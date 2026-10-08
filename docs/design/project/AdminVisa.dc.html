@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · visa applications</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="visa" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Travel</span></div>
+          <h1 class="a-title">Visa applications</h1>
+          <p>Each application moves through the pipeline. A status change emails the customer (SMS in P1). Documents are private: only Visa Officers and Admins can open them.</p>
+        </div>
+        <div class="a-actions"><a class="a-btn a-btn-outline a-hide-sm" href="AdminPages.dc.html"><span class="i i-list-checks"></span>Countries and checklists</a><button class="a-btn a-btn-primary" type="button"><span class="i i-plus"></span>New application</button></div>
+      </div>
+      <div class="a-kanban" style="grid-auto-columns:minmax(214px,1fr)">
+        <sc-for list="{{cols}}" as="c" hint-placeholder-count="6">
+          <div class="a-col">
+            <div class="a-col-head"><span>{{c.label}}</span><b>{{c.n}}</b></div>
+            <sc-for list="{{c.cards}}" as="v" hint-placeholder-count="2">
+              <button class="{{v.cls}}" type="button" style="text-align:left" onClick="{{v.go}}">
+                <div class="flex items-center justify-between gap-2"><span class="a-ref" style="font-size:12px">{{v.ref}}</span><img class="w-flag" src="{{v.flag}}" alt="" style="width:22px;height:16px;border-radius:3px"></div>
+                <div><b>{{v.who}}</b><small class="block">{{v.country}} · {{v.type}}</small></div>
+                <div class="a-lead-foot"><span class="flex items-center gap-2 text-12 a-mute"><span class="a-hbar-track" style="width:56px"><span style="{{v.w}}"></span></span>{{v.docs}}</span><span class="a-avatar is-sm" style="{{v.av}}">{{v.ini}}</span></div>
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+
+      <div class="a-split is-wide">
+        <section class="a-card" aria-labelledby="ap-t">
+          <div class="a-card-head"><div class="flex items-center gap-3"><img class="w-flag" src="{{A.flag}}" alt="" style="width:30px;height:22px;border-radius:4px"><div><h3 id="ap-t">{{A.ref}} · {{A.who}}</h3><p>{{A.country}} {{A.type}} visa · {{A.pax}} · travel {{A.travel}}</p></div></div><span class="{{A.stCls}}">{{A.st}}</span></div>
+          <div class="a-card-body flex flex-col gap-4">
+            <div class="a-grid2">
+              <label class="a-field"><span class="a-label">Status</span><span class="a-sel"><select class="a-input" value="{{A.st}}" onChange="{{onStatus}}"><sc-for list="{{statuses}}" as="s" hint-placeholder-count="6"><option value="{{s}}">{{s}}</option></sc-for></select></span><span class="a-hint">The customer gets an email for every change.</span></label>
+              <label class="a-field"><span class="a-label">Visa Officer</span><span class="a-sel"><select class="a-input"><option>Tanvir A.</option><option>Unassigned</option></select></span></label>
+            </div>
+            <dl class="a-kv"><dt>Fee</dt><dd>৳6,500 per applicant · paid at the office</dd><dt>Processing</dt><dd>About 7 working days</dd><dt>Embassy appointment</dt><dd>Sun, 18 Oct, 10:30 am</dd><dt>Passport collection</dt><dd>Motijheel office</dd></dl>
+            <div class="flex flex-col gap-2"><div class="flex items-center justify-between"><span class="a-sec-title">Checklist · {{A.done}} of {{A.total}}</span><button class="a-btn a-btn-outline a-btn-sm" type="button" onClick="{{askDocs}}"><span class="i i-send"></span>Ask for missing documents</button></div>
+              <div class="a-files"><sc-for list="{{docs}}" as="d" hint-placeholder-count="8"><button class="{{d.cls}}" type="button" onClick="{{d.go}}"><span class="{{d.icon}}"></span><span class="min-w-0" style="flex:1"><b>{{d.name}}</b><small class="block text-12 a-mute">{{d.sub}}</small></span><span class="{{d.chip}}">{{d.state}}</span></button></sc-for></div>
+            </div>
+          </div>
+        </section>
+        <div class="a-stack a-sticky">
+          <section class="a-card" aria-labelledby="dv-t">
+            <div class="a-card-head"><div><h3 id="dv-t">{{D.name}}</h3><p>{{D.sub}}</p></div><span class="a-chip"><span class="i i-lock"></span>Private</span></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <div class="a-doc"><div class="a-doc-page"><span class="a-doc-photo"></span><span class="a-doc-lines"><i style="width:70%"></i><i style="width:90%"></i><i style="width:55%"></i><i style="width:80%"></i></span><span class="a-doc-mrz"></span></div><span class="a-doc-wm">Waafa · confidential</span><div class="a-doc-bar"><span>Page 1 of 1 · viewed by Tanvir A.</span><span class="flex gap-1"><button class="a-btn a-btn-sm a-btn-icon" type="button" aria-label="Zoom in"><span class="i i-zoom-in"></span></button><button class="a-btn a-btn-sm a-btn-icon" type="button" aria-label="Rotate"><span class="i i-rotate-cw"></span></button><button class="a-btn a-btn-sm a-btn-icon" type="button" aria-label="Download"><span class="i i-download"></span></button></span></div></div>
+              <div class="grid gap-2" style="grid-template-columns:1fr 1fr"><button class="a-btn a-btn-outline" type="button" onClick="{{rejectDoc}}"><span class="i i-rotate-ccw"></span>Ask again</button><button class="a-btn a-btn-primary" type="button" onClick="{{okDoc}}"><span class="i i-check"></span>Looks right</button></div>
+              <p class="text-12 a-mute">Files are stored privately and shown with a watermark. Every view is logged.</p>
+            </div>
+          </section>
+          <section class="a-card" aria-labelledby="tl2-t">
+            <div class="a-card-head"><h3 id="tl2-t">Timeline</h3></div>
+            <div class="a-card-body"><div class="a-tl"><sc-for list="{{tl}}" as="e" hint-placeholder-count="4"><div class="a-tl-item"><span class="{{e.ic}}"><span class="{{e.icon}}"></span></span><div class="a-tl-body"><b>{{e.who}}</b> {{e.what}}<time>{{e.t}}</time></div></div></sc-for></div></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="a-toast" role="status"><span class="i i-mail-check"></span>{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const flash = msg => { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2600); };
+    const F = { th: '../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg', my: '../assets/039af49115f270dcd1fee4896f730088.svg', sg: '../assets/a06f4086040ecf0d1169328364940adc.svg', ae: '../assets/f93db3c0c172100e0475f05ed5e29b63.svg', in: '../assets/95b323620f7ad34966c1bf5f7276d390.svg', tr: '../assets/327b621038f836552788eb78bb9c89c6.svg', jp: '../assets/0a22842f52b1b465ca4234f911c78fee.svg' };
+    const AV = { TA: '--av:#7C5CFF', NJ: '--av:#0053D7' };
+    const STAT = ['Submitted', 'Documents pending', 'Under review', 'At the embassy', 'Approved', 'Refused'];
+    const SC = { Submitted: 'a-s-new', 'Documents pending': 'a-s-pending', 'Under review': 'a-s-progress', 'At the embassy': 'a-s-quoted', Approved: 'a-s-booked', Refused: 'a-s-lost' };
+    const V = [
+      ['VSA-261008-0011', 'Nasima Khatun', 'th', 'Thailand', 'Tourist', 'Documents pending', 6, 8, 'TA', '2 applicants', 'Tue, 3 Nov'],
+      ['VSA-261008-0010', 'Arman Chowdhury', 'my', 'Malaysia', 'Business', 'Submitted', 3, 7, 'TA', '1 applicant', 'Mon, 26 Oct'],
+      ['VSA-261007-0108', 'Tanvir Hasan', 'th', 'Thailand', 'Tourist', 'Under review', 8, 8, 'TA', '1 applicant', 'Fri, 13 Nov'],
+      ['VSA-261007-0102', 'Rokeya Begum', 'in', 'India', 'Medical', 'At the embassy', 9, 9, 'TA', '2 applicants', 'Thu, 22 Oct'],
+      ['VSA-261006-0097', 'Jamil Akhtar', 'sg', 'Singapore', 'Tourist', 'Approved', 7, 7, 'NJ', '3 applicants', 'Sat, 17 Oct'],
+      ['VSA-261005-0090', 'Lina Ferdous', 'ae', 'United Arab Emirates', 'Tourist', 'Under review', 6, 6, 'TA', '1 applicant', 'Wed, 4 Nov'],
+      ['VSA-261004-0085', 'Sabbir Ahmed', 'tr', 'Türkiye', 'Tourist', 'Documents pending', 4, 9, 'NJ', '2 applicants', 'Sun, 15 Nov'],
+      ['VSA-260930-0071', 'Mahin Alam', 'jp', 'Japan', 'Tourist', 'Refused', 9, 9, 'TA', '1 applicant', '—']
+    ];
+    const sel = st.sel || 'VSA-261008-0011';
+    const stOver = st.stOver || {};
+    const status = r => stOver[r[0]] || r[5];
+    const COUNTS = { Submitted: 14, 'Documents pending': 9, 'Under review': 12, 'At the embassy': 18, Approved: 41, Refused: 3 };
+    const cols = STAT.map(s => ({ label: s, n: COUNTS[s], cards: V.filter(r => status(r) === s).map(r => ({ ref: r[0], who: r[1], flag: F[r[2]], country: r[3], type: r[4], docs: r[6] + '/' + r[7] + ' docs', w: 'width:' + Math.round(r[6] / r[7] * 100) + '%;background:' + (r[6] === r[7] ? 'var(--color-success-600)' : 'var(--color-warning-700)'), ini: r[8], av: AV[r[8]], cls: 'a-lead' + (r[0] === sel ? ' is-sel' : ''), go: () => this.setState({ sel: r[0], doc: 0 }) })) }));
+    const a = V.find(r => r[0] === sel) || V[0];
+    const DOCS = [['Passport bio page', 'Valid until 2031 · scanned in colour', 'ok', 'i i-passport'], ['Photo, 35 × 45 mm', 'White background', 'ok', 'i i-camera'], ['Bank statement, 6 months', 'Balance above ৳1,50,000', 'ok', 'i i-landmark'], ['Bank solvency letter', 'From the same bank', 'ok', 'i i-file-check'], ['Hotel booking', 'Bangkok, 4 nights', 'ok', 'i i-hotel'], ['Return air ticket', 'DAC–BKK–DAC', 'ok', 'i i-ticket'], ['Employer NOC', 'On letterhead, signed', 'ask', 'i i-briefcase'], ['Visa application form', 'Signed by the applicant', 'wait', 'i i-file-text']];
+    const docIdx = st.doc || 0;
+    const docState = st.docState || {};
+    const docs = DOCS.slice(0, a[7]).map((d, i) => { const s = docState[i] || (i < a[6] ? 'ok' : d[2] === 'ok' ? 'wait' : d[2]); return { name: d[0], sub: d[1], icon: d[3], state: s === 'ok' ? 'Checked' : s === 'ask' ? 'Asked again' : 'Waiting', chip: 'a-chip ' + (s === 'ok' ? 'is-green' : s === 'ask' ? 'is-amber' : ''), cls: 'a-file' + (i === docIdx ? ' is-on' : ''), go: () => this.setState({ doc: i }) }; });
+    const d0 = DOCS[docIdx] || DOCS[0];
+    const tl = [['a-tl-ic is-blue', 'i i-inbox', 'Website', 'received the application with 5 documents.', '6 Oct, 11:20 am'], ['a-tl-ic', 'i i-user-check', 'Tanvir A.', 'took the case.', '6 Oct, 11:42 am'], ['a-tl-ic is-amber', 'i i-mail', 'Tanvir A.', 'asked for the employer NOC and the signed form. Email sent.', '7 Oct, 3:05 pm'], ['a-tl-ic is-green', 'i i-file-up', 'Customer', 'uploaded the hotel booking and ticket.', 'Today, 9:14 am']]
+      .map(e => ({ ic: e[0], icon: e[1], who: e[2], what: e[3], t: e[4] }));
+    return {
+      m: !!p.m, cols,
+      A: { ref: a[0], who: a[1], flag: F[a[2]], country: a[3], type: a[4].toLowerCase(), st: status(a), stCls: 'a-status ' + SC[status(a)], done: docs.filter(d => d.state === 'Checked').length, total: a[7], pax: a[9], travel: a[10] },
+      statuses: STAT, onStatus: e => { const v = e && e.target ? e.target.value : ''; this.setState({ stOver: Object.assign({}, stOver, { [a[0]]: v }) }); flash('Status changed to ' + v + '. ' + a[1] + ' gets an email now.'); },
+      docs, D: { name: d0[0], sub: d0[1] },
+      okDoc: () => { this.setState({ docState: Object.assign({}, docState, { [docIdx]: 'ok' }) }); flash(d0[0] + ' marked as checked'); },
+      rejectDoc: () => { this.setState({ docState: Object.assign({}, docState, { [docIdx]: 'ask' }) }); flash('Asked again. The customer gets an email with the reason.'); },
+      askDocs: () => flash('Email sent: 2 documents still needed'),
+      tl, toast: st.toast || '',
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

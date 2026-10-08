@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Plan my trip</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="packages" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead v-pthead">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Plan my trip</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px">
+            <span class="v-eyebrow">Plan my trip</span>
+            <h1 class="v-h1 v-h1-page">Tell us the trip. We’ll plan it day by day.</h1>
+            <p class="v-lead">Five short questions, about two minutes. A travel expert turns your answers into a plan with flights, hotels, visas and a clear price.</p>
+          </div>
+          <ol class="v-howsteps " aria-label="How it works"><li><span>1</span><div><b>Answer five short questions</b><small>Places, dates, people, budget, contact</small></div></li><li><span>2</span><div><b>Get a plan within one working day</b><small>Day by day, with the price per person</small></div></li><li><span>3</span><div><b>Change anything, then book</b><small>Pay only when you’re happy</small></div></li></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec" style="padding-top:24px">
+      <div class="w-wrap v-ptgrid">
+        <div class="min-w-0">
+          <sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
+            <div class="w-formcard v-formcard v-ptcard">
+              <div class="w-formcard-head">
+                <div class="v-ptprog" role="list" aria-label="Steps">
+                  <sc-for list="{{steps}}" as="s" hint-placeholder-count="5"><button class="{{s.cls}}" type="button" role="listitem" onClick="{{s.go}}" disabled="{{s.off}}"><span class="v-ptprog-bar"><span></span></span><span class="v-ptprog-label">{{s.label}}</span></button></sc-for>
+                </div>
+                <button class="v-ptmini" type="button" onClick="{{sumSheet.open_}}"><span class="i i-route"></span><span class="min-w-0 truncate">{{sum.short}}</span><span class="i i-chevron-down"></span></button>
+              </div>
+              <div key="{{stepKey}}">
+            <sc-if value="{{is1}}" hint-placeholder-val="{{ true }}">
+              <div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>Where would you like to go?</h2><p>Pick one or more places. Not sure yet? Tell us that too.</p></div>
+                <div class="v-ptgroup"><span class="v-kicker">In Bangladesh</span><div class="w-pills v-ptchips" role="group" aria-label="Places in Bangladesh"><sc-for list="{{dBD}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" type="button" role="checkbox" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div></div>
+                <div class="v-ptgroup"><span class="v-kicker">Abroad</span><div class="w-pills v-ptchips" role="group" aria-label="Places abroad"><sc-for list="{{dAB}}" as="c" hint-placeholder-count="11"><button class="{{c.cls}}" type="button" role="checkbox" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div></div>
+                <div class="v-ptgroup"><span class="v-kicker">Something else</span><div class="v-ptother"><div class="w-pills v-ptchips" role="group" aria-label="Not sure"><sc-for list="{{dNS}}" as="c" hint-placeholder-count="1"><button class="{{c.cls}}" type="button" role="checkbox" aria-checked="{{c.on}}" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.label}}</button></sc-for></div><input class="w-input" placeholder="Another place, e.g. Vietnam or Kashmir" aria-label="Another place"></div></div>
+                <sc-if value="{{err1}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>Choose at least one place, or pick “Not sure yet”.</span></sc-if></div>
+            </sc-if><sc-if value="{{is2}}" hint-placeholder-val="{{ false }}">
+              <div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>When are you travelling?</h2><p>Exact dates or a rough month both work.</p></div>
+                <div class="w-seg v-ptseg" role="radiogroup" aria-label="Dates"><sc-for list="{{whenModes}}" as="c" hint-placeholder-count="2"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div>
+                <sc-if value="{{flexMode}}" hint-placeholder-val="{{ true }}"><div class="w-field"><span class="w-label">Which months could work?</span><div class="w-pills" role="group" aria-label="Months"><sc-for list="{{months}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" type="button" role="checkbox" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div></div></sc-if>
+                <sc-if value="{{exactMode}}" hint-placeholder-val="{{ false }}"><div class="w-grid-2"><div class="w-field"><label class="w-label" for="pt-dep">Leave on</label><input class="w-input" id="pt-dep" placeholder="Thu, 10 Dec 2026" value="Thu, 10 Dec 2026"></div><div class="w-field"><label class="w-label" for="pt-ret">Come back on</label><input class="w-input" id="pt-ret" placeholder="Tue, 15 Dec 2026" value="Tue, 15 Dec 2026"></div></div></sc-if>
+                <div class="v-ptnights"><div><b>How many nights?</b><small>We plan the days around this</small></div><div class="w-counter"><button type="button" aria-label="One night fewer" onClick="{{nights.dec}}" disabled="{{nights.decOff}}"><span class="i i-minus"></span></button><output aria-live="polite">{{nights.val}}</output><button type="button" aria-label="One more night" onClick="{{nights.inc}}" disabled="{{nights.incOff}}"><span class="i i-plus"></span></button></div></div></div>
+            </sc-if><sc-if value="{{is3}}" hint-placeholder-val="{{ false }}">
+              <div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>Who’s going?</h2><p>So we can plan rooms, seats and the pace of each day.</p></div>
+                <div class="v-paxrow" role="group" aria-label="Travellers"><sc-for list="{{paxr}}" as="r" hint-placeholder-count="3"><div class="v-paxcell"><div><b>{{r.title}}</b><small>{{r.sub}}</small></div><div class="w-counter"><button type="button" aria-label="{{r.decLabel}}" onClick="{{r.dec}}" disabled="{{r.decOff}}"><span class="i i-minus"></span></button><output aria-live="polite">{{r.val}}</output><button type="button" aria-label="{{r.incLabel}}" onClick="{{r.inc}}" disabled="{{r.incOff}}"><span class="i i-plus"></span></button></div></div></sc-for></div>
+                <div class="w-field"><span class="w-label">This trip is for</span><div class="w-pills" role="radiogroup" aria-label="Trip type"><sc-for list="{{styles}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.label}}</button></sc-for></div></div></div>
+            </sc-if><sc-if value="{{is4}}" hint-placeholder-val="{{ false }}">
+              <div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>Budget and style</h2><p>A rough budget helps us choose the right hotels and flights.</p></div>
+                <div class="w-field"><span class="w-label">Budget per person, all in</span><div class="w-pills" role="radiogroup" aria-label="Budget per person"><sc-for list="{{budgets}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div></div>
+                <div class="w-field"><span class="w-label">Hotels</span><div class="w-pills" role="radiogroup" aria-label="Hotel class"><sc-for list="{{hotels}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div></div>
+                <div class="w-field"><span class="w-label">What do you enjoy? <span class="w-opt">(pick any)</span></span><div class="w-pills" role="group" aria-label="Interests"><sc-for list="{{likes}}" as="c" hint-placeholder-count="8"><button class="{{c.cls}}" type="button" role="checkbox" aria-checked="{{c.on}}" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.label}}</button></sc-for></div></div>
+                <div class="v-ptswitches"><button class="w-pick-opt v-optbox" type="button" role="switch" aria-checked="{{flights.on}}" onClick="{{flights.go}}"><span><b>Include flights from Dhaka</b><small>We compare airlines for your dates</small></span><span class="{{flights.cls}}"></span></button><button class="w-pick-opt v-optbox" type="button" role="switch" aria-checked="{{visa.on}}" onClick="{{visa.go}}"><span><b>Help with visas</b><small>We prepare the files and book appointments</small></span><span class="{{visa.cls}}"></span></button></div></div>
+            </sc-if><sc-if value="{{is5}}" hint-placeholder-val="{{ false }}">
+              <div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>Where should we send your plan?</h2><p>A travel expert sends a day-by-day plan and price, usually within one working day.</p></div>
+                <div class="w-field"><label class="w-label" for="pt-name">Full name <span class="w-req">*</span></label><input class="w-input" id="pt-name" placeholder="e.g. Farhana Akter"></div>
+                <div class="w-grid-2"><div class="w-field"><label class="w-label" for="pt-phone">Mobile number <span class="w-req">*</span></label><div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880<span class="i i-chevron-down"></span></button><input id="pt-phone" inputmode="tel" autocomplete="tel-national" placeholder="1712-345678"></div></div><div class="w-field"><label class="w-label" for="pt-mail">Email <span class="w-req">*</span></label><input class="w-input" id="pt-mail" type="email" placeholder="you@example.com"></div></div>
+                <div class="w-field"><span class="w-label">How should we contact you?</span><div class="w-pills" role="radiogroup" aria-label="Preferred contact"><sc-for list="{{contacts}}" as="c" hint-placeholder-count="3"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.label}}</button></sc-for></div></div>
+                <label class="w-field"><span class="w-label">Anything else? <span class="w-opt">(optional)</span></span><textarea class="w-input v-textarea" rows="3" placeholder="For example: first trip abroad, need halal food, travelling with grandparents, a birthday on the trip."></textarea></label>
+                <button class="{{consent.cls}}" type="button" role="checkbox" aria-checked="{{consent.on}}" onClick="{{consent.go}}"><span class="v-cbox"></span><span>I agree that Waafa Tours and Travel may contact me about this request by phone, WhatsApp or email.</span></button></div>
+            </sc-if>
+              </div>
+              <div class="w-formcard-foot">
+                <sc-if value="{{canBack}}" hint-placeholder-val="{{ false }}"><button class="w-btn w-btn-ghost" type="button" onClick="{{back}}"><span class="i i-arrow-left"></span>Back</button></sc-if>
+                <span class="v-foot-note">{{stepNote}}</span>
+                <sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button class="w-btn w-btn-primary v-foot-go" type="button" onClick="{{next}}">Continue<span class="i i-arrow-right"></span></button></sc-if>
+                <sc-if value="{{isLast}}" hint-placeholder-val="{{ false }}"><button class="{{sendCls}}" type="button" onClick="{{send}}" disabled="{{sending}}"><span class="{{sendIc}}"></span>{{sendLabel}}</button></sc-if>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}"><section class="w-formcard v-done " aria-live="polite" data-fx-confetti=""><div class="w-success">
+  <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"/><path d="M28 45 l11 11 l22 -24"/></svg>
+  <span class="v-eyebrow" style="justify-content:center">Request sent</span>
+  <h2 class="v-h2">Thank you! Your travel expert will send a day-by-day plan and price.</h2>
+  <div class="w-ref"><span class="text-13 text-muted">Reference</span><b>CTR-261008-0011</b><button class="{{copy.cls}}" type="button" onClick="{{copy.go}}"><span class="{{copy.ic}}"></span>{{copy.label}}</button></div>
+  <div class="w-next"><div class="w-next-item"><span class="w-next-n">1</span><div><b>We read your request and check flights and hotels</b><p>Usually within one working day, Saturday to Thursday.</p></div></div><div class="w-next-item"><span class="w-next-n">2</span><div><b>You get a plan you can change</b><p>Day by day, with what’s included and the price per person.</p></div></div><div class="w-next-item"><span class="w-next-n">3</span><div><b>Book when you’re happy</b><p>Pay by bank transfer, bKash, Nagad or at our office.</p></div></div></div>
+  <div class="v-done-actions"><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20my%20trip%20request%20reference%20is%20CTR-261008-0011"><span class="i i-whatsapp-fill"></span>Send reference on WhatsApp</a><a class="w-btn w-btn-secondary" href="{{L.Packages}}"><span class="i i-map"></span>Browse packages</a></div>
+  <p class="w-note" style="justify-content:center"><span class="i i-mail"></span><span>A copy is on its way to your email.</span></p>
+</div></section></sc-if>
+        </div>
+        <aside class="v-ptaside"><div class="v-ptticket">
+            <div class="v-ptticket-top"><span class="v-kicker" style="color:rgb(255 255 255/.7)">Your trip so far</span><b>{{sum.title}}</b><span class="v-ptticket-rib" aria-hidden="true"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ptr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"/><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"/><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"/><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"/></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#ptr)"/><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30" fill="none" stroke="#D7D3D0" stroke-opacity=".7" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></span></div>
+            <dl class="v-ptlist">
+              <sc-for list="{{sum.rows}}" as="r" hint-placeholder-count="7"><div class="{{r.cls}}"><dt><span class="{{r.icon}}"></span>{{r.k}}</dt><dd>{{r.v}}</dd></div></sc-for>
+            </dl>
+            <div class="v-ptticket-foot"><span class="i i-shield-check"></span>Free to ask. No payment until you approve a plan.</div>
+          </div>
+          <div class="w-helpcard">
+            <div class="w-helpcard-ribbon"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ptc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"/><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"/><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"/><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"/></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#ptc)"/><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30" fill="none" stroke="#D7D3D0" stroke-opacity=".7" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></div>
+            <span class="{{hours.clsDark}}" style="align-self:flex-start">{{hours.label}}</span>
+            <h3 class="v-h3" style="color:#fff">Prefer to talk it through?</h3>
+            <p>Call or WhatsApp a travel expert in Motijheel. Saturday to Thursday, 10 am to 6 pm.</p>
+            <a class="w-btn w-btn-white" href="tel:+8801823232241"><span class="i i-phone"></span>01823-232241</a>
+            <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20I%20would%20like%20help%20planning%20a%20trip"><span class="i i-whatsapp-fill"></span>WhatsApp</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+  <sc-if value="{{sumSheet.open}}" hint-placeholder-val="{{ false }}">
+    <div class="{{sumSheet.ovCls}}" role="dialog" aria-modal="true" aria-label="Your trip so far">
+      <div class="w-scrim" onClick="{{sumSheet.close}}"></div>
+      <div class="w-sheet v-ptsheet">
+        <div class="w-sheet-grab"></div>
+        <div class="w-sheet-head"><span class="w-sheet-title">Your trip so far</span><button class="w-iconbtn" type="button" aria-label="Close" onClick="{{sumSheet.close}}"><span class="i i-x"></span></button></div>
+        <div class="w-sheet-body"><div class="v-ptticket">
+            <div class="v-ptticket-top"><span class="v-kicker" style="color:rgb(255 255 255/.7)">Your trip so far</span><b>{{sum.title}}</b><span class="v-ptticket-rib" aria-hidden="true"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ptr2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"/><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"/><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"/><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"/></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#ptr2)"/><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30" fill="none" stroke="#D7D3D0" stroke-opacity=".7" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></span></div>
+            <dl class="v-ptlist">
+              <sc-for list="{{sum.rows}}" as="r" hint-placeholder-count="7"><div class="{{r.cls}}"><dt><span class="{{r.icon}}"></span>{{r.k}}</dt><dd>{{r.v}}</dd></div></sc-for>
+            </dl>
+            <div class="v-ptticket-foot"><span class="i i-shield-check"></span>Free to ask. No payment until you approve a plan.</div>
+          </div></div>
+        
+      </div>
+    </div>
+  </sc-if>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="packages" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m": {"editor": "boolean", "default": false}, "step": {"editor": "enum", "options": ["1", "2", "3", "4", "5", "done"], "default": "1"}, "$preview": {"width": 1440, "height": 1900}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Packages','PackageDetail','PlanTrip','Contact','Visa'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const pick1 = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => ({ key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on: cur === o[0], cls: b + (cur === o[0] ? (b.indexOf('v-opt') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: o[0] }) })); };
+    const pickN = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => { const on = cur.indexOf(o[0]) >= 0; return { key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on, cls: b + (on ? (b.indexOf('v-checkrow') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: on ? cur.filter(x => x !== o[0]) : cur.concat([o[0]]) }) }; }); };
+    const val = (key, def) => st[key] !== undefined ? st[key] : def;
+    const counter = (key, def, title, subt, min, max, what) => { const v = val(key, def); return { title, sub: subt, val: v, decOff: v <= min, incOff: v >= max, decLabel: 'Remove one ' + what, incLabel: 'Add one ' + what, dec: () => this.setState({ [key]: Math.max(min, v - 1) }), inc: () => this.setState({ [key]: Math.min(max, v + 1) }) }; };
+    const sw = (key, def) => { const on = val(key, def); return { on, cls: 'w-switch' + (on ? ' is-on' : ''), go: () => this.setState({ [key]: !on }) }; };
+    const overlay = (key, def) => { const open = st[key] !== undefined ? st[key] : def; const out = !!st[key + 'Out']; return { open, out,
+      open_: () => this.setState({ [key]: true, [key + 'Out']: false }),
+      close: () => { this.setState({ [key + 'Out']: true }); clearTimeout(this['_o' + key]); this['_o' + key] = setTimeout(() => this.setState({ [key]: false, [key + 'Out']: false }), 260); } }; };
+    const tk = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const _d = new Date(Date.now() + 6 * 3600e3);
+    const _dow = _d.getUTCDay(), _mins = _d.getUTCHours() * 60 + _d.getUTCMinutes();
+    let _open = false, _label;
+    if (_dow !== 5 && _mins >= 600 && _mins < 1080) { _open = true; _label = 'Open now · until 6 pm'; }
+    else if (_dow !== 5 && _mins < 600) _label = 'Closed · opens at 10 am';
+    else if (_dow === 4 || _dow === 5) _label = 'Closed · opens Saturday at 10 am';
+    else _label = 'Closed · opens tomorrow at 10 am';
+    const hours = { open: _open, label: _label, cls: 'v-hours is-sm ' + (_open ? 'is-open' : 'is-closed'), clsDark: 'v-hours is-sm on-dark ' + (_open ? 'is-open' : 'is-closed') };
+    const copied = !!st.copied;
+    const copy = { cls: 'w-btn w-btn-xs ' + (copied ? 'w-btn-navy' : 'w-btn-soft'), ic: 'i ' + (copied ? 'i-check' : 'i-copy'), label: copied ? 'Copied' : 'Copy',
+      go: () => { try { if (navigator.clipboard) navigator.clipboard.writeText('CTR-261008-0011'); } catch (x) {} clearTimeout(this._c); this.setState({ copied: true }); this._c = setTimeout(() => this.setState({ copied: false }), 1600); } };
+    const BD = [["cox", "Cox’s Bazar"], ["sajek", "Sajek Valley"], ["sylhet", "Sylhet and Srimangal"], ["bandarban", "Bandarban"], ["sundarbans", "Sundarbans"], ["stmartin", "Saint Martin’s Island"]], AB = [["mle", "Maldives"], ["ktm", "Nepal"], ["pbh", "Bhutan"], ["bkk", "Thailand"], ["kul", "Malaysia"], ["sin", "Singapore"], ["dxb", "Dubai"], ["ist", "Türkiye"], ["dps", "Bali"], ["cmb", "Sri Lanka"], ["ind", "India"]];
+    const step = st.step || p.step || '1';
+    const dests = val('dests', p.step && p.step !== '1' ? ['mle'] : []);
+    const togD = (k) => this.setState({ dests: dests.indexOf(k) >= 0 ? dests.filter(x => x !== k) : dests.filter(x => x !== 'ns').concat([k]), err1: false });
+    const dc = (arr) => arr.map(d => ({ label: d[1], on: dests.indexOf(d[0]) >= 0, cls: 'w-chip' + (dests.indexOf(d[0]) >= 0 ? ' is-active' : ''), go: () => togD(d[0]) }));
+    const dBD = dc(BD), dAB = dc(AB);
+    const dNS = [{ label: 'Not sure yet', icon: 'i i-circle-help', on: dests.indexOf('ns') >= 0, cls: 'w-chip' + (dests.indexOf('ns') >= 0 ? ' is-active' : ''), go: () => this.setState({ dests: dests.indexOf('ns') >= 0 ? [] : ['ns'], err1: false }) }];
+    const when = val('when', 'flex');
+    const whenModes = [['flex', 'Flexible month'], ['exact', 'Exact dates']].map(w => ({ label: w[1], on: when === w[0], cls: 'w-seg-btn' + (when === w[0] ? ' is-active' : ''), go: () => this.setState({ when: w[0] }) }));
+    const MON = [['nov', 'Nov 2026'], ['dec', 'Dec 2026'], ['jan', 'Jan 2027'], ['feb', 'Feb 2027'], ['mar', 'Mar 2027']];
+    const months = pickN('mon', p.step && p.step !== '1' ? ['dec'] : [], MON);
+    const nights = counter('nights', 5, 'Nights', '', 1, 30, 'night');
+    const paxr = [counter('adt', 2, 'Adults', '12+ years', 1, 20, 'adult'), counter('chd', 0, 'Children', '2 to 11 years', 0, 10, 'child'), counter('inf', 0, 'Infants', 'Under 2', 0, 4, 'infant')];
+    const STY = [['family', 'Family', 'i i-users'], ['couple', 'Couple', 'i i-heart'], ['friends', 'Friends', 'i i-route'], ['solo', 'Just me', 'i i-user'], ['office', 'Office group', 'i i-briefcase']];
+    const styles = pick1('style', 'couple', STY);
+    const BUD = [['30', 'Under ৳30,000'], ['60', '৳30,000 to ৳60,000'], ['100', '৳60,000 to ৳1,00,000'], ['max', 'Over ৳1,00,000'], ['ns', 'Not sure']];
+    const budgets = pick1('bud', '100', BUD);
+    const HOT = [['3', '3-star'], ['4', '4-star'], ['5', '5-star'], ['resort', 'Resort or villa'], ['any', 'Any']];
+    const hotels = pick1('hot', 'resort', HOT);
+    const LIK = [['beach', 'Beaches', 'i i-waves'], ['mount', 'Mountains', 'i i-mountain'], ['city', 'Cities', 'i i-building'], ['food', 'Food', 'i i-utensils'], ['shop', 'Shopping', 'i i-shopping-bag'], ['culture', 'Culture and history', 'i i-landmark'], ['adv', 'Adventure', 'i i-compass'], ['relax', 'Slow and relaxed', 'i i-sun']];
+    const likes = pickN('likes', ['beach', 'relax'], LIK);
+    const flights = sw('flights', true), visa = sw('visa', true);
+    const contacts = pick1('contact', 'whatsapp', [['call', 'Call', 'i i-phone'], ['whatsapp', 'WhatsApp', 'i i-whatsapp'], ['email', 'Email', 'i i-mail']]);
+    const consent = (() => { const on = val('consent', true); return { on, cls: 'v-checkrow v-consent' + (on ? ' is-on' : ''), go: () => this.setState({ consent: !on }) }; })();
+    const sumSheet = overlay('sumSheet', false); sumSheet.ovCls = 'w-overlay wa-r ' + (sumSheet.out ? ' is-out' : '');
+
+    // live summary
+    const nm = (k) => { const a = BD.concat(AB).find(d => d[0] === k); return a ? a[1] : (k === 'ns' ? 'Not sure yet' : k); };
+    const adt = val('adt', 2), chd = val('chd', 0), inf = val('inf', 0);
+    const who = adt + (adt === 1 ? ' adult' : ' adults') + (chd ? ', ' + chd + (chd === 1 ? ' child' : ' children') : '') + (inf ? ', ' + inf + (inf === 1 ? ' infant' : ' infants') : '');
+    const mon = val('mon', p.step && p.step !== '1' ? ['dec'] : []);
+    const whenTxt = when === 'exact' ? '10 Dec to 15 Dec 2026' : (mon.length ? MON.filter(x => mon.indexOf(x[0]) >= 0).map(x => x[1]).join(', ') : '');
+    const lk = val('likes', ['beach', 'relax']);
+    const nN = val('nights', 5);
+    const row = (icon, k, v, done) => ({ icon: 'i ' + icon, k, v: v || 'Not chosen yet', cls: 'v-ptrow' + (v ? ' is-set' : '') });
+    const stepN = step === 'done' ? 6 : +step;
+    const rows = [
+      row('i-map-pin', 'Where', dests.map(nm).join(', ')),
+      row('i-calendar', 'When', stepN >= 2 || whenTxt ? (whenTxt || 'Any time') : ''),
+      row('i-moon', 'Nights', stepN >= 2 ? nN + (nN === 1 ? ' night' : ' nights') : ''),
+      row('i-users', 'Travellers', stepN >= 3 ? who + ' · ' + (STY.find(s => s[0] === val('style', 'couple')) || ['', ''])[1] : ''),
+      row('i-wallet', 'Budget', stepN >= 4 ? (BUD.find(b => b[0] === val('bud', '100')) || ['', ''])[1] + ' per person' : ''),
+      row('i-hotel', 'Hotels', stepN >= 4 ? (HOT.find(h => h[0] === val('hot', 'resort')) || ['', ''])[1] : ''),
+      row('i-heart', 'Likes', stepN >= 4 ? LIK.filter(l => lk.indexOf(l[0]) >= 0).map(l => l[1]).join(', ') : '')
+    ];
+    const title = dests.length ? (dests.length === 1 ? nm(dests[0]) : nm(dests[0]) + ' + ' + (dests.length - 1) + ' more') : 'A trip, to be planned';
+    const sum = { title, rows, short: title + (stepN >= 2 ? ' · ' + nN + ' nights' : '') + (stepN >= 3 ? ' · ' + adt + (adt === 1 ? ' adult' : ' adults') : '') };
+    const LBL = ['Where', 'When', 'Who', 'Budget', 'Contact'];
+    const steps = LBL.map((l, i) => ({ label: l, off: i + 1 > stepN, cls: 'v-ptprog-step' + (i + 1 < stepN ? ' is-done' : '') + (i + 1 === stepN ? ' is-now' : ''), go: () => { if (i + 1 < stepN) this.setState({ step: String(i + 1) }); } }));
+    const go = (n) => this.setState({ step: String(n) });
+    const sending = !!st.sending;
+    return {
+      L, m: !!p.m, hours, copy, dBD, dAB, dNS, whenModes, flexMode: when === 'flex', exactMode: when === 'exact', months, nights, paxr, styles, budgets, hotels, likes, flights, visa, contacts, consent,
+      sum, steps, sumSheet, stepKey: 's' + step,
+      is1: step === '1', is2: step === '2', is3: step === '3', is4: step === '4', is5: step === '5', notDone: step !== 'done', isDone: step === 'done',
+      err1: !!st.err1, canBack: stepN > 1 && stepN < 6, notLast: stepN < 5, isLast: stepN === 5,
+      stepNote: 'Step ' + Math.min(stepN, 5) + ' of 5',
+      back: () => go(Math.max(1, stepN - 1)),
+      next: () => { if (stepN === 1 && !dests.length) { this.setState({ err1: true }); return; } go(stepN + 1); },
+      sending, sendCls: 'w-btn w-btn-primary v-foot-go' + (sending ? ' is-loading' : ''), sendIc: sending ? 'v-spin' : 'i i-send', sendLabel: sending ? 'Sending…' : 'Send my trip',
+      send: () => { this.setState({ sending: true }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ sending: false, step: 'done' }), 1000); }
+    };
+  }
+}
+</script>
+</body>
+</html>

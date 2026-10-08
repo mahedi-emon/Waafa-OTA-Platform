@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Track a request</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="none" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Track</span></nav>
+        <div class="flex flex-col gap-3" style="max-width:720px;margin-top:20px"><span class="v-eyebrow">Track</span><h1 class="v-h1 v-h1-page">Where is my request?</h1><p class="v-lead">One box for every reference: flights, hotels, packages, visas, Waafas World orders and quotes.</p></div>
+        <form class="wd-trackform" onSubmit="{{find}}">
+          <label class="w-field"><span class="w-label">Reference number</span><input class="w-input" value="{{ref}}" onInput="{{typeRef}}" placeholder="e.g. PKG-261008-0021" autocapitalize="characters"><span class="wd-detect"><span class="i i-sparkles" style="width:14px;height:14px;color:var(--color-brand-700)"></span>Looks like <b>{{detected}}</b></span></label>
+          <label class="w-field"><span class="w-label">Mobile number</span><input class="w-input" value="01712-345678" inputmode="tel"><span class="wd-detect">The one you gave us</span></label>
+          <button class="w-btn w-btn-navy" type="submit"><span class="i i-search"></span>Track</button>
+        </form>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:26px">
+      <div class="w-wrap wd-track">
+        <div class="flex flex-col gap-4 min-w-0">
+          <sc-if value="{{found}}" hint-placeholder-val="{{ true }}">
+            <div class="wd-result">
+              <div class="wd-result-head"><span class="w-tile"><span class="i i-map"></span></span><div><small>Tour package</small><b>PKG-261008-0021</b><span class="sub">Cox’s Bazar beach break · 2 adults, 1 child · 23–25 Oct</span></div><span class="ww-statuspill"><i></i>Quoted</span></div>
+              <div class="ww-timeline">
+                <div class="ww-tstep is-done"><span class="ww-tdot"><span class="i i-check"></span></span><div><b>Request received</b><small>Today, 11:20 am · from the package page</small></div></div>
+                <div class="ww-tstep is-done"><span class="ww-tdot"><span class="i i-check"></span></span><div><b>Expert assigned</b><small>Nusrat Jahan called you at 11:46 am</small></div></div>
+                <div class="ww-tstep is-now"><span class="ww-tdot"><span class="i i-receipt-text"></span></span><div><b>Price ready to confirm</b><small>৳37,500 for three, twin sharing plus a child bed. Valid until tomorrow, 6 pm.</small><div class="flex flex-wrap gap-2" style="margin-top:10px"><a class="w-btn w-btn-primary w-btn-sm" href="{{L.OfflinePay}}">Confirm and pay</a><a class="w-btn w-btn-secondary w-btn-sm" href="https://wa.me/8801823232241">Ask a question</a></div></div></div>
+                <div class="ww-tstep is-next"><span class="ww-tdot"><span class="i i-banknote"></span></span><div><b>Payment received</b><small>bKash, Nagad, bank or at our office</small></div></div>
+                <div class="ww-tstep is-next"><span class="ww-tdot"><span class="i i-file-check"></span></span><div><b>Vouchers sent</b><small>Hotel and bus tickets by WhatsApp and email</small></div></div>
+              </div>
+              <div class="wd-expert"><span class="wc-avatar">NJ</span><div><b>Nusrat Jahan</b><small>Your travel expert · replies in office hours</small></div><div class="flex gap-2"><a class="w-btn w-btn-wa w-btn-sm" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>WhatsApp</a><a class="w-btn w-btn-secondary w-btn-sm" href="tel:+8801823232241"><span class="i i-phone"></span>Call</a></div></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{nf}}" hint-placeholder-val="{{ false }}">
+            <div class="ww-empty"><span class="w-tile"><span class="i i-search-x"></span></span><h2 class="v-h3">We couldn’t find {{ref}}</h2><p>Check the reference in your SMS or email: three letters, then 10 digits. The mobile number must be the one you gave us.</p><div class="flex flex-wrap gap-2 justify-center"><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>Ask on WhatsApp</a><button class="w-btn w-btn-secondary" type="button" onClick="{{demo}}">See a sample</button></div></div>
+          </sc-if>
+        </div>
+        <aside class="flex flex-col gap-4">
+          <div class="w-panel flex flex-col gap-3"><b class="text-navy" style="font:700 15px/1.2 var(--font-sans)">Which reference is which?</b>
+            <div class="wd-prefix"><div><code>FLT-</code>Flight</div><div><code>HTL-</code>Hotel</div><div><code>PKG-</code>Tour package</div><div><code>CTR-</code>Plan my trip</div><div><code>VSA-</code>Visa</div><div><code>ORD-</code>Waafas World order</div><div><code>QTE-</code>Corporate quote</div><div><code>PRN-</code>Printing quote</div><div><code>TRD-</code>Trading RFQ</div></div>
+          </div>
+          <a class="v-gfnote" href="{{L.Login}}" style="margin:0"><span class="w-tile"><span class="i i-circle-user"></span></span><p><b>See everything at once.</b> Log in with your mobile number to see all your requests and orders.</p></a>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"nf":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1868}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','OfflinePay','Login'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const nf = st.nf !== undefined ? st.nf : !!p.nf;
+    const ref = st.ref !== undefined ? st.ref : (nf ? 'PKG-261008-0099' : 'PKG-261008-0021');
+    const PFX = { FLT: 'a flight request', HTL: 'a hotel request', PKG: 'a tour package request', CTR: 'a Plan my trip request', VSA: 'a visa application', ORD: 'a Waafas World order', QTE: 'a corporate quote', PRN: 'a printing quote', TRD: 'a trading RFQ' };
+    const pf = (ref || '').toUpperCase().slice(0, 3);
+    return {
+      L, m: !!p.m, ref, found: !nf, nf, detected: PFX[pf] || 'not a reference yet',
+      typeRef: (e) => this.setState({ ref: e && e.target ? e.target.value : '' }),
+      find: (e) => { if (e && e.preventDefault) e.preventDefault(); const r = ((this.state && this.state.ref) || ref).toUpperCase(); this.setState({ nf: r !== 'PKG-261008-0021' }); },
+      demo: () => this.setState({ nf: false, ref: 'PKG-261008-0021' })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · All categories</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="{{cart}}" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <div class="w-wrap ww-catspage">
+      <div class="ww-catspage-head"><h1>All categories</h1><span class="v-sample">Sample categories</span></div>
+      <div class="ww-cattree">
+        <nav class="ww-cattree-l" aria-label="Categories"><sc-for list="{{cats}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" type="button" aria-current="{{c.on}}" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.short}}</button></sc-for></nav>
+        <div class="ww-cattree-r" key="{{cur.key}}">
+          <a class="ww-cattree-banner" href="{{L.ShopList}}">
+            <sc-if value="{{cur.img}}" hint-placeholder-val="{{ false }}"><img class="ww-cattree-img" src="{{cur.img}}" alt=""></sc-if>
+            <sc-if value="{{cur.noImg}}" hint-placeholder-val="{{ true }}"><span class="ph" data-photo="{{cur.ph}}"><span class="ph-in"><span class="ph-ic"><span class="{{cur.icon}}"></span></span></span></span></sc-if>
+            <span><small>{{cur.k}}</small><b>{{cur.t}}</b></span>
+          </a>
+          <a class="ww-cattree-all" href="{{L.ShopList}}"><span>Shop all {{cur.name}}</span><span class="i i-arrow-right"></span></a>
+          <sc-if value="{{cur.finder}}" hint-placeholder-val="{{ false }}"><a class="ww-cattree-fbm" href="{{L.ShopFinder}}"><span class="i i-printer-check"></span><span><b>Find by model</b><small>See only what fits your printer</small></span><span class="i i-chevron-right"></span></a></sc-if>
+          <sc-for list="{{cur.groups}}" as="g" hint-placeholder-count="3">
+            <section class="ww-cattree-g"><h2>{{g.title}}</h2><div class="ww-subgrid"><sc-for list="{{g.items}}" as="s" hint-placeholder-count="3"><a href="{{L.ShopList}}"><span class="ww-subic"><span class="{{s.icon}}"></span></span><span>{{s.name}}</span></a></sc-for></div></section>
+          </sc-for>
+        </div>
+      </div>
+      <div class="ww-cattree-svc">
+        <a class="ww-door" href="{{L.Printing}}"><span class="w-tile"><span class="i i-layers"></span></span><span><b>Printing Solutions</b><small>Cards, banners, packaging. Get a quote.</small></span></a>
+        <a class="ww-door" href="{{L.Trading}}"><span class="w-tile"><span class="i i-ship"></span></span><span><b>International Trading</b><small>Import and export. Send an RFQ.</small></span></a>
+      </div>
+    </div>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="shop" cart="{{cart}}" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"cart":{"editor":"int","default":4},"cat":{"editor":"enum","options":["printers","office","computer","electronics","home","fashion"],"default":"electronics"},"$preview":{"width":1440,"height":1748}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Shop','ShopList','ShopFinder','Printing','Trading'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const BD1 = '../assets/c9ea845b540e931548117afdb5ae8a65.jpg';
+    const ICON = { 'Toner cartridges': 'printer', 'Ink bottles': 'droplet', 'Drum units': 'circle-dot', 'Laser printers': 'printer', 'Ink tank printers': 'printer-check', 'Photocopiers': 'copy', 'A4 copy paper': 'file-text', 'Photo paper': 'image', 'Labels': 'tag',
+      'Pens and markers': 'pen-line', 'Notebooks': 'book-open', 'Diaries': 'book-marked', 'Files and folders': 'folder-tree', 'Staplers': 'paperclip', 'Organisers': 'layout-grid', 'Envelopes': 'mail', 'Calculators': 'calculator', 'Whiteboards': 'square-pen',
+      'Keyboards': 'keyboard', 'Mice': 'mouse', 'Webcams': 'camera', 'Flash drives': 'database', 'External drives': 'server-crash', 'Memory cards': 'save', 'Cables': 'cable', 'Hubs and adapters': 'plug', 'Routers': 'wifi',
+      'Power banks': 'battery-charging', 'Chargers': 'plug-zap', 'Headphones': 'headphones', 'Earbuds': 'headphones', 'Speakers': 'speaker', 'Smart watches': 'watch', 'Fitness bands': 'activity', 'Accessories': 'gem',
+      'Bottles and flasks': 'glass-water', 'Lunch boxes': 'package', 'Cookware': 'cooking-pot', 'Storage': 'boxes', 'Lighting': 'lamp-desk', 'Cleaning': 'droplet', 'Kettles': 'coffee', 'Blenders': 'cup-soda', 'Irons': 'shirt',
+      'T-shirts': 'shirt', 'Polo shirts': 'shirt', 'Hoodies': 'shirt', 'Bags': 'shopping-bag', 'Caps': 'sun', 'Wallets': 'wallet', 'Gifts': 'gift', 'Travel gear': 'luggage', 'Umbrellas': 'umbrella' };
+    const CATS = [
+      ['printers', 'Printers & Supplies', 'printer', 'Printers', [['Toner and ink', ['Toner cartridges', 'Ink bottles', 'Drum units']], ['Printers', ['Laser printers', 'Ink tank printers', 'Photocopiers']], ['Paper and media', ['A4 copy paper', 'Photo paper', 'Labels']]], { img: BD1, k: 'Best seller', t: 'Better Day toner, from ৳1,450' }],
+      ['office', 'Office & Stationery', 'pencil-ruler', 'Stationery', [['Writing', ['Pens and markers', 'Notebooks', 'Diaries']], ['Desk', ['Files and folders', 'Staplers', 'Organisers']], ['Office supplies', ['Envelopes', 'Calculators', 'Whiteboards']]], { ph: 'cat-stationery', k: 'Collection', t: 'Office essentials' }],
+      ['computer', 'Computer & Accessories', 'monitor', 'Computer', [['Input', ['Keyboards', 'Mice', 'Webcams']], ['Storage', ['Flash drives', 'External drives', 'Memory cards']], ['Connect', ['Cables', 'Hubs and adapters', 'Routers']]], { ph: '', k: 'New', t: 'Work-from-home kit' }],
+      ['electronics', 'Electronics & Gadgets', 'headphones', 'Electronics', [['Power', ['Power banks', 'Chargers', 'Cables']], ['Audio', ['Headphones', 'Earbuds', 'Speakers']], ['Wearables', ['Smart watches', 'Fitness bands', 'Accessories']]], { ph: 'prod-powerbank', k: 'Deal', t: 'Power banks from ৳1,690' }],
+      ['home', 'Home & Kitchen', 'cooking-pot', 'Home', [['Kitchen', ['Bottles and flasks', 'Lunch boxes', 'Cookware']], ['Home', ['Storage', 'Lighting', 'Cleaning']], ['Appliances', ['Kettles', 'Blenders', 'Irons']]], { ph: '', k: 'Coming soon', t: 'Opens when stock arrives' }],
+      ['fashion', 'Fashion & Lifestyle', 'shirt', 'Fashion', [['Clothing', ['T-shirts', 'Polo shirts', 'Hoodies']], ['Accessories', ['Bags', 'Caps', 'Wallets']], ['Lifestyle', ['Gifts', 'Travel gear', 'Umbrellas']]], { ph: 'prod-tshirt', k: 'New season', t: 'Everyday T-shirts from ৳650' }]
+    ];
+    const ck = st.cat || p.cat || 'electronics';
+    const c = CATS.find(x => x[0] === ck) || CATS[3];
+    const cats = CATS.map(x => ({ short: x[3], icon: 'i i-' + x[2], on: x[0] === ck, cls: x[0] === ck ? 'is-on' : '', go: () => this.setState({ cat: x[0] }) }));
+    const cur = { key: c[0], name: c[1], icon: 'i i-' + c[2], img: c[5].img || '', noImg: !c[5].img, ph: c[5].ph || '', k: c[5].k, t: c[5].t, finder: c[0] === 'printers',
+      groups: c[4].map(g => ({ title: g[0], items: g[1].map(n => ({ name: n, icon: 'i i-' + (ICON[n] || 'package') })) })) };
+    return { L, m: !!p.m, cart: p.cart !== undefined ? +p.cart : 4, cats, cur };
+  }
+}
+</script>
+</body>
+</html>

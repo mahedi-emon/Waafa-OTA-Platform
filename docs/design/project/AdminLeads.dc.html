@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · leads</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="leads" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Sales</span></div>
+          <h1 class="a-title">Leads</h1>
+          <p>Every query from the website, WhatsApp and calls. Reply within 30 minutes: rows turn red after that.</p>
+        </div>
+        <div class="a-actions">
+          <div class="a-seg a-only-lg" role="tablist" aria-label="Layout"><button class="{{vt.table}}" type="button" role="tab" aria-selected="{{isTable}}" onClick="{{toTable}}"><span class="i i-list"></span>Table</button><button class="{{vt.board}}" type="button" role="tab" aria-selected="{{isBoard}}" onClick="{{toBoard}}"><span class="i i-kanban"></span>Board<span class="a-p is-p1">P1</span></button></div>
+          <button class="a-btn a-btn-outline a-hide-sm" type="button"><span class="i i-download"></span>Export</button>
+          <button class="a-btn a-btn-primary" type="button"><span class="i i-plus"></span><span class="a-hide-sm">Add lead</span></button>
+        </div>
+      </div>
+
+      <div class="a-views" role="tablist" aria-label="Saved views"><sc-for list="{{views}}" as="v" hint-placeholder-count="4"><button class="{{v.cls}}" type="button" role="tab" aria-selected="{{v.on}}" onClick="{{v.go}}">{{v.label}}<b>{{v.n}}</b></button></sc-for></div>
+
+      <div class="a-bar">
+        <label class="a-search"><span class="i i-search"></span><input class="a-input" value="{{q}}" placeholder="Reference, name, phone or email" aria-label="Search leads" onChange="{{onQ}}"></label>
+        <div class="a-bar-chips"><sc-for list="{{fchips}}" as="f" hint-placeholder-count="5"><button class="{{f.cls}}" type="button" onClick="{{f.go}}"><span class="{{f.icon}}"></span>{{f.label}}<sc-if value="{{f.val}}" hint-placeholder-val="{{ false }}"><b>{{f.val}}</b></sc-if></button></sc-for>
+        <sc-if value="{{anyF}}" hint-placeholder-val="{{ false }}"><button class="a-btn a-btn-ghost a-btn-sm" type="button" onClick="{{clearF}}">Reset<span class="i i-x"></span></button></sc-if></div>
+      </div>
+
+      <sc-if value="{{isTable}}" hint-placeholder-val="{{ true }}">
+        <section class="a-card a-only-lg" aria-label="Leads table">
+          <div class="a-table-wrap">
+            <table class="a-table is-wide">
+              <thead><tr><th class="is-check"><button class="{{allCls}}" type="button" aria-label="Select all" onClick="{{toggleAll}}"></button></th><th>Reference</th><th>Customer</th><th>Trip or request</th><th>Travel date</th><th>Status</th><th>Assignee</th><th>Age</th><th>Source</th></tr></thead>
+              <tbody>
+                <sc-for list="{{rows}}" as="r" hint-placeholder-count="10">
+                  <tr class="{{r.trCls}}">
+                    <td class="is-check"><button class="{{r.chk}}" type="button" aria-label="{{r.selAria}}" onClick="{{r.toggle}}"></button></td>
+                    <td><a class="a-ref" href="AdminLead.dc.html">{{r.ref}}</a><sc-if value="{{r.dup}}" hint-placeholder-val="{{ false }}"><span class="a-flag" title="Same phone and module within 24 hours"><span class="i i-copy"></span>Duplicate</span></sc-if><span class="a-sub"><span class="a-mod"><span class="{{r.icon}}"></span>{{r.mod}}</span></span></td>
+                    <td><b class="text-navy" style="font-weight:600">{{r.who}}</b><span class="a-sub">{{r.phone}}</span></td>
+                    <td style="white-space:normal;min-width:190px;max-width:240px">{{r.trip}}<span class="a-sub">{{r.pax}}</span></td>
+                    <td>{{r.date}}</td>
+                    <td><span class="{{r.st}}">{{r.status}}</span></td>
+                    <td><span class="a-who"><span class="{{r.avCls}}" style="{{r.av}}">{{r.ini}}</span><span>{{r.agent}}</span></span></td>
+                    <td><span class="{{r.ageCls}}">{{r.age}}</span></td>
+                    <td><span class="a-chip">{{r.src}}</span></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}"><div class="wl-empty" style="margin:16px;box-shadow:none"><span class="w-tile"><span class="i i-search-x"></span></span><h2 class="v-h3">No leads match</h2><p>Try another view or reset the filters.</p></div></sc-if>
+          <div class="a-card-foot"><span>Showing {{shown}} of {{total}} · sorted by age, oldest first</span><div class="a-pager"><button type="button" aria-label="Previous page"><span class="i i-chevron-left"></span></button><button class="is-on" type="button">1</button><button type="button">2</button><button type="button">3</button><span>…</span><button type="button">6</button><button type="button" aria-label="Next page"><span class="i i-chevron-right"></span></button></div></div>
+        </section>
+
+        <div class="a-mcards a-hide-lg">
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+            <article class="{{r.mCls}}">
+              <div class="a-mcard-top"><span class="a-mod"><span class="{{r.icon}}"></span>{{r.mod}} · <b class="a-ref" style="font-size:12.5px">{{r.ref}}</b></span><span class="{{r.st}}">{{r.status}}</span></div>
+              <a href="AdminLead-m.dc.html" class="flex flex-col gap-1"><b>{{r.who}}</b><p>{{r.trip}} · {{r.date}}</p></a>
+              <div class="flex items-center justify-between"><span class="a-who"><span class="{{r.avCls}}" style="{{r.av}}">{{r.ini}}</span><span class="text-13">{{r.agent}}</span></span><span class="{{r.ageCls}}">{{r.age}}</span></div>
+              <div class="a-mcard-acts"><a class="a-btn a-btn-outline" href="tel:+8801712345678"><span class="i i-phone"></span>Call</a><a class="a-btn a-btn-wa" href="https://wa.me/8801712345678"><span class="i i-whatsapp"></span>WhatsApp</a><a class="a-btn a-btn-primary" href="AdminLead-m.dc.html">Open</a></div>
+            </article>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isBoard}}" hint-placeholder-val="{{ false }}">
+        <div class="a-callout"><span class="i i-info"></span><span><b>Board view arrives in P1.</b> Drag a card to change its status; the same rules apply (Booked asks for an amount, Lost asks for a reason).</span></div>
+        <div class="a-kanban">
+          <sc-for list="{{cols}}" as="c" hint-placeholder-count="5">
+            <div class="a-col">
+              <div class="a-col-head"><span class="{{c.st}}">{{c.label}}</span><b>{{c.n}}</b></div>
+              <sc-for list="{{c.cards}}" as="r" hint-placeholder-count="2">
+                <a class="{{r.cardCls}}" href="AdminLead.dc.html">
+                  <div class="flex items-center justify-between gap-2"><span class="a-mod"><span class="{{r.icon}}"></span>{{r.ref}}</span><span class="{{r.ageCls}}">{{r.age}}</span></div>
+                  <div><b>{{r.who}}</b><small class="block">{{r.trip}}</small></div>
+                  <div class="a-lead-foot"><span class="a-chip">{{r.src}}</span><span class="{{r.avCls}}" style="{{r.av}}">{{r.ini}}</span></div>
+                </a>
+              </sc-for>
+              <sc-if value="{{c.drop}}" hint-placeholder-val="{{ false }}"><div class="a-col-drop">Drop to mark as Quoted</div></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{selN}}" hint-placeholder-val="{{ false }}">
+        <div class="a-bulk" role="region" aria-label="Bulk actions"><b>{{selN}} selected</b><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-user-plus"></span>Assign to</button><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-circle-dot"></span>Change status</button><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-file-spreadsheet"></span>Export CSV or Excel</button><button class="a-btn a-btn-ghost a-btn-sm a-btn-icon" type="button" aria-label="Clear selection" onClick="{{clearSel}}"><span class="i i-x"></span></button></div>
+      </sc-if>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"view":{"editor":"enum","options":["table","board"],"default":"table"},"sel":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const AG = { NJ: ['Nusrat J.', '--av:#0053D7'], SR: ['Sadia R.', '--av:#7C5CFF'], MK: ['Mahmudul K.', '--av:#0E6B5C'], AH: ['Arif Hossain', '--av:#0D8CEE'] };
+    const ST = { 'New': 'a-s-new', 'Pending': 'a-s-pending', 'In progress': 'a-s-progress', 'Quoted': 'a-s-quoted', 'Booked': 'a-s-booked', 'Cancelled': 'a-s-cancelled', 'Lost': 'a-s-lost', 'Spam': 'a-s-spam' };
+    const MOD = { Flight: 'i i-plane', Hotel: 'i i-hotel', Package: 'i i-map', Visa: 'i i-passport', 'Plan my trip': 'i i-route', Printing: 'i i-printer', Trading: 'i i-ship', Contact: 'i i-message-square', 'Group fare': 'i i-plane-takeoff' };
+    const L = [
+      ['FLT-261008-0042', 'Flight', 'Rahim Uddin', '01712-345678', 'Dhaka to Dubai · one way · Economy', 'Thu, 22 Oct', '1 adult', 'New', '', 42, 'Website', false],
+      ['FLT-261008-0040', 'Flight', 'Rahim Uddin', '01712-345678', 'Dhaka to Dubai · one way · flexible dates', 'Thu, 22 Oct', '1 adult', 'New', '', 40, 'Facebook', true],
+      ['PKG-261008-0017', 'Package', 'Farhana Akter', '01819-220114', 'Maldives 4D/3N · water villa', 'Thu, 12 Nov', '2 adults', 'Pending', 'SR', 38, 'Facebook', false],
+      ['HTL-261008-0009', 'Hotel', 'Tanvir Hasan', '01911-778201', 'Cox’s Bazar · 2 nights · 1 room · 4 stars', 'Sat, 14 Nov', '2 adults', 'New', '', 35, 'Google', false],
+      ['PRN-261008-0003', 'Printing', 'Nexus Textiles Ltd', '01730-118844', 'Managed printing for 12 printers, monthly', '—', '—', 'New', 'MK', 33, 'Website', false],
+      ['VSA-261008-0011', 'Visa', 'Nasima Khatun', '01611-903311', 'Thailand · tourist visa · 2 applicants', 'Tue, 3 Nov', '2 adults', 'In progress', 'SR', 31, 'WhatsApp', false],
+      ['FLT-261008-0039', 'Flight', 'Mitu Rahman', '01556-402210', 'Dhaka to Kuala Lumpur · return', 'Fri, 30 Oct', '2 adults, 1 child', 'Quoted', 'NJ', 72, 'Website', false],
+      ['FLT-261008-0036', 'Group fare', 'Kamal Hossain', '01714-556677', 'Group fare DAC → DXB, flydubai · 6 seats', 'Wed, 28 Oct', '6 adults', 'In progress', 'NJ', 125, 'Website', false],
+      ['CTR-261008-0005', 'Plan my trip', 'Shirin Sultana', '01822-334455', 'Nepal, 6 nights · family · mid-range hotels', 'December', '2 adults, 2 children', 'Pending', 'AH', 190, 'Website', false],
+      ['TRD-261007-0002', 'Trading', 'Delta Apparels', '01755-667788', 'Sourcing 2,000 cotton T-shirts · FOB Chattogram', '—', '—', 'Quoted', 'MK', 1440, 'Website', false],
+      ['HTL-261007-0006', 'Hotel', 'Imran Kabir', '01933-121212', 'Kuala Lumpur · 3 nights · 2 rooms', 'Mon, 19 Oct', '4 adults', 'Booked', 'NJ', 1500, 'Phone call', false],
+      ['CNT-261007-0014', 'Contact', 'Sumaiya Islam', '01688-909090', 'Question about card EMI for packages', '—', '—', 'Lost', 'SR', 1620, 'Website', false]
+    ];
+    const SLA = 30;
+    const fmtAge = mins => mins < 60 ? mins + 'm' : mins < 1440 ? Math.floor(mins / 60) + 'h ' + (mins % 60 ? (mins % 60) + 'm' : '') : Math.floor(mins / 1440) + 'd';
+    const view = st.view || 'all';
+    const q = (st.q || '').toLowerCase();
+    const fMod = st.fMod || '', fSt = st.fSt || '', fAg = st.fAg || '', fSrc = st.fSrc || '';
+    const late = r => (r[7] === 'New' || r[7] === 'Pending') && r[9] > SLA;
+    const pass = r => (view === 'all' || (view === 'mine' && r[8] === 'AH') || (view === 'unassigned' && !r[8]) || (view === 'overdue' && late(r)))
+      && (!q || (r[0] + ' ' + r[2] + ' ' + r[3]).toLowerCase().indexOf(q) >= 0) && (!fMod || r[1] === fMod) && (!fSt || r[7] === fSt) && (!fAg || r[8] === fAg) && (!fSrc || r[10] === fSrc);
+    const preSel = p.sel ? ['FLT-261008-0042', 'HTL-261008-0009', 'PRN-261008-0003'] : [];
+    const sel = st.sel || preSel;
+    const togSel = ref => this.setState({ sel: sel.indexOf(ref) >= 0 ? sel.filter(x => x !== ref) : sel.concat([ref]) });
+    const deco = r => {
+      const ag = AG[r[8]];
+      const isLate = late(r);
+      return { ref: r[0], mod: r[1], icon: MOD[r[1]], who: r[2], phone: r[3], trip: r[4], date: r[5], pax: r[6], status: r[7], st: 'a-status ' + ST[r[7]],
+        ini: ag ? r[8] : '—', agent: ag ? ag[0] : 'Unassigned', av: ag ? ag[1] : '', avCls: 'a-avatar is-sm' + (ag ? '' : ' is-none'),
+        age: fmtAge(r[9]), ageCls: 'a-age' + (isLate ? ' is-late' : ''), src: r[10], dup: r[11],
+        trCls: (sel.indexOf(r[0]) >= 0 ? 'is-selected' : '') + (r[11] ? ' is-dup' : '') + (isLate ? ' is-late' : ''),
+        mCls: 'a-mcard' + (isLate ? ' is-late' : ''), cardCls: 'a-lead',
+        chk: 'a-check' + (sel.indexOf(r[0]) >= 0 ? ' is-on' : ''), selAria: 'Select ' + r[0], toggle: () => togSel(r[0]) };
+    };
+    const list = L.filter(pass);
+    const rows = list.map(deco);
+    const allOn = rows.length > 0 && rows.every(r => sel.indexOf(r.ref) >= 0);
+    const someOn = rows.some(r => sel.indexOf(r.ref) >= 0);
+    const VIEWS = [['all', 'All', 64], ['mine', 'My leads', 12], ['unassigned', 'Unassigned', 7], ['overdue', 'Overdue', 5]];
+    const cyc = (key, opts) => { const cur = st[key] || ''; const i = opts.indexOf(cur); this.setState({ [key]: opts[(i + 1) % opts.length] }); };
+    const fchips = [
+      ['Module', 'i i-layers', fMod, () => cyc('fMod', ['', 'Flight', 'Hotel', 'Package', 'Visa', 'Printing', 'Trading'])],
+      ['Status', 'i i-circle-dot', fSt, () => cyc('fSt', ['', 'New', 'Pending', 'In progress', 'Quoted', 'Booked', 'Lost'])],
+      ['Assignee', 'i i-user', fAg ? AG[fAg][0] : '', () => cyc('fAg', ['', 'NJ', 'SR', 'MK', 'AH'])],
+      ['Source', 'i i-globe', fSrc, () => cyc('fSrc', ['', 'Website', 'Facebook', 'Google', 'WhatsApp', 'Phone call'])],
+      ['Travel date', 'i i-calendar', '', () => {}],
+      ['Created', 'i i-clock', '', () => {}]
+    ].map(f => ({ label: f[0], icon: f[1], val: f[2], cls: 'a-fchip' + (f[2] ? ' is-on' : ''), go: f[3] }));
+    const vw = st.layout || p.view || 'table';
+    const COLS = ['New', 'Pending', 'In progress', 'Quoted', 'Booked'];
+    const cols = COLS.map(c => { const cards = L.filter(r => r[7] === c).map(deco); return { label: c, st: 'a-status ' + ST[c], n: cards.length + (c === 'Booked' ? 31 : c === 'New' ? 14 : 6), cards: cards.map((x, i) => Object.assign({}, x, { cardCls: 'a-lead' + (c === 'Pending' && i === 0 ? ' is-drag' : '') })), drop: c === 'Quoted' }; });
+    return {
+      m: !!p.m,
+      views: VIEWS.map(v => ({ label: v[1], n: v[2], on: view === v[0], cls: 'a-view' + (view === v[0] ? ' is-active' : ''), go: () => this.setState({ view: v[0] }) })),
+      q: st.q || '', onQ: e => this.setState({ q: e && e.target ? e.target.value : '' }),
+      fchips, anyF: !!(fMod || fSt || fAg || fSrc || q), clearF: () => this.setState({ fMod: '', fSt: '', fAg: '', fSrc: '', q: '' }),
+      rows, empty: rows.length === 0, shown: rows.length, total: (VIEWS.find(v => v[0] === view) || VIEWS[0])[2],
+      allCls: 'a-check' + (allOn ? ' is-on' : someOn ? ' is-mixed' : ''), toggleAll: () => this.setState({ sel: allOn ? [] : rows.map(r => r.ref) }),
+      selN: sel.length, clearSel: () => this.setState({ sel: [] }),
+      isTable: vw === 'table', isBoard: vw === 'board', vt: { table: vw === 'table' ? 'is-on' : '', board: vw === 'board' ? 'is-on' : '' },
+      toTable: () => this.setState({ layout: 'table' }), toBoard: () => this.setState({ layout: 'board' }), cols,
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

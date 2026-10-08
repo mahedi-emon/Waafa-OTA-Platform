@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mobile tab bar with Waafas World and WhatsApp button</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div style="display:contents">
+  <sc-if value="{{showFab}}" hint-placeholder-val="{{ true }}">
+    <a class="w-fab wa-r" href="{{waHref}}" aria-label="{{waLabel}}"><span class="i i-whatsapp-fill"></span><span class="w-fab-label">{{waLabel}}</span></a>
+  </sc-if>
+  <nav class="w-tabbar ww-tabbar wa-r" aria-label="Main">
+    <a class="{{t.home}}" href="{{L.Home}}"><span class="i i-house"></span>Home</a>
+    <a class="{{t.packages}}" href="{{L.Packages}}"><span class="i i-map"></span>Packages</a>
+    <a class="{{t.shop}}" href="{{L.Shop}}" aria-label="{{shopAria}}">
+      <span class="ww-tw-disc"><span class="ww-tw-ring" aria-hidden="true"></span><img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt=""><sc-if value="{{hasCart}}" hint-placeholder-val="{{ false }}"><span class="ww-tw-badge">{{cart}}</span></sc-if></span>
+      <span class="ww-tw-label">Waafas World</span>
+    </a>
+    <a class="{{t.visa}}" href="{{L.Visa}}"><span class="i i-passport"></span>Visa</a>
+    <button class="{{t.more}}" type="button" aria-expanded="{{moreOpen}}" onClick="{{openMore}}"><span class="i i-layout-grid"></span>More</button>
+  </nav>
+  <sc-if value="{{moreOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="{{ovCls}}" style="bottom:calc(var(--tab-h) + env(safe-area-inset-bottom))" role="dialog" aria-modal="true" aria-label="More">
+      <div class="w-scrim" style="{{scrimStyle}}" onClick="{{closeMore}}"></div>
+      <div class="{{sheetCls}}" style="{{sheetStyle}}">
+        <div class="w-sheet-grab" onPointerDown="{{dragStart}}" onPointerMove="{{dragMove}}" onPointerUp="{{dragEnd}}" onPointerCancel="{{dragEnd}}"></div>
+        <div class="w-sheet-head"><span class="w-sheet-title">More from WAAFA</span><button class="w-iconbtn" type="button" aria-label="Close" onClick="{{closeMore}}"><span class="i i-x"></span></button></div>
+        <div class="w-sheet-body">
+          <div class="w-moregrid">
+            <a class="w-moreitem" href="{{L.VisaGuide}}"><span class="w-tile"><span class="i i-book-open"></span></span>Visa Guide</a>
+            <a class="w-moreitem" href="{{L.Refund}}"><span class="w-tile"><span class="i i-undo"></span></span>Refund Policy</a>
+            <a class="w-moreitem" href="{{L.Baggage}}"><span class="w-tile"><span class="i i-luggage"></span></span>Baggage</a>
+            <a class="w-moreitem" href="{{L.Emi}}"><span class="w-tile"><span class="i i-calculator"></span></span>EMI</a>
+            <a class="w-moreitem" href="{{L.OfflinePay}}"><span class="w-tile"><span class="i i-landmark"></span></span>Offline Payment</a>
+            <a class="w-moreitem" href="{{L.Blog}}"><span class="w-tile"><span class="i i-newspaper"></span></span>Blogs</a>
+            <a class="w-moreitem" href="{{L.Faqs}}"><span class="w-tile"><span class="i i-circle-help"></span></span>FAQs</a>
+            <a class="w-moreitem" href="{{L.About}}"><span class="w-tile"><span class="i i-building"></span></span>About Us</a>
+            <a class="w-moreitem" href="{{L.Contact}}"><span class="w-tile"><span class="i i-headset"></span></span>Contact</a>
+            <a class="w-moreitem" href="{{L.Gallery}}"><span class="w-tile"><span class="i i-image"></span></span>Gallery</a>
+            <a class="w-moreitem" href="{{L.Feedback}}"><span class="w-tile"><span class="i i-message-square"></span></span>Feedback</a>
+            <a class="w-moreitem" href="{{L.Track}}"><span class="w-tile"><span class="i i-truck"></span></span>Track</a>
+            <a class="w-moreitem" href="{{L.Login}}"><span class="w-tile is-navy"><span class="i i-user"></span></span>Log in</a>
+          </div>
+          <div class="grid gap-2 mt-4" style="grid-template-columns:1fr 1fr">
+            <a class="w-btn w-btn-secondary" href="tel:+8801823232241"><span class="i i-phone"></span>Call us</a>
+            <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":null,"default":false},"active":{"editor":"enum","options":["home","packages","visa","shop","more","none"],"default":"home"},"more":{"editor":"boolean","default":false},"cart":{"editor":"int","default":0},"fab":{"editor":"boolean","default":true},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const s = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Packages','Visa','Shop','VisaGuide','Refund','Baggage','Emi','OfflinePay','Blog','Faqs','About','Contact','Gallery','Feedback','Login','Track'].forEach(k => { L[k] = k + s + '.dc.html'; });
+    const moreOpen = st.more !== undefined ? st.more : !!p.more;
+    const act = moreOpen ? 'more' : (p.active || 'home');
+    const t = {};
+    ['home','packages','visa','more'].forEach(k => { t[k] = 'w-tab' + (act === k ? ' is-active' : ''); });
+    t.shop = 'ww-tabworld' + (act === 'shop' ? ' is-active' : '');
+    const cart = Number(p.cart || 0);
+    const inShop = act === 'shop';
+    const dy = st.dy || 0;
+    const exit = () => {
+      clearTimeout(this._t);
+      this._t = setTimeout(() => this.setState({ more: false, out: false, flung: false, dy: 0 }), 270);
+    };
+    let sheetStyle = 'transform:translateY(0);transition:transform .48s var(--spring)';
+    if (st.dragging) sheetStyle = 'transform:translateY(' + dy + 'px);transition:none';
+    if (st.flung) sheetStyle = 'transform:translateY(105%);transition:transform .26s cubic-bezier(.4,0,1,1)';
+    return {
+      L, t, moreOpen, cart, hasCart: cart > 0,
+      shopAria: 'Waafas World, our online store' + (cart ? ', ' + cart + (cart === 1 ? ' item' : ' items') + ' in your cart' : ''),
+      showFab: p.fab !== false && p.fab !== 'false',
+      waLabel: inShop ? 'Ask the Waafas World team' : 'Chat with a travel expert',
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent(inShop ? 'Hi Waafas World, I have a question about a product' : 'Hi Waafa, I’m on your website'),
+      ovCls: 'w-overlay wa-r' + (st.out ? ' is-out' : ''),
+      sheetCls: 'w-sheet' + (st.dragging ? ' is-dragging' : ''),
+      sheetStyle,
+      scrimStyle: st.dragging ? 'opacity:' + Math.max(0.2, 1 - dy / 420).toFixed(3) : (st.flung ? 'opacity:0;transition:opacity .26s' : ''),
+      openMore: () => this.setState({ more: true, out: false, flung: false, dy: 0 }),
+      closeMore: () => { this.setState({ out: true }); exit(); },
+      dragStart: (e) => {
+        this._drag = { y0: e.clientY, y: e.clientY, t: e.timeStamp, v: 0 };
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+        this.setState({ dragging: true, dy: 0 });
+      },
+      dragMove: (e) => {
+        const d = this._drag; if (!d) return;
+        const dt = Math.max(1, e.timeStamp - d.t);
+        d.v = (e.clientY - d.y) / dt; d.y = e.clientY; d.t = e.timeStamp;
+        this.setState({ dy: Math.max(0, e.clientY - d.y0) });
+      },
+      dragEnd: (e) => {
+        const d = this._drag; if (!d) return;
+        this._drag = null;
+        const moved = Math.max(0, e.clientY - d.y0);
+        if (moved > 96 || (moved > 24 && d.v > 0.55)) { this.setState({ dragging: false, flung: true }); exit(); }
+        else this.setState({ dragging: false, dy: 0 });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion kit</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<span class="v-motionkit" aria-hidden="true"></span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":200,"height":40}}'>
+/*
+  WAAFA motion layer for the prototype.
+  - Scroll reveals for .w-reveal sections and .w-stagger-in groups, with IntersectionObserver (works in every browser).
+  - When the Motion library can be loaded (cdn.jsdelivr.net, motion@10.16.2 UMD), reveals use Motion.animate with a real
+    spring and stagger; otherwise the same reveal runs as a CSS transition with a spring-shaped linear() easing.
+  - Video loops (video.fx-video): muted, inline, looped; paused when off screen; hover-play inside .fx-hoverplay.
+  - Number tickers ([data-count]) count up once when they scroll into view (21st.dev Number Ticker).
+  - Spotlight (.fx-spot) and 3D tilt (.fx-tilt) follow the pointer on fine pointers (21st.dev Spotlight Card, Tilt Card).
+  - Confetti burst on success screens ([data-fx-confetti]) (21st.dev Confetti).
+  - Magnetic pull on primary buttons marked .v-magnet or .w-search-go (fine pointers only).
+  - Everything is skipped when the visitor prefers reduced motion: videos stay on their poster, numbers show the final value.
+  In the build, Claude Code replaces this file with Motion for React: <motion.section initial whileInView>, stagger,
+  useSpring for the magnetic button and tilt, useInView for tickers, and the 21st.dev components listed on the Motion board.
+*/
+class Component extends DCLogic {
+  componentDidMount() {
+    const root = document.documentElement;
+    if (root.classList.contains('mk-on')) { this._own = false; return; }
+    this._own = true;
+    root.classList.add('js', 'mk-on');
+    const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    this._reduce = reduce;
+    if (reduce) root.classList.add('mk-reduce');
+    const mark = () => {
+      document.querySelectorAll('.w-stagger-in').forEach(g => { Array.from(g.children).forEach((c, i) => { if (!c.style.getPropertyValue('--si')) c.style.setProperty('--si', String(Math.min(i, 8))); }); });
+    };
+    const io = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { io.unobserve(en.target); this._reveal(en.target); } });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.06 }) : null;
+    this._io = io;
+    // videos play only while visible
+    this._vio = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
+      entries.forEach(en => { const v = en.target; if (v.closest('.fx-hoverplay')) return; if (en.isIntersecting) this._play(v); else { try { v.pause(); } catch (e) {} } });
+    }, { threshold: 0.05 }) : null;
+    this._cio = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { this._cio.unobserve(en.target); this._count(en.target); } });
+    }, { threshold: 0.4 }) : null;
+    const scan = () => {
+      mark();
+      document.querySelectorAll('.w-reveal:not(.is-in):not(.mk-seen), .w-stagger-in:not(.is-in):not(.mk-seen), [data-reveal]:not(.is-in):not(.mk-seen)').forEach(el => {
+        el.classList.add('mk-seen');
+        if (io && !reduce) io.observe(el); else el.classList.add('is-in');
+      });
+      document.querySelectorAll('video.fx-video:not(.mk-v)').forEach(v => {
+        v.classList.add('mk-v'); v.muted = true; v.defaultMuted = true; v.playsInline = true; v.loop = true; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+        if (reduce) { try { v.pause(); } catch (e) {} return; }
+        if (this._vio) this._vio.observe(v); else this._play(v);
+      });
+      document.querySelectorAll('[data-count]:not(.mk-c)').forEach(el => { el.classList.add('mk-c'); if (reduce || !this._cio) return; this._cio.observe(el); });
+      if (!reduce && !this._confettiDone && document.querySelector('[data-fx-confetti]')) { this._confettiDone = true; setTimeout(() => this._confetti(), 450); }
+    };
+    this._scan = scan;
+    scan();
+    try {
+      this._mo = new MutationObserver(() => { clearTimeout(this._st); this._st = setTimeout(scan, 80); });
+      this._mo.observe(document.body, { childList: true, subtree: true });
+    } catch (e) {}
+    if (!reduce) {
+      this._loadMotion();
+      this._onMove = (e) => {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        const t = e.target && e.target.closest ? e.target : null;
+        const b = t ? t.closest('.v-magnet, .w-search-go') : null;
+        if (this._magEl && this._magEl !== b) { this._magEl.style.transform = ''; this._magEl.classList.remove('is-magnet'); this._magEl = null; }
+        if (b) {
+          const r = b.getBoundingClientRect();
+          const dx = (e.clientX - (r.left + r.width / 2)) * 0.22, dy = (e.clientY - (r.top + r.height / 2)) * 0.3;
+          b.classList.add('is-magnet'); b.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)'; this._magEl = b;
+        }
+        const sp = t ? t.closest('.fx-spot') : null;
+        if (sp) { const r = sp.getBoundingClientRect(); sp.style.setProperty('--mx', (e.clientX - r.left).toFixed(0) + 'px'); sp.style.setProperty('--my', (e.clientY - r.top).toFixed(0) + 'px'); }
+        const tl = t ? t.closest('.fx-tilt') : null;
+        if (this._tiltEl && this._tiltEl !== tl) { this._tiltEl.classList.remove('is-tilt'); this._tiltEl = null; }
+        if (tl) {
+          const r = tl.getBoundingClientRect(); const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+          tl.style.setProperty('--ry', (px * 9).toFixed(2) + 'deg'); tl.style.setProperty('--rx', (-py * 7).toFixed(2) + 'deg'); tl.classList.add('is-tilt'); this._tiltEl = tl;
+        }
+        const hp = t ? t.closest('.fx-hoverplay') : null;
+        if (this._hpEl && this._hpEl !== hp) { const v = this._hpEl.querySelector('video'); if (v) { try { v.pause(); v.currentTime = 0; } catch (e2) {} } this._hpEl.classList.remove('is-playing'); this._hpEl = null; }
+        if (hp && hp !== this._hpEl) { const v = hp.querySelector('video'); if (v) { this._play(v); hp.classList.add('is-playing'); } this._hpEl = hp; }
+      };
+      document.addEventListener('pointermove', this._onMove, { passive: true });
+      this._onLeave = () => { if (this._tiltEl) { this._tiltEl.classList.remove('is-tilt'); this._tiltEl = null; } };
+      document.addEventListener('pointerleave', this._onLeave);
+    }
+  }
+  _play(v) {
+    try { if (v.preload === 'none') v.preload = 'auto'; const p = v.play(); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+  }
+  _count(el) {
+    const target = parseFloat(el.getAttribute('data-count')); if (!isFinite(target)) return;
+    const node = Array.from(el.childNodes).find(n => n.nodeType === 3); if (!node) return;
+    const final = node.nodeValue; const fmt = el.getAttribute('data-format') || ''; const dec = parseInt(el.getAttribute('data-decimals') || '0', 10);
+    const pre = el.getAttribute('data-prefix') || '', suf = el.getAttribute('data-suffix') || '';
+    const group = (n) => {
+      const s = n.toFixed(dec); const [i, d] = s.split('.');
+      let out;
+      if (fmt === 'in' && i.length > 3) { const last3 = i.slice(-3); const rest = i.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ','); out = rest + ',' + last3; }
+      else if (fmt === 'plain') out = i; else out = i.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return out + (d ? '.' + d : '');
+    };
+    const t0 = performance.now(), dur = 1400;
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / dur); const e = 1 - Math.pow(1 - k, 3);
+      try { node.nodeValue = pre + group(target * e) + suf; } catch (er) { return; }
+      if (k < 1) requestAnimationFrame(step); else node.nodeValue = final;
+    };
+    requestAnimationFrame(step);
+  }
+  _confetti() {
+    try {
+      const c = document.createElement('canvas'); c.className = 'fx-confetti-layer'; c.setAttribute('aria-hidden', 'true');
+      const W = c.width = window.innerWidth, H = c.height = Math.min(window.innerHeight, 1200); document.body.appendChild(c); const g = c.getContext('2d');
+      const cols = ['#003FBE', '#0D8CEE', '#39CCE9', '#A8782F', '#D7D3D0', '#22B565'];
+      const ps = []; for (let i = 0; i < 150; i++) { const a = -Math.PI / 2 + (Math.random() - 0.5) * 1.6; const v = 7 + Math.random() * 9; ps.push({ x: W * (0.3 + Math.random() * 0.4), y: H * 0.42, vx: Math.cos(a) * v * 1.2, vy: Math.sin(a) * v, r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.4, s: 5 + Math.random() * 6, c: cols[i % cols.length], k: Math.random() < 0.3 }); }
+      const t0 = performance.now();
+      const tick = (now) => {
+        const t = (now - t0) / 1000; g.clearRect(0, 0, W, H);
+        ps.forEach(p => { p.vy += 0.32; p.vx *= 0.985; p.x += p.vx; p.y += p.vy; p.r += p.vr; g.save(); g.globalAlpha = Math.max(0, 1 - t / 2.8); g.translate(p.x, p.y); g.rotate(p.r); g.fillStyle = p.c; if (p.k) { g.beginPath(); g.arc(0, 0, p.s * 0.45, 0, Math.PI * 2); g.fill(); } else g.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); g.restore(); });
+        if (t < 2.9) requestAnimationFrame(tick); else c.remove();
+      };
+      requestAnimationFrame(tick);
+    } catch (e) {}
+  }
+  _loadMotion() {
+    if (window.Motion && window.Motion.animate) { this._motion = window.Motion; document.documentElement.classList.add('has-motion'); return; }
+    try {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/motion@10.16.2/dist/motion.js';
+      s.async = true;
+      s.onload = () => { if (window.Motion && window.Motion.animate) { this._motion = window.Motion; document.documentElement.classList.add('has-motion'); } };
+      s.onerror = () => {};
+      document.head.appendChild(s);
+    } catch (e) {}
+  }
+  _reveal(el) {
+    const M = this._motion;
+    const done = () => el.classList.add('mk-done');
+    if (!M) { el.classList.add('is-in'); setTimeout(done, 1700); return; }
+    // Motion path: hidden start styles stay until Motion animates the element in with a spring;
+    // when it finishes, inline styles are cleared so hover transitions keep working.
+    el.classList.add('is-in', 'mk-m');
+    const ease = M.spring ? M.spring({ stiffness: 260, damping: 26 }) : 'ease-out';
+    try {
+      const targets = el.classList.contains('w-stagger-in') ? Array.from(el.children) : [el];
+      const ctl = M.animate(targets, { opacity: [0, 1], transform: [targets.length > 1 || el.classList.contains('w-stagger-in') ? 'translateY(22px)' : 'translateY(30px)', 'translateY(0px)'] },
+        { delay: targets.length > 1 && M.stagger ? M.stagger(0.06) : 0, easing: ease });
+      const clear = () => { targets.forEach(t => { t.style.opacity = ''; t.style.transform = ''; }); done(); };
+      if (ctl && ctl.finished) ctl.finished.then(clear, clear); else setTimeout(clear, 1600);
+    } catch (e) { el.classList.remove('mk-m'); done(); }
+  }
+  componentWillUnmount() {
+    if (!this._own) return;
+    try { if (this._io) this._io.disconnect(); if (this._vio) this._vio.disconnect(); if (this._cio) this._cio.disconnect(); if (this._mo) this._mo.disconnect(); } catch (e) {}
+    if (this._onMove) document.removeEventListener('pointermove', this._onMove);
+    if (this._onLeave) document.removeEventListener('pointerleave', this._onLeave);
+    clearTimeout(this._st);
+    document.documentElement.classList.remove('mk-on');
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

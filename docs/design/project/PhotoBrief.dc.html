@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA — Photo brief and credits</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}
+.pb td{vertical-align:top}
+.pb-group{background:var(--color-mist-50);color:var(--color-mist-500);font:700 11px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;padding:12px!important}
+.pb-subj{display:block;color:var(--color-navy-900);font-weight:600}
+.pb-used{display:block;margin-top:3px;font-size:13px;color:var(--color-mist-500)}
+.pb-who{display:block;color:var(--color-navy-900);font-weight:500}
+.pb-page{display:block;margin-top:3px;font-size:12.5px;color:var(--color-electric-600);text-decoration:none}
+.pb-url{display:block;font-size:11.5px;line-height:1.45;word-break:break-all;color:var(--color-navy-700);background:var(--color-mist-50);border-radius:8px;padding:6px 8px}
+.pb-reals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+.pb-real{margin:0;display:flex;flex-direction:column;gap:8px}
+.pb-real-img{aspect-ratio:1;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 1px var(--color-mist-200);display:grid;place-items:center;padding:16px}
+.pb-real-img img{max-width:100%;max-height:100%;object-fit:contain}
+.pb-real figcaption{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--color-mist-500)}
+.pb-real code{font-size:12px;color:var(--color-navy-900)}
+.pb-status{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border-radius:18px;background:var(--color-electric-50,#eef5ff);box-shadow:inset 0 0 0 1px rgb(0 63 190/.14)}
+.pb-status .i{font-size:20px;color:var(--color-electric-600);margin-top:2px}
+.pb-status b{color:var(--color-navy-900)}
+</style>
+</helmet>
+<div class="wa" style="width:1440px;padding:64px;display:flex;flex-direction:column;gap:32px;background:#fff">
+  <div class="flex items-end justify-between gap-6">
+    <div class="flex flex-col gap-3">
+      <span class="v-eyebrow"><span class="i i-camera"></span>Photography</span>
+      <h1 class="font-display font-extrabold text-navy" style="font-size:52px;line-height:1;letter-spacing:-.04em">Photo brief and credits</h1>
+      <p class="v-lead" style="max-width:820px">Every photo slot in the prototype carries its Unsplash image URL in <code>data-src</code>. Claude Code hotlinks these exact URLs at build time: <code>w=1600</code> for heroes and large images, <code>w=900</code> for cards.</p>
+    </div>
+    <span class="v-sample">32 supplied photos · 10 open slots</span>
+  </div>
+
+  <div class="pb-status"><span class="i i-info"></span><div class="flex flex-col gap-1"><b>Prototype stand-ins, real photos in the build.</b><span class="text-subtle">The design canvas only shows files uploaded into it, and this workspace can’t reach images.unsplash.com. So every photo slot in the prototype now shows an original drawn scene as a stand-in, and a few panels play short rendered loops. The rule below still holds for the live site: real photos only, never drawn or AI scenes. In the downloadable prototype, run get-waafa-photos.mjs and the real photos listed here replace the stand-ins automatically.</span></div></div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+    <div class="w-panel flex flex-col gap-2"><span class="w-tile is-soft"><span class="i i-shield-check"></span></span><b class="text-navy">Real photos only</b><span class="text-13 text-subtle">Unsplash License: free for commercial use. Replace with Waafa’s own photos over time. Never images from Google search.</span></div>
+    <div class="w-panel flex flex-col gap-2"><span class="w-tile is-soft"><span class="i i-layers"></span></span><b class="text-navy">Text on photos</b><span class="text-13 text-subtle">Where text sits on a photo, add a soft navy gradient: transparent at 40%, navy-950 at 55% opacity at the bottom.</span></div>
+    <div class="w-panel flex flex-col gap-2"><span class="w-tile is-soft"><span class="i i-circle-x"></span></span><b class="text-navy">Never</b><span class="text-13 text-subtle">AI-generated, painted or 3D-rendered images, or scenes drawn in CSS or SVG.</span></div>
+    <div class="w-panel flex flex-col gap-2"><span class="w-tile is-soft"><span class="i i-triangle-alert"></span></span><b class="text-navy">Avoid</b><span class="text-13 text-subtle">The Kaaba, Masjid al-Haram, Madinah or any Hajj and Umrah imagery; airline logos on photos; recognisable celebrities.</span></div>
+  </div>
+
+  <div class="w-card pb" style="overflow:hidden">
+    <table class="ds-spec">
+      <thead><tr><th style="width:150px">Slot</th><th style="width:360px">Subject and where it is used</th><th style="width:210px">Photographer</th><th style="width:84px">Size</th><th>Image URL for the build</th></tr></thead>
+      <tbody>
+<tr><td colspan="5" class="pb-group">Hero and flights</td></tr><tr>
+  <td><code>hero-wing</code></td>
+  <td><b class="pb-subj">Airplane wing over clouds at sunrise</b><span class="pb-used">Home hero on desktop, tablet and phone</span></td>
+  <td><span class="pb-who">Nicholas Szewczyk</span><a class="pb-page" href="https://unsplash.com/photos/QAemWFs90tU">unsplash.com/photos/QAemWFs90tU</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1647363377737-8d0ad7c2f494?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>hero-wing-alt</code></td>
+  <td><b class="pb-subj">Airplane wing over clouds</b><span class="pb-used">Flight results header · blog card “Cabin bag or checked bag?”</span></td>
+  <td><span class="pb-who">Johny Goerend</span><a class="pb-page" href="https://unsplash.com/photos/KB9r_hTzyeQ">unsplash.com/photos/KB9r_hTzyeQ</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1593182440709-4b7b56482c55?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>flights</code></td>
+  <td><b class="pb-subj">Aircraft, flights and group fares</b><span class="pb-used">Group fares page header · Flights Manual success screen</span></td>
+  <td><span class="pb-who">Blake Guidry</span><a class="pb-page" href="https://unsplash.com/photos/p9vr45T2scg">unsplash.com/photos/p9vr45T2scg</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1530469641172-8ac15d0a7d6a?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr><td colspan="5" class="pb-group">Bangladesh</td></tr><tr>
+  <td><code>coxsbazar</code></td>
+  <td><b class="pb-subj">Cox’s Bazar beach</b><span class="pb-used">Home destination explorer (Cox’s Bazar) · Tour packages</span></td>
+  <td><span class="pb-who">Masum Ahmed</span><a class="pb-page" href="https://unsplash.com/photos/dXj8iSUCydo">unsplash.com/photos/dXj8iSUCydo</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1711077470004-cb6a7258c082?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>coxsbazar-alt</code></td>
+  <td><b class="pb-subj">Cox’s Bazar</b><span class="pb-used">Home gallery strip · Gallery page</span></td>
+  <td><span class="pb-who">Nafiul Hasan</span><a class="pb-page" href="https://unsplash.com/photos/veIrXDU9WQI">unsplash.com/photos/veIrXDU9WQI</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1609501285437-4eb001f82684?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>sajek</code></td>
+  <td><b class="pb-subj">Sajek Valley above the clouds</b><span class="pb-used">Home offer “A weekend in Sajek Valley” · Home gallery strip</span></td>
+  <td><span class="pb-who">Sium Ahameed Bhuyan</span><a class="pb-page" href="https://unsplash.com/photos/TAUjeniJWjs">unsplash.com/photos/TAUjeniJWjs</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1673632417072-b1366fda0e22?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>sajek-alt</code></td>
+  <td><b class="pb-subj">Sajek Valley</b><span class="pb-used">Home package card (Sajek) · blog card “Sajek Valley in winter”</span></td>
+  <td><span class="pb-who">Sium Ahameed Bhuyan</span><a class="pb-page" href="https://unsplash.com/photos/ADFyoO70OVA">unsplash.com/photos/ADFyoO70OVA</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1673632417265-a7bcbc90383c?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr><td colspan="5" class="pb-group">International</td></tr><tr>
+  <td><code>maldives</code></td>
+  <td><b class="pb-subj">Maldives overwater villas</b><span class="pb-used">Home offer “Maldives in December” · destination explorer</span></td>
+  <td><span class="pb-who">Ishan @seefromthesky</span><a class="pb-page" href="https://unsplash.com/photos/DtWyp_4YEes">unsplash.com/photos/DtWyp_4YEes</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>maldives-alt</code></td>
+  <td><b class="pb-subj">Maldives</b><span class="pb-used">Home package card (Maldives) · package detail gallery</span></td>
+  <td><span class="pb-who">Rayyu Maldives</span><a class="pb-page" href="https://unsplash.com/photos/4F4OtnNjpmc">unsplash.com/photos/4F4OtnNjpmc</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1574226780565-388f10f8121e?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>dubai</code></td>
+  <td><b class="pb-subj">Dubai skyline</b><span class="pb-used">Home destination explorer (Dubai) · UAE visa page header</span></td>
+  <td><span class="pb-who">David Rodrigo</span><a class="pb-page" href="https://unsplash.com/photos/Fr6zexbmjmc">unsplash.com/photos/Fr6zexbmjmc</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>dubai-desert</code></td>
+  <td><b class="pb-subj">Dubai desert</b><span class="pb-used">Home gallery strip · Dubai package detail</span></td>
+  <td><span class="pb-who">Fredrik Öhlander</span><a class="pb-page" href="https://unsplash.com/photos/fCW1hWq2nq0">unsplash.com/photos/fCW1hWq2nq0</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1528702748617-c64d49f918af?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>nepal</code></td>
+  <td><b class="pb-subj">Nepal</b><span class="pb-used">Home destination explorer (Kathmandu)</span></td>
+  <td><span class="pb-who">Giuseppe Mondì</span><a class="pb-page" href="https://unsplash.com/photos/xyE1p1rG04U">unsplash.com/photos/xyE1p1rG04U</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>nepal-alt</code></td>
+  <td><b class="pb-subj">Nepal</b><span class="pb-used">Home package card (Kathmandu and Pokhara)</span></td>
+  <td><span class="pb-who">Meera Pankhania</span><a class="pb-page" href="https://unsplash.com/photos/7cENZhgyf7c">unsplash.com/photos/7cENZhgyf7c</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1562462181-b228e3cff9ad?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>cappadocia</code></td>
+  <td><b class="pb-subj">Cappadocia balloons</b><span class="pb-used">Home package card (Istanbul and Cappadocia)</span></td>
+  <td><span class="pb-who">Chloé Lefleur</span><a class="pb-page" href="https://unsplash.com/photos/ygtKS8lyjb4">unsplash.com/photos/ygtKS8lyjb4</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1699519324068-8cade0601b53?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>cappadocia-alt</code></td>
+  <td><b class="pb-subj">Cappadocia, Türkiye</b><span class="pb-used">Package detail gallery (Türkiye) · Türkiye visa page</span></td>
+  <td><span class="pb-who">Ricky LK</span><a class="pb-page" href="https://unsplash.com/photos/sqWpPdIU_ao">unsplash.com/photos/sqWpPdIU_ao</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1680469814298-9a1220de2cf2?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>bali</code></td>
+  <td><b class="pb-subj">Bali temple</b><span class="pb-used">Home gallery strip · Gallery page</span></td>
+  <td><span class="pb-who">Aron Visuals</span><a class="pb-page" href="https://unsplash.com/photos/1kdIG_258bU">unsplash.com/photos/1kdIG_258bU</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>bali-alt</code></td>
+  <td><b class="pb-subj">Bali</b><span class="pb-used">Tour packages list (Bali)</span></td>
+  <td><span class="pb-who">Harry Kessell</span><a class="pb-page" href="https://unsplash.com/photos/eE2trMn-6a0">unsplash.com/photos/eE2trMn-6a0</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>thailand</code></td>
+  <td><b class="pb-subj">Thailand islands</b><span class="pb-used">Home destination explorer (Bangkok) · blog card “Thailand visa checklist”</span></td>
+  <td><span class="pb-who">Humphrey M</span><a class="pb-page" href="https://unsplash.com/photos/TejFa7VW5e4">unsplash.com/photos/TejFa7VW5e4</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1534008897995-27a23e859048?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>thailand-alt</code></td>
+  <td><b class="pb-subj">Thailand</b><span class="pb-used">Tour packages list (Thailand) · Thailand visa page header</span></td>
+  <td><span class="pb-who">Evan Krause</span><a class="pb-page" href="https://unsplash.com/photos/BU6lABNbTpA">unsplash.com/photos/BU6lABNbTpA</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>singapore</code></td>
+  <td><b class="pb-subj">Singapore Marina Bay</b><span class="pb-used">Singapore visa page header · Tour packages list</span></td>
+  <td><span class="pb-who">Hu Chen</span><a class="pb-page" href="https://unsplash.com/photos/__cBlRzLSTg">unsplash.com/photos/__cBlRzLSTg</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>kualalumpur</code></td>
+  <td><b class="pb-subj">Kuala Lumpur, Petronas Towers</b><span class="pb-used">Home offer “Student fares to Kuala Lumpur” · explorer (Kuala Lumpur)</span></td>
+  <td><span class="pb-who">Ismail Bashiri</span><a class="pb-page" href="https://unsplash.com/photos/GdjZs5JZwZA">unsplash.com/photos/GdjZs5JZwZA</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1597148543182-830ef7bbb904?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr><td colspan="5" class="pb-group">Visa, shop and trading</td></tr><tr>
+  <td><code>visa</code></td>
+  <td><b class="pb-subj">Passport and boarding pass</b><span class="pb-used">Visa Services page header · Visa apply form side image</span></td>
+  <td><span class="pb-who">Kit</span><a class="pb-page" href="https://unsplash.com/photos/htQznS-Rx7w">unsplash.com/photos/htQznS-Rx7w</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1581553673739-c4906b5d0de8?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>visa-alt</code></td>
+  <td><b class="pb-subj">Passport and travel</b><span class="pb-used">Visa Guide header · visa status page</span></td>
+  <td><span class="pb-who">Nicole Geri</span><a class="pb-page" href="https://unsplash.com/photos/gMJ3tFOLvnA">unsplash.com/photos/gMJ3tFOLvnA</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1454496406107-dc34337da8d6?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>printing</code></td>
+  <td><b class="pb-subj">Office printer, Waafas World</b><span class="pb-used">Printing Solutions page header</span></td>
+  <td><span class="pb-who">Mahrous Houses</span><a class="pb-page" href="https://unsplash.com/photos/5AoOejjRUrA">unsplash.com/photos/5AoOejjRUrA</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>printing-alt</code></td>
+  <td><b class="pb-subj">Printing</b><span class="pb-used">Waafas World service card “Printing Solutions” · quote form side image</span></td>
+  <td><span class="pb-who">Jakub Żerdzicki</span><a class="pb-page" href="https://unsplash.com/photos/Da9qsu-0a00">unsplash.com/photos/Da9qsu-0a00</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1706895040634-62055892cbbb?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>trading</code></td>
+  <td><b class="pb-subj">Container port, international trading</b><span class="pb-used">International Trading page header</span></td>
+  <td><span class="pb-who">Andy Li</span><a class="pb-page" href="https://unsplash.com/photos/CpsTAUPoScw">unsplash.com/photos/CpsTAUPoScw</a></td>
+  <td><span class="w-badge w-badge-brand">w=1600</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&amp;fit=crop&amp;w=1600&amp;q=80</code></td>
+</tr><tr>
+  <td><code>trading-alt</code></td>
+  <td><b class="pb-subj">Shipping and trade</b><span class="pb-used">International Trading RFQ form side image</span></td>
+  <td><span class="pb-who">Ali Mkumbwa</span><a class="pb-page" href="https://unsplash.com/photos/Annl9CjEaEs">unsplash.com/photos/Annl9CjEaEs</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1678182451047-196f22a4143e?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr>
+<tr><td colspan="5" class="pb-group">Waafas World · sample products (each card is tagged “Sample”)</td></tr><tr>
+  <td><code>prod-toner</code><br><span class="w-sample" style="margin-top:6px;display:inline-flex">Sample</span></td>
+  <td><b class="pb-subj">Toner cartridge in a laser printer</b><span class="pb-used">Waafas World sample product · Printers &amp; Supplies cards</span></td>
+  <td><span class="pb-who">Jakub Żerdzicki</span><a class="pb-page" href="https://unsplash.com/photos/Da9qsu-0a00">unsplash.com/photos/Da9qsu-0a00</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1706895040634-62055892cbbb?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>prod-tshirt</code><br><span class="w-sample" style="margin-top:6px;display:inline-flex">Sample</span></td>
+  <td><b class="pb-subj">Plain cotton T-shirt</b><span class="pb-used">Waafas World sample product · Classic Cotton Crew T-shirt (card and product page)</span></td>
+  <td><span class="pb-who">Md Salman</span><a class="pb-page" href="https://unsplash.com/photos/tWOz2_EK5EQ">unsplash.com/photos/tWOz2_EK5EQ</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>prod-powerbank</code><br><span class="w-sample" style="margin-top:6px;display:inline-flex">Sample</span></td>
+  <td><b class="pb-subj">Power bank</b><span class="pb-used">Waafas World sample product · Voltaro 20,000 mAh Power Bank</span></td>
+  <td><span class="pb-who">I’M ZION</span><a class="pb-page" href="https://unsplash.com/photos/APdfyW0Aq-E">unsplash.com/photos/APdfyW0Aq-E</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1566554738544-d962991c3fee?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>prod-headphones</code><br><span class="w-sample" style="margin-top:6px;display:inline-flex">Sample</span></td>
+  <td><b class="pb-subj">Wireless over-ear headphones</b><span class="pb-used">Waafas World sample product · Sonaro Air Wireless Headphones</span></td>
+  <td><span class="pb-who">C D-X</span><a class="pb-page" href="https://unsplash.com/photos/PDX_a_82obo">unsplash.com/photos/PDX_a_82obo</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr><tr>
+  <td><code>cat-stationery</code><br><span class="w-sample" style="margin-top:6px;display:inline-flex">Sample</span></td>
+  <td><b class="pb-subj">Desk stationery flat lay</b><span class="pb-used">Waafas World category tile · Office &amp; Stationery</span></td>
+  <td><span class="pb-who">Joanna Kosinska</span><a class="pb-page" href="https://unsplash.com/photos/bF2vsubyHcQ">unsplash.com/photos/bF2vsubyHcQ</a></td>
+  <td><span class="w-badge w-badge-neutral">w=900</span></td>
+  <td><code class="pb-url">https://images.unsplash.com/photo-1510070009289-b5bc34383727?auto=format&amp;fit=crop&amp;w=900&amp;q=80</code></td>
+</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <h2 class="font-display font-bold text-navy" style="font-size:24px;letter-spacing:-.02em">Open slots: no photo supplied yet</h2>
+    <p class="text-subtle" style="max-width:820px">These keep their labelled placeholders. Decision noted in the handoff: Claude Code may pick from Unsplash with the same rules, or Waafa uploads its own from Admin.</p>
+    <div class="w-card pb" style="overflow:hidden">
+      <table class="ds-spec">
+        <thead><tr><th style="width:150px">Slot</th><th style="width:360px">Subject and where it is used</th><th colspan="3">Note</th></tr></thead>
+        <tbody><tr><td><code>office</code></td><td><b class="pb-subj">Waafa office and team, Motijheel (Waafa’s own photo)</b><span class="pb-used">Home “Visit our office” · Contact page · About Us</span></td><td colspan="3" class="text-subtle">Waafa’s own photo of the Motijheel office or front desk. Until then, the slot shows a clean placeholder.</td></tr><tr><td><code>srimangal</code></td><td><b class="pb-subj">Srimangal tea garden</b><span class="pb-used">Tour packages list (Srimangal)</span></td><td colspan="3" class="text-subtle">Pick on Unsplash with the same rules, or a customer photo with permission.</td></tr><tr><td><code>sundarbans</code></td><td><b class="pb-subj">Sundarbans</b><span class="pb-used">Tour packages list (Sundarbans)</span></td><td colspan="3" class="text-subtle">Same as above.</td></tr><tr><td><code>saintmartin</code></td><td><b class="pb-subj">Saint Martin’s Island</b><span class="pb-used">Tour packages list (Saint Martin’s)</span></td><td colspan="3" class="text-subtle">Same as above.</td></tr><tr><td><code>bandarban</code></td><td><b class="pb-subj">Bandarban hills</b><span class="pb-used">Tour packages list (Bandarban)</span></td><td colspan="3" class="text-subtle">Same as above.</td></tr><tr><td><code>istanbul</code></td><td><b class="pb-subj">Istanbul</b><span class="pb-used">Package detail gallery (Türkiye)</span></td><td colspan="3" class="text-subtle">Same as above.</td></tr><tr><td><code>bhutan</code></td><td><b class="pb-subj">Bhutan, Tiger’s Nest</b><span class="pb-used">Tour packages list (Bhutan)</span></td><td colspan="3" class="text-subtle">Same as above.</td></tr><tr><td><code>darjeeling</code></td><td><b class="pb-subj">Darjeeling</b><span class="pb-used">Tour packages list (Darjeeling)</span></td><td colspan="3" class="text-subtle">Same as above.</td></tr><tr><td><code>ella</code></td><td><b class="pb-subj">Ella, Sri Lanka</b><span class="pb-used">Tour packages list (Sri Lanka)</span></td><td colspan="3" class="text-subtle">Same as above.</td></tr><tr><td><code>people</code></td><td><b class="pb-subj">South Asian travellers, natural and candid</b><span class="pb-used">About Us · Plan My Trip</span></td><td colspan="3" class="text-subtle">Candid South Asian travellers. No staged stock smiles, no celebrities.</td></tr>
+          <tr><td><code>team-*</code></td><td><b class="pb-subj">Team portraits, 3:4</b><span class="pb-used">Home “Meet our team” · About Us</span></td><td colspan="3" class="text-subtle">Uploaded in Admin → Content → Team with a 3:4 crop. No stock faces; without a photo the card shows initials on the ribbon gradient.</td></tr>
+          <tr><td><code>prod-*</code></td><td><b class="pb-subj">Waafas World product photos, 1:1 on white</b><span class="pb-used">Waafas World cards, product pages and the cart</span></td><td colspan="3" class="text-subtle">Come from Admin → Waafas World → Products, one set per variant. Cards without a photo show a neat product placeholder. The five sample photos above stay tagged “Sample” until real stock is photographed.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <h2 class="font-display font-bold text-navy" style="font-size:24px;letter-spacing:-.02em">Real files already in the canvas</h2>
+    <p class="text-subtle">Supplied by Waafa and used as they are. The logo is never recoloured.</p>
+    <div class="pb-reals"><figure class="pb-real"><div class="pb-real-img"><img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt=""></div><figcaption><code>waafa-mark.png</code><span>Logo mark, original colours</span></figcaption></figure><figure class="pb-real"><div class="pb-real-img"><img src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt=""></div><figcaption><code>waafa-wordmark.png</code><span>WAAFA wordmark, original colours</span></figcaption></figure><figure class="pb-real"><div class="pb-real-img"><img src="../assets/5b2acfca93bee702b970dd9c12a766f0.png" alt=""></div><figcaption><code>waafa-international.png</code><span>“International” line, original colours</span></figcaption></figure><figure class="pb-real"><div class="pb-real-img"><img src="../assets/c9ea845b540e931548117afdb5ae8a65.jpg" alt=""></div><figcaption><code>prod-cf280a.jpg</code><span>Better Day CE505A / CF280A</span></figcaption></figure><figure class="pb-real"><div class="pb-real-img"><img src="../assets/fd111676d187ad84eb1cdef897ce4776.jpg" alt=""></div><figcaption><code>prod-crg070h.jpg</code><span>Better Day CRG 070H</span></figcaption></figure><figure class="pb-real"><div class="pb-real-img"><img src="../assets/1bb1b89d15ac65da8322547e81decbdf.jpg" alt=""></div><figcaption><code>prod-w1510a.jpg</code><span>Better Day 151A (W1510A)</span></figcaption></figure></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

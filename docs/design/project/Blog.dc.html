@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Blog</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="more" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Blog</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">Blog</span><h1 class="v-h1 v-h1-page">Travel tips, guides and stories</h1><p class="v-lead">Written by our travel and visa desks for travellers from Bangladesh: what to pack, when to go, and the rules nobody explains.</p></div>
+          <span class="v-sample">Sample articles</span>
+        </div>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:24px">
+      <div class="w-wrap flex flex-col gap-8">
+        <a class="wc-bfeat" href="{{L.BlogPost}}">
+          <div class="wc-bfeat-media"><span class="wc-ph"><span class="v-photo" data-photo="{{feat.ph.key}}" data-src="{{feat.ph.src}}"><span class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">{{feat.ph.subj}}</span><span class="w-ph-credit">{{feat.ph.credit}}</span></span></span></span></div>
+          <div class="wc-bfeat-body"><span class="w-badge w-badge-brand" style="align-self:flex-start">Editor’s pick · Destinations</span><h2 class="v-h2" style="font-size:32px">Cox’s Bazar on a long weekend: a three-day plan</h2><p class="v-lead" style="font-size:16px">Sunrise on Inani, the Marine Drive by CNG, where to eat fresh fish, and what to book before you go.</p><div class="wc-bmeta"><span><span class="i i-clock"></span>7 min read</span><span><span class="i i-calendar-days"></span>2 Oct 2026</span><span><span class="i i-user"></span>Nusrat Jahan, Travel</span></div><span class="v-link" style="min-height:0">Read the guide<span class="i i-arrow-right"></span></span></div>
+        </a>
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3"><div class="wc-chips" role="tablist" aria-label="Topics"><sc-for list="{{chips}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" type="button" role="tab" aria-selected="{{c.on}}" onClick="{{c.go}}">{{c.label}}<small>{{c.n}}</small></button></sc-for></div><label class="v-vsearch-field" style="max-width:320px;width:100%"><span class="i i-search"></span><input class="w-input" placeholder="Search articles" aria-label="Search articles"></label></div>
+          <div class="wc-bgrid" key="{{cat}}">
+            <sc-for list="{{posts}}" as="b" hint-placeholder-count="6">
+              <a class="wc-bcard" href="{{L.BlogPost}}">
+                <div class="wc-bcard-media"><span class="wc-ph"><span class="v-photo" data-photo="{{b.ph.key}}" data-src="{{b.ph.src}}"><span class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">{{b.ph.subj}}</span><span class="w-ph-credit">{{b.ph.credit}}</span></span></span></span><span class="w-badge w-badge-glass">{{b.tag}}</span></div>
+                <h3>{{b.title}}</h3><p>{{b.sub}}</p>
+                <div class="wc-bmeta"><span><span class="i i-clock"></span>{{b.read}}</span><span>{{b.date}}</span></div>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+        <div class="wc-news"><div><h2>Fare drops and visa news, once a month</h2><p>One short email. Unsubscribe in one click. We never share your address.</p></div><form onSubmit="{{noop}}"><input class="w-input" type="email" placeholder="Your email address" aria-label="Email address"><button class="w-btn w-btn-navy" type="submit">Subscribe</button></form></div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','BlogPost'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const PH = {"coxsbazar":["Cox’s Bazar beach","photo-1711077470004-cb6a7258c082","Masum Ahmed"],"sajek-alt":["Sajek Valley","photo-1673632417265-a7bcbc90383c","Sium Ahameed Bhuyan"],"maldives-alt":["Maldives","photo-1574226780565-388f10f8121e","Rayyu Maldives"],"nepal-alt":["Nepal","photo-1562462181-b228e3cff9ad","Meera Pankhania"],"hero-wing-alt":["Airplane wing over clouds","photo-1593182440709-4b7b56482c55","Johny Goerend"],"visa-alt":["Passport and travel","photo-1454496406107-dc34337da8d6","Nicole Geri"],"printing-alt":["Printing","photo-1706895040634-62055892cbbb","Jakub Żerdzicki"],"kualalumpur":["Kuala Lumpur, Petronas Towers","photo-1597148543182-830ef7bbb904","Ismail Bashiri"],"flights":["Aircraft, flights and group fares","photo-1530469641172-8ac15d0a7d6a","Blake Guidry"]};
+    const ph = (k, w) => ({ key: k, subj: PH[k][0], credit: PH[k][2] + ' · Unsplash', src: 'https://images.unsplash.com/' + PH[k][1] + '?auto=format&fit=crop&w=' + (w || 900) + '&q=80' });
+    const P = [
+      ['tips', 'Travel tips', 'What 20 kg really means: baggage rules made simple', 'Checked, cabin and personal items, and the fees that catch people at the counter.', '5 min', '28 Sep 2026', 'flights'],
+      ['dest', 'Destinations', 'Sajek Valley: when to go and how to get there', 'Clouds at sunrise, jeep rides from Khagrachari and the best months for clear views.', '6 min', '21 Sep 2026', 'sajek-alt'],
+      ['visa', 'Visa', 'Malaysia eVisa for Bangladeshis, step by step', 'Photos, bank statements and the mistakes that cause a refusal.', '6 min', '15 Sep 2026', 'kualalumpur'],
+      ['tips', 'Travel tips', 'Flying with a power bank: what airlines allow', 'Why it must go in your cabin bag, and how to read the Wh rating on the label.', '4 min', '9 Sep 2026', 'hero-wing-alt'],
+      ['dest', 'Destinations', 'Maldives without the resort price', 'Guesthouse islands, ferries and when a water villa is worth it.', '8 min', '1 Sep 2026', 'maldives-alt'],
+      ['dest', 'Destinations', 'Five days in Nepal for first-timers', 'Kathmandu, Pokhara and a gentle hike, with a day-by-day plan.', '7 min', '24 Aug 2026', 'nepal-alt'],
+      ['visa', 'Visa', 'Your passport checklist before any trip', 'Validity, blank pages and the photo rules embassies are strict about.', '4 min', '17 Aug 2026', 'visa-alt'],
+      ['work', 'Waafas World', 'Original or compatible toner: what offices should buy', 'Cost per page, warranty and when the original is worth it.', '5 min', '10 Aug 2026', 'printing-alt']
+    ];
+    const cat = st.cat || 'all';
+    const CH = [['all', 'All'], ['dest', 'Destinations'], ['tips', 'Travel tips'], ['visa', 'Visa'], ['work', 'Waafas World']];
+    const chips = CH.map(c => ({ label: c[1], n: c[0] === 'all' ? P.length : P.filter(x => x[0] === c[0]).length, on: cat === c[0], cls: 'w-chip' + (cat === c[0] ? ' is-on' : ''), go: () => this.setState({ cat: c[0] }) }));
+    const posts = P.filter(x => cat === 'all' || x[0] === cat).map(x => ({ tag: x[1], title: x[2], sub: x[3], read: x[4] + ' read', date: x[5], ph: ph(x[6]) }));
+    return { L, m: !!p.m, cat, chips, posts, feat: { ph: ph('coxsbazar', 1600) }, noop: (e) => { if (e && e.preventDefault) e.preventDefault(); } };
+  }
+}
+</script>
+</body>
+</html>

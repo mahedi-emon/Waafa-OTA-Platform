@@ -1,0 +1,17 @@
+node_modules/
+.next/
+dist/
+
+.DS_Store
+*.log
+.turbo/
+coverage/
+
+# Local secrets and per-machine config (never commit)
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+.serena/cache/
+.serena/project.local.yml
+.playwright-mcp/

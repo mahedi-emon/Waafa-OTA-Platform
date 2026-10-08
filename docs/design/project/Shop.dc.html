@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · store home</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="{{cart}}" mini="{{mini}}" mega="{{mega}}" suggest="{{suggest}}" q="{{q}}" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <h1 class="sr-only">Waafas World, Waafa International’s online store</h1>
+
+    <section class="ww-home">
+      <div class="w-wrap">
+        <div class="ww-herogrid">
+          <div class="ww-car" aria-roledescription="carousel" aria-label="Campaigns">
+            <sc-for list="{{slides}}" as="s" hint-placeholder-count="1">
+              <div class="{{s.cls}}" aria-hidden="{{s.hidden}}" aria-roledescription="slide" aria-label="{{s.aria}}">
+                <div class="ww-slide-media">
+                  <sc-if value="{{s.ph}}" hint-placeholder-val="{{ true }}"><div class="ph is-dark" data-photo="{{s.ph}}"><div class="ph-in" style="align-items:flex-end;justify-content:flex-start;padding:18px 22px"><span class="ph-float"><sc-for list="{{s.float}}" as="f" hint-placeholder-count="3"><span style="{{f.st}}"><span class="{{f.ic}}"></span></span></sc-for></span><span class="ph-cr">{{s.credit}}</span></div></div></sc-if>
+                  <sc-if value="{{s.art}}" hint-placeholder-val="{{ false }}"><div class="ph is-dark" style="background:radial-gradient(520px 320px at 78% 45%,rgb(57 204 233/.35),transparent 70%),linear-gradient(120deg,#020D39,#00185B 45%,#003FBE)"><img src="{{s.art}}" alt="" style="left:auto;right:4%;top:10%;width:46%;height:80%;object-fit:contain;border-radius:22px;background:#fff;padding:12px;transform:rotate(-3deg);box-shadow:0 30px 60px -20px rgb(2 13 57/.6)"></div></sc-if>
+                </div>
+                <div class="ww-slide-copy">
+                  <span class="ww-slide-k"><span class="{{s.kIcon}}"></span>{{s.k}}</span>
+                  <h2 class="ww-slide-h">{{s.h}}</h2>
+                  <p class="ww-slide-p">{{s.p}}</p>
+                  <div class="ww-slide-acts"><a class="w-btn w-btn-white" href="{{s.href}}">{{s.cta}}<span class="i i-arrow-right"></span></a><sc-if value="{{s.price}}" hint-placeholder-val="{{ false }}"><span class="ww-slide-price">{{s.price}}<s>{{s.mrp}}</s></span></sc-if></div>
+                </div>
+              </div>
+            </sc-for>
+            <div class="ww-car-ctl">
+              <button class="ww-car-arrow" type="button" aria-label="Previous campaign" onClick="{{prev}}"><span class="i i-chevron-left"></span></button>
+              <div class="ww-bars"><sc-for list="{{bars}}" as="b" hint-placeholder-count="3"><button class="{{b.cls}}" type="button" aria-label="{{b.label}}" onClick="{{b.go}}"><span key="{{b.key}}"></span></button></sc-for></div>
+              <button class="ww-car-arrow" type="button" aria-label="Next campaign" onClick="{{next}}"><span class="i i-chevron-right"></span></button>
+              <button class="ww-car-arrow" type="button" aria-label="{{pauseLabel}}" onClick="{{togglePause}}"><span class="{{pauseIcon}}"></span></button>
+            </div>
+          </div>
+          <div class="ww-side">
+            <button class="ww-tile is-light" type="button" onClick="{{openBulk}}" style="text-align:left">
+              <span class="ww-tile-ic"><span class="i i-building-2"></span></span>
+              <span class="flex flex-col gap-2"><b>Buying for your company?</b><small>Bulk prices, monthly supply and VAT invoices for offices.</small></span>
+              <em>Get a corporate quote<span class="i i-arrow-right"></span></em>
+            </button>
+            <a class="ww-tile is-gold" href="{{L.ShopFinder}}">
+              <span class="ww-tile-art"><img src="../assets/1bb1b89d15ac65da8322547e81decbdf.jpg" alt=""></span>
+              <span class="ww-tile-ic"><span class="i i-scan-barcode"></span></span>
+              <span class="flex flex-col gap-2"><b>Find by model</b><small>Toner and ink that fit your printer.</small></span>
+              <em>Start<span class="i i-arrow-right"></span></em>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ww-sec" aria-labelledby="cat-t" style="padding-top:28px">
+      <div class="w-wrap">
+        <div class="ww-head"><div><h2 id="cat-t">Shop by category</h2></div><div class="ww-head-r"><span class="v-sample">Sample categories</span><a class="v-pillbtn" href="{{L.ShopCats}}">All categories<span class="i i-arrow-right"></span></a></div></div>
+        <div class="ww-cats mo-stagger">
+          <sc-for list="{{cats}}" as="c" hint-placeholder-count="7"><a class="{{c.cls}}" href="{{c.href}}" style="{{c.style}}"><span class="ww-cat-ic"><span class="{{c.icon}}"></span></span>{{c.name}}<small>{{c.count}}</small></a></sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section class="ww-sec is-tight" aria-labelledby="col-t">
+      <div class="w-wrap">
+        <div class="ww-head"><div><h2 id="col-t">Featured collections</h2><p>Hand-picked or built by rule in Admin, like “Under ৳999”.</p></div></div>
+        <div class="ww-cols">
+          <a class="ww-col" href="{{L.ShopList}}"><div class="ph is-dark" data-photo="cat-stationery"><div class="ph-in" style="justify-content:flex-start;padding-top:24px"><span class="ph-ic"><span class="i i-pencil-ruler"></span></span><span class="ph-cr">Joanna Kosinska · Unsplash</span></div></div><span class="ww-col-go"><span class="i i-arrow-right"></span></span><b>Office essentials</b><small>48 products · Sample</small></a>
+          <a class="ww-col is-price" href="{{L.ShopList}}"><span class="ww-col-big"><small>Everything</small>৳999</span><span class="ww-col-go"><span class="i i-arrow-right"></span></span><b>Under ৳999</b><small>Built by rule · 120 products · Sample</small></a>
+          <a class="ww-col" href="{{L.ShopList}}"><div class="ph is-dark" data-photo="prod-powerbank"><div class="ph-in" style="justify-content:flex-start;padding-top:24px"><span class="ph-ic"><span class="i i-battery-charging"></span></span><span class="ph-cr">I’M ZION · Unsplash</span></div></div><span class="ww-col-go"><span class="i i-arrow-right"></span></span><b>Power and charging</b><small>16 products · Sample</small></a>
+          <a class="ww-col" href="{{L.ShopProduct}}"><div class="ph is-dark" data-photo="prod-tshirt"><div class="ph-in" style="justify-content:flex-start;padding-top:24px"><span class="ph-ic"><span class="i i-shirt"></span></span><span class="ph-cr">Md Salman · Unsplash</span></div></div><span class="ww-col-go"><span class="i i-arrow-right"></span></span><b>Everyday basics</b><small>22 products · Sample</small></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="ww-sec is-tint" aria-labelledby="deal-t">
+      <div class="w-wrap">
+        <div class="ww-dealhead">
+          <div><h2 id="deal-t"><span class="i i-flame"></span>Deals of the week</h2><p>Prices go back to normal when the timer ends · {{dealEnds}}</p></div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="ww-count" role="timer" aria-label="{{cd.aria}}">
+              <span class="ww-count-lbl"><b>Ends in</b><small>Asia/Dhaka</small></span>
+              <span class="ww-count-u"><span class="ww-count-n" key="{{cd.d}}">{{cd.d}}</span><span class="ww-count-l">days</span></span><span class="ww-count-sep">:</span>
+              <span class="ww-count-u"><span class="ww-count-n" key="{{cd.h}}">{{cd.h}}</span><span class="ww-count-l">hrs</span></span><span class="ww-count-sep">:</span>
+              <span class="ww-count-u"><span class="ww-count-n" key="{{cd.mi}}">{{cd.mi}}</span><span class="ww-count-l">min</span></span><span class="ww-count-sep">:</span>
+              <span class="ww-count-u"><span class="ww-count-n" key="{{cd.s}}">{{cd.s}}</span><span class="ww-count-l">sec</span></span>
+            </div>
+            <a class="v-pillbtn" href="{{L.ShopDeals}}">All deals<span class="i i-arrow-right"></span></a>
+          </div>
+        </div>
+        <div class="ww-rail"><sc-for list="{{deals}}" as="it" hint-placeholder-count="5"><dc-import name="PCard" p="{{it}}" on-add="{{it.add}}" style="display:contents" hint-size="100%,430px"></dc-import></sc-for></div>
+      </div>
+    </section>
+
+    <section class="ww-sec" aria-labelledby="best-t">
+      <div class="w-wrap">
+        <div class="ww-head"><div><h2 id="best-t">Best sellers</h2><p>What customers reorder most this month.</p></div><div class="ww-head-r"><span class="v-sample">Sample prices</span><a class="v-pillbtn" href="{{L.ShopList}}">See all<span class="i i-arrow-right"></span></a></div></div>
+        <div class="ww-grid"><sc-for list="{{best}}" as="it" hint-placeholder-count="10"><dc-import name="PCard" p="{{it}}" on-add="{{it.add}}" style="display:contents" hint-size="100%,430px"></dc-import></sc-for></div>
+      </div>
+    </section>
+
+    <section class="ww-sec is-tight" aria-labelledby="bulk-t">
+      <div class="w-wrap">
+        <div class="ww-bulk">
+          <div class="ww-bulk-rib" aria-hidden="true"><svg viewBox="0 0 1440 220" preserveAspectRatio="none"><defs><linearGradient id="bkr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#020D39" stop-opacity="0"></stop><stop offset=".4" stop-color="#003FBE" stop-opacity=".7"></stop><stop offset=".75" stop-color="#0D8CEE" stop-opacity=".75"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"></stop></linearGradient></defs><path d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44 L 1440 84 C 1204 160 1080 102 780 110 C 470 118 300 216 0 216 Z" fill="url(#bkr)"></path><path class="w-rib-line" d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44" fill="none" stroke="#D7D3D0" stroke-opacity=".8" stroke-width="1.4" vector-effect="non-scaling-stroke"></path></svg></div>
+          <div class="flex flex-col gap-4">
+            <span class="v-eyebrow" style="align-self:flex-start;background:rgb(255 255 255/.1);color:#fff"><span class="w-tri"></span>For companies</span>
+            <h2 id="bulk-t">Corporate and bulk orders, one invoice</h2>
+            <p>Send your list once. We quote within one working day, deliver on a schedule and bill monthly with VAT invoices. Serving Dhaka’s offices since 2010.</p>
+            <div class="flex flex-wrap gap-2"><button class="w-btn w-btn-white" type="button" onClick="{{openBulk}}"><span class="i i-file-text"></span>Request a corporate quote</button><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafas%20World%2C%20we%20need%20a%20corporate%20quote"><span class="i i-whatsapp-fill"></span>WhatsApp</a></div>
+          </div>
+          <div class="ww-bulk-steps">
+            <div class="ww-bulk-step"><i>01</i><b>Send your list</b><small>Products and quantities, or upload a file.</small></div>
+            <div class="ww-bulk-step"><i>02</i><b>Get a price in a day</b><small>A named account manager replies.</small></div>
+            <div class="ww-bulk-step"><i>03</i><b>Delivered and billed</b><small>On your schedule, with VAT invoices.</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ww-sec is-tint" aria-labelledby="brand-t">
+      <div class="w-wrap">
+        <div class="ww-head"><div><h2 id="brand-t">Top brands</h2><p>Hover to pause. Brand pages list every product we stock.</p></div><span class="v-sample">Sample brands</span></div>
+      </div>
+      <div class="ww-marquee"><div class="ww-marquee-track"><sc-for list="{{brands}}" as="b" hint-placeholder-count="10"><a class="ww-brandtile" href="{{L.ShopList}}"><b>{{b.n}}</b><small>{{b.c}}</small></a></sc-for></div></div>
+    </section>
+
+    <section class="ww-sec" aria-labelledby="new-t">
+      <div class="w-wrap">
+        <div class="ww-head"><div><h2 id="new-t">New arrivals</h2><p>Added to Waafas World in the last 30 days.</p></div><a class="v-pillbtn" href="{{L.ShopList}}">See all<span class="i i-arrow-right"></span></a></div>
+        <div class="ww-rail"><sc-for list="{{fresh}}" as="it" hint-placeholder-count="5"><dc-import name="PCard" p="{{it}}" on-add="{{it.add}}" style="display:contents" hint-size="100%,430px"></dc-import></sc-for></div>
+      </div>
+    </section>
+
+    <sc-if value="{{hasRecent}}" hint-placeholder-val="{{ true }}">
+      <section class="ww-sec is-tight" aria-labelledby="rv-t">
+        <div class="w-wrap">
+          <div class="ww-head"><div><h2 id="rv-t" style="font-size:22px">Recently viewed</h2></div><button class="ww-linkbtn" type="button" onClick="{{clearRecent}}"><span class="i i-x"></span>Clear</button></div>
+          <div class="ww-rail is-compact"><sc-for list="{{recent}}" as="it" hint-placeholder-count="4"><dc-import name="PCard" p="{{it}}" variant="compact" style="display:contents" hint-size="100%,100px"></dc-import></sc-for></div>
+        </div>
+      </section>
+    </sc-if>
+
+    <section class="ww-sec is-tint" aria-labelledby="svc-t">
+      <div class="w-wrap">
+        <div class="ww-head"><div><h2 id="svc-t">Waafa International services</h2><p>Beyond the store: printing for offices, and trade across borders.</p></div></div>
+        <div class="ww-svcs">
+          <a class="ww-svc" href="{{L.Printing}}"><div class="ph" data-photo="printing"><div class="ph-in"><span class="ph-ic"><span class="i i-printer"></span></span><span class="ph-cap">Office printer</span><span class="ph-cr">Mahrous Houses · Unsplash</span></div></div><div class="ww-svc-body"><span class="v-eyebrow" style="align-self:flex-start"><span class="i i-layers"></span>Printing Solutions</span><h3>Managed printing for offices</h3><p>Toner on a schedule, printer servicing and one monthly invoice for every branch.</p><span class="v-link">Get a quote<span class="i i-arrow-right"></span></span></div></a>
+          <a class="ww-svc" href="{{L.Trading}}"><div class="ph" data-photo="trading"><div class="ph-in"><span class="ph-ic"><span class="i i-ship"></span></span><span class="ph-cap">Container port</span><span class="ph-cr">Andy Li · Unsplash</span></div></div><div class="ww-svc-body"><span class="v-eyebrow" style="align-self:flex-start"><span class="i i-globe"></span>International Trading</span><h3>Export, import and sourcing</h3><p>Send a request for quotation with the product, quantity and destination.</p><span class="v-link">Send an RFQ<span class="i i-arrow-right"></span></span></div></a>
+        </div>
+        <div class="ww-trust" style="margin-top:16px">
+          <div><span class="w-tile"><span class="i i-badge-check"></span></span><span><b>Genuine products</b><small>From brands and authorised importers. Compatible items are labelled.</small></span></div>
+          <div><span class="w-tile"><span class="i i-shield-check"></span></span><span><b>Warranty on every item</b><small>Brand or seller warranty, shown on each product page.</small></span></div>
+          <div><span class="w-tile"><span class="i i-truck"></span></span><span><b>Delivery across Bangladesh</b><small>Next day in Dhaka, 2 to 4 days elsewhere.</small></span></div>
+          <div><span class="w-tile"><span class="i i-banknote"></span></span><span><b>Cash on delivery</b><small>Or bKash, Nagad and bank transfer.</small></span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <sc-if value="{{bulkOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="ww-dialog wa-r" role="dialog" aria-modal="true" aria-labelledby="bq-t">
+      <div class="w-scrim" onClick="{{closeBulk}}"></div>
+      <div class="ww-dialog-card">
+        <sc-if value="{{bulkForm}}" hint-placeholder-val="{{ true }}">
+          <div class="ww-dialog-head"><span class="w-tile"><span class="i i-building-2"></span></span><div><h2 id="bq-t">Request a corporate quote</h2><p>We reply within one working day with prices, delivery and payment terms.</p></div><button class="v-iconbtn is-plain" type="button" aria-label="Close" onClick="{{closeBulk}}"><span class="i i-x"></span></button></div>
+          <div class="ww-dialog-body">
+            <div class="w-grid-2"><div class="w-field"><label class="w-label" for="bq-co">Company <span class="w-req">*</span></label><input class="w-input" id="bq-co" placeholder="e.g. Nexus Textiles Ltd"></div><div class="w-field"><label class="w-label" for="bq-nm">Your name <span class="w-req">*</span></label><input class="w-input" id="bq-nm" placeholder="Full name"></div></div>
+            <div class="w-grid-2"><div class="w-field"><label class="w-label" for="bq-ph">Mobile <span class="w-req">*</span></label><input class="w-input" id="bq-ph" inputmode="tel" placeholder="+880 1712-345678"></div><div class="w-field"><label class="w-label" for="bq-em">Email <span class="w-opt">(optional)</span></label><input class="w-input" id="bq-em" type="email" placeholder="you@company.com"></div></div>
+            <div class="w-field"><label class="w-label" for="bq-ls">What do you need? <span class="w-req">*</span></label><textarea class="w-input v-textarea" id="bq-ls" rows="3" placeholder="For example: 40 × A4 paper 80 gsm, 12 × HP 85A toner, 10 × power banks, monthly"></textarea></div>
+            <label class="v-drop"><span class="i i-cloud-upload"></span><b>Or upload your list</b><small>Excel, PDF or a photo, up to 5 MB</small></label>
+          </div>
+          <div class="ww-dialog-foot"><button class="w-btn w-btn-ghost" type="button" onClick="{{closeBulk}}">Cancel</button><button class="w-btn w-btn-primary" type="button" onClick="{{sendBulk}}"><span class="i i-send"></span>Send request</button></div>
+        </sc-if>
+        <sc-if value="{{bulkDone}}" hint-placeholder-val="{{ false }}">
+          <div class="ww-dialog-body" style="align-items:center;text-align:center;padding:30px 24px">
+            <span class="w-tile" style="width:64px;height:64px;border-radius:50%;background:var(--color-success-50);color:var(--color-success-600)"><span class="i i-circle-check" style="width:32px;height:32px"></span></span>
+            <h2 class="v-h3">Request sent</h2>
+            <span class="ww-ref">QTE-261008-0007</span>
+            <p class="text-subtle" style="max-width:380px">An account manager will call or email you within one working day. Keep this reference for WhatsApp.</p>
+            <button class="w-btn w-btn-navy" type="button" onClick="{{closeBulk}}">Done</button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="shop" cart="{{cart}}" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="v-toastwrap" role="status"><div class="w-toast"><span class="w-tile"><span class="i i-check"></span></span><span class="min-w-0"><b>Added to cart</b><br><span style="opacity:.8">{{toast}}</span></span><a class="v-toast-link" href="{{L.ShopCart}}">View cart</a></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"cart":{"editor":"int","default":4},"mini":{"editor":"boolean","default":false},"mega":{"editor":"boolean","default":false},"suggest":{"editor":"boolean","default":false},"q":{"editor":"text","default":""},"bulk":{"editor":"boolean","default":false},"slide":{"editor":"int","default":0},"$preview":{"width":1440,"height":5832}}'>
+class Component extends DCLogic {
+  componentDidMount() {
+    this._tick = setInterval(() => this.forceUpdate(), 1000);
+    this._auto = setInterval(() => { const st = this.state || {}; if (st.paused) return; const sl = (st.sl !== undefined ? st.sl : (+this.props.slide || 0)); this.setState({ sl: (sl + 1) % 3, done: sl }); }, 6000);
+  }
+  componentWillUnmount() { clearInterval(this._tick); clearInterval(this._auto); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Shop','ShopList','ShopProduct','ShopCart','ShopCheckout','ShopDone','ShopTrack','ShopFinder','ShopSearch','ShopDeals','ShopCats','Printing','Trading'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const cart = st.cart !== undefined ? st.cart : (p.cart !== undefined ? +p.cart : 4);
+    const fmt = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const BD1 = '../assets/c9ea845b540e931548117afdb5ae8a65.jpg', BD2 = '../assets/fd111676d187ad84eb1cdef897ce4776.jpg', BD3 = '../assets/1bb1b89d15ac65da8322547e81decbdf.jpg';
+    const CAP = { 'prod-tshirt': 'T-shirt · Md Salman / Unsplash', 'prod-powerbank': 'Power bank · I’M ZION / Unsplash', 'prod-headphones': 'Headphones · C D-X / Unsplash', 'printing-alt': 'Toner · Jakub Żerdzicki / Unsplash' };
+    const PR = {
+      tee: ['Classic Cotton Crew T-shirt', 'Tessra', 'Sizes S to XXL · 4 colours', 650, 850, 'in', '', 'prod-tshirt', 'shirt', 1, 1, 'New', 'ShopProduct'],
+      pb: ['20,000 mAh Power Bank, 22.5 W', 'Voltaro', '10,000 or 20,000 mAh · USB-C PD', 2450, 2990, 'in', '', 'prod-powerbank', 'battery-charging', 1, 1, 'Best seller', 'ShopProduct-pb'],
+      hp: ['Air Wireless Over-ear Headphones', 'Sonaro', '40-hour battery · 3 colours', 3890, 4990, 'in', '', 'prod-headphones', 'headphones', 1, 1, '', 'ShopProduct-hp'],
+      t85: ['85A Compatible Black Toner (CE285A)', 'Printers & Supplies', 'Up to 1,600 pages · fits HP LaserJet P1102', 1350, 1700, 'in', '', 'printing-alt', 'printer', 0, 1, '', 'ShopProduct-toner'],
+      bd1: ['Better Day CE505A / CF280A Black Toner', 'Better Day', 'Up to 2,700 pages · fits HP LaserJet P2035', 1450, 1800, 'in', BD1, '', 'printer', 0, 0, 'Best seller', 'ShopProduct-toner'],
+      bd2: ['Better Day Canon CRG 070H Black Toner', 'Better Day', 'Up to 9,000 pages · fits Canon LBP243dw', 3250, 3900, 'in', BD2, '', 'printer', 0, 0, '', 'ShopProduct-toner'],
+      bd3: ['Better Day HP 151A (W1510A) Black Toner', 'Better Day', 'Up to 3,050 pages · fits HP LaserJet Pro 4003', 2150, 2600, 'low', BD3, '', 'printer', 0, 0, '', 'ShopProduct-toner'],
+      pb10: ['10,000 mAh Slim Power Bank', 'Voltaro', '10,000 mAh · 2 USB ports', 1690, 1990, 'in', '', 'prod-powerbank', 'battery-charging', 0, 1, '', 'ShopProduct-pb'],
+      pen: ['Gel Pen Set, 12 Colours', 'Quillo', '0.5 mm · quick-dry ink', 290, 350, 'in', '', '', 'pen-line', 0, 1, '', 'ShopProduct'],
+      paper: ['Double A A4 Copy Paper, 80 gsm', 'Double A', '500 sheets · laser and inkjet', 520, 580, 'in', '', '', 'file-text', 0, 0, '', 'ShopProduct'],
+      mouse: ['Wireless Silent Mouse, 2.4 GHz', 'Klikk', 'Silent clicks · 18-month battery', 890, 1100, 'out', '', '', 'mouse', 0, 1, '', 'ShopProduct'],
+      cable: ['USB-C to USB-C Cable, 1 m, 60 W', 'Voltaro', 'Braided · fast charge and data', 390, 450, 'in', '', '', 'cable', 0, 1, '', 'ShopProduct'],
+      bottle: ['Insulated Steel Bottle, 750 ml', 'Aquelle', 'Cold 24 h · hot 12 h', 990, 1290, 'pre', '', '', 'cup-soda', 0, 1, '', 'ShopProduct'],
+      buds: ['Pods Wireless Earbuds', 'Sonaro', '30-hour battery · touch controls', 2190, 2790, 'in', '', '', 'headphones', 0, 1, '', 'ShopProduct-hp']
+    };
+    const add = (d, prod) => {
+      clearTimeout(this._t2);
+      const c = (this.state && this.state.cart !== undefined) ? this.state.cart : cart;
+      this.setState({ cart: Math.max(0, c + d), toast: d > 0 ? prod.title : '' });
+      if (d > 0) this._t2 = setTimeout(() => this.setState({ toast: '' }), 2400);
+    };
+    const mk = (id) => { const x = PR[id]; return { id, title: x[0], brand: x[1], spec: x[2], price: x[3], mrp: x[4], stock: x[5], img: x[6], ph: x[7], icon: x[8], options: !!x[9], sample: !!x[10], badge: x[11], href: x[12] + sx + '.dc.html', phCap: x[7] ? CAP[x[7]] : 'Product photo from Admin', left: id === 'bd3' ? 3 : 0, ships: id === 'bottle' ? '20 Oct' : '', add }; };
+    // campaign carousel
+    const SL = [
+      { ph: 'cat-stationery', float: [['pencil-ruler', 'right:30%;top:18%;--s:96px'], ['file-text', 'right:9%;top:34%;--s:120px'], ['printer', 'right:24%;top:58%;--s:84px']], credit: 'Photo: Joanna Kosinska · Unsplash · Sample', k: 'Office restock week · until 15 Oct', kIcon: 'i i-sparkles', h: 'Restock the office for less', p: 'Paper, pens, files and toner with up to 25% off. Free delivery in Dhaka over ৳5,000.', cta: 'Shop office essentials', href: L.ShopList },
+      { ph: 'prod-powerbank', float: [['battery-charging', 'right:12%;top:20%;--s:130px'], ['zap', 'right:34%;top:46%;--s:80px'], ['cable', 'right:16%;top:62%;--s:92px']], credit: 'Photo: I’M ZION · Unsplash · Sample', k: 'New in Electronics & Gadgets', kIcon: 'i i-zap', h: 'Power that lasts the whole week', p: 'Fast-charging power banks in 10,000 and 20,000 mAh, with a 6-month warranty.', cta: 'See power banks', href: 'ShopProduct-pb' + sx + '.dc.html', price: fmt(1690), mrp: fmt(1990) },
+      { art: BD1, k: 'Printers & Supplies', kIcon: 'i i-printer', h: 'Compatible toner, clearly labelled', p: 'Better Day cartridges: the same pages for less. Every listing shows the printers it fits.', cta: 'Find by model', href: L.ShopFinder, price: fmt(1450), mrp: fmt(1800) }
+    ];
+    const N = SL.length;
+    const sl = st.sl !== undefined ? st.sl : (+p.slide || 0);
+    const slides = SL.map((s, i) => Object.assign({}, s, { float: (s.float || []).map(f => ({ ic: 'i i-' + f[0], st: f[1] })), cls: 'ww-slide' + (i === sl ? ' is-on' : ''), hidden: i !== sl, aria: (i + 1) + ' of ' + N, ph: s.ph || '', art: s.art || '', price: s.price || '', mrp: s.mrp || '' }));
+    const bars = SL.map((s, i) => ({ cls: 'ww-bar-prog' + (i === sl ? (st.paused ? ' is-done' : ' is-on') : (i < sl ? ' is-done' : '')), key: i + '-' + sl + (st.paused ? 'p' : ''), label: 'Campaign ' + (i + 1), go: () => this.setState({ sl: i }) }));
+    // categories
+    const CATS = [['printers', 'Printers & Supplies', 'printer', '#003FBE', '86 items'], ['office', 'Office & Stationery', 'pencil-ruler', '#0B7A54', '140 items'], ['computer', 'Computer & Accessories', 'monitor', '#4B37C2', '64 items'], ['electronics', 'Electronics & Gadgets', 'headphones', '#0A6B88', '52 items'], ['home', 'Home & Kitchen', 'cooking-pot', '#A15C07', 'Coming soon'], ['fashion', 'Fashion & Lifestyle', 'shirt', '#B0231B', '38 items']];
+    const cats = CATS.map(c => ({ name: c[1], icon: 'i i-' + c[2], style: '--c:' + c[3], count: c[4], cls: 'ww-cat', href: L.ShopList })).concat([{ name: 'All categories', icon: 'i i-layout-grid', style: '', count: '6 categories', cls: 'ww-cat is-all', href: L.ShopCats }]);
+    // deals countdown: ends Sun 12 Oct 2026, 11:59 pm Asia/Dhaka
+    const end = Date.UTC(2026, 9, 12, 17, 59, 59);
+    let left = Math.max(0, Math.floor((end - Date.now()) / 1000));
+    const two = n => (n < 10 ? '0' : '') + n;
+    const cd = { d: two(Math.floor(left / 86400)), h: two(Math.floor(left % 86400 / 3600)), mi: two(Math.floor(left % 3600 / 60)), s: two(left % 60) };
+    cd.aria = 'Deals end in ' + (+cd.d) + ' days ' + (+cd.h) + ' hours ' + (+cd.mi) + ' minutes';
+    const BR = [['Better Day', '3 products'], ['HP', '24 products'], ['Canon', '18 products'], ['Brother', '9 products'], ['Epson', '12 products'], ['Double A', '4 products'], ['Voltaro', 'Sample brand'], ['Sonaro', 'Sample brand'], ['Tessra', 'Sample brand'], ['Quillo', 'Sample brand']];
+    const brands = BR.concat(BR).map(b => ({ n: b[0], c: b[1] }));
+    const recentIds = st.noRecent ? [] : ['bd1', 'tee', 'pb', 'hp'];
+    const bulkOpen = st.bulk !== undefined ? st.bulk : !!p.bulk;
+    return {
+      L, cart, m: !!p.m, mini: !!p.mini, mega: !!p.mega, suggest: !!p.suggest, q: p.q || '',
+      slides, bars, cats, cd, dealEnds: 'Sun 12 Oct, 11:59 pm',
+      pauseLabel: st.paused ? 'Play campaigns' : 'Pause campaigns', pauseIcon: st.paused ? 'i i-play' : 'i i-pause',
+      togglePause: () => this.setState({ paused: !st.paused }),
+      prev: () => this.setState({ sl: (sl + N - 1) % N }), next: () => this.setState({ sl: (sl + 1) % N }),
+      deals: ['pb', 't85', 'hp', 'bd2', 'pen'].map(mk),
+      best: ['bd1', 'tee', 'pb', 'hp', 't85', 'bd3', 'paper', 'buds', 'mouse', 'bottle'].map(mk),
+      fresh: ['tee', 'buds', 'pb10', 'cable', 'bottle'].map(mk),
+      recent: recentIds.map(mk), hasRecent: recentIds.length > 0, clearRecent: () => this.setState({ noRecent: true }),
+      brands,
+      bulkOpen, bulkForm: !st.bulkSent, bulkDone: !!st.bulkSent,
+      openBulk: () => this.setState({ bulk: true, bulkSent: false }), closeBulk: () => this.setState({ bulk: false, bulkSent: false }), sendBulk: () => this.setState({ bulkSent: true }),
+      toast: st.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Group fares</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="flights" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Flights}}">Flights</a><span class="i i-chevron-right"></span><span aria-current="page">Group fares</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px">
+            <span class="v-eyebrow">Group fares</span>
+            <h1 class="v-h1 v-h1-page">Fixed-date seats from Dhaka</h1>
+            <p class="v-lead">We hold these seats with airlines in advance. If one matches your date, it is the simplest fare to book. Prices are per adult and indicative until we confirm with you.</p>
+          </div>
+          <ol class="v-howsteps" aria-label="How it works">
+            <li><span>1</span><div><b>Pick a fare on your date</b><small>Tap Request this fare</small></div></li>
+            <li><span>2</span><div><b>Send names as in each passport</b><small>On WhatsApp or the form</small></div></li>
+            <li><span>3</span><div><b>Pay and get your e-ticket</b><small>Bank, bKash, Nagad or at our office</small></div></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec" style="padding-top:20px">
+      <div class="w-wrap">
+        <div class="v-gffilters">
+          <div class="v-gfrow">
+            <span class="v-gflabel">Going to</span>
+            <div class="v-dfilters" role="group" aria-label="Destination" style="margin-bottom:0">
+              <sc-for list="{{dests}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" type="button" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}<span class="v-dcount">{{c.count}}</span></button></sc-for>
+            </div>
+          </div>
+          <div class="v-gfrow">
+            <span class="v-gflabel">Month</span>
+            <div class="w-seg is-sm" role="radiogroup" aria-label="Month">
+              <sc-for list="{{months}}" as="mo" hint-placeholder-count="3"><button class="{{mo.cls}}" type="button" role="radio" aria-checked="{{mo.on}}" onClick="{{mo.pick}}">{{mo.label}}</button></sc-for>
+            </div>
+            <label class="v-gfsort"><span class="v-gflabel">Sort</span><span class="w-select"><select class="w-input" aria-label="Sort fares"><option>Departure date</option><option>Lowest price</option><option>Most seats left</option></select></span></label>
+          </div>
+        </div>
+
+        <div class="v-gfbar"><b>{{countLabel}}</b><span class="v-sample">Sample fares</span></div>
+
+        <sc-if value="{{has}}" hint-placeholder-val="{{ true }}">
+          <div class="v-gfgrid v-gfgrid3" aria-live="polite">
+            <sc-for list="{{fares}}" as="g" hint-placeholder-count="6">
+              <article class="w-fare v-gfcard" key="{{g.key}}">
+                <div class="w-fare-top">
+                  <div class="w-fare-head"><span class="w-airline">{{g.code}}</span><div class="w-fare-meta"><b>{{g.airline}}</b><span>{{g.bag}}</span></div><span class="{{g.kindCls}}" style="margin-left:auto">{{g.kind}}</span></div>
+                  <div class="w-fare-route">
+                    <div><div class="w-iata">DAC</div><div class="w-fare-city">Dhaka</div></div>
+                    <div class="w-path"><span class="w-path-dot"></span><span class="w-path-ic"><span class="i i-plane"></span></span><span class="w-path-label">Direct</span></div>
+                    <div class="text-right"><div class="w-iata">{{g.to}}</div><div class="w-fare-city">{{g.toCity}}</div></div>
+                  </div>
+                  <div class="w-fare-info"><span><span class="i i-calendar"></span>{{g.date}}</span><span class="v-seats"><span class="i i-armchair"></span>{{g.seats}} seats left</span></div>
+                  <div class="v-gfexp"><span class="i i-hourglass"></span>Book by {{g.exp}}</div>
+                </div>
+                <div class="w-fare-split"></div>
+                <div class="w-fare-bot"><div><div class="w-from">From</div><div class="w-price">{{g.price}} <small>per adult</small></div></div><a class="w-btn w-btn-sm w-btn-navy" href="{{L.FlightsFare}}">Request this fare</a></div>
+              </article>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+          <div class="w-empty v-empty">
+            <span class="v-empty-ic"><span class="i i-ticket"></span></span>
+            <h3>No group fares match</h3>
+            <p>There are no fixed-date seats for {{noneWhat}} right now. A travel expert can still find you a fare on any airline.</p>
+            <div class="flex flex-wrap justify-center gap-2">
+              <a class="w-btn w-btn-primary" href="{{L.Flights}}"><span class="i i-headset"></span>Ask an expert for a fare</a>
+              <button class="w-btn w-btn-secondary" type="button" onClick="{{clear}}"><span class="i i-rotate-ccw"></span>Clear filters</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div class="v-gfnote">
+          <span class="w-tile"><span class="i i-info"></span></span>
+          <p><b>About group fares.</b> Seats are limited and the airline sets the rules: names usually can’t be changed after ticketing, and most of these fares can’t be refunded. We explain the rules for your fare before you pay.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="none" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"empty":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const s = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Flights','FlightsFare'].forEach(k => { L[k] = k + s + '.dc.html'; });
+    const GF = [["ek14", "EK", "Emirates", "Economy · 30 kg checked bag", "One way", "DXB", "Dubai", "Sat, 14 Nov 2026", "2026-11", 9, 58500, "31 Oct"], ["fz20", "FZ", "flydubai", "Economy · 20 kg checked bag", "One way", "DXB", "Dubai", "Fri, 20 Nov 2026", "2026-11", 4, 49900, "5 Nov"], ["bs02", "BS", "US-Bangla Airlines", "Economy · 30 kg checked bag", "One way", "KUL", "Kuala Lumpur", "Mon, 2 Nov 2026", "2026-11", 14, 29800, "25 Oct"], ["mh27", "MH", "Malaysia Airlines", "Economy · 30 kg checked bag", "One way", "KUL", "Kuala Lumpur", "Fri, 27 Nov 2026", "2026-11", 8, 31500, "12 Nov"], ["sq19", "SQ", "Singapore Airlines", "Economy · 30 kg checked bag", "One way", "SIN", "Singapore", "Thu, 19 Nov 2026", "2026-11", 6, 41200, "4 Nov"], ["tg11", "TG", "Thai Airways", "Economy · 30 kg checked bag", "Return", "BKK", "Bangkok", "11 Dec – 16 Dec 2026", "2026-12", 11, 38900, "20 Nov"], ["bg08", "BG", "Biman Bangladesh Airlines", "Economy · 20 kg checked bag", "One way", "CCU", "Kolkata", "Sun, 8 Nov 2026", "2026-11", 20, 9900, "28 Oct"], ["qr01", "QR", "Qatar Airways", "Economy · 30 kg checked bag", "One way", "DOH", "Doha", "Tue, 1 Dec 2026", "2026-12", 5, 54000, "15 Nov"], ["g921", "G9", "Air Arabia", "Economy · 20 kg checked bag", "One way", "SHJ", "Sharjah", "Sat, 21 Nov 2026", "2026-11", 12, 36900, "6 Nov"]];
+    const dest = st.dest !== undefined ? st.dest : (p.empty ? 'DXB' : 'all');
+    const month = st.month !== undefined ? st.month : (p.empty ? '2026-12' : 'all');
+    const inMonth = g => month === 'all' || g[8] === month;
+    const DESTS = [['all', 'All'], ['DXB', 'Dubai'], ['KUL', 'Kuala Lumpur'], ['SIN', 'Singapore'], ['BKK', 'Bangkok'], ['CCU', 'Kolkata'], ['DOH', 'Doha'], ['SHJ', 'Sharjah']];
+    const dests = DESTS.map(d => ({ label: d[1], on: dest === d[0], cls: 'v-dchip' + (dest === d[0] ? ' is-on' : ''),
+      count: GF.filter(g => (d[0] === 'all' || g[5] === d[0]) && inMonth(g)).length, pick: () => this.setState({ dest: d[0], month }) }));
+    const MONTHS = [['all', 'All months'], ['2026-11', 'November'], ['2026-12', 'December']];
+    const months = MONTHS.map(m => ({ label: m[1], on: month === m[0], cls: 'w-seg-btn' + (month === m[0] ? ' is-active' : ''), pick: () => this.setState({ month: m[0], dest }) }));
+    const list = GF.filter(g => (dest === 'all' || g[5] === dest) && inMonth(g));
+    const fmt = n => '৳' + n.toLocaleString('en-IN');
+    const fares = list.map(g => ({ key: g[0], code: g[1], airline: g[2], bag: g[3], kind: g[4], kindCls: 'w-badge ' + (g[4] === 'Return' ? 'w-badge-success' : 'w-badge-brand'),
+      to: g[5], toCity: g[6], date: g[7], seats: g[9], price: fmt(g[10]), exp: g[11] }));
+    const dn = (DESTS.find(d => d[0] === dest) || [0, ''])[1];
+    const mn = (MONTHS.find(m => m[0] === month) || [0, ''])[1];
+    return {
+      L, dests, months, fares, has: fares.length > 0, none: fares.length === 0,
+      countLabel: fares.length === 1 ? '1 fare' : fares.length + ' fares',
+      noneWhat: (dest === 'all' ? 'these dates' : dn) + (month === 'all' ? '' : ' in ' + mn),
+      clear: () => this.setState({ dest: 'all', month: 'all' }),
+      m: !!p.m
+    };
+  }
+}
+</script>
+</body>
+</html>

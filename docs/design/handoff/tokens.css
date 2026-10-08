@@ -1,0 +1,182 @@
+/* WAAFA design tokens · Tailwind CSS v4 + shadcn/ui
+   Paste into app/globals.css after:  @import "tailwindcss";
+   Source of truth: project/waafa.css (the prototype uses the same values).
+   Fonts: load with next/font — Plus Jakarta Sans (600–800) as --font-display,
+   Inter (400–800) as --font-sans, Hind Siliguri (500–600) for Bangla.        */
+
+@theme {
+  /* brand ramp (logo blues) */
+  --color-midnight-950: #020D39;
+  --color-navy-900: #00185B;
+  --color-royal-800: #01278B;
+  --color-brand-700: #003FBE;   /* primary actions */
+  --color-electric-600: #0053D7;
+  --color-sky-500: #0D8CEE;
+  --color-cyan-400: #39CCE9;
+  --color-electric-50: #EEF4FF;
+  --color-electric-100: #DCE7FF;
+  --color-electric-200: #B8CEFF;
+
+  /* metallic accents (logo silver and gold) */
+  --color-silver-300: #D7D3D0;
+  --color-silver-500: #9F9B9C;
+  --color-gold-50: #FBF6EC;
+  --color-gold-100: #F2E4C8;
+  --color-gold-400: #C9A05A;
+  --color-gold-600: #A8782F;
+  --color-ink-950: #0E0D0B;
+
+  /* neutrals */
+  --color-mist-25: #FBFCFE;
+  --color-mist-50: #F6F8FB;
+  --color-mist-100: #EFF2F7;
+  --color-mist-200: #E3E8F0;
+  --color-mist-300: #CDD5E2;
+  --color-mist-400: #A3ADBF;
+  --color-mist-500: #6B7489;
+  --color-mist-600: #556078;   /* body text on white: 6.3:1 */
+  --color-mist-700: #3E475C;
+  --color-mist-800: #283044;
+  --color-mist-900: #151B2C;
+  --color-ink-900: #0E1424;    /* body text (shadcn --foreground) */
+
+  /* status */
+  --color-success-50: #E7F6EF;
+  --color-success-600: #0B7A54;
+  --color-warning-50: #FFF4E2;
+  --color-warning-700: #A15C07;
+  --color-danger-50: #FDEDEB;
+  --color-danger-600: #C2261D;
+  --color-whatsapp-500: #22B565;
+  --color-whatsapp-700: #0E7A47;
+
+  /* type */
+  --font-display: "Plus Jakarta Sans", "Hind Siliguri", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", "Hind Siliguri", ui-sans-serif, system-ui, sans-serif;
+
+  /* radius */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+
+  /* elevation (navy-tinted) */
+  --shadow-xs: 0 1px 2px rgb(2 13 57 / .06);
+  --shadow-sm: 0 1px 3px rgb(2 13 57 / .08), 0 1px 2px rgb(2 13 57 / .04);
+  --shadow-md: 0 10px 24px -8px rgb(2 13 57 / .14), 0 2px 4px rgb(2 13 57 / .04);
+  --shadow-lg: 0 20px 48px -16px rgb(2 13 57 / .22), 0 4px 12px -4px rgb(2 13 57 / .06);
+  --shadow-xl: 0 36px 80px -28px rgb(2 13 57 / .34), 0 8px 20px -8px rgb(2 13 57 / .08);
+  --shadow-glass: 0 28px 70px -28px rgb(2 13 57 / .45), 0 2px 6px rgb(2 13 57 / .06), inset 0 1px 0 rgb(255 255 255 / .75);
+
+  /* motion */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --ease-standard: cubic-bezier(.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(.34, 1.36, .64, 1);
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-rise: rise 560ms cubic-bezier(.22, 1, .36, 1) both;
+
+  @keyframes shimmer { to { background-position: -200% 0; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+}
+
+/* gradients and layout sizes (use as bg-[image:var(--ribbon)], h-(--hdr-h)) */
+:root {
+  --ribbon: linear-gradient(120deg, #020D39 0%, #003FBE 40%, #0D8CEE 74%, #39CCE9 100%);
+  --ribbon-soft: linear-gradient(120deg, #EAF1FF 0%, #F4F8FF 55%, #EDFAFD 100%);
+  --hdr-h: 64px;
+  --tab-h: 64px;
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-slow: 300ms;
+  --dur-enter: 560ms;
+
+  /* shadcn/ui semantic variables, mapped to the WAAFA palette */
+  --background: #FFFFFF;
+  --foreground: #0E1424;
+  --card: #FFFFFF;
+  --card-foreground: #0E1424;
+  --popover: #FFFFFF;
+  --popover-foreground: #0E1424;
+  --primary: #003FBE;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EEF4FF;
+  --secondary-foreground: #01278B;
+  --muted: #F6F8FB;
+  --muted-foreground: #556078;
+  --accent: #EFF2F7;
+  --accent-foreground: #00185B;
+  --destructive: #C2261D;
+  --border: #E3E8F0;
+  --input: #CDD5E2;
+  --ring: #0D8CEE;
+  --radius: 12px;
+  --chart-1: #003FBE;
+  --chart-2: #0D8CEE;
+  --chart-3: #39CCE9;
+  --chart-4: #A8782F;
+  --chart-5: #0B7A54;
+  --sidebar: #020D39;
+  --sidebar-foreground: #D7DEEC;
+  --sidebar-primary: #39CCE9;
+  --sidebar-primary-foreground: #020D39;
+  --sidebar-accent: rgb(255 255 255 / .08);
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgb(255 255 255 / .1);
+  --sidebar-ring: #39CCE9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--background); color: var(--foreground); font-family: var(--font-sans); font-feature-settings: "cv11", "ss01"; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
+  :focus-visible { outline: 2px solid var(--color-sky-500); outline-offset: 2px; }
+  .tnum { font-variant-numeric: tabular-nums; }
+}
+
+/* reduced motion: movement becomes a short fade */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 150ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+    scroll-behavior: auto !important;
+  }
+}

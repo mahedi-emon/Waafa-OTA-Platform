@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Page not found</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <sc-if value="{{withHeader}}" hint-placeholder-val="{{ true }}"><dc-import name="Header" m="{{m}}" active="none" style="display:contents" hint-size="100%,76px"></dc-import></sc-if>
+  <main class="w-main" id="main">
+    <section class="wd-err">
+      <svg class="wd-plane" viewBox="0 0 1700 200" preserveAspectRatio="none" aria-hidden="true"><path d="M0 150 C 300 40 600 180 900 70 S 1400 60 1700 120"></path></svg>
+      <div class="wd-plane-fly" aria-hidden="true"><span class="wd-pl"><span class="i i-plane"></span></span></div>
+      <div class="wd-err-in">
+        <sc-if value="{{is404}}" hint-placeholder-val="{{ true }}">
+          <span class="wd-err-code" aria-hidden="true">404</span>
+          <h1>This page took a different flight</h1>
+          <p>The link may be old or mistyped. Search again, or start from one of these.</p>
+          <label class="v-vsearch-field" style="width:100%;max-width:520px"><span class="i i-search"></span><input class="w-input" placeholder="Search trips, visas or products" aria-label="Search"></label>
+          <div class="wd-err-links"><a href="{{L.Home}}"><span class="i i-house"></span>Home</a><a href="{{L.Packages}}"><span class="i i-map"></span>Tour packages</a><a href="{{L.Visa}}"><span class="i i-passport"></span>Visa</a><a href="{{L.Shop}}"><span class="i i-shopping-bag"></span>Waafas World</a><a href="{{L.Track}}"><span class="i i-search"></span>Track a request</a></div>
+        </sc-if>
+        <sc-if value="{{is500}}" hint-placeholder-val="{{ false }}">
+          <span class="wd-err-code" aria-hidden="true">500</span>
+          <h1>Something went wrong on our side</h1>
+          <p>Your request was not lost. Try again in a minute; if it still fails, call or WhatsApp us and quote the code below.</p>
+          <span class="wd-ref">Error ID · 7F3A-2610-0842</span>
+          <div class="flex flex-wrap justify-center gap-2"><button class="w-btn w-btn-primary" type="button"><span class="i i-refresh-cw"></span>Try again</button><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>WhatsApp us</a><a class="w-btn w-btn-secondary" href="tel:+8801823232241"><span class="i i-phone"></span>01823-232241</a></div>
+        </sc-if>
+        <sc-if value="{{isMaint}}" hint-placeholder-val="{{ false }}">
+          <img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="WAAFA" style="width:72px">
+          <h1>We’re making the site better</h1>
+          <p>Back by 6 am Bangladesh time, Friday 9 October. Our team is still answering calls and WhatsApp as usual.</p>
+          <div class="wd-maint"><div class="wd-maint-bar"><span></span></div><span class="text-13 text-muted">About 2 hours left</span></div>
+          <div class="flex flex-wrap justify-center gap-2"><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>WhatsApp us</a><a class="w-btn w-btn-secondary" href="tel:+8801823232241"><span class="i i-phone"></span>Call 01823-232241</a></div>
+        </sc-if>
+        <sc-if value="{{isOffline}}" hint-placeholder-val="{{ false }}">
+          <span class="w-tile" style="width:80px;height:80px;border-radius:24px"><span class="i i-wifi-off" style="width:36px;height:36px"></span></span>
+          <span class="wd-offline-pill"><span class="i i-cloud-off"></span>You’re offline</span>
+          <h1>No internet connection</h1>
+          <p>Check your Wi-Fi or mobile data. Anything you typed is kept on this device and sent when you’re back online.</p>
+          <div class="flex flex-wrap justify-center gap-2"><button class="w-btn w-btn-primary" type="button"><span class="i i-refresh-cw"></span>Try again</button><a class="w-btn w-btn-secondary" href="tel:+8801823232241"><span class="i i-phone"></span>Call us instead</a></div>
+        </sc-if>
+      </div>
+    </section>
+  </main>
+  <sc-if value="{{withHeader}}" hint-placeholder-val="{{ true }}"><dc-import name="TabBar" m="{{m}}" active="home" style="display:contents" hint-size="390px,64px"></dc-import></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"kind":{"editor":"enum","options":["404","500","maint","offline"],"default":"404"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Packages','Visa','Shop','Track'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const k = String(p.kind || '404');
+    return { L, m: !!p.m, is404: k === '404', is500: k === '500', isMaint: k === 'maint', isOffline: k === 'offline', withHeader: k !== 'maint' };
+  }
+}
+</script>
+</body>
+</html>

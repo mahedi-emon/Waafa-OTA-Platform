@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Hotels · Live mode</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="none" style="display:contents" hint-size="100%,76px"></dc-import>
+
+  <div class="w-sum wa-r">
+    <div class="w-wrap w-sum-in">
+      <span class="v-sum-ic" aria-hidden="true"><span class="i i-hotel"></span></span>
+      <div class="min-w-0" style="flex:1">
+        <div class="w-sum-route"><span class="w-iata" style="font-size:20px">Cox’s Bazar</span><span class="v-sum-cities">Bangladesh</span></div>
+        <div class="w-sum-meta"><span>Sat, 14 Nov to Mon, 16 Nov 2026</span><span class="w-dot-sep"></span><span>2 nights</span><span class="w-dot-sep"></span><span>1 room, 2 adults</span></div>
+      </div>
+      <span class="wl-phase v-hide-xs"><span class="i i-zap"></span>Live · Phase 2</span>
+      <sc-if value="{{isResults}}" hint-placeholder-val="{{ true }}"><a class="v-pillbtn" href="{{L.Hotels}}"><span class="i i-pencil"></span><span class="v-hide-xs">Edit search</span></a></sc-if>
+    </div>
+  </div>
+
+  <main class="{{mainCls}}" id="main">
+    <div class="w-wrap">
+      <nav class="w-crumbs v-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Hotels}}">Hotels</a><span class="i i-chevron-right"></span><sc-if value="{{isResults}}" hint-placeholder-val="{{ true }}"><span aria-current="page">Cox’s Bazar · Live</span></sc-if><sc-if value="{{notResults}}" hint-placeholder-val="{{ false }}"><a href="{{L.HotelsLive}}">Cox’s Bazar</a><span class="i i-chevron-right"></span><span aria-current="page">{{H.name}}</span></sc-if></nav>
+
+      <sc-if value="{{isResults}}" hint-placeholder-val="{{ true }}">
+        <div class="wl-mbar" style="margin-top:12px">
+          <button class="{{fChipCls}}" type="button" onClick="{{openF}}"><span class="i i-sliders-horizontal"></span>Filters<sc-if value="{{fCount}}" hint-placeholder-val="{{ false }}"><b>· {{fCount}}</b></sc-if></button>
+          <sc-for list="{{quick}}" as="q" hint-placeholder-count="3"><button class="{{q.cls}}" type="button" aria-pressed="{{q.on}}" onClick="{{q.go}}">{{q.label}}</button></sc-for>
+        </div>
+        <div class="{{resCls}}">
+          <div class="{{fScrimCls}}" onClick="{{closeF}}"></div>
+          <aside class="{{railCls}}" aria-label="Filters">
+            <div class="wl-frail-head"><b>Filters</b><button class="v-iconbtn is-plain" type="button" aria-label="Close filters" onClick="{{closeF}}"><span class="i i-x"></span></button></div>
+            <div class="v-pref-head" style="flex-direction:row;align-items:center;justify-content:space-between"><b>Filter hotels</b><button class="v-link" type="button" style="min-height:0" onClick="{{clearF}}">Clear all</button></div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Price per night</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Price per night"><sc-for list="{{fl.prices}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}<small class="v-count" style="margin-left:auto">{{o.n}}</small></button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Star rating</div>
+              <div class="w-pills"><sc-for list="{{fl.stars}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" aria-pressed="{{o.on}}" onClick="{{o.go}}">{{o.label}}<span class="i i-star-fill i-14" style="color:#C9A05A"></span></button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Guest rating</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Guest rating"><sc-for list="{{fl.rates}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <button class="w-pick-opt" type="button" role="switch" aria-checked="{{fl.free}}" onClick="{{fl.toggleFree}}"><span><b>Free cancellation</b><small>Cancel for free until 2 days before check-in</small></span><span class="{{fl.freeCls}}"></span></button>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Meal plan</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Meal plan"><sc-for list="{{fl.meals}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Amenities</div>
+              <div class="v-checks"><sc-for list="{{fl.ams}}" as="a" hint-placeholder-count="6"><button class="{{a.cls}}" type="button" role="checkbox" aria-checked="{{a.on}}" onClick="{{a.go}}"><span class="v-cbox"></span><span class="{{a.icon}}" style="width:16px;height:16px;color:var(--color-brand-700)"></span>{{a.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec" style="border-bottom:0">
+              <div class="w-rail-title">Area</div>
+              <div class="v-checks"><sc-for list="{{fl.areas}}" as="a" hint-placeholder-count="5"><button class="{{a.cls}}" type="button" role="checkbox" aria-checked="{{a.on}}" onClick="{{a.go}}"><span class="v-cbox"></span>{{a.label}}<small class="v-count" style="margin-left:auto">{{a.n}}</small></button></sc-for></div>
+            </div>
+            <div class="wl-frail-foot"><button class="w-btn w-btn-ghost" type="button" onClick="{{clearF}}">Clear</button><button class="w-btn w-btn-primary" type="button" onClick="{{closeF}}">Show {{countLabel}}</button></div>
+          </aside>
+
+          <div class="v-resmain">
+            <div class="wl-modebar"><span class="i i-shield-check"></span><span><b>Live rates from hotels.</b> Prices are for 2 nights with VAT and service charge included, and are checked again before you pay.</span></div>
+            <div class="wl-htool">
+              <div class="wl-count" style="margin:0"><span><b>{{countLabel}}</b> in Cox’s Bazar</span><span class="wl-live">Live · checked 1 min ago</span></div>
+              <div class="flex items-center gap-2">
+                <label class="w-select" aria-label="Sort hotels"><select class="w-input" value="{{sortV}}" onChange="{{onSort}}"><sc-for list="{{sorts}}" as="s" hint-placeholder-count="4"><option value="{{s.v}}">{{s.label}}</option></sc-for></select></label>
+                <div class="wl-viewtog" role="tablist" aria-label="View"><button class="{{vt.list}}" type="button" role="tab" aria-selected="{{isList}}" onClick="{{toList}}"><span class="i i-list"></span>List</button><button class="{{vt.map}}" type="button" role="tab" aria-selected="{{isMap}}" onClick="{{toMap}}"><span class="i i-map"></span>Map</button></div>
+              </div>
+            </div>
+
+            <sc-if value="{{showList}}" hint-placeholder-val="{{ true }}">
+              <div class="wl-hotels" key="{{listKey}}">
+                <sc-for list="{{hotels}}" as="h" hint-placeholder-count="4">
+                  <article class="wl-hotel">
+                    <div class="wl-hotel-media">
+                      <div class="ph" data-photo="{{h.ph}}"><div class="ph-in"><span class="ph-ic"><span class="i i-hotel"></span></span><span class="ph-cap">{{h.phCap}}</span><span class="ph-cr">Photo from the hotel provider</span></div></div>
+                      <span class="v-sample">Sample</span>
+                      <button class="wl-hotel-fav" type="button" aria-label="Save hotel"><span class="i i-heart"></span></button>
+                      <div class="wl-hotel-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                    </div>
+                    <div class="wl-hotel-body">
+                      <div class="flex items-center gap-2 flex-wrap"><span class="wl-stars" aria-label="{{h.starsAria}}"><sc-for list="{{h.starL}}" as="s" hint-placeholder-count="4"><span class="i i-star-fill"></span></sc-for></span><sc-if value="{{h.deal}}" hint-placeholder-val="{{ false }}"><span class="wl-tag is-good"><span class="i i-badge-percent"></span>{{h.deal}}</span></sc-if></div>
+                      <h3>{{h.name}}</h3>
+                      <div class="wl-hotel-loc"><span class="i i-map-pin"></span>{{h.area}} · {{h.dist}}</div>
+                      <div class="wl-rate"><b>{{h.rate}}</b><span><strong style="color:var(--color-navy-900)">{{h.rateL}}</strong> · {{h.n}} guest ratings</span></div>
+                      <div class="wl-amen"><sc-for list="{{h.amL}}" as="a" hint-placeholder-count="4"><span><span class="{{a.icon}}"></span>{{a.label}}</span></sc-for></div>
+                      <div class="wl-tags"><span class="{{h.freeCls}}"><span class="i i-rotate-ccw"></span>{{h.freeL}}</span><span class="wl-tag"><span class="i i-coffee"></span>{{h.meal}}</span><sc-if value="{{h.left}}" hint-placeholder-val="{{ false }}"><span class="w-seats"><span class="i i-bed"></span>{{h.left}}</span></sc-if></div>
+                    </div>
+                    <div class="wl-hotel-side">
+                      <div class="wl-hotel-price"><div class="wl-pricebox"><sc-if value="{{h.was}}" hint-placeholder-val="{{ false }}"><s>{{h.was}}</s></sc-if><b>{{h.totalF}}</b><small>2 nights, taxes included · {{h.nightF}} a night</small></div></div>
+                      <button class="w-btn w-btn-primary" type="button" style="border-radius:999px" onClick="{{h.open}}">See rooms</button>
+                    </div>
+                  </article>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{showMap}}" hint-placeholder-val="{{ false }}">
+              <div class="wl-hsplit">
+                <div class="wl-hminis">
+                  <sc-for list="{{hotels}}" as="h" hint-placeholder-count="4">
+                    <button class="{{h.miniCls}}" type="button" onClick="{{h.pick}}"><div class="ph is-sm" data-photo="{{h.ph}}"><div class="ph-in"><span class="ph-ic"><span class="i i-hotel"></span></span></div></div><span class="min-w-0"><b>{{h.name}}</b><small>{{h.starsTxt}} · {{h.area}}</small><small><strong style="color:var(--color-navy-900)">{{h.rate}}</strong> {{h.rateL}}</small><em>{{h.totalF}}</em></span></button>
+                  </sc-for>
+                </div>
+                <div class="wl-map" role="region" aria-label="Map of hotels in Cox’s Bazar">
+                  <div class="wl-map-water" style="left:-14%;top:-10%;width:46%;height:130%;border-radius:0 60% 40% 0"></div>
+                  <div class="wl-map-road" style="left:30%;top:6%;width:74%;transform:rotate(62deg);transform-origin:left center"></div>
+                  <div class="wl-map-road" style="left:36%;top:20%;width:40%;transform:rotate(-12deg);transform-origin:left center;height:7px"></div>
+                  <span class="wl-map-label is-sea" style="left:6%;top:46%">Bay of Bengal</span>
+                  <span class="wl-map-label" style="left:50%;top:16%">Laboni Point</span>
+                  <span class="wl-map-label" style="left:60%;top:40%">Kolatoli</span>
+                  <span class="wl-map-label" style="left:70%;top:58%">Himchari</span>
+                  <span class="wl-map-label" style="left:62%;top:80%">Inani · Marine Drive</span>
+                  <span class="wl-map-credit">Map preview · live map in the build</span>
+                  <sc-for list="{{hotels}}" as="h" hint-placeholder-count="4"><button class="{{h.pinCls}}" type="button" style="{{h.pinPos}}" aria-label="{{h.pinAria}}" onClick="{{h.pick}}"><span class="i i-hotel i-14"></span>{{h.nightK}}</button></sc-for>
+                  <button class="wl-map-list w-btn w-btn-sm w-btn-white" type="button" style="border-radius:999px;box-shadow:var(--shadow-md)" onClick="{{toList}}"><span class="i i-list"></span>Show list</button>
+                  <div class="wl-map-ctrl" aria-hidden="true"><span><span class="i i-plus"></span></span><span><span class="i i-minus"></span></span><span><span class="i i-navigation"></span></span></div>
+                  <sc-if value="{{sel}}" hint-placeholder-val="{{ true }}">
+                    <div class="wl-map-card" key="{{sel.id}}">
+                      <div class="ph is-sm" data-photo="{{sel.ph}}"><div class="ph-in"><span class="ph-ic"><span class="i i-hotel"></span></span><span class="ph-cap">{{sel.phCap}}</span></div></div>
+                      <div class="wl-map-card-body"><span class="wl-stars"><sc-for list="{{sel.starL}}" as="s" hint-placeholder-count="4"><span class="i i-star-fill"></span></sc-for></span><b>{{sel.name}}</b><div class="wl-rate"><b>{{sel.rate}}</b><span>{{sel.rateL}}</span></div><div class="flex items-center justify-between gap-2"><span class="wl-pricebox"><b style="font-size:18px">{{sel.totalF}}</b><small>2 nights</small></span><button class="w-btn w-btn-primary" type="button" onClick="{{sel.open}}">See rooms</button></div></div>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{noHotels}}" hint-placeholder-val="{{ false }}">
+              <div class="wl-empty"><span class="w-tile"><span class="i i-search-x"></span></span><h2 class="v-h3">No hotels match these filters</h2><p>Clear a filter or ask an expert. They can book hotels that are not listed online.</p><div class="flex flex-wrap justify-center gap-2"><button class="w-btn w-btn-secondary" type="button" onClick="{{clearF}}"><span class="i i-rotate-ccw"></span>Clear filters</button><a class="w-btn w-btn-primary" href="{{L.Hotels}}"><span class="i i-headset"></span>Ask an expert</a></div></div>
+            </sc-if>
+            <div class="w-helpcard-m v-helpm">
+              <span class="w-tile"><span class="i i-headset"></span></span>
+              <div class="min-w-0" style="flex:1"><b class="text-navy text-15">Need a group or a long stay?</b><div class="text-13 text-muted">An expert gets you a better rate · 01823-232241</div></div>
+              <a class="w-btn w-btn-sm w-btn-wa" href="https://wa.me/8801823232241" aria-label="WhatsApp a travel expert"><span class="i i-whatsapp-fill"></span></a>
+            </div>
+          </div>
+
+          <aside class="w-aside v-aside" aria-label="Help">
+            <div class="w-helpcard">
+              <div class="w-helpcard-ribbon"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hhr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"></stop><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"></stop></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#hhr)"></path></svg></div>
+              <span class="{{hours.clsDark}}" style="align-self:flex-start">{{hours.label}}</span>
+              <h3 class="v-h3" style="color:#fff">Group, event or long stay?</h3>
+              <p>Ten rooms or more, a wedding block or a month in Cox’s Bazar: an expert gets a better rate than the website.</p>
+              <a class="w-btn w-btn-white" href="tel:+8801823232241"><span class="i i-phone"></span>01823-232241</a>
+              <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20I%27m%20looking%20at%20hotels%20in%20Cox%27s%20Bazar"><span class="i i-whatsapp-fill"></span>WhatsApp</a>
+            </div>
+            <div class="v-whylist">
+              <b>Booking here</b>
+              <span><span class="i i-badge-check"></span>Rate checked again before you pay</span>
+              <span><span class="i i-rotate-ccw"></span>Free cancellation is marked on every room</span>
+              <span><span class="i i-receipt"></span>Voucher by email and SMS</span>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isDetail}}" hint-placeholder-val="{{ false }}">
+        <div class="flex flex-col gap-5 wl-hdetail" style="margin-top:10px">
+          <div class="wl-hgal">
+            <sc-for list="{{gal}}" as="g" hint-placeholder-count="5"><div><div class="ph" data-photo="{{g.ph}}"><div class="ph-in"><span class="ph-ic"><span class="{{g.icon}}"></span></span><span class="ph-cap">{{g.cap}}</span><span class="ph-cr">Photo from the hotel provider</span></div></div><sc-if value="{{g.more}}" hint-placeholder-val="{{ false }}"><button class="wl-hgal-more" type="button"><span class="i i-images"></span>All 32 photos</button></sc-if><sc-if value="{{g.first}}" hint-placeholder-val="{{ false }}"><button class="wl-hgal-count" type="button" aria-label="See all 32 photos"><span class="i i-images"></span>1 / 32</button></sc-if></div></sc-for>
+          </div>
+          <div class="wl-hdet">
+            <div class="flex flex-col gap-6 min-w-0">
+              <div class="wl-htitle">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap"><span class="wl-stars" aria-label="{{H.starsAria}}"><sc-for list="{{H.starL}}" as="s" hint-placeholder-count="5"><span class="i i-star-fill"></span></sc-for></span><span class="v-sample" style="margin:0">Sample hotel</span></div>
+                  <h1>{{H.name}}</h1>
+                  <div class="wl-hotel-loc" style="margin-top:8px"><span class="i i-map-pin"></span>{{H.addr}} · <button class="v-link" type="button" style="min-height:0" onClick="{{toMap}}">Show on map</button></div>
+                </div>
+                <div class="flex flex-col items-end gap-2"><div class="wl-rate"><b>{{H.rate}}</b><span><strong style="color:var(--color-navy-900)">{{H.rateL}}</strong><br>{{H.n}} guest ratings</span></div><div class="wl-htitle-acts"><button class="v-iconbtn" type="button" aria-label="Save"><span class="i i-heart"></span></button><button class="v-iconbtn" type="button" aria-label="Share"><span class="i i-share-2"></span></button></div></div>
+              </div>
+              <nav class="wl-anchors" aria-label="On this page"><a class="is-on" href="#rooms">Rooms</a><a href="#overview">Overview</a><a href="#amenities">Amenities</a><a href="#policies">Policies</a><a href="#location">Location</a></nav>
+
+              <section class="wl-sec" id="rooms" aria-labelledby="rooms-t">
+                <div class="flex items-end justify-between gap-3 flex-wrap"><h2 id="rooms-t" style="font:800 22px/1.2 var(--font-display);color:var(--color-navy-900)">Choose your room</h2><span class="wl-live">Live rates · 14 to 16 Nov, 2 adults</span></div>
+                <div class="wl-rooms">
+                  <sc-for list="{{rooms}}" as="r" hint-placeholder-count="3">
+                    <div class="wl-room">
+                      <div class="wl-room-info">
+                        <div class="ph is-sm" data-photo="{{r.ph}}"><div class="ph-in"><span class="ph-ic"><span class="i i-bed"></span></span><span class="ph-cap">{{r.name}}</span></div></div>
+                        <h3>{{r.name}}</h3>
+                        <div class="wl-room-facts"><span><span class="i i-maximize-2"></span>{{r.size}}</span><span><span class="i i-bed"></span>{{r.bed}}</span><span><span class="i i-users"></span>{{r.guests}}</span><span><span class="i i-eye"></span>{{r.view}}</span></div>
+                        <button class="v-link" type="button" style="min-height:0;align-self:flex-start">Room details and photos<span class="i i-chevron-right"></span></button>
+                      </div>
+                      <div class="wl-plans">
+                        <sc-for list="{{r.plans}}" as="p" hint-placeholder-count="2">
+                          <div class="{{p.cls}}">
+                            <div class="min-w-0"><b>{{p.name}}</b><small>{{p.meal}}</small></div>
+                            <div class="{{p.cancelCls}}"><span class="{{p.cancelIcon}}"></span><span>{{p.cancel}}</span></div>
+                            <div class="wl-pricebox"><b>{{p.totalF}}</b><small>2 nights, taxes included</small></div>
+                            <button class="{{p.btnCls}}" type="button" onClick="{{p.go}}">{{p.btn}}</button>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </section>
+
+              <section class="wl-sec" id="overview" aria-labelledby="ov-t">
+                <h2 id="ov-t">About this hotel</h2>
+                <p>{{H.about}}</p>
+                <div class="wl-hfacts"><span class="wl-tag"><span class="i i-clock"></span>Check-in from 14:00</span><span class="wl-tag"><span class="i i-clock-3"></span>Check-out until 12:00</span><span class="wl-tag"><span class="i i-building-2"></span>{{H.rooms}} rooms</span><span class="wl-tag"><span class="i i-languages"></span>Bangla, English</span></div>
+              </section>
+
+              <section class="wl-sec" id="amenities" aria-labelledby="am-t">
+                <h2 id="am-t">Amenities</h2>
+                <div class="wl-amengrid"><sc-for list="{{amenAll}}" as="a" hint-placeholder-count="8"><span><span class="{{a.icon}}"></span>{{a.label}}</span></sc-for></div>
+              </section>
+
+              <section class="wl-sec" id="policies" aria-labelledby="po-t">
+                <h2 id="po-t">Policies</h2>
+                <div class="wl-rules">
+                  <div class="wl-rule"><span class="w-tile"><span class="i i-key-round"></span></span><div><b>Check-in and check-out</b><small>Check-in from 14:00, check-out until 12:00. Early check-in on request.</small></div><em>14:00 / 12:00</em></div>
+                  <div class="wl-rule"><span class="w-tile"><span class="i i-users"></span></span><div><b>Children and extra beds</b><small>Children up to 5 stay free in existing beds. Extra bed on request.</small></div><em>৳2,500 a night</em></div>
+                  <div class="wl-rule"><span class="w-tile"><span class="i i-passport"></span></span><div><b>ID at check-in</b><small>Every adult shows a national ID card or passport.</small></div><em class="is-ok">Required</em></div>
+                  <div class="wl-rule"><span class="w-tile"><span class="i i-ban"></span></span><div><b>Pets and smoking</b><small>Pets are not allowed. Smoking only in marked outdoor areas.</small></div><em class="is-no">Not allowed</em></div>
+                  <div class="wl-rule"><span class="w-tile"><span class="i i-rotate-ccw"></span></span><div><b>Cancellation</b><small>Set per rate. It is shown on every room above and on your voucher.</small></div><em>Per rate</em></div>
+                </div>
+              </section>
+
+              <section class="wl-sec" id="location" aria-labelledby="lo-t">
+                <h2 id="lo-t">Location</h2>
+                <div class="wl-map" style="min-height:300px">
+                  <div class="wl-map-water" style="left:-14%;top:-10%;width:46%;height:130%;border-radius:0 60% 40% 0"></div>
+                  <div class="wl-map-road" style="left:30%;top:6%;width:74%;transform:rotate(62deg);transform-origin:left center"></div>
+                  <span class="wl-map-label is-sea" style="left:6%;top:46%">Bay of Bengal</span>
+                  <span class="wl-map-label" style="left:52%;top:30%">{{H.area}}</span>
+                  <span class="wl-pin is-on" style="left:46%;top:58%"><span class="i i-hotel i-14"></span>{{H.short}}</span>
+                  <span class="wl-map-credit">Map preview · live map in the build</span>
+                </div>
+                <div class="wl-hfacts"><span class="wl-tag"><span class="i i-umbrella"></span>{{H.dist}}</span><span class="wl-tag"><span class="i i-plane-landing"></span>Cox’s Bazar Airport · 4.5 km</span><span class="wl-tag"><span class="i i-bus"></span>Kolatoli bus stand · 1.2 km</span></div>
+              </section>
+            </div>
+
+            <aside class="wl-sum" aria-label="Your stay">
+              <h3>Your stay</h3>
+              <div class="wl-sum-flight">
+                <b style="font:800 16px/1.25 var(--font-display);color:var(--color-navy-900)">{{H.name}}</b>
+                <div class="text-13 text-muted">Sat, 14 Nov to Mon, 16 Nov 2026 · 2 nights · 2 adults</div>
+                <div class="wl-tags"><span class="wl-tag"><span class="i i-bed"></span>{{pickRoom}}</span><span class="wl-tag"><span class="i i-coffee"></span>{{pickPlan.name}}</span></div>
+                <div class="{{pickPlan.cancelCls}}"><span class="{{pickPlan.cancelIcon}}"></span><span>{{pickPlan.cancel}}</span></div>
+              </div>
+              <table class="wl-bk"><tbody>
+                <tr><td>Room, 2 nights</td><td>{{bk.base}}</td></tr>
+                <tr><td>VAT 15% and service charge 10%</td><td>{{bk.tax}}</td></tr>
+                <tr class="is-total"><td>Total</td><td>{{bk.total}}</td></tr>
+              </tbody></table>
+              <button class="w-btn w-btn-primary" type="button" style="border-radius:999px;height:50px" onClick="{{toBook}}">Book this room<span class="i i-arrow-right"></span></button>
+              <p class="text-13 text-muted">Nothing is charged yet. Sample fixture data for Phase 2.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="wl-hbar"><div class="wl-pricebox"><b>{{bk.total}}</b><small>{{pickPlan.name}} · 2 nights</small></div><button class="w-btn w-btn-primary" type="button" onClick="{{toBook}}">Book this room</button></div>
+      </sc-if>
+
+      <sc-if value="{{isBook}}" hint-placeholder-val="{{ false }}">
+        <div class="wl-book">
+          <div class="flex flex-col gap-4 min-w-0">
+            <div class="wl-steps" aria-label="Booking steps"><span class="wl-step is-done"><i>✓</i><b>Room</b></span><span class="wl-step-sep"></span><span class="wl-step is-now"><i>2</i><b>Guest and payment</b></span><span class="wl-step-sep"></span><span class="wl-step"><i>3</i><b>Voucher</b></span></div>
+            <div class="wl-recheck"><span class="i i-circle-check"></span><span>Rate checked with the hotel 10 seconds ago: <b>{{bk.total}}</b> for 2 nights. Still available.</span></div>
+            <section class="wl-card" aria-labelledby="g-t">
+              <div class="wl-card-head"><h2 id="g-t"><i>1</i>Lead guest</h2><span class="text-13 text-muted">The name the hotel will check in</span></div>
+              <div class="wl-card-body">
+                <div class="w-grid-2">
+                  <div class="w-field"><label class="w-label" for="g-n">Full name <span class="w-req">*</span></label><input class="w-input" id="g-n" value="Rahim Uddin" autocomplete="name"><span class="v-hint">As on the ID you will show at check-in.</span></div>
+                  <label class="w-field"><span class="w-label">Nationality <span class="w-req">*</span></span><span class="w-select"><select class="w-input"><option>Bangladesh</option><option>India</option><option>Other</option></select></span></label>
+                </div>
+                <div class="w-grid-2">
+                  <div class="w-field"><label class="w-label" for="g-ph">Mobile number <span class="w-req">*</span></label><div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880<span class="i i-chevron-down"></span></button><input id="g-ph" inputmode="tel" value="1712-345678"></div></div>
+                  <div class="w-field"><label class="w-label" for="g-em">Email <span class="w-req">*</span></label><input class="w-input" id="g-em" type="email" value="rahim.uddin@example.com"></div>
+                </div>
+                <div class="w-grid-2">
+                  <label class="w-field"><span class="w-label">Arrival time <span class="w-opt">(optional)</span></span><span class="w-select"><select class="w-input"><option>I don’t know yet</option><option selected>14:00 to 16:00</option><option>16:00 to 18:00</option><option>After 18:00</option></select></span></label>
+                  <div class="w-field"><label class="w-label" for="g-rq">Special requests <span class="w-opt">(optional)</span></label><input class="w-input" id="g-rq" placeholder="e.g. high floor, twin beds" value="High floor if possible"></div>
+                </div>
+                <p class="w-note"><span class="i i-info"></span><span>Requests are sent to the hotel but cannot be guaranteed.</span></p>
+              </div>
+            </section>
+            <section class="wl-card" aria-labelledby="hp-t">
+              <div class="wl-card-head"><h2 id="hp-t"><i>2</i>How would you like to pay?</h2><span class="ww-codbadge" style="background:var(--color-electric-50);color:var(--color-brand-700)"><span class="i i-lock"></span>Secure payment</span></div>
+              <div class="wl-card-body">
+                <div class="wl-paygrid" role="radiogroup" aria-label="Payment method">
+                  <sc-for list="{{pays}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="wl-paylogo" style="{{o.pc}}">{{o.logo}}</span><span><b>{{o.title}}</b><small>{{o.sub}}</small></span><span class="w-radio"></span></button></sc-for>
+                </div>
+                <button class="{{agreeCls}}" type="button" role="checkbox" aria-checked="{{agree}}" onClick="{{toggleAgree}}"><span class="v-cbox"></span><span>I agree to the hotel’s policies and this rate’s cancellation terms: {{pickPlan.cancelLower}}.</span></button>
+                <sc-if value="{{agreeErr}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>Tick the box to agree to the cancellation terms.</span></sc-if>
+              </div>
+            </section>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <button class="v-link" type="button" style="min-height:44px" onClick="{{toDetail}}"><span class="i i-arrow-left"></span>Change room</button>
+              <button class="w-btn w-btn-primary wl-paybtn" type="button" style="padding:0 28px" onClick="{{payNow}}"><sc-if value="{{proc}}" hint-placeholder-val="{{ false }}"><span class="wl-proc"><span class="ww-spin"></span>Confirming with the hotel…</span></sc-if><sc-if value="{{notProc}}" hint-placeholder-val="{{ true }}"><span class="wl-proc"><span class="i i-lock"></span>Pay {{bk.total}}</span></sc-if></button>
+            </div>
+          </div>
+          <aside class="wl-sum" aria-label="Your stay">
+            <h3>Your stay</h3>
+            <div class="wl-sum-flight">
+              <div class="ph is-sm" data-photo="{{H.ph}}" style="height:120px;border-radius:14px"><div class="ph-in"><span class="ph-ic"><span class="i i-hotel"></span></span><span class="ph-cap">{{H.phCap}}</span></div></div>
+              <b style="font:800 16px/1.25 var(--font-display);color:var(--color-navy-900)">{{H.name}}</b>
+              <div class="text-13 text-muted">Sat, 14 Nov to Mon, 16 Nov 2026 · 2 nights · 2 adults</div>
+              <div class="wl-tags"><span class="wl-tag"><span class="i i-bed"></span>{{pickRoom}}</span><span class="wl-tag"><span class="i i-coffee"></span>{{pickPlan.name}}</span></div>
+              <div class="{{pickPlan.cancelCls}}"><span class="{{pickPlan.cancelIcon}}"></span><span>{{pickPlan.cancel}}</span></div>
+            </div>
+            <table class="wl-bk"><tbody>
+              <tr><td>Room, 2 nights</td><td>{{bk.base}}</td></tr>
+              <tr><td>VAT 15% and service charge 10%</td><td>{{bk.tax}}</td></tr>
+              <tr class="is-total"><td>Total</td><td>{{bk.total}}</td></tr>
+            </tbody></table>
+            <p class="text-13 text-muted">Paid in full now. Nothing more to pay at the hotel except extras you order there.</p>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+        <section class="w-success" style="padding-block:28px 64px" aria-live="polite">
+          <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"></circle><path d="M28 45 l11 11 l22 -24"></path></svg>
+          <span class="v-eyebrow" style="justify-content:center">Booking confirmed</span>
+          <h1 class="v-h2" style="max-width:640px">Your room in Cox’s Bazar is booked.</h1>
+          <div class="wl-voucher">
+            <div class="wl-voucher-head"><div class="min-w-0"><span class="wl-stars"><sc-for list="{{H.starL}}" as="s" hint-placeholder-count="5"><span class="i i-star-fill"></span></sc-for></span><b style="display:block;margin-top:4px">{{H.name}}</b><span class="text-13 text-muted">{{H.addr}}</span></div><span class="wl-tag is-good"><span class="i i-circle-check"></span>Confirmed</span></div>
+            <div class="wl-voucher-grid">
+              <div><small>Check-in</small><b>Sat, 14 Nov 2026</b><span class="text-13 text-muted">from 14:00</span></div>
+              <div><small>Check-out</small><b>Mon, 16 Nov 2026</b><span class="text-13 text-muted">until 12:00</span></div>
+              <div><small>Guests</small><b>2 adults · 1 room</b><span class="text-13 text-muted">Lead: Rahim Uddin</span></div>
+              <div><small>Room</small><b>{{pickRoom}}</b><span class="text-13 text-muted">{{pickPlan.name}}</span></div>
+              <div><small>Booking</small><b>BKG-261008-0012</b><span class="text-13 text-muted">Waafa reference</span></div>
+              <div><small>Hotel confirmation</small><b>58312904</b><span class="text-13 text-muted">Show at the desk</span></div>
+            </div>
+            <div class="{{pickPlan.cancelCls}}" style="font-size:13.5px"><span class="{{pickPlan.cancelIcon}}"></span><span>{{pickPlan.cancel}}</span></div>
+            <div class="wl-voucher-foot"><span>Paid with SSLCommerz · VAT and service charge included</span><b>{{bk.total}}</b></div>
+          </div>
+          <div class="wl-manage">
+            <a href="#"><span class="i i-file-down"></span>Download voucher<small>PDF, also emailed</small></a>
+            <a href="#"><span class="i i-navigation"></span>Directions<small>Open in maps</small></a>
+            <a href="#"><span class="i i-circle-x"></span>Request cancellation<small>{{pickPlan.shortCancel}}</small></a>
+            <a href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20booking%20BKG-261008-0012"><span class="i i-whatsapp"></span>Ask on WhatsApp<small>Quote BKG-261008-0012</small></a>
+          </div>
+          <p class="w-note" style="justify-content:center"><span class="i i-mail-check"></span><span>Voucher sent to rahim.uddin@example.com and by SMS to 01712-345678.</span></p>
+        </section>
+      </sc-if>
+    </div>
+  </main>
+
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <sc-if value="{{isResults}}" hint-placeholder-val="{{ true }}"><dc-import name="TabBar" m="{{m}}" active="none" style="display:contents" hint-size="390px,64px"></dc-import></sc-if>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"step":{"editor":"enum","options":["results","detail","book","done"],"default":"results"},"view":{"editor":"enum","options":["list","map"],"default":"list"},"filters":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Hotels','HotelsLive','Refund'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const fmt = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const AM = { pool: ['i i-waves', 'Pool'], wifi: ['i i-wifi', 'Free Wi-Fi'], parking: ['i i-car', 'Parking'], restaurant: ['i i-utensils', 'Restaurant'], gym: ['i i-dumbbell', 'Gym'], spa: ['i i-sparkles', 'Spa'], shuttle: ['i i-bus', 'Airport shuttle'], family: ['i i-users', 'Family rooms'], beach: ['i i-umbrella', 'Beach access'] };
+    // fixture HotelOffer list (Phase 2)
+    const HT = [
+      { id: 'h2', name: 'Kolatoli Bay Resort', short: 'Kolatoli Bay', stars: 5, area: 'Kolatoli', dist: 'Beachfront, 1 min to the sand', addr: 'Kolatoli Road, Cox’s Bazar 4700', rate: 9.1, rateL: 'Superb', n: '860', night: 7900, was: 0, free: true, meal: 'Breakfast included', mealK: 'bf', am: ['pool', 'beach', 'wifi', 'spa', 'gym'], ph: 'hotel', phCap: 'Resort pool facing the sea', x: 45, y: 44, rooms: 148, left: '3 rooms left at this rate',
+        about: 'A beachfront resort on Kolatoli Road with a sea-facing pool, two restaurants and a spa. Most rooms have a balcony; sea-view rooms face west for the sunset. Sugandha and Laboni points are a short rickshaw ride away.' },
+      { id: 'h1', name: 'Laboni Sands Hotel', short: 'Laboni Sands', stars: 4, area: 'Laboni Point', dist: '2 min walk to Laboni Beach', addr: 'Laboni Point, Cox’s Bazar 4700', rate: 8.7, rateL: 'Excellent', n: '1,240', night: 4450, was: 5200, free: true, meal: 'Breakfast included', mealK: 'bf', am: ['pool', 'wifi', 'parking', 'restaurant'], ph: 'hotel-2', phCap: 'Hotel front and lobby', x: 40, y: 20, rooms: 96, left: '',
+        about: 'A modern hotel a short walk from Laboni Beach and the Burmese market, with a rooftop pool and a 24-hour restaurant.' },
+      { id: 'h3', name: 'Sugandha Seaview Suites', short: 'Sugandha', stars: 4, area: 'Sugandha Point', dist: '350 m to the beach', addr: 'Sugandha Point, Cox’s Bazar 4700', rate: 8.2, rateL: 'Very good', n: '2,015', night: 3250, was: 0, free: false, meal: 'Room only', mealK: 'ro', am: ['wifi', 'restaurant', 'family'], ph: 'hotel-3', phCap: 'Suite with sea view', x: 50, y: 31, rooms: 64, left: '2 rooms left',
+        about: 'Suites with kitchenettes near Sugandha Point, popular with families staying a few nights.' },
+      { id: 'h4', name: 'Marine Drive Retreat', short: 'Marine Drive', stars: 5, area: 'Inani, Marine Drive', dist: 'On Inani Beach, 25 km south', addr: 'Marine Drive, Inani, Ukhia', rate: 9.3, rateL: 'Superb', n: '412', night: 10750, was: 12450, free: true, meal: 'Half board', mealK: 'hb', am: ['pool', 'beach', 'spa', 'gym', 'shuttle'], ph: 'hotel-4', phCap: 'Villas along Marine Drive', x: 74, y: 76, rooms: 72, left: '',
+        about: 'A quiet resort on Inani Beach along Marine Drive, with villas, an infinity pool and a free shuttle to Cox’s Bazar town.' },
+      { id: 'h5', name: 'Himchari Hill Lodge', short: 'Himchari', stars: 3, area: 'Himchari', dist: 'Hill view, 12 km south', addr: 'Himchari Road, Cox’s Bazar', rate: 8.0, rateL: 'Very good', n: '318', night: 2100, was: 0, free: true, meal: 'Breakfast included', mealK: 'bf', am: ['wifi', 'parking', 'family'], ph: 'hotel-5', phCap: 'Lodge in the hills', x: 63, y: 62, rooms: 28, left: '',
+        about: 'A small lodge in the Himchari hills, close to the waterfall and the national park.' },
+      { id: 'h6', name: 'Coral Coast Hotel', short: 'Coral Coast', stars: 3, area: 'Kolatoli', dist: '600 m to the beach', addr: 'Kolatoli, Cox’s Bazar 4700', rate: 7.6, rateL: 'Good', n: '954', night: 2600, was: 0, free: false, meal: 'Room only', mealK: 'ro', am: ['wifi', 'restaurant', 'parking'], ph: 'hotel-6', phCap: 'Standard room', x: 57, y: 50, rooms: 54, left: '',
+        about: 'A simple, central hotel in Kolatoli with a restaurant and parking.' }
+    ];
+    const AREAS = ['Kolatoli', 'Laboni Point', 'Sugandha Point', 'Himchari', 'Inani, Marine Drive'];
+    const f0 = { price: 'any', stars: [], rate: 'any', free: false, meal: 'any', ams: [], areas: [] };
+    const fs = Object.assign({}, f0, st.f || {});
+    const setF = patch => this.setState({ f: Object.assign({}, fs, patch) });
+    const tog = (arr, x) => arr.indexOf(x) >= 0 ? arr.filter(y => y !== x) : arr.concat([x]);
+    const PR = [['any', 'Any price', 1e9], ['3', 'Up to ৳3,000', 3000], ['5', 'Up to ৳5,000', 5000], ['8', 'Up to ৳8,000', 8000]];
+    const maxP = (PR.find(x => x[0] === fs.price) || PR[0])[2];
+    const RT = [['any', 'Any rating', 0], ['9', 'Superb 9+', 9], ['8', 'Very good 8+', 8], ['7', 'Good 7+', 7]];
+    const minR = (RT.find(x => x[0] === fs.rate) || RT[0])[2];
+    const pass = (h, skip) => (skip === 'price' || h.night <= maxP) && (!fs.stars.length || fs.stars.indexOf(h.stars) >= 0) && h.rate >= minR && (!fs.free || h.free)
+      && (fs.meal === 'any' || (fs.meal === 'bf' ? h.mealK !== 'ro' : h.mealK === 'hb')) && fs.ams.every(a => h.am.indexOf(a) >= 0) && (skip === 'areas' || !fs.areas.length || fs.areas.indexOf(h.area) >= 0);
+    const sort = st.sort || 'rec';
+    const list = HT.filter(h => pass(h)).sort((a, b) => sort === 'low' ? a.night - b.night : sort === 'rate' ? b.rate - a.rate : sort === 'stars' ? b.stars - a.stars || b.rate - a.rate : 0);
+    const view = st.view || p.view || 'list';
+    const step = st.step || p.step || 'results';
+    const selId = st.sel || 'h2';
+    const hid = st.hid || 'h2';
+    const go = (s, extra) => this.setState(Object.assign({ step: s }, extra || {}));
+    const deco = h => Object.assign({}, h, {
+      rate: h.rate.toFixed(1),
+      starL: Array.from({ length: h.stars }, (_, i) => i), starsAria: h.stars + ' stars', starsTxt: h.stars + '-star',
+      amL: h.am.slice(0, 4).map(a => ({ icon: AM[a][0], label: AM[a][1] })),
+      freeCls: h.free ? 'wl-tag is-good' : 'wl-tag is-warn', freeL: h.free ? 'Free cancellation' : 'Non-refundable rate',
+      totalF: fmt(h.night * 2), nightF: fmt(h.night), nightK: '৳' + (h.night / 1000).toFixed(1).replace('.0', '') + 'k',
+      was: h.was ? fmt(h.was * 2) : '', deal: h.was ? Math.round((1 - h.night / h.was) * 100) + '% off tonight' : '',
+      pinCls: 'wl-pin' + (h.id === selId ? ' is-on' : ''), pinPos: 'left:' + h.x + '%;top:' + h.y + '%', pinAria: h.name + ', ' + fmt(h.night * 2) + ' for 2 nights',
+      miniCls: 'wl-hmini' + (h.id === selId ? ' is-on' : ''),
+      open: () => go('detail', { hid: h.id, plan: '' }), pick: () => this.setState({ sel: h.id })
+    });
+    const hotels = list.map(deco);
+    const selRaw = list.find(h => h.id === selId) || list[0];
+    const sel = selRaw ? deco(selRaw) : null;
+    const fOpen = st.fOpen !== undefined ? st.fOpen : !!p.filters;
+    const fl = {
+      prices: PR.map(x => ({ label: x[1], on: fs.price === x[0], n: HT.filter(h => pass(h, 'price') && h.night <= x[2]).length, cls: 'v-opt' + (fs.price === x[0] ? ' is-on' : ''), go: () => setF({ price: x[0] }) })),
+      stars: [5, 4, 3].map(n => ({ label: n, on: fs.stars.indexOf(n) >= 0, cls: 'w-chip' + (fs.stars.indexOf(n) >= 0 ? ' is-active' : ''), go: () => setF({ stars: tog(fs.stars, n) }) })),
+      rates: RT.map(x => ({ label: x[1], on: fs.rate === x[0], cls: 'v-opt' + (fs.rate === x[0] ? ' is-on' : ''), go: () => setF({ rate: x[0] }) })),
+      free: fs.free, freeCls: 'w-switch' + (fs.free ? ' is-on' : ''), toggleFree: () => setF({ free: !fs.free }),
+      meals: [['any', 'Any meal plan'], ['bf', 'Breakfast included'], ['hb', 'Half board']].map(x => ({ label: x[1], on: fs.meal === x[0], cls: 'v-opt' + (fs.meal === x[0] ? ' is-on' : ''), go: () => setF({ meal: x[0] }) })),
+      ams: ['pool', 'beach', 'wifi', 'parking', 'gym', 'spa', 'shuttle', 'family'].map(a => ({ icon: AM[a][0], label: AM[a][1], on: fs.ams.indexOf(a) >= 0, cls: 'v-checkrow' + (fs.ams.indexOf(a) >= 0 ? ' is-on' : ''), go: () => setF({ ams: tog(fs.ams, a) }) })),
+      areas: AREAS.map(a => ({ label: a, on: fs.areas.indexOf(a) >= 0, n: HT.filter(h => h.area === a && pass(h, 'areas')).length, cls: 'v-checkrow' + (fs.areas.indexOf(a) >= 0 ? ' is-on' : ''), go: () => setF({ areas: tog(fs.areas, a) }) }))
+    };
+    const fCount = (fs.price !== 'any' ? 1 : 0) + fs.stars.length + (fs.rate !== 'any' ? 1 : 0) + (fs.free ? 1 : 0) + (fs.meal !== 'any' ? 1 : 0) + fs.ams.length + fs.areas.length;
+    const quick = [['Free cancellation', fs.free, () => setF({ free: !fs.free })], ['Breakfast', fs.meal === 'bf', () => setF({ meal: fs.meal === 'bf' ? 'any' : 'bf' })], ['5 stars', fs.stars.indexOf(5) >= 0, () => setF({ stars: tog(fs.stars, 5) })], ['Pool', fs.ams.indexOf('pool') >= 0, () => setF({ ams: tog(fs.ams, 'pool') })]].map(q => ({ label: q[0], on: !!q[1], cls: 'w-chip' + (q[1] ? ' is-on' : ''), go: q[2] }));
+    const SORTS = [['rec', 'Sort: Recommended'], ['low', 'Sort: Lowest price'], ['rate', 'Sort: Guest rating'], ['stars', 'Sort: Stars']];
+    // detail
+    const Hraw = HT.find(h => h.id === hid) || HT[0];
+    const H = deco(Hraw);
+    const k = Hraw.night / 7900;
+    const r100 = n => Math.round(n / 100) * 100;
+    const ROOMS = [
+      { id: 'r1', name: 'Deluxe King, hill view', size: '32 m²', bed: '1 king bed', guests: 'Sleeps 2', view: 'Hill view, no balcony', ph: 'hotel-room', plans: [
+        { id: 'p1', name: 'Room only', meal: 'No meals', cancel: 'Non-refundable', ok: false, night: r100(6950 * k) },
+        { id: 'p2', name: 'Breakfast included', meal: 'Breakfast for 2', cancel: 'Free cancellation until Thu, 12 Nov', ok: true, night: r100(7900 * k) } ] },
+      { id: 'r2', name: 'Premier Twin, sea view', size: '38 m²', bed: '2 single beds', guests: 'Sleeps 2', view: 'Sea view, balcony', ph: 'hotel-sea', plans: [
+        { id: 'p3', name: 'Breakfast included', meal: 'Breakfast for 2', cancel: 'Free cancellation until Thu, 12 Nov', ok: true, night: r100(9450 * k) },
+        { id: 'p4', name: 'Half board', meal: 'Breakfast and dinner for 2', cancel: 'Free cancellation until Thu, 12 Nov', ok: true, night: r100(11200 * k) } ] },
+      { id: 'r3', name: 'Family Suite, sea view', size: '56 m²', bed: '1 king and 2 single beds', guests: 'Sleeps 4', view: 'Sea view, two balconies', ph: 'hotel-suite', plans: [
+        { id: 'p5', name: 'Breakfast included', meal: 'Breakfast for 4', cancel: 'Half the stay is charged if cancelled after Tue, 10 Nov', ok: false, night: r100(13750 * k) } ] }
+    ];
+    const planId = st.plan || 'p2';
+    let pickRoom = ROOMS[0].name, pickP = ROOMS[0].plans[1];
+    ROOMS.forEach(r => r.plans.forEach(pl => { if (pl.id === planId) { pickRoom = r.name; pickP = pl; } }));
+    const decoPlan = pl => ({ name: pl.name, cancel: pl.cancel, cancelLower: pl.cancel.charAt(0).toLowerCase() + pl.cancel.slice(1), shortCancel: pl.ok ? 'Free until Thu, 12 Nov' : 'Charges apply',
+      cancelCls: 'wl-plan-cancel ' + (pl.ok ? 'is-ok' : 'is-no'), cancelIcon: pl.ok ? 'i i-circle-check' : 'i i-info' });
+    const rooms = ROOMS.map(r => Object.assign({}, r, { plans: r.plans.map(pl => Object.assign(decoPlan(pl), {
+      meal: pl.meal, totalF: fmt(pl.night * 2), cls: 'wl-plan' + (pl.id === planId ? ' is-on' : ''),
+      btn: pl.id === planId ? 'Selected' : 'Select', btnCls: 'w-btn ' + (pl.id === planId ? 'w-btn-secondary' : 'w-btn-primary'),
+      go: () => this.setState({ plan: pl.id }) })) }));
+    const pickPlan = decoPlan(pickP);
+    const total = pickP.night * 2;
+    const base = Math.round(total / 1.25 / 10) * 10;
+    const amenAll = ['pool', 'beach', 'wifi', 'parking', 'restaurant', 'gym', 'spa', 'shuttle', 'family'].map(a => ({ icon: AM[a][0], label: AM[a][1] }))
+      .concat([{ icon: 'i i-snowflake', label: 'Air conditioning' }, { icon: 'i i-coffee', label: 'Breakfast buffet' }, { icon: 'i i-headset', label: '24-hour front desk' }]);
+    const gal = [[H.ph, 'i i-waves', H.phCap], ['hotel-room', 'i i-bed', 'Deluxe room'], ['hotel-sea', 'i i-sunset', 'Sea-view balcony'], ['hotel-dining', 'i i-utensils', 'Restaurant'], ['hotel-lobby', 'i i-building-2', 'Lobby']]
+      .map((g, i) => ({ ph: g[0], icon: g[1], cap: g[2], more: i === 4, first: i === 0 }));
+    const PAYS = [['ssl', 'SSLCommerz', 'Cards and mobile banking', 'Visa, Mastercard, Amex and more', '--pc:#00185B'], ['bkash', 'bKash', 'bKash', 'Pay from your bKash account', '--pc:#B5135E'], ['nagad', 'Nagad', 'Nagad', 'Pay from your Nagad account', '--pc:#C2410C'], ['emi', 'EMI', 'Card EMI', '3 to 12 months on partner bank cards', '--pc:#003FBE']];
+    const pm = st.pm || 'ssl';
+    const agree = !!st.agree;
+    const isResults = step === 'results', isDetail = step === 'detail', isBook = step === 'book', isDone = step === 'done';
+    const hours = (() => { const d = new Date(Date.now() + 6 * 3600e3); const dow = d.getUTCDay(), mins = d.getUTCHours() * 60 + d.getUTCMinutes(); let open = false, label; if (dow !== 5 && mins >= 600 && mins < 1080) { open = true; label = 'Open now · until 6 pm'; } else if (dow !== 5 && mins < 600) label = 'Closed · opens at 10 am'; else if (dow === 4 || dow === 5) label = 'Closed · opens Saturday at 10 am'; else label = 'Closed · opens tomorrow at 10 am'; return { label, clsDark: 'v-hours is-sm on-dark ' + (open ? 'is-open' : 'is-closed') }; })();
+    return {
+      L, m: !!p.m, hours, isResults, notResults: !isResults, isDetail, isBook, isDone,
+      mainCls: 'w-main' + (isDetail ? ' wl-hpad' : ''),
+      resCls: 'w-results' + (view === 'map' ? ' wl-mapmode' : ''), hotels, sel, showList: view === 'list' && hotels.length > 0, showMap: view === 'map' && hotels.length > 0, noHotels: hotels.length === 0,
+      isList: view === 'list', isMap: view === 'map', vt: { list: view === 'list' ? 'is-on' : '', map: view === 'map' ? 'is-on' : '' },
+      toList: () => this.setState({ view: 'list', step: 'results' }), toMap: () => this.setState({ view: 'map', step: 'results' }),
+      listKey: sort + '-' + fCount, countLabel: hotels.length === 1 ? '1 hotel' : hotels.length + ' hotels',
+      sortV: sort, sorts: SORTS.map(x => ({ v: x[0], label: x[1] })), onSort: e => this.setState({ sort: e && e.target ? e.target.value : 'rec' }),
+      fl, fCount, quick, fChipCls: 'w-chip' + (fCount ? ' is-on' : ''),
+      railCls: 'w-rail v-rail wl-frail' + (fOpen ? ' is-open' : ''), fScrimCls: 'wl-fscrim' + (fOpen ? ' is-open' : ''),
+      openF: () => this.setState({ fOpen: true }), closeF: () => this.setState({ fOpen: false }), clearF: () => this.setState({ f: f0 }),
+      H, gal, rooms, amenAll, pickRoom, pickPlan,
+      bk: { base: fmt(base), tax: fmt(total - base), total: fmt(total) },
+      toResults: () => go('results'), toDetail: () => go('detail'), toBook: () => go('book'),
+      pays: PAYS.map(x => ({ logo: x[1], title: x[2], sub: x[3], pc: x[4], on: pm === x[0], cls: 'wl-payopt' + (pm === x[0] ? ' is-on' : ''), go: () => this.setState({ pm: x[0] }) })),
+      agree, agreeCls: 'v-checkrow v-consent' + (agree ? ' is-on' : ''), toggleAgree: () => this.setState({ agree: !agree, agreeErr: false }), agreeErr: !!st.agreeErr,
+      proc: !!st.proc, notProc: !st.proc,
+      payNow: () => { if (!agree) { this.setState({ agreeErr: true }); return; } this.setState({ proc: true }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ proc: false, step: 'done' }), 1400); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · collections and store home</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="collections" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Waafas World</span></div>
+          <h1 class="a-title">Collections and store home</h1>
+          <p>Collections are picked by hand or filled by rules. They feed the store home rows and campaign pages. Rows hide by themselves when empty.</p>
+        </div>
+        <div class="a-actions"><button class="a-btn a-btn-outline" type="button"><span class="i i-plus"></span>New collection</button><button class="a-btn a-btn-primary" type="button" onClick="{{save}}"><span class="i i-save"></span>Save</button></div>
+      </div>
+      <div class="a-split is-left">
+        <div class="a-stack">
+          <section class="a-card" aria-labelledby="cl-t">
+            <div class="a-card-head"><h3 id="cl-t">Collections</h3><span class="a-chip">7</span></div>
+            <div class="a-card-body" style="padding:8px"><div class="a-files"><sc-for list="{{cols}}" as="c" hint-placeholder-count="7"><button class="{{c.cls}}" type="button" onClick="{{c.go}}"><span class="{{c.icon}}"></span><span class="min-w-0" style="flex:1"><b>{{c.name}}</b><small class="block text-12 a-mute">{{c.sub}}</small></span><span class="{{c.chip}}">{{c.type}}</span></button></sc-for></div></div>
+          </section>
+          <section class="a-card" aria-labelledby="hr-t">
+            <div class="a-card-head"><div><h3 id="hr-t">Store home rows</h3><p>Drag to reorder</p></div><a class="a-link text-13" href="Shop.dc.html">Preview</a></div>
+            <div class="a-card-body" style="padding:10px"><div class="a-drag"><sc-for list="{{rowsHome}}" as="r" hint-placeholder-count="11"><div class="{{r.cls}}" style="padding:8px 10px"><span class="i i-grip-vertical grip"></span><span class="min-w-0"><b style="font-size:13px">{{r.name}}</b><small>{{r.sub}}</small></span><span class="a-push"><button class="{{r.sw}}" type="button" role="switch" aria-checked="{{r.on}}" aria-label="{{r.aria}}" onClick="{{r.go}}"></button></span></div></sc-for></div></div>
+          </section>
+        </div>
+
+        <div class="a-stack">
+          <section class="a-card" aria-labelledby="ce-t">
+            <div class="a-card-head"><div><h3 id="ce-t">{{C.name}}</h3><p>/shop/collection/{{C.slug}} · {{C.count}} products match now</p></div><div class="a-seg"><button class="{{tt.hand}}" type="button" onClick="{{toHand}}"><span class="i i-list-checks"></span>Picked by hand</button><button class="{{tt.rule}}" type="button" onClick="{{toRule}}"><span class="i i-sliders-horizontal"></span>By rule</button></div></div>
+            <div class="a-card-body flex flex-col gap-4">
+              <div class="a-grid2"><label class="a-field"><span class="a-label">Name</span><input class="a-input" value="{{C.name}}"></label><label class="a-field"><span class="a-label">Sort products by</span><span class="a-sel"><select class="a-input"><option>Best selling</option><option>Price, low to high</option><option>Newest</option><option>Manual order</option></select></span></label></div>
+              <sc-if value="{{isRule}}" hint-placeholder-val="{{ true }}">
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-2 text-13"><span class="a-label" style="margin:0">Products must match</span><div class="a-seg"><button class="is-on" type="button">all conditions</button><button type="button">any condition</button></div></div>
+                  <sc-for list="{{rules}}" as="r" hint-placeholder-count="3"><div class="grid gap-2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) auto;align-items:center"><span class="a-sel"><select class="a-input"><option>{{r.a}}</option></select></span><span class="a-sel"><select class="a-input"><option>{{r.b}}</option></select></span><input class="a-input" value="{{r.c}}"><button class="a-btn a-btn-ghost a-btn-sm a-btn-icon" type="button" aria-label="Remove condition"><span class="i i-x"></span></button></div></sc-for>
+                  <button class="a-add" type="button" style="align-self:flex-start;padding:0 12px"><span class="i i-plus"></span>Add condition</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{isHand}}" hint-placeholder-val="{{ false }}"><div class="a-search"><span class="i i-search"></span><input class="a-input" placeholder="Search products to add"></div></sc-if>
+              <div class="a-grid3">
+                <label class="a-field"><span class="a-label">Starts</span><input class="a-input" value="{{C.start}}"></label>
+                <label class="a-field"><span class="a-label">Ends</span><input class="a-input" value="{{C.end}}" placeholder="Never"></label>
+                <div class="a-field"><span class="a-label">Countdown on the store</span><span class="flex items-center gap-2" style="height:38px"><span class="{{C.cdCls}}"></span><span class="text-13 a-mute">{{C.cdNote}}</span></span></div>
+              </div>
+            </div>
+          </section>
+          <section class="a-card" aria-labelledby="pv-t">
+            <div class="a-card-head"><div><h3 id="pv-t">Matching products</h3><p>First 4 of {{C.count}}, in store order</p></div><a class="a-link text-13" href="ShopDeals.dc.html">Open the collection page</a></div>
+            <div class="a-card-body"><div class="ww-grid" style="grid-template-columns:repeat(4,minmax(0,1fr))"><sc-for list="{{prods}}" as="it" hint-placeholder-count="4"><dc-import name="PCard" p="{{it}}" style="display:contents" hint-size="100%,430px"></dc-import></sc-for></div></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="a-toast" role="status"><span class="i i-circle-check"></span>{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const flash = msg => { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const COLS = [
+      ['u999', 'Under ৳999', 'Rule · 61 products', 'rule', 'i i-tag', 'under-999', 61, 'Always', '', false, [['Price', 'is at most', '৳999'], ['Stock', 'is', 'In stock or low stock'], ['Category', 'is not', 'Printers & Supplies']]],
+      ['deals', 'Deals of the week', 'Rule · ends Sun 11 Oct', 'rule', 'i i-badge-percent', 'deals-of-the-week', 24, 'Mon, 5 Oct, 12:00 am', 'Sun, 11 Oct, 11:59 pm', true, [['Discount', 'is at least', '10%'], ['Stock', 'is', 'In stock']]],
+      ['office', 'Office essentials', 'By hand · 24 products', 'hand', 'i i-lamp-desk', 'office-essentials', 24, 'Always', '', false, []],
+      ['new', 'New arrivals', 'Rule · added in 30 days', 'rule', 'i i-sparkles', 'new-arrivals', 18, 'Always', '', false, [['Added', 'in the last', '30 days']]],
+      ['basics', 'Everyday basics', 'By hand · 22 · Sample', 'hand', 'i i-shirt', 'everyday-basics', 22, 'Always', '', false, []],
+      ['printer', 'Printer supplies', 'Rule · 64 products', 'rule', 'i i-printer', 'printer-supplies', 64, 'Always', '', false, [['Category', 'is', 'Printers & Supplies']]],
+      ['1111', '11.11 deals', 'Scheduled · 11 Nov', 'rule', 'i i-calendar-clock', '11-11-deals', 0, 'Wed, 11 Nov, 12:00 am', 'Wed, 11 Nov, 11:59 pm', true, [['Tag', 'is', '1111']]]
+    ];
+    const sel = st.sel || 'u999';
+    const c0 = COLS.find(c => c[0] === sel) || COLS[0];
+    const type = st.type && st.typeFor === sel ? st.type : c0[3];
+    const H = [['Campaign carousel', '3 banners · Banners'], ['Search', 'Products, brands and categories'], ['Category grid', '6 categories with icons'], ['Featured collections', 'Office essentials, Everyday basics'], ['Deals', 'Deals of the week · countdown'], ['Best sellers', 'Last 30 days'], ['Top brands', 'Brands with products'], ['New arrivals', 'Rule: added in 30 days'], ['Recently viewed', 'Per visitor, on this device'], ['Printing and Trading', 'Service cards'], ['Corporate bulk banner', 'Quote form'], ['Trust row', 'Genuine, warranty, delivery, COD']];
+    const off = st.off || { 'Top brands': false };
+    const prods = sel === 'u999' || sel === 'basics'
+      ? [{ id: 'tee', title: 'Classic Cotton Crew T-shirt', brand: 'Tessra', spec: 'Sizes S to XXL · 4 colours', price: 650, mrp: 850, stock: 'in', ph: 'prod-tshirt', phCap: 'Photo: T-shirt', icon: 'shirt', options: true, sample: true },
+         { id: 'paper', title: 'Double A A4 Copy Paper, 80 gsm', brand: 'Double A', spec: '500 sheets · laser and inkjet', price: 520, mrp: 580, stock: 'in', ph: 'cat-stationery', phCap: 'Photo: A4 paper', icon: 'file-text', sample: true },
+         { id: 'pen', title: 'Gel Pen Set, 12 Colours', brand: 'Quillo', spec: '0.5 mm · quick-dry ink', price: 290, mrp: 350, stock: 'in', ph: 'cat-stationery', phCap: 'Photo: gel pens', icon: 'pen-line', sample: true },
+         { id: 'cable', title: 'USB-C to USB-C Cable, 1 m, 60 W', brand: 'Voltaro', spec: 'Braided · fast charge and data', price: 390, mrp: 450, stock: 'in', ph: 'prod-powerbank', phCap: 'Photo: USB-C cable', icon: 'cable', sample: true }]
+      : [{ id: 'bd1', title: 'Better Day CE505A / CF280A Black Toner', brand: 'Better Day', spec: 'Up to 2,700 pages · fits HP LaserJet P2035', price: 1450, mrp: 1800, stock: 'in', badge: 'Best seller', img: '../assets/c9ea845b540e931548117afdb5ae8a65.jpg', icon: 'printer' },
+         { id: 'bd2', title: 'Better Day Canon CRG 070H Black Toner', brand: 'Better Day', spec: 'Up to 9,000 pages · fits Canon LBP243dw', price: 3250, mrp: 3900, stock: 'in', img: '../assets/fd111676d187ad84eb1cdef897ce4776.jpg', icon: 'printer' },
+         { id: 'bd3', title: 'Better Day HP 151A (W1510A) Black Toner', brand: 'Better Day', spec: 'Up to 3,050 pages · fits HP LaserJet Pro 4003', price: 2150, mrp: 2600, stock: 'low', left: 4, img: '../assets/1bb1b89d15ac65da8322547e81decbdf.jpg', icon: 'printer' },
+         { id: 'hp', title: 'Air Wireless Over-ear Headphones', brand: 'Sonaro', spec: '40-hour battery · 3 colours', price: 3890, mrp: 4990, stock: 'in', ph: 'prod-headphones', phCap: 'Photo: headphones', icon: 'headphones', options: true, sample: true }];
+    return {
+      m: !!p.m,
+      cols: COLS.map(c => ({ name: c[1], sub: c[2], type: c[3] === 'rule' ? 'Rule' : 'Hand', chip: 'a-chip ' + (c[3] === 'rule' ? 'is-blue' : 'is-violet'), icon: c[4], cls: 'a-file' + (c[0] === sel ? ' is-on' : ''), go: () => this.setState({ sel: c[0] }) })),
+      C: { name: c0[1], slug: c0[5], count: c0[6], start: c0[7], end: c0[8], cdCls: 'w-switch' + (c0[9] ? ' is-on' : ''), cdNote: c0[9] ? 'Shows days, hours and minutes left' : 'Off' },
+      isRule: type === 'rule', isHand: type === 'hand', tt: { rule: type === 'rule' ? 'is-on' : '', hand: type === 'hand' ? 'is-on' : '' },
+      toRule: () => this.setState({ type: 'rule', typeFor: sel }), toHand: () => this.setState({ type: 'hand', typeFor: sel }),
+      rules: (c0[10].length ? c0[10] : [['Price', 'is at most', '৳999']]).map(r => ({ a: r[0], b: r[1], c: r[2] })),
+      rowsHome: H.map(h => { const on = off[h[0]] === undefined ? true : !off[h[0]]; return { name: h[0], sub: h[1] + (on ? '' : ' · hidden'), on, cls: 'a-drag-item' + (on ? '' : ' is-off') + (h[0] === 'Deals' ? ' is-lift' : ''), sw: 'w-switch' + (on ? ' is-on' : ''), aria: (on ? 'Hide ' : 'Show ') + h[0], go: () => this.setState({ off: Object.assign({}, off, { [h[0]]: on }) }) }; }),
+      prods, save: () => flash('Saved. Store home updates now.'), toast: st.toast || '',
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

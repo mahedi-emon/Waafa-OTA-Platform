@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Header</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div style="display:contents">
+  <header class="{{hdrCls}}">
+    <div class="w-wrap v-header-in">
+      <a class="v-logo" href="{{L.Home}}" aria-label="WAAFA home">
+        <img class="v-logo-mark" src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="">
+        <img class="v-logo-word" src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt="WAAFA">
+        <span class="v-logo-div" aria-hidden="true"></span>
+        <span class="v-logo-tag">Worldwide Alliance<br>for Advancement,<br>Future &amp; Achievement</span>
+      </a>
+      <nav class="v-nav" aria-label="Main">
+        <a class="{{n.home}}" href="{{L.Home}}">Home</a>
+        <a class="{{n.packages}}" href="{{L.Packages}}">Tour Packages</a>
+        <a class="{{n.visa}}" href="{{L.Visa}}">Visa Services</a>
+        <div class="v-navitem">
+          <a class="{{n.shop}}" href="{{L.Shop}}" aria-haspopup="true">Waafas World<span class="i i-chevron-down"></span></a>
+          <div class="{{shopMega}}">
+            <div class="ww-mega5">
+              <div class="ww-mega5-intro">
+                <b>Waafas World</b>
+                <p>Waafa International’s online store. Printer and office supplies today, more of what you need every month. Cash on delivery across Bangladesh.</p>
+                <a class="w-btn w-btn-sm w-btn-navy" href="{{L.Shop}}" style="align-self:flex-start;margin-top:auto">Shop all products<span class="i i-arrow-right"></span></a>
+              </div>
+              <div>
+                <div class="ww-mega5-label" style="padding:18px 22px 0;display:flex;justify-content:space-between;align-items:center">Top categories<span class="w-sample">Sample</span></div>
+                <div class="ww-mega5-cats">
+                  <a class="ww-mega5-cat" href="{{L.ShopList}}"><span class="w-tile"><span class="i i-printer"></span></span><span><b>Printers &amp; Supplies</b><small>Toner, ink, paper, printers</small></span></a>
+                  <a class="ww-mega5-cat" href="{{L.ShopList}}"><span class="w-tile"><span class="i i-pencil-ruler"></span></span><span><b>Office &amp; Stationery</b><small>Pens, files, desk supplies</small></span></a>
+                  <a class="ww-mega5-cat" href="{{L.ShopList}}"><span class="w-tile"><span class="i i-monitor"></span></span><span><b>Computer &amp; Accessories</b><small>Mice, keyboards, cables</small></span></a>
+                  <a class="ww-mega5-cat" href="{{L.ShopList}}"><span class="w-tile"><span class="i i-headphones"></span></span><span><b>Electronics &amp; Gadgets</b><small>Power banks, audio</small></span></a>
+                  <a class="ww-mega5-cat" href="{{L.ShopList}}"><span class="w-tile"><span class="i i-cooking-pot"></span></span><span><b>Home &amp; Kitchen</b><small>Bottles, storage</small></span></a>
+                  <a class="ww-mega5-cat" href="{{L.ShopList}}"><span class="w-tile"><span class="i i-shirt"></span></span><span><b>Fashion &amp; Lifestyle</b><small>T-shirts, bags, gifts</small></span></a>
+                </div>
+              </div>
+              <div class="ww-mega5-doors">
+                <span class="ww-mega5-label">Waafa International services</span>
+                <a class="ww-door" href="{{L.Printing}}"><span class="w-tile"><span class="i i-layers"></span></span><span><b>Printing Solutions</b><small>Managed printing and toner supply for offices, since 2010.</small><em>Get a quote<span class="i i-arrow-right"></span></em></span></a>
+                <a class="ww-door" href="{{L.Trading}}"><span class="w-tile"><span class="i i-ship"></span></span><span><b>International Trading</b><small>Export, import, sourcing and supply.</small><em>Send an RFQ<span class="i i-arrow-right"></span></em></span></a>
+                <a class="ww-door is-all" href="{{L.ShopFinder}}"><span class="w-tile"><span class="i i-scan-barcode"></span></span><span><b>Find by model</b><small>Toner and ink that fit your printer.</small><em>Start<span class="i i-arrow-right"></span></em></span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a class="{{n.gallery}}" href="{{L.Gallery}}">Gallery</a>
+        <a class="{{n.feedback}}" href="{{L.Feedback}}">Feedback</a>
+        <div class="v-navitem">
+          <button class="{{n.more}}" type="button" aria-haspopup="true" aria-expanded="{{moreOpen}}">More<span class="i i-chevron-down"></span></button>
+          <div class="{{moreMega}}">
+            <div class="w-mega-grid w-mega-more">
+              <a class="w-mega-item" href="{{L.VisaGuide}}"><span class="w-tile"><span class="i i-book-open"></span></span><span><span class="w-mega-title">Visa Guide</span><span class="w-mega-desc" style="display:block">Documents, fees and processing times by country</span></span></a>
+              <a class="w-mega-item" href="{{L.Refund}}"><span class="w-tile"><span class="i i-undo"></span></span><span><span class="w-mega-title">Refund Policy</span><span class="w-mega-desc" style="display:block">How cancellations and refunds work</span></span></a>
+              <a class="w-mega-item" href="{{L.Baggage}}"><span class="w-tile"><span class="i i-luggage"></span></span><span><span class="w-mega-title">Baggage Information</span><span class="w-mega-desc" style="display:block">Cabin and checked allowance by airline</span></span></a>
+              <a class="w-mega-item" href="{{L.Emi}}"><span class="w-tile"><span class="i i-calculator"></span></span><span><span class="w-mega-title">EMI</span><span class="w-mega-desc" style="display:block">Split trip costs into monthly instalments</span></span></a>
+              <a class="w-mega-item" href="{{L.OfflinePay}}"><span class="w-tile"><span class="i i-landmark"></span></span><span><span class="w-mega-title">Offline Payment</span><span class="w-mega-desc" style="display:block">Bank transfer, mobile banking or pay at our office</span></span></a>
+              <a class="w-mega-item" href="{{L.Blog}}"><span class="w-tile"><span class="i i-newspaper"></span></span><span><span class="w-mega-title">Blogs</span><span class="w-mega-desc" style="display:block">Travel tips, guides and stories</span></span></a>
+              <a class="w-mega-item" href="{{L.Faqs}}"><span class="w-tile"><span class="i i-circle-help"></span></span><span><span class="w-mega-title">FAQs</span><span class="w-mega-desc" style="display:block">Answers to common questions</span></span></a>
+              <a class="w-mega-item" href="{{L.About}}"><span class="w-tile"><span class="i i-building"></span></span><span><span class="w-mega-title">About Us</span><span class="w-mega-desc" style="display:block">Our story since 2010</span></span></a>
+              <a class="w-mega-item" href="{{L.Contact}}"><span class="w-tile"><span class="i i-headset"></span></span><span><span class="w-mega-title">Contact</span><span class="w-mega-desc" style="display:block">Call, WhatsApp, email or visit us</span></span></a>
+            </div>
+            <div class="w-mega-foot"><span class="flex items-center gap-3"><span class="{{hours.cls}}">{{hours.label}}</span><span>Sat–Thu, 10 am–6 pm</span></span><a class="w-more" href="tel:+8801823232241" style="padding:0">01823-232241<span class="i i-phone"></span></a></div>
+          </div>
+        </div>
+      </nav>
+      <div class="v-actions">
+        <div class="v-help">
+          <button class="{{helpBtnCls}}" type="button" aria-label="Need help? Call, WhatsApp or email us" aria-expanded="{{helpOpen}}" onClick="{{toggleHelp}}"><span class="i i-headset"></span><span class="{{hours.dotCls}}"></span></button>
+          <sc-if value="{{helpOpen}}" hint-placeholder-val="{{ false }}">
+            <div class="v-help-catch" onClick="{{closeHelp}}"></div>
+            <div class="v-helppop is-open" role="dialog" aria-label="Need help?">
+              <div class="v-helphead"><span class="w-tile"><span class="i i-headset"></span></span><div><b>Need help?</b><small>Talk to a travel expert in Motijheel</small></div></div>
+              <div class="v-helphours"><small>Office hours</small><span class="{{hours.cls}}">{{hours.label}}</span></div>
+              <p class="v-helpfoot" style="padding-top:2px">Saturday to Thursday, 10 am to 6 pm. Closed on Friday.</p>
+              <div class="v-helprow"><span class="i i-phone"></span><div class="v-helprow-txt"><small>Call</small><b>01823-232241</b></div><button class="{{cp.phoneCls}}" type="button" aria-label="Copy phone number" onClick="{{cp.phone}}"><span class="{{cp.phoneIc}}"></span></button><a class="v-helprow-act" href="tel:+8801823232241" aria-label="Call now"><span class="i i-arrow-up-right"></span></a></div>
+              <div class="v-helprow is-wa"><span class="i i-whatsapp"></span><div class="v-helprow-txt"><small>WhatsApp</small><b>+880 1823-232241</b></div><a class="v-helprow-act" href="https://wa.me/8801823232241" aria-label="Chat on WhatsApp"><span class="i i-arrow-up-right"></span></a></div>
+              <div class="v-helprow"><span class="i i-mail"></span><div class="v-helprow-txt"><small>Email</small><b>info@waafasworld.com</b></div><button class="{{cp.mailCls}}" type="button" aria-label="Copy email address" onClick="{{cp.mail}}"><span class="{{cp.mailIc}}"></span></button><a class="v-helprow-act" href="mailto:info@waafasworld.com" aria-label="Write an email"><span class="i i-arrow-up-right"></span></a></div>
+              <div class="v-helprow"><span class="i i-map-pin"></span><div class="v-helprow-txt"><small>Visit</small><b>Motijheel Plaza, 4th floor</b></div><a class="v-helprow-act" href="https://maps.google.com/?q=Motijheel+Plaza+Aziz+Square+Dhaka" aria-label="Get directions"><span class="i i-arrow-up-right"></span></a></div>
+            </div>
+          </sc-if>
+        </div>
+        <a class="v-login" href="{{L.Login}}"><span class="i i-user"></span>Log in</a>
+        <button class="v-iconbtn is-plain v-menubtn" type="button" aria-label="Open menu" aria-expanded="{{drawer}}" onClick="{{openDrawer}}"><span class="i i-menu"></span></button>
+      </div>
+    </div>
+  </header>
+
+  <sc-if value="{{helpOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="{{helpOvCls}}" role="dialog" aria-modal="true" aria-label="Need help?">
+      <div class="w-scrim" style="{{scrimStyle}}" onClick="{{closeHelp}}"></div>
+      <div class="{{sheetCls}}" style="{{sheetStyle}}">
+        <div class="w-sheet-grab" onPointerDown="{{dragStart}}" onPointerMove="{{dragMove}}" onPointerUp="{{dragEnd}}" onPointerCancel="{{dragEnd}}"></div>
+        <div class="w-sheet-body" style="padding-top:0">
+          <div class="v-helphead"><span class="w-tile"><span class="i i-headset"></span></span><div style="flex:1"><b>Need help?</b><small>Talk to a travel expert in Motijheel</small></div><button class="v-iconbtn is-plain" type="button" aria-label="Close" onClick="{{closeHelp}}"><span class="i i-x"></span></button></div>
+          <div class="v-helphours"><small>Office hours</small><span class="{{hours.cls}}">{{hours.label}}</span></div>
+          <p class="v-helpfoot" style="padding-top:2px">Saturday to Thursday, 10 am to 6 pm. Closed on Friday.</p>
+          <div class="v-helprow"><span class="i i-phone"></span><div class="v-helprow-txt"><small>Call</small><b>01823-232241</b></div><button class="{{cp.phoneCls}}" type="button" aria-label="Copy phone number" onClick="{{cp.phone}}"><span class="{{cp.phoneIc}}"></span></button><a class="v-helprow-act" href="tel:+8801823232241" aria-label="Call now"><span class="i i-arrow-up-right"></span></a></div>
+          <div class="v-helprow is-wa"><span class="i i-whatsapp"></span><div class="v-helprow-txt"><small>WhatsApp</small><b>+880 1823-232241</b></div><a class="v-helprow-act" href="https://wa.me/8801823232241" aria-label="Chat on WhatsApp"><span class="i i-arrow-up-right"></span></a></div>
+          <div class="v-helprow"><span class="i i-mail"></span><div class="v-helprow-txt"><small>Email</small><b>info@waafasworld.com</b></div><button class="{{cp.mailCls}}" type="button" aria-label="Copy email address" onClick="{{cp.mail}}"><span class="{{cp.mailIc}}"></span></button><a class="v-helprow-act" href="mailto:info@waafasworld.com" aria-label="Write an email"><span class="i i-arrow-up-right"></span></a></div>
+          <div class="v-helprow"><span class="i i-map-pin"></span><div class="v-helprow-txt"><small>Visit</small><b>193/C-1 Motijheel Plaza, 4th floor</b></div><a class="v-helprow-act" href="https://maps.google.com/?q=Motijheel+Plaza+Aziz+Square+Dhaka" aria-label="Get directions"><span class="i i-arrow-up-right"></span></a></div>
+          <div class="grid gap-2 mt-4" style="grid-template-columns:1fr 1fr">
+            <a class="w-btn w-btn-secondary" href="tel:+8801823232241"><span class="i i-phone"></span>Call now</a>
+            <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{drawer}}" hint-placeholder-val="{{ false }}">
+    <div class="{{drawerCls}}" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="w-scrim" onClick="{{closeDrawer}}"></div>
+      <aside class="w-drawer">
+        <div class="w-drawer-head">
+          <a class="v-logo" href="{{L.Home}}"><img class="v-logo-mark" src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="" style="height:30px"><img class="v-logo-word" src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt="WAAFA" style="height:14px"></a>
+          <button class="v-iconbtn is-plain" type="button" aria-label="Close menu" onClick="{{closeDrawer}}"><span class="i i-x"></span></button>
+        </div>
+        <div class="w-drawer-body">
+          <a class="w-drawer-link" href="{{L.Home}}"><span class="i i-house"></span>Home<span class="i i-chevron-right"></span></a>
+          <a class="w-drawer-link" href="{{L.Flights}}"><span class="i i-plane"></span>Flights<span class="i i-chevron-right"></span></a>
+          <a class="w-drawer-link" href="{{L.Hotels}}"><span class="i i-bed"></span>Hotels<span class="i i-chevron-right"></span></a>
+          <a class="w-drawer-link" href="{{L.Packages}}"><span class="i i-map"></span>Tour Packages<span class="i i-chevron-right"></span></a>
+          <a class="w-drawer-link" href="{{L.Visa}}"><span class="i i-passport"></span>Visa Services<span class="i i-chevron-right"></span></a>
+          <a class="w-drawer-link" href="{{L.Shop}}"><span class="i i-shopping-bag"></span>Waafas World<span class="i i-chevron-right"></span></a>
+          <a class="w-drawer-link" href="{{L.Gallery}}"><span class="i i-image"></span>Gallery<span class="i i-chevron-right"></span></a>
+          <a class="w-drawer-link" href="{{L.Feedback}}"><span class="i i-message-square"></span>Feedback<span class="i i-chevron-right"></span></a>
+          <div class="w-drawer-group">More</div>
+          <div class="w-moregrid">
+            <a class="w-moreitem" href="{{L.VisaGuide}}"><span class="w-tile"><span class="i i-book-open"></span></span>Visa Guide</a>
+            <a class="w-moreitem" href="{{L.Refund}}"><span class="w-tile"><span class="i i-undo"></span></span>Refund Policy</a>
+            <a class="w-moreitem" href="{{L.Baggage}}"><span class="w-tile"><span class="i i-luggage"></span></span>Baggage</a>
+            <a class="w-moreitem" href="{{L.Emi}}"><span class="w-tile"><span class="i i-calculator"></span></span>EMI</a>
+            <a class="w-moreitem" href="{{L.OfflinePay}}"><span class="w-tile"><span class="i i-landmark"></span></span>Offline Payment</a>
+            <a class="w-moreitem" href="{{L.Blog}}"><span class="w-tile"><span class="i i-newspaper"></span></span>Blogs</a>
+            <a class="w-moreitem" href="{{L.Faqs}}"><span class="w-tile"><span class="i i-circle-help"></span></span>FAQs</a>
+            <a class="w-moreitem" href="{{L.About}}"><span class="w-tile"><span class="i i-building"></span></span>About Us</a>
+            <a class="w-moreitem" href="{{L.Contact}}"><span class="w-tile"><span class="i i-headset"></span></span>Contact</a>
+          </div>
+          <div class="v-drawer-hours">
+            <span class="flex items-center justify-between gap-3"><b class="text-navy text-15">Office hours</b><span class="{{hours.cls}}">{{hours.label}}</span></span>
+            <span class="t">Saturday to Thursday, 10 am to 6 pm. Closed on Friday.</span>
+          </div>
+          <div class="w-drawer-group">Talk to us</div>
+          <div class="w-contactlist">
+            <a href="tel:+8801823232241"><span class="i i-phone"></span><span><b class="text-navy">01823-232241</b><br><span class="text-13 text-muted">Phone and WhatsApp</span></span></a>
+            <a href="mailto:info@waafasworld.com"><span class="i i-mail"></span><span>info@waafasworld.com</span></a>
+            <div><span class="i i-map-pin"></span><span>193/C-1, 4th Floor, East Side, Motijheel Plaza, Aziz Square, Box Kalvat Road, Motijheel, Dhaka</span></div>
+          </div>
+          <div class="w-drawer-cta">
+            <a class="w-btn w-btn-secondary" href="{{L.Login}}"><span class="i i-user"></span>Log in</a>
+            <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>WhatsApp</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":null,"default":false},"store":{"editor":"boolean","default":false},"active":{"editor":"enum","options":["home","packages","visa","shop","gallery","feedback","more"],"default":"home"},"menu":{"editor":"enum","options":["","shop","more"],"default":""},"drawer":{"editor":"boolean","default":false},"help":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":76}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._c); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const s = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Packages','Visa','Shop','ShopList','ShopFinder','Printing','Trading','Gallery','Feedback','VisaGuide','Refund','Baggage','Emi','OfflinePay','Blog','Faqs','About','Contact','Login','Flights','Hotels'].forEach(k => { L[k] = k + s + '.dc.html'; });
+    // office hours, live in Asia/Dhaka (UTC+6, no daylight saving): Sat–Thu 10:00–18:00, closed Friday
+    const d = new Date(Date.now() + 6 * 3600e3);
+    const dow = d.getUTCDay(), mins = d.getUTCHours() * 60 + d.getUTCMinutes();
+    let open = false, label;
+    if (dow !== 5 && mins >= 600 && mins < 1080) { open = true; label = 'Open now · until 6 pm'; }
+    else if (dow !== 5 && mins < 600) label = 'Closed · opens at 10 am';
+    else if (dow === 4 || dow === 5) label = 'Closed · opens Saturday at 10 am';
+    else label = 'Closed · opens tomorrow at 10 am';
+    const hours = { open, label, cls: 'v-hours is-sm ' + (open ? 'is-open' : 'is-closed'), dotCls: 'v-dot' + (open ? '' : ' is-closed') };
+    const act = p.active || 'home';
+    const menu = p.menu || '';
+    const nav = (k, extra) => 'v-navlink' + (act === k ? ' is-active' : '') + (extra ? ' is-open' : '');
+    const drawer = st.drawer !== undefined ? st.drawer : !!p.drawer;
+    const helpOpen = st.help !== undefined ? st.help : !!p.help;
+    const copied = st.copied || '';
+    const copy = (key, text) => () => {
+      try { if (navigator.clipboard) navigator.clipboard.writeText(text); } catch (e) {}
+      clearTimeout(this._c);
+      this.setState({ copied: key });
+      this._c = setTimeout(() => this.setState({ copied: '' }), 1600);
+    };
+    const dy = st.dy || 0;
+    let sheetStyle = 'transform:translateY(0);transition:transform .48s var(--spring)';
+    if (st.dragging) sheetStyle = 'transform:translateY(' + dy + 'px);transition:none';
+    if (st.flung) sheetStyle = 'transform:translateY(105%);transition:transform .26s cubic-bezier(.4,0,1,1)';
+    const closeHelp = () => {
+      this.setState({ helpOut: true });
+      clearTimeout(this._t);
+      this._t = setTimeout(() => this.setState({ help: false, helpOut: false, flung: false, dy: 0 }), 260);
+    };
+    return {
+      L, hours, drawer, helpOpen,
+      hdrCls: 'v-header wa-r' + (p.store ? ' is-instore' : ''),
+      n: { home: nav('home'), packages: nav('packages'), visa: nav('visa'), shop: nav('shop', menu === 'shop'), gallery: nav('gallery'), feedback: nav('feedback'), more: nav('more', menu === 'more') },
+      shopMega: 'w-mega' + (menu === 'shop' ? ' is-open' : ''),
+      moreMega: 'w-mega v-mega-right' + (menu === 'more' ? ' is-open' : ''),
+      moreOpen: menu === 'more',
+      helpBtnCls: 'v-iconbtn' + (helpOpen ? ' is-open' : ''),
+      helpOvCls: 'w-overlay wa-r v-helpsheet' + (st.helpOut ? ' is-out' : ''),
+      sheetCls: 'w-sheet' + (st.dragging ? ' is-dragging' : ''),
+      sheetStyle,
+      scrimStyle: st.dragging ? 'opacity:' + Math.max(0.2, 1 - dy / 420).toFixed(3) : (st.flung ? 'opacity:0;transition:opacity .26s' : ''),
+      toggleHelp: () => { if (helpOpen) closeHelp(); else this.setState({ help: true, helpOut: false, flung: false, dy: 0 }); },
+      closeHelp,
+      cp: {
+        phone: copy('phone', '01823232241'), mail: copy('mail', 'info@waafasworld.com'),
+        phoneCls: 'v-helprow-act' + (copied === 'phone' ? ' is-done' : ''), mailCls: 'v-helprow-act' + (copied === 'mail' ? ' is-done' : ''),
+        phoneIc: 'i ' + (copied === 'phone' ? 'i-check' : 'i-copy'), mailIc: 'i ' + (copied === 'mail' ? 'i-check' : 'i-copy')
+      },
+      drawerCls: 'w-overlay wa-r' + (st.drawerOut ? ' is-out' : ''),
+      openDrawer: () => this.setState({ drawer: true, drawerOut: false }),
+      closeDrawer: () => {
+        this.setState({ drawerOut: true });
+        clearTimeout(this._t);
+        this._t = setTimeout(() => this.setState({ drawer: false, drawerOut: false }), 280);
+      },
+      dragStart: (e) => {
+        this._drag = { y0: e.clientY, y: e.clientY, t: e.timeStamp, v: 0 };
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+        this.setState({ dragging: true, dy: 0 });
+      },
+      dragMove: (e) => {
+        const g = this._drag; if (!g) return;
+        const dt = Math.max(1, e.timeStamp - g.t);
+        g.v = (e.clientY - g.y) / dt; g.y = e.clientY; g.t = e.timeStamp;
+        this.setState({ dy: Math.max(0, e.clientY - g.y0) });
+      },
+      dragEnd: (e) => {
+        const g = this._drag; if (!g) return;
+        this._drag = null;
+        const moved = Math.max(0, e.clientY - g.y0);
+        if (moved > 96 || (moved > 24 && g.v > 0.55)) {
+          this.setState({ dragging: false, flung: true });
+          clearTimeout(this._t);
+          this._t = setTimeout(() => this.setState({ help: false, flung: false, dy: 0 }), 270);
+        } else this.setState({ dragging: false, dy: 0 });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

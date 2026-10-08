@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · package editor</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="packages" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div class="min-w-0">
+          <div class="a-crumbs"><a href="AdminPackages.dc.html">Tour packages</a><span class="i i-chevron-right"></span><span>Dubai city and desert</span></div>
+          <h1 class="a-title flex items-center gap-3 flex-wrap">Dubai city and desert<span class="a-status a-s-booked">Published</span><span class="a-chip is-blue">International</span></h1>
+          <p>5 days, 4 nights · Dubai, United Arab Emirates · 41 queries in the last 30 days</p>
+        </div>
+        <div class="a-actions"><a class="a-btn a-btn-outline" href="PackageDetail.dc.html"><span class="i i-eye"></span>Preview</a><button class="a-btn a-btn-outline a-btn-icon" type="button" aria-label="Duplicate"><span class="i i-copy"></span></button><button class="a-btn a-btn-primary" type="button" onClick="{{save}}"><span class="i i-save"></span>Save</button></div>
+      </div>
+      <nav class="a-tabs" aria-label="Sections"><sc-for list="{{secs}}" as="s" hint-placeholder-count="7"><a class="{{s.cls}}" href="{{s.href}}">{{s.label}}</a></sc-for></nav>
+      <div class="a-split">
+        <div class="a-stack">
+          <section class="a-card" id="basics" aria-labelledby="pb-t">
+            <div class="a-card-head"><h3 id="pb-t">Basics</h3></div>
+            <div class="a-card-body a-grid2">
+              <label class="a-field a-span2"><span class="a-label">Title</span><input class="a-input" value="Dubai city and desert"></label>
+              <label class="a-field"><span class="a-label">Category</span><span class="a-sel"><select class="a-input"><option>International</option><option>Domestic</option><option>Group Tours</option><option>Honeymoon</option><option>Family</option><option>Corporate</option><option>Cruise</option></select></span></label>
+              <label class="a-field"><span class="a-label">Duration</span><span class="flex gap-2"><span class="a-prefix" style="flex:1"><input class="a-input" value="5"><span style="border-right:0;border-left:1px solid var(--color-mist-200)">days</span></span><span class="a-prefix" style="flex:1"><input class="a-input" value="4"><span style="border-right:0;border-left:1px solid var(--color-mist-200)">nights</span></span></span></label>
+              <div class="a-field a-span2"><span class="a-label">Destinations</span><div class="a-chips"><span class="a-chip is-blue" style="height:28px">Dubai<span class="a-chip-x"><span class="i i-x"></span></span></span><span class="a-chip is-blue" style="height:28px">Abu Dhabi (optional)<span class="a-chip-x"><span class="i i-x"></span></span></span><button class="a-add" type="button" style="height:28px;padding:0 10px"><span class="i i-plus"></span>Add</button></div></div>
+            </div>
+          </section>
+          <section class="a-card" id="gallery" aria-labelledby="pg-t">
+            <div class="a-card-head"><div><h3 id="pg-t">Gallery</h3><p>Swipeable on the package page, with a lightbox</p></div><span class="a-chip">6 photos</span></div>
+            <div class="a-card-body"><div class="a-media"><sc-for list="{{gal}}" as="g" hint-placeholder-count="5"><div class="{{g.cls}}"><div class="ph is-sm" data-photo="{{g.ph}}"><div class="ph-in"><span class="ph-ic"><span class="{{g.icon}}"></span></span><span class="ph-cap">{{g.cap}}</span></div></div><sc-if value="{{g.main}}" hint-placeholder-val="{{ false }}"><span class="a-chip is-dark">Cover</span></sc-if></div></sc-for><button class="a-media-add" type="button"><span class="i i-image-plus"></span>Add photos</button></div></div>
+          </section>
+          <section class="a-card" id="itinerary" aria-labelledby="pi-t">
+            <div class="a-card-head"><div><h3 id="pi-t">Day by day</h3><p>Shown as a timeline. Drag days to reorder.</p></div><button class="a-btn a-btn-outline a-btn-sm" type="button" onClick="{{addDay}}"><span class="i i-plus"></span>Add day</button></div>
+            <div class="a-card-body"><div class="a-daybuilder"><sc-for list="{{days}}" as="d" hint-placeholder-count="5"><div class="{{d.cls}}"><span class="i i-grip-vertical" style="width:16px;height:16px;color:var(--color-mist-400);margin-top:4px"></span><span class="a-chip is-dark" style="height:26px;justify-content:center">Day {{d.n}}</span><div class="flex flex-col gap-2 min-w-0"><input class="a-input" value="{{d.t}}" style="font-weight:600"><p class="text-13" style="color:var(--color-mist-600);line-height:1.55">{{d.p}}</p><div class="a-chips"><sc-for list="{{d.tags}}" as="g" hint-placeholder-count="2"><span class="a-chip"><span class="{{g.icon}}"></span>{{g.t}}</span></sc-for></div></div><button class="a-btn a-btn-ghost a-btn-sm a-btn-icon" type="button" aria-label="More"><span class="i i-ellipsis-vertical"></span></button></div></sc-for></div></div>
+          </section>
+          <section class="a-card" id="prices" aria-labelledby="pp-t">
+            <div class="a-card-head"><div><h3 id="pp-t">Prices and departures</h3><p>Per person, in taka. The card shows the lowest twin-sharing price.</p></div></div>
+            <div class="a-card-body a-grid2" style="align-items:start">
+              <table class="a-vtable"><thead><tr><th>Room sharing</th><th>Per person</th></tr></thead><tbody><sc-for list="{{prices}}" as="r" hint-placeholder-count="5"><tr><td><b class="text-navy" style="font-weight:600">{{r.k}}</b></td><td><span class="a-prefix"><span>৳</span><input class="a-input" value="{{r.v}}"></span></td></tr></sc-for></tbody></table>
+              <div class="flex flex-col gap-2"><div class="a-switch-row" style="padding-top:0"><span><b>Fixed departures</b><small>Off means “any date” on request</small></span><span class="w-switch is-on"></span></div><sc-for list="{{deps}}" as="d" hint-placeholder-count="3"><div class="a-drag-item" style="padding:8px 10px"><span class="i i-calendar" style="width:16px;height:16px;color:var(--color-brand-700)"></span><span><b>{{d.date}}</b><small>{{d.sub}}</small></span><span class="a-push"><span class="{{d.chip}}">{{d.seats}}</span></span></div></sc-for><button class="a-add" type="button"><span class="i i-plus"></span>Add departure</button></div>
+            </div>
+          </section>
+          <section class="a-card" id="incl" aria-labelledby="pin-t">
+            <div class="a-card-head"><h3 id="pin-t">Included and not included</h3></div>
+            <div class="a-card-body a-grid2" style="align-items:start">
+              <div class="flex flex-col gap-2"><span class="a-label" style="color:var(--color-success-600)"><span class="i i-circle-check" style="width:15px;height:15px"></span>Included</span><sc-for list="{{inc}}" as="x" hint-placeholder-count="5"><div class="a-link-item"><span class="i i-grip-vertical grip"></span>{{x}}</div></sc-for><button class="a-add" type="button"><span class="i i-plus"></span>Add</button></div>
+              <div class="flex flex-col gap-2"><span class="a-label" style="color:var(--color-danger-600)"><span class="i i-circle-x" style="width:15px;height:15px"></span>Not included</span><sc-for list="{{exc}}" as="x" hint-placeholder-count="4"><div class="a-link-item"><span class="i i-grip-vertical grip"></span>{{x}}</div></sc-for><button class="a-add" type="button"><span class="i i-plus"></span>Add</button></div>
+            </div>
+          </section>
+          <section class="a-card" id="policy" aria-labelledby="pt-t">
+            <div class="a-card-head"><h3 id="pt-t">Visa notes, terms and FAQs</h3></div>
+            <div class="a-card-body flex flex-col gap-4">
+              <label class="a-field"><span class="a-label">Visa notes</span><textarea class="a-input">UAE tourist visa for Bangladeshi passport holders is arranged by Waafa: passport valid for 6 months, photo, bank statement. About 5 working days.</textarea></label>
+              <label class="a-field"><span class="a-label">Terms and cancellation</span><textarea class="a-input">30% advance to confirm. Free cancellation up to 21 days before departure; 50% charged within 21 days; no refund within 7 days. Visa fees are not refundable.</textarea></label>
+              <div class="flex flex-col gap-2"><span class="a-label">FAQs on this package</span><div class="a-link-item"><span class="i i-grip-vertical grip"></span>Can I extend my stay?<small>Answered</small></div><div class="a-link-item"><span class="i i-grip-vertical grip"></span>Is the desert safari safe for children?<small>Answered</small></div><button class="a-add" type="button"><span class="i i-plus"></span>Add a question</button></div>
+            </div>
+          </section>
+        </div>
+        <div class="a-stack a-sticky">
+          <section class="a-card" aria-labelledby="ps-t">
+            <div class="a-card-head"><h3 id="ps-t">Publishing</h3></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <label class="a-field"><span class="a-sel"><select class="a-input"><option>Published</option><option>Draft</option><option>Archived</option></select></span></label>
+              <div class="a-switch-row" style="padding-top:2px"><span><b>Schedule</b><small>Publish at a set time</small></span><span class="a-p is-p1">P1</span></div>
+              <div class="a-switch-row"><span><b>Booking button</b><small>Manual: Send query · Live: Book now</small></span><span class="a-chip is-blue">Send query</span></div>
+            </div>
+          </section>
+          <div class="a-preview"><small>Card on Tour Packages</small>
+            <div class="a-album" style="width:100%"><div class="ph" data-photo="dubai"><div class="ph-in"><span class="ph-ic"><span class="i i-building-2"></span></span><span class="ph-cap">Dubai skyline</span><span class="ph-cr">David Rodrigo · Unsplash</span></div></div><div class="a-album-b"><span class="a-chip is-blue" style="align-self:flex-start">International · 5D/4N</span><b>Dubai city and desert</b><small>From ৳89,500 per person, twin sharing</small></div></div>
+          </div>
+          <section class="a-card" aria-labelledby="pseo-t">
+            <div class="a-card-head"><h3 id="pseo-t">Search engine listing</h3></div>
+            <div class="a-card-body"><div class="a-seo"><small>waafasworld.com <span>› packages › dubai-city-and-desert</span></small><b>Dubai City and Desert Tour, 5 Days from Dhaka | Waafa</b><p>Burj Khalifa, dhow cruise and desert safari with hotel, transfers and visa help. From ৳89,500 per person.</p></div></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="a-toast" role="status"><span class="i i-circle-check"></span>{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const flash = msg => { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const D = [
+      ['Arrive in Dubai, dhow cruise at night', 'Meet and greet at Dubai airport, transfer to the hotel. In the evening, a dinner cruise on Dubai Creek.', [['i i-plane-landing', 'Airport pickup'], ['i i-utensils', 'Dinner']]],
+      ['City tour and Burj Khalifa', 'Jumeirah Mosque photo stop, Palm Jumeirah, Dubai Marina. At the Top, Burj Khalifa at sunset (optional, paid).', [['i i-coffee', 'Breakfast'], ['i i-bus', 'Guided tour']]],
+      ['Desert safari', 'Free morning. Afternoon pickup for dune bashing, sunset photos, camel ride and a barbecue dinner at a desert camp.', [['i i-coffee', 'Breakfast'], ['i i-utensils', 'BBQ dinner']]],
+      ['Free day for shopping', 'Dubai Mall, Gold Souk or an optional Abu Dhabi day trip.', [['i i-coffee', 'Breakfast'], ['i i-shopping-bag', 'Free time']]],
+      ['Departure', 'Check out and transfer to the airport for your flight home.', [['i i-coffee', 'Breakfast'], ['i i-plane-takeoff', 'Airport drop']]]
+    ];
+    const extra = st.extra || 0;
+    const all = D.concat(Array.from({ length: extra }, (_, i) => ['New day', 'Describe the day', []]));
+    return {
+      m: !!p.m,
+      secs: [['basics', 'Basics'], ['gallery', 'Gallery'], ['itinerary', 'Day by day'], ['prices', 'Prices and departures'], ['incl', 'Inclusions'], ['policy', 'Visa, terms, FAQs']].map((s, i) => ({ label: s[1], href: '#' + s[0], cls: 'a-tab' + (i === 0 ? ' is-active' : '') })),
+      gal: [['dubai', 'i i-building-2', 'Dubai skyline'], ['dubai-desert', 'i i-sun', 'Desert safari'], ['dubai', 'i i-ship', 'Dhow cruise'], ['dubai', 'i i-hotel', 'Hotel room']].map((g, i) => ({ ph: g[0], icon: g[1], cap: g[2], main: i === 0, cls: 'a-media-item' + (i === 0 ? ' is-main' : '') })),
+      days: all.map((d, i) => ({ n: i + 1, t: d[0], p: d[1], tags: d[2].map(t => ({ icon: t[0], t: t[1] })), cls: 'a-dayrow' + (i === 2 ? ' is-lift' : '') })),
+      addDay: () => this.setState({ extra: extra + 1 }),
+      prices: [['Single room', '1,24,000'], ['Twin sharing', '89,500'], ['Triple sharing', '84,000'], ['Child with bed (2 to 11)', '72,000'], ['Child without bed', '58,000']].map(r => ({ k: r[0], v: r[1] })),
+      deps: [['Thu, 5 Nov 2026', 'Emirates EK 585 · 7 nights hold', '8 seats left', 'a-chip is-amber'], ['Thu, 19 Nov 2026', 'flydubai FZ 584', '20 seats', 'a-chip is-green'], ['Thu, 3 Dec 2026', 'Emirates EK 585', '20 seats', 'a-chip is-green']].map(d => ({ date: d[0], sub: d[1], seats: d[2], chip: d[3] })),
+      inc: ['Return air ticket, Economy', '4 nights, 4-star hotel, twin sharing', 'Daily breakfast, 2 dinners', 'Airport transfers and guided city tour', 'UAE tourist visa processing'],
+      exc: ['At the Top, Burj Khalifa ticket', 'Lunches and personal expenses', 'Tourism dirham, paid at the hotel', 'Travel insurance'],
+      save: () => flash('Package saved'), toast: st.toast || '',
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Baggage information</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="more" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Baggage information</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">Baggage information</span><h1 class="v-h1 v-h1-page">What you can carry, and how</h1><p class="v-lead">Typical economy allowances by airline, the size of each bag, and what must go in your cabin bag. Your ticket shows your exact allowance.</p></div>
+          <span class="v-sample">Sample allowances · set in Admin</span>
+        </div>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:24px">
+      <div class="w-wrap flex flex-col gap-8">
+        <div class="wc-bagviz">
+          <div class="wc-bag"><span class="wc-bag-shape" style="width:46px;height:40px;border-radius:10px"></span><b>Personal item</b><small>Handbag or laptop bag<br>under the seat</small></div>
+          <div class="wc-bag"><span class="wc-bag-shape" style="width:58px;height:78px"></span><b>7 kg cabin bag</b><small>Usually up to<br>55 × 40 × 20 cm</small></div>
+          <div class="wc-bag"><span class="wc-bag-shape" style="width:78px;height:104px;background:linear-gradient(160deg,#0D8CEE,#003FBE)"></span><b>20 to 30 kg checked</b><small>One or two bags,<br>by airline and fare</small></div>
+          <div class="wc-bag"><span class="wc-bag-shape" style="width:96px;height:62px;background:linear-gradient(160deg,#39CCE9,#0D8CEE)"></span><b>Extra kilos</b><small>Cheaper bought with<br>the ticket than at the airport</small></div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <div class="wc-sec-title"><h2>Allowance by airline</h2></div>
+          <div class="wc-bagtools">
+            <label class="v-vsearch-field" style="width:100%"><span class="i i-search"></span><input class="w-input" placeholder="Search an airline" aria-label="Search an airline" value="{{q}}" onInput="{{typeQ}}"></label>
+            <div class="ww-zone" role="radiogroup" aria-label="Route"><button class="{{rt.intl}}" type="button" role="radio" aria-checked="{{rt.intlOn}}" onClick="{{rt.goIntl}}">International</button><button class="{{rt.dom}}" type="button" role="radio" aria-checked="{{rt.domOn}}" onClick="{{rt.goDom}}">Domestic</button></div>
+            <span class="w-select"><select class="w-input" aria-label="Cabin class"><option>Economy</option><option>Premium economy</option><option>Business</option></select></span>
+          </div>
+          <div class="wc-tablewrap">
+            <table class="wc-table" style="min-width:640px">
+              <thead><tr><th>Airline</th><th>Cabin bag</th><th>Checked bag</th><th>Good to know</th></tr></thead>
+              <tbody>
+                <sc-for list="{{rows}}" as="r" hint-placeholder-count="6"><tr><th scope="row"><span class="wc-air"><i>{{r.code}}</i>{{r.name}}</span></th><td><span class="wc-kg"><span class="i i-briefcase"></span>{{r.cabin}}</span></td><td><span class="wc-kg"><span class="i i-luggage"></span>{{r.checked}}</span></td><td style="color:var(--color-mist-600)">{{r.note}}</td></tr></sc-for>
+              </tbody>
+            </table>
+          </div>
+          <sc-if value="{{none}}" hint-placeholder-val="{{ false }}"><p class="ww-note"><span class="i i-info"></span><span>No airline matches “{{q}}”. Ask us: we check your exact fare.</span></p></sc-if>
+          <p class="ww-note"><span class="i i-info"></span><span>Allowances depend on your fare (for example Saver, Classic or Flex) and change from time to time. These are typical economy figures for orientation, updated by our team in Admin. Your e-ticket is the final word.</span></p>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <div class="wc-sec-title"><h2>Cabin bag or checked bag?</h2></div>
+          <div class="wc-rules">
+            <div class="wc-rule is-yes"><span class="w-tile"><span class="i i-battery-charging"></span></span><div><b>Power banks: cabin bag only</b><p>Up to 100 Wh is fine; 100 to 160 Wh needs the airline’s approval; over 160 Wh is not allowed. The Wh rating is on the label.</p><a class="v-link" href="{{L.ShopList}}" style="min-height:0;font-size:13.5px;margin-top:6px">Cabin-safe power banks<span class="i i-arrow-right"></span></a></div></div>
+            <div class="wc-rule is-yes"><span class="w-tile"><span class="i i-glass-water"></span></span><div><b>Liquids: 100 ml each</b><p>On international flights, liquids in the cabin go in containers of 100 ml or less, all in one clear 1-litre bag.</p></div></div>
+            <div class="wc-rule is-yes"><span class="w-tile"><span class="i i-heart"></span></span><div><b>Medicines with you</b><p>Keep medicines in the cabin with the prescription, especially for insulin or anything in liquid form.</p></div></div>
+            <div class="wc-rule is-no"><span class="w-tile"><span class="i i-flame"></span></span><div><b>Never: flammables</b><p>Lighter fluid, fireworks, gas canisters and strong chemicals are not allowed in any bag.</p></div></div>
+            <div class="wc-rule is-no"><span class="w-tile"><span class="i i-zap"></span></span><div><b>Never in checked bags: spare batteries</b><p>Spare lithium batteries, e-cigarettes and smart bags with fixed batteries must travel in the cabin.</p></div></div>
+            <div class="wc-rule"><span class="w-tile"><span class="i i-package"></span></span><div><b>Fragile and valuable</b><p>Keep jewellery, cash, documents and laptops in your cabin bag. Airlines limit what they pay for in checked bags.</p></div></div>
+          </div>
+        </div>
+        <div class="wc-help"><div><b>Need more baggage?</b><p>Tell your expert when you book. Extra kilos added to the ticket cost less than paying at the airport.</p></div><div class="flex flex-wrap gap-2"><a class="w-btn w-btn-white" href="{{L.Flights}}">Search flights</a><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>Ask on WhatsApp</a></div></div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2676}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','ShopList','Flights'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const A = [
+      ['BG', 'Biman Bangladesh Airlines', 'both', '7 kg', '20 to 30 kg', 'Varies by route; Middle East routes often allow more.'],
+      ['BS', 'US-Bangla Airlines', 'both', '7 kg', '20 to 30 kg', 'Domestic fares usually include 20 kg.'],
+      ['VQ', 'NOVOAIR', 'dom', '7 kg', '20 kg', 'Domestic routes only.'],
+      ['2A', 'Air Astra', 'dom', '7 kg', '20 kg', 'Domestic routes only.'],
+      ['EK', 'Emirates', 'intl', '7 kg', '25 to 35 kg', 'Depends on the fare type you buy.'],
+      ['QR', 'Qatar Airways', 'intl', '7 kg', '25 to 30 kg', 'Depends on the fare type you buy.'],
+      ['SQ', 'Singapore Airlines', 'intl', '7 kg', '25 to 30 kg', 'Depends on the fare type you buy.'],
+      ['MH', 'Malaysia Airlines', 'intl', '7 kg', '20 to 30 kg', 'Some Lite fares have no checked bag.'],
+      ['TK', 'Turkish Airlines', 'intl', '8 kg', '20 to 30 kg', 'Depends on the fare type you buy.'],
+      ['G9', 'Air Arabia', 'intl', '7 kg', 'Bought with the fare', 'Low-cost: choose a bag when booking.'],
+      ['6E', 'IndiGo', 'intl', '7 kg', '20 to 30 kg', 'Depends on route and fare.']
+    ];
+    const rtk = st.rt || 'intl';
+    const q = (st.q || '').trim().toLowerCase();
+    const rows = A.filter(a => (a[2] === 'both' || a[2] === rtk) && (!q || a[1].toLowerCase().indexOf(q) >= 0 || a[0].toLowerCase() === q)).map(a => ({ code: a[0], name: a[1], cabin: a[3], checked: a[4], note: a[5] }));
+    return {
+      L, m: !!p.m, q: st.q || '', rows, none: !rows.length,
+      typeQ: (e) => this.setState({ q: e && e.target ? e.target.value : '' }),
+      rt: { intl: rtk === 'intl' ? 'is-on' : '', dom: rtk === 'dom' ? 'is-on' : '', intlOn: rtk === 'intl', domOn: rtk === 'dom', goIntl: () => this.setState({ rt: 'intl' }), goDom: () => this.setState({ rt: 'dom' }) }
+    };
+  }
+}
+</script>
+</body>
+</html>

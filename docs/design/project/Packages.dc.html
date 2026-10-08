@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Tour packages</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="packages" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead is-media" style="background-image:url(../assets/6770d5151388e918daecab856f8b83fa.webp);background-size:cover;background-position:center">
+      <video class="fx-video" poster="../assets/6770d5151388e918daecab856f8b83fa.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"><source src="../assets/321015d9ce0bd451310be529879c2ed6.webm" type="video/webm"><source src="../assets/51b29b5c8ff049fa5844edb34c648b76.mp4" type="video/mp4"></video>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Tour packages</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px">
+            <span class="v-eyebrow">Tour packages</span>
+            <h1 class="v-h1 v-h1-page">Trips planned day by day</h1>
+            <p class="v-lead">Every package shows the full plan, what’s included and a price per person. Send a query and a travel expert confirms dates and the final price with you.</p>
+          </div>
+          <form class="v-pksearch" role="search" onSubmit="{{noop}}">
+            <span class="i i-search"></span>
+            <input class="w-input" placeholder="Search a place or idea: Bali, beach, honeymoon" aria-label="Search packages" value="{{q}}">
+            <button class="w-btn w-btn-primary" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec" style="padding-top:22px">
+      <div class="w-wrap">
+        <div class="v-dfilters v-pkcats" role="group" aria-label="Trip type">
+          <sc-for list="{{cats}}" as="c" hint-placeholder-count="7"><button class="{{c.cls}}" type="button" aria-pressed="{{c.on}}" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.label}}<span class="v-dcount">{{c.count}}</span></button></sc-for>
+        </div>
+        <div class="v-listgrid">
+          <aside class="w-rail v-rail v-filterrail" aria-label="Filters">
+            <div class="v-pref-head" style="flex-direction:row;align-items:center;justify-content:space-between"><b>Filters</b><button class="v-link" type="button" style="min-height:0" onClick="{{clear}}">Clear all</button></div>
+            <div class="w-rail-sec" style="padding-top:4px">
+              <div class="w-rail-title">Trip length</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Trip length"><sc-for list="{{f.durs}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Budget per person</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Budget per person"><sc-for list="{{f.budgets}}" as="o" hint-placeholder-count="5"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Travel month</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Travel month"><sc-for list="{{f.months}}" as="o" hint-placeholder-count="5"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec" style="border-bottom:0">
+              <div class="w-rail-title">Includes</div>
+              <div class="v-checks" role="group" aria-label="Includes"><sc-for list="{{f.incl}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="checkbox" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="v-cbox"></span>{{o.label}}<small class="v-count">{{o.count}}</small></button></sc-for></div>
+            </div>
+          </aside>
+          <div class="min-w-0">
+            <div class="v-listbar">
+              <b aria-live="polite">{{countLabel}}</b>
+              <button class="w-chip v-filterbtn" type="button" onClick="{{fs.open_}}"><span class="i i-sliders"></span>Filters<sc-if value="{{fcount}}" hint-placeholder-val="{{ false }}"><span class="w-chip-count">{{fcount}}</span></sc-if></button>
+              <label class="v-sort"><span class="hide-m">Sort by</span><span class="w-select"><select class="w-input" aria-label="Sort packages"><option>Most popular</option><option>Price, low to high</option><option>Price, high to low</option><option>Shortest first</option></select></span></label>
+            </div>
+            <div class="v-activechips"><sc-for list="{{chipsOn}}" as="c" hint-placeholder-count="1"><button class="w-chip is-active v-xchip" type="button" onClick="{{c.go}}">{{c.label}}<span class="i i-x"></span></button></sc-for><span class="v-sample">Sample packages and prices</span></div>
+            <sc-if value="{{has}}" hint-placeholder-val="{{ true }}">
+              <div class="v-pkgrid w-stagger-in" key="{{gridKey}}"><sc-if value="{{vis.istanbul_cappadocia}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="cappadocia" data-src="https://images.unsplash.com/photo-1699519324068-8cade0601b53?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Cappadocia balloons</span><span class="w-ph-credit">Chloé Lefleur · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-glass">Visa help</span></div><span class="v-pkg-dur">7D/6N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Türkiye · Istanbul, Cappadocia</span>
+    <h3 class="v-pkg-title">Istanbul and Cappadocia in a week</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotels</span><span><span class="i i-passport"></span>Visa help</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳1,45,000</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.maldives}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="maldives" data-src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Maldives overwater villas</span><span class="w-ph-credit">Ishan @seefromthesky · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-premium"><span class="w-tri"></span>Best seller</span></div><span class="v-pkg-dur">4D/3N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Maldives · Malé, Maafushi</span>
+    <h3 class="v-pkg-title">Maldives island stay with speedboat transfers</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotel</span><span><span class="i i-utensils"></span>Breakfast</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳64,900</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.sajek}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="sajek-alt" data-src="https://images.unsplash.com/photo-1673632417265-a7bcbc90383c?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Sajek Valley</span><span class="w-ph-credit">Sium Ahameed Bhuyan · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-glass">Bangladesh</span></div><span class="v-pkg-dur">3D/2N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Bangladesh · Khagrachari</span>
+    <h3 class="v-pkg-title">Sajek Valley above the clouds</h3>
+    <div class="v-pkg-incl"><span><span class="i i-car"></span>Jeep</span><span><span class="i i-hotel"></span>Resort</span><span><span class="i i-utensils"></span>Meals</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳9,800</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.nepal}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="nepal-alt" data-src="https://images.unsplash.com/photo-1562462181-b228e3cff9ad?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Nepal</span><span class="w-ph-credit">Meera Pankhania · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-glass">Group departure</span></div><span class="v-pkg-dur">5D/4N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Nepal · Kathmandu, Pokhara</span>
+    <h3 class="v-pkg-title">Kathmandu and Pokhara, mountain views</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotels</span><span><span class="i i-car"></span>Transfers</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳38,500</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.bali}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="bali" data-src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Bali temple</span><span class="w-ph-credit">Aron Visuals · Unsplash</span></div></div><div class="v-pkg-tags"></div><span class="v-pkg-dur">6D/5N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Indonesia · Ubud, Seminyak</span>
+    <h3 class="v-pkg-title">Bali temples and beaches</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Villa and hotel</span><span><span class="i i-car"></span>Transfers</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳1,05,000</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.bangkok_phuket}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="thailand" data-src="https://images.unsplash.com/photo-1534008897995-27a23e859048?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Thailand islands</span><span class="w-ph-credit">Humphrey M · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-glass">Best seller</span></div><span class="v-pkg-dur">6D/5N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Thailand · Bangkok, Phuket</span>
+    <h3 class="v-pkg-title">Bangkok and Phuket</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotels</span><span><span class="i i-ship"></span>Island tour</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳72,000</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><a class="v-plancard" href="{{L.PlanTrip}}">
+  <span class="v-plancard-rib" aria-hidden="true"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="pcr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"/><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"/><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"/><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"/></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#pcr)"/><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30" fill="none" stroke="#D7D3D0" stroke-opacity=".7" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></span>
+  <div class="v-plancard-copy"><span class="v-eyebrow" style="color:#fff">Plan my trip</span>
+  <h3>Don’t see your trip?</h3>
+  <p>Tell us where, when and your budget. A travel expert plans it day by day, at no cost.</p></div>
+  <ol class="v-plancard-steps"><li><span>1</span>Where and when</li><li><span>2</span>Who’s going and budget</li><li><span>3</span>Your plan on WhatsApp</li></ol>
+  <span class="w-btn w-btn-white v-magnet"><span class="i i-route"></span>Plan my trip</span>
+</a><sc-if value="{{vis.dubai}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="dubai" data-src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Dubai skyline</span><span class="w-ph-credit">David Rodrigo · Unsplash</span></div></div><div class="v-pkg-tags"></div><span class="v-pkg-dur">5D/4N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>United Arab Emirates · Dubai</span>
+    <h3 class="v-pkg-title">Dubai city and desert</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotel</span><span><span class="i i-passport"></span>Visa help</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳96,000</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.coxsbazar}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="coxsbazar" data-src="https://images.unsplash.com/photo-1711077470004-cb6a7258c082?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Cox’s Bazar beach</span><span class="w-ph-credit">Masum Ahmed · Unsplash</span></div></div><div class="v-pkg-tags"></div><span class="v-pkg-dur">3D/2N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Bangladesh · Cox’s Bazar</span>
+    <h3 class="v-pkg-title">Cox’s Bazar beach break</h3>
+    <div class="v-pkg-incl"><span><span class="i i-car"></span>AC bus</span><span><span class="i i-hotel"></span>Sea-view hotel</span><span><span class="i i-utensils"></span>Breakfast</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳12,500</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.singapore}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="singapore" data-src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Singapore Marina Bay</span><span class="w-ph-credit">Hu Chen · Unsplash</span></div></div><div class="v-pkg-tags"></div><span class="v-pkg-dur">5D/4N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Singapore</span>
+    <h3 class="v-pkg-title">Singapore with Sentosa</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotel</span><span><span class="i i-ticket"></span>Attraction passes</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳1,02,000</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.kl_langkawi}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="kualalumpur" data-src="https://images.unsplash.com/photo-1597148543182-830ef7bbb904?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Kuala Lumpur, Petronas Towers</span><span class="w-ph-credit">Ismail Bashiri · Unsplash</span></div></div><div class="v-pkg-tags"></div><span class="v-pkg-dur">6D/5N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Malaysia · Kuala Lumpur, Langkawi</span>
+    <h3 class="v-pkg-title">Kuala Lumpur and Langkawi</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotels</span><span><span class="i i-ship"></span>Island hopping</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳82,000</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.srimangal}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="srimangal"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Srimangal tea garden</span><span class="w-ph-credit">Photo to come</span></div></div><div class="v-pkg-tags"></div><span class="v-pkg-dur">2D/1N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Bangladesh · Moulvibazar</span>
+    <h3 class="v-pkg-title">Srimangal tea garden weekend</h3>
+    <div class="v-pkg-incl"><span><span class="i i-car"></span>Train or AC bus</span><span><span class="i i-hotel"></span>Eco resort</span><span><span class="i i-utensils"></span>Meals</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳6,900</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if><sc-if value="{{vis.corporate_cox}}" hint-placeholder-val="{{ true }}"><a class="v-pkg fx-spot fx-tilt" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="coxsbazar-alt" data-src="https://images.unsplash.com/photo-1609501285437-4eb001f82684?auto=format&fit=crop&w=900&q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Cox’s Bazar</span><span class="w-ph-credit">Nafiul Hasan · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-glass">For 20+ people</span></div><span class="v-pkg-dur">3D/2N</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Bangladesh · Cox’s Bazar</span>
+    <h3 class="v-pkg-title">Team retreat in Cox’s Bazar</h3>
+    <div class="v-pkg-incl"><span><span class="i i-car"></span>Coach</span><span><span class="i i-hotel"></span>Resort</span><span><span class="i i-users"></span>Event space</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From</div><div class="w-price">৳14,500</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a></sc-if></div>
+              <div class="v-loadmore"><button class="v-pillbtn" type="button">Show more packages<span class="i i-chevron-down"></span></button><span class="text-13 text-muted">Showing {{shown}} of {{shown}}</span></div>
+            </sc-if>
+            <sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+              <div class="w-empty v-empty"><span class="v-empty-ic"><span class="i i-map"></span></span><h3>No packages match these filters</h3><p>Clear a filter, or tell us what you have in mind and a travel expert will plan it for you.</p><div class="flex flex-wrap justify-center gap-2"><button class="w-btn w-btn-secondary" type="button" onClick="{{clear}}"><span class="i i-rotate-ccw"></span>Clear filters</button><a class="w-btn w-btn-primary" href="{{L.PlanTrip}}"><span class="i i-route"></span>Plan my trip</a></div></div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </section>
+  <sc-if value="{{fs.open}}" hint-placeholder-val="{{ false }}">
+    <div class="{{fs.ovCls}}" role="dialog" aria-modal="true" aria-label="Filters">
+      <div class="w-scrim" onClick="{{fs.close}}"></div>
+      <div class="w-sheet is-full v-prefsheet">
+        <div class="w-sheet-grab"></div>
+        <div class="w-sheet-head"><span class="w-sheet-title">Filters</span><button class="w-iconbtn" type="button" aria-label="Close" onClick="{{fs.close}}"><span class="i i-x"></span></button></div>
+        <div class="w-sheet-body">
+            <div class="w-rail-sec" style="padding-top:4px">
+              <div class="w-rail-title">Trip length</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Trip length"><sc-for list="{{f.durs}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Budget per person</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Budget per person"><sc-for list="{{f.budgets}}" as="o" hint-placeholder-count="5"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Travel month</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Travel month"><sc-for list="{{f.months}}" as="o" hint-placeholder-count="5"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec" style="border-bottom:0">
+              <div class="w-rail-title">Includes</div>
+              <div class="v-checks" role="group" aria-label="Includes"><sc-for list="{{f.incl}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="checkbox" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="v-cbox"></span>{{o.label}}<small class="v-count">{{o.count}}</small></button></sc-for></div>
+            </div></div>
+        <div class="w-sheet-foot"><button class="w-btn w-btn-ghost" type="button" onClick="{{clear}}">Clear all</button><button class="w-btn w-btn-primary" type="button" onClick="{{fs.close}}">Show {{countLabel}}</button></div>
+      </div>
+    </div>
+  </sc-if>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="packages" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m": {"editor": "boolean", "default": false}, "filters": {"editor": "boolean", "default": false}, "empty": {"editor": "boolean", "default": false}, "$preview": {"width": 1440, "height": 2600}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Packages','PackageDetail','PlanTrip','VisaCountry','Visa','Flights','Contact','Faqs','Refund','OfflinePay','Emi'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const pick1 = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => ({ key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on: cur === o[0], cls: b + (cur === o[0] ? (b.indexOf('v-opt') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: o[0] }) })); };
+    const pickN = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => { const on = cur.indexOf(o[0]) >= 0; return { key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on, cls: b + (on ? (b.indexOf('v-checkrow') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: on ? cur.filter(x => x !== o[0]) : cur.concat([o[0]]) }) }; }); };
+    const val = (key, def) => st[key] !== undefined ? st[key] : def;
+    const counter = (key, def, title, subt, min, max, what) => { const v = val(key, def); return { title, sub: subt, val: v, decOff: v <= min, incOff: v >= max, decLabel: 'Remove one ' + what, incLabel: 'Add one ' + what, dec: () => this.setState({ [key]: Math.max(min, v - 1) }), inc: () => this.setState({ [key]: Math.min(max, v + 1) }) }; };
+    const sw = (key, def) => { const on = val(key, def); return { on, cls: 'w-switch' + (on ? ' is-on' : ''), go: () => this.setState({ [key]: !on }) }; };
+    const overlay = (key, def) => { const open = st[key] !== undefined ? st[key] : def; const out = !!st[key + 'Out']; return { open, out,
+      open_: () => this.setState({ [key]: true, [key + 'Out']: false }),
+      close: () => { this.setState({ [key + 'Out']: true }); clearTimeout(this['_o' + key]); this['_o' + key] = setTimeout(() => this.setState({ [key]: false, [key + 'Out']: false }), 260); } }; };
+    const tk = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const _d = new Date(Date.now() + 6 * 3600e3);
+    const _dow = _d.getUTCDay(), _mins = _d.getUTCHours() * 60 + _d.getUTCMinutes();
+    let _open = false, _label;
+    if (_dow !== 5 && _mins >= 600 && _mins < 1080) { _open = true; _label = 'Open now · until 6 pm'; }
+    else if (_dow !== 5 && _mins < 600) _label = 'Closed · opens at 10 am';
+    else if (_dow === 4 || _dow === 5) _label = 'Closed · opens Saturday at 10 am';
+    else _label = 'Closed · opens tomorrow at 10 am';
+    const hours = { open: _open, label: _label, cls: 'v-hours is-sm ' + (_open ? 'is-open' : 'is-closed'), clsDark: 'v-hours is-sm on-dark ' + (_open ? 'is-open' : 'is-closed') };
+    const D = [["istanbul-cappadocia", ["intl", "group"], 6, 145000, ["2026-11", "2026-12", "2027-01"], ["Flights", "Hotels", "Visa help"]], ["maldives", ["intl", "honeymoon"], 3, 64900, ["2026-11", "2026-12", "2027-01", "any"], ["Flights", "Hotel", "Breakfast"]], ["sajek", ["dom", "group"], 2, 9800, ["2026-11", "2026-12"], ["Jeep", "Resort", "Meals"]], ["nepal", ["intl", "family", "group"], 4, 38500, ["2026-11", "2026-12", "any"], ["Flights", "Hotels", "Transfers"]], ["bali", ["intl", "honeymoon"], 5, 105000, ["2026-12", "2027-01", "any"], ["Flights", "Villa and hotel", "Transfers"]], ["bangkok-phuket", ["intl", "family"], 5, 72000, ["2026-11", "2026-12", "2027-01", "any"], ["Flights", "Hotels", "Island tour"]], ["dubai", ["intl", "family"], 4, 96000, ["2026-11", "2026-12", "any"], ["Flights", "Hotel", "Visa help"]], ["coxsbazar", ["dom", "family"], 2, 12500, ["2026-11", "2026-12", "2027-01", "any"], ["AC bus", "Sea-view hotel", "Breakfast"]], ["singapore", ["intl", "family"], 4, 102000, ["2026-12", "2027-01", "any"], ["Flights", "Hotel", "Attraction passes"]], ["kl-langkawi", ["intl", "honeymoon"], 5, 82000, ["2026-11", "2027-01", "any"], ["Flights", "Hotels", "Island hopping"]], ["srimangal", ["dom"], 1, 6900, ["2026-11", "2026-12", "2027-01", "any"], ["Train or AC bus", "Eco resort", "Meals"]], ["corporate-cox", ["dom", "corporate"], 2, 14500, ["any"], ["Coach", "Resort", "Event space"]]];
+    const CATS = [["all", "All trips", "i i-compass"], ["dom", "Bangladesh", "i i-map-pin"], ["intl", "International", "i i-globe"], ["honeymoon", "Honeymoon", "i i-heart"], ["family", "Family", "i i-users"], ["group", "Group tours", "i i-route"], ["corporate", "Corporate", "i i-briefcase"]];
+    const f0 = { cat: 'all', dur: 'any', bud: 'any', month: 'any', incl: [] };
+    const fs0 = st.f || (p.empty ? { cat: 'dom', dur: '6', bud: 'any', month: 'any', incl: [] } : {});
+    const fv = Object.assign({}, f0, fs0);
+    const setF = (patch) => this.setState({ f: Object.assign({}, fv, patch) });
+    const DUR = [['any', 'Any length', 0, 99], ['3', 'Up to 3 nights', 0, 3], ['5', '4 to 5 nights', 4, 5], ['6', '6 nights or more', 6, 99]];
+    const BUD = [['any', 'Any budget', 0, 1e9], ['25', 'Under ৳25,000', 0, 25000], ['75', '৳25,000 to ৳75,000', 25000, 75000], ['125', '৳75,000 to ৳1,25,000', 75000, 125000], ['max', 'Over ৳1,25,000', 125000, 1e9]];
+    const MON = [['any', 'Any month'], ['2026-11', 'November 2026'], ['2026-12', 'December 2026'], ['2027-01', 'January 2027']];
+    const INC = ['Flights', 'Visa help', 'Meals'];
+    const du = DUR.find(x => x[0] === fv.dur) || DUR[0], bu = BUD.find(x => x[0] === fv.bud) || BUD[0];
+    const hasIncl = (d, w) => w === 'Meals' ? d[5].some(x => x === 'Meals' || x === 'Breakfast') : d[5].indexOf(w) >= 0;
+    const pass = (d, skip) => (skip === 'c' || fv.cat === 'all' || d[1].indexOf(fv.cat) >= 0) && (skip === 'd' || (d[2] >= du[2] && d[2] <= du[3])) && (skip === 'b' || (d[3] >= bu[2] && d[3] < bu[3]))
+      && (skip === 'm' || fv.month === 'any' || d[4].indexOf(fv.month) >= 0 || d[4].indexOf('any') >= 0) && (skip === 'i' || fv.incl.every(w => hasIncl(d, w)));
+    const vis = {}; let n = 0;
+    D.forEach(d => { const ok = pass(d); vis[d[0].replace(/-/g, '_')] = ok; if (ok) n++; });
+    const cats = CATS.map(c => ({ label: c[1], icon: c[2], on: fv.cat === c[0], cls: 'v-dchip' + (fv.cat === c[0] ? ' is-on' : ''), count: D.filter(d => (c[0] === 'all' || d[1].indexOf(c[0]) >= 0) && pass(d, 'c')).length, go: () => setF({ cat: c[0] }) }));
+    const o = (arr, key) => arr.map(x => ({ label: x[1], on: fv[key] === x[0], cls: 'v-opt' + (fv[key] === x[0] ? ' is-on' : ''), go: () => setF({ [key]: x[0] }) }));
+    const f = { durs: o(DUR, 'dur'), budgets: o(BUD, 'bud'), months: o(MON, 'month'),
+      incl: INC.map(w => { const on = fv.incl.indexOf(w) >= 0; return { label: w, on, cls: 'v-checkrow' + (on ? ' is-on' : ''), count: D.filter(d => hasIncl(d, w) && pass(d, 'i')).length, go: () => setF({ incl: on ? fv.incl.filter(x => x !== w) : fv.incl.concat([w]) }) }; }) };
+    const chipsOn = [].concat(fv.dur !== 'any' ? [{ label: du[1], go: () => setF({ dur: 'any' }) }] : [], fv.bud !== 'any' ? [{ label: bu[1], go: () => setF({ bud: 'any' }) }] : [],
+      fv.month !== 'any' ? [{ label: (MON.find(x => x[0] === fv.month) || [0, ''])[1], go: () => setF({ month: 'any' }) }] : [], fv.incl.map(w => ({ label: w, go: () => setF({ incl: fv.incl.filter(x => x !== w) }) })));
+        const fs = overlay('fs', !!p.filters); fs.ovCls = 'w-overlay wa-r ' + (fs.out ? ' is-out' : '');
+    return {
+      L, m: !!p.m, cats, f, vis, chipsOn, fcount: chipsOn.length, fs, has: n > 0, none: n === 0, shown: n, q: '',
+      gridKey: [fv.cat, fv.dur, fv.bud, fv.month, fv.incl.join('.')].join('-'),
+      countLabel: n === 1 ? '1 package' : n + ' packages',
+      clear: () => this.setState({ f: f0 }), noop: (e) => { if (e && e.preventDefault) e.preventDefault(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

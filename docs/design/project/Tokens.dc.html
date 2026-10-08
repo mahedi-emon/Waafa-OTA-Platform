@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA — Design tokens</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa ds" style="width:1440px;height:3330px;padding:64px;display:flex;flex-direction:column;gap:40px">
+
+  <div class="flex items-end justify-between gap-6">
+    <div class="flex flex-col gap-3"><span class="w-eyebrow">Stage B · Tokens</span><h1 class="ds-h" style="font-size:52px">Design tokens</h1></div>
+    <p class="ds-note" style="max-width:460px;text-align:right">Named for Tailwind v4 <code>@theme</code> variables and the shadcn/ui theme. Contrast is measured against white unless noted; anything under 4.5:1 is for icons, borders or large text only.</p>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center justify-between"><span class="ds-label">Colour · brand (sampled from the logo)</span><span class="ds-map">--color-*</span></div>
+    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px">
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#020D39"></div><div class="ds-swatch-meta"><b>midnight-950</b><span>#020D39 · footer, dark sections</span><span>18.8:1</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#00185B"></div><div class="ds-swatch-meta"><b>navy-900</b><span>#00185B · headings, navy UI</span><span>16.4:1</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#01278B"></div><div class="ds-swatch-meta"><b>royal-800</b><span>#01278B · hover on navy</span><span>12.6:1</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#003FBE"></div><div class="ds-swatch-meta"><b>brand-700</b><span>#003FBE · links, primary hover</span><span>8.6:1</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#0053D7"></div><div class="ds-swatch-meta"><b>electric-600</b><span>#0053D7 · primary action, focus</span><span>6.5:1 · white text 6.5:1</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#0D8CEE"></div><div class="ds-swatch-meta"><b>sky-500</b><span>#0D8CEE · icons, charts</span><span>3.5:1 · no body text</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#39CCE9"></div><div class="ds-swatch-meta"><b>cyan-400</b><span>#39CCE9 · highlights on dark only</span><span>9.8:1 on midnight</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#D7D3D0"></div><div class="ds-swatch-meta"><b>silver-300</b><span>#D7D3D0 · chrome edges on dark</span><span>decorative</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#9F9B9C"></div><div class="ds-swatch-meta"><b>silver-500</b><span>#9F9B9C · metallic detail</span><span>decorative</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#A8782F;display:grid;place-items:center"><span class="w-tri w-tri-lg" style="background:#fff"></span></div><div class="ds-swatch-meta"><b>gold-600</b><span>#A8782F · triangle marker</span><span>3.9:1 · never text</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#0E0D0B"></div><div class="ds-swatch-meta"><b>ink-950</b><span>#0E0D0B · max-contrast text</span><span>19.4:1</span></div></div>
+      <div class="ds-swatch"><div class="ds-swatch-chip" style="background:var(--ribbon)"></div><div class="ds-swatch-meta"><b>--ribbon</b><span>120° · 4 stops</span><span>signature only</span></div></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:28px">
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between"><span class="ds-label">Colour · neutral “mist” (cool, navy-tinted)</span><span class="ds-map">surfaces, borders, text</span></div>
+      <div style="display:grid;grid-template-columns:repeat(11,minmax(0,1fr));border-radius:16px;overflow:hidden;border:1px solid var(--color-mist-200)">
+        <div style="background:#FBFCFE;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#556078"><b>25</b>FBFCFE</div>
+        <div style="background:#F6F8FB;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#556078"><b>50</b>F6F8FB</div>
+        <div style="background:#EFF2F7;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#556078"><b>100</b>EFF2F7</div>
+        <div style="background:#E3E8F0;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#3E475C"><b>200</b>E3E8F0</div>
+        <div style="background:#CDD5E2;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#3E475C"><b>300</b>CDD5E2</div>
+        <div style="background:#A3ADBF;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#151B2C"><b>400</b>A3ADBF</div>
+        <div style="background:#6B7489;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#fff"><b>500</b>6B7489</div>
+        <div style="background:#556078;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#fff"><b>600</b>556078</div>
+        <div style="background:#3E475C;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#fff"><b>700</b>3E475C</div>
+        <div style="background:#283044;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#fff"><b>800</b>283044</div>
+        <div style="background:#151B2C;height:92px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;font-size:11px;color:#fff"><b>900</b>151B2C</div>
+      </div>
+      <table class="ds-spec">
+        <tbody>
+          <tr><td>Text · body</td><td>mist-800 #283044 — 13.2:1</td><td>Text · secondary</td><td>mist-600 #556078 — 6.3:1</td></tr>
+          <tr><td>Text · muted, captions</td><td>mist-500 #6B7489 — 4.7:1 on white (use 600 on mist-50)</td><td>Borders</td><td>mist-200 cards · mist-300 inputs</td></tr>
+          <tr><td>Surfaces</td><td>white page · mist-50 panels · mist-100 tracks</td><td>Disabled</td><td>mist-400 on mist-100</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-col gap-4">
+      <span class="ds-label">Colour · semantic</span>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+        <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#0B7A54;height:64px"></div><div class="ds-swatch-meta"><b>success-600</b><span>#0B7A54 · bg #E7F6EF · 5.4:1</span></div></div>
+        <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#A15C07;height:64px"></div><div class="ds-swatch-meta"><b>warning-700</b><span>#A15C07 · bg #FFF4E2 · 5.2:1</span></div></div>
+        <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#C2261D;height:64px"></div><div class="ds-swatch-meta"><b>danger-600</b><span>#C2261D · bg #FDEDEB · 5.9:1</span></div></div>
+        <div class="ds-swatch"><div class="ds-swatch-chip" style="background:#0E7A47;height:64px"></div><div class="ds-swatch-meta"><b>whatsapp-700</b><span>#0E7A47 · white text 5.4:1</span></div></div>
+      </div>
+      <p class="ds-note">Status never relies on hue alone: every state also carries an icon or a word (✓ Booked, ! Overdue).</p>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px">
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between"><span class="ds-label">shadcn/ui theme mapping</span><span class="ds-map">globals.css · :root</span></div>
+      <table class="ds-spec">
+        <thead><tr><th>Variable</th><th>Value</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>--background / --foreground</td><td>#FFFFFF / mist-900</td><td>Light only at launch</td></tr>
+          <tr><td>--card, --popover</td><td>#FFFFFF</td><td>border mist-200, shadow tokens below</td></tr>
+          <tr><td>--primary / -foreground</td><td>electric-600 / #FFFFFF</td><td>Buttons, active states</td></tr>
+          <tr><td>--secondary / -foreground</td><td>mist-100 / navy-900</td><td>Secondary buttons, chips</td></tr>
+          <tr><td>--muted / -foreground</td><td>mist-100 / mist-500</td><td>Captions, skeletons</td></tr>
+          <tr><td>--accent / -foreground</td><td>electric-50 / brand-700</td><td>Hover, selected rows</td></tr>
+          <tr><td>--destructive</td><td>danger-600</td><td>Errors, cancel</td></tr>
+          <tr><td>--border / --input / --ring</td><td>mist-200 / mist-300 / electric-600</td><td>Ring 2 px + 4 px halo at 13%</td></tr>
+          <tr><td>--radius</td><td>0.75rem</td><td>inputs 12, cards 16, sheets 26</td></tr>
+          <tr><td>--chart-1…5</td><td>electric-600, sky-500, cyan-400, navy-900, gold-600</td><td>Admin charts</td></tr>
+          <tr><td>--sidebar</td><td>midnight-950</td><td>Admin navigation</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between"><span class="ds-label">Tailwind v4 · app/globals.css</span><span class="ds-map">excerpt</span></div>
+      <pre style="margin:0;padding:22px;border-radius:18px;background:var(--color-midnight-950);color:#D6DEF0;font:500 12.5px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow:hidden;white-space:pre">@import "tailwindcss";
+
+@theme {
+  --color-midnight-950: #020D39;  --color-navy-900: #00185B;
+  --color-royal-800: #01278B;     --color-brand-700: #003FBE;
+  --color-electric-600: #0053D7;  --color-sky-500: #0D8CEE;
+  --color-cyan-400: #39CCE9;      --color-gold-600: #A8782F;
+  --color-silver-300: #D7D3D0;    --color-silver-500: #9F9B9C;
+  --color-ink-950: #0E0D0B;
+  --color-mist-50: #F6F8FB;  /* … 25–900 as left */
+  --font-display: var(--font-jakarta), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px;
+  --shadow-glass: 0 28px 70px -28px rgb(2 13 57 / .45),
+                  inset 0 1px 0 rgb(255 255 255 / .75);
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring: cubic-bezier(.34, 1.36, .64, 1);
+}
+
+:root {
+  --background: #fff;  --foreground: var(--color-mist-900);
+  --primary: var(--color-electric-600);
+  --primary-foreground: #fff;
+  --ring: var(--color-electric-600);  --radius: .75rem;
+  --ribbon: linear-gradient(120deg, #020D39, #003FBE 40%,
+            #0D8CEE 74%, #39CCE9);
+}</pre>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center justify-between"><span class="ds-label">Type scale · mobile → desktop</span><span class="ds-map">Plus Jakarta Sans 700/800 · Inter 400–700 · Hind Siliguri for ৳ and Bangla (P1)</span></div>
+    <table class="ds-spec">
+      <thead><tr><th style="width:160px">Token</th><th style="width:220px">Size / line</th><th style="width:220px">Weight · tracking</th><th>Sample</th></tr></thead>
+      <tbody>
+        <tr><td>display</td><td>34/36 → 48 → 60/64</td><td>PJS 800 · −0.04em</td><td><span style="font:800 40px/1 var(--font-display);letter-spacing:-.04em;color:var(--color-navy-900)">Tell us where.</span></td></tr>
+        <tr><td>h1</td><td>28/32 → 36 → 44/50</td><td>PJS 700 · −0.03em</td><td><span style="font:700 32px/1.1 var(--font-display);letter-spacing:-.03em;color:var(--color-navy-900)">Tour packages from Dhaka</span></td></tr>
+        <tr><td>h2 · section</td><td>24/28 → 30 → 36/42</td><td>PJS 700 · −0.026em</td><td><span style="font:700 28px/1.15 var(--font-display);letter-spacing:-.026em;color:var(--color-navy-900)">Popular destinations</span></td></tr>
+        <tr><td>h3 · card title</td><td>19/24 → 22/28</td><td>PJS 700 · −0.018em</td><td><span style="font:700 20px/1.25 var(--font-display);letter-spacing:-.018em;color:var(--color-navy-900)">Maldives Island Escape</span></td></tr>
+        <tr><td>lead</td><td>15.5/24 → 17.5/27</td><td>Inter 400</td><td><span style="font-size:17px;color:var(--color-mist-600)">Compared by our experts and confirmed with you on call or WhatsApp.</span></td></tr>
+        <tr><td>body</td><td>16/24 (15/24 dense)</td><td>Inter 400</td><td><span style="font-size:16px;color:var(--color-mist-800)">Every search becomes a query our team answers.</span></td></tr>
+        <tr><td>label · UI</td><td>13.5–15/20</td><td>Inter 600</td><td><span style="font:600 14px/1 var(--font-sans);color:var(--color-mist-700)">Phone number</span></td></tr>
+        <tr><td>caption</td><td>12.5–13/18</td><td>Inter 500 · mist-500</td><td><span style="font-size:13px;color:var(--color-mist-500)">Fares are indicative until confirmed by our team.</span></td></tr>
+        <tr><td>eyebrow</td><td>11.5/12</td><td>Inter 700 · +0.14em · caps</td><td><span class="w-eyebrow">Group fares</span></td></tr>
+        <tr><td>numerals</td><td>tabular, cv05</td><td>PJS 800 for times and fares</td><td><span class="w-time" style="font-size:24px">07:45</span> <span class="w-price" style="font-size:24px;margin-left:16px">৳58,500</span> <span class="w-code" style="margin-left:16px">FLT-261008-0042</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px">
+    <div class="flex flex-col gap-4">
+      <span class="ds-label">Spacing · 4 px base</span>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-3 text-13"><span style="width:56px" class="text-subtle">1 · 4</span><span style="height:12px;width:4px;background:var(--color-electric-600);border-radius:2px"></span></div>
+        <div class="flex items-center gap-3 text-13"><span style="width:56px" class="text-subtle">2 · 8</span><span style="height:12px;width:8px;background:var(--color-electric-600);border-radius:2px"></span></div>
+        <div class="flex items-center gap-3 text-13"><span style="width:56px" class="text-subtle">3 · 12</span><span style="height:12px;width:12px;background:var(--color-electric-600);border-radius:2px"></span></div>
+        <div class="flex items-center gap-3 text-13"><span style="width:56px" class="text-subtle">4 · 16</span><span style="height:12px;width:16px;background:var(--color-electric-600);border-radius:2px"></span><span class="ds-note">mobile gutter</span></div>
+        <div class="flex items-center gap-3 text-13"><span style="width:56px" class="text-subtle">6 · 24</span><span style="height:12px;width:24px;background:var(--color-electric-600);border-radius:2px"></span></div>
+        <div class="flex items-center gap-3 text-13"><span style="width:56px" class="text-subtle">10 · 40</span><span style="height:12px;width:40px;background:var(--color-electric-600);border-radius:2px"></span><span class="ds-note">desktop gutter</span></div>
+        <div class="flex items-center gap-3 text-13"><span style="width:56px" class="text-subtle">16 · 64</span><span style="height:12px;width:64px;background:var(--color-electric-600);border-radius:2px"></span><span class="ds-note">section, tablet</span></div>
+        <div class="flex items-center gap-3 text-13"><span style="width:56px" class="text-subtle">22 · 88</span><span style="height:12px;width:88px;background:var(--color-electric-600);border-radius:2px"></span><span class="ds-note">section, desktop</span></div>
+      </div>
+      <p class="ds-note">Container 1320 px max · gutters 16 / 28 / 40 · touch targets ≥ 44 px.</p>
+    </div>
+    <div class="flex flex-col gap-4">
+      <span class="ds-label">Radius</span>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+        <div class="flex flex-col gap-2 items-center"><span style="width:72px;height:56px;border-radius:6px;background:var(--color-mist-100);box-shadow:inset 0 0 0 1px var(--color-mist-300)"></span><span class="text-13 text-subtle">xs 6 · tags</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:72px;height:56px;border-radius:12px;background:var(--color-mist-100);box-shadow:inset 0 0 0 1px var(--color-mist-300)"></span><span class="text-13 text-subtle">md 12 · inputs</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:72px;height:56px;border-radius:16px;background:var(--color-mist-100);box-shadow:inset 0 0 0 1px var(--color-mist-300)"></span><span class="text-13 text-subtle">lg 16 · cards</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:72px;height:56px;border-radius:20px;background:var(--color-mist-100);box-shadow:inset 0 0 0 1px var(--color-mist-300)"></span><span class="text-13 text-subtle">xl 20 · panels</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:72px;height:56px;border-radius:28px;background:var(--color-mist-100);box-shadow:inset 0 0 0 1px var(--color-mist-300)"></span><span class="text-13 text-subtle">2xl 28 · search</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:72px;height:56px;border-radius:999px;background:var(--color-mist-100);box-shadow:inset 0 0 0 1px var(--color-mist-300)"></span><span class="text-13 text-subtle">full · chips</span></div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-4">
+      <span class="ds-label">Elevation · navy-tinted</span>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:12px;border-radius:18px;background:var(--color-mist-50)">
+        <div class="flex flex-col gap-2 items-center"><span style="width:76px;height:56px;border-radius:12px;background:#fff;box-shadow:var(--shadow-xs)"></span><span class="text-13 text-subtle">xs</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:76px;height:56px;border-radius:12px;background:#fff;box-shadow:var(--shadow-sm)"></span><span class="text-13 text-subtle">sm</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:76px;height:56px;border-radius:12px;background:#fff;box-shadow:var(--shadow-md)"></span><span class="text-13 text-subtle">md · hover</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:76px;height:56px;border-radius:12px;background:#fff;box-shadow:var(--shadow-lg)"></span><span class="text-13 text-subtle">lg · lift</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:76px;height:56px;border-radius:12px;background:#fff;box-shadow:var(--shadow-xl)"></span><span class="text-13 text-subtle">xl · menus</span></div>
+        <div class="flex flex-col gap-2 items-center"><span style="width:76px;height:56px;border-radius:12px;background:rgb(255 255 255/.8);box-shadow:var(--shadow-glass)"></span><span class="text-13 text-subtle">glass</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px">
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between"><span class="ds-label">Motion tokens</span><span class="ds-map">Motion (Framer Motion) via LazyMotion</span></div>
+      <table class="ds-spec">
+        <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td>duration.fast</td><td>150 ms</td><td>hover, colour, focus</td></tr>
+          <tr><td>duration.base</td><td>220 ms</td><td>chips, toggles, small panels</td></tr>
+          <tr><td>duration.slow</td><td>300 ms</td><td>popovers, card lift</td></tr>
+          <tr><td>duration.enter</td><td>420–560 ms (≤ 700)</td><td>page fade + 8 px, section reveals</td></tr>
+          <tr><td>ease.out</td><td>cubic-bezier(.22, 1, .36, 1)</td><td>entrances, lifts, image zoom</td></tr>
+          <tr><td>ease.standard</td><td>cubic-bezier(.2, 0, 0, 1)</td><td>state changes</td></tr>
+          <tr><td>ease.inOut</td><td>cubic-bezier(.65, 0, .35, 1)</td><td>sheen, loader</td></tr>
+          <tr><td>spring.tab</td><td>visualDuration .35, bounce .18</td><td>sliding indicators, swap 180°</td></tr>
+          <tr><td>spring.sheet</td><td>visualDuration .42, bounce .08</td><td>bottom sheets, drawers</td></tr>
+          <tr><td>stagger</td><td>50 ms (40–60)</td><td>lists and grids, max 8 items</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-col gap-4">
+      <span class="ds-label">Breakpoints · Tailwind defaults</span>
+      <div style="display:grid;gap:10px">
+        <div class="flex items-center gap-3"><span class="ds-map" style="width:96px">base 390</span><span style="height:14px;width:30%;border-radius:4px;background:var(--color-electric-100)"></span><span class="text-13 text-subtle">app bar + bottom tabs, sheets</span></div>
+        <div class="flex items-center gap-3"><span class="ds-map" style="width:96px">md 768</span><span style="height:14px;width:48%;border-radius:4px;background:var(--color-electric-200)"></span><span class="text-13 text-subtle">tagline on, tabs off, dialogs</span></div>
+        <div class="flex items-center gap-3"><span class="ds-map" style="width:96px">lg 1024</span><span style="height:14px;width:64%;border-radius:4px;background:#8FB0F5"></span><span class="text-13 text-subtle">filter rail, search row</span></div>
+        <div class="flex items-center gap-3"><span class="ds-map" style="width:96px">xl 1280</span><span style="height:14px;width:80%;border-radius:4px;background:#4D82E8"></span><span class="text-13 text-subtle">full nav, help card rail</span></div>
+        <div class="flex items-center gap-3"><span class="ds-map" style="width:96px">1440</span><span style="height:14px;width:92%;border-radius:4px;background:var(--color-electric-600)"></span><span class="text-13 text-subtle">design reference</span></div>
+      </div>
+      <p class="ds-note">The full header nav needs 1,200 px for seven items, the hotline chip and the lockup with its tagline, so between 768 and 1279 the nav folds into the menu drawer while the lockup keeps its tagline.</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3330}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

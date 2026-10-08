@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Contact</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="more" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Contact</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">Contact</span><h1 class="v-h1 v-h1-page">Talk to a person, not a bot</h1><p class="v-lead">One number for travel, visas, Waafas World orders, printing and trading. Call, WhatsApp, email or come to our office in Motijheel.</p></div>
+          <span class="{{hours.cls}}">{{hours.label}}</span>
+        </div>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:22px">
+      <div class="w-wrap flex flex-col gap-8">
+        <div class="wc-contacts">
+          <a class="wc-contact" href="tel:+8801823232241"><span class="w-tile"><span class="i i-phone-call"></span></span><small>Call</small><b>01823-232241</b><p>Saturday to Thursday, 10 am to 6 pm. Ask for travel, visa or Waafas World.</p></a>
+          <a class="wc-contact is-wa" href="https://wa.me/8801823232241"><span class="w-tile"><span class="i i-whatsapp-fill"></span></span><small>WhatsApp</small><b>Message us</b><p>Best for photos of documents, printer labels and order questions. We reply in office hours.</p></a>
+          <a class="wc-contact" href="mailto:info@waafasworld.com"><span class="w-tile"><span class="i i-mail"></span></span><small>Email</small><b>info@waafasworld.com</b><p>For quotes, corporate orders and anything with attachments. Reply within one working day.</p></a>
+          <a class="wc-contact" href="https://maps.google.com/?q=Motijheel+Plaza+Dhaka"><span class="w-tile"><span class="i i-map-pin"></span></span><small>Visit</small><b>Motijheel Plaza, 4th floor</b><p>193/C-1, East Side, Aziz Square, Box Kalvat Road, Motijheel, Dhaka.</p></a>
+        </div>
+        <div class="wc-cgrid">
+          <section class="w-formcard" aria-labelledby="cf-t">
+            <sc-if value="{{form}}" hint-placeholder-val="{{ true }}">
+              <div class="w-formcard-body">
+                <div><h2 class="v-h3" id="cf-t">Send us a message</h2><p class="text-13 text-muted" style="margin-top:4px">For a quote on flights, tours or visas, the search forms are quicker: they send us your dates and travellers.</p></div>
+                <div class="w-grid-2"><div class="w-field"><label class="w-label" for="c-n">Your name <span class="w-req">*</span></label><input class="w-input" id="c-n" placeholder="e.g. Rahim Uddin"></div><div class="w-field"><label class="w-label" for="c-p">Mobile <span class="w-req">*</span></label><div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880</button><input id="c-p" inputmode="tel" placeholder="1712-345678"></div></div></div>
+                <div class="w-field"><span class="w-label">What is it about? <span class="w-req">*</span></span><div class="wc-chips" style="flex-wrap:wrap"><sc-for list="{{topics}}" as="t" hint-placeholder-count="7"><button class="{{t.cls}}" type="button" aria-pressed="{{t.on}}" onClick="{{t.go}}"><span class="{{t.icon}}"></span>{{t.label}}</button></sc-for></div></div>
+                <div class="w-field"><label class="w-label" for="c-m">Message <span class="w-req">*</span></label><textarea class="w-input v-textarea" id="c-m" rows="5" placeholder="{{msgPh}}"></textarea></div>
+                <div class="w-field"><label class="w-label" for="c-e">Email <span class="w-opt">(optional)</span></label><input class="w-input" id="c-e" type="email" placeholder="you@example.com"></div>
+                <div class="flex flex-wrap items-center gap-3"><button class="w-btn w-btn-primary" type="button" onClick="{{send}}"><span class="i i-send"></span>Send message</button><span class="text-13 text-muted">Protected from spam. We never share your number.</span></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
+              <div class="w-success">
+                <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"></circle><path d="M28 45 l11 11 l22 -24"></path></svg>
+                <h2 class="v-h3">Message sent</h2>
+                <p class="text-subtle" style="max-width:360px">{{sentLine}}</p>
+                <div class="flex flex-wrap justify-center gap-2"><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>WhatsApp instead</a><button class="w-btn w-btn-secondary" type="button" onClick="{{again}}">Send another</button></div>
+              </div>
+            </sc-if>
+          </section>
+          <div class="flex flex-col gap-4">
+            <div class="wc-map" style="height:300px"><span class="wc-map-grid"></span><span class="wc-map-note">Map embed loads here in the build</span><span class="wc-map-pin"><span><img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt=""></span></span><div class="wc-map-label"><div><b>Waafa International</b><small>Motijheel Plaza, 4th floor</small></div><a class="w-btn w-btn-sm w-btn-navy" href="https://maps.google.com/?q=Motijheel+Plaza+Dhaka"><span class="i i-navigation"></span>Directions</a></div></div>
+            <div class="w-panel flex flex-col gap-3">
+              <b class="text-navy" style="font:700 16px/1.2 var(--font-sans)">Office hours</b>
+              <table class="wc-table"><tbody><tr><th scope="row">Saturday to Thursday</th><td>10 am to 6 pm</td></tr><tr><th scope="row">Friday</th><td>Closed</td></tr><tr><th scope="row">Public holidays</th><td>Announced on Facebook</td></tr></tbody></table>
+              <p class="text-13 text-muted">Out of hours? Leave a WhatsApp message and we reply first thing.</p>
+            </div>
+            <a class="v-gfnote" href="{{L.Faqs}}" style="margin:0"><span class="w-tile"><span class="i i-circle-help"></span></span><p><b>Quick answers</b> on payments, refunds, visas and deliveries are in the FAQs.</p></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"sent":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2064}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Faqs'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const _d = new Date(Date.now() + 6 * 3600e3);
+    const _dow = _d.getUTCDay(), _mins = _d.getUTCHours() * 60 + _d.getUTCMinutes();
+    const open = _dow !== 5 && _mins >= 600 && _mins < 1080;
+    const hours = { cls: 'v-hours ' + (open ? 'is-open' : 'is-closed'), label: open ? 'Open now · until 6 pm' : (_dow === 4 || _dow === 5 ? 'Closed · opens Saturday at 10 am' : 'Closed · opens at 10 am') };
+    const T = [['travel', 'Flights and tours', 'i i-plane', 'Where and when are you going, and how many travellers?'], ['visa', 'Visa', 'i i-passport', 'Which country, which visa, and when do you travel?'], ['shop', 'Waafas World order', 'i i-shopping-bag', 'Your order number (ORD-…) and what you need help with'], ['print', 'Printing', 'i i-layers', 'What do you need printed, and how many?'], ['trade', 'Trading', 'i i-ship', 'Product, quantity and destination'], ['pay', 'Payment', 'i i-banknote', 'Your reference number and how you paid'], ['other', 'Something else', 'i i-message-circle', 'How can we help?']];
+    const tk = st.topic || 'travel';
+    const cur = T.find(t => t[0] === tk) || T[0];
+    const topics = T.map(t => ({ label: t[1], icon: t[2], on: tk === t[0], cls: 'w-chip' + (tk === t[0] ? ' is-on' : ''), go: () => this.setState({ topic: t[0] }) }));
+    const sent = st.sent !== undefined ? st.sent : !!p.sent;
+    return {
+      L, m: !!p.m, hours, topics, msgPh: cur[3], form: !sent, sent,
+      sentLine: open ? 'We’re open now, so expect a call or a WhatsApp reply within the hour.' : 'We’re closed now. We reply first thing when we open at 10 am.',
+      send: () => this.setState({ sent: true }), again: () => this.setState({ sent: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

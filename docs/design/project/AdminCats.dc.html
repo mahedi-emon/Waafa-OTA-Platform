@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · categories</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="cats" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Waafas World</span></div>
+          <h1 class="a-title">Categories</h1>
+          <p>Up to three levels. Each category has an icon, a banner, SEO fields and an attribute set that drives the product form, the filters and the specification table.</p>
+        </div>
+        <div class="a-actions"><button class="a-btn a-btn-outline" type="button"><span class="i i-plus"></span>Add category</button><button class="a-btn a-btn-primary" type="button" onClick="{{save}}"><span class="i i-save"></span>Save</button></div>
+      </div>
+      <div class="a-split is-left">
+        <section class="a-card a-sticky" aria-labelledby="tr-t">
+          <div class="a-card-head"><div><h3 id="tr-t">Category tree</h3><p>Drag to reorder or nest</p></div><span class="a-chip">{{total}} products</span></div>
+          <div class="a-card-body" style="padding:8px">
+            <div class="a-tree" role="tree" aria-label="Categories">
+              <sc-for list="{{tree}}" as="n" hint-placeholder-count="12">
+                <div class="{{n.cls}}" role="treeitem" aria-level="{{n.level}}" aria-selected="{{n.on}}" aria-expanded="{{n.exp}}" style="{{n.lv}}">
+                  <span class="i i-grip-vertical grip"></span>
+                  <sc-if value="{{n.kids}}" hint-placeholder-val="{{ false }}"><button class="a-tw" type="button" aria-label="{{n.twAria}}" onClick="{{n.toggle}}"><span class="{{n.tw}}"></span></button></sc-if><sc-if value="{{n.leaf}}" hint-placeholder-val="{{ true }}"><span style="width:18px;flex:none"></span></sc-if>
+                  <button class="a-tree-sel" type="button" onClick="{{n.go}}">
+                    <span class="ic"><span class="{{n.icon}}"></span></span>
+                    <span class="min-w-0" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{n.name}}</span>
+                    <sc-if value="{{n.sample}}" hint-placeholder-val="{{ false }}"><span class="a-chip" style="margin-left:4px">Sample</span></sc-if>
+                    <sc-if value="{{n.compat}}" hint-placeholder-val="{{ false }}"><span class="a-chip is-blue" style="margin-left:4px" title="Uses Compatible with">Fit</span></sc-if>
+                    <small>{{n.n}}</small>
+                  </button>
+                </div>
+              </sc-for>
+            </div>
+            <button class="a-add" type="button" style="margin:8px"><span class="i i-plus"></span>Add a top-level category</button>
+          </div>
+        </section>
+
+        <div class="a-stack">
+          <section class="a-card" aria-labelledby="ed-t">
+            <div class="a-card-head"><div><h3 id="ed-t">{{cur.name}}</h3><p>{{cur.path}}</p></div><span class="a-chip is-green">Visible</span></div>
+            <div class="a-card-body a-grid2">
+              <label class="a-field"><span class="a-label">Name</span><input class="a-input" value="{{cur.name}}"></label>
+              <label class="a-field"><span class="a-label">URL</span><span class="a-prefix"><span>/shop/c/</span><input class="a-input" value="{{cur.slug}}"></span></label>
+              <label class="a-field"><span class="a-label">Parent</span><span class="a-sel"><select class="a-input"><option>{{cur.parent}}</option><option>None (top level)</option></select></span></label>
+              <label class="a-field"><span class="a-label">Show in the store</span><span class="a-sel"><select class="a-input"><option>Visible</option><option>Hidden</option><option>Visible when it has products</option></select></span></label>
+              <div class="a-field a-span2"><span class="a-label">Icon</span><div class="a-iconpick" role="radiogroup" aria-label="Icon"><sc-for list="{{icons}}" as="x" hint-placeholder-count="16"><button class="{{x.cls}}" type="button" role="radio" aria-checked="{{x.on}}" aria-label="{{x.name}}" onClick="{{x.go}}"><span class="{{x.icon}}"></span></button></sc-for></div></div>
+              <div class="a-field a-span2"><span class="a-label">Banner <span class="a-hint">1440 × 360, shown on the category page</span></span><div class="a-media-item" style="aspect-ratio:4/1"><div class="ph" data-photo="{{cur.banner}}"><div class="ph-in"><span class="ph-ic"><span class="i i-image"></span></span><span class="ph-cap">{{cur.bannerCap}}</span></div></div><button class="a-btn a-btn-outline a-btn-sm" type="button" style="position:absolute;right:10px;bottom:10px"><span class="i i-upload"></span>Replace</button></div></div>
+            </div>
+          </section>
+
+          <section class="a-card" aria-labelledby="at-t">
+            <div class="a-card-head"><div><h3 id="at-t">Attribute set · {{cur.set}}</h3><p>Used by {{cur.setUse}}. Attributes become product fields, listing filters and specification rows.</p></div><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-plus"></span>Add attribute</button></div>
+            <div class="a-attr a-attr-head"><span></span><span>Attribute</span><span>Type</span><span>Values</span><span>Filter</span><span>Spec</span></div>
+            <sc-for list="{{attrs}}" as="a" hint-placeholder-count="5"><div class="a-attr"><span class="i i-grip-vertical grip"></span><b>{{a.name}}</b><span class="a-chip">{{a.type}}</span><span class="a-chips">{{a.vals}}</span><span class="{{a.f}}"></span><span class="{{a.s}}"></span></div></sc-for>
+          </section>
+
+          <section class="a-card" aria-labelledby="cm-t">
+            <div class="a-card-head"><div><h3 id="cm-t">Compatible with</h3><p>A list of models this category’s products fit, imported by CSV</p></div><button class="{{compatCls}}" type="button" role="switch" aria-checked="{{compat}}" onClick="{{toggleCompat}}"></button></div>
+            <sc-if value="{{compat}}" hint-placeholder-val="{{ true }}">
+              <div class="a-card-body flex flex-col gap-3">
+                <div class="a-grid3"><div class="a-kpi" style="padding:12px 14px"><span class="a-kpi-label">Model lists</span><span class="a-kpi-n" style="font-size:22px">4</span><span class="a-kpi-d">HP, Canon, Brother, Samsung</span></div><div class="a-kpi" style="padding:12px 14px"><span class="a-kpi-label">Models</span><span class="a-kpi-n" style="font-size:22px">612</span><span class="a-kpi-d">Last import 2 Oct</span></div><div class="a-kpi" style="padding:12px 14px"><span class="a-kpi-label">Products linked</span><span class="a-kpi-n" style="font-size:22px">38</span><span class="a-kpi-d">of 38 toners</span></div></div>
+                <div class="a-dropzone" style="height:auto;padding:16px;gap:12px"><span class="i i-file-spreadsheet" style="width:22px;height:22px"></span><span><b class="text-navy">Drop a CSV of models</b> · columns: brand, series, model, part codes</span><button class="a-btn a-btn-outline a-btn-sm" type="button">Choose file</button></div>
+                <div class="a-callout is-green"><span class="i i-search"></span><span><b>Find by model</b> appears for this category: brand, then model, then the products that fit, plus search by part code.</span></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{noCompat}}" hint-placeholder-val="{{ false }}"><div class="a-card-body"><p class="text-13 a-mute">Off. Products in this category won’t show a Compatible with list, and Find by model stays hidden.</p></div></sc-if>
+          </section>
+
+          <section class="a-card" aria-labelledby="se-t">
+            <div class="a-card-head"><h3 id="se-t">Search engine listing</h3></div>
+            <div class="a-card-body a-grid2" style="align-items:start">
+              <div class="flex flex-col gap-3"><label class="a-field"><span class="a-label">Meta title</span><input class="a-input" value="{{cur.seo}}"></label><label class="a-field"><span class="a-label">Meta description</span><textarea class="a-input" style="min-height:72px" value="{{cur.seoD}}"></textarea></label></div>
+              <div class="a-seo"><small>waafasworld.com <span>› shop › c › {{cur.slug}}</span></small><b>{{cur.seo}}</b><p>{{cur.seoD}}</p></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="a-toast" role="status"><span class="i i-circle-check"></span>{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const flash = msg => { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const T = [
+      ['pr', 0, 'Printers & Supplies', 'printer', 64, false, true, ''],
+      ['tn', 1, 'Toner cartridges', 'package', 38, false, true, 'pr'],
+      ['tn-hp', 2, 'For HP printers', 'tag', 21, false, true, 'tn'],
+      ['tn-ca', 2, 'For Canon printers', 'tag', 9, false, true, 'tn'],
+      ['tn-br', 2, 'For Brother printers', 'tag', 8, false, true, 'tn'],
+      ['ink', 1, 'Ink and ribbons', 'droplet', 12, false, true, 'pr'],
+      ['ptr', 1, 'Printers', 'printer-check', 9, false, false, 'pr'],
+      ['of', 0, 'Office & Stationery', 'lamp-desk', 52, true, false, ''],
+      ['pa', 1, 'Paper', 'file-text', 14, true, false, 'of'],
+      ['de', 1, 'Desk', 'boxes', 11, true, false, 'of'],
+      ['co', 0, 'Computer & Accessories', 'laptop', 31, true, false, ''],
+      ['el', 0, 'Electronics & Gadgets', 'smartphone', 44, true, false, ''],
+      ['pb', 1, 'Power banks', 'battery-charging', 9, true, false, 'el'],
+      ['au', 1, 'Audio', 'headphones', 12, true, false, 'el'],
+      ['hk', 0, 'Home & Kitchen', 'cooking-pot', 26, true, false, ''],
+      ['fa', 0, 'Fashion & Lifestyle', 'shirt', 31, true, false, ''],
+      ['men', 1, 'Men', 'user', 18, true, false, 'fa'],
+      ['tee', 2, 'T-shirts', 'shirt', 9, true, false, 'men']
+    ];
+    const sel = st.sel || 'tn';
+    const closed = st.closed || { of: true, co: true, hk: true };
+    const hasKids = id => T.some(t => t[7] === id);
+    const visible = t => { let par = t[7]; while (par) { if (closed[par]) return false; const pp = T.find(x => x[0] === par); par = pp ? pp[7] : ''; } return true; };
+    const tree = T.filter(visible).map(t => ({ name: t[2], level: t[1] + 1, lv: '--lv:' + t[1], icon: 'i i-' + t[3], n: t[4], sample: t[5] && t[1] === 0, compat: t[6] && t[1] === 0, on: t[0] === sel, cls: 'a-tree-row' + (t[0] === sel ? ' is-on' : ''), kids: hasKids(t[0]), leaf: !hasKids(t[0]), exp: hasKids(t[0]) ? !closed[t[0]] : undefined,
+      tw: 'i i-chevron-right tw' + (closed[t[0]] ? '' : ' is-open'), twAria: (closed[t[0]] ? 'Expand ' : 'Collapse ') + t[2], toggle: e => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ closed: Object.assign({}, closed, { [t[0]]: !closed[t[0]] }) }); }, go: () => this.setState({ sel: t[0], icon: undefined }) }));
+    const curT = T.find(t => t[0] === sel) || T[1];
+    const pathOf = t => { const out = [t[2]]; let par = t[7]; while (par) { const pp = T.find(x => x[0] === par); if (!pp) break; out.unshift(pp[2]); par = pp[7]; } return out; };
+    const path = pathOf(curT);
+    const isPrinter = curT[6];
+    const isFashion = path[0] === 'Fashion & Lifestyle';
+    const ICONS = ['printer', 'package', 'droplet', 'file-text', 'laptop', 'smartphone', 'shirt', 'cooking-pot', 'headphones', 'battery-charging', 'cable', 'lamp-desk', 'boxes', 'palette', 'gift', 'watch'];
+    const icon = st.icon || curT[3];
+    const ATTRS = isPrinter
+      ? [['Colour', 'Choice', 'Black, Cyan, Magenta, Yellow', 1, 1], ['Page yield', 'Number · pages', '1,000 to 20,000', 1, 1], ['Printer brand', 'Choice', 'HP, Canon, Brother, Samsung', 1, 1], ['Part code', 'Text', 'CF280A, CRG 070H…', 0, 1], ['Type', 'Choice', 'Original, Compatible', 1, 1]]
+      : isFashion
+      ? [['Size', 'Option', 'S, M, L, XL, XXL', 1, 0], ['Colour', 'Option', 'Navy, White, Black, Grey…', 1, 0], ['Material', 'Choice', 'Cotton, Polyester, Blend', 1, 1], ['Fabric weight', 'Number · GSM', '140 to 240', 0, 1], ['Fit', 'Choice', 'Slim, Regular, Relaxed', 1, 1]]
+      : [['Brand', 'Choice', 'From the brand list', 1, 1], ['Capacity', 'Number', 'Units set per category', 1, 1], ['Colour', 'Option', 'Any', 1, 0], ['Warranty', 'Text', '6 months, 1 year…', 0, 1], ['Material', 'Choice', 'Any', 1, 1]];
+    const chk = on => on ? 'a-check is-on' : 'a-check';
+    const compat = st.compat !== undefined ? st.compat : isPrinter;
+    const slug = curT[2].toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return {
+      m: !!p.m, tree, total: 248,
+      cur: { name: curT[2], path: path.join(' › ') + ' · ' + curT[4] + ' products', slug, parent: path.length > 1 ? path[path.length - 2] : 'None (top level)',
+        banner: isPrinter ? 'printing-alt' : isFashion ? 'prod-tshirt' : 'cat-stationery', bannerCap: curT[2] + ' banner',
+        set: isPrinter ? 'Toner and ink' : isFashion ? 'Apparel' : 'General product', setUse: isPrinter ? '3 categories, 59 products' : isFashion ? '2 categories, 31 products' : '9 categories',
+        seo: curT[2] + ' in Bangladesh | Waafas World', seoD: 'Shop ' + curT[2].toLowerCase() + ' with cash on delivery across Bangladesh. Genuine products, clear prices and fast delivery.' },
+      icons: ICONS.map(n => ({ name: n, icon: 'i i-' + n, on: n === icon, cls: n === icon ? 'is-on' : '', go: () => this.setState({ icon: n }) })),
+      attrs: ATTRS.map(a => ({ name: a[0], type: a[1], vals: a[2], f: chk(a[3]), s: chk(a[4]) })),
+      compat, noCompat: !compat, compatCls: 'w-switch' + (compat ? ' is-on' : ''), toggleCompat: () => this.setState({ compat: !compat }),
+      save: () => flash('Categories saved. Store menus update now.'), toast: st.toast || '',
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

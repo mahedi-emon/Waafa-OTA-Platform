@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Track a visa application</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="visa" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead ">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Visa}}">Visa services</a><span class="i i-chevron-right"></span><span aria-current="page">Track an application</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px">
+            <span class="v-eyebrow">Track</span>
+            <h1 class="v-h1 v-h1-page">Track your visa application</h1>
+            <p class="v-lead">Enter your reference and the phone number you applied with. We show the latest status and what happens next.</p>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec" style="padding-top:24px">
+      <div class="w-wrap v-trackgrid">
+        <form class="w-formcard v-trackform2" onSubmit="{{find}}">
+          <div class="w-formcard-body">
+            <div class="w-field"><label class="w-label" for="t-ref">Reference</label><input class="w-input" id="t-ref" placeholder="VSA-261008-0108" value="{{refVal}}"></div>
+            <div class="w-field"><label class="w-label" for="t-phone">Phone number used to apply <span class="w-req">*</span></label><div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880<span class="i i-chevron-down"></span></button><input id="t-phone" inputmode="tel" autocomplete="tel-national" placeholder="1712-345678" value="{{phoneVal}}"></div></div>
+            <button class="w-btn w-btn-primary w-btn-block" type="submit"><span class="i i-search"></span>Show status</button>
+            <p class="text-13 text-muted">Lost your reference? It’s in the email we sent, or ask us on WhatsApp.</p>
+          </div>
+        </form>
+        <div class="min-w-0">
+          <sc-if value="{{found}}" hint-placeholder-val="{{ true }}">
+            <section class="w-formcard v-trackres v-done" aria-live="polite">
+              <div class="v-trackres-head">
+                <img class="w-flag" src="../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg" alt="" style="width:44px;height:30px;border-radius:6px">
+                <div class="min-w-0"><b>Thailand · tourist visa</b><span class="text-13 text-muted">VSA-261008-0108 · 2 applicants</span></div>
+                <span class="a-status a-s-progress" style="margin-left:auto">Submitted to embassy</span>
+              </div>
+              <div class="w-timeline v-tracktl"><div class="w-tl-item is-done"><span class="w-tl-dot"><span class="i i-check"></span></span><div><div class="w-tl-title">New</div><div class="w-tl-meta">Thu, 8 Oct 2026, 11:42 am</div><p class="v-tl-note">We received your application.</p></div></div><div class="w-tl-item is-done"><span class="w-tl-dot"><span class="i i-check"></span></span><div><div class="w-tl-title">Documents verified</div><div class="w-tl-meta">Sat, 10 Oct 2026, 3:15 pm</div><p class="v-tl-note">Our visa desk checked every page with you.</p></div></div><div class="w-tl-item is-now"><span class="w-tl-dot"><span class="i i-send"></span></span><div><div class="w-tl-title">Submitted to embassy</div><div class="w-tl-meta">Mon, 12 Oct 2026, 10:30 am</div><p class="v-tl-note">Your file is with the embassy. Most decisions take about 10 working days.</p></div></div><div class="w-tl-item "><span class="w-tl-dot"></span><div><div class="w-tl-title">Decision</div><div class="w-tl-meta">Expected around Mon, 26 Oct 2026</div><p class="v-tl-note">We tell you the moment the embassy decides.</p></div></div><div class="w-tl-item "><span class="w-tl-dot"></span><div><div class="w-tl-title">Passport delivered</div><div class="w-tl-meta"></div><p class="v-tl-note">Collect it from our office or we send it by courier.</p></div></div></div>
+              <div class="v-trackres-foot"><span class="text-14 text-muted">Questions? Your visa officer is <b class="text-navy">Tanvir Ahmed</b> <span class="v-sample">Sample</span></span><a class="w-btn w-btn-sm w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20my%20visa%20reference%20is%20VSA-261008-0108"><span class="i i-whatsapp-fill"></span>WhatsApp</a></div>
+            </section>
+          </sc-if>
+          <sc-if value="{{notFound}}" hint-placeholder-val="{{ false }}">
+            <div class="w-empty v-empty"><span class="v-empty-ic"><span class="i i-search"></span></span><h3>We couldn’t find that application</h3><p>Check the reference starts with VSA- and use the phone number you applied with. Still stuck? Our visa desk can look it up.</p><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>Ask on WhatsApp</a></div>
+          </sc-if>
+          <div class="v-statlegend"><span class="v-kicker">What each status means</span><div class="flex flex-wrap gap-2"><span class="w-badge w-badge-neutral">New</span><span class="w-badge w-badge-neutral">Documents pending</span><span class="w-badge w-badge-neutral">Documents verified</span><span class="w-badge w-badge-neutral">Submitted to embassy</span><span class="w-badge w-badge-neutral">Approved</span><span class="w-badge w-badge-neutral">Rejected</span><span class="w-badge w-badge-neutral">Delivered</span><span class="w-badge w-badge-neutral">Cancelled</span></div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="visa" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m": {"editor": "boolean", "default": false}, "notfound": {"editor": "boolean", "default": false}, "$preview": {"width": 1440, "height": 1700}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Visa','VisaCountry','VisaApply','VisaTrack','VisaGuide','VisaGuidePost','Contact','Faqs','OfflinePay','Packages','PackageDetail'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const pick1 = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => ({ key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on: cur === o[0], cls: b + (cur === o[0] ? (b.indexOf('v-opt') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: o[0] }) })); };
+    const pickN = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => { const on = cur.indexOf(o[0]) >= 0; return { key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on, cls: b + (on ? (b.indexOf('v-checkrow') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: on ? cur.filter(x => x !== o[0]) : cur.concat([o[0]]) }) }; }); };
+    const val = (key, def) => st[key] !== undefined ? st[key] : def;
+    const counter = (key, def, title, subt, min, max, what) => { const v = val(key, def); return { title, sub: subt, val: v, decOff: v <= min, incOff: v >= max, decLabel: 'Remove one ' + what, incLabel: 'Add one ' + what, dec: () => this.setState({ [key]: Math.max(min, v - 1) }), inc: () => this.setState({ [key]: Math.min(max, v + 1) }) }; };
+    const sw = (key, def) => { const on = val(key, def); return { on, cls: 'w-switch' + (on ? ' is-on' : ''), go: () => this.setState({ [key]: !on }) }; };
+    const overlay = (key, def) => { const open = st[key] !== undefined ? st[key] : def; const out = !!st[key + 'Out']; return { open, out,
+      open_: () => this.setState({ [key]: true, [key + 'Out']: false }),
+      close: () => { this.setState({ [key + 'Out']: true }); clearTimeout(this['_o' + key]); this['_o' + key] = setTimeout(() => this.setState({ [key]: false, [key + 'Out']: false }), 260); } }; };
+    const tk = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const nf = st.nf !== undefined ? st.nf : !!p.notfound;
+    return { L, m: !!p.m, found: !nf, notFound: nf, refVal: nf ? 'VSA-261008-0180' : 'VSA-261008-0108', phoneVal: '1819-224466',
+      find: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ nf: false }); } };
+  }
+}
+</script>
+</body>
+</html>

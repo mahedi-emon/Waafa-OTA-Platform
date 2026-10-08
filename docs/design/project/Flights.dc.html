@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Flights · Dhaka to Dubai</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="flights" style="display:contents" hint-size="100%,76px"></dc-import>
+
+  <div class="w-sum wa-r">
+    <div class="w-wrap w-sum-in">
+      <span class="v-sum-ic" aria-hidden="true"><span class="i i-plane"></span></span>
+      <div class="min-w-0">
+        <div class="w-sum-route"><span class="w-iata">{{trip.from}}</span><span class="i i-arrow-right"></span><span class="w-iata">{{trip.to}}</span><span class="v-sum-cities">{{trip.cities}}</span></div>
+        <div class="w-sum-meta"><span>{{trip.kind}}</span><span class="w-dot-sep"></span><span>{{trip.dates}}</span><span class="w-dot-sep"></span><span>{{trip.pax}}</span></div>
+      </div>
+      <button class="{{editBtnCls}}" type="button" aria-expanded="{{editOpen}}" onClick="{{toggleEdit}}"><span class="{{editIc}}"></span><span class="v-hide-xs">{{editLabel}}</span></button>
+    </div>
+    <sc-if value="{{editOpen}}" hint-placeholder-val="{{ false }}">
+      <div class="v-sum-panel">
+        <div class="w-wrap">
+          <div class="v-hero-card" style="margin:0;padding:0">
+            <dc-import name="SearchCard" m="{{m}}" tab="flight" trip="oneway" style="display:block" hint-size="100%,240px"></dc-import>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+
+  <main class="w-main" id="main">
+    <div class="w-wrap">
+      <nav class="w-crumbs v-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Flights}}">Flights</a><span class="i i-chevron-right"></span><span aria-current="page">{{trip.cities}}</span></nav>
+
+      <div class="w-mbar lg-hide v-mbar">
+        <button class="w-chip" type="button" onClick="{{openPrefs}}"><span class="i i-sliders"></span>Preferences<sc-if value="{{pf.count}}" hint-placeholder-val="{{ false }}"><span class="w-chip-count">{{pf.count}}</span></sc-if></button>
+        <a class="w-chip" href="#gf"><span class="i i-ticket"></span>Group fares on this route · {{gfCount}}</a>
+      </div>
+
+      <div class="w-results">
+        <aside class="w-rail v-rail" aria-label="Your preferences">
+          <div class="v-pref-head"><b>Your preferences</b><span>Optional. They go to your travel expert with your request.</span></div>
+          <div class="w-rail-sec">
+            <div class="w-rail-title">Stops</div>
+            <div class="v-optlist" role="radiogroup" aria-label="Stops">
+              <sc-for list="{{pf.stops}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for>
+            </div>
+          </div>
+          <div class="w-rail-sec">
+            <div class="w-rail-title">Departure time</div>
+            <div class="w-timegrid">
+              <sc-for list="{{pf.times}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" type="button" aria-pressed="{{t.on}}" onClick="{{t.go}}"><span class="{{t.icon}}"></span><b>{{t.label}}</b>{{t.sub}}</button></sc-for>
+            </div>
+          </div>
+          <div class="w-rail-sec">
+            <div class="w-rail-title">Airlines <span class="text-13 text-muted" style="font-weight:500">Any if none ticked</span></div>
+            <div class="v-checks">
+              <sc-for list="{{pf.airlines}}" as="a" hint-placeholder-count="6"><button class="{{a.cls}}" type="button" role="checkbox" aria-checked="{{a.on}}" onClick="{{a.go}}"><span class="v-cbox"></span><span class="w-airline">{{a.code}}</span>{{a.name}}</button></sc-for>
+            </div>
+          </div>
+          <div class="w-rail-sec">
+            <div class="w-rail-title">Checked bag</div>
+            <div class="v-optlist" role="radiogroup" aria-label="Checked bag">
+              <sc-for list="{{pf.bags}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for>
+            </div>
+          </div>
+          <div class="w-rail-sec" style="border-bottom:0">
+            <button class="w-pick-opt" type="button" role="switch" aria-checked="{{pf.refund}}" onClick="{{pf.toggleRefund}}"><span><b>Refundable fares only</b><small>Usually costs a little more</small></span><span class="{{pf.refundCls}}"></span></button>
+          </div>
+        </aside>
+
+        <div class="v-resmain">
+          <sc-if value="{{showForm}}" hint-placeholder-val="{{ true }}">
+            <section class="w-expert v-expert" aria-labelledby="exp-t">
+              <div class="w-expert-ribbon"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="exr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"/><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"/><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"/><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"/></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#exr)"/><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30" fill="none" stroke="#D7D3D0" stroke-opacity=".7" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></div>
+              <span class="v-eyebrow">Fare check by a person</span>
+              <h1 class="v-h2" id="exp-t">Get the best fare from our experts</h1>
+              <p class="v-lead">Tell us how to reach you. A travel expert compares airlines for your date and sends you the best options, with baggage and change rules spelled out.</p>
+              <div class="v-expert-meta"><span class="{{hours.cls}}">{{hours.label}}</span><span><span class="i i-shield-check"></span>No payment now</span><span><span class="i i-badge-check"></span>Price confirmed before you pay</span></div>
+            </section>
+
+            <sc-if value="{{fare.on}}" hint-placeholder-val="{{ false }}">
+              <div class="v-pinfare">
+                <span class="w-badge w-badge-premium"><span class="w-tri"></span>Group fare</span>
+                <div class="v-pinfare-main"><b>{{fare.title}}</b><span>{{fare.meta}}</span></div>
+                <div class="v-pinfare-price"><span class="w-from">Indicative</span><span class="w-price">{{fare.price}} <small>per adult</small></span></div>
+                <a class="v-link" href="{{L.Flights}}" style="min-height:0">Change</a>
+              </div>
+            </sc-if>
+
+            <form class="w-formcard v-formcard" onSubmit="{{submit}}" novalidate="">
+              <div class="w-formcard-head">
+                <div class="w-steps" aria-label="Steps">
+                  <div class="{{st1.cls}}"><span class="w-step-n"><span class="{{st1.ic}}"></span>{{st1.n}}</span>Your details</div>
+                  <div class="w-step-line" style="{{lineStyle}}"><span></span></div>
+                  <div class="{{st2.cls}}"><span class="w-step-n">2</span>Trip details</div>
+                </div>
+              </div>
+
+              <sc-if value="{{isStep1}}" hint-placeholder-val="{{ true }}">
+                <div class="w-formcard-body v-stepanim">
+                  <div class="v-formtitle"><h2>How can our travel expert reach you?</h2><p>We use these only for this request.</p></div>
+                  <div class="w-field">
+                    <label class="w-label" for="f-name">Full name <span class="w-req">*</span></label>
+                    <input class="{{e.nameCls}}" id="f-name" autocomplete="name" placeholder="e.g. Rahim Uddin" value="{{v.name}}">
+                    <sc-if value="{{e.name}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{e.name}}</span></sc-if>
+                  </div>
+                  <div class="w-grid-2">
+                    <div class="w-field">
+                      <label class="w-label" for="f-phone">Mobile number <span class="w-req">*</span></label>
+                      <div class="{{e.phoneCls}}"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880<span class="i i-chevron-down"></span></button><input id="f-phone" inputmode="tel" autocomplete="tel-national" placeholder="1712-345678" value="{{v.phone}}"></div>
+                      <sc-if value="{{e.phone}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{e.phone}}</span></sc-if>
+                      <sc-if value="{{e.phoneHint}}" hint-placeholder-val="{{ true }}"><span class="v-hint">We call or WhatsApp you on this number.</span></sc-if>
+                    </div>
+                    <div class="w-field">
+                      <label class="w-label" for="f-mail">Email <span class="w-req">*</span></label>
+                      <input class="{{e.mailCls}}" id="f-mail" type="email" autocomplete="email" placeholder="you@example.com" value="{{v.mail}}">
+                      <sc-if value="{{e.mail}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{e.mail}}</span></sc-if>
+                      <sc-if value="{{e.mailHint}}" hint-placeholder-val="{{ true }}"><span class="v-hint">We send your fare options here too.</span></sc-if>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-formcard-foot">
+                  <span class="v-foot-note"><span class="i i-lock"></span>Step 1 of 2 · Private and never shared</span>
+                  <button class="w-btn w-btn-primary v-foot-go" type="button" onClick="{{toStep2}}">Continue<span class="i i-arrow-right"></span></button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{isStep2}}" hint-placeholder-val="{{ false }}">
+                <div class="w-formcard-body v-stepanim">
+                  <div class="v-formtitle"><h2>Check your trip</h2><p>We filled this in from your search. Change anything that isn’t right.</p></div>
+                  <div class="v-tripgrid">
+                    <div class="w-field"><label class="w-label" for="t-from">From</label><input class="w-input" id="t-from" value="Dhaka (DAC)"></div>
+                    <div class="w-field"><label class="w-label" for="t-to">To</label><input class="w-input" id="t-to" value="Dubai (DXB)"></div>
+                    <div class="w-field"><label class="w-label" for="t-dep">Departure</label><sc-if value="{{fare.on}}" hint-placeholder-val="{{ false }}"><input class="w-input" id="t-dep" value="{{fare.dep}}" readonly=""><span class="v-hint"><span class="i i-lock"></span>Fixed date for this group fare</span></sc-if><sc-if value="{{fare.off}}" hint-placeholder-val="{{ true }}"><input class="w-input" id="t-dep" value="{{fare.dep}}"></sc-if></div>
+                    <div class="w-field"><label class="w-label" for="t-ret">Return <span class="w-opt">(optional)</span></label><input class="w-input" id="t-ret" placeholder="Add a return date" value=""></div>
+                  </div>
+                  <div class="v-paxrow" role="group" aria-label="Travellers">
+                    <sc-for list="{{pax}}" as="r" hint-placeholder-count="3">
+                      <div class="v-paxcell"><div><b>{{r.title}}</b><small>{{r.sub}}</small></div><div class="w-counter"><button type="button" aria-label="{{r.decLabel}}" onClick="{{r.dec}}" disabled="{{r.decOff}}"><span class="i i-minus"></span></button><output aria-live="polite">{{r.val}}</output><button type="button" aria-label="{{r.incLabel}}" onClick="{{r.inc}}" disabled="{{r.incOff}}"><span class="i i-plus"></span></button></div></div>
+                    </sc-for>
+                  </div>
+                  <div class="w-field">
+                    <span class="w-label">Cabin class</span>
+                    <div class="w-pills" role="radiogroup" aria-label="Cabin class"><sc-for list="{{cabins}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div>
+                  </div>
+                  <div class="w-grid-2">
+                    <label class="w-field"><span class="w-label">Preferred airline <span class="w-opt">(optional)</span></span><span class="w-select"><select class="w-input"><option>Any airline</option><option>Emirates</option><option>flydubai</option><option>Biman Bangladesh Airlines</option><option>US-Bangla Airlines</option><option>Air Arabia</option><option>Qatar Airways</option></select></span></label>
+                    <div class="w-field"><span class="w-label">Dates</span><button class="w-pick-opt v-optbox" type="button" role="switch" aria-checked="{{flex}}" onClick="{{toggleFlex}}"><span><b>My dates are flexible</b><small>We also check 3 days before and after</small></span><span class="{{flexCls}}"></span></button></div>
+                  </div>
+                  <div class="v-contactrow">
+                    <div class="w-field">
+                      <span class="w-label">How should we contact you?</span>
+                      <div class="w-pills" role="radiogroup" aria-label="Preferred contact"><sc-for list="{{contacts}}" as="c" hint-placeholder-count="3"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.label}}</button></sc-for></div>
+                    </div>
+                    <label class="w-field"><span class="w-label">Best time to call</span><span class="w-select"><select class="w-input"><option>Any time in office hours</option><option>10 am to 12 pm</option><option>12 pm to 3 pm</option><option>3 pm to 6 pm</option></select></span></label>
+                  </div>
+                  <label class="w-field"><span class="w-label">Anything we should know? <span class="w-opt">(optional)</span></span><textarea class="w-input v-textarea" rows="3" placeholder="For example: travelling with a baby, need extra baggage, or a wheelchair at the airport."></textarea></label>
+                  <button class="{{consentCls}}" type="button" role="checkbox" aria-checked="{{consent}}" onClick="{{toggleConsent}}"><span class="v-cbox"></span><span>I agree that Waafa Tours and Travel may contact me about this request by phone, WhatsApp or email.</span></button>
+                  <sc-if value="{{consentErr}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>Tick the box so our expert can contact you.</span></sc-if>
+                </div>
+                <div class="w-formcard-foot">
+                  <button class="w-btn w-btn-ghost" type="button" onClick="{{toStep1}}"><span class="i i-arrow-left"></span>Back</button>
+                  <span class="v-foot-note"><span class="i i-shield-check"></span>No payment now</span>
+                  <button class="{{sendCls}}" type="submit" disabled="{{sending}}"><span class="{{sendIc}}"></span>{{sendLabel}}</button>
+                </div>
+              </sc-if>
+            </form>
+          </sc-if>
+
+          <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+            <section class="w-formcard v-done" aria-live="polite" data-fx-confetti="">
+              <div class="w-success">
+                <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"/><path d="M28 45 l11 11 l22 -24"/></svg>
+                <span class="v-eyebrow" style="justify-content:center">Request sent</span>
+                <h1 class="v-h2">Thank you! Our travel expert will contact you shortly with the best quotes.</h1>
+                <div class="w-ref"><span class="text-13 text-muted">Reference</span><b>FLT-261008-0042</b><button class="{{copyCls}}" type="button" onClick="{{copyRef}}"><span class="{{copyIc}}"></span>{{copyLabel}}</button></div>
+                <div class="w-next">
+                  <div class="w-next-item"><span class="w-next-n">1</span><div><b>An expert checks fares and rules for your date</b><p>{{doneHours}}</p></div></div>
+                  <div class="w-next-item"><span class="w-next-n">2</span><div><b>We call or WhatsApp you with the best options</b><p>From 01823-232241. Save the number so you know it’s us.</p></div></div>
+                  <div class="w-next-item"><span class="w-next-n">3</span><div><b>You choose, pay, and get your e-ticket</b><p>Pay by bank transfer, bKash, Nagad or at our office. Only after you agree the fare.</p></div></div>
+                </div>
+                <div class="v-done-actions">
+                  <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20my%20flight%20request%20reference%20is%20FLT-261008-0042"><span class="i i-whatsapp-fill"></span>Send reference on WhatsApp</a>
+                  <a class="w-btn w-btn-secondary" href="{{L.Flights}}" onClick="{{again}}"><span class="i i-search"></span>Search again</a>
+                  <a class="w-btn w-btn-ghost" href="{{L.Home}}"><span class="i i-house"></span>Home</a>
+                </div>
+                <p class="w-note" style="justify-content:center"><span class="i i-mail"></span><span>A copy of your request is on its way to your email.</span></p>
+              </div>
+            </section>
+          </sc-if>
+
+          <section class="v-gfmatch" id="gf" aria-labelledby="gf-t">
+            <div class="v-head" style="margin-bottom:16px">
+              <div class="v-head-text"><span class="v-eyebrow">Group fares</span><h2 class="v-h3" id="gf-t">Group fares on this route</h2><p class="v-lead" style="font-size:15px">Fixed-date seats we hold with airlines. Prices are per adult and indicative until we confirm.</p></div>
+              <span class="v-sample">Sample fares</span>
+            </div>
+            <div class="v-gfgrid">
+              <sc-for list="{{gfs}}" as="g" hint-placeholder-count="2">
+                <article class="w-fare v-gfcard">
+                  <div class="w-fare-top">
+                    <div class="w-fare-head"><span class="w-airline">{{g.code}}</span><div class="w-fare-meta"><b>{{g.airline}}</b><span>{{g.bag}}</span></div><span class="w-badge w-badge-brand" style="margin-left:auto">{{g.kind}}</span></div>
+                    <div class="w-fare-route">
+                      <div><div class="w-iata">{{g.from}}</div><div class="w-fare-city">{{g.fromCity}}</div></div>
+                      <div class="w-path"><span class="w-path-dot"></span><span class="w-path-ic"><span class="i i-plane"></span></span><span class="w-path-label">Direct</span></div>
+                      <div class="text-right"><div class="w-iata">{{g.to}}</div><div class="w-fare-city">{{g.toCity}}</div></div>
+                    </div>
+                    <div class="w-fare-info"><span><span class="i i-calendar"></span>{{g.date}}</span><span class="v-seats"><span class="i i-armchair"></span>{{g.seats}} seats left</span></div>
+                  </div>
+                  <div class="w-fare-split"></div>
+                  <div class="w-fare-bot"><div><div class="w-from">From</div><div class="w-price">{{g.price}} <small>per adult</small></div></div><a class="w-btn w-btn-sm w-btn-navy" href="{{g.href}}">Request this fare</a></div>
+                </article>
+              </sc-for>
+            </div>
+            <a class="v-pillbtn" href="{{L.GroupFares}}" style="margin-top:14px">See all group fares<span class="i i-arrow-right"></span></a>
+          </section>
+
+          <div class="w-helpcard-m v-helpm">
+            <span class="w-tile"><span class="i i-headset"></span></span>
+            <div class="min-w-0" style="flex:1"><b class="text-navy text-15">Rather talk to someone?</b><div class="text-13 text-muted">Call or WhatsApp 01823-232241</div></div>
+            <a class="w-btn w-btn-sm w-btn-wa" href="https://wa.me/8801823232241" aria-label="WhatsApp a travel expert"><span class="i i-whatsapp-fill"></span></a>
+          </div>
+        </div>
+
+        <aside class="w-aside v-aside" aria-label="Help">
+          <div class="w-helpcard">
+            <div class="w-helpcard-ribbon"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hcr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"/><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"/><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"/><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"/></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#hcr)"/><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30" fill="none" stroke="#D7D3D0" stroke-opacity=".7" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></div>
+            <span class="{{hours.clsDark}}" style="align-self:flex-start">{{hours.label}}</span>
+            <h3 class="v-h3" style="color:#fff">Rather talk to someone?</h3>
+            <p>Call or WhatsApp a travel expert in Motijheel. Saturday to Thursday, 10 am to 6 pm.</p>
+            <a class="w-btn w-btn-white" href="tel:+8801823232241"><span class="i i-phone"></span>01823-232241</a>
+            <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20I%27m%20looking%20for%20a%20flight%20from%20Dhaka%20to%20Dubai"><span class="i i-whatsapp-fill"></span>WhatsApp</a>
+          </div>
+          <div class="v-whylist">
+            <b>Why ask WAAFA</b>
+            <span><span class="i i-badge-check"></span>Price and rules confirmed before you pay</span>
+            <span><span class="i i-wallet"></span>Pay by bank, bKash, Nagad or at our office</span>
+            <span><span class="i i-building"></span>Part of Waafa International, est. 2010</span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <sc-if value="{{prefsOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="{{prefsOvCls}}" role="dialog" aria-modal="true" aria-label="Your preferences">
+      <div class="w-scrim" onClick="{{closePrefs}}"></div>
+      <div class="w-sheet is-full v-prefsheet">
+        <div class="w-sheet-grab"></div>
+        <div class="w-sheet-head"><span class="w-sheet-title">Your preferences</span><button class="w-iconbtn" type="button" aria-label="Close" onClick="{{closePrefs}}"><span class="i i-x"></span></button></div>
+        <div class="w-sheet-body">
+          <div class="v-pref-head"><b style="display:none">Your preferences</b><span>Optional. They go to your travel expert with your request.</span></div>
+          <div class="w-rail-sec">
+            <div class="w-rail-title">Stops</div>
+            <div class="v-optlist" role="radiogroup" aria-label="Stops">
+              <sc-for list="{{pf.stops}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for>
+            </div>
+          </div>
+          <div class="w-rail-sec">
+            <div class="w-rail-title">Departure time</div>
+            <div class="w-timegrid">
+              <sc-for list="{{pf.times}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" type="button" aria-pressed="{{t.on}}" onClick="{{t.go}}"><span class="{{t.icon}}"></span><b>{{t.label}}</b>{{t.sub}}</button></sc-for>
+            </div>
+          </div>
+          <div class="w-rail-sec">
+            <div class="w-rail-title">Airlines <span class="text-13 text-muted" style="font-weight:500">Any if none ticked</span></div>
+            <div class="v-checks">
+              <sc-for list="{{pf.airlines}}" as="a" hint-placeholder-count="6"><button class="{{a.cls}}" type="button" role="checkbox" aria-checked="{{a.on}}" onClick="{{a.go}}"><span class="v-cbox"></span><span class="w-airline">{{a.code}}</span>{{a.name}}</button></sc-for>
+            </div>
+          </div>
+          <div class="w-rail-sec">
+            <div class="w-rail-title">Checked bag</div>
+            <div class="v-optlist" role="radiogroup" aria-label="Checked bag">
+              <sc-for list="{{pf.bags}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for>
+            </div>
+          </div>
+          <div class="w-rail-sec" style="border-bottom:0">
+            <button class="w-pick-opt" type="button" role="switch" aria-checked="{{pf.refund}}" onClick="{{pf.toggleRefund}}"><span><b>Refundable fares only</b><small>Usually costs a little more</small></span><span class="{{pf.refundCls}}"></span></button>
+          </div>
+        </div>
+        <div class="w-sheet-foot"><button class="w-btn w-btn-ghost" type="button" onClick="{{clearPrefs}}">Clear all</button><button class="w-btn w-btn-primary" type="button" onClick="{{closePrefs}}">Save preferences</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="none" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"step":{"editor":"enum","options":["1","2","done"],"default":"1"},"fare":{"editor":"boolean","default":false},"err":{"editor":"boolean","default":false},"edit":{"editor":"boolean","default":false},"prefs":{"editor":"boolean","default":false},"filled":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2200}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._c); clearTimeout(this._p); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const s = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Flights','GroupFares','FlightsFare'].forEach(k => { L[k] = k + s + '.dc.html'; });
+    // office hours, Asia/Dhaka (UTC+6): Sat–Thu 10:00–18:00, closed Friday
+    const d = new Date(Date.now() + 6 * 3600e3);
+    const dow = d.getUTCDay(), mins = d.getUTCHours() * 60 + d.getUTCMinutes();
+    let open = false, label;
+    if (dow !== 5 && mins >= 600 && mins < 1080) { open = true; label = 'Open now · until 6 pm'; }
+    else if (dow !== 5 && mins < 600) label = 'Closed · opens at 10 am';
+    else if (dow === 4 || dow === 5) label = 'Closed · opens Saturday at 10 am';
+    else label = 'Closed · opens tomorrow at 10 am';
+    const hours = { label, cls: 'v-hours is-sm ' + (open ? 'is-open' : 'is-closed'), clsDark: 'v-hours is-sm on-dark ' + (open ? 'is-open' : 'is-closed') };
+    const doneHours = open ? 'We’re open now, until 6 pm. Requests are handled in the order they arrive.'
+      : (label.indexOf('Saturday') > 0 ? 'We’re closed now and start again on Saturday at 10 am.' : (label.indexOf('tomorrow') > 0 ? 'We’re closed now and start again tomorrow at 10 am.' : 'We open at 10 am today.'));
+
+    const step = st.step || p.step || '1';
+    const err = st.err !== undefined ? st.err : !!p.err;
+    const filled = st.filled !== undefined ? st.filled : (!!p.filled || step !== '1' || err);
+    const fareOn = !!p.fare;
+    const v = filled ? { name: 'Rahim Uddin', phone: err ? '1712-34' : '1712-345678', mail: err ? '' : 'rahim.uddin@gmail.com' } : { name: '', phone: '', mail: '' };
+    const e = {
+      name: '', nameCls: 'w-input',
+      phone: err ? 'Check the number: it should have 10 digits after +880, like 1712-345678.' : '',
+      mail: err ? 'Add your email so we can send your fare options.' : '',
+    };
+    e.phoneCls = 'w-phone' + (e.phone ? ' is-invalid' : '');
+    e.mailCls = 'w-input' + (e.mail ? ' is-invalid' : '');
+    e.phoneHint = !e.phone; e.mailHint = !e.mail;
+
+    // preferences (Manual: sent with the request; Live: the same rail filters offers)
+    const pf0 = { stops: 'any', times: [], airlines: [], bag: 'any', refund: false };
+    const pfs = Object.assign({}, pf0, st.pf || {});
+    const setPf = (patch) => this.setState({ pf: Object.assign({}, pfs, patch) });
+    const opt = (key, val, labelTxt) => ({ label: labelTxt, on: pfs[key] === val, cls: 'v-opt' + (pfs[key] === val ? ' is-on' : ''), go: () => setPf({ [key]: val }) });
+    const TIMES = [['morning', 'Morning', '5 am–12 pm', 'i i-sunrise'], ['afternoon', 'Afternoon', '12–5 pm', 'i i-sun'], ['evening', 'Evening', '5–9 pm', 'i i-sunset'], ['night', 'Night', '9 pm–5 am', 'i i-moon']];
+    const AIR = [['EK', 'Emirates'], ['FZ', 'flydubai'], ['BG', 'Biman Bangladesh'], ['BS', 'US-Bangla'], ['G9', 'Air Arabia'], ['QR', 'Qatar Airways']];
+    const tog = (arr, x) => arr.indexOf(x) >= 0 ? arr.filter(y => y !== x) : arr.concat([x]);
+    const pf = {
+      stops: [opt('stops', 'any', 'Any number of stops'), opt('stops', 'direct', 'Direct only'), opt('stops', 'one', 'Up to 1 stop')],
+      times: TIMES.map(t => ({ label: t[1], sub: t[2], icon: t[3], on: pfs.times.indexOf(t[0]) >= 0, cls: 'w-timebox' + (pfs.times.indexOf(t[0]) >= 0 ? ' is-active' : ''), go: () => setPf({ times: tog(pfs.times, t[0]) }) })),
+      airlines: AIR.map(a => ({ code: a[0], name: a[1], on: pfs.airlines.indexOf(a[0]) >= 0, cls: 'v-checkrow' + (pfs.airlines.indexOf(a[0]) >= 0 ? ' is-on' : ''), go: () => setPf({ airlines: tog(pfs.airlines, a[0]) }) })),
+      bags: [opt('bag', 'any', 'Any'), opt('bag', '20', '20 kg or more'), opt('bag', '30', '30 kg or more')],
+      refund: pfs.refund, refundCls: 'w-switch' + (pfs.refund ? ' is-on' : ''), toggleRefund: () => setPf({ refund: !pfs.refund })
+    };
+    pf.count = (pfs.stops !== 'any' ? 1 : 0) + pfs.times.length + pfs.airlines.length + (pfs.bag !== 'any' ? 1 : 0) + (pfs.refund ? 1 : 0);
+    const prefsOpen = st.prefsOpen !== undefined ? st.prefsOpen : !!p.prefs;
+
+    // step 2 data
+    const adt = st.adt || 1, chd = st.chd || 0, inf = st.inf || 0;
+    const row = (title, sub, val, min, max, key, what) => ({ title, sub, val, decOff: val <= min, incOff: val >= max, decLabel: 'Remove one ' + what, incLabel: 'Add one ' + what,
+      dec: () => this.setState({ [key]: Math.max(min, val - 1) }), inc: () => this.setState({ [key]: Math.min(max, val + 1) }) });
+    const pax = [row('Adults', '12+ years', adt, 1, 9 - chd, 'adt', 'adult'), row('Children', '2–11 years', chd, 0, 9 - adt, 'chd', 'child'), row('Infants', 'Under 2', inf, 0, adt, 'inf', 'infant')];
+    const cabin = st.cabin || 'Economy';
+    const cabins = ['Economy', 'Premium economy', 'Business', 'First'].map(c => ({ label: c, on: cabin === c, cls: 'w-chip' + (cabin === c ? ' is-active' : ''), go: () => this.setState({ cabin: c }) }));
+    const contact = st.contact || 'whatsapp';
+    const contacts = [['call', 'Call', 'i i-phone'], ['whatsapp', 'WhatsApp', 'i i-whatsapp'], ['email', 'Email', 'i i-mail']].map(c => ({ label: c[1], icon: c[2], on: contact === c[0], cls: 'w-chip' + (contact === c[0] ? ' is-active' : ''), go: () => this.setState({ contact: c[0] }) }));
+    const consent = st.consent !== undefined ? st.consent : true;
+    const sending = !!st.sending;
+
+    const GFS = [["EK", "Emirates", "Economy · 30 kg checked bag", "One way", "DAC", "Dhaka", "DXB", "Dubai", "Sat, 14 Nov 2026", 9, "৳58,500"], ["FZ", "flydubai", "Economy · 20 kg checked bag", "One way", "DAC", "Dhaka", "DXB", "Dubai", "Fri, 20 Nov 2026", 4, "৳49,900"]];
+    const gfs = GFS.map(g => ({ code: g[0], airline: g[1], bag: g[2], kind: g[3], from: g[4], fromCity: g[5], to: g[6], toCity: g[7], date: g[8], seats: g[9], price: g[10], href: L.FlightsFare }));
+
+    const copied = !!st.copied;
+    const isDone = step === 'done';
+    const editOpen = st.edit !== undefined ? st.edit : !!p.edit;
+    return {
+      L, hours, doneHours, v, e, pf, pax, cabins, contacts, gfs, gfCount: gfs.length,
+      m: !!p.m,
+      trip: { from: 'DAC', to: 'DXB', cities: 'Dhaka to Dubai', kind: 'One way', dates: fareOn ? 'Sat, 14 Nov 2026' : 'Thu, 22 Oct 2026', pax: '1 adult, Economy' },
+      fare: { on: fareOn, off: !fareOn, title: 'Emirates · Dhaka to Dubai · Sat, 14 Nov 2026', meta: 'Economy · 30 kg checked bag · 9 seats left (sample)', price: '৳58,500', dep: fareOn ? 'Sat, 14 Nov 2026' : 'Thu, 22 Oct 2026' },
+      editOpen, editBtnCls: 'w-btn w-btn-sm w-sum-edit ' + (editOpen ? 'w-btn-navy' : 'w-btn-secondary'), editIc: 'i ' + (editOpen ? 'i-x' : 'i-pencil'), editLabel: editOpen ? 'Close' : 'Edit search',
+      toggleEdit: () => this.setState({ edit: !editOpen }),
+      showForm: !isDone, isStep1: step === '1', isStep2: step === '2', isDone,
+      st1: { cls: 'w-step ' + (step === '1' ? 'is-active' : 'is-done'), ic: step === '1' ? '' : 'i i-check', n: step === '1' ? '1' : '' },
+      st2: { cls: 'w-step' + (step === '2' ? ' is-active' : '') },
+      lineStyle: '--p:' + (step === '1' ? '0%' : '100%'),
+      toStep2: () => { if (err) { this.setState({ err: false, filled: true }); return; } this.setState({ step: '2', filled: true }); },
+      toStep1: () => this.setState({ step: '1' }),
+      submit: (ev) => {
+        if (ev && ev.preventDefault) ev.preventDefault();
+        if (!consent) { this.setState({ consentErr: true }); return; }
+        this.setState({ sending: true });
+        clearTimeout(this._t);
+        this._t = setTimeout(() => this.setState({ sending: false, step: 'done' }), 1100);
+      },
+      sending, sendCls: 'w-btn w-btn-primary v-foot-go' + (sending ? ' is-loading' : ''), sendIc: sending ? 'v-spin' : 'i i-send', sendLabel: sending ? 'Sending…' : 'Send to a travel expert',
+      flex: !!st.flex, flexCls: 'w-switch' + (st.flex ? ' is-on' : ''), toggleFlex: () => this.setState({ flex: !st.flex }),
+      consent, consentCls: 'v-checkrow v-consent' + (consent ? ' is-on' : '') + (st.consentErr && !consent ? ' is-invalid' : ''), consentErr: !!st.consentErr && !consent,
+      toggleConsent: () => this.setState({ consent: !consent, consentErr: false }),
+      copyCls: 'w-btn w-btn-xs ' + (copied ? 'w-btn-navy' : 'w-btn-soft'), copyIc: 'i ' + (copied ? 'i-check' : 'i-copy'), copyLabel: copied ? 'Copied' : 'Copy',
+      copyRef: () => { try { if (navigator.clipboard) navigator.clipboard.writeText('FLT-261008-0042'); } catch (x) {} clearTimeout(this._c); this.setState({ copied: true }); this._c = setTimeout(() => this.setState({ copied: false }), 1600); },
+      again: () => this.setState({ step: '1', err: false }),
+      prefsOpen, prefsOvCls: 'w-overlay wa-r' + (st.prefsOut ? ' is-out' : ''),
+      openPrefs: () => this.setState({ prefsOpen: true, prefsOut: false }),
+      closePrefs: () => { this.setState({ prefsOut: true }); clearTimeout(this._p); this._p = setTimeout(() => this.setState({ prefsOpen: false, prefsOut: false }), 260); },
+      clearPrefs: () => this.setState({ pf: pf0 })
+    };
+  }
+}
+</script>
+</body>
+</html>

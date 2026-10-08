@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · sidebar</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{scrimCls}}" onClick="{{close}}"></div>
+<nav class="{{sideCls}}" aria-label="Admin">
+  <div class="a-side-brand">
+    <img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="">
+    <div class="min-w-0"><b>Waafa Admin</b><small>Tours and Travel · Waafas World</small></div>
+    <sc-if value="{{m}}" hint-placeholder-val="{{ false }}"><button class="a-iconbtn" type="button" aria-label="Close menu" style="margin-left:auto;color:rgb(255 255 255/.7)" onClick="{{close}}"><span class="i i-x"></span></button></sc-if>
+  </div>
+  <sc-for list="{{groups}}" as="g" hint-placeholder-count="6">
+    <div class="a-side-label">{{g.label}}</div>
+    <sc-for list="{{g.items}}" as="n" hint-placeholder-count="4">
+      <a class="{{n.cls}}" href="{{n.href}}" aria-current="{{n.cur}}"><span class="{{n.icon}}"></span>{{n.label}}<sc-if value="{{n.count}}" hint-placeholder-val="{{ false }}"><span class="{{n.countCls}}">{{n.count}}</span></sc-if><sc-if value="{{n.p}}" hint-placeholder-val="{{ false }}"><span class="a-nav-p">{{n.p}}</span></sc-if></a>
+    </sc-for>
+  </sc-for>
+  <div class="a-side-foot">
+    <span class="a-avatar" style="--av:#0D8CEE">AH</span>
+    <div class="min-w-0"><b>Arif Hossain</b><small>Super Admin · sample user</small></div>
+    <a class="a-iconbtn" href="{{logout}}" aria-label="Sign out"><span class="i i-log-out"></span></a>
+  </div>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"active":{"editor":"text","default":"dash"},"m":{"editor":"boolean","default":false},"open":{"editor":"boolean","default":false},"$preview":{"width":256,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const act = p.active || 'dash';
+    const PHONE = { AdminDash: 1, AdminLeads: 1, AdminLead: 1, AdminOrders: 1 };
+    const href = b => b + (p.m && PHONE[b] ? '-m' : '') + '.dc.html';
+    const NAV = [
+      ['Overview', [['dash', 'Dashboard', 'layout-dashboard', 'AdminDash']]],
+      ['Sales', [['leads', 'Leads', 'inbox', 'AdminLeads', '12', ''], ['bookings', 'Bookings', 'ticket', 'AdminBookings'], ['groupfares', 'Group fares', 'plane-takeoff', 'AdminGroupFares'], ['search', 'Search activity', 'chart-line', 'AdminSearch'], ['customers', 'Customers', 'users', 'AdminCustomers']]],
+      ['Travel', [['packages', 'Tour packages', 'map', 'AdminPackages'], ['visa', 'Visa applications', 'passport', 'AdminVisa', '5', '']]],
+      ['Waafas World', [['orders', 'Orders', 'shopping-bag', 'AdminOrders', '4', ''], ['products', 'Products', 'package', 'AdminProducts'], ['cats', 'Categories', 'folder-tree', 'AdminCats'], ['collections', 'Collections', 'layers', 'AdminCollections'], ['coupons', 'Coupons', 'ticket-percent', 'AdminCoupons']]],
+      ['Content', [['home', 'Home and banners', 'house', 'AdminHome'], ['team', 'Team', 'users-round', 'AdminTeam'], ['gallery', 'Gallery', 'images', 'AdminGallery'], ['feedback', 'Feedback', 'message-square-quote', 'AdminFeedback', '3', 'warn'], ['pages', 'Pages, blog and FAQs', 'file-text', 'AdminPages'], ['media', 'Media library', 'image', 'AdminMedia']]],
+      ['Insights', [['reports', 'Reports', 'chart-column', 'AdminReports']]],
+      ['Settings', [['modes', 'Booking modes', 'toggle-right', 'AdminModes'], ['footer', 'Footer and menus', 'rows-3', 'AdminFooter'], ['payments', 'Payments and delivery', 'wallet', 'AdminPayments'], ['notify', 'Notifications', 'bell', 'AdminNotify'], ['users', 'Users and roles', 'user-cog', 'AdminUsers'], ['general', 'General', 'settings', 'AdminGeneral']]]
+    ];
+    const groups = NAV.map(g => ({ label: g[0], items: g[1].map(n => ({
+      label: n[1], icon: 'i i-' + n[2], href: href(n[3]), cls: 'a-nav' + (n[0] === act ? ' is-active' : ''), cur: n[0] === act ? 'page' : undefined,
+      count: n[4] || '', countCls: 'a-nav-count' + (n[5] === 'warn' ? ' is-warn' : ''), p: n[6] || ''
+    })) }));
+    const open = !!p.open;
+    return {
+      m: !!p.m, groups, logout: 'AdminLogin.dc.html',
+      sideCls: 'a-side wa-r' + (open ? ' is-open' : ''), scrimCls: 'a-scrim' + (open ? ' is-open' : ''),
+      close: () => { if (typeof p.onClose === 'function') p.onClose(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

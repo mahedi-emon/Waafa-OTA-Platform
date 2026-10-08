@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Home</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}">
+  <sc-if value="{{intro}}" hint-placeholder-val="{{ false }}">
+    <div class="w-intro" aria-hidden="true">
+      <div class="w-intro-in v-intro-in">
+        <img class="v-intro-mark" src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="">
+        <img class="v-intro-word" src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt="">
+        <span class="v-intro-bar"><span></span></span>
+      </div>
+    </div>
+  </sc-if>
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="home" menu="{{menu}}" drawer="{{drawer}}" help="{{help}}" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+
+    <section class="v-hero" aria-labelledby="hero-t">
+      <div class="w-wrap">
+        <div class="v-hero-head">
+          <div class="v-hero-copy">
+            <span class="v-eyebrow"><span class="w-tri"></span>Waafa Tours and Travel</span>
+            <h1 class="v-h1" id="hero-t"><span class="v-line"><span>Tell us where.</span></span><span class="v-line"><span class="v-accent">We’ll handle the rest.</span></span></h1>
+          </div>
+          <div class="v-hero-side">
+            <p class="v-hero-sub">Flights, hotels, holidays and visas. A real travel expert checks the price and the rules with you before you pay.</p>
+            <div class="v-hero-meta"><span class="{{hours.cls}}">{{hours.label}}</span><span><span class="i i-phone"></span>01823-232241</span></div>
+            <div class="fx-next" aria-label="Popular next stops: Bangkok, Bali, Dubai, Kathmandu and the Maldives"><span class="i i-plane-takeoff"></span>Next stop<span class="fx-rotate" aria-hidden="true"><span>Bangkok</span><span>Bali</span><span>Dubai</span><span>Kathmandu</span><span>Maldives</span></span></div>
+          </div>
+        </div>
+        <div style="position:relative">
+          <div class="v-photo v-hero-media" data-photo="hero-wing" data-src="https://images.unsplash.com/photo-1647363377737-8d0ad7c2f494?auto=format&amp;fit=crop&amp;w=1600&amp;q=80"><video class="fx-video" poster="../assets/1eafb822d2a5bcfd609e27620a915610.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"><source src="../assets/7c04a4c60b2ac0ca8121ba25f2773e8c.webm" type="video/webm"><source src="../assets/50d70a56ed0b7e3e2e903279e5f8b0a5.mp4" type="video/mp4"></video><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Airplane wing over clouds at sunrise</span><span class="w-ph-credit">Nicholas Szewczyk · Unsplash</span></div></div>
+          <div class="v-hero-ribbon" aria-hidden="true"><svg viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hrb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#020D39" stop-opacity="0"></stop><stop offset=".32" stop-color="#003FBE" stop-opacity=".78"></stop><stop offset=".7" stop-color="#0D8CEE" stop-opacity=".8"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"></stop></linearGradient></defs><path d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44 L 1440 84 C 1204 160 1080 102 780 110 C 470 118 300 216 0 216 Z" fill="url(#hrb)"></path><path class="w-rib-line" d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44" fill="none" stroke="#D7D3D0" stroke-opacity=".85" stroke-width="1.4" vector-effect="non-scaling-stroke"></path></svg></div>
+        </div>
+        <div class="v-hero-card">
+          <dc-import name="SearchCard" m="{{m}}" tab="{{tab}}" trip="{{trip}}" sheet="{{sheet}}" q="{{q}}" style="display:contents" hint-size="100%,240px"></dc-import>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec is-tight" style="padding-top:28px;padding-bottom:0" aria-label="Why people book with WAAFA">
+      <div class="w-wrap">
+        <div class="v-trust w-stagger-in">
+          <div class="v-trust-item"><span class="w-tile"><span class="i i-building"></span></span><div><b>Part of Waafa International</b><small>Serving Dhaka’s offices since 2010</small></div></div>
+          <div class="v-trust-item"><span class="w-tile"><span class="i i-headset"></span></span><div><b>A real person helps you</b><small>Call or WhatsApp 01823-232241</small></div></div>
+          <div class="v-trust-item"><span class="w-tile"><span class="i i-shield-check"></span></span><div><b>Price confirmed first</b><small>No payment until you agree</small></div></div>
+          <div class="v-trust-item"><span class="w-tile"><span class="i i-wallet"></span></span><div><b>Pay the way you prefer</b><small>Bank, bKash, Nagad or at our office</small></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec w-reveal" aria-labelledby="off-t">
+      <div class="w-wrap">
+        <div class="v-head">
+          <div class="v-head-text"><span class="v-eyebrow">This season</span><h2 class="v-h2" id="off-t">Offers worth a look</h2></div>
+          <span class="v-sample">Sample offers</span>
+        </div>
+        <div class="w-hscroll lg-grid v-deals w-stagger-in">
+          <a class="v-deal fx-spot" href="{{L.PackageDetail}}">
+  <div class="v-photo " data-photo="bali-alt" data-src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Bali</span><span class="w-ph-credit">Harry Kessell · Unsplash</span></div></div>
+  <div class="v-deal-body">
+    <div class="v-deal-kicker"><span class="w-badge w-badge-brand">Holiday</span><span class="text-13 text-muted">Until 15 Dec</span></div>
+    <h3 class="v-deal-title">Five days in Bali</h3>
+    <p class="v-deal-sub">Ubud and the south coast, with flights, hotels and visa help. From ৳89,500 per person.</p>
+    <div class="v-deal-foot"><span class="v-code"><span class="i i-tag"></span>BALI-5D</span><span class="v-link" style="min-height:0">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a><a class="v-deal fx-spot" href="{{L.Flights}}">
+  <div class="v-photo " data-photo="kualalumpur" data-src="https://images.unsplash.com/photo-1597148543182-830ef7bbb904?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Kuala Lumpur, Petronas Towers</span><span class="w-ph-credit">Ismail Bashiri · Unsplash</span></div></div>
+  <div class="v-deal-body">
+    <div class="v-deal-kicker"><span class="w-badge w-badge-brand">Flights</span><span class="text-13 text-muted">Ongoing</span></div>
+    <h3 class="v-deal-title">Student fares to Kuala Lumpur</h3>
+    <p class="v-deal-sub">Extra baggage on some airlines when you show a valid student ID.</p>
+    <div class="v-deal-foot"><span class="v-code"><span class="i i-tag"></span>STUDENT</span><span class="v-link" style="min-height:0">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a><a class="v-deal fx-spot" href="{{L.PackageDetail}}">
+  <div class="v-photo " data-photo="sajek" data-src="https://images.unsplash.com/photo-1673632417072-b1366fda0e22?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Sajek Valley above the clouds</span><span class="w-ph-credit">Sium Ahameed Bhuyan · Unsplash</span></div></div>
+  <div class="v-deal-body">
+    <div class="v-deal-kicker"><span class="w-badge w-badge-brand">Bangladesh</span><span class="text-13 text-muted">Nov to Feb</span></div>
+    <h3 class="v-deal-title">A weekend in Sajek Valley</h3>
+    <p class="v-deal-sub">2 nights in the hills, with the jeep from Khagrachari included. From ৳9,800 per person.</p>
+    <div class="v-deal-foot"><span class="v-code"><span class="i i-tag"></span>SAJEK-WINTER</span><span class="v-link" style="min-height:0">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec is-tint w-reveal" aria-labelledby="gf-t">
+      <div class="w-wrap">
+        <div class="v-head">
+          <div class="v-head-text"><span class="v-eyebrow on-tint">Group fares</span><h2 class="v-h2" id="gf-t">Fixed-date seats at a fixed price</h2><p class="v-lead">We hold seats with airlines in advance. If your date matches, these are the simplest fares to book: send the names as in each passport, pay, get your e-ticket.</p></div>
+          <div class="flex items-center gap-3"><span class="v-sample">Sample fares</span><a class="v-pillbtn" href="{{L.GroupFares}}">All group fares<span class="i i-arrow-right"></span></a></div>
+        </div>
+        <div class="w-hscroll lg-grid v-fares w-stagger-in" style="--notch:var(--color-mist-50)">
+          <article class="w-fare w-lift">
+  <div class="w-fare-top">
+    <div class="w-fare-head"><span class="w-airline">EK</span><div class="w-fare-meta"><b>Emirates</b><span>Economy · 30 kg checked bag</span></div><span class="w-badge w-badge-brand" style="margin-left:auto">One way</span></div>
+    <div class="w-fare-route">
+      <div><div class="w-iata">DAC</div><div class="w-fare-city">Dhaka</div></div>
+      <div class="w-path"><span class="w-path-dot"></span><span class="w-path-ic"><span class="i i-plane"></span></span><span class="w-path-label">Direct</span></div>
+      <div class="text-right"><div class="w-iata">DXB</div><div class="w-fare-city">Dubai</div></div>
+    </div>
+    <div class="w-fare-info"><span><span class="i i-calendar"></span>Sat, 14 Nov 2026</span><span class="v-seats"><span class="i i-armchair"></span>9 seats left</span></div>
+  </div>
+  <div class="w-fare-split"></div>
+  <div class="w-fare-bot"><div><div class="w-from">From</div><div class="w-price">৳58,500 <small>per adult</small></div></div><a class="w-btn w-btn-sm w-btn-secondary" href="{{L.GroupFares}}">Request</a></div>
+</article><article class="w-fare w-lift">
+  <div class="w-fare-top">
+    <div class="w-fare-head"><span class="w-airline">BS</span><div class="w-fare-meta"><b>US-Bangla Airlines</b><span>Economy · 30 kg checked bag</span></div><span class="w-badge w-badge-brand" style="margin-left:auto">One way</span></div>
+    <div class="w-fare-route">
+      <div><div class="w-iata">DAC</div><div class="w-fare-city">Dhaka</div></div>
+      <div class="w-path"><span class="w-path-dot"></span><span class="w-path-ic"><span class="i i-plane"></span></span><span class="w-path-label">Direct</span></div>
+      <div class="text-right"><div class="w-iata">KUL</div><div class="w-fare-city">Kuala Lumpur</div></div>
+    </div>
+    <div class="w-fare-info"><span><span class="i i-calendar"></span>Mon, 2 Nov 2026</span><span class="v-seats"><span class="i i-armchair"></span>14 seats left</span></div>
+  </div>
+  <div class="w-fare-split"></div>
+  <div class="w-fare-bot"><div><div class="w-from">From</div><div class="w-price">৳29,800 <small>per adult</small></div></div><a class="w-btn w-btn-sm w-btn-secondary" href="{{L.GroupFares}}">Request</a></div>
+</article><article class="w-fare w-lift">
+  <div class="w-fare-top">
+    <div class="w-fare-head"><span class="w-airline">SQ</span><div class="w-fare-meta"><b>Singapore Airlines</b><span>Economy · 30 kg checked bag</span></div><span class="w-badge w-badge-brand" style="margin-left:auto">One way</span></div>
+    <div class="w-fare-route">
+      <div><div class="w-iata">DAC</div><div class="w-fare-city">Dhaka</div></div>
+      <div class="w-path"><span class="w-path-dot"></span><span class="w-path-ic"><span class="i i-plane"></span></span><span class="w-path-label">Direct</span></div>
+      <div class="text-right"><div class="w-iata">SIN</div><div class="w-fare-city">Singapore</div></div>
+    </div>
+    <div class="w-fare-info"><span><span class="i i-calendar"></span>Thu, 19 Nov 2026</span><span class="v-seats"><span class="i i-armchair"></span>6 seats left</span></div>
+  </div>
+  <div class="w-fare-split"></div>
+  <div class="w-fare-bot"><div><div class="w-from">From</div><div class="w-price">৳41,200 <small>per adult</small></div></div><a class="w-btn w-btn-sm w-btn-secondary" href="{{L.GroupFares}}">Request</a></div>
+</article><article class="w-fare w-lift">
+  <div class="w-fare-top">
+    <div class="w-fare-head"><span class="w-airline">TG</span><div class="w-fare-meta"><b>Thai Airways</b><span>Economy · 30 kg checked bag</span></div><span class="w-badge w-badge-success" style="margin-left:auto">Return</span></div>
+    <div class="w-fare-route">
+      <div><div class="w-iata">DAC</div><div class="w-fare-city">Dhaka</div></div>
+      <div class="w-path"><span class="w-path-dot"></span><span class="w-path-ic"><span class="i i-plane"></span></span><span class="w-path-label">Direct</span></div>
+      <div class="text-right"><div class="w-iata">BKK</div><div class="w-fare-city">Bangkok</div></div>
+    </div>
+    <div class="w-fare-info"><span><span class="i i-calendar"></span>11 Dec – 16 Dec</span><span class="v-seats"><span class="i i-armchair"></span>11 seats left</span></div>
+  </div>
+  <div class="w-fare-split"></div>
+  <div class="w-fare-bot"><div><div class="w-from">From</div><div class="w-price">৳38,900 <small>per adult</small></div></div><a class="w-btn w-btn-sm w-btn-secondary" href="{{L.GroupFares}}">Request</a></div>
+</article>
+        </div>
+        <div class="w-airlines">
+          <div class="w-airlines-label"><span class="w-ribbon-line" style="width:28px"></span>We book most airlines that fly from Bangladesh, including</div>
+          <div class="w-marquee" aria-label="Airlines we book"><div class="w-marquee-track"><span class="w-airchip"><span class="w-airline">BG</span>Biman Bangladesh</span><span class="w-airchip"><span class="w-airline">BS</span>US-Bangla</span><span class="w-airchip"><span class="w-airline">VQ</span>NOVOAIR</span><span class="w-airchip"><span class="w-airline">EK</span>Emirates</span><span class="w-airchip"><span class="w-airline">QR</span>Qatar Airways</span><span class="w-airchip"><span class="w-airline">SQ</span>Singapore Airlines</span><span class="w-airchip"><span class="w-airline">MH</span>Malaysia Airlines</span><span class="w-airchip"><span class="w-airline">TG</span>Thai Airways</span><span class="w-airchip"><span class="w-airline">TK</span>Turkish Airlines</span><span class="w-airchip"><span class="w-airline">6E</span>IndiGo</span><span class="w-airchip"><span class="w-airline">G9</span>Air Arabia</span><span class="w-airchip"><span class="w-airline">CX</span>Cathay Pacific</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">BG</span>Biman Bangladesh</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">BS</span>US-Bangla</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">VQ</span>NOVOAIR</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">EK</span>Emirates</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">QR</span>Qatar Airways</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">SQ</span>Singapore Airlines</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">MH</span>Malaysia Airlines</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">TG</span>Thai Airways</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">TK</span>Turkish Airlines</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">6E</span>IndiGo</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">G9</span>Air Arabia</span><span class="w-airchip" aria-hidden="true"><span class="w-airline">CX</span>Cathay Pacific</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec w-reveal" aria-labelledby="dest-t">
+      <div class="w-wrap">
+        <div class="v-head">
+          <div class="v-head-text"><span class="v-eyebrow">Destinations</span><h2 class="v-h2" id="dest-t">Find a trip that fits you</h2><p class="v-lead">Filter by visa, flight time or the kind of trip. Prices are per person, from Dhaka.</p></div>
+          <span class="v-sample">Sample visa notes and prices</span>
+        </div>
+        <div class="v-dfilters" role="group" aria-label="Filter destinations">
+          <sc-for list="{{chips}}" as="c" hint-placeholder-count="5">
+            <button class="{{c.cls}}" type="button" aria-pressed="{{c.on}}" onClick="{{c.pick}}"><span class="{{c.icon}}"></span>{{c.label}}<span class="v-dcount">{{c.count}}</span></button>
+          </sc-for>
+        </div>
+        <div class="v-dests" aria-live="polite">
+          <sc-for list="{{dests}}" as="d" hint-placeholder-count="6">
+            <a class="v-dest fx-tilt fx-spot" key="{{d.key}}" href="{{L.Packages}}">
+              <div class="v-photo v-dest-ph" data-photo="{{d.slot}}" data-src="{{d.src}}"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">{{d.subj}}</span><span class="w-ph-credit">{{d.credit}}</span></div></div>
+              <div class="v-dest-body">
+                <div class="v-dest-top"><b>{{d.name}}</b><span class="v-dest-code">{{d.code}}</span></div>
+                <span class="v-dest-sub">{{d.sub}}</span>
+                <ul class="v-dest-facts">
+                  <li><span class="i i-plane"></span>{{d.time}}</li>
+                  <li class="{{d.visaCls}}"><span class="i i-passport"></span>{{d.visa}}</li>
+                  <li><span class="i i-calendar"></span>{{d.season}}</li>
+                </ul>
+                <div class="v-dest-foot"><span><span class="w-from">From</span><b class="w-price">{{d.price}}</b></span><span class="v-dest-go">See trips<span class="i i-arrow-right"></span></span></div>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+        <p class="w-note mt-4"><span class="i i-info"></span><span>Visa rules change. We confirm the current rules for your passport before you book.</span></p>
+      </div>
+    </section>
+
+    <section class="v-sec is-tint w-reveal" aria-labelledby="pkg-t">
+      <div class="w-wrap">
+        <div class="v-head">
+          <div class="v-head-text"><span class="v-eyebrow on-tint">Tour packages</span><h2 class="v-h2" id="pkg-t">Trips planned day by day</h2></div>
+          <div class="flex items-center gap-3"><span class="v-sample">Sample packages</span><a class="v-pillbtn" href="{{L.Packages}}">All packages<span class="i i-arrow-right"></span></a></div>
+        </div>
+        <div class="w-hscroll lg-grid v-pkgs w-stagger-in">
+          <a class="v-pkg fx-spot fx-hoverplay" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="maldives" data-src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><video class="fx-video" poster="../assets/6770d5151388e918daecab856f8b83fa.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"><source src="../assets/321015d9ce0bd451310be529879c2ed6.webm" type="video/webm"><source src="../assets/51b29b5c8ff049fa5844edb34c648b76.mp4" type="video/mp4"></video><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Maldives overwater villas</span><span class="w-ph-credit">Ishan @seefromthesky · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-premium"><span class="w-tri"></span>Best seller</span></div><span class="fx-playchip"><span class="i i-play"></span>Preview</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Malé · Maafushi</span>
+    <h3 class="v-pkg-title">Maldives island stay with speedboat transfers</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotel</span><span><span class="i i-utensils"></span>Breakfast</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From · 4D/3N</div><div class="w-price">৳64,900</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a><a class="v-pkg fx-spot" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="nepal-alt" data-src="https://images.unsplash.com/photo-1562462181-b228e3cff9ad?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Nepal</span><span class="w-ph-credit">Meera Pankhania · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-glass">Group departure</span></div></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Kathmandu · Pokhara</span>
+    <h3 class="v-pkg-title">Kathmandu and Pokhara, mountain views</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotels</span><span><span class="i i-car"></span>Transfers</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From · 5D/4N</div><div class="w-price">৳38,500</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a><a class="v-pkg fx-spot" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="sajek-alt" data-src="https://images.unsplash.com/photo-1673632417265-a7bcbc90383c?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Sajek Valley</span><span class="w-ph-credit">Sium Ahameed Bhuyan · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-glass">Bangladesh</span></div></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Khagrachari · Sajek</span>
+    <h3 class="v-pkg-title">Sajek Valley above the clouds</h3>
+    <div class="v-pkg-incl"><span><span class="i i-car"></span>Jeep</span><span><span class="i i-hotel"></span>Resort</span><span><span class="i i-utensils"></span>Meals</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From · 3D/2N</div><div class="w-price">৳9,800</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a><a class="v-pkg fx-spot fx-hoverplay" href="{{L.PackageDetail}}">
+  <div style="position:relative"><div class="v-photo " data-photo="cappadocia" data-src="https://images.unsplash.com/photo-1699519324068-8cade0601b53?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><video class="fx-video" poster="../assets/23fc242076511d4e518367e5544f52ca.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"><source src="../assets/fd285aba22c244450c8c2d7e5034b449.webm" type="video/webm"><source src="../assets/ecfb8d1c807e3343954b36d36298686f.mp4" type="video/mp4"></video><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Cappadocia balloons</span><span class="w-ph-credit">Chloé Lefleur · Unsplash</span></div></div><div class="v-pkg-tags"><span class="w-badge w-badge-glass">Visa help</span></div><span class="fx-playchip"><span class="i i-play"></span>Preview</span></div>
+  <div class="v-pkg-body">
+    <span class="v-pkg-place"><span class="i i-map-pin"></span>Istanbul · Cappadocia</span>
+    <h3 class="v-pkg-title">Istanbul and Cappadocia in a week</h3>
+    <div class="v-pkg-incl"><span><span class="i i-plane"></span>Flights</span><span><span class="i i-hotel"></span>Hotels</span><span><span class="i i-passport"></span>Visa help</span></div>
+    <div class="v-pkg-foot"><div><div class="w-from">From · 7D/6N</div><div class="w-price">৳1,45,000</div><div class="v-per">per person, twin share</div></div><span class="w-btn w-btn-xs w-btn-soft">View<span class="i i-arrow-right"></span></span></div>
+  </div>
+</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec w-reveal" aria-labelledby="visa-t">
+      <div class="w-wrap">
+        <div class="v-head">
+          <div class="v-head-text"><span class="v-eyebrow">Visa services</span><h2 class="v-h2" id="visa-t">Visa files, prepared properly</h2><p class="v-lead">Send photos of your papers on WhatsApp. We check them, fill in the forms, book the appointment and follow the file until the embassy decides.</p></div>
+          <div class="flex items-center gap-3"><span class="v-sample">Sample times and fees</span><a class="v-pillbtn" href="{{L.Visa}}">All countries<span class="i i-arrow-right"></span></a></div>
+        </div>
+        <div class="v-visas w-stagger-in">
+          <a class="v-visa fx-spot" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Thailand</div><div class="v-visa-types">Tourist · Business</div><div class="v-visa-line"><span>About 10 working days</span><span>Our fee from ৳3,500</span></div></div></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 10 working days</b></div><div><small>Our fee from</small><b>৳3,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a><a class="v-visa fx-spot" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/039af49115f270dcd1fee4896f730088.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Malaysia</div><div class="v-visa-types">Tourist · Business</div><div class="v-visa-line"><span>About 5 working days</span><span>Our fee from ৳3,000</span></div></div></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 5 working days</b></div><div><small>Our fee from</small><b>৳3,000</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a><a class="v-visa fx-spot" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/a06f4086040ecf0d1169328364940adc.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Singapore</div><div class="v-visa-types">Tourist · Business</div><div class="v-visa-line"><span>About 7 working days</span><span>Our fee from ৳3,800</span></div></div></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 7 working days</b></div><div><small>Our fee from</small><b>৳3,800</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a><a class="v-visa fx-spot" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/f93db3c0c172100e0475f05ed5e29b63.svg" alt=""><div style="min-width:0"><div class="v-visa-name">United Arab Emirates</div><div class="v-visa-types">Tourist · Transit</div><div class="v-visa-line"><span>About 4 working days</span><span>Our fee from ৳2,500</span></div></div></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 4 working days</b></div><div><small>Our fee from</small><b>৳2,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a><a class="v-visa fx-spot" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/95b323620f7ad34966c1bf5f7276d390.svg" alt=""><div style="min-width:0"><div class="v-visa-name">India</div><div class="v-visa-types">Tourist · Medical · Business</div><div class="v-visa-line"><span>About 7 working days</span><span>Our fee from ৳1,500</span></div></div></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 7 working days</b></div><div><small>Our fee from</small><b>৳1,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a><a class="v-visa fx-spot" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/327b621038f836552788eb78bb9c89c6.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Türkiye</div><div class="v-visa-types">Tourist · Business</div><div class="v-visa-line"><span>About 15 working days</span><span>Our fee from ৳4,000</span></div></div></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 15 working days</b></div><div><small>Our fee from</small><b>৳4,000</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a><a class="v-visa fx-spot" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/9d925abd7f3837d2332ec992a4022607.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Vietnam</div><div class="v-visa-types">Tourist</div><div class="v-visa-line"><span>About 5 working days</span><span>Our fee from ৳2,800</span></div></div></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 5 working days</b></div><div><small>Our fee from</small><b>৳2,800</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a><a class="v-visa fx-spot" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/241da4a39bf1dddb788006ef486bea27.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Schengen area</div><div class="v-visa-types">Tourist · Business · Student</div><div class="v-visa-line"><span>About 15 working days</span><span>Our fee from ৳6,500</span></div></div></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 15 working days</b></div><div><small>Our fee from</small><b>৳6,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a>
+        </div>
+        <p class="w-note mt-4"><span class="i i-info"></span><span>Embassies make every visa decision. Our fee is separate from the embassy fee; both are confirmed before you pay.</span></p>
+      </div>
+    </section>
+
+    <section class="v-sec is-tint w-reveal" aria-labelledby="why-t">
+      <div class="w-wrap">
+        <div class="v-story">
+          <div class="v-yearcard">
+            <div class="v-yearcard-rib" aria-hidden="true"><svg viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="yrb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#020D39" stop-opacity="0"></stop><stop offset=".32" stop-color="#003FBE" stop-opacity=".78"></stop><stop offset=".7" stop-color="#0D8CEE" stop-opacity=".8"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"></stop></linearGradient></defs><path d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44 L 1440 84 C 1204 160 1080 102 780 110 C 470 118 300 216 0 216 Z" fill="url(#yrb)"></path><path class="w-rib-line" d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44" fill="none" stroke="#D7D3D0" stroke-opacity=".85" stroke-width="1.4" vector-effect="non-scaling-stroke"></path></svg></div>
+            <span class="v-eyebrow" style="background:rgb(255 255 255/.1);color:#fff"><span class="w-tri"></span>Since 2010</span>
+            <div class="w-why-num" style="margin-top:16px"><span class="w-stat-n w-count" style="--n:16"></span><span class="w-why-unit" style="color:#fff">years of<br>dependable service</span></div>
+            <p style="margin-top:10px">Waafa International began in 2010, serving Dhaka’s offices with printing and toner. In 2026 we opened Waafa Tours and Travel, with the same promise: people you can call, and an office you can visit.</p>
+            <div class="v-timeline">
+              <div><b>2010</b><span>Waafa International starts with printing products for offices</span></div>
+              <div><b>2010–2025</b><span>Long-term corporate clients, built on trust</span></div>
+              <div><b>2026</b><span>A new chapter: travel, visas and international trading</span></div>
+              <div><b>Next</b><span>Connecting Bangladesh with the world</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="v-head-text" style="margin-bottom:20px"><span class="v-eyebrow on-tint">Why WAAFA</span><h2 class="v-h2" id="why-t">What we stand for</h2></div>
+            <div class="v-values w-stagger-in"><div class="v-value"><span class="w-tile"><span class="i i-shield-check"></span></span><div class="v-value-txt"><h3>Trust</h3><p>Every relationship starts with it. We tell you the price and the rules before you pay.</p></div></div><div class="v-value"><span class="w-tile"><span class="i i-award"></span></span><div class="v-value-txt"><h3>Quality</h3><p>Dependable products and service that meet office and traveller expectations.</p></div></div><div class="v-value"><span class="w-tile"><span class="i i-zap"></span></span><div class="v-value-txt"><h3>Innovation</h3><p>Smarter tools and new services, from printer finders to online visa tracking.</p></div></div><div class="v-value"><span class="w-tile"><span class="i i-star"></span></span><div class="v-value-txt"><h3>Excellence</h3><p>Care in every step: product, service, communication and follow-up.</p></div></div><div class="v-value"><span class="w-tile"><span class="i i-user-check"></span></span><div class="v-value-txt"><h3>Integrity</h3><p>Honest, ethical business. Prices labelled clearly, nothing hidden.</p></div></div><div class="v-value"><span class="w-tile"><span class="i i-globe"></span></span><div class="v-value-txt"><h3>Global vision</h3><p>Connecting Bangladesh with the wider world through travel and trade.</p></div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec w-reveal" aria-labelledby="shop-t">
+      <div class="w-wrap">
+        <div class="v-shopband ww-homeband">
+          <div class="flex flex-col gap-4">
+            <a class="ww-homeband-brand" href="{{L.Shop}}"><span><b>Waafas World</b><small>by Waafa International · waafasworld.com</small></span></a>
+            <h2 class="v-h2" id="shop-t">Everything for work and home, delivered</h2>
+            <p class="v-lead">Office supplies, electronics, fashion and more from the team that has served Dhaka’s offices since 2010. Pay cash on delivery anywhere in Bangladesh.</p>
+            <form class="ww-homeband-search" onSubmit="{{noop}}" role="search"><span class="i i-search"></span><input class="w-input" placeholder="Search products, brands and categories" aria-label="Search Waafas World"><a class="w-btn w-btn-navy" href="{{L.ShopSearch}}">Search</a></form>
+            <div class="ww-homeband-cats"><sc-for list="{{shopCats}}" as="c" hint-placeholder-count="6"><a href="{{L.ShopList}}"><span class="{{c.icon}}"></span>{{c.name}}</a></sc-for></div>
+            <div class="w-shoplinks">
+              <a class="w-shoplink" href="{{L.Printing}}"><span class="w-tile"><span class="i i-layers"></span></span><span><b>Printing Solutions</b><small>Cards, banners and packaging · get a quote</small></span><span class="i i-chevron-right"></span></a>
+              <a class="w-shoplink" href="{{L.Trading}}"><span class="w-tile"><span class="i i-ship"></span></span><span><b>International Trading</b><small>Import, export and sourcing · send an RFQ</small></span><span class="i i-chevron-right"></span></a>
+            </div>
+          </div>
+          <div class="flex flex-col gap-3 min-w-0">
+            <div class="v-shophead"><b>Best sellers this week</b><span class="v-sample">Sample prices</span><a class="v-link" href="{{L.Shop}}" style="min-height:0">Open Waafas World<span class="i i-arrow-right"></span></a></div>
+            <div class="ww-rail ww-homeband-rail"><sc-for list="{{shopItems}}" as="it" hint-placeholder-count="3"><dc-import name="PCard" p="{{it}}" style="display:contents" hint-size="100%,420px"></dc-import></sc-for></div>
+            <div class="ww-homeband-trust"><span><span class="i i-banknote"></span>Cash on delivery</span><span><span class="i i-truck"></span>Next day in Dhaka</span><span><span class="i i-rotate-ccw"></span>Easy returns</span><span><span class="i i-building-2"></span>Corporate prices</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec is-tint w-reveal" aria-labelledby="trav-t">
+      <div class="w-wrap">
+        <div class="v-head">
+          <div class="v-head-text"><span class="v-eyebrow on-tint">Gallery and reviews</span><h2 class="v-h2" id="trav-t">Trips, in travellers’ own photos</h2><p class="v-lead">Shared with their permission. Until real ones are added in Admin, these are sample photos.</p></div>
+          <div class="flex items-center gap-3"><span class="v-sample">Sample photos</span><a class="v-pillbtn" href="{{L.Gallery}}">Open the gallery<span class="i i-arrow-right"></span></a></div>
+        </div>
+        <div class="v-gal">
+          <a class="fx-zoom" href="{{L.Gallery}}"><div class="v-photo " data-photo="coxsbazar-alt" data-src="https://images.unsplash.com/photo-1609501285437-4eb001f82684?auto=format&amp;fit=crop&amp;w=900&amp;q=80" style="height:100%;border-radius:20px"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Cox’s Bazar</span><span class="w-ph-credit">Nafiul Hasan · Unsplash</span></div></div></a>
+          <a class="fx-zoom" href="{{L.Gallery}}"><div class="v-photo " data-photo="cappadocia-alt" data-src="https://images.unsplash.com/photo-1680469814298-9a1220de2cf2?auto=format&amp;fit=crop&amp;w=900&amp;q=80" style="height:100%;border-radius:20px"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Cappadocia, Türkiye</span><span class="w-ph-credit">Ricky LK · Unsplash</span></div></div></a>
+          <a class="fx-zoom" href="{{L.Gallery}}"><div class="v-photo " data-photo="bali" data-src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&amp;fit=crop&amp;w=900&amp;q=80" style="height:100%;border-radius:20px"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Bali temple</span><span class="w-ph-credit">Aron Visuals · Unsplash</span></div></div></a>
+          <a class="fx-zoom" href="{{L.Gallery}}"><div class="v-photo " data-photo="dubai-desert" data-src="https://images.unsplash.com/photo-1528702748617-c64d49f918af?auto=format&amp;fit=crop&amp;w=900&amp;q=80" style="height:100%;border-radius:20px"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Dubai desert</span><span class="w-ph-credit">Fredrik Öhlander · Unsplash</span></div></div></a>
+        </div>
+        <div class="v-reviews mt-6">
+          <a class="v-fbcard" href="https://www.facebook.com/waafatoursandtravel">
+            <span class="rib" aria-hidden="true"><svg viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="fbr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#020D39" stop-opacity="0"></stop><stop offset=".32" stop-color="#003FBE" stop-opacity=".78"></stop><stop offset=".7" stop-color="#0D8CEE" stop-opacity=".8"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"></stop></linearGradient></defs><path d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44 L 1440 84 C 1204 160 1080 102 780 110 C 470 118 300 216 0 216 Z" fill="url(#fbr)"></path><path class="w-rib-line" d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44" fill="none" stroke="#D7D3D0" stroke-opacity=".85" stroke-width="1.4" vector-effect="non-scaling-stroke"></path></svg></span>
+            <span class="w-tile" style="background:rgb(255 255 255/.1);color:#fff;box-shadow:inset 0 0 0 1px rgb(255 255 255/.22)"><span class="i i-facebook"></span></span>
+            <div><b>Read reviews on our Facebook page</b><p>Real comments and photos from travellers, in their own words.</p></div>
+            <span class="w-btn w-btn-white" style="align-self:flex-start">Open Facebook<span class="i i-arrow-up-right"></span></span>
+          </a>
+          <a class="v-value" href="{{L.Feedback}}" style="justify-content:space-between;min-height:230px">
+            <span class="w-tile"><span class="i i-message-square"></span></span>
+            <div class="flex flex-col gap-2"><h3 style="font-size:20px">Travelled with us? Tell us how it went</h3><p>We only show reviews here with the traveller’s permission.</p></div>
+            <span class="v-link" style="min-height:0">Leave feedback<span class="i i-arrow-right"></span></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec w-reveal" aria-labelledby="blog-t">
+      <div class="w-wrap">
+        <div class="v-head">
+          <div class="v-head-text"><span class="v-eyebrow">Travel guides</span><h2 class="v-h2" id="blog-t">Read before you go</h2></div>
+          <a class="v-pillbtn" href="{{L.Blog}}">All articles<span class="i i-arrow-right"></span></a>
+        </div>
+        <div class="w-hscroll lg-grid v-posts w-stagger-in"><a class="v-post" href="{{L.BlogPost}}"><div class="v-photo " data-photo="visa-alt" data-src="https://images.unsplash.com/photo-1454496406107-dc34337da8d6?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Passport and travel</span><span class="w-ph-credit">Nicole Geri · Unsplash</span></div></div><span class="v-post-cat">Visa guide</span><h3 class="v-post-title">Thailand visa from Bangladesh: the documents checklist</h3><span class="v-post-meta">6 min read</span></a><a class="v-post" href="{{L.BlogPost}}"><div class="v-photo " data-photo="thailand" data-src="https://images.unsplash.com/photo-1534008897995-27a23e859048?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Thailand islands</span><span class="w-ph-credit">Humphrey M · Unsplash</span></div></div><span class="v-post-cat">Holidays</span><h3 class="v-post-title">Bangkok and Phuket in six days: a first-timer’s plan</h3><span class="v-post-meta">5 min read</span></a><a class="v-post" href="{{L.BlogPost}}"><div class="v-photo " data-photo="hero-wing-alt" data-src="https://images.unsplash.com/photo-1593182440709-4b7b56482c55?auto=format&amp;fit=crop&amp;w=900&amp;q=80"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Airplane wing over clouds</span><span class="w-ph-credit">Johny Goerend · Unsplash</span></div></div><span class="v-post-cat">Flights</span><h3 class="v-post-title">Cabin bag or checked bag? Baggage rules made simple</h3><span class="v-post-meta">4 min read</span></a></div>
+        <div class="v-faq" style="margin-top:56px">
+          <div class="flex flex-col gap-3">
+            <span class="v-eyebrow" style="align-self:flex-start">Questions</span>
+            <h2 class="v-h2">Good to know</h2>
+            <p class="v-lead">Short answers to what people ask us most.</p>
+            <a class="v-link" href="{{L.Faqs}}">All FAQs<span class="i i-arrow-right"></span></a>
+          </div>
+          <div class="w-acc"><details class="w-acc-item" open=""><summary class="w-acc-q">How do I book a flight with WAAFA?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Search your route and send the short form. A travel expert calls or messages you with the best options, confirms the fare and the rules, and issues your ticket after you pay.</div></details><details class="w-acc-item"><summary class="w-acc-q">Can I pay by bank transfer, bKash or Nagad?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Yes. You can also pay in cash at our Motijheel office. We share the payment details after your booking is confirmed.</div></details><details class="w-acc-item"><summary class="w-acc-q">Do you help with visa applications?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Yes. We check your documents, complete the forms, book appointments where needed and track the file. The embassy makes the final decision.</div></details><details class="w-acc-item"><summary class="w-acc-q">Can I change or cancel my ticket?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">It depends on the airline’s fare rules. We explain them before you pay and handle the change for you. See our Refund Policy for details.</div></details><details class="w-acc-item"><summary class="w-acc-q">When is your office open?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Saturday to Thursday, 10 am to 6 pm, closed on Friday. You can send a WhatsApp message any time and we reply when the office opens.</div></details></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec is-tint w-reveal v-teamsec" aria-labelledby="team-t">
+      <div class="w-wrap v-team">
+        <div class="v-head">
+          <div class="v-head-text"><span class="v-eyebrow on-tint">Our team</span><h2 class="v-h2" id="team-t">The people behind WAAFA</h2><p class="v-lead">Trip planners, visa specialists and the Waafas World team, all in one Motijheel office.</p></div>
+          <div class="flex items-center gap-3"><span class="v-sample">Sample team</span><a class="v-pillbtn" href="{{L.About}}">Meet the whole team<span class="i i-arrow-right"></span></a></div>
+        </div>
+        <div class="v-wteam">
+          <svg class="v-wrib" viewBox="0 0 1312 440" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="wrg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".18" stop-color="#003FBE" stop-opacity=".85"></stop><stop offset=".6" stop-color="#0D8CEE"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".9"></stop></linearGradient></defs>
+            <path class="v-wrib-band" d="M -40.0 372.0 C -12.0 373.3 59.7 389.0 128.0 380.0 C 196.3 371.0 294.5 312.7 370.0 318.0 C 445.5 323.3 510.5 406.7 581.0 412.0 C 651.5 417.3 722.5 350.0 793.0 350.0 C 863.5 350.0 933.7 417.3 1004.0 412.0 C 1074.3 406.7 1157.0 338.0 1215.0 318.0 C 1273.0 298.0 1329.2 296.3 1352.0 292.0" fill="none" stroke="url(#wrg)" stroke-width="22" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+            <path class="v-wrib-edge" d="M -40.0 372.0 C -12.0 373.3 59.7 389.0 128.0 380.0 C 196.3 371.0 294.5 312.7 370.0 318.0 C 445.5 323.3 510.5 406.7 581.0 412.0 C 651.5 417.3 722.5 350.0 793.0 350.0 C 863.5 350.0 933.7 417.3 1004.0 412.0 C 1074.3 406.7 1157.0 338.0 1215.0 318.0 C 1273.0 298.0 1329.2 296.3 1352.0 292.0" fill="none" stroke="#D7D3D0" stroke-width="1.4" vector-effect="non-scaling-stroke" transform="translate(0 -13)"></path>
+          </svg>
+          <div class="v-teamgrid v-wgrid">
+            <sc-for list="{{team}}" as="t" hint-placeholder-count="6">
+              <article class="{{t.cls}}" style="{{t.style}}" tabindex="0" aria-label="{{t.aria}}" onPointerMove="{{t.move}}" onPointerLeave="{{t.leave}}" onClick="{{t.tap}}">
+                <div class="v-initials" aria-hidden="true">
+                  <svg class="v-mrib" viewBox="0 0 300 400" preserveAspectRatio="none"><path d="M-30 300 C 60 300 110 190 180 182 C 250 174 280 110 340 80" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="34" stroke-linecap="round"></path><path d="M-30 280 C 60 280 110 170 180 162 C 250 154 280 90 340 60" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"></path></svg>
+                  <span>{{t.initials}}</span>
+                </div>
+                <span class="v-glare" aria-hidden="true"></span>
+                <div class="v-member-tags"><sc-if value="{{t.featured}}" hint-placeholder-val="{{ false }}"><span class="v-member-feat"><span class="w-tri"></span>Featured</span></sc-if><span class="w-sample on-dark" style="margin-left:auto">Sample</span></div>
+                <div class="v-member-plate">
+                  <span class="v-member-dept">{{t.dept}}</span>
+                  <span class="v-member-name">{{t.name}}</span>
+                  <span class="v-member-role">{{t.role}}</span>
+                  <div class="v-member-more"><div>
+                    <p class="v-member-bio">{{t.bio}}</p>
+                    <div class="v-member-links">
+                      <sc-if value="{{t.wa}}" hint-placeholder-val="{{ true }}"><a href="{{t.wa}}" aria-label="{{t.waLabel}}"><span class="i i-whatsapp"></span></a></sc-if>
+                      <sc-if value="{{t.mail}}" hint-placeholder-val="{{ true }}"><a href="{{t.mail}}" aria-label="{{t.mailLabel}}"><span class="i i-mail"></span></a></sc-if>
+                      <sc-if value="{{t.li}}" hint-placeholder-val="{{ false }}"><a href="{{t.li}}" aria-label="{{t.liLabel}}"><span class="i i-linkedin"></span></a></sc-if>
+                    </div>
+                  </div></div>
+                </div>
+              </article>
+            </sc-for>
+          </div>
+        </div>
+        <div class="v-team-bar"><span></span></div>
+        <p class="v-team-hint">Swipe to meet everyone. Tap a card for more.</p>
+      </div>
+    </section>
+
+    <section class="v-sec w-reveal" aria-labelledby="cta-t">
+      <div class="w-wrap">
+        <div class="v-visit">
+          <div class="v-cta">
+            <div class="rib" aria-hidden="true"><svg viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ctr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#020D39" stop-opacity="0"></stop><stop offset=".32" stop-color="#003FBE" stop-opacity=".78"></stop><stop offset=".7" stop-color="#0D8CEE" stop-opacity=".8"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"></stop></linearGradient></defs><path d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44 L 1440 84 C 1204 160 1080 102 780 110 C 470 118 300 216 0 216 Z" fill="url(#ctr)"></path><path class="w-rib-line" d="M0 176 C 300 176 470 74 780 66 C 1080 58 1200 122 1440 44" fill="none" stroke="#D7D3D0" stroke-opacity=".85" stroke-width="1.4" vector-effect="non-scaling-stroke"></path></svg></div>
+            <div>
+              <span class="v-eyebrow" style="background:rgb(255 255 255/.1);color:#fff">Talk to a person</span>
+              <h2 class="v-h2" id="cta-t" style="margin-top:14px">Not sure where to start?</h2>
+              <p>Send your dates and budget on WhatsApp. A travel expert replies with options you can compare, with no obligation to book.</p>
+            </div>
+            <div class="v-cta-actions">
+              <a class="w-btn w-btn-wa fx-shine" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20I%27d%20like%20help%20planning%20a%20trip"><span class="i i-whatsapp-fill"></span>Message on WhatsApp</a>
+              <a class="w-btn w-btn-white" href="tel:+8801823232241"><span class="i i-phone"></span>Call 01823-232241</a>
+            </div>
+          </div>
+          <div class="v-office">
+            <div class="v-photo " data-photo="office"><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Waafa office and team, Motijheel (Waafa’s own photo)</span><span class="w-ph-credit">Photo to come</span></div></div>
+            <div class="flex items-center justify-between gap-3"><b class="text-navy" style="font:700 18px/1.2 var(--font-display)">Visit our office</b><span class="{{hours.cls}}">{{hours.label}}</span></div>
+            <div class="v-office-rows">
+              <div class="v-office-row"><span class="i i-map-pin"></span><div><b>193/C-1, 4th Floor, East Side, Motijheel Plaza</b>Aziz Square, Box Kalvat Road, Motijheel, Dhaka</div></div>
+              <div class="v-office-row"><span class="i i-clock"></span><div><b>Saturday to Thursday, 10 am to 6 pm</b>Closed on Friday</div></div>
+            </div>
+            <a class="v-pillbtn" href="https://maps.google.com/?q=Motijheel+Plaza+Aziz+Square+Dhaka" style="align-self:flex-start"><span class="i i-route"></span>Get directions</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,640px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="home" more="{{more}}" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"intro":{"editor":"boolean","default":true},"tab":{"editor":"enum","options":["flight","hotel","tour","visa"],"default":"flight"},"trip":{"editor":"enum","options":["oneway","round","multi"],"default":"oneway"},"sheet":{"editor":"enum","options":["","from","to","dates","pax","hcity","hdates","rooms","tdest","tmonth","tpax","vcountry","vtype","vpax"],"default":""},"menu":{"editor":"enum","options":["","shop","more"],"default":""},"drawer":{"editor":"boolean","default":false},"help":{"editor":"boolean","default":false},"more":{"editor":"boolean","default":false},"q":{"editor":"text","default":""},"$preview":{"width":1440,"height":8000}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const s = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Flights','Hotels','Packages','PackageDetail','Visa','VisaCountry','VisaGuide','GroupFares','PlanTrip','Shop','ShopFinder','ShopProduct','ShopList','ShopSearch','Printing','Trading','Gallery','Feedback','Blog','BlogPost','Faqs','Emi','Contact','About'].forEach(k => { L[k] = k + s + '.dc.html'; });
+    const d = new Date(Date.now() + 6 * 3600e3);
+    const dow = d.getUTCDay(), mins = d.getUTCHours() * 60 + d.getUTCMinutes();
+    let open = false, label;
+    if (dow !== 5 && mins >= 600 && mins < 1080) { open = true; label = 'Open now · until 6 pm'; }
+    else if (dow !== 5 && mins < 600) label = 'Closed · opens at 10 am';
+    else if (dow === 4 || dow === 5) label = 'Closed · opens Saturday at 10 am';
+    else label = 'Closed · opens tomorrow at 10 am';
+    const DESTS = [["mle", "Maldives", "Island resorts · Maldives", "MLE", "maldives-alt", "About 4 hours by air", "Free visa on arrival", true, "November to April", "৳64,900", ["visa", "beach"]], ["ktm", "Kathmandu", "Mountains and old towns · Nepal", "KTM", "nepal", "About 1 hour by air", "Free visa on arrival", true, "October to December", "৳38,500", ["visa", "short", "city"]], ["cxb", "Cox’s Bazar", "Sea beach · Bangladesh", "CXB", "coxsbazar", "About 1 hour by air", "No visa needed", true, "November to February", "৳12,900", ["visa", "short", "beach"]], ["bkk", "Bangkok", "City and islands · Thailand", "BKK", "thailand-alt", "About 2.5 hours by air", "Visa needed; we apply", false, "November to February", "৳42,000", ["short", "beach", "city"]], ["dxb", "Dubai", "City and desert · UAE", "DXB", "dubai", "About 5 hours by air", "Visa needed; we apply", false, "November to March", "৳52,000", ["city"]], ["sin", "Singapore", "City and gardens · Singapore", "SIN", "singapore", "About 4 hours by air", "Visa needed; we apply", false, "All year", "৳58,000", ["city"]]];
+    const CHIPS = [["all", "All", "i i-compass"], ["visa", "Easy visa", "i i-passport"], ["short", "Under 3 hours", "i i-clock"], ["beach", "Beach", "i i-waves"], ["city", "City", "i i-building"]];
+    const PH = {"hero-wing": ["Airplane wing over clouds at sunrise", "photo-1647363377737-8d0ad7c2f494", "Nicholas Szewczyk"], "hero-wing-alt": ["Airplane wing over clouds", "photo-1593182440709-4b7b56482c55", "Johny Goerend"], "flights": ["Aircraft, flights and group fares", "photo-1530469641172-8ac15d0a7d6a", "Blake Guidry"], "coxsbazar": ["Cox’s Bazar beach", "photo-1711077470004-cb6a7258c082", "Masum Ahmed"], "coxsbazar-alt": ["Cox’s Bazar", "photo-1609501285437-4eb001f82684", "Nafiul Hasan"], "sajek": ["Sajek Valley above the clouds", "photo-1673632417072-b1366fda0e22", "Sium Ahameed Bhuyan"], "sajek-alt": ["Sajek Valley", "photo-1673632417265-a7bcbc90383c", "Sium Ahameed Bhuyan"], "maldives": ["Maldives overwater villas", "photo-1514282401047-d79a71a590e8", "Ishan @seefromthesky"], "maldives-alt": ["Maldives", "photo-1574226780565-388f10f8121e", "Rayyu Maldives"], "dubai": ["Dubai skyline", "photo-1512453979798-5ea266f8880c", "David Rodrigo"], "dubai-desert": ["Dubai desert", "photo-1528702748617-c64d49f918af", "Fredrik Öhlander"], "nepal": ["Nepal", "photo-1518002054494-3a6f94352e9d", "Giuseppe Mondì"], "nepal-alt": ["Nepal", "photo-1562462181-b228e3cff9ad", "Meera Pankhania"], "cappadocia": ["Cappadocia balloons", "photo-1699519324068-8cade0601b53", "Chloé Lefleur"], "cappadocia-alt": ["Cappadocia, Türkiye", "photo-1680469814298-9a1220de2cf2", "Ricky LK"], "bali": ["Bali temple", "photo-1537996194471-e657df975ab4", "Aron Visuals"], "bali-alt": ["Bali", "photo-1518548419970-58e3b4079ab2", "Harry Kessell"], "thailand": ["Thailand islands", "photo-1534008897995-27a23e859048", "Humphrey M"], "thailand-alt": ["Thailand", "photo-1506665531195-3566af2b4dfa", "Evan Krause"], "singapore": ["Singapore Marina Bay", "photo-1525625293386-3f8f99389edd", "Hu Chen"], "kualalumpur": ["Kuala Lumpur, Petronas Towers", "photo-1597148543182-830ef7bbb904", "Ismail Bashiri"], "visa": ["Passport and boarding pass", "photo-1581553673739-c4906b5d0de8", "Kit"], "visa-alt": ["Passport and travel", "photo-1454496406107-dc34337da8d6", "Nicole Geri"], "printing": ["Office printer, Waafas World", "photo-1612815154858-60aa4c59eaa6", "Mahrous Houses"], "printing-alt": ["Printing", "photo-1706895040634-62055892cbbb", "Jakub Żerdzicki"], "trading": ["Container port, international trading", "photo-1578575437130-527eed3abbec", "Andy Li"], "trading-alt": ["Shipping and trade", "photo-1678182451047-196f22a4143e", "Ali Mkumbwa"]};
+    const f = st.filter || 'all';
+    const chips = CHIPS.map(c => ({ label: c[1], icon: c[2], on: f === c[0], cls: 'v-dchip' + (f === c[0] ? ' is-on' : ''),
+      count: c[0] === 'all' ? DESTS.length : DESTS.filter(x => x[10].indexOf(c[0]) >= 0).length,
+      pick: () => this.setState({ filter: c[0] }) }));
+    const dests = DESTS.filter(x => f === 'all' || x[10].indexOf(f) >= 0).map(x => { const ph = PH[x[4]]; return {
+      key: x[0] + '-' + f, name: x[1], sub: x[2], code: x[3], time: x[5], visa: x[6], visaCls: x[7] ? 'is-good' : '', season: x[8], price: x[9],
+      slot: x[4], subj: ph[0], credit: ph[2] + ' · Unsplash', src: 'https://images.unsplash.com/' + ph[1] + '?auto=format&fit=crop&w=900&q=80' }; });
+    const TEAM = [["Arif Hossain", "AH", "Managing Director", "Leadership", "Has led Waafa International since 2010 and opened Waafa Tours and Travel in 2026. Still visits clients himself.", true], ["Nusrat Jahan", "NJ", "Head of Travel Sales", "Travel", "Plans family holidays and group trips. Her favourite: a slow week in Pokhara.", false], ["Tanvir Ahmed", "TA", "Visa Officer", "Visa", "Checks every page of your file before it reaches an embassy, so nothing comes back for a missing paper.", false], ["Sadia Rahman", "SR", "Travel Consultant", "Travel", "Finds the fare that fits your dates and explains baggage and change rules in plain words.", false], ["Mahmudul Karim", "MK", "Store Manager", "Waafas World", "Runs Waafas World, from office supplies to gadgets, and still knows which toner fits which printer.", false], ["Farzana Haque", "FH", "Accounts and Payments", "Accounts", "Confirms bKash, Nagad and bank payments and makes sure every receipt is right.", false]];
+    const tilt = st.tilt || { i: -1, rx: 0, ry: 0 };
+    const HUE = ['168deg', '150deg', '182deg', '160deg', '140deg', '176deg'];
+    const team = TEAM.map((m, i) => ({
+      name: m[0], initials: m[1], role: m[2], dept: m[3], bio: m[4], featured: m[5],
+      cls: 'v-member' + (m[5] ? ' is-featured' : '') + (st.revealed === i ? ' is-revealed' : '') + (tilt.i === i ? ' is-tilting' : ''),
+      style: '--a:' + HUE[i % HUE.length] + ';--i:' + i + (tilt.i === i ? ';--rx:' + tilt.rx.toFixed(2) + 'deg;--ry:' + tilt.ry.toFixed(2) + 'deg;--ty:-8px;--mx:' + tilt.mx + '%;--my:' + tilt.my + '%' : ''),
+      aria: m[0] + ', ' + m[2],
+      wa: 'https://wa.me/8801823232241', waLabel: 'WhatsApp ' + m[0],
+      mail: 'mailto:info@waafasworld.com', mailLabel: 'Email ' + m[0],
+      li: m[5] ? 'https://www.linkedin.com/' : '', liLabel: m[0] + ' on LinkedIn',
+      move: (e) => {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        const r = e.currentTarget.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+        this.setState({ tilt: { i, rx: -py * 8, ry: px * 10, mx: Math.round((px + 0.5) * 100), my: Math.round((py + 0.5) * 100) } });
+      },
+      leave: () => this.setState({ tilt: { i: -1, rx: 0, ry: 0 } }),
+      tap: () => this.setState({ revealed: st.revealed === i ? -1 : i })
+    }));
+    const shopCats = [['Printers & Supplies', 'printer'], ['Office & Stationery', 'pencil-ruler'], ['Computer & Accessories', 'monitor'], ['Electronics & Gadgets', 'headphones'], ['Home & Kitchen', 'cooking-pot'], ['Fashion & Lifestyle', 'shirt']].map(c => ({ name: c[0], icon: 'i i-' + c[1] }));
+    const shopItems = [
+      { id: 'h-pb', title: 'Voltaro 20,000 mAh Power Bank, 22.5 W', brand: 'Voltaro', spec: '10,000 or 20,000 mAh · 2 colours', price: 2450, mrp: 2990, ph: 'prod-powerbank', icon: 'battery-charging', phCap: 'Power bank · I’M ZION / Unsplash', stock: 'in', options: true, sample: true, badge: 'Best seller', href: L.ShopProduct },
+      { id: 'h-tee', title: 'Classic Cotton Crew T-shirt', brand: 'Tessra', spec: 'Sizes S to XXL · 4 colours', price: 650, mrp: 850, ph: 'prod-tshirt', icon: 'shirt', phCap: 'T-shirt · Md Salman / Unsplash', stock: 'in', options: true, sample: true, href: L.ShopProduct },
+      { id: 'h-bd', title: 'Better Day CE505A / CF280A Black Toner', brand: 'Better Day', spec: 'Compatible · up to 2,700 pages', price: 1450, mrp: 1800, img: '../assets/c9ea845b540e931548117afdb5ae8a65.jpg', stock: 'in', href: L.ShopProduct },
+      { id: 'h-hp', title: 'Sonaro Air Wireless Over-ear Headphones', brand: 'Sonaro', spec: '40-hour battery · 3 colours', price: 3890, mrp: 4990, ph: 'prod-headphones', icon: 'headphones', phCap: 'Headphones · C D-X / Unsplash', stock: 'low', left: 2, options: true, sample: true, href: L.ShopProduct }
+    ];
+    return { shopCats, shopItems,
+      L, dests, chips, team,
+      hours: { label, cls: 'v-hours ' + (open ? 'is-open' : 'is-closed') },
+      m: !!p.m,
+      intro: p.intro !== false && p.intro !== 'false',
+      rootCls: 'wa is-mobile' + ((p.intro !== false && p.intro !== 'false') ? ' has-intro' : ''),
+      tab: p.tab || 'flight', trip: p.trip || 'oneway', sheet: p.sheet || '', q: p.q || '',
+      menu: p.menu || '', drawer: !!p.drawer, help: !!p.help, more: !!p.more,
+      noop: (e) => { if (e && e.preventDefault) e.preventDefault(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

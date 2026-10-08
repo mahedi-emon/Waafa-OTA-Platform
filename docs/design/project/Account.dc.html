@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · My account</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="none" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-sec" style="padding-top:18px">
+      <div class="w-wrap wd-acct">
+        <aside class="wd-me">
+          <div class="wd-me-top"><span class="wc-avatar is-lg">RU</span><div><b>Rahim Uddin</b><small>+880 1712-345678</small></div></div>
+          <nav class="wd-menu" aria-label="Account"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="6"><button class="{{t.cls}}" type="button" onClick="{{t.go}}"><span class="{{t.icon}}"></span>{{t.label}}<small>{{t.n}}</small></button></sc-for></nav>
+          <a class="v-link" href="{{L.Home}}" style="min-height:0;font-size:13.5px;color:var(--color-mist-600)"><span class="i i-log-out"></span>Log out</a>
+        </aside>
+        <div class="flex flex-col gap-5 min-w-0" key="{{tab}}" style="animation:v-step-in .35s var(--ease-out) both">
+          <div class="wd-hello"><div><h1>{{greet}}, Rahim</h1><p>Your trips, visas and Waafas World orders, all in one place.</p></div><a class="w-btn w-btn-primary" href="{{L.Flights}}"><span class="i i-plus"></span>New request</a></div>
+          <sc-if value="{{isOverview}}" hint-placeholder-val="{{ true }}">
+            <div class="wd-kpis">
+              <div class="wd-kpi"><b>2</b><span><span class="i i-ticket"></span>Requests in progress</span></div>
+              <div class="wd-kpi"><b>1</b><span><span class="i i-truck"></span>Order on the way</span></div>
+              <div class="wd-kpi"><b>1</b><span><span class="i i-passport"></span>Visa being processed</span></div>
+              <div class="wd-kpi"><b>3</b><span><span class="i i-users"></span>Saved travellers</span></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{showReq}}" hint-placeholder-val="{{ true }}">
+            <div class="wd-list">
+              <div class="wd-list-head"><b>Trips and visas</b><a class="v-link" href="{{L.Track}}" style="min-height:0;font-size:13.5px">Track by reference<span class="i i-arrow-right"></span></a></div>
+              <sc-for list="{{reqs}}" as="r" hint-placeholder-count="4"><a class="wd-row" href="{{r.href}}"><span class="w-tile"><span class="{{r.icon}}"></span></span><span class="min-w-0"><b>{{r.title}}</b><small><code>{{r.ref}}</code> · {{r.when}}</small></span><span class="wd-row-r"><span class="{{r.stCls}}">{{r.st}}</span><small>{{r.note}}</small></span></a></sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{showOrders}}" hint-placeholder-val="{{ true }}">
+            <div class="wd-list">
+              <div class="wd-list-head"><b>Waafas World orders</b><a class="v-link" href="{{L.Shop}}" style="min-height:0;font-size:13.5px">Open the store<span class="i i-arrow-right"></span></a></div>
+              <sc-for list="{{orders}}" as="o" hint-placeholder-count="3"><a class="wd-row" href="{{L.ShopTrack}}"><span class="w-tile"><span class="i i-shopping-bag"></span></span><span class="min-w-0"><b>{{o.title}}</b><small><code>{{o.ref}}</code> · {{o.when}}</small></span><span class="wd-row-r"><span class="{{o.stCls}}">{{o.st}}</span><small>{{o.total}}</small></span></a></sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{showTrav}}" hint-placeholder-val="{{ true }}">
+            <div class="wd-twocol">
+              <div class="wd-list">
+                <div class="wd-list-head"><b>Saved travellers</b><button class="v-link" type="button" style="min-height:0;font-size:13.5px"><span class="i i-plus"></span>Add</button></div>
+                <div class="wd-traveller"><span class="wc-avatar">RU</span><div><b>Rahim Uddin</b><small>Adult · passport saved</small></div><span class="w-badge w-badge-success">Valid to Mar 2031</span></div>
+                <div class="wd-traveller"><span class="wc-avatar">SU</span><div><b>Sabina Uddin</b><small>Adult · passport saved</small></div><span class="w-badge w-badge-warning">Expires in 5 months</span></div>
+                <div class="wd-traveller"><span class="wc-avatar">AU</span><div><b>Ayaan Uddin</b><small>Child, 8 years</small></div><span class="w-badge w-badge-neutral">No passport yet</span></div>
+              </div>
+              <div class="wd-list">
+                <div class="wd-list-head"><b>Addresses</b><button class="v-link" type="button" style="min-height:0;font-size:13.5px"><span class="i i-plus"></span>Add</button></div>
+                <div class="wd-traveller"><span class="w-tile"><span class="i i-house"></span></span><div><b>Home</b><small>House 12, Road 5, Mirpur 10, Dhaka</small></div><span class="w-badge w-badge-brand">Default</span></div>
+                <div class="wd-traveller"><span class="w-tile"><span class="i i-building-2"></span></span><div><b>Office</b><small>Rahman Traders, Dilkusha, Motijheel</small></div></div>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{showSaved}}" hint-placeholder-val="{{ false }}">
+            <div class="wd-list">
+              <div class="wd-list-head"><b>Saved printers</b><a class="v-link" href="{{L.ShopFinder}}" style="min-height:0;font-size:13.5px"><span class="i i-plus"></span>Add a printer</a></div>
+              <a class="wd-row" href="{{L.ShopFinder}}"><span class="w-tile"><span class="i i-printer"></span></span><span class="min-w-0"><b>HP LaserJet P2035</b><small>Office · 4 products fit</small></span><span class="wd-row-r"><span class="wd-st is-ok">Toner in stock</span><small>Last bought 21 Sep</small></span></a>
+              <a class="wd-row" href="{{L.ShopFinder}}"><span class="w-tile"><span class="i i-printer"></span></span><span class="min-w-0"><b>Canon imageCLASS LBP6030</b><small>Home · 3 products fit</small></span><span class="wd-row-r"><span class="wd-st is-ok">In stock</span><small>Never ordered</small></span></a>
+            </div>
+          </sc-if>
+          <sc-if value="{{showSettings}}" hint-placeholder-val="{{ false }}">
+            <div class="wd-list">
+              <div class="wd-list-head"><b>How we contact you</b></div>
+              <sc-for list="{{prefs}}" as="x" hint-placeholder-count="4"><div class="wd-traveller"><span class="w-tile"><span class="{{x.icon}}"></span></span><div><b>{{x.t}}</b><small>{{x.s}}</small></div><button class="{{x.cls}}" type="button" role="switch" aria-checked="{{x.on}}" aria-label="{{x.t}}" onClick="{{x.go}}" style="margin-left:auto"></button></div></sc-for>
+            </div>
+          </sc-if>
+          <div class="ww-note"><span class="i i-shield-check"></span><span>Passport details are visible only to you and our visa team. We remind you 6 months before a passport expires.</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2120}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Flights','Track','Shop','ShopTrack','VisaTrack','PackageDetail','ShopFinder'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const tab = st.tab || 'overview';
+    const T = [['overview', 'Overview', 'i i-layout-dashboard', ''], ['trips', 'Trips and visas', 'i i-ticket', '4'], ['orders', 'Orders', 'i i-shopping-bag', '3'], ['people', 'Travellers', 'i i-users', '3'], ['saved', 'Saved printers', 'i i-printer', '2'], ['settings', 'Settings', 'i i-settings', '']];
+    const tabs = T.map(t => ({ label: t[1], icon: t[2], n: t[3], cls: tab === t[0] ? 'is-on' : '', go: () => this.setState({ tab: t[0] }) }));
+    const reqs = [
+      ['i i-map', 'Cox’s Bazar beach break, 2 adults, 1 child', 'PKG-261008-0021', 'Sent today, 11:20 am', 'Quoted', 'is-wait', 'Price ready to confirm', L.PackageDetail],
+      ['i i-passport', 'Thailand tourist visa, 2 applicants', 'VSA-261008-0108', 'Sent 8 Oct', 'Documents checked', 'is-new', 'Submission on 12 Oct', L.VisaTrack],
+      ['i i-plane', 'Dhaka to Dubai, 14 Oct, 1 adult', 'FLT-261008-0042', 'Sent 8 Oct', 'Booked', 'is-ok', 'E-ticket in your email', L.Track],
+      ['i i-hotel', 'Bangkok hotel, 3 nights', 'HTL-260912-0007', 'Sep 2026', 'Completed', 'is-done', 'Thanks for staying', L.Track]
+    ].map(r => ({ icon: r[0], title: r[1], ref: r[2], when: r[3], st: r[4], stCls: 'wd-st ' + r[5], note: r[6], href: r[7] }));
+    const orders = [['Power bank, T-shirt and toner, 4 items', 'ORD-261008-0042', 'Placed 8 Oct', 'On the way', 'is-new', '৳5,200 · cash on delivery'], ['A4 paper, 5 reams', 'ORD-260921-0310', '21 Sep', 'Delivered', 'is-done', '৳2,490 · bKash'], ['Wireless earbuds', 'ORD-260830-0118', '30 Aug', 'Delivered', 'is-done', '৳2,190 · cash on delivery']].map(o => ({ title: o[0], ref: o[1], when: o[2], st: o[3], stCls: 'wd-st ' + o[4], total: o[5] }));
+    const h = new Date(Date.now() + 6 * 3600e3).getUTCHours();
+    const pv = st.pv || { sms: true, wa: true, mail: false, news: false };
+    const prefs = [['sms', 'SMS updates', 'Codes, confirmations and delivery messages', 'i i-message-square'], ['wa', 'WhatsApp updates', 'Your expert’s messages and documents', 'i i-whatsapp'], ['mail', 'Email receipts', 'Invoices and e-tickets by email', 'i i-mail'], ['news', 'Monthly newsletter', 'Fare drops and visa news', 'i i-newspaper']].map(x => ({ t: x[1], s: x[2], icon: x[3], on: !!pv[x[0]], cls: 'w-switch' + (pv[x[0]] ? ' is-on' : ''), go: () => this.setState({ pv: Object.assign({}, pv, { [x[0]]: !pv[x[0]] }) }) }));
+    return {
+      L, m: !!p.m, tab, tabs, reqs, orders,
+      greet: h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening',
+      isOverview: tab === 'overview', showReq: tab === 'overview' || tab === 'trips', showOrders: tab === 'overview' || tab === 'orders', showTrav: tab === 'overview' || tab === 'people', showSaved: tab === 'saved', showSettings: tab === 'settings', prefs
+    };
+  }
+}
+</script>
+</body>
+</html>

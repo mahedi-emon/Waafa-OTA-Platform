@@ -1,0 +1,34 @@
+WAAFA prototype photos (Unsplash licence). Run get-waafa-photos.mjs in this folder (Node 18+, internet) to save them here;
+the prototype then shows these real photos instead of the drawn stand-in scenes.
+
+hero-wing.jpg - Airplane wing over clouds at sunrise - photo by Nicholas Szewczyk on Unsplash - https://unsplash.com/photos/QAemWFs90tU
+hero-wing-alt.jpg - Airplane wing over clouds - photo by Johny Goerend on Unsplash - https://unsplash.com/photos/KB9r_hTzyeQ
+flights.jpg - Aircraft, flights and group fares - photo by Blake Guidry on Unsplash - https://unsplash.com/photos/p9vr45T2scg
+coxsbazar.jpg - Cox's Bazar beach - photo by Masum Ahmed on Unsplash - https://unsplash.com/photos/dXj8iSUCydo
+coxsbazar-alt.jpg - Cox's Bazar - photo by Nafiul Hasan on Unsplash - https://unsplash.com/photos/veIrXDU9WQI
+sajek.jpg - Sajek Valley above the clouds - photo by Sium Ahameed Bhuyan on Unsplash - https://unsplash.com/photos/TAUjeniJWjs
+sajek-alt.jpg - Sajek Valley - photo by Sium Ahameed Bhuyan on Unsplash - https://unsplash.com/photos/ADFyoO70OVA
+maldives.jpg - Maldives overwater villas - photo by Ishan @seefromthesky on Unsplash - https://unsplash.com/photos/DtWyp_4YEes
+maldives-alt.jpg - Maldives - photo by Rayyu Maldives on Unsplash - https://unsplash.com/photos/4F4OtnNjpmc
+dubai.jpg - Dubai skyline - photo by David Rodrigo on Unsplash - https://unsplash.com/photos/Fr6zexbmjmc
+dubai-desert.jpg - Dubai desert - photo by Fredrik Öhlander on Unsplash - https://unsplash.com/photos/fCW1hWq2nq0
+nepal.jpg - Nepal - photo by Giuseppe Mondì on Unsplash - https://unsplash.com/photos/xyE1p1rG04U
+nepal-alt.jpg - Nepal - photo by Meera Pankhania on Unsplash - https://unsplash.com/photos/7cENZhgyf7c
+cappadocia.jpg - Cappadocia balloons - photo by Chloé Lefleur on Unsplash - https://unsplash.com/photos/ygtKS8lyjb4
+cappadocia-alt.jpg - Cappadocia, Türkiye - photo by Ricky LK on Unsplash - https://unsplash.com/photos/sqWpPdIU_ao
+bali.jpg - Bali temple - photo by Aron Visuals on Unsplash - https://unsplash.com/photos/1kdIG_258bU
+bali-alt.jpg - Bali - photo by Harry Kessell on Unsplash - https://unsplash.com/photos/eE2trMn-6a0
+thailand.jpg - Thailand islands - photo by Humphrey M on Unsplash - https://unsplash.com/photos/TejFa7VW5e4
+thailand-alt.jpg - Thailand - photo by Evan Krause on Unsplash - https://unsplash.com/photos/BU6lABNbTpA
+singapore.jpg - Singapore Marina Bay - photo by Hu Chen on Unsplash - https://unsplash.com/photos/__cBlRzLSTg
+kualalumpur.jpg - Kuala Lumpur, Petronas Towers - photo by Ismail Bashiri on Unsplash - https://unsplash.com/photos/GdjZs5JZwZA
+visa.jpg - Passport and boarding pass - photo by Kit on Unsplash - https://unsplash.com/photos/htQznS-Rx7w
+visa-alt.jpg - Passport and travel - photo by Nicole Geri on Unsplash - https://unsplash.com/photos/gMJ3tFOLvnA
+printing.jpg - Office printer - photo by Mahrous Houses on Unsplash - https://unsplash.com/photos/5AoOejjRUrA
+printing-alt.jpg - Toner cartridge and printing (also the sample toner product) - photo by Jakub Żerdzicki on Unsplash - https://unsplash.com/photos/Da9qsu-0a00
+trading.jpg - Container port, international trading - photo by Andy Li on Unsplash - https://unsplash.com/photos/CpsTAUPoScw
+trading-alt.jpg - Shipping and trade - photo by Ali Mkumbwa on Unsplash - https://unsplash.com/photos/Annl9CjEaEs
+prod-tshirt.jpg - Sample product: T-shirt (size and colour variants) - photo by Md Salman on Unsplash - https://unsplash.com/photos/tWOz2_EK5EQ
+prod-powerbank.jpg - Sample product: power bank (capacity variants) - photo by I'M ZION on Unsplash - https://unsplash.com/photos/APdfyW0Aq-E
+prod-headphones.jpg - Sample product: wireless headphones (colour variants) - photo by C D-X on Unsplash - https://unsplash.com/photos/PDX_a_82obo
+cat-stationery.jpg - Sample category tile: Office & Stationery - photo by Joanna Kosinska on Unsplash - https://unsplash.com/photos/bF2vsubyHcQ

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Footer</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<footer class="v-footer wa-r">
+  <div class="w-wrap">
+    <div class="v-fgrid">
+      <div class="v-fbrand">
+        <a class="v-logo" href="{{L.Home}}" aria-label="WAAFA home">
+          <img class="v-logo-mark" src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="">
+          <img class="v-logo-word" src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt="WAAFA">
+          <span class="v-logo-div" aria-hidden="true"></span>
+          <span class="v-logo-tag">Worldwide Alliance<br>for Advancement,<br>Future &amp; Achievement</span>
+        </a>
+        <p class="v-ftag">Connecting the World, Creating the Future.</p>
+        <p>Waafa International has served Dhaka’s offices since 2010. In 2026 we opened Waafa Tours and Travel: flights, holidays and visas from the same Motijheel office.</p>
+        <div class="v-fsocial">
+          <a href="https://www.facebook.com/waafatoursandtravel" aria-label="Waafa on Facebook"><span class="i i-facebook"></span></a>
+          <a href="https://wa.me/8801823232241" aria-label="Waafa on WhatsApp"><span class="i i-whatsapp"></span></a>
+          <a href="mailto:info@waafasworld.com" aria-label="Email Waafa"><span class="i i-mail"></span></a>
+        </div>
+      </div>
+      <div class="{{c.travel}}">
+        <button class="v-fcol-head" type="button" aria-expanded="{{o.travel}}" onClick="{{tg.travel}}">Travel<span class="i i-chevron-down"></span></button>
+        <div class="v-fcol-body">
+          <a class="v-flink" href="{{L.Flights}}">Flights</a><a class="v-flink" href="{{L.Hotels}}">Hotels</a><a class="v-flink" href="{{L.Packages}}">Tour Packages</a><a class="v-flink" href="{{L.Visa}}">Visa Services</a><a class="v-flink" href="{{L.GroupFares}}">Group Fares</a><a class="v-flink" href="{{L.PlanTrip}}">Plan My Trip</a>
+        </div>
+      </div>
+      <div class="{{c.shop}}">
+        <button class="v-fcol-head" type="button" aria-expanded="{{o.shop}}" onClick="{{tg.shop}}">Waafas World<span class="i i-chevron-down"></span></button>
+        <div class="v-fcol-body">
+          <a class="v-flink" href="{{L.Shop}}">Shop all products</a><a class="v-flink" href="{{L.ShopList}}">Printers &amp; Supplies</a><a class="v-flink" href="{{L.ShopList}}">Office &amp; Stationery</a><a class="v-flink" href="{{L.ShopList}}">Electronics &amp; Gadgets</a><a class="v-flink" href="{{L.Printing}}">Printing Solutions</a><a class="v-flink" href="{{L.Trading}}">International Trading</a><a class="v-flink" href="{{L.ShopTrack}}">Track Order</a>
+        </div>
+      </div>
+      <div class="{{c.help}}">
+        <button class="v-fcol-head" type="button" aria-expanded="{{o.help}}" onClick="{{tg.help}}">Help<span class="i i-chevron-down"></span></button>
+        <div class="v-fcol-body">
+          <a class="v-flink" href="{{L.VisaGuide}}">Visa Guide</a><a class="v-flink" href="{{L.Baggage}}">Baggage Information</a><a class="v-flink" href="{{L.Emi}}">EMI</a><a class="v-flink" href="{{L.OfflinePay}}">Offline Payment</a><a class="v-flink" href="{{L.Faqs}}">FAQs</a><a class="v-flink" href="{{L.Refund}}">Refund Policy</a><a class="v-flink" href="{{L.Contact}}">Contact</a>
+        </div>
+      </div>
+      <div class="v-fcontact">
+        <span class="v-fcol-head" style="min-height:0;margin-bottom:2px">Visit or call</span>
+        <div class="v-fcontact-row"><span class="i i-map-pin"></span><span>193/C-1, 4th Floor, East Side, Motijheel Plaza, Aziz Square, Box Kalvat Road, Motijheel, Dhaka</span></div>
+        <div class="v-fcontact-row"><span class="i i-phone"></span><span><a href="tel:+8801823232241">01823-232241</a><br><span class="text-13">Phone and WhatsApp</span></span></div>
+        <div class="v-fcontact-row"><span class="i i-mail"></span><a href="mailto:info@waafasworld.com">info@waafasworld.com</a></div>
+        <div class="v-fcontact-row"><span class="i i-clock"></span><span class="flex flex-col gap-2"><span>Saturday to Thursday, 10 am to 6 pm</span><span class="{{hours.cls}}" style="align-self:flex-start">{{hours.label}}</span></span></div>
+        <a class="v-pillbtn" href="https://maps.google.com/?q=Motijheel+Plaza+Aziz+Square+Dhaka" style="align-self:flex-start"><span class="i i-route"></span>Get directions</a>
+      </div>
+    </div>
+    <div class="v-fmid">
+      <div class="flex flex-col gap-3">
+        <span class="v-fcol-head" style="min-height:0">We accept</span>
+        <div class="v-pay">
+          <span class="v-paychip"><span class="i i-landmark"></span>Bank transfer</span>
+          <span class="v-paychip"><span class="i i-smartphone"></span>bKash</span>
+          <span class="v-paychip"><span class="i i-smartphone"></span>Nagad</span>
+          <span class="v-paychip"><span class="i i-building"></span>Pay at our office</span>
+          <span class="v-paychip"><span class="i i-truck"></span>Cash on delivery (Waafas World)</span>
+        </div>
+        <span class="text-13 text-muted">Card and online payments appear here once they are live.</span>
+      </div>
+      <form class="flex flex-col gap-3" onSubmit="{{noop}}">
+        <label class="v-fcol-head" style="min-height:0" for="ft-mail">Fare drops and visa news, once a month</label>
+        <div class="v-news"><input class="w-input" id="ft-mail" type="email" placeholder="Your email address" autocomplete="email"><button class="w-btn w-btn-navy" type="submit">Subscribe</button></div>
+      </form>
+    </div>
+    <div class="v-fbottom">
+      <div class="flex flex-col lg:flex-row items-center gap-2 lg:gap-6"><span>© 2026 Waafa Tours and Travel and Waafa International</span><nav class="v-legal" aria-label="Legal"><a href="{{L.Privacy}}">Privacy</a><a href="{{L.Terms}}">Terms</a><a href="{{L.Refund}}">Refund</a></nav></div>
+      <span class="v-credit">Developed by <a href="https://www.mahedihasanemon.site/" target="_blank" rel="noopener">Mahedi Hasan Emon</a></span>
+    </div>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":null,"default":false},"$preview":{"width":1440,"height":640}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const s = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Flights','Hotels','Packages','Visa','GroupFares','PlanTrip','Shop','ShopList','Printing','Trading','ShopTrack','VisaGuide','Baggage','Emi','OfflinePay','Faqs','Refund','Contact','Privacy','Terms'].forEach(k => { L[k] = k + s + '.dc.html'; });
+    const d = new Date(Date.now() + 6 * 3600e3);
+    const dow = d.getUTCDay(), mins = d.getUTCHours() * 60 + d.getUTCMinutes();
+    let open = false, label;
+    if (dow !== 5 && mins >= 600 && mins < 1080) { open = true; label = 'Open now · until 6 pm'; }
+    else if (dow !== 5 && mins < 600) label = 'Closed · opens at 10 am';
+    else if (dow === 4 || dow === 5) label = 'Closed · opens Saturday at 10 am';
+    else label = 'Closed · opens tomorrow at 10 am';
+    const open2 = st.open || '';
+    const c = {}, o = {}, tg = {};
+    ['travel','shop','help'].forEach(k => {
+      c[k] = 'v-fcol' + (open2 === k ? ' is-open' : '');
+      o[k] = open2 === k;
+      tg[k] = () => this.setState({ open: open2 === k ? '' : k });
+    });
+    return { L, c, o, tg, hours: { label, cls: 'v-hours is-sm ' + (open ? 'is-open' : 'is-closed') }, noop: (e) => { if (e && e.preventDefault) e.preventDefault(); } };
+  }
+}
+</script>
+</body>
+</html>

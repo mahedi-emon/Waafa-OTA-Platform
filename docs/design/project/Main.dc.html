@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA — Research summary</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa" style="min-height:100%">
+  <header style="border-bottom:1px solid var(--color-mist-200)">
+    <div class="w-wrap flex items-center justify-between gap-4" style="height:72px">
+      <div class="w-logo">
+        <img class="w-logo-mark" src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="WAAFA">
+        <span class="w-logo-text"><img class="w-logo-word" src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt=""><span class="w-logo-tag">Worldwide Alliance for Advancement,<br>Future &amp; Achievement</span></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="w-small hide-m">Design research · 8 Oct 2026</span>
+        <span class="w-badge w-badge-premium"><span class="w-tri"></span>Stage A of E</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="w-wrap" style="padding-top:72px;padding-bottom:40px">
+    <div class="flex flex-col gap-5" style="max-width:920px">
+      <span class="w-eyebrow">Stage A · Research</span>
+      <h1 class="w-display">Learn the patterns.<br>Never copy the look.</h1>
+      <p class="w-lead" style="max-width:760px">I read the five references you named for structure and flows, with all Hajj and Umrah content skipped, then checked them against the benchmarks you listed. This board lists the ten patterns WAAFA adopts, the ten mistakes it avoids, and the visual idea that makes WAAFA unmistakably its own.</p>
+    </div>
+    <div class="grid md:grid-cols-4 gap-3 mt-10">
+      <div class="w-panel w-panel-tint flex flex-col gap-2"><span class="i i-search i-20 text-brand"></span><b class="text-navy text-15">Read directly</b><p class="text-sm text-subtle">gozayaan.com, sharetrip.net, sharetrip.net/shop, akijair.com and obokash.com: navigation, search fields, section order, card anatomy, footers.</p></div>
+      <div class="w-panel w-panel-tint flex flex-col gap-2"><span class="i i-image i-20 text-brand"></span><b class="text-navy text-15">Your screenshots</b><p class="text-sm text-subtle">Desktop home pages of Akij Air, ShareTrip, ShareTrip Shop and GoZayaan, Akij’s “Need help?” panel and the More menu. Layout lessons only; every word and layout on WAAFA is new.</p></div>
+      <div class="w-panel w-panel-tint flex flex-col gap-2"><span class="i i-compass i-20 text-brand"></span><b class="text-navy text-15">Benchmarks</b><p class="text-sm text-subtle">Airbnb, Booking.com, Skyscanner, Google Flights, Apple, Stripe and Linear. Component sources from 21st.dev and motion.dev.</p></div>
+      <div class="w-panel flex flex-col gap-2" style="border-color:var(--color-gold-100);background:var(--color-gold-50)"><span class="i i-info i-20" style="color:var(--color-gold-600)"></span><b class="text-navy text-15">One limit</b><p class="text-sm text-subtle">The sites are blocked from this workspace, so the 390 px views and a live DAC → DXB search couldn’t be run. Results patterns come from Google Flights, Skyscanner and Booking.com instead.</p></div>
+    </div>
+  </section>
+
+  <section class="w-wrap" style="padding-block:40px">
+    <div class="w-head"><div class="w-head-text"><span class="w-eyebrow">What the references do</span><h2 class="w-h2">Five sites, read for patterns</h2></div></div>
+    <p class="w-note" style="margin-bottom:16px"><span class="i i-info"></span><span>Read from page HTML on 8 Oct 2026, then checked against your desktop screenshots (below). Phone views at 390 px weren’t captured: the sites are blocked from this workspace.</span></p>
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">GoZayaan</h3><span class="w-code">gozayaan.com</span></div>
+        <span class="w-badge w-badge-outline" style="align-self:flex-start">HTML only · nav and footer</span>
+        <ul class="flex flex-col gap-2 text-sm text-subtle">
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Nav: Flight, Hotel, Tour, Visa, Gift Card, plus “Use App”, Chat and Sign In; side menu grouped as Travel, Extras, Rewards.</span></li>
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Footer states support plainly (24/7 via Messenger or phone) and links Refund and EMI policies and an Experience Center finder.</span></li>
+          <li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>Visa starts from a world map (“Select your desired country”), slower than a searchable list on a phone.</span></li>
+          <li class="flex gap-2"><span class="i i-smartphone i-16 text-brand"></span><span>Mobile: pinch-zoom blocked (<code>user-scalable=0</code>), phone-number detection off, app pushed.</span></li>
+        </ul>
+      </article>
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">ShareTrip</h3><span class="w-code">sharetrip.net</span></div>
+        <span class="w-badge w-badge-outline" style="align-self:flex-start">HTML only · nav and footer</span>
+        <ul class="flex flex-col gap-2 text-sm text-subtle">
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Nav: Flight, Hotel, Shop, Holiday, Gift Card, then Visa, Transport, Others.</span></li>
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Travel Guide, Travel Advisory, Visa Guide and Visa Application as linked content; “We accept” mixes cards with bKash, Nagad, Upay.</span></li>
+          <li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>A long wall of accreditation badges, and retail mixed into the travel navigation.</span></li>
+          <li class="flex gap-2"><span class="i i-smartphone i-16 text-brand"></span><span>Mobile: zoom blocked, app deep links.</span></li>
+        </ul>
+      </article>
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">ShareTrip Shop</h3><span class="w-code">sharetrip.net/shop</span></div>
+        <span class="w-badge w-badge-outline" style="align-self:flex-start">Full page read</span>
+        <ul class="flex flex-col gap-2 text-sm text-subtle">
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Search first (“Search ShareTrip Shop for products, brands &amp; more”), category tiles, Top Selling, Top Brands, New Arrivals.</span></li>
+          <li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>No add-to-cart on cards, no filters, no delivery or returns terms on the page, cart without a count.</span></li>
+          <li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>All banners share the alt text “Shop Banner Image”.</span></li>
+        </ul>
+      </article>
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">Akij Air</h3><span class="w-code">akijair.com</span></div>
+        <span class="w-badge w-badge-outline" style="align-self:flex-start">Full page read · your screenshot</span>
+        <ul class="flex flex-col gap-2 text-sm text-subtle">
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>“Where to Next?” with Flight, Visa, Hotel, Holiday; From DAC, To DXB; Departure plus “Add Return”; Passenger &amp; Class; “Add preferred Airline”.</span></li>
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Trending routes with “from ৳”, packages “Starting from”, help hours stated (09:00–02:00), footer links for Offline Payment, Baggage, EMI.</span></li>
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Two-column More menu with icon, title and one line (from your screenshot).</span></li>
+          <li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>A “4.8 · Based on 50 reviews” rating with no source; Adult, Child, Kid and Infant is one split too many.</span></li>
+        </ul>
+      </article>
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">Obokash</h3><span class="w-code">obokash.com · Hajj/Umrah skipped</span></div>
+        <span class="w-badge w-badge-outline" style="align-self:flex-start">Full page read</span>
+        <ul class="flex flex-col gap-2 text-sm text-subtle">
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>WhatsApp appointment as a first-class action in the hero.</span></li>
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Search tabs Tour, Visa, Hotel, Flight, asking destination and nationality.</span></li>
+          <li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>No dates or travellers in the search, so staff must ask everything again; claims like “Best Price” with nothing behind them; no prices in the HTML.</span></li>
+        </ul>
+      </article>
+      <article class="w-card w-card-pad flex flex-col gap-3" style="background:var(--color-mist-25)">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">Benchmarks</h3><span class="w-code">world class</span></div>
+        <span class="w-badge w-badge-outline" style="align-self:flex-start">From experience, not re-browsed</span>
+        <ul class="flex flex-col gap-2 text-sm text-subtle">
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span><b class="text-navy">Google Flights</b> airport and date pickers · <b class="text-navy">Skyscanner</b> sort tabs that show values · <b class="text-navy">Booking.com</b> filter counts</span></li>
+          <li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span><b class="text-navy">Airbnb</b> image-first cards and map toggle · <b class="text-navy">Apple, Stripe</b> type, restraint, micro-motion · <b class="text-navy">Linear</b> admin speed</span></li>
+        </ul>
+      </article>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-4" style="margin-top:24px">
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <span class="w-eyebrow">Where WAAFA already wins</span>
+        <ol class="flex flex-col gap-3 text-sm text-subtle">
+          <li class="flex gap-3"><b class="text-navy">1</b><span><b class="text-navy">Accessibility basics.</b> Zoom stays on, 44–56 px targets, AA contrast. GoZayaan and ShareTrip block zoom.</span></li>
+          <li class="flex gap-3"><b class="text-navy">2</b><span><b class="text-navy">Honest prices.</b> Every price says “from” or “indicative”, sample data is labelled, no rating without a source.</span></li>
+          <li class="flex gap-3"><b class="text-navy">3</b><span><b class="text-navy">Visa as a real product.</b> Country list, steps, document check and status tracking, against a map picker or no visa block at all.</span></li>
+        </ol>
+      </article>
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <span class="w-eyebrow">Not yet, and the fix</span>
+        <ol class="flex flex-col gap-3 text-sm text-subtle">
+          <li class="flex gap-3"><b class="text-navy">1</b><span><b class="text-navy">Photography.</b> Theirs is real. Fix: your Unsplash photos are wired to every slot by URL and load at build time; the canvas shows labelled placeholders because it can’t load outside images.</span></li>
+          <li class="flex gap-3"><b class="text-navy">2</b><span><b class="text-navy">Proof of trust.</b> They show offices, hotlines and payment partners. Fix: an honest trust layer on Home: office and directions, phone and WhatsApp, office hours, real payment methods, Facebook reviews instead of invented ones.</span></li>
+          <li class="flex gap-3"><b class="text-navy">3</b><span><b class="text-navy">Instant answers.</b> Akij shows “from ৳” routes at once. Fix: group fares with fixed prices on Home, a plain line under Search saying what happens next, and (Stage D) matching group fares plus the reference number the moment a Manual query is sent.</span></li>
+        </ol>
+      </article>
+    </div>
+  </section>
+
+  <section class="w-wrap" style="padding-block:40px">
+    <div class="w-head"><div class="w-head-text"><span class="w-eyebrow">From your screenshots · desktop 1440</span><h2 class="w-h2">What we learned, and what we left behind</h2><p class="w-lead">Akij Air is the calmest of the four, so it set the bar for restraint. WAAFA takes the lessons, not the look: the destination finder, section labels, headings and copy are our own.</p></div></div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">Akij Air</h3><span class="w-code">akijair.com</span></div>
+        <ul class="flex flex-col gap-2 text-sm text-subtle"><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>White header, few links, a headset “help” button instead of a loud hotline chip. Adopted, with live office hours inside the panel.</span></li><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>One rounded hero photo with the search card overlapping its lower edge; lots of white space.</span></li><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Help band with opening hours above the footer.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>“4.8 · Based on 50 reviews” with no source. WAAFA links to Facebook reviews instead.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>The same red accent word in every heading. WAAFA keeps headings one colour and saves the accent for the hero.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>List-plus-big-card destination layout. WAAFA uses its own destination finder with visa and flight-time filters.</span></li></ul>
+      </article>
+
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">ShareTrip</h3><span class="w-code">sharetrip.net</span></div>
+        <ul class="flex flex-col gap-2 text-sm text-subtle"><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Student fare as a search option, not a separate page.</span></li><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>A clear grid of airlines, good for search engines and trust.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>Ten product tabs in the search card, with a scroll arrow.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>Advertising banners between sections.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>Umrah fare type: not offered by WAAFA.</span></li></ul>
+      </article>
+
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">ShareTrip Shop</h3><span class="w-code">sharetrip.net/shop</span></div>
+        <ul class="flex flex-col gap-2 text-sm text-subtle"><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Search bar overlapping the banner, then category tiles: the shop starts with finding, not browsing.</span></li><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Discount tag plus MRP struck through; top brands with product counts.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>Banners carry most of the message; no delivery or returns terms on the page.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>Most cards have no add-to-cart.</span></li></ul>
+      </article>
+
+      <article class="w-card w-card-pad flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">GoZayaan</h3><span class="w-code">gozayaan.com</span></div>
+        <ul class="flex flex-col gap-2 text-sm text-subtle"><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Short “how to book” videos in Bangla for first-time users.</span></li><li class="flex gap-2"><span class="i i-check i-16 text-success"></span><span>Deals filtered by All, Flight, Hotel, Others, each with a coupon code.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>Large partner advertisements inside the page.</span></li><li class="flex gap-2"><span class="i i-x i-16 text-danger"></span><span>Walls of card-network logos in the footer.</span></li></ul>
+      </article>
+
+    </div>
+    <div class="grid lg:grid-cols-2 gap-4" style="margin-top:16px">
+      <article class="w-card w-card-pad flex flex-col gap-3" style="background:var(--color-mist-25)">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">Flight results, DAC → DXB</h3><span class="w-code">one way · 1 adult · November</span></div>
+        <p class="text-sm text-subtle">Couldn’t be run here: the sites are blocked from this workspace. Stage D uses proven results patterns instead: <b class="text-navy">Google Flights</b> for the price-and-date strip and plain fare rules, <b class="text-navy">Skyscanner</b> for Best · Cheapest · Fastest tabs that show their values, <b class="text-navy">Booking.com</b> for filter counts and the sticky summary bar.</p>
+      </article>
+      <article class="w-card w-card-pad flex flex-col gap-3" style="background:var(--color-mist-25)">
+        <div class="flex items-center justify-between gap-3"><h3 class="w-h4">Obokash</h3><span class="w-code">screenshot not received</span></div>
+        <p class="text-sm text-subtle">The Obokash screenshot didn’t reach this workspace, so its card above is from the page HTML only. Hajj and Umrah content skipped.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="w-wrap" style="padding-block:48px">
+    <div class="grid lg:grid-cols-2 gap-10 xl:gap-16">
+      <div>
+        <div class="w-head"><div class="w-head-text"><span class="w-eyebrow">Adopt</span><h2 class="w-h2">10 patterns WAAFA takes</h2></div></div>
+        <ol class="w-acc" style="border-top:1px solid var(--color-mist-200)">
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">01</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">One search card, four tabs</h3><p class="w-body">Flight, Hotel, Tour and Visa share one glass card with a sliding indicator. The Search button is always in reach, and pinned inside every mobile picker.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">GoZayaan</span><span class="w-badge w-badge-neutral">Akij Air</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">02</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">City, code and airport together</h3><p class="w-body">“Dhaka · DAC · Hazrat Shahjalal International”. Bangladeshi airports pinned first, then popular routes, with recent searches as one-tap chips.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">Akij Air</span><span class="w-badge w-badge-neutral">Google Flights</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">03</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Return date on demand</h3><p class="w-body">One-way is the default. “Add return” upgrades to round-trip in one tap, while the trip-type control stays visible for people who look for it.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">Akij Air</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">04</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Travellers and class in one sheet</h3><p class="w-body">Steppers with the rules written next to them (infants no more than adults, nine travellers max), class as large radio cards, extra options folded away.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">Akij Air</span><span class="w-badge w-badge-neutral">Google Flights</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">05</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Honest “from” prices</h3><p class="w-body">Every fare before live booking reads “Indicative from ৳58,500 per adult”. Trending routes become admin-run group fares with seat counts the team actually enters.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">Akij Air</span><span class="w-badge w-badge-neutral">Obokash</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">06</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">The itinerary on the card</h3><p class="w-body">Package cards show nights per city (“3N Bangkok · 2N Pattaya”) and “from ৳ per person, twin sharing”, so people compare before they click.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">Obokash</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">07</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Visa by country, then by type</h3><p class="w-body">Search, region and A–Z filters lead to a country page with a tab per visa type, a checklist, and fees split into embassy fee and service charge.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">Obokash</span><span class="w-badge w-badge-neutral">ShareTrip</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">08</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">WhatsApp where it helps</h3><p class="w-body">A floating button above the tab bar, prefilled with the page. After every query, a WhatsApp button prefilled with the reference number.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">Obokash</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">09</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">A shop rhythm that sells</h3><p class="w-body">Campaign, categories, best sellers, brands with counts, new arrivals. Waafas World adds Add to cart on every card, and Find by model wherever a category has compatibility data.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">ShareTrip Shop</span></div></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl text-navy tabular-nums" style="width:36px;flex:none">10</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Results that explain themselves</h3><p class="w-body">Sort tabs show the winning value (Cheapest ৳, Fastest 6h 05m). Filters are a rail on desktop and a sheet on mobile; the help card never scrolls away.</p><div class="flex flex-wrap gap-1.5"><span class="w-badge w-badge-neutral">Skyscanner</span><span class="w-badge w-badge-neutral">Booking.com</span></div></div></li>
+        </ol>
+      </div>
+      <div>
+        <div class="w-head"><div class="w-head-text"><span class="w-eyebrow">Avoid</span><h2 class="w-h2">10 mistakes WAAFA won’t make</h2></div></div>
+        <ol style="border-top:1px solid var(--color-mist-200)">
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">01</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Blocking pinch-zoom</h3><p class="w-body">Two references ship <code>user-scalable=no</code>.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — zoom stays on; text scales to 200% without breaking (WCAG 1.4.4).</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">02</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Badge walls</h3><p class="w-body">A dozen logos make every one of them mean less.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — only what Waafa really holds. No IATA badge until accredited; payment marks only for methods that are live.</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">03</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Prices you have to decode</h3><p class="w-body">Two unlabeled numbers on one product card.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — price, crossed-out MRP and “save ৳” always labelled; travel fares marked indicative.</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">04</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Menu items that go nowhere</h3><p class="w-body">Nav links pointing to “#”.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — every item in the header, More menu and footer has a real page on launch day.</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">05</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Fake urgency</h3><p class="w-body">Countdowns and “only 2 left” with nothing behind them.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — seats left appear only when an admin entered them; no timers until live holds exist.</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">06</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Reviews nobody can check</h3><p class="w-body">Big star averages with no source.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — approved feedback only, each with the service used and a date; no self-serving review markup.</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">07</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Search below the fold on phones</h3><p class="w-body">Long hero copy pushes the button out of reach.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — the card starts in the first screen and its button sits in the thumb zone.</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">08</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">One long form</h3><p class="w-body">Asking for everything before saying anything back.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — two short steps, contact first, trip details prefilled from the search.</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">09</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">Heroes with three jobs</h3><p class="w-body">Offer sliders fighting the search card.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — the hero does one thing; offers start right after the trust strip.</p></div></li>
+          <li class="flex gap-5 py-5 border-b"><span class="font-display font-extrabold text-2xl tabular-nums" style="width:36px;flex:none;color:var(--color-mist-400)">10</span><div class="flex flex-col gap-2 min-w-0"><h3 class="w-h4">The template look</h3><p class="w-body">Gradient blobs, emoji, icons in coloured circles, stock smiles.</p><p class="text-sm text-subtle"><b class="text-success">Instead</b> — one icon family, one motif, one photo grade, and copy written for Bangladeshi travellers.</p></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--color-mist-50);border-block:1px solid var(--color-mist-200)">
+    <div class="w-wrap" style="padding-block:72px">
+      <div class="w-head"><div class="w-head-text"><span class="w-eyebrow">Ours</span><h2 class="w-h2">How WAAFA will look different</h2><p class="w-lead">Six decisions a visitor can see in the first five seconds, and none of them borrowed.</p></div></div>
+      <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="w-value"><div style="height:64px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:inset 0 0 0 1px var(--color-mist-200);position:relative">
+          <svg viewBox="0 0 400 64" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><defs><linearGradient id="rb1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#020D39"/><stop offset=".4" stop-color="#003FBE"/><stop offset=".74" stop-color="#0D8CEE"/><stop offset="1" stop-color="#39CCE9"/></linearGradient></defs><path d="M0 52 C 90 52 140 18 220 16 C 300 14 330 40 400 22 L 400 34 C 332 52 300 28 220 30 C 142 32 92 62 0 62 Z" fill="url(#rb1)"/><path d="M0 52 C 90 52 140 18 220 16 C 300 14 330 40 400 22" fill="none" stroke="#D7D3D0" stroke-width="1.2"/></svg>
+        </div><h3>The ribbon</h3><p>The W’s flowing band becomes the hero underlay, the active-tab line, section dividers and the loader. One motif, used with restraint.</p></div>
+        <div class="w-value"><div class="flex items-center gap-2" style="height:64px"><span class="w-badge w-badge-premium"><span class="w-tri"></span>Best seller</span><span class="w-badge w-badge-premium"><span class="w-tri"></span>Featured</span></div><h3>The gold triangle</h3><p>Lifted from the A’s in the wordmark. It is the only premium marker on the site and never carries small text.</p></div>
+        <div class="w-value"><div class="flex items-center gap-2" style="height:64px"><span style="width:40px;height:40px;border-radius:50%;background:#020D39"></span><span style="width:40px;height:40px;border-radius:50%;background:#00185B"></span><span style="width:40px;height:40px;border-radius:50%;background:#0053D7"></span><span style="width:40px;height:40px;border-radius:50%;background:#0D8CEE"></span><span style="width:40px;height:40px;border-radius:50%;background:#D7D3D0"></span><span style="width:40px;height:40px;border-radius:50%;background:#A8782F"></span></div><h3>An airline-lounge palette</h3><p>Midnight, navy, electric blue and silver on white. No orange sale banners, no purple gradients.</p></div>
+        <div class="w-value"><div class="w-fare-route" style="height:64px"><div><div class="w-iata">DAC</div><div class="w-fare-city">Dhaka</div></div><div class="w-path"><span class="w-path-dot"></span><span class="w-path-ic"><span class="i i-plane"></span></span></div><div class="text-right"><div class="w-iata">DXB</div><div class="w-fare-city">Dubai</div></div></div><h3>Boarding-pass details</h3><p>IATA codes set large, dashed flight paths, ticket-stub notches on fare cards, tabular figures for every time and taka amount.</p></div>
+        <div class="w-value"><div class="flex items-center gap-3" style="height:64px"><span class="v-iconbtn" style="width:44px;height:44px"><span class="i i-headset"></span><span class="v-dot"></span></span><span class="v-hours is-open">Open now · until 6 pm</span></div><h3>People, not a robot</h3><p>“Our travel expert will call you.” A calm help button in the header opens phone, WhatsApp, email and live office hours; the Motijheel office sits in the footer.</p></div>
+        <div class="w-value"><div class="flex items-center gap-2" style="height:64px"><span class="w-chip is-active"><span class="i i-plane"></span>Travel</span><span class="w-chip"><span class="i i-shopping-bag"></span>Waafas World</span></div><h3>Two brands, one system</h3><p>Travel and Waafas World share every token. Waafas World gets its own bar with product search and cart, so it feels like a store.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-wrap" style="padding-block:72px">
+    <div class="w-head"><div class="w-head-text"><span class="w-eyebrow">Sources</span><h2 class="w-h2">Motion and components we’ll build from</h2><p class="w-lead">Studied on 21st.dev and motion.dev, rebuilt in our tokens. Nothing is pasted in as-is.</p></div></div>
+    <div class="w-ptable-wrap">
+      <table class="ds-spec">
+        <thead><tr><th>WAAFA moment</th><th>Built with</th><th>Inspired by</th></tr></thead>
+        <tbody>
+          <tr><td>Sliding search tabs, segmented controls</td><td>Motion <code>layoutId</code> + spring</td><td>Motion Primitives — Animated Background</td></tr>
+          <tr><td>Search button sheen</td><td>CSS mask sweep, 1.1 s</td><td>Magic UI — Shimmer Button</td></tr>
+          <tr><td>Airline name marquee</td><td>Motion <code>useAnimationFrame</code>, pause on hover</td><td>Magic UI — Marquee · Motion Primitives — Infinite Slider</td></tr>
+          <tr><td>“16 years” counter</td><td>Motion <code>animate()</code> on a motion value</td><td>Magic UI — Number Ticker</td></tr>
+          <tr><td>Section reveals (once)</td><td>Motion <code>whileInView</code> with <code>once: true</code></td><td>Magic UI — Blur Fade</td></tr>
+          <tr><td>Itinerary timeline</td><td>Motion <code>useScroll</code> progress line</td><td>Aceternity — Timeline</td></tr>
+          <tr><td>Bottom sheets</td><td>shadcn Drawer (Vaul), drag to dismiss</td><td>Vaul</td></tr>
+          <tr><td>Gallery lightbox</td><td>Motion shared layout</td><td>Motion Primitives — Morphing Dialog</td></tr>
+          <tr><td>Phone input, steppers, uploads</td><td>shadcn primitives</td><td>Origin UI</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-4 mt-10 p-6 rounded-2xl" style="background:var(--color-navy-900);color:#fff">
+      <div class="flex flex-col gap-1"><b class="font-display text-xl">Next: Stage B — brand, tokens and components</b><span style="color:rgb(255 255 255/.72)" class="text-sm">Traced W mark and wordmark, Tailwind v4 tokens, shadcn-mapped components.</span></div>
+      <a class="w-btn w-btn-white w-arrow" href="Brand.dc.html">Open the design system<span class="i i-arrow-right"></span></a>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5280}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

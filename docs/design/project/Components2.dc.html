@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA — Components, travel, shop and admin patterns</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa ds" style="width:1440px;height:2700px;padding:64px;display:flex;flex-direction:column;gap:28px">
+  <div class="flex items-end justify-between gap-6">
+    <div class="flex flex-col gap-3"><span class="w-eyebrow">Stage B · Components 2 of 2</span><h1 class="ds-h" style="font-size:52px">Travel, shop &amp; admin patterns</h1></div>
+    <p class="ds-note" style="max-width:460px;text-align:right">Built on shadcn Card, NavigationMenu, Drawer, Dialog and DataTable. Hover the cards for the lift and image zoom; the product card’s button turns into a stepper.</p>
+  </div>
+
+  <div class="flex items-center justify-between"><span class="ds-label">Cards · hover: lift 4 px + shadow-lg in 300 ms ease-out, image scale 1.045 in 700 ms</span><span class="ds-map">shadcn · Card · Aceternity · Focus Cards (hover only)</span></div>
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px">
+    <a class="w-card w-lift w-pkg" href="#">
+      <div class="w-media"><div class="w-ph" data-photo="dest-maldives"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Maldives overwater villas</span></div><div class="w-media-tags"><span class="w-badge w-badge-glass">Flights included</span></div><span class="w-media-fav"><span class="i i-heart"></span></span></div>
+      <div class="w-pkg-body">
+        <div class="w-pkg-meta"><span class="i i-map-pin"></span>Malé, Maldives<span class="w-dot-sep"></span><span class="i i-clock"></span>4D / 3N</div>
+        <h3 class="w-pkg-title">Maldives Island Escape</h3>
+        <p class="w-pkg-route">2N Maafushi · 1N Malé · speedboat transfers</p>
+        <div class="w-pkg-foot"><div><span class="w-from">From</span><div class="w-price">৳64,900 <small>/ person</small></div></div><span class="w-btn w-btn-xs w-btn-soft">View</span></div>
+      </div>
+    </a>
+    <a class="w-dest" href="#" style="aspect-ratio:3/4"><div class="w-ph is-dark at-top" data-photo="dest-dubai"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Dubai skyline</span></div><div class="w-dest-body"><div><div class="w-dest-name">Dubai</div><div class="w-dest-sub">City and desert · from ৳48,500</div></div><span class="w-dest-go"><span class="i i-arrow-up-right"></span></span></div></a>
+    <div class="w-fare">
+      <div class="w-fare-top">
+        <div class="w-fare-head"><span class="w-airline">BS</span><div class="flex flex-col"><b class="text-navy text-sm">US-Bangla · group fare</b><span class="text-13 text-muted">One-way · Economy</span></div></div>
+        <div class="w-fare-route"><div><div class="w-iata">DAC</div><div class="w-fare-city">Dhaka</div></div><div class="w-path"><span class="w-path-dot"></span><span class="w-path-ic"><span class="i i-plane"></span></span></div><div class="text-right"><div class="w-iata">KUL</div><div class="w-fare-city">Kuala Lumpur</div></div></div>
+        <div class="w-fare-info"><span><span class="i i-calendar"></span>18 Nov 2026</span><span><span class="i i-luggage"></span>30 kg</span><span><span class="i i-clock"></span>Fixed date</span></div>
+      </div>
+      <div class="w-fare-split"></div>
+      <div class="w-fare-bot"><div><span class="w-from">Indicative from</span><div class="w-price">৳29,800 <small>/ adult</small></div></div><span class="w-btn w-btn-sm w-btn-navy">Request</span></div>
+    </div>
+    <div class="flex flex-col gap-3">
+      <a class="w-visa w-lift" href="#"><img class="w-flag-lg w-flag" src="../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg" alt=""><div class="min-w-0"><div class="w-visa-name">Thailand</div><div class="w-visa-sub">Tourist · Business</div></div><span class="i i-chevron-right w-visa-go"></span></a>
+      <a class="w-visa w-lift" href="#"><img class="w-flag-lg w-flag" src="../assets/039af49115f270dcd1fee4896f730088.svg" alt=""><div class="min-w-0"><div class="w-visa-name">Malaysia</div><div class="w-visa-sub">Tourist · Business</div></div><span class="i i-chevron-right w-visa-go"></span></a>
+      <a class="w-visa w-lift" href="#"><img class="w-flag-lg w-flag" src="../assets/241da4a39bf1dddb788006ef486bea27.svg" alt=""><div class="min-w-0"><div class="w-visa-name">Schengen</div><div class="w-visa-sub">Tourist · appointment needed</div></div><span class="i i-chevron-right w-visa-go"></span></a>
+      <div class="w-quote" style="padding:16px;gap:10px;border-style:dashed"><span class="w-badge w-badge-outline" style="align-self:flex-start"><span class="i i-message-square"></span>Real reviews only</span><p style="font-size:14px;color:var(--color-mist-500)">[Review text, in the traveller’s own words, published with permission]</p><div class="w-quote-who"><span class="w-avatar is-soft">AB</span><div><div class="w-quote-name">[First name, last initial]</div><div class="w-quote-meta">[Trip · month]</div></div></div></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px">
+    <div class="w-prod w-lift">
+      <div class="w-prod-media"><div class="w-ph is-product" data-photo="prod-hp83a"><span class="w-ph-ic"><span class="i i-camera"></span></span><span class="w-ph-subj">Product photo: HP 83A black toner</span></div><div class="w-prod-tags"><span class="w-off">−12%</span></div></div>
+      <div class="w-prod-body">
+        <span class="w-prod-brand">HP · Original</span>
+        <h3 class="w-prod-title">HP 83A Black LaserJet Toner (CF283A)</h3>
+        <span class="w-prod-spec">Yield ~1,500 pages · <span class="w-stock in">In stock</span></span>
+        <div class="w-prod-price"><b>৳6,950</b><span class="w-strike text-13">৳7,900</span></div>
+        <sc-if value="{{inCart}}" hint-placeholder-val="{{ false }}">
+          <div class="w-counter w-prod-cta" style="justify-content:space-between;width:100%;padding:3px;border-radius:12px;background:var(--color-electric-50)"><button type="button" aria-label="Remove one" onClick="{{dec}}"><span class="i i-minus"></span></button><output>{{qty}}</output><button type="button" aria-label="Add one" onClick="{{inc}}"><span class="i i-plus"></span></button></div>
+        </sc-if>
+        <sc-if value="{{notInCart}}" hint-placeholder-val="{{ true }}">
+          <button class="w-btn w-btn-sm w-btn-primary w-prod-cta" type="button" onClick="{{add}}"><span class="i i-shopping-cart"></span>Add to cart</button>
+        </sc-if>
+      </div>
+    </div>
+    <div class="w-prod w-lift">
+      <div class="w-prod-media"><div class="w-ph is-product" data-photo="prod-lbp122"><span class="w-ph-ic"><span class="i i-camera"></span></span><span class="w-ph-subj">Product photo: Canon LBP122dw printer</span></div><div class="w-prod-tags"><span class="w-badge w-badge-premium"><span class="w-tri"></span>Featured</span></div></div>
+      <div class="w-prod-body">
+        <span class="w-prod-brand">Canon</span>
+        <h3 class="w-prod-title">imageCLASS LBP122dw Mono Laser Printer</h3>
+        <span class="w-prod-spec">29 ppm · Wi-Fi · duplex · <span class="w-stock low">Low stock</span></span>
+        <div class="w-prod-price"><b>৳18,500</b></div>
+        <button class="w-btn w-btn-sm w-btn-secondary w-prod-cta" type="button">Get a corporate price</button>
+      </div>
+    </div>
+    <a class="w-post" href="#">
+      <div class="w-media"><div class="w-ph" data-photo="dest-pokhara"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Pokhara, Nepal</span></div></div>
+      <span class="w-post-cat">Visa guide</span>
+      <h3 class="w-post-title">Nepal visa on arrival for Bangladeshi travellers: what to carry</h3>
+      <span class="w-post-meta">6 min read · 2 Oct 2026</span>
+    </a>
+    <a class="w-offer" href="#" style="aspect-ratio:auto;min-height:100%"><div class="w-ph is-dark at-tr" data-photo="hero-wing"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Airplane wing over clouds at sunrise</span></div><div class="w-offer-body"><span class="w-badge w-badge-glass" style="align-self:flex-start">Group fare</span><div class="flex flex-col gap-2"><span class="w-offer-title">Dhaka to Dubai, 12–19 Nov</span><span class="w-offer-sub">30 kg baggage · fixed dates · confirmed by our team</span></div><span class="w-offer-code">From ৳58,500 · indicative</span></div></a>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px">
+    <section class="w-panel flex flex-col gap-4" style="overflow:visible">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Navigation · header &amp; More menu</h2><div class="flex gap-2"><span class="ds-map">shadcn · NavigationMenu</span><span class="ds-map">Aceternity · Navbar Menu</span></div></div>
+      <div style="position:relative;border-radius:18px;border:1px solid var(--color-mist-200);height:470px;background:var(--color-mist-25)">
+        <header class="w-header" style="position:relative;border-radius:18px 18px 0 0;--hdr-h:72px">
+          <div class="flex items-center gap-4" style="height:100%;padding:0 20px">
+            <div class="w-logo"><img class="w-logo-mark" src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="" style="height:34px"><img class="w-logo-word" src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt="" style="height:15px"></div>
+            <nav class="flex items-center gap-1" style="margin-left:8px">
+              <a class="w-navlink" href="#">Tour Packages</a>
+              <a class="w-navlink" href="#">Visa Services</a>
+              <a class="w-navlink" href="#">Waafas World<span class="i i-chevron-down"></span></a>
+              <div class="w-navitem"><a class="w-navlink is-open is-active" href="#">More<span class="i i-chevron-down"></span></a>
+                <div class="w-mega is-open" style="left:-180px;transform:none">
+                  <div class="w-mega-grid" style="width:560px">
+                    <a class="w-mega-item is-active" href="#"><span class="w-tile"><span class="i i-book-open"></span></span><span><span class="w-mega-title">Visa Guide</span><span class="w-mega-desc" style="display:block">Documents, fees and processing times by country</span></span></a>
+                    <a class="w-mega-item" href="#"><span class="w-tile"><span class="i i-undo"></span></span><span><span class="w-mega-title">Refund Policy</span><span class="w-mega-desc" style="display:block">How cancellations and refunds work</span></span></a>
+                    <a class="w-mega-item" href="#"><span class="w-tile"><span class="i i-luggage"></span></span><span><span class="w-mega-title">Baggage Information</span><span class="w-mega-desc" style="display:block">Cabin and checked allowance by airline</span></span></a>
+                    <a class="w-mega-item" href="#"><span class="w-tile"><span class="i i-calculator"></span></span><span><span class="w-mega-title">EMI</span><span class="w-mega-desc" style="display:block">Split trip costs into monthly instalments</span></span></a>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </header>
+        <span class="ds-note" style="position:absolute;left:20px;bottom:16px">Panel: opacity + 10 px rise + scale .985 → 1 in 280 ms ease-out; hover bridge keeps it open across the gap.</span>
+      </div>
+    </section>
+    <section class="w-panel flex flex-col gap-4">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Mobile · tab bar &amp; sheet</h2><div class="flex gap-2"><span class="ds-map">shadcn · Drawer (Vaul)</span></div></div>
+      <div style="position:relative;height:470px;border-radius:30px;overflow:hidden;background:#fff;box-shadow:inset 0 0 0 1px var(--color-mist-200);transform:translateZ(0)">
+        <div style="position:absolute;inset:0;background:var(--color-mist-50)"></div>
+        <div class="w-scrim" style="position:absolute"></div>
+        <div class="w-sheet" style="max-height:78%;bottom:64px">
+          <div class="w-sheet-grab"></div>
+          <div class="w-sheet-head"><span class="w-sheet-title">More</span><button class="w-iconbtn" type="button" aria-label="Close"><span class="i i-x"></span></button></div>
+          <div class="w-sheet-body" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+            <span class="flex flex-col items-center gap-2 text-center text-13 font-semibold text-navy" style="padding:10px 4px"><span class="w-tile"><span class="i i-book-open"></span></span>Visa Guide</span>
+            <span class="flex flex-col items-center gap-2 text-center text-13 font-semibold text-navy" style="padding:10px 4px"><span class="w-tile"><span class="i i-luggage"></span></span>Baggage</span>
+            <span class="flex flex-col items-center gap-2 text-center text-13 font-semibold text-navy" style="padding:10px 4px"><span class="w-tile"><span class="i i-calculator"></span></span>EMI</span>
+            <span class="flex flex-col items-center gap-2 text-center text-13 font-semibold text-navy" style="padding:10px 4px"><span class="w-tile"><span class="i i-landmark"></span></span>Offline Payment</span>
+            <span class="flex flex-col items-center gap-2 text-center text-13 font-semibold text-navy" style="padding:10px 4px"><span class="w-tile"><span class="i i-image"></span></span>Gallery</span>
+            <span class="flex flex-col items-center gap-2 text-center text-13 font-semibold text-navy" style="padding:10px 4px"><span class="w-tile"><span class="i i-message-square"></span></span>Feedback</span>
+          </div>
+        </div>
+        <nav class="w-tabbar ww-tabbar" style="position:absolute;display:grid" aria-label="Main">
+          <a class="w-tab" href="#"><span class="i i-house"></span>Home</a><a class="w-tab" href="#"><span class="i i-map"></span>Packages</a>
+          <a class="ww-tabworld" href="#" aria-label="Waafas World, 4 items in cart"><span class="ww-tw-disc"><span class="ww-tw-ring" aria-hidden="true"></span><img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt=""><span class="ww-tw-badge">4</span></span><span class="ww-tw-label">Waafas World</span></a>
+          <a class="w-tab" href="#"><span class="i i-passport"></span>Visa</a><a class="w-tab is-active" href="#"><span class="i i-layout-grid"></span>More</a>
+        </nav>
+      </div>
+      <p class="ds-note">Sheet: spring visualDuration .42, bounce .08; drag past 30% or flick to close. Tab bar 64 px + safe area; active tab gets the ribbon pill.</p>
+    </section>
+  </div>
+
+  <section class="w-panel flex flex-col gap-4">
+    <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Admin · data table, status, KPI, Golden Switch</h2><div class="flex gap-2"><span class="ds-map">shadcn · DataTable (TanStack), Card, Chart</span><span class="ds-map">Linear · density &amp; keyboard</span></div></div>
+    <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px">
+      <div class="a-card" style="overflow:hidden">
+        <div class="a-table-wrap"><table class="a-table" style="min-width:0">
+          <thead><tr><th>Reference</th><th>Module</th><th>Customer</th><th>Trip</th><th>Status</th><th>Age</th></tr></thead>
+          <tbody>
+            <tr><td><span class="a-ref">FLT-261008-0042</span></td><td><span class="a-mod"><span class="i i-plane"></span>Flight</span></td><td>Rahim Uddin</td><td>DAC → DXB · 14 Oct</td><td><span class="a-status a-s-new">New</span></td><td><span class="a-age is-late">42m</span></td></tr>
+            <tr class="is-selected"><td><span class="a-ref">PKG-261008-0017</span></td><td><span class="a-mod"><span class="i i-map"></span>Package</span></td><td>Farhana Akter</td><td>Maldives · 4D/3N · 2 adults</td><td><span class="a-status a-s-progress">In progress</span></td><td><span class="a-age">18m</span></td></tr>
+            <tr><td><span class="a-ref">VSA-261007-0108</span></td><td><span class="a-mod"><span class="i i-passport"></span>Visa</span></td><td>Tanvir Hasan</td><td>Thailand · tourist</td><td><span class="a-status a-s-quoted">Quoted</span></td><td><span class="a-age">1d</span></td></tr>
+            <tr><td><span class="a-ref">ORD-261007-0031</span></td><td><span class="a-mod"><span class="i i-shopping-bag"></span>Waafas World</span></td><td>Nexus Textiles Ltd</td><td>3 items · ৳21,450</td><td><span class="a-status a-s-booked">Confirmed</span></td><td><span class="a-age">1d</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="flex flex-col gap-3">
+        <div class="a-kpi"><span class="a-kpi-label">New leads today<span class="i i-inbox"></span></span><span class="a-kpi-n">27</span><span class="a-kpi-d up">+6 vs yesterday</span></div>
+        <div class="a-mode" style="grid-template-columns:1fr;gap:12px;padding:16px">
+          <div class="flex items-center justify-between"><b class="text-navy">Flights</b><span class="a-health off">No provider connected</span></div>
+          <div class="a-modesw"><button class="is-active" type="button">Manual</button><button class="is-locked" type="button" disabled=""><span class="i i-lock i-14"></span>Live</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-2"><span class="a-status a-s-new">New</span><span class="a-status a-s-pending">Pending</span><span class="a-status a-s-progress">In progress</span><span class="a-status a-s-quoted">Quoted</span><span class="a-status a-s-booked">Booked</span><span class="a-status a-s-cancelled">Cancelled</span><span class="a-status a-s-lost">Lost</span><span class="a-status a-s-spam">Spam</span><span class="ds-note" style="margin-left:8px;align-self:center">Each status pairs colour with a word; age turns red with a pulsing dot after the 30-minute SLA.</span></div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const qty = st.qty ?? 0;
+    return {
+      qty, inCart: qty > 0, notInCart: qty === 0,
+      add: () => this.setState({ qty: 1 }),
+      inc: () => this.setState({ qty: Math.min(99, qty + 1) }),
+      dec: () => this.setState({ qty: Math.max(0, qty - 1) })
+    };
+  }
+}
+</script>
+</body>
+</html>

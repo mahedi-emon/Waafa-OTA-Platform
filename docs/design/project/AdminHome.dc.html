@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · content</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="{{tab}}" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Content</span></div>
+          <h1 class="a-title">{{T.title}}</h1>
+          <p>{{T.desc}}</p>
+        </div>
+        <div class="a-actions"><a class="a-btn a-btn-outline" href="{{T.view}}"><span class="i i-eye"></span>View on the site</a><button class="a-btn a-btn-primary" type="button" onClick="{{save}}"><span class="i i-save"></span>Save</button></div>
+      </div>
+
+      <sc-if value="{{is.home}}" hint-placeholder-val="{{ true }}">
+        <div class="a-split is-left">
+          <section class="a-card" aria-labelledby="hs-t">
+            <div class="a-card-head"><div><h3 id="hs-t">Home sections</h3><p>Drag to reorder, switch off to hide</p></div></div>
+            <div class="a-card-body" style="padding:10px"><div class="a-drag"><sc-for list="{{sections}}" as="s" hint-placeholder-count="11"><div class="{{s.cls}}" style="padding:8px 10px"><span class="i i-grip-vertical grip"></span><span class="min-w-0"><b style="font-size:13px">{{s.name}}</b><small>{{s.sub}}</small></span><span class="a-push"><button class="{{s.sw}}" type="button" role="switch" aria-checked="{{s.on}}" aria-label="{{s.aria}}" onClick="{{s.go}}"></button></span></div></sc-for></div></div>
+          </section>
+          <div class="a-stack">
+            <section class="a-card" aria-labelledby="bn-t">
+              <div class="a-card-head"><div><h3 id="bn-t">Banners and offers</h3><p>Each banner has a placement and a schedule</p></div><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-plus"></span>New banner</button></div>
+              <div class="a-table-wrap"><table class="a-table"><thead><tr><th>Banner</th><th>Placement</th><th>Runs</th><th>Status</th><th></th></tr></thead><tbody>
+                <sc-for list="{{banners}}" as="b" hint-placeholder-count="4"><tr class="{{b.tr}}" style="cursor:pointer" onClick="{{b.go}}"><td><span class="flex items-center gap-3"><span class="a-thumb ph is-sm" data-photo="{{b.ph}}" style="width:64px;height:40px;display:grid;place-items:center"><span class="i i-image"></span></span><span><b class="text-navy" style="font-weight:600">{{b.name}}</b><span class="a-sub">{{b.cta}}</span></span></span></td><td>{{b.place}}</td><td>{{b.runs}}</td><td><span class="{{b.stCls}}">{{b.st}}</span></td><td class="is-num"><span class="i i-chevron-right" style="width:16px;height:16px;color:var(--color-mist-400)"></span></td></tr></sc-for>
+              </tbody></table></div>
+            </section>
+            <section class="a-card" aria-labelledby="be-t">
+              <div class="a-card-head"><div><h3 id="be-t">{{B.name}}</h3><p>{{B.place}}</p></div><span class="{{B.stCls}}">{{B.st}}</span></div>
+              <div class="a-card-body a-grid2" style="align-items:start">
+                <div class="flex flex-col gap-3">
+                  <div class="a-media-item" style="aspect-ratio:16/7"><div class="ph" data-photo="{{B.ph}}"><div class="ph-in"><span class="ph-ic"><span class="i i-image"></span></span><span class="ph-cap">{{B.phCap}}</span></div></div><button class="a-btn a-btn-outline a-btn-sm" type="button" style="position:absolute;right:8px;bottom:8px"><span class="i i-upload"></span>Replace</button></div>
+                  <label class="a-field"><span class="a-label">Alt text <span class="w-req">*</span></span><input class="a-input" value="{{B.alt}}"></label>
+                </div>
+                <div class="flex flex-col gap-3">
+                  <label class="a-field"><span class="a-label">Headline</span><input class="a-input" value="{{B.name}}"></label>
+                  <div class="a-grid2"><label class="a-field"><span class="a-label">Button</span><input class="a-input" value="{{B.btn}}"></label><label class="a-field"><span class="a-label">Link</span><input class="a-input" value="{{B.href}}"></label></div>
+                  <div class="a-grid2"><label class="a-field"><span class="a-label">Starts</span><input class="a-input" value="{{B.from}}"></label><label class="a-field"><span class="a-label">Ends</span><input class="a-input" value="{{B.to}}"></label></div>
+                  <label class="a-field"><span class="a-label">Placement</span><span class="a-sel"><select class="a-input"><option>{{B.place}}</option><option>Home hero</option><option>Waafas World carousel</option><option>Tour Packages top</option></select></span></label>
+                </div>
+              </div>
+            </section>
+            <section class="a-card" aria-labelledby="an-t">
+              <div class="a-card-head"><div><h3 id="an-t">Announcement bar</h3><p>A thin line above the header on every page</p></div><span class="w-switch is-on"></span></div>
+              <div class="a-card-body a-grid3"><label class="a-field a-span2"><span class="a-label">Text</span><input class="a-input" value="Office closed on Friday. WhatsApp stays open: 01823-232241"></label><label class="a-field"><span class="a-label">Until</span><input class="a-input" value="Sat, 10 Oct, 10:00 am"></label></div>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{is.team}}" hint-placeholder-val="{{ false }}">
+        <div class="a-callout"><span class="i i-shield-check"></span><span>Only real staff who agree to appear are listed. Without a photo, the card shows initials on the ribbon gradient, never a stock face. The section hides itself when nobody is visible.</span></div>
+        <div class="a-split is-wide">
+          <section class="a-card" aria-labelledby="tm-t">
+            <div class="a-card-head"><div><h3 id="tm-t">Team members</h3><p>Drag to reorder · one featured card on desktop</p></div><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-user-plus"></span>Add member</button></div>
+            <div class="a-card-body"><div class="a-team"><sc-for list="{{team}}" as="t" hint-placeholder-count="6"><button class="{{t.cls}}" type="button" style="text-align:left" onClick="{{t.go}}"><div class="a-tcard-ph"><span class="grip"><span class="i i-grip-vertical"></span></span><sc-if value="{{t.feat}}" hint-placeholder-val="{{ false }}"><span class="a-chip is-amber"><span class="i i-star-fill"></span>Featured</span></sc-if>{{t.ini}}</div><div class="a-tcard-body"><b>{{t.name}}</b><small>{{t.role}}</small><div class="a-tcard-acts"><span class="a-chips"><sc-for list="{{t.where}}" as="w" hint-placeholder-count="2"><span class="a-chip">{{w}}</span></sc-for></span><span class="{{t.eye}}" style="width:16px;height:16px;color:var(--color-mist-500)"></span></div></div></button></sc-for></div></div>
+          </section>
+          <section class="a-card a-sticky" aria-labelledby="te-t">
+            <div class="a-card-head"><div><h3 id="te-t">Edit {{M.name}}</h3><p>The card updates as you type</p></div></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <div class="flex gap-3 items-start">
+                <div class="a-tcard" style="width:150px;flex:none"><div class="a-tcard-ph" style="font-size:30px">{{M.ini}}</div><div class="a-tcard-body"><b>{{M.name}}</b><small>{{M.role}}</small></div></div>
+                <div class="a-dropzone" style="flex:1;height:auto;min-height:150px;flex-direction:column;text-align:center;padding:12px"><span class="i i-image-plus" style="width:22px;height:22px"></span><span>Add a photo<br><small>3:4 crop, optimised for you</small></span></div>
+              </div>
+              <div class="a-grid2"><label class="a-field"><span class="a-label">Name</span><input class="a-input" value="{{M.name}}"></label><label class="a-field"><span class="a-label">Designation</span><input class="a-input" value="{{M.role}}"></label></div>
+              <label class="a-field"><span class="a-label">One-line bio <span class="a-count is-ok">{{M.bioN}}/160</span></span><textarea class="a-input" style="min-height:72px" value="{{M.bio}}"></textarea></label>
+              <div class="a-grid3"><label class="a-field"><span class="a-label">WhatsApp</span><input class="a-input" placeholder="Optional"></label><label class="a-field"><span class="a-label">Email</span><input class="a-input" placeholder="Optional"></label><label class="a-field"><span class="a-label">LinkedIn</span><input class="a-input" placeholder="Optional"></label></div>
+              <div class="a-switch-row"><span><b>Show on Home</b><small>Bento grid on desktop, swipe row on phones</small></span><span class="w-switch is-on"></span></div>
+              <div class="a-switch-row"><span><b>Show on About Us</b></span><span class="w-switch is-on"></span></div>
+              <div class="a-switch-row"><span><b>Featured card</b><small>Only one member can be featured</small></span><span class="{{M.featCls}}"></span></div>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{is.gallery}}" hint-placeholder-val="{{ false }}">
+        <div class="a-split is-wide">
+          <section class="a-card" aria-labelledby="ga-t">
+            <div class="a-card-head"><div><h3 id="ga-t">Albums</h3><p>Tours, Events, Office, Happy travellers</p></div><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-plus"></span>New album</button></div>
+            <div class="a-card-body"><div class="a-gallery"><sc-for list="{{albums}}" as="a" hint-placeholder-count="6"><a class="a-album" href="Gallery-album.dc.html"><div class="ph" data-photo="{{a.ph}}"><div class="ph-in"><span class="ph-ic"><span class="{{a.icon}}"></span></span><span class="ph-cap">{{a.cap}}</span></div></div><div class="a-album-b"><b>{{a.name}}</b><small>{{a.sub}}</small><span class="a-chips"><span class="a-chip">{{a.cat}}</span><sc-if value="{{a.video}}" hint-placeholder-val="{{ false }}"><span class="a-chip is-red"><span class="i i-youtube"></span>Video</span></sc-if></span></div></a></sc-for></div></div>
+          </section>
+          <section class="a-card a-sticky" aria-labelledby="up-t">
+            <div class="a-card-head"><div><h3 id="up-t">Bulk upload</h3><p>Sajek Valley, October · 4 of 6 done</p></div></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <div class="a-dropzone" style="height:96px"><span class="i i-cloud-upload" style="width:22px;height:22px"></span>Drop photos or paste a YouTube or Facebook video link</div>
+              <div class="a-upq"><sc-for list="{{uploads}}" as="u" hint-placeholder-count="5"><div class="a-upq-item"><span class="a-thumb ph is-sm" data-photo="sajek" style="display:grid;place-items:center"><span class="i i-image"></span></span><div class="min-w-0"><b class="text-navy" style="font-weight:600">{{u.name}}</b><small class="block a-mute">{{u.sub}}</small><div class="bar"><span style="{{u.w}}"></span></div></div><span class="{{u.chip}}">{{u.st}}</span></div></sc-for></div>
+              <span class="a-hint">Photos are compressed to WebP or AVIF automatically. Alt text is needed before publishing.</span>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{is.media}}" hint-placeholder-val="{{ false }}">
+        <div class="a-bar"><label class="a-search"><span class="i i-search"></span><input class="a-input" placeholder="File name or alt text" aria-label="Search media"></label><div class="a-bar-chips"><button class="a-fchip is-on" type="button"><span class="i i-image"></span>Images<b>412</b></button><button class="a-fchip" type="button"><span class="i i-video"></span>Video<b>8</b></button><button class="a-fchip" type="button"><span class="i i-file-text"></span>Documents<b>36</b></button><button class="a-fchip" type="button"><span class="i i-triangle-alert"></span>Missing alt text<b>3</b></button></div></div>
+        <div class="a-split is-wide">
+          <section class="a-card" aria-label="Media">
+            <div class="a-card-body"><div class="a-media" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr))"><sc-for list="{{media}}" as="x" hint-placeholder-count="12"><button class="{{x.cls}}" type="button" onClick="{{x.go}}" aria-label="{{x.cap}}"><sc-if value="{{x.img}}" hint-placeholder-val="{{ false }}"><img src="{{x.img}}" alt="" style="object-fit:contain;background:#fff;padding:6px"></sc-if><sc-if value="{{x.noImg}}" hint-placeholder-val="{{ true }}"><div class="ph is-sm" data-photo="{{x.ph}}"><div class="ph-in"><span class="ph-ic"><span class="i i-image"></span></span></div></div></sc-if><sc-if value="{{x.noAlt}}" hint-placeholder-val="{{ false }}"><span class="a-chip is-amber">No alt</span></sc-if></button></sc-for></div></div>
+          </section>
+          <section class="a-card a-sticky" aria-labelledby="mi-t">
+            <div class="a-card-head"><div><h3 id="mi-t">{{F.name}}</h3><p>{{F.meta}}</p></div></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <div class="a-media-item" style="aspect-ratio:4/3"><sc-if value="{{F.img}}" hint-placeholder-val="{{ false }}"><img src="{{F.img}}" alt="" style="object-fit:contain;background:#fff;padding:10px"></sc-if><sc-if value="{{F.noImg}}" hint-placeholder-val="{{ true }}"><div class="ph" data-photo="{{F.ph}}"><div class="ph-in"><span class="ph-ic"><span class="i i-image"></span></span><span class="ph-cap">{{F.cap}}</span></div></div></sc-if></div>
+              <label class="a-field"><span class="a-label">Alt text <span class="w-req">*</span></span><input class="{{F.altCls}}" value="{{F.alt}}" placeholder="Describe the image for people who can’t see it"></label>
+              <dl class="a-kv"><dt>Formats</dt><dd>AVIF, WebP, JPEG fallback</dd><dt>Saved</dt><dd>{{F.saved}}</dd><dt>Used on</dt><dd>{{F.used}} <span class="a-p is-p1">P1</span></dd></dl>
+              <div class="flex gap-2"><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-copy"></span>Copy link</button><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-crop"></span>Crop</button><button class="a-btn a-btn-ghost a-btn-sm" type="button" style="margin-left:auto;color:var(--color-danger-600)"><span class="i i-trash-2"></span>Delete</button></div>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="a-toast" role="status"><span class="i i-circle-check"></span>{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"tab":{"editor":"enum","options":["home","team","gallery","media"],"default":"home"},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const tab = p.tab || 'home';
+    const flash = msg => { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const TT = { home: ['Home and banners', 'Section order on the home page, banners with placement and schedule, and the announcement bar.', 'Home.dc.html'], team: ['Team', 'Meet our team on Home and About Us. Add, reorder, hide and feature members; the card preview updates as you type.', 'About.dc.html'], gallery: ['Gallery', 'Albums of photos and YouTube or Facebook videos, with bulk upload and automatic compression.', 'Gallery.dc.html'], media: ['Media library', 'Every upload in one place. Alt text is required before an image can be used.', 'Home.dc.html'] };
+    const off = st.off || {};
+    const SEC = [['Hero with search', 'Ribbon, headline, Flight, Hotel, Tour and Visa tabs'], ['Destination finder', 'Easy visa, Under 3 hours, Beach, City'], ['Tour packages', 'Six packages, newest first'], ['Visa services', 'Popular countries'], ['Waafas World band', 'Store highlights, links to /shop'], ['Why Waafa', 'Four reasons'], ['Gallery strip', 'Latest album'], ['Blog', 'Three latest posts'], ['FAQ strip', 'Four common questions'], ['Meet our team', 'Hides when nobody is visible'], ['Newsletter', 'Fare drops and visa news']];
+    const sections = SEC.map(s => { const on = !off[s[0]]; return { name: s[0], sub: s[1] + (on ? '' : ' · hidden'), on, cls: 'a-drag-item' + (on ? '' : ' is-off') + (s[0] === 'Meet our team' ? ' is-lift' : ''), sw: 'w-switch' + (on ? ' is-on' : ''), aria: (on ? 'Hide ' : 'Show ') + s[0], go: () => this.setState({ off: Object.assign({}, off, { [s[0]]: on }) }) }; });
+    const BN = [['Winter in Nepal, from ৳52,000', 'nepal', 'Home hero', 'See packages · /packages/kathmandu-pokhara', 'Now to 30 Nov', 'Live', 'Snow peaks above Pokhara'], ['Office essentials, up to 20% off', 'cat-stationery', 'Waafas World carousel', 'Shop now · /shop/collection/office-essentials', 'Now to 31 Oct', 'Live', 'Notebooks, pens and paper on a desk'], ['Toner for every HP and Canon', 'printing-alt', 'Waafas World carousel', 'Find by model · /shop/finder', 'Always', 'Live', 'Toner cartridge beside a printer'], ['11.11 deals', 'trading', 'Waafas World carousel', 'See deals · /shop/collection/11-11-deals', '11 Nov only', 'Scheduled', 'Parcels ready to ship']];
+    const bsel = st.b !== undefined ? st.b : 0;
+    const banners = BN.map((b, i) => ({ name: b[0], ph: b[1], place: b[2], cta: b[3], runs: b[4], st: b[5], stCls: 'a-status ' + (b[5] === 'Live' ? 'a-s-booked' : 'a-s-new'), tr: i === bsel ? 'is-selected' : '', go: () => this.setState({ b: i }) }));
+    const b0 = BN[bsel];
+    const TEAM = [['AH', 'Arif Hossain', 'Managing Director', 'Has led Waafa International since 2010 and opened Waafa Tours and Travel in 2026.', true, ['Home', 'About'], true], ['NJ', 'Nusrat Jahan', 'Head of Travel Sales', 'Plans family holidays and group trips. Her favourite: a slow week in Pokhara.', false, ['Home', 'About'], true], ['TA', 'Tanvir Ahmed', 'Visa Officer', 'Checks every page of your file before it reaches an embassy.', false, ['Home', 'About'], true], ['SR', 'Sadia Rahman', 'Travel Consultant', 'Finds the fare that fits your dates and explains the rules in plain words.', false, ['Home', 'About'], true], ['MK', 'Mahmudul Karim', 'Store Manager', 'Knows which toner fits which printer.', false, ['About'], true], ['FH', 'Farzana Haque', 'Accounts and Payments', 'Confirms bKash, Nagad and bank payments the same day.', false, ['About'], false]];
+    const msel = st.mem !== undefined ? st.mem : 1;
+    const team = TEAM.map((t, i) => ({ ini: t[0], name: t[1], role: t[2], feat: t[4], where: t[5], eye: t[6] ? 'i i-eye' : 'i i-eye-off', cls: 'a-tcard' + (i === msel ? ' is-on' : '') + (t[6] ? '' : ' is-hidden'), go: () => this.setState({ mem: i }) }));
+    const m0 = TEAM[msel];
+    const albums = [['sajek', 'i i-mountain', 'Sajek Valley, October', '42 photos · 1 video', 'Tours', true], ['coxsbazar', 'i i-umbrella', 'Cox’s Bazar family trip', '36 photos', 'Happy travellers', false], ['dubai', 'i i-building-2', 'Dubai group tour', '58 photos', 'Tours', false], ['visa', 'i i-briefcase', 'Our Motijheel office', '12 photos', 'Office', false], ['printing', 'i i-printer', 'Printing Solutions launch', '20 photos · 2 videos', 'Events', true], ['nepal', 'i i-mountain-snow', 'Pokhara in winter', '31 photos', 'Tours', false]]
+      .map(a => ({ ph: a[0], icon: a[1], name: a[2], sub: a[3], cat: a[4], video: a[5], cap: a[2] }));
+    const uploads = [['sajek-sunrise-01.jpg', '4.2 MB → 380 KB WebP', 100, 'Done', 'a-chip is-green'], ['sajek-sunrise-02.jpg', '3.9 MB → 352 KB WebP', 100, 'Done', 'a-chip is-green'], ['helipad-group.jpg', '5.1 MB → 410 KB WebP', 100, 'Needs alt', 'a-chip is-amber'], ['konglak-hill.jpg', '4.6 MB → 401 KB WebP', 100, 'Done', 'a-chip is-green'], ['cloud-sea.jpg', '6.0 MB', 64, 'Uploading', 'a-chip is-blue'], ['night-camp.jpg', '4.4 MB', 12, 'Waiting', 'a-chip']]
+      .map(u => ({ name: u[0], sub: u[1], w: 'width:' + u[2] + '%', st: u[3], chip: u[4] }));
+    const MED = [['', 'hero-wing', 'Airplane wing at sunrise', 'Home hero', 'Today', true], ['../assets/c9ea845b540e931548117afdb5ae8a65.jpg', '', 'CE505A / CF280A toner box', 'Product: Better Day CE505A / CF280A', 'Yesterday', true], ['', 'coxsbazar', 'Cox’s Bazar beach', 'Package: Cox’s Bazar', '2 days ago', true], ['../assets/fd111676d187ad84eb1cdef897ce4776.jpg', '', 'CRG 070H toner box', 'Product: Better Day CRG 070H', 'Yesterday', true], ['', 'maldives', 'Maldives water villas', 'Package: Maldives', 'Last week', true], ['', 'dubai', 'Dubai skyline', 'Package: Dubai', 'Last week', false], ['../assets/1bb1b89d15ac65da8322547e81decbdf.jpg', '', 'HP 151A toner box', 'Product: Better Day HP 151A', 'Yesterday', true], ['', 'visa', 'Passport and boarding pass', 'Visa page', 'Last week', true], ['', 'sajek', 'Sajek Valley', 'Album: Sajek', 'Today', false], ['', 'prod-tshirt', 'T-shirt sample', 'Product: T-shirt', 'Today', true], ['', 'printing', 'Office printer', 'Printing Solutions', 'Last week', true], ['', 'trading', 'Container port', 'International Trading', 'Last week', false]];
+    const fsel = st.f !== undefined ? st.f : 1;
+    const media = MED.map((x, i) => ({ img: x[0], noImg: !x[0], ph: x[1], cap: x[2], noAlt: !x[5], cls: 'a-media-item' + (i === fsel ? ' is-main' : ''), go: () => this.setState({ f: i }) }));
+    const f0 = MED[fsel];
+    return {
+      m: !!p.m, tab, T: { title: TT[tab][0], desc: TT[tab][1], view: TT[tab][2] },
+      is: { home: tab === 'home', team: tab === 'team', gallery: tab === 'gallery', media: tab === 'media' },
+      sections, banners, B: { name: b0[0], ph: b0[1], phCap: b0[6], place: b0[2], st: b0[5], stCls: 'a-status ' + (b0[5] === 'Live' ? 'a-s-booked' : 'a-s-new'), btn: b0[3].split(' · ')[0], href: b0[3].split(' · ')[1] || '/', from: b0[4] === 'Always' ? 'Now' : 'Thu, 8 Oct', to: b0[4], alt: b0[6] },
+      team, M: { ini: m0[0], name: m0[1], role: m0[2], bio: m0[3], bioN: m0[3].length, featCls: 'w-switch' + (m0[4] ? ' is-on' : '') },
+      albums, uploads, media,
+      F: { name: f0[2], meta: f0[0] ? 'PNG · 1200 × 1200 · 212 KB' : 'JPEG · 1600 × 1067 · 1.1 MB', img: f0[0], noImg: !f0[0], ph: f0[1], cap: f0[2], alt: f0[5] ? f0[2] : '', altCls: 'a-input' + (f0[5] ? '' : ' is-err'), saved: f0[4], used: f0[3] },
+      save: () => flash('Saved. The site updates now.'), toast: st.toast || '',
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+page,screen,file,width,height,title
+10 · Account & states,Login-m,project/Login-m.dc.html,390,844,Phone · log in with mobile number
+10 · Account & states,Login-m-otp,project/Login-m-otp.dc.html,390,844,Phone · SMS code
+10 · Account & states,Account-m,project/Account-m.dc.html,390,844,Phone · my account
+10 · Account & states,Track-m,project/Track-m.dc.html,390,844,Phone · track any reference
+10 · Account & states,Error-m,project/Error-m.dc.html,390,844,Phone · 404
+10 · Account & states,Offline-m,project/Offline-m.dc.html,390,844,Phone · offline
+10 · Account & states,Maintenance-m,project/Maintenance-m.dc.html,390,844,Phone · maintenance
+10 · Account & states,Login,project/Login.dc.html,1440,900,Desktop · log in with your mobile number (Play: send code)
+10 · Account & states,Login-otp,project/Login-otp.dc.html,1440,900,Desktop · enter the SMS code
+10 · Account & states,Login-err,project/Login-err.dc.html,1440,900,Desktop · wrong code
+10 · Account & states,Account,project/Account.dc.html,1440,2120,Desktop · my account (Play: tabs)
+10 · Account & states,Track,project/Track.dc.html,1440,1868,Desktop · track any reference (Play: type a reference)
+10 · Account & states,Track-nf,project/Track-nf.dc.html,1440,1785,Desktop · reference not found
+10 · Account & states,Error,project/Error.dc.html,1440,900,"Desktop · 404, page not found"
+10 · Account & states,Error500,project/Error500.dc.html,1440,900,"Desktop · 500, something went wrong"
+10 · Account & states,Maintenance,project/Maintenance.dc.html,1440,900,Desktop · maintenance
+10 · Account & states,Offline,project/Offline.dc.html,1440,900,Desktop · offline
+10 · Account & states,States,project/States.dc.html,1440,1610,"System states: loader, skeletons, toasts, network, buttons, fields, empty"
+11 · Admin,AdminLogin-m,project/AdminLogin-m.dc.html,390,844,Phone · sign in
+11 · Admin,AdminDash-m,project/AdminDash-m.dc.html,390,844,Phone · dashboard
+11 · Admin,AdminNav-m,project/AdminNav-m.dc.html,390,844,Phone · menu open
+11 · Admin,AdminLeads-m,project/AdminLeads-m.dc.html,390,844,Phone · leads for agents in the field
+11 · Admin,AdminLead-m,project/AdminLead-m.dc.html,390,844,Phone · lead detail with call and WhatsApp
+11 · Admin,AdminOrders-m,project/AdminOrders-m.dc.html,390,844,Phone · orders
+11 · Admin,AdminLogin,project/AdminLogin.dc.html,1440,900,Desktop · sign in (Play: wrong password ×5 locks)
+11 · Admin,AdminLogin-error,project/AdminLogin-error.dc.html,1440,900,"Desktop · wrong password, tries left"
+11 · Admin,AdminLogin-locked,project/AdminLogin-locked.dc.html,1440,900,Desktop · locked for 15 minutes after 5 tries
+11 · Admin,AdminLogin-totp,project/AdminLogin-totp.dc.html,1440,900,Desktop · two-factor code (P1)
+11 · Admin,AdminDash,project/AdminDash.dc.html,1440,1719,"Desktop · dashboard (Play: date range, Ctrl K)"
+11 · Admin,AdminCmd,project/AdminCmd.dc.html,1440,900,Desktop · command palette (Ctrl K)
+11 · Admin,AdminLeads,project/AdminLeads.dc.html,1440,1490,"Desktop · leads table (Play: views, filters, search, select rows)"
+11 · Admin,AdminLeads-bulk,project/AdminLeads-bulk.dc.html,1440,1560,"Desktop · 3 leads selected: assign, change status, export"
+11 · Admin,AdminLeads-board,project/AdminLeads-board.dc.html,1440,1180,Desktop · board view (P1): drag to change status
+11 · Admin,AdminLead,project/AdminLead.dc.html,1440,1378,"Desktop · lead detail (Play: status, assignee, notes, raw JSON)"
+11 · Admin,AdminLead-convert,project/AdminLead-convert.dc.html,1440,900,"Desktop · convert to booking (PNR, tickets, amount, payment)"
+11 · Admin,AdminLead-lost,project/AdminLead-lost.dc.html,1440,900,Desktop · Lost needs a reason
+11 · Admin,AdminBookings,project/AdminBookings.dc.html,1440,1180,"Desktop · bookings (Play: tabs, open a row)"
+11 · Admin,AdminBookings-open,project/AdminBookings-open.dc.html,1440,900,Desktop · booking record with documents
+11 · Admin,AdminGroupFares,project/AdminGroupFares.dc.html,1440,1180,Desktop · group fares
+11 · Admin,AdminGroupFares-new,project/AdminGroupFares-new.dc.html,1440,900,Desktop · new group fare
+11 · Admin,AdminCustomers,project/AdminCustomers.dc.html,1440,1180,Desktop · customers from leads and orders
+11 · Admin,AdminCustomers-open,project/AdminCustomers-open.dc.html,1440,900,Desktop · customer profile with history
+11 · Admin,AdminSearch,project/AdminSearch.dc.html,1440,1243,Desktop · search activity
+11 · Admin,AdminPackages,project/AdminPackages.dc.html,1440,1180,Desktop · tour packages
+11 · Admin,AdminPackage,project/AdminPackage.dc.html,1440,3008,Desktop · package editor with day-by-day builder
+11 · Admin,AdminVisa,project/AdminVisa.dc.html,1440,1540,Desktop · visa pipeline and private document viewer
+11 · Admin,AdminOrders,project/AdminOrders.dc.html,1440,1358,"Desktop · orders (Play: tabs, open an order)"
+11 · Admin,AdminOrders-open,project/AdminOrders-open.dc.html,1440,900,"Desktop · order drawer: verify payment, ship with tracking"
+11 · Admin,AdminProducts,project/AdminProducts.dc.html,1440,1180,"Desktop · products, any type, stock per variant"
+11 · Admin,AdminProduct,project/AdminProduct.dc.html,1440,2995,"Desktop · product editor: options, 20 variants, live store card"
+11 · Admin,AdminProduct-toner,project/AdminProduct-toner.dc.html,1440,2628,Desktop · single-item product with Compatible with (toner)
+11 · Admin,AdminCats,project/AdminCats.dc.html,1440,1944,"Desktop · category tree, icons, banners, attribute sets"
+11 · Admin,AdminCollections,project/AdminCollections.dc.html,1440,1621,"Desktop · collections by hand or rule, store home rows"
+11 · Admin,AdminCoupons,project/AdminCoupons.dc.html,1440,1180,Desktop · coupons
+11 · Admin,AdminHome,project/AdminHome.dc.html,1440,1281,"Desktop · home sections, banners, announcement bar"
+11 · Admin,AdminTeam,project/AdminTeam.dc.html,1440,1227,Desktop · team with live card preview
+11 · Admin,AdminGallery,project/AdminGallery.dc.html,1440,1180,Desktop · gallery albums and bulk upload
+11 · Admin,AdminMedia,project/AdminMedia.dc.html,1440,1180,"Desktop · media library, alt text required"
+11 · Admin,AdminFeedback,project/AdminFeedback.dc.html,1440,1180,Desktop · feedback moderation
+11 · Admin,AdminPages,project/AdminPages.dc.html,1440,1180,"Desktop · pages, blog and FAQs"
+11 · Admin,AdminReports,project/AdminReports.dc.html,1440,1407,Desktop · reports
+11 · Admin,AdminModes,project/AdminModes.dc.html,1440,1658,"Desktop · Booking modes: the Golden Switch, Live locked"
+11 · Admin,AdminModes-confirm,project/AdminModes-confirm.dc.html,1440,900,Desktop · turning a module Live (P2 preview): typed confirmation
+11 · Admin,AdminFooter,project/AdminFooter.dc.html,1440,1891,Desktop · footer and menus builder
+11 · Admin,AdminPayments,project/AdminPayments.dc.html,1440,1190,Desktop · payments and delivery
+11 · Admin,AdminNotify,project/AdminNotify.dc.html,1440,1193,Desktop · notification templates and delivery log
+11 · Admin,AdminUsers,project/AdminUsers.dc.html,1440,1336,"Desktop · users, roles and sign-in security"
+11 · Admin,AdminGeneral,project/AdminGeneral.dc.html,1440,1180,"Desktop · lead forms, maintenance, tracking"
+11 · Admin,AdminSide,project/AdminSide.dc.html,256,1180,Admin sidebar
+11 · Admin,AdminTop,project/AdminTop.dc.html,1184,64,Admin top bar
+02 · Brand & design system,Brand,project/Brand.dc.html,1440,2130,Brand & logo lockup
+02 · Brand & design system,Tokens,project/Tokens.dc.html,1440,3330,Design tokens
+02 · Brand & design system,Components,project/Components.dc.html,1440,2820,Components 1 · core controls
+02 · Brand & design system,Components2,project/Components2.dc.html,1440,2700,"Components 2 · travel, shop & admin"
+02 · Brand & design system,Header,project/Header.dc.html,1440,77,Header (live component)
+02 · Brand & design system,SearchCard,project/SearchCard.dc.html,1240,240,Search card (live component)
+02 · Brand & design system,TabBar,project/TabBar.dc.html,390,844,Mobile tab bar + WhatsApp (live component)
+02 · Brand & design system,MotionKit,project/MotionKit.dc.html,200,120,MotionKit (no visible UI: scroll reveals and springs)
+02 · Brand & design system,PCard,project/PCard.dc.html,260,480,Product card (live component: Add → stepper)
+02 · Brand & design system,Footer,project/Footer.dc.html,1440,707,Footer (live component)
+02 · Brand & design system,ShopBar,project/ShopBar.dc.html,1440,600,Waafas World bar with cart drawer (live component)
+"09 · Gallery, feedback & More pages",Gallery-m,project/Gallery-m.dc.html,390,844,Phone · Gallery
+"09 · Gallery, feedback & More pages",Gallery-album-m,project/Gallery-album-m.dc.html,390,844,Phone · album
+"09 · Gallery, feedback & More pages",Gallery-m-photo,project/Gallery-m-photo.dc.html,390,844,Phone · photo viewer
+"09 · Gallery, feedback & More pages",Feedback-m,project/Feedback-m.dc.html,390,844,Phone · Feedback
+"09 · Gallery, feedback & More pages",About-m,project/About-m.dc.html,390,844,Phone · About
+"09 · Gallery, feedback & More pages",Contact-m,project/Contact-m.dc.html,390,844,Phone · Contact
+"09 · Gallery, feedback & More pages",Faqs-m,project/Faqs-m.dc.html,390,844,Phone · Faqs
+"09 · Gallery, feedback & More pages",Blog-m,project/Blog-m.dc.html,390,844,Phone · Blog
+"09 · Gallery, feedback & More pages",BlogPost-m,project/BlogPost-m.dc.html,390,844,Phone · BlogPost
+"09 · Gallery, feedback & More pages",Refund-m,project/Refund-m.dc.html,390,844,Phone · Refund
+"09 · Gallery, feedback & More pages",Privacy-m,project/Privacy-m.dc.html,390,844,Phone · Privacy policy
+"09 · Gallery, feedback & More pages",Terms-m,project/Terms-m.dc.html,390,844,Phone · Terms of use
+"09 · Gallery, feedback & More pages",Baggage-m,project/Baggage-m.dc.html,390,844,Phone · Baggage
+"09 · Gallery, feedback & More pages",Emi-m,project/Emi-m.dc.html,390,844,Phone · Emi
+"09 · Gallery, feedback & More pages",OfflinePay-m,project/OfflinePay-m.dc.html,390,844,Phone · OfflinePay
+"09 · Gallery, feedback & More pages",Gallery,project/Gallery.dc.html,1440,2361,"Desktop · Gallery (Play: filter albums, open the latest album)"
+"09 · Gallery, feedback & More pages",Gallery-album,project/Gallery-album.dc.html,1440,1881,Desktop · album with masonry photos (Play: open a photo)
+"09 · Gallery, feedback & More pages",Feedback,project/Feedback.dc.html,1440,2595,"Desktop · Feedback (Play: filter by service, rate, send)"
+"09 · Gallery, feedback & More pages",About,project/About.dc.html,1440,5281,"Desktop · About us with story, values, team and office"
+"09 · Gallery, feedback & More pages",Contact,project/Contact.dc.html,1440,2064,"Desktop · Contact (Play: pick a topic, send)"
+"09 · Gallery, feedback & More pages",Faqs,project/Faqs.dc.html,1440,1625,"Desktop · FAQs (Play: topics, open and close, search)"
+"09 · Gallery, feedback & More pages",Blog,project/Blog.dc.html,1440,2980,Desktop · Blog (Play: topic chips)
+"09 · Gallery, feedback & More pages",BlogPost,project/BlogPost.dc.html,1440,4770,"Desktop · article with reading progress, contents and a packing checklist"
+"09 · Gallery, feedback & More pages",Refund,project/Refund.dc.html,1440,3259,Desktop · Refund policy
+"09 · Gallery, feedback & More pages",Privacy,project/Privacy.dc.html,1440,2635,Desktop · Privacy policy
+"09 · Gallery, feedback & More pages",Terms,project/Terms.dc.html,1440,2662,Desktop · Terms of use
+"09 · Gallery, feedback & More pages",Baggage,project/Baggage.dc.html,1440,2676,"Desktop · Baggage information (Play: search an airline, switch route)"
+"09 · Gallery, feedback & More pages",Emi,project/Emi.dc.html,1440,2187,Desktop · EMI calculator (Play: amount and months)
+"09 · Gallery, feedback & More pages",OfflinePay,project/OfflinePay.dc.html,1440,2548,Desktop · Offline payment with proof upload
+"09 · Gallery, feedback & More pages",Gallery-photo,project/Gallery-photo.dc.html,1440,900,Desktop · photo viewer (lightbox)
+"09 · Gallery, feedback & More pages",Feedback-sent,project/Feedback-sent.dc.html,1440,2595,Desktop · feedback sent
+"09 · Gallery, feedback & More pages",Contact-sent,project/Contact-sent.dc.html,1440,2045,Desktop · message sent
+"09 · Gallery, feedback & More pages",OfflinePay-sent,project/OfflinePay-sent.dc.html,1440,2406,Desktop · payment proof received
+"09 · Gallery, feedback & More pages",Faqs-search,project/Faqs-search.dc.html,1440,1703,Desktop · FAQ search “refund”
+04 · Search & flights (Manual),Pick-m-from,project/Pick-m-from.dc.html,390,844,"Phone · From: recent, Bangladesh, popular"
+04 · Search & flights (Manual),Pick-m-to,project/Pick-m-to.dc.html,390,844,Phone · To: typing “kua” filters
+04 · Search & flights (Manual),Pick-m-dates,project/Pick-m-dates.dc.html,390,844,Phone · Dates: one way + Add return
+04 · Search & flights (Manual),Pick-m-range,project/Pick-m-range.dc.html,390,844,Phone · Dates: round trip range
+04 · Search & flights (Manual),Pick-m-pax,project/Pick-m-pax.dc.html,390,844,"Phone · Travellers, class and options"
+04 · Search & flights (Manual),Pick-m-multi,project/Pick-m-multi.dc.html,390,844,Phone · Multi-city: up to 5 flights
+04 · Search & flights (Manual),Pick-m-hcity,project/Pick-m-hcity.dc.html,390,844,Phone · Hotel: city or hotel
+04 · Search & flights (Manual),Pick-m-rooms,project/Pick-m-rooms.dc.html,390,844,"Phone · Hotel: rooms, guests, nationality"
+04 · Search & flights (Manual),Pick-m-tmonth,project/Pick-m-tmonth.dc.html,390,844,Phone · Tour: travel month
+04 · Search & flights (Manual),Pick-m-vcountry,project/Pick-m-vcountry.dc.html,390,844,Phone · Visa: country
+04 · Search & flights (Manual),Pick-m-vtype,project/Pick-m-vtype.dc.html,390,844,Phone · Visa: purpose of the visit
+04 · Search & flights (Manual),Pick-d-from,project/Pick-d-from.dc.html,1440,860,Desktop · From
+04 · Search & flights (Manual),Pick-d-to,project/Pick-d-to.dc.html,1440,860,Desktop · To: typing “kua”
+04 · Search & flights (Manual),Pick-d-dates,project/Pick-d-dates.dc.html,1440,860,Desktop · Dates: one way
+04 · Search & flights (Manual),Pick-d-range,project/Pick-d-range.dc.html,1440,860,Desktop · Dates: round trip
+04 · Search & flights (Manual),Pick-d-pax,project/Pick-d-pax.dc.html,1440,860,Desktop · Travellers and class
+04 · Search & flights (Manual),Pick-d-rooms,project/Pick-d-rooms.dc.html,1440,860,Desktop · Hotel rooms and guests
+04 · Search & flights (Manual),Pick-d-tmonth,project/Pick-d-tmonth.dc.html,1440,860,Desktop · Tour month
+04 · Search & flights (Manual),Pick-d-vcountry,project/Pick-d-vcountry.dc.html,1440,860,Desktop · Visa country
+04 · Search & flights (Manual),Flights-m,project/Flights-m.dc.html,390,844,Phone · step 1: your details
+04 · Search & flights (Manual),Flights-m-err,project/Flights-m-err.dc.html,390,844,Phone · step 1 with errors
+04 · Search & flights (Manual),Flights-m-2,project/Flights-m-2.dc.html,390,844,Phone · step 2: trip details
+04 · Search & flights (Manual),Flights-m-done,project/Flights-m-done.dc.html,390,844,Phone · request sent
+04 · Search & flights (Manual),Flights-m-prefs,project/Flights-m-prefs.dc.html,390,844,Phone · preferences sheet
+04 · Search & flights (Manual),FlightsFare-m,project/FlightsFare-m.dc.html,390,844,Phone · requesting a group fare
+04 · Search & flights (Manual),Flights,project/Flights.dc.html,1440,2290,"Desktop · Flights results, Manual mode (Play to try the form)"
+04 · Search & flights (Manual),Flights-err,project/Flights-err.dc.html,1440,1180,Desktop · step 1 with errors
+04 · Search & flights (Manual),Flights-2,project/Flights-2.dc.html,1440,1640,Desktop · step 2: trip details
+04 · Search & flights (Manual),FlightsFare,project/FlightsFare.dc.html,1440,1760,Desktop · requesting a group fare (date locked)
+04 · Search & flights (Manual),Flights-done,project/Flights-done.dc.html,1440,1240,"Desktop · request sent, FLT-261008-0042"
+04 · Search & flights (Manual),Flights-edit,project/Flights-edit.dc.html,1440,900,Desktop · edit search open
+04 · Search & flights (Manual),GroupFares,project/GroupFares.dc.html,1440,2390,Desktop · Group fares (filters work in Play)
+04 · Search & flights (Manual),GroupFares-empty,project/GroupFares-empty.dc.html,1440,1180,"Desktop · Group fares, no match"
+04 · Search & flights (Manual),GroupFares-m,project/GroupFares-m.dc.html,390,844,Phone · Group fares
+04 · Search & flights (Manual),GroupFares-m-empty,project/GroupFares-m-empty.dc.html,390,844,"Phone · Group fares, no match"
+12 · Motion & handoff,Handoff,project/Handoff.dc.html,1440,5120,"Developer handoff: routes, components, tokens, build order, rules"
+12 · Motion & handoff,Motion,project/Motion.dc.html,1440,7835,"Motion system: 26 live patterns, 12 video loops, scene images and the 21st.dev components (Play: Replay)"
+12 · Motion & handoff,Emails,project/Emails.dc.html,1440,1468,"Email and SMS templates: lead, staff alert, order, offline payment, visa"
+03 · Home & navigation,Home-m,project/Home-m.dc.html,390,844,Home · phone (scroll inside)
+03 · Home & navigation,Home-m-help,project/Home-m-help.dc.html,390,844,Phone · Need help? sheet (drag down to close)
+03 · Home & navigation,Home-m-drawer,project/Home-m-drawer.dc.html,390,844,Phone · menu drawer
+03 · Home & navigation,Home-m-more,project/Home-m-more.dc.html,390,844,Phone · More sheet (drag down to close)
+03 · Home & navigation,Home-t,project/Home-t.dc.html,768,1024,Home · tablet (scroll inside)
+03 · Home & navigation,Home,project/Home.dc.html,1440,8000,Home · desktop (Play to scroll the whole page)
+03 · Home & navigation,Home-help,project/Home-help.dc.html,1440,900,Desktop · Need help? panel
+03 · Home & navigation,Home-shopmenu,project/Home-shopmenu.dc.html,1440,900,"Desktop · Waafas World menu (top categories, shop all, Printing Solutions, International Trading)"
+03 · Home & navigation,Home-mfull,project/Home-mfull.dc.html,390,8000,"Home · phone, full length (1 of 2)"
+03 · Home & navigation,Home-mfull2,project/Home-mfull2.dc.html,390,5140,"Home · phone, full length (2 of 2)"
+03 · Home & navigation,Home-moremenu,project/Home-moremenu.dc.html,1440,900,Desktop · More menu
+03 · Home & navigation,Home-lower,project/Home-lower.dc.html,1440,2620,"Home · desktop, lower part: team, visit us, footer"
+05 · Live mode (Phase 2),FlightsLive-m,project/FlightsLive-m.dc.html,390,844,Phone · live flight results
+05 · Live mode (Phase 2),FlightsLive-m-filters,project/FlightsLive-m-filters.dc.html,390,844,Phone · filters sheet
+05 · Live mode (Phase 2),FlightsLive-m-offer,project/FlightsLive-m-offer.dc.html,390,844,Phone · flight details
+05 · Live mode (Phase 2),FlightsLive-m-book,project/FlightsLive-m-book.dc.html,390,844,"Phone · traveller details, fare held"
+05 · Live mode (Phase 2),FlightsLive-m-pay,project/FlightsLive-m-pay.dc.html,390,844,Phone · review and pay
+05 · Live mode (Phase 2),FlightsLive-m-price,project/FlightsLive-m-price.dc.html,390,844,Phone · fare changed
+05 · Live mode (Phase 2),FlightsLive-m-done,project/FlightsLive-m-done.dc.html,390,844,Phone · e-ticket ready
+05 · Live mode (Phase 2),HotelsLive-m,project/HotelsLive-m.dc.html,390,844,Phone · live hotel results
+05 · Live mode (Phase 2),HotelsLive-m-filters,project/HotelsLive-m-filters.dc.html,390,844,Phone · hotel filters
+05 · Live mode (Phase 2),HotelsLive-m-map,project/HotelsLive-m-map.dc.html,390,844,Phone · map view
+05 · Live mode (Phase 2),HotelsLive-m-detail,project/HotelsLive-m-detail.dc.html,390,844,Phone · hotel detail
+05 · Live mode (Phase 2),HotelsLive-m-book,project/HotelsLive-m-book.dc.html,390,844,Phone · guest and payment
+05 · Live mode (Phase 2),HotelsLive-m-done,project/HotelsLive-m-done.dc.html,390,844,Phone · voucher
+05 · Live mode (Phase 2),FlightsLive,project/FlightsLive.dc.html,1440,3189,"Desktop · live results: 8 offers (Play: filters, sort, ±3 days, details, select)"
+05 · Live mode (Phase 2),FlightsLive-offer,project/FlightsLive-offer.dc.html,1440,900,"Desktop · Flight details drawer: itinerary, baggage, fare rules, price"
+05 · Live mode (Phase 2),FlightsLive-loading,project/FlightsLive-loading.dc.html,1440,2522,Desktop · new date picked: skeletons while live fares load
+05 · Live mode (Phase 2),FlightsLive-nomatch,project/FlightsLive-nomatch.dc.html,1440,2510,Desktop · no flights match the filters
+05 · Live mode (Phase 2),FlightsLive-book,project/FlightsLive-book.dc.html,1440,2021,"Desktop · step 1, traveller as on the passport, fare held for 15 minutes"
+05 · Live mode (Phase 2),FlightsLive-pay,project/FlightsLive-pay.dc.html,1440,1782,"Desktop · step 2, review and pay: SSLCommerz, bKash, Nagad, card EMI"
+05 · Live mode (Phase 2),FlightsLive-price,project/FlightsLive-price.dc.html,1440,900,Desktop · fare changed at the re-check before payment
+05 · Live mode (Phase 2),FlightsLive-done,project/FlightsLive-done.dc.html,1440,1606,"Desktop · ticketed: PNR, e-ticket and manage booking"
+05 · Live mode (Phase 2),HotelsLive,project/HotelsLive.dc.html,1440,3392,"Desktop · live hotel results (Play: filters, sort, list or map, See rooms)"
+05 · Live mode (Phase 2),HotelsLive-map,project/HotelsLive-map.dc.html,1440,2597,Desktop · map view with price pins
+05 · Live mode (Phase 2),HotelsLive-detail,project/HotelsLive-detail.dc.html,1440,3884,"Desktop · hotel detail: gallery, rooms and rate plans, amenities, policies"
+05 · Live mode (Phase 2),HotelsLive-book,project/HotelsLive-book.dc.html,1440,1889,"Desktop · guest details and payment, rate re-checked"
+05 · Live mode (Phase 2),HotelsLive-done,project/HotelsLive-done.dc.html,1440,1730,Desktop · booked: voucher with hotel confirmation
+01 · Research & moodboard,Main,project/Main.dc.html,1440,6342,Research summary
+01 · Research & moodboard,Moodboard,project/Moodboard.dc.html,1440,1960,Moodboard
+01 · Research & moodboard,PhotoBrief,project/PhotoBrief.dc.html,1440,4697,"Photo brief & credits (prototype stand-ins, real photos in the build)"
+08 · Waafas World,Shop-m,project/Shop-m.dc.html,390,844,Phone · Waafas World home
+08 · Waafas World,Shop-m-mini,project/Shop-m-mini.dc.html,390,844,Phone · cart drawer
+08 · Waafas World,ShopCats-m,project/ShopCats-m.dc.html,390,844,Phone · all categories
+08 · Waafas World,ShopCats-m-printers,project/ShopCats-m-printers.dc.html,390,844,"Phone · categories, Printers & Supplies"
+08 · Waafas World,ShopList-m,project/ShopList-m.dc.html,390,844,Phone · Electronics & Gadgets listing
+08 · Waafas World,ShopList-m-filters,project/ShopList-m-filters.dc.html,390,844,Phone · filters sheet
+08 · Waafas World,ShopList-m-fashion,project/ShopList-m-fashion.dc.html,390,844,Phone · T-shirts listing
+08 · Waafas World,ShopSearch-m,project/ShopSearch-m.dc.html,390,844,Phone · search results
+08 · Waafas World,ShopDeals-m,project/ShopDeals-m.dc.html,390,844,Phone · Deals
+08 · Waafas World,ShopProduct-m,project/ShopProduct-m.dc.html,390,844,"Phone · product page, T-shirt"
+08 · Waafas World,ShopProduct-m-hp,project/ShopProduct-m-hp.dc.html,390,844,Phone · headphones
+08 · Waafas World,ShopProduct-m-toner,project/ShopProduct-m-toner.dc.html,390,844,Phone · toner
+08 · Waafas World,ShopCart-m,project/ShopCart-m.dc.html,390,844,Phone · cart
+08 · Waafas World,ShopCart-m-empty,project/ShopCart-m-empty.dc.html,390,844,Phone · empty cart
+08 · Waafas World,ShopCheckout-m,project/ShopCheckout-m.dc.html,390,844,Phone · checkout
+08 · Waafas World,ShopDone-m,project/ShopDone-m.dc.html,390,844,"Phone · order placed, ORD-261008-0042"
+08 · Waafas World,ShopTrack-m,project/ShopTrack-m.dc.html,390,844,Phone · track order
+08 · Waafas World,ShopFinder-m,project/ShopFinder-m.dc.html,390,844,Phone · Find by model
+08 · Waafas World,Printing-m,project/Printing-m.dc.html,390,844,Phone · Printing Solutions
+08 · Waafas World,Trading-m,project/Trading-m.dc.html,390,844,Phone · International Trading
+08 · Waafas World,Shop,project/Shop.dc.html,1440,5832,"Desktop · Waafas World home (Play: carousel, countdown, Add to cart)"
+08 · Waafas World,ShopList,project/ShopList.dc.html,1440,2710,"Desktop · Electronics & Gadgets listing (filters, sort and Add work)"
+08 · Waafas World,ShopProduct,project/ShopProduct.dc.html,1440,3292,"Desktop · product page, T-shirt (Play: colour and size change price, stock, SKU)"
+08 · Waafas World,ShopCart,project/ShopCart.dc.html,1440,2315,"Desktop · cart (quantities, save for later, coupon WELCOME10)"
+08 · Waafas World,ShopCheckout,project/ShopCheckout.dc.html,1440,2702,"Desktop · checkout (delivery, payment and VAT invoice switch)"
+08 · Waafas World,ShopDone,project/ShopDone.dc.html,1440,1694,"Desktop · order placed, ORD-261008-0042"
+08 · Waafas World,ShopTrack,project/ShopTrack.dc.html,1440,1966,"Desktop · track order, out for delivery"
+08 · Waafas World,ShopFinder,project/ShopFinder.dc.html,1440,2351,"Desktop · Find by model (brand, model, part code)"
+08 · Waafas World,ShopCats,project/ShopCats.dc.html,1440,1748,Desktop · all categories
+08 · Waafas World,ShopProduct-pb,project/ShopProduct-pb.dc.html,1440,3345,"Desktop · power bank, capacity options"
+08 · Waafas World,ShopProduct-hp,project/ShopProduct-hp.dc.html,1440,3180,"Desktop · headphones, colour options"
+08 · Waafas World,ShopProduct-toner,project/ShopProduct-toner.dc.html,1440,3280,Desktop · toner with Compatible with
+08 · Waafas World,ShopSearch,project/ShopSearch.dc.html,1440,2734,Desktop · search results for “power bank”
+08 · Waafas World,ShopDeals,project/ShopDeals.dc.html,1440,2668,"Desktop · Deals, ends Sunday"
+08 · Waafas World,ShopList-printers,project/ShopList-printers.dc.html,1440,2382,Desktop · Printers & Supplies with Find by model
+08 · Waafas World,ShopList-empty,project/ShopList-empty.dc.html,1440,2215,"Desktop · listing, no match"
+08 · Waafas World,ShopFinder-part,project/ShopFinder-part.dc.html,1440,1976,Desktop · Find by part code CF280A
+08 · Waafas World,ShopFinder-none,project/ShopFinder-none.dc.html,1440,1976,Desktop · part code not found
+08 · Waafas World,Shop-mini,project/Shop-mini.dc.html,1440,900,Desktop · cart drawer open
+08 · Waafas World,Shop-mega,project/Shop-mega.dc.html,1440,900,Desktop · All categories open
+08 · Waafas World,Shop-suggest,project/Shop-suggest.dc.html,1440,900,Desktop · search suggestions while typing “pow”
+08 · Waafas World,Shop-bulk,project/Shop-bulk.dc.html,1440,900,Desktop · corporate bulk-order request
+08 · Waafas World,ShopProduct-video,project/ShopProduct-video.dc.html,1440,900,Desktop · product video open
+08 · Waafas World,ShopProduct-bulk,project/ShopProduct-bulk.dc.html,1440,900,Desktop · corporate price request
+08 · Waafas World,ShopCart-empty,project/ShopCart-empty.dc.html,1440,1803,Desktop · empty cart
+08 · Waafas World,ShopCart-coupon,project/ShopCart-coupon.dc.html,1440,2338,Desktop · coupon that has expired
+08 · Waafas World,ShopCheckout-err,project/ShopCheckout-err.dc.html,1440,2786,Desktop · checkout with errors
+08 · Waafas World,ShopDone-bank,project/ShopDone-bank.dc.html,1440,1993,"Desktop · order placed, pay by bank transfer"
+08 · Waafas World,ShopTrack-nf,project/ShopTrack-nf.dc.html,1440,1581,Desktop · order not found
+08 · Waafas World,ShopTrack-delivered,project/ShopTrack-delivered.dc.html,1440,2030,Desktop · delivered
+08 · Waafas World,Printing,project/Printing.dc.html,1440,3292,Desktop · Printing Solutions (quote form)
+08 · Waafas World,Trading,project/Trading.dc.html,1440,3493,Desktop · International Trading (RFQ form)
+08 · Waafas World,Printing-done,project/Printing-done.dc.html,1440,2100,"Desktop · quote sent, PRN-261008-0015"
+08 · Waafas World,Trading-done,project/Trading-done.dc.html,1440,2100,"Desktop · RFQ sent, TRD-261008-0009"
+06 · Packages & group fares,Packages-m,project/Packages-m.dc.html,390,844,Phone · tour packages
+06 · Packages & group fares,Packages-m-filters,project/Packages-m-filters.dc.html,390,844,Phone · filters sheet
+06 · Packages & group fares,PackageDetail-m,project/PackageDetail-m.dc.html,390,844,Phone · package page with booking bar
+06 · Packages & group fares,PackageDetail-m-query,project/PackageDetail-m-query.dc.html,390,844,Phone · send query sheet
+06 · Packages & group fares,PackageDetail-m-done,project/PackageDetail-m-done.dc.html,390,844,"Phone · query sent, PKG-261008-0021"
+06 · Packages & group fares,PlanTrip-m,project/PlanTrip-m.dc.html,390,844,"Phone · Plan my trip, step 1"
+06 · Packages & group fares,PlanTrip-m-4,project/PlanTrip-m-4.dc.html,390,844,"Phone · Plan my trip, budget step"
+06 · Packages & group fares,PlanTrip-m-done,project/PlanTrip-m-done.dc.html,390,844,"Phone · trip request sent, CTR-261008-0011"
+06 · Packages & group fares,Hotels-m,project/Hotels-m.dc.html,390,844,"Phone · hotels, Manual mode"
+06 · Packages & group fares,Hotels-m-2,project/Hotels-m-2.dc.html,390,844,"Phone · stay details, hotel pinned"
+06 · Packages & group fares,Hotels-m-done,project/Hotels-m-done.dc.html,390,844,Phone · hotel request sent
+06 · Packages & group fares,Packages,project/Packages.dc.html,1440,3478,Desktop · tour packages (type chips and filters work)
+06 · Packages & group fares,PackageDetail,project/PackageDetail.dc.html,1440,5477,"Desktop · package page (days open and close, booking card updates the estimate)"
+06 · Packages & group fares,PlanTrip,project/PlanTrip.dc.html,1440,1965,"Desktop · Plan my trip (Play: five steps, live summary)"
+06 · Packages & group fares,Hotels,project/Hotels.dc.html,1440,3597,"Desktop · hotels, Manual mode (Request this hotel pins it to the form)"
+06 · Packages & group fares,Packages-empty,project/Packages-empty.dc.html,1440,1250,Desktop · no packages match
+06 · Packages & group fares,PackageDetail-query,project/PackageDetail-query.dc.html,1440,1000,Desktop · send query dialog
+06 · Packages & group fares,PackageDetail-photos,project/PackageDetail-photos.dc.html,1440,900,Desktop · photo lightbox
+06 · Packages & group fares,PackageDetail-done,project/PackageDetail-done.dc.html,1440,1500,Desktop · query sent in the booking card
+06 · Packages & group fares,PlanTrip-4,project/PlanTrip-4.dc.html,1440,1500,"Desktop · Plan my trip, budget and style"
+06 · Packages & group fares,PlanTrip-done,project/PlanTrip-done.dc.html,1440,1500,Desktop · trip request sent
+06 · Packages & group fares,Hotels-2,project/Hotels-2.dc.html,1440,1900,Desktop · stay details with a pinned hotel
+06 · Packages & group fares,Hotels-done,project/Hotels-done.dc.html,1440,1500,Desktop · hotel request sent
+07 · Visa,Visa-m,project/Visa-m.dc.html,390,844,Phone · visa services
+07 · Visa,VisaCountry-m,project/VisaCountry-m.dc.html,390,844,Phone · Thailand visa with apply bar
+07 · Visa,VisaApply-m,project/VisaApply-m.dc.html,390,844,"Phone · apply, trip and contact"
+07 · Visa,VisaApply-m-2,project/VisaApply-m-2.dc.html,390,844,"Phone · apply, documents"
+07 · Visa,VisaApply-m-err,project/VisaApply-m-err.dc.html,390,844,Phone · file too large
+07 · Visa,VisaApply-m-done,project/VisaApply-m-done.dc.html,390,844,"Phone · received, VSA-261008-0108"
+07 · Visa,VisaTrack-m,project/VisaTrack-m.dc.html,390,844,Phone · track an application
+07 · Visa,VisaTrack-m-nf,project/VisaTrack-m-nf.dc.html,390,844,Phone · not found
+07 · Visa,VisaGuide-m,project/VisaGuide-m.dc.html,390,844,Phone · Visa Guide
+07 · Visa,VisaGuidePost-m,project/VisaGuidePost-m.dc.html,390,844,Phone · guide article
+07 · Visa,Visa,project/Visa.dc.html,1440,3149,Desktop · visa services (search and region chips filter live)
+07 · Visa,VisaCountry,project/VisaCountry.dc.html,1440,2449,Desktop · Thailand visa (tabs switch documents and fees)
+07 · Visa,VisaApply,project/VisaApply.dc.html,1440,1900,"Desktop · apply (Play: four steps, uploads, office visit)"
+07 · Visa,VisaTrack,project/VisaTrack.dc.html,1440,1821,Desktop · track an application
+07 · Visa,VisaGuide,project/VisaGuide.dc.html,1440,2011,Desktop · Visa Guide
+07 · Visa,VisaGuidePost,project/VisaGuidePost.dc.html,1440,3408,Desktop · guide article with a checklist you can tick
+07 · Visa,Visa-none,project/Visa-none.dc.html,1440,1250,Desktop · country not listed
+07 · Visa,VisaCountry-medical,project/VisaCountry-medical.dc.html,1440,1500,Desktop · medical visa tab
+07 · Visa,VisaApply-2,project/VisaApply-2.dc.html,1440,1900,Desktop · documents
+07 · Visa,VisaApply-err,project/VisaApply-err.dc.html,1440,1900,Desktop · file too large
+07 · Visa,VisaApply-3,project/VisaApply-3.dc.html,1440,1500,Desktop · office visit
+07 · Visa,VisaApply-4,project/VisaApply-4.dc.html,1440,1600,Desktop · check and send
+07 · Visa,VisaApply-done,project/VisaApply-done.dc.html,1440,1600,Desktop · received with status timeline
+07 · Visa,VisaTrack-nf,project/VisaTrack-nf.dc.html,1440,1200,Desktop · not found

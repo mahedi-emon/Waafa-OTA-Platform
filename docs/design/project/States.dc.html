@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>System states: loading, toasts, empty and errors</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa" style="width:1440px">
+  <div style="padding:56px 48px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;background:#F6F8FB">
+    <div class="flex flex-col gap-3"><span class="v-eyebrow">System states</span><h1 class="font-display font-extrabold text-navy" style="font-size:48px;line-height:1;letter-spacing:-.04em">Loading, feedback, empty and offline</h1><p class="v-lead" style="max-width:760px">Every screen uses these same states. Skeletons match the layout they replace, toasts never cover the tab bar, and nothing a person typed is lost when the network drops.</p></div>
+    <span class="ds-map">shadcn · Skeleton, Sonner, Alert</span>
+  </div>
+  <div class="wd-sheet">
+    <div class="wd-cell"><h3>Page loader<code>w-loader</code></h3>
+      <div class="w-loader" role="status" aria-label="Loading" style="flex:1"><svg viewBox="0 0 120 76" aria-hidden="true"><defs><linearGradient id="lgs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="120" y2="40"><stop offset="0" stop-color="#020D39"></stop><stop offset=".4" stop-color="#003FBE"></stop><stop offset=".74" stop-color="#0D8CEE"></stop><stop offset="1" stop-color="#39CCE9"></stop></linearGradient></defs><path class="w-lp" stroke="url(#lgs)" d="M19 6 L37 60 Q41 70 47 62 L64 24 Q65 22 68 22 L102 22"></path><path class="w-lp w-lp2" stroke="url(#lgs)" d="M41 6 Q51 5 54 12 L72 68 L110 6"></path></svg><span class="text-13 text-muted">Finding fares…</span></div>
+      <p class="text-13 text-muted">The W draws itself. Shown only after 400 ms, so fast pages never flash.</p>
+    </div>
+    <div class="wd-cell"><h3>Product card skeleton<code>Skeleton</code></h3>
+      <div class="grid gap-3" style="grid-template-columns:1fr 1fr">
+        <div class="wd-skelcard"><span class="w-skel" style="height:120px;border-radius:14px"></span><span class="w-skel" style="height:10px;width:40%"></span><span class="w-skel" style="height:14px;width:90%"></span><span class="w-skel" style="height:14px;width:60%"></span><div class="flex justify-between"><span class="w-skel" style="height:18px;width:40%"></span><span class="w-skel" style="height:30px;width:30%;border-radius:999px"></span></div></div>
+        <div class="wd-skelcard"><span class="w-skel" style="height:120px;border-radius:14px"></span><span class="w-skel" style="height:10px;width:50%"></span><span class="w-skel" style="height:14px;width:80%"></span><span class="w-skel" style="height:14px;width:55%"></span><div class="flex justify-between"><span class="w-skel" style="height:18px;width:35%"></span><span class="w-skel" style="height:30px;width:30%;border-radius:999px"></span></div></div>
+      </div>
+    </div>
+    <div class="wd-cell"><h3>List skeleton<code>Skeleton</code></h3>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center gap-3"><span class="w-skel" style="width:44px;height:44px;border-radius:14px"></span><div class="flex flex-col gap-2" style="flex:1"><span class="w-skel" style="height:12px;width:70%"></span><span class="w-skel" style="height:10px;width:45%"></span></div><span class="w-skel" style="width:70px;height:24px;border-radius:999px"></span></div>
+        <div class="flex items-center gap-3"><span class="w-skel" style="width:44px;height:44px;border-radius:14px"></span><div class="flex flex-col gap-2" style="flex:1"><span class="w-skel" style="height:12px;width:60%"></span><span class="w-skel" style="height:10px;width:35%"></span></div><span class="w-skel" style="width:70px;height:24px;border-radius:999px"></span></div>
+        <div class="flex items-center gap-3"><span class="w-skel" style="width:44px;height:44px;border-radius:14px"></span><div class="flex flex-col gap-2" style="flex:1"><span class="w-skel" style="height:12px;width:75%"></span><span class="w-skel" style="height:10px;width:40%"></span></div><span class="w-skel" style="width:70px;height:24px;border-radius:999px"></span></div>
+      </div>
+      <p class="text-13 text-muted">Account lists, admin tables and search results.</p>
+    </div>
+    <div class="wd-cell is-wide"><h3>Toasts<code>Sonner · bottom centre on phones, bottom right on desktop</code></h3>
+      <div class="wd-toasts">
+        <div class="wd-toast is-ok"><span class="i i-circle-check"></span><div><b>Added to cart</b><small>Classic Cotton Crew T-shirt · White, M</small></div><button type="button">View cart</button></div>
+        <div class="wd-toast is-err"><span class="i i-circle-alert"></span><div><b>Couldn’t send your request</b><small>Your details are kept. Check the connection and try again.</small></div><button type="button">Try again</button></div>
+        <div class="wd-toast is-info"><span class="i i-info"></span><div><b>Price updated</b><small>The airline changed the fare to ৳58,900. Your expert will confirm.</small></div></div>
+        <div class="wd-toast is-wa"><span class="i i-whatsapp-fill"></span><div><b>Sent to WhatsApp</b><small>Your reference FLT-261008-0042 is in the chat.</small></div></div>
+      </div>
+    </div>
+    <div class="wd-cell"><h3>Network<code>online / offline</code></h3>
+      <div class="wd-netbar"><span class="i i-wifi-off"></span>You’re offline. We’ll send this when you’re back.<button type="button">Retry</button></div>
+      <div class="wd-netbar" style="background:var(--color-success-50);box-shadow:inset 0 0 0 1px #BFE8D0;color:var(--color-success-600)"><span class="i i-wifi"></span>Back online. Request sent.</div>
+      <p class="text-13 text-muted">Forms save drafts on the device, so nothing typed is lost.</p>
+    </div>
+    <div class="wd-cell"><h3>Buttons<code>Button</code></h3>
+      <div class="wd-btnstates"><button class="w-btn w-btn-primary" type="button">Send request</button><button class="w-btn w-btn-primary" type="button" aria-busy="true"><span class="ww-spin"></span>Sending…</button><button class="w-btn w-btn-primary" type="button" disabled="">Send request</button><button class="w-btn" type="button" style="background:var(--color-success-600);color:#fff"><span class="i i-check"></span>Sent</button></div>
+      <p class="text-13 text-muted">Loading keeps the width; success holds for 1.2 s, then the next screen.</p>
+    </div>
+    <div class="wd-cell"><h3>Fields<code>Input · FormMessage</code></h3>
+      <div class="w-field"><label class="w-label" for="s-p">Mobile number</label><div class="w-phone is-invalid"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880</button><input id="s-p" value="1712-3"></div><span class="w-error"><span class="i i-circle-alert"></span>Check the number: 10 digits after +880.</span></div>
+      <div class="w-field"><label class="w-label" for="s-e">Email</label><input class="w-input" id="s-e" value="rahim@example.com"><span class="w-ok"><span class="i i-check"></span>Looks good</span></div>
+    </div>
+    <div class="wd-cell"><h3>Empty<code>Empty state</code></h3>
+      <div class="ww-empty" style="padding:24px 16px;flex:1"><span class="w-tile"><span class="i i-search-x"></span></span><b class="text-navy">No packages match</b><p style="font-size:13.5px">Try fewer filters, or tell us the trip you want.</p><button class="w-btn w-btn-sm w-btn-secondary" type="button">Clear filters</button></div>
+    </div>
+    <div class="wd-cell is-dark is-wide"><h3>Top progress<code>route change</code></h3>
+      <div style="position:relative;height:6px;border-radius:6px;background:rgb(255 255 255/.12);overflow:hidden"><span style="position:absolute;left:0;top:0;bottom:0;width:62%;border-radius:6px;background:var(--ribbon)"></span></div>
+      <p class="text-13" style="color:rgb(255 255 255/.7)">A 3 px ribbon bar at the top of the page while the next route loads. Same ribbon as the W.</p>
+      <div class="flex items-center gap-3" style="margin-top:auto"><span class="ww-spin" style="border-color:rgb(255 255 255/.3);border-top-color:#fff"></span><span class="text-13" style="color:#fff">Inline spinner, 18 px, for buttons only</span></div>
+    </div>
+    <div class="wd-cell"><h3>Confirm before losing work<code>AlertDialog</code></h3>
+      <div style="padding:18px;border-radius:20px;box-shadow:var(--shadow-lg),inset 0 0 0 1px var(--color-mist-200);display:flex;flex-direction:column;gap:10px">
+        <b class="text-navy" style="font:700 16px/1.3 var(--font-sans)">Leave this request?</b>
+        <p class="text-13 text-muted">You’ve filled in 2 of 3 steps. We keep a draft on this device for 7 days.</p>
+        <div class="flex justify-end gap-2"><button class="w-btn w-btn-sm w-btn-ghost" type="button">Leave</button><button class="w-btn w-btn-sm w-btn-primary" type="button">Keep going</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1610}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

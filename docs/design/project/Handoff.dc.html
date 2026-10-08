@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Developer handoff</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="mx wa-r">
+  <div class="mx-head">
+    <div>
+      <span class="mx-eyebrow">12 · Developer handoff</span>
+      <h1>Build the frontend from this canvas with Claude Code</h1>
+      <p class="mx-lead">Every route, the screens that show it, the shadcn/ui and 21st.dev pieces to use, the design tokens, and a build order that fits the 13 October launch. The PRD stays the source of truth; this page tells you which artboard to match.</p>
+    </div>
+    <div class="mx-chips"><span class="mx-chip is-dark"><span class="i i-layers"></span>Next.js App Router</span><span class="mx-chip"><span class="i i-palette"></span>Tailwind v4</span><span class="mx-chip"><span class="i i-blocks"></span>shadcn/ui</span><span class="mx-chip"><span class="i i-sparkles"></span>21st.dev</span><span class="mx-chip"><span class="i i-zap"></span>Motion</span><span class="mx-chip"><span class="i i-database"></span>NestJS · Prisma · PostgreSQL</span></div>
+  </div>
+
+  <div class="mx-3">
+    <div class="mx-card"><span class="mx-eyebrow">Step 1</span><h3 style="font:800 18px/1.25 var(--font-display);color:var(--color-navy-900);margin-top:10px">Download the prototype</h3><p class="text-13" style="color:var(--color-mist-600);line-height:1.55;margin-top:6px">Use the canvas’s Share › Export, or the ZIP in this chat: every artboard as a working page, the stylesheet with all tokens, fonts, icons and the Unsplash photo list.</p></div>
+    <div class="mx-card"><span class="mx-eyebrow">Step 2</span><h3 style="font:800 18px/1.25 var(--font-display);color:var(--color-navy-900);margin-top:10px">Put it next to the code</h3><p class="text-13" style="color:var(--color-mist-600);line-height:1.55;margin-top:6px">Copy it to <code>docs/design/</code> in the repo with the PRD, so Claude Code can open the HTML, read tokens from <code>waafa.css</code> and compare screenshots.</p></div>
+    <div class="mx-card"><span class="mx-eyebrow">Step 3</span><h3 style="font:800 18px/1.25 var(--font-display);color:var(--color-navy-900);margin-top:10px">Build route by route</h3><p class="text-13" style="color:var(--color-mist-600);line-height:1.55;margin-top:6px">Follow the build order below. For each route, match the listed artboards on phone first, then tablet and desktop, then check against the screenshot.</p></div>
+  </div>
+
+  <section class="mx-sec" aria-labelledby="rt-t">
+    <h2 id="rt-t">Routes and the artboards to match</h2>
+    <p>Board names are the file names on this canvas (phone versions end in -m). P0 ships on 13 October, P1 within 30 days, P2 with live booking.</p>
+    <div class="mx-card" style="padding:6px 8px"><table class="mx-table"><thead><tr><th style="width:20%">Route</th><th style="width:30%">Artboards</th><th>Build with</th><th style="width:7%">Phase</th></tr></thead><tbody>
+      <sc-for list="{{routes}}" as="r" hint-placeholder-count="12"><tr><td><code>{{r.route}}</code><div class="text-12" style="color:var(--color-mist-500);margin-top:4px">{{r.page}}</div></td><td>{{r.boards}}</td><td>{{r.build}}</td><td><span class="{{r.pc}}">{{r.phase}}</span></td></tr></sc-for>
+    </tbody></table></div>
+  </section>
+
+  <section class="mx-sec" aria-labelledby="cm-t">
+    <h2 id="cm-t">Components: shadcn/ui first, 21st.dev where it adds polish</h2>
+    <p>Install shadcn/ui components with the CLI and keep them in <code>components/ui</code>. Copy 21st.dev components into <code>components/fx</code>, review them for accessibility and bundle size, and restyle them with our tokens.</p>
+    <div class="mx-card" style="padding:6px 8px"><table class="mx-table"><thead><tr><th style="width:22%">Piece</th><th style="width:28%">shadcn/ui and libraries</th><th style="width:22%">21st.dev reference</th><th>Notes</th></tr></thead><tbody>
+      <sc-for list="{{comps}}" as="c" hint-placeholder-count="12"><tr><td><b>{{c.piece}}</b></td><td>{{c.ui}}</td><td>{{c.fx}}</td><td>{{c.note}}</td></tr></sc-for>
+    </tbody></table></div>
+  </section>
+
+  <section class="mx-sec" aria-labelledby="tk-t">
+    <h2 id="tk-t">Design tokens</h2>
+    <p>The colours come from the WAAFA logo. Use these names in Tailwind v4’s @theme so classes read like the design: bg-navy-900, text-electric-600, shadow-lg, ease-out.</p>
+    <div class="mx-2" style="align-items:start">
+      <div class="mx-card"><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px"><sc-for list="{{swatches}}" as="s" hint-placeholder-count="12"><div class="mx-swatch"><i style="{{s.c}}"></i><b>{{s.name}}</b><code>{{s.hex}}</code></div></sc-for></div><div style="margin-top:16px;display:flex;flex-direction:column;gap:6px"><div style="font:800 28px/1.1 var(--font-display);color:var(--color-navy-900);letter-spacing:-.02em">Plus Jakarta Sans 800 · headings</div><div style="font:500 16px/1.5 var(--font-sans);color:var(--color-mist-700)">Inter 400 to 700 · body, labels and numbers</div><div style="font:600 16px/1.5 'Hind Siliguri',sans-serif;color:var(--color-mist-700)">হিন্দ শিলিগুড়ি · বাংলা লেখা (Phase 1B)</div></div></div>
+      <pre class="mx-code" style="font-size:12px;padding:16px 18px;border-radius:16px">{{theme}}</pre>
+    </div>
+  </section>
+
+  <section class="mx-sec" aria-labelledby="bo-t">
+    <h2 id="bo-t">Build order to the 13 October launch</h2>
+    <p>Five working days for P0, so build the shell once and reuse it. Staging sign-off is on 12 October.</p>
+    <div class="mx-2" style="align-items:start">
+      <div class="mx-card" style="padding-top:6px;padding-bottom:6px"><sc-for list="{{steps}}" as="s" hint-placeholder-count="5"><div class="mx-step"><i>{{s.n}}</i><div><b>{{s.t}}</b><p>{{s.p}}</p><div class="mx-spec"><sc-for list="{{s.tags}}" as="g" hint-placeholder-count="3"><span>{{g}}</span></sc-for></div></div></div></sc-for></div>
+      <div class="flex flex-col gap-4">
+        <div class="mx-card"><span class="mx-eyebrow">Kick-off prompt for Claude Code</span><pre class="mx-code" style="margin-top:12px">{{prompt}}</pre></div>
+        <div class="mx-card"><span class="mx-eyebrow">Put in CLAUDE.md</span><pre class="mx-code" style="margin-top:12px">{{claudemd}}</pre></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-sec" aria-labelledby="gr-t">
+    <h2 id="gr-t">Rules the build must keep</h2>
+    <p>From the PRD and the owner’s instructions. Add them to code review and to the seed data checks.</p>
+    <div class="mx-2" style="align-items:start">
+      <div class="mx-card" style="padding-top:4px;padding-bottom:4px"><sc-for list="{{nos}}" as="r" hint-placeholder-count="5"><div class="mx-rule"><span class="i i-ban"></span><span>{{r}}</span></div></sc-for></div>
+      <div class="mx-card" style="padding-top:4px;padding-bottom:4px"><sc-for list="{{yes}}" as="r" hint-placeholder-count="5"><div class="mx-rule is-ok"><span class="i i-circle-check"></span><span>{{r}}</span></div></sc-for></div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const R = [
+      ['/', 'Home with unified search', 'Home, Home-t, Home-m, Home-help, Home-m-drawer, Home-m-more, Home-shopmenu', 'Header, SearchCard, TabBar, Footer, MotionKit, team bento', 'P0'],
+      ['/flights', 'Results shell, Manual body', 'Flights, Flights-2, Flights-done, Flights-err, Flights-edit, Flights-m-*, Pick-*', 'ResultsShell + ManualBody (2-step query form), group fares rail', 'P0'],
+      ['/flights (Live)', 'Live body in the same slot', 'FlightsLive, -offer, -loading, -nomatch, -book, -pay, -price, -done, -m-*', 'LiveBody against fixtures; same shell, filters become offer filters', 'P2'],
+      ['/flights/group-fares', 'Group and special fares', 'GroupFares, GroupFares-empty, GroupFares-m, -m-empty', 'Fare cards with “indicative” labels, Request this fare form', 'P0'],
+      ['/hotels', 'Hotel results', 'Hotels, Hotels-2, Hotels-done, Hotels-m-*; Live: HotelsLive, -map, -detail, -book, -done', 'Same shell; Live adds list or map, rooms and rate plans', 'P0 / P2'],
+      ['/tour-packages', 'Packages and detail', 'Packages, Packages-empty, PackageDetail, -photos, -query, -done, Packages-m-*', 'Filter sheet, gallery lightbox, itinerary timeline, sticky booking card', 'P0'],
+      ['/plan-my-trip', 'Custom tour request', 'PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-*', 'Multi-step form with month picker and interests', 'P0'],
+      ['/visa-services', 'Visa list, country, apply', 'Visa, Visa-none, VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done', 'Country cards, checklist, document upload (private), apply steps', 'P0'],
+      ['/visa-guide', 'Editorial guides', 'VisaGuide, VisaGuidePost (+ -m)', 'Article layout with contents list and apply CTA', 'P0'],
+      ['/shop', 'Waafas World home', 'Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk, Shop-mini', 'ShopBar, campaign carousel, rows that hide when empty, PCard', 'P0'],
+      ['/shop/c/[slug] · brand · collection', 'Listing', 'ShopList, -printers, -empty, -m, -m-filters, -m-fashion, ShopCats, ShopDeals', 'Attribute filters from the category set, sort, Load more', 'P0'],
+      ['/shop/p/[slug]', 'Product page', 'ShopProduct, -pb, -hp, -toner, -video, -bulk, -m-*', 'Variant selector updates price, stock, SKU and images; Compatible with only when used', 'P0'],
+      ['/shop/finder · /shop/search', 'Find by model, search', 'ShopFinder, -part, -none, ShopSearch', 'Brand → model → products, part-code search', 'P0'],
+      ['/shop/cart → checkout → order', 'Cart, checkout, success, tracking', 'ShopCart, -empty, -coupon, ShopCheckout, -err, ShopDone, -bank, ShopTrack, -nf, -delivered', 'COD cap, offline payment with proof upload, ORD- numbers', 'P0'],
+      ['/shop/printing-solutions · /shop/international-trading', 'Service pages', 'Printing, Printing-done, Trading, Trading-done (+ -m)', 'Quote form (PRN-) and RFQ form (TRD-) with attachments', 'P0'],
+      ['/gallery · /feedback', 'Gallery and testimonials', 'Gallery, Gallery-album, Gallery-photo, Feedback, Feedback-sent', 'Masonry grid, lightbox, moderation-only wall', 'P0'],
+      ['More pages', 'About, Contact, FAQs, Blog, policies, Baggage, EMI, Offline Payment', 'About, Contact, Faqs, Blog, BlogPost, Refund, Privacy, Terms, Baggage, Emi, OfflinePay (+ -m, -sent)', 'Rich text from Admin, FAQPage markup, forms that create leads', 'P0'],
+      ['/track · /login · /account', 'Tracking and accounts', 'Track, Track-nf, Login, Login-otp, Login-err, Account', 'Phone OTP sign-in, guest records attach after verification', 'P1'],
+      ['404 · 500 · offline · maintenance', 'System states', 'Error, Error500, Offline, Maintenance, States', 'Shared empty, error and loading patterns', 'P0'],
+      ['/admin/*', 'Admin panel', 'Admin* (52 boards): Login, Dash, Leads, Lead, Bookings, Orders, Products, Product, Cats, Collections, Modes …', 'shadcn Sidebar, Data Table, Command, Charts; never indexed', 'P0']
+    ];
+    const routes = R.map(r => ({ route: r[0], page: r[1], boards: r[2], build: r[3], phase: r[4], pc: 'a-p ' + (r[4] === 'P2' ? 'is-p2' : r[4] === 'P1' ? 'is-p1' : r[4] === 'P0' ? 'is-live' : 'is-p1') }));
+    const C = [
+      ['Header, More menu, Waafas World panel', 'NavigationMenu, DropdownMenu, Sheet', 'Mega Menu', 'Logo is never recoloured; panel opens on hover and focus'],
+      ['Bottom tab bar', 'Custom nav, Motion layoutId pill', '—', 'Five tabs: Home, Packages, Waafas World (raised W disc), Visa, More'],
+      ['Search card and pickers', 'Tabs, Popover, Command, Calendar (range), Drawer (vaul)', '—', 'Phones get full-screen pickers; desktop gets popovers'],
+      ['Travellers and quantity', 'Popover + Button group', 'Quantity Stepper (#29940)', 'Min and max per type; infants ≤ adults'],
+      ['Forms', 'Form (react-hook-form + zod), Input, Select, RadioGroup, Checkbox, Switch, Textarea', 'OTP Input', 'One zod schema shared with the API; Turnstile on submit'],
+      ['Filters and price range', 'Accordion, Checkbox, Slider, Sheet on phones', 'Price Range Slider', 'Filters live in the URL with nuqs'],
+      ['Cards: offers, packages, hotels, products', 'Card, Badge, Button, Tooltip, AspectRatio', 'Add to Cart Button (#34564)', 'Add turns into a stepper; Choose options for variants'],
+      ['Carousels and gallery', 'Carousel (Embla), Dialog', 'Carousel, Masonry Lightbox', 'Swipe, keyboard and captions in the lightbox'],
+      ['Numbers, logos, countdowns', '—', 'Number Ticker, Logo Marquee, Countdown', 'All stop under reduced motion'],
+      ['Order and visa tracking', 'Card, Separator', 'Order tracking, Milestone Timeline', 'Statuses from the PRD, with dates'],
+      ['Dialogs, drawers, toasts, skeletons', 'Dialog, AlertDialog, Sheet, Sonner, Skeleton', '—', 'Price-change dialog is an AlertDialog'],
+      ['Admin shell and search', 'Sidebar block, Command (cmdk), Breadcrumb', 'Command Palette', 'Ctrl K, G then L or O shortcuts'],
+      ['Admin tables and charts', 'Data Table (TanStack Table), Chart (Recharts), Pagination', 'Dashboard layouts', 'Row selection, bulk bar, CSV export'],
+      ['Admin board and category tree', 'dnd-kit', 'Kanban, Tree View', 'Board is P1; tree nests three levels'],
+      ['Rich text and uploads', 'Tiptap, react-dropzone', '—', 'Alt text required; R2 signed uploads, private bucket for passports']
+    ];
+    const comps = C.map(c => ({ piece: c[0], ui: c[1], fx: c[2], note: c[3] }));
+    const SW = [['midnight-950', '#020D39'], ['navy-900', '#00185B'], ['royal-800', '#01278B'], ['brand-700', '#003FBE'], ['electric-600', '#0053D7'], ['sky-500', '#0D8CEE'], ['cyan-400', '#39CCE9'], ['gold-400', '#C9A05A'], ['mist-50', '#F6F8FB'], ['mist-200', '#E3E8F0'], ['mist-500', '#6B7489'], ['mist-800', '#283044'], ['success-600', '#0B7A54'], ['warning-700', '#A15C07'], ['danger-600', '#C2261D'], ['whatsapp-500', '#22B565']];
+    const swatches = SW.map(s => ({ name: s[0], hex: s[1], c: '--c:' + s[1] }));
+    const theme = '/* app/globals.css · Tailwind v4 */\n@import "tailwindcss";\n\n@theme {\n  --color-midnight-950: #020D39;\n  --color-navy-900: #00185B;\n  --color-royal-800: #01278B;\n  --color-brand-700: #003FBE;\n  --color-electric-600: #0053D7;\n  --color-sky-500: #0D8CEE;\n  --color-cyan-400: #39CCE9;\n  --color-gold-400: #C9A05A;\n  --color-mist-50: #F6F8FB;\n  --color-mist-200: #E3E8F0;\n  --color-mist-500: #6B7489;\n  --color-mist-800: #283044;\n  --color-success-600: #0B7A54;\n  --color-warning-700: #A15C07;\n  --color-danger-600: #C2261D;\n\n  --font-display: "Plus Jakarta Sans", "Hind Siliguri", sans-serif;\n  --font-sans: "Inter", "Hind Siliguri", sans-serif;\n\n  --radius-md: 12px;  --radius-lg: 16px;\n  --radius-xl: 20px;  --radius-2xl: 28px;\n\n  --shadow-md: 0 10px 24px -8px rgb(2 13 57 / .14);\n  --shadow-xl: 0 36px 80px -28px rgb(2 13 57 / .34);\n\n  --ease-out: cubic-bezier(.22, 1, .36, 1);\n  --ease-spring: cubic-bezier(.34, 1.36, .64, 1);\n}\n\n/* the ribbon from the logo */\n.bg-ribbon { background: linear-gradient(120deg,\n  #020D39 0%, #003FBE 40%, #0D8CEE 74%, #39CCE9 100%); }';
+    const steps = [
+      ['1', 'Thu 8 to Fri 9 Oct · foundation', 'Monorepo, Next.js, Tailwind tokens, fonts, shadcn init. Layout shell: Header, Footer, TabBar with the Waafas World disc, MotionKit, breadcrumbs. Home with static data.', ['Home', 'Header', 'TabBar', 'Footer']],
+      ['2', 'Sat 10 Oct · search and Manual mode', 'SearchCard with all pickers; one results shell; Manual query forms for flights and hotels; group fares; success pages; POST /leads with idempotency key.', ['Flights', 'Hotels', 'GroupFares', 'Pick-*']],
+      ['3', 'Sun 11 Oct · packages, visa, content', 'Packages and detail, Plan my trip, visa list, country, apply and track, Visa Guide; Gallery, Feedback, About, Contact, FAQs, Blog and policy pages.', ['Packages', 'Visa*', 'More pages']],
+      ['4', 'Mon 12 Oct · Waafas World and Admin', 'Store home, listing, product with variants, cart, checkout (COD and offline), order success and tracking, Find by model, printing and trading forms. Admin: sign-in, leads, booking modes, catalogue, orders, content. Staging sign-off.', ['Shop*', 'Admin*']],
+      ['5', 'Tue 13 Oct · launch', 'SEO and sitemap, GA4 and Pixel after consent, Lighthouse CI, Playwright smoke tests on phone sizes, then go live. Afterwards: P1 accounts, online payment, Bangla; P2 Live bodies against fixtures.', ['QA', 'SEO', 'Launch']]
+    ].map(s => ({ n: s[0], t: s[1], p: s[2], tags: s[3] }));
+    const prompt = 'Read docs/PRD.md and docs/design/handoff (this page).\nBuild apps/web with Next.js App Router, TypeScript strict,\nTailwind v4 and shadcn/ui. Take tokens from\ndocs/design/project/waafa.css into app/globals.css @theme.\n\nStart with the layout shell (Header, Footer, TabBar,\nMotionKit) and Home. For every route, open the listed\nartboards in docs/design and match them on a 390 px phone\nfirst, then 768 and 1440. Use real components, not\nscreenshots. Keep sample data in /fixtures, marked Sample.\nAsk before adding a dependency that is not in the PRD.';
+    const claudemd = '# Waafa web\n- Stack: Next.js App Router, Tailwind v4, shadcn/ui,\n  Motion (LazyMotion), Embla, react-hook-form + zod,\n  TanStack Query, nuqs. Icons: lucide-react.\n- Tokens live in app/globals.css @theme. Never hard-code\n  a colour; never recolour the logo.\n- Phone first. Tap targets 44 px. Visible focus.\n- Prices in BDT with ৳ and Indian grouping (1,46,480),\n  VAT included.\n- Mobile tab label is “Waafas World”; route /shop.\n- Manual mode fares are “indicative”. No fake live\n  availability. Live bodies only behind the Golden Switch.\n- No testimonials we did not receive. No trade licence\n  details anywhere. No Hajj, Umrah or manpower products.\n- Passport and visa files: private bucket, signed links.';
+    const nos = ['Trade licence numbers, owner details, ID numbers or fees never appear on the site, in seed data or in the repository.', 'No Hajj or Umrah packages, and no manpower, recruitment or employment-visa services.', 'No fake live availability: Manual mode shows indicative fares and asks an expert to confirm.', 'No invented reviews or testimonials; the feedback wall shows approved submissions only.', 'Passport and visa documents are never public; staff open them through signed, logged links.', 'Waafas World never lists restricted items.'];
+    const yes = ['Every page works on a 320 px phone and keeps the bottom tab bar.', 'Every price is in taka with VAT included; online payment shows only when live.', 'Photos come from Unsplash with credits (Photo brief, page 01) or from Waafa’s own product shots.', 'Reduced motion turns movement into short fades.', 'Each form submit is protected by Turnstile, rate limits and an idempotency key.', 'Every admin write lands in the audit log with before and after values.'];
+    return { routes, comps, swatches, theme, steps, prompt, claudemd, nos, yes };
+  }
+}
+</script>
+</body>
+</html>

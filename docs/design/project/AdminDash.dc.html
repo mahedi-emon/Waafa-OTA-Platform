@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · dashboard</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="dash" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" on-cmd="{{openCmd}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <h1 class="a-title">Good evening, Arif</h1>
+          <p>Thursday, 8 October 2026 · Flights, Hotels and Packages run in Manual mode: every search becomes a lead for the team.</p>
+        </div>
+        <div class="a-actions">
+          <div class="a-range" role="tablist" aria-label="Date range"><sc-for list="{{ranges}}" as="r" hint-placeholder-count="3"><button class="{{r.cls}}" type="button" role="tab" aria-selected="{{r.on}}" onClick="{{r.go}}">{{r.label}}</button></sc-for></div>
+          <span class="a-p is-p1 a-hide-sm" title="Custom ranges arrive in P1">Custom range · P1</span>
+          <a class="a-btn a-btn-primary" href="AdminLeads.dc.html"><span class="i i-inbox"></span>Open leads</a>
+        </div>
+      </div>
+
+      <section class="a-kpis" aria-label="Key numbers">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="8">
+          <a class="{{k.cls}}" href="{{k.href}}">
+            <span class="a-kpi-label">{{k.label}}<span class="{{k.icon}}"></span></span>
+            <span class="a-kpi-n fx-count" data-count="{{k.c}}" data-format="in" data-prefix="{{k.pre}}">{{k.n}}</span>
+            <span class="{{k.dCls}}">{{k.d}}</span>
+            <sc-if value="{{k.hasBars}}" hint-placeholder-val="{{ true }}"><span class="a-kpi-bars" aria-hidden="true"><sc-for list="{{k.mb}}" as="b" hint-placeholder-count="7"><i style="{{b.st}}"></i></sc-for></span></sc-if>
+          </a>
+        </sc-for>
+      </section>
+
+      <div class="a-dash">
+        <div class="a-stack">
+          <section class="a-card" aria-labelledby="lm-t">
+            <div class="a-card-head"><div><h3 id="lm-t">Leads by module</h3><p>{{rangeNote}}</p></div><div class="a-legend"><sc-for list="{{legend}}" as="l" hint-placeholder-count="5"><span><i style="{{l.c}}"></i>{{l.label}}</span></sc-for></div></div>
+            <div class="a-card-body">
+              <div class="a-chart" style="height:200px" key="{{range}}"><sc-for list="{{bars}}" as="b" hint-placeholder-count="14"><div class="a-chart-bar" title="{{b.title}}"><sc-for list="{{b.parts}}" as="s" hint-placeholder-count="4"><span style="{{s.st}}"></span></sc-for></div></sc-for></div>
+              <div class="a-chart-x"><sc-for list="{{bars}}" as="b" hint-placeholder-count="14"><span>{{b.x}}</span></sc-for></div>
+            </div>
+          </section>
+
+          <div class="a-grid2">
+            <section class="a-card" aria-labelledby="ls-t">
+              <div class="a-card-head"><div><h3 id="ls-t">Leads by status</h3><p>Open and closed this month</p></div><a class="a-link text-13" href="AdminLeads.dc.html">All leads</a></div>
+              <div class="a-card-body"><sc-for list="{{statuses}}" as="s" hint-placeholder-count="6"><div class="a-hbar"><span class="{{s.cls}}">{{s.label}}</span><span class="a-hbar-track"><span style="{{s.w}}"></span></span><b class="text-right text-navy">{{s.n}}</b></div></sc-for></div>
+            </section>
+            <section class="a-card" aria-labelledby="tr-t">
+              <div class="a-card-head"><div><h3 id="tr-t">Top searched routes</h3><p>Last 7 days · flights</p></div><a class="a-link text-13" href="AdminSearch.dc.html">Search activity</a></div>
+              <div class="a-card-body"><sc-for list="{{routes}}" as="r" hint-placeholder-count="6"><div class="a-hbar" style="grid-template-columns:96px minmax(0,1fr) 44px"><b class="text-navy" style="font-size:13px">{{r.r}}</b><span class="a-hbar-track"><span style="{{r.w}}"></span></span><span class="text-right text-13 text-muted">{{r.n}}</span></div></sc-for></div>
+            </section>
+          </div>
+
+          <section class="a-card" aria-labelledby="q-t">
+            <div class="a-card-head"><div><h3 id="q-t">Needs a reply</h3><p>Past the 30-minute reply target, oldest first</p></div><a class="a-btn a-btn-outline a-btn-sm" href="AdminLeads.dc.html">Overdue view<span class="i i-arrow-right"></span></a></div>
+            <div class="a-queue">
+              <sc-for list="{{queue}}" as="q" hint-placeholder-count="5">
+                <a class="a-qitem" href="AdminLead.dc.html">
+                  <span class="a-tile" style="width:36px;height:36px;border-radius:10px"><span class="{{q.icon}}"></span></span>
+                  <span class="min-w-0"><b>{{q.ref}} · {{q.who}}</b><small>{{q.trip}}</small></span>
+                  <span class="flex items-center gap-3"><span class="{{q.st}}">{{q.status}}</span><span class="a-age is-late">{{q.age}}</span></span>
+                </a>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+
+        <div class="a-stack">
+          <section class="a-card" aria-labelledby="bm-t">
+            <div class="a-card-head"><div><h3 id="bm-t">Booking modes</h3><p>The Golden Switch, per module</p></div><a class="a-link text-13" href="AdminModes.dc.html">Settings</a></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <sc-for list="{{modes}}" as="x" hint-placeholder-count="4"><div class="flex items-center justify-between gap-3"><span class="flex items-center gap-3"><span class="a-tile" style="width:34px;height:34px;border-radius:10px"><span class="{{x.icon}}"></span></span><span><b class="text-navy" style="font-size:13.5px">{{x.label}}</b><small class="block text-12 text-muted">{{x.sub}}</small></span></span><span class="{{x.cls}}">{{x.mode}}</span></div></sc-for>
+              <div class="a-callout"><span class="i i-lock"></span><span>Live stays locked until a provider passes its health check and online payment is live.</span></div>
+            </div>
+          </section>
+
+          <section class="a-card" aria-labelledby="ws-t">
+            <div class="a-card-head"><div><h3 id="ws-t">Waafas World today</h3><p>Orders, payments and stock</p></div><a class="a-link text-13" href="AdminOrders.dc.html">Orders</a></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <dl class="a-kv"><dt>New orders</dt><dd>9 · ৳31,450</dd><dt>Cash on delivery</dt><dd>6</dd><dt>Offline payments to verify</dt><dd style="color:var(--color-warning-700)">2</dd><dt>Ready to ship</dt><dd>4</dd></dl>
+              <div class="a-callout is-warn"><span class="i i-triangle-alert"></span><span><b>Low stock:</b> Better Day HP 151A (W1510A) toner, 4 left. The 10,000 mAh power bank is out.</span></div>
+            </div>
+          </section>
+
+          <section class="a-card" aria-labelledby="af-t">
+            <div class="a-card-head"><div><h3 id="af-t">Activity</h3><p>Everyone, live</p></div><span class="wl-live">Live</span></div>
+            <div class="a-card-body" style="padding-top:4px;padding-bottom:4px">
+              <div class="a-feed"><sc-for list="{{feed}}" as="f" hint-placeholder-count="6"><div class="a-feed-item"><span class="a-avatar" style="{{f.av}}">{{f.ini}}</span><p><b>{{f.who}}</b> {{f.what}} <b>{{f.obj}}</b></p><time>{{f.t}}</time></div></sc-for></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <sc-if value="{{cmdOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="a-cmdk" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="a-scrim2" onClick="{{closeCmd}}"></div>
+      <div class="a-cmdk-card">
+        <div class="a-cmdk-in"><span class="i i-search"></span><input value="{{q}}" placeholder="Search or type a command" aria-label="Search" onChange="{{onQ}}"><kbd class="a-env" style="background:var(--color-mist-100);color:var(--color-mist-600)">Esc</kbd></div>
+        <div class="a-cmdk-list">
+          <sc-for list="{{cmdGroups}}" as="g" hint-placeholder-count="3">
+            <div class="a-cmdk-group">{{g.label}}</div>
+            <sc-for list="{{g.items}}" as="it" hint-placeholder-count="3"><a class="{{it.cls}}" href="{{it.href}}"><span class="{{it.icon}}"></span><span><b>{{it.title}}</b> <span class="a-mute">{{it.sub}}</span></span><small>{{it.kbd}}</small></a></sc-for>
+          </sc-for>
+        </div>
+        <div class="a-cmdk-foot"><span><kbd>↑</kbd><kbd>↓</kbd>Move</span><span><kbd>Enter</kbd>Open</span><span><kbd>Esc</kbd>Close</span><span style="margin-left:auto">Shortcuts: G then L for Leads, G then O for Orders</span></div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"cmd":{"editor":"boolean","default":false},"nav":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const range = st.range || '14d';
+    const sp = arr => { const max = Math.max.apply(null, arr), min = Math.min.apply(null, arr); const pts = arr.map((v, i) => [i * 84 / (arr.length - 1), 26 - (v - min) / ((max - min) || 1) * 22]); const d = pts.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' '); return { d, area: d + ' L84 30 L0 30 Z' }; };
+    const K = [
+      ['New leads today', 'i i-inbox', '27', '+6 on yesterday', 'up', [12, 15, 11, 18, 16, 21, 27], 'AdminLeads.dc.html', ''],
+      ['Open leads', 'i i-list-todo', '64', '12 assigned to you', '', [52, 55, 58, 61, 57, 60, 64], 'AdminLeads.dc.html', ''],
+      ['Overdue', 'i i-timer', '5', 'Past the 30-minute reply target', 'down', null, 'AdminLeads.dc.html', 'alert'],
+      ['Booked this month', 'i i-badge-check', '38', '+9 on September', 'up', [4, 9, 13, 18, 24, 31, 38], 'AdminBookings.dc.html', ''],
+      ['Shop orders today', 'i i-shopping-bag', '9', '৳31,450 · 6 cash on delivery', '', [5, 7, 4, 8, 6, 11, 9], 'AdminOrders.dc.html', ''],
+      ['Shop revenue, October', 'i i-banknote', '৳4,82,300', '+12% on September', 'up', [40, 52, 61, 70, 79, 88, 96], 'AdminReports.dc.html', ''],
+      ['Visa cases open', 'i i-passport', '12', '3 waiting for documents', '', [9, 10, 12, 11, 13, 12, 12], 'AdminVisa.dc.html', ''],
+      ['Feedback to review', 'i i-message-square-quote', '3', 'Oldest 2 days', '', null, 'AdminFeedback.dc.html', '']
+    ];
+    const kpis = K.map(k => { const arr = k[5] || []; const mx = Math.max.apply(null, arr.concat([1])); return { label: k[0], icon: k[1], n: k[2], c: String(k[2]).replace(/[^0-9.]/g, ''), pre: String(k[2]).indexOf('৳') === 0 ? '৳' : '', d: k[3], dCls: 'a-kpi-d' + (k[4] ? ' ' + k[4] : ''), hasBars: arr.length > 0, mb: arr.map((v, i) => ({ st: 'height:' + Math.max(3, Math.round(v / mx * 28)) + 'px;animation-delay:' + (0.25 + i * 0.05).toFixed(2) + 's' + (i === arr.length - 1 ? ';background:var(--color-electric-600)' : '') })), href: k[6], cls: 'a-kpi' + (k[7] === 'alert' ? ' is-alert' : '') }; });
+    const COLS = [['Flights', '#0053D7'], ['Hotels', '#0D8CEE'], ['Packages', '#39CCE9'], ['Visa', '#7C5CFF'], ['Waafas World', '#C9A05A']];
+    const days14 = [[9, 3, 2, 3, 1], [11, 2, 4, 2, 2], [8, 4, 2, 3, 1], [14, 3, 5, 2, 3], [12, 2, 3, 4, 2], [6, 1, 1, 2, 1], [10, 3, 4, 3, 2], [13, 4, 3, 5, 2], [15, 2, 6, 3, 3], [12, 5, 4, 2, 2], [9, 2, 3, 4, 1], [16, 4, 5, 3, 4], [14, 3, 4, 4, 3], [12, 4, 5, 3, 3]];
+    const labels14 = ['25', '26', '27', '28', '29', '30', '1', '2', '3', '4', '5', '6', '7', '8'];
+    const data = range === 'today' ? [[1, 0, 1, 0, 0], [2, 1, 0, 1, 0], [3, 1, 1, 0, 1], [2, 0, 1, 1, 0], [4, 1, 0, 1, 1], [3, 1, 1, 0, 0], [2, 0, 0, 1, 1], [1, 1, 0, 0, 0]] : range === '7d' ? days14.slice(7) : days14;
+    const labels = range === 'today' ? ['10am', '11', '12', '1pm', '2', '3', '4', '5'] : range === '7d' ? ['Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed'].concat([]).slice(0, 7) : labels14;
+    const max = Math.max.apply(null, data.map(d => d.reduce((a, b) => a + b, 0)));
+    const bars = data.map((d, i) => ({ x: labels[i] || '', title: d.reduce((a, b) => a + b, 0) + ' leads', parts: d.map((v, j) => ({ st: 'height:' + Math.round(v / max * 176) + 'px;background:' + COLS[j][1] + ';border-radius:' + (j === d.length - 1 ? '6px 6px 2px 2px' : '2px') })).reverse() }));
+    const S = [['New', 'a-status a-s-new', 18], ['Pending', 'a-status a-s-pending', 9], ['In progress', 'a-status a-s-progress', 14], ['Quoted', 'a-status a-s-quoted', 11], ['Booked', 'a-status a-s-booked', 38], ['Lost', 'a-status a-s-lost', 6]];
+    const statuses = S.map(s => ({ label: s[0], cls: s[1], n: s[2], w: 'width:' + Math.round(s[2] / 38 * 100) + '%' }));
+    const R = [['DAC → DXB', 412], ['DAC → KUL', 288], ['DAC → BKK', 241], ['DAC → CXB', 198], ['DAC → SIN', 154], ['DAC → KTM', 96]];
+    const routes = R.map(r => ({ r: r[0], n: r[1], w: 'width:' + Math.round(r[1] / 412 * 100) + '%;background:var(--color-electric-600)' }));
+    const queue = [
+      ['i i-plane', 'FLT-261008-0042', 'Rahim Uddin', 'Dhaka to Dubai · Thu 22 Oct · 1 adult', 'a-status a-s-new', 'New', '42m'],
+      ['i i-map', 'PKG-261008-0017', 'Farhana Akter', 'Maldives 4D/3N · 2 adults · Nov', 'a-status a-s-pending', 'Pending', '38m'],
+      ['i i-hotel', 'HTL-261008-0009', 'Tanvir Hasan', 'Cox’s Bazar · 14 to 16 Nov · 1 room', 'a-status a-s-new', 'New', '35m'],
+      ['i i-printer', 'PRN-261008-0003', 'Nexus Textiles Ltd', 'Managed printing · 12 printers · monthly', 'a-status a-s-new', 'New', '33m'],
+      ['i i-passport', 'VSA-261008-0011', 'Nasima Khatun', 'Thailand tourist visa · 2 applicants', 'a-status a-s-progress', 'In progress', '31m']
+    ].map(q => ({ icon: q[0], ref: q[1], who: q[2], trip: q[3], st: q[4], status: q[5], age: q[6] }));
+    const modes = [['i i-plane', 'Flights', 'Query form and group fares', 'Manual'], ['i i-hotel', 'Hotels', 'Query form', 'Manual'], ['i i-map', 'Packages', 'Query form', 'Manual'], ['i i-wallet', 'Shop payment', 'Cash on delivery and offline', 'COD + offline']]
+      .map(x => ({ icon: x[0], label: x[1], sub: x[2], mode: x[3], cls: 'a-chip is-blue' }));
+    const AV = { NJ: '--av:#0053D7', SR: '--av:#7C5CFF', MK: '--av:#0E6B5C', AH: '--av:#0D8CEE', TA: '--av:#A15C07', SY: '--av:#556078' };
+    const feed = [['NJ', 'Nusrat J.', 'moved', 'FLT-261008-0039 to Quoted', '4 min'], ['SY', 'System', 'new order', 'ORD-261008-0042 · ৳5,200 · cash on delivery', '9 min'], ['TA', 'Tanvir A.', 'asked for documents on', 'VSA-261008-0011', '16 min'], ['MK', 'Mahmudul K.', 'logged a call with', 'Nexus Textiles Ltd', '22 min'], ['SY', 'System', 'low stock alert for', 'Better Day HP 151A (4 left)', '40 min'], ['AH', 'Arif Hossain', 'published package', 'Kathmandu and Pokhara 5D/4N', '1 h']]
+      .map(f => ({ ini: f[0], av: AV[f[0]], who: f[1], what: f[2], obj: f[3], t: f[4] }));
+    const q = st.q !== undefined ? st.q : 'dxb';
+    const cmdGroups = [
+      { label: 'Leads', items: [['i i-plane', 'FLT-261008-0042', 'Rahim Uddin · Dhaka to Dubai', 'AdminLead.dc.html', 'Enter'], ['i i-plane', 'FLT-261007-0118', 'Mitu Rahman · Dhaka to Dubai, return', 'AdminLead.dc.html', '']] },
+      { label: 'Group fares', items: [['i i-plane-takeoff', 'DAC → DXB · flydubai', '23 seats · until 30 Oct', 'AdminGroupFares.dc.html', '']] },
+      { label: 'Go to', items: [['i i-toggle-right', 'Booking modes', 'Settings', 'AdminModes.dc.html', 'G M'], ['i i-shopping-bag', 'Orders', 'Waafas World', 'AdminOrders.dc.html', 'G O']] },
+      { label: 'Create', items: [['i i-plus', 'New group fare', '', 'AdminGroupFares.dc.html', ''], ['i i-plus', 'New product', '', 'AdminProduct.dc.html', '']] }
+    ].map((g, gi) => ({ label: g.label, items: g.items.map((it, ii) => ({ icon: it[0], title: it[1], sub: it[2], href: it[3], kbd: it[4], cls: 'a-cmdk-item' + (gi === 0 && ii === 0 ? ' is-on' : '') })) }));
+    const cmdOpen = st.cmd !== undefined ? st.cmd : !!p.cmd;
+    return {
+      m: !!p.m, range,
+      ranges: [['today', 'Today'], ['7d', '7 days'], ['14d', '14 days']].map(r => ({ label: r[1], on: range === r[0], cls: range === r[0] ? 'is-on' : '', go: () => this.setState({ range: r[0] }) })),
+      rangeNote: range === 'today' ? 'Today by hour, all sources' : range === '7d' ? 'Last 7 days, all sources' : 'Last 14 days, all sources',
+      kpis, legend: COLS.map(c => ({ label: c[0], c: '--c:' + c[1] })), bars, statuses, routes, queue, modes, feed,
+      navOpen: st.nav !== undefined ? st.nav : !!p.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false }),
+      cmdOpen, openCmd: () => this.setState({ cmd: true }), closeCmd: () => this.setState({ cmd: false }),
+      q, onQ: e => this.setState({ q: e && e.target ? e.target.value : '' }), cmdGroups
+    };
+  }
+}
+</script>
+</body>
+</html>

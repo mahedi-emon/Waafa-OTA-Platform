@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Log in</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="none" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <div class="wd-auth">
+      <aside class="wd-auth-art" aria-hidden="true">
+        <svg class="rib" viewBox="0 0 1200 420"><defs><linearGradient id="wd-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".45" stop-color="#0D8CEE" stop-opacity=".8"></stop><stop offset="1" stop-color="#39CCE9"></stop></linearGradient></defs><path stroke="url(#wd-rib)" d="M-20 360 C 260 360 380 120 640 110 C 860 100 980 220 1220 80"></path></svg>
+        <div class="flex items-center gap-3"><span style="display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:#fff;box-shadow:0 10px 30px -12px rgb(0 0 0/.5)"><img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="" style="width:38px"></span><b style="font:800 20px/1 var(--font-display);color:#fff;letter-spacing:-.02em">WAAFA</b></div>
+        <div><h2>Every booking, order and visa in one place</h2><p>Log in with your mobile number. No password to remember: we send a 6-digit code by SMS.</p></div>
+        <div class="wd-perks">
+          <div class="wd-perk"><span class="w-tile"><span class="i i-ticket"></span></span>See every request with its reference and status</div>
+          <div class="wd-perk"><span class="w-tile"><span class="i i-shopping-bag"></span></span>Track Waafas World orders and reorder in a tap</div>
+          <div class="wd-perk"><span class="w-tile"><span class="i i-users"></span></span>Save travellers once, book faster next time</div>
+        </div>
+      </aside>
+      <div class="wd-auth-form">
+        <sc-if value="{{isPhone}}" hint-placeholder-val="{{ true }}">
+          <form class="wd-authcard" onSubmit="{{sendCode}}" novalidate="">
+            <span class="v-eyebrow">Log in or sign up</span>
+            <h1>Your mobile number</h1>
+            <p>We send a 6-digit code by SMS. New here? The same code creates your account.</p>
+            <div class="w-field"><label class="w-label" for="l-p">Mobile number</label><div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880</button><input id="l-p" inputmode="tel" autocomplete="tel-national" value="1712-345678"></div></div>
+            <button class="w-btn w-btn-primary w-btn-block" type="submit" style="height:54px">Send code<span class="i i-arrow-right"></span></button>
+            <div class="wd-or">or</div>
+            <a class="wd-google" href="{{L.Account}}"><span class="wd-g" aria-hidden="true">G</span>Continue with Google</a>
+            <p class="wd-secure"><span class="i i-shield-check"></span><span>By continuing you agree to our <a href="{{L.Terms}}" style="color:var(--color-brand-700);font-weight:600">terms</a> and <a href="{{L.Privacy}}" style="color:var(--color-brand-700);font-weight:600">privacy policy</a>.</span></p>
+          </form>
+        </sc-if>
+        <sc-if value="{{isOtp}}" hint-placeholder-val="{{ false }}">
+          <form class="wd-authcard" onSubmit="{{verify}}" novalidate="">
+            <button class="v-link" type="button" onClick="{{back}}" style="min-height:0;align-self:flex-start"><span class="i i-arrow-left"></span>Change number</button>
+            <h1>Enter the code</h1>
+            <p>Sent by SMS to <b style="color:var(--color-navy-900)">+880 1712-345678</b>. It expires in 5 minutes.</p>
+            <div class="{{otpCls}}" role="group" aria-label="6-digit code"><sc-for list="{{digits}}" as="d" hint-placeholder-count="6"><input class="{{d.cls}}" value="{{d.v}}" inputmode="numeric" maxlength="1" aria-label="{{d.label}}"></sc-for></div>
+            <sc-if value="{{isErr}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>That code doesn’t match. Check the SMS and try again. 2 tries left.</span></sc-if>
+            <div class="wd-resend"><span>Didn’t get it?</span><sc-if value="{{canResend}}" hint-placeholder-val="{{ false }}"><button class="v-link" type="button" style="min-height:0;font-size:13.5px" onClick="{{resend}}">Send again</button></sc-if><sc-if value="{{waiting}}" hint-placeholder-val="{{ true }}"><span>Send again in <b>{{timer}}</b></span></sc-if></div>
+            <a class="w-btn w-btn-primary w-btn-block" href="{{L.Account}}" style="height:54px">{{verifyLabel}}<span class="i i-arrow-right"></span></a>
+            <a class="v-link" href="https://wa.me/8801823232241" style="min-height:0;font-size:13.5px;align-self:center"><span class="i i-whatsapp"></span>Get help on WhatsApp</a>
+          </form>
+        </sc-if>
+      </div>
+    </div>
+  </main>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"step":{"editor":"enum","options":["phone","otp","err"],"default":"phone"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => { const s = (this.state && this.state.left !== undefined) ? this.state.left : 42; if (s > 0) this.setState({ left: s - 1 }); }, 1000); }
+  componentWillUnmount() { clearInterval(this._iv); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Account','Terms','Privacy'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const step = st.step || p.step || 'phone';
+    const isErr = step === 'err';
+    const left = st.left !== undefined ? st.left : 42;
+    const code = isErr ? ['4', '8', '2', '9', '1', '7'] : ['4', '8', '2', '', '', ''];
+    const digits = code.map((v, i) => ({ v, label: 'Digit ' + (i + 1), cls: !isErr && i === 3 ? 'is-focus' : '' }));
+    return {
+      L, m: !!p.m, isPhone: step === 'phone', isOtp: step === 'otp' || isErr, isErr, digits,
+      otpCls: 'w-otp' + (isErr ? ' is-err' : ''),
+      timer: '0:' + String(left).padStart(2, '0'), waiting: left > 0, canResend: left <= 0,
+      verifyLabel: 'Verify and continue',
+      sendCode: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ step: 'otp', left: 42 }); },
+      verify: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ step: 'err' }); },
+      back: () => this.setState({ step: 'phone' }), resend: () => this.setState({ left: 42 })
+    };
+  }
+}
+</script>
+</body>
+</html>

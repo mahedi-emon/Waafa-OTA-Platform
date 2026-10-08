@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · EMI</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="more" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">EMI</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">EMI</span><h1 class="v-h1 v-h1-page">Travel now, pay monthly</h1><p class="v-lead">Split a trip or a large Waafas World order into 3 to 12 monthly instalments on a credit card from a partner bank. See your monthly amount before you ask.</p></div>
+          <span class="v-sample">Sample terms · set in Admin</span>
+        </div>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:24px">
+      <div class="w-wrap flex flex-col gap-8">
+        <div class="wc-emi">
+          <div class="wc-emicalc">
+            <div class="wc-slider">
+              <div class="wc-slider-top"><label for="emi-amt">Amount</label><output id="emi-amt"><span key="{{amtF}}" class="ww-pop">{{amtF}}</span></output></div>
+              <div class="wc-range" role="slider" aria-label="Amount" aria-valuemin="20000" aria-valuemax="500000" aria-valuenow="{{amt}}" tabindex="0" onClick="{{pickAmt}}" style="cursor:pointer"><span style="{{fill}}"></span><i style="{{knob}}"></i></div>
+              <div class="wc-range-scale"><span>৳20,000</span><span>৳5,00,000</span></div>
+              <div class="wc-range-btns"><sc-for list="{{presets}}" as="b" hint-placeholder-count="5"><button class="{{b.cls}}" type="button" onClick="{{b.go}}">{{b.label}}</button></sc-for></div>
+            </div>
+            <div class="flex flex-col gap-3"><span class="w-label" style="margin:0">Months</span><div class="wc-tenure" role="radiogroup" aria-label="Months"><sc-for list="{{tenures}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" type="button" role="radio" aria-checked="{{t.on}}" onClick="{{t.go}}">{{t.n}}<small>{{t.sub}}</small></button></sc-for></div></div>
+            <div class="ww-note"><span class="i i-info"></span><span>0% interest on partner bank credit cards for these sample tenures. Your bank may charge its own processing fee; we show it before you pay.</span></div>
+          </div>
+          <div class="wc-emires" aria-live="polite">
+            <small>You pay each month</small>
+            <div class="wc-big"><span key="{{monthlyF}}" class="ww-pop" style="font-size:inherit;color:inherit;margin:0">{{monthlyF}}</span><span>× {{months}}</span></div>
+            <div class="wc-emibar" aria-hidden="true" key="{{months}}"><sc-for list="{{bars}}" as="b" hint-placeholder-count="6"><span class="{{b.cls}}" style="{{b.st}}"></span></sc-for></div>
+            <div class="wc-emirows"><div><span>Trip or order amount</span><b>{{amtF}}</b></div><div><span>Interest</span><b>৳0</b></div><div><span>Bank processing fee</span><b>Shown by your bank</b></div><div><span>Total you pay us</span><b>{{amtF}}</b></div></div>
+            <a class="w-btn w-btn-white" href="{{L.Contact}}">Ask for EMI on my booking<span class="i i-arrow-right"></span></a>
+          </div>
+        </div>
+        <div class="flex flex-col gap-4">
+          <div class="wc-sec-title"><h2>How it works</h2></div>
+          <div class="wc-steps">
+            <div class="wc-step"><b>Choose your trip or order</b><p>Send a request as usual. Tell your expert you want to pay by EMI, and for how many months.</p></div>
+            <div class="wc-step"><b>Pay with your credit card</b><p>We take the full amount on your partner bank credit card at our office or by a secure payment link.</p></div>
+            <div class="wc-step"><b>Your bank splits it</b><p>The bank turns it into monthly instalments on your card statement, usually within 7 working days.</p></div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-4">
+          <div class="wc-sec-title"><h2>Partner banks</h2></div>
+          <div class="ww-note"><span class="i i-landmark"></span><span>Partner banks and their tenures are listed here once agreements are live. Admin adds each bank with its logo, months and minimum amount. Until then, ask us which cards qualify.</span></div>
+          <div class="wc-tablewrap"><table class="wc-table"><thead><tr><th>Rule</th><th>Sample value</th></tr></thead><tbody><tr><th scope="row">Minimum amount</th><td>৳20,000</td></tr><tr><th scope="row">Months</th><td>3, 6, 9 or 12</td></tr><tr><th scope="row">Cards</th><td>Credit cards from partner banks (not debit cards)</td></tr><tr><th scope="row">Applies to</th><td>Flights, tour packages, hotels and Waafas World orders</td></tr></tbody></table></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2187}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Contact'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const fmt = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const MIN = 20000, MAX = 500000;
+    const amt = st.amt || 120000;
+    const months = st.months || 6;
+    const pct = Math.round((amt - MIN) * 100 / (MAX - MIN));
+    const presets = [50000, 120000, 200000, 350000, 500000].map(v => ({ label: fmt(v), cls: 'w-chip' + (amt === v ? ' is-on' : ''), go: () => this.setState({ amt: v }) }));
+    const tenures = [3, 6, 9, 12].map(n => ({ n, sub: 'months', on: months === n, cls: months === n ? 'is-on' : '', go: () => this.setState({ months: n }) }));
+    const bars = Array.from({ length: months }, (_, i) => ({ cls: i === 0 ? 'is-paid' : '', st: 'height:' + (60 + (i % 3) * 8) + '%;animation-delay:' + (i * 0.04).toFixed(2) + 's' }));
+    const pickAmt = (e) => { if (!e || !e.currentTarget) return; const r = e.currentTarget.getBoundingClientRect(); const f = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); this.setState({ amt: Math.round((MIN + f * (MAX - MIN)) / 5000) * 5000 }); };
+    return { L, m: !!p.m, amt, pickAmt, amtF: fmt(amt), months, monthlyF: fmt(Math.ceil(amt / months)), fill: 'width:' + pct + '%', knob: 'left:' + pct + '%', presets, tenures, bars };
+  }
+}
+</script>
+</body>
+</html>

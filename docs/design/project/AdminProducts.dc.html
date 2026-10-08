@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · products</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="products" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Waafas World</span></div>
+          <h1 class="a-title">Products</h1>
+          <p>Any kind of product. Options make variants, and every variant has its own SKU, price, MRP, stock and photos.</p>
+        </div>
+        <div class="a-actions"><button class="a-btn a-btn-outline a-hide-sm" type="button"><span class="i i-file-up"></span>Import CSV<span class="a-p is-p1">P1</span></button><button class="a-btn a-btn-outline a-hide-sm" type="button"><span class="i i-download"></span>Export</button><a class="a-btn a-btn-primary" href="AdminProduct.dc.html"><span class="i i-plus"></span>Add product</a></div>
+      </div>
+      <div class="a-callout is-warn"><span class="i i-triangle-alert"></span><span><b>3 variants are low on stock</b> and 5 are out, including Better Day HP 151A (4 left). The shop manager gets an email when a variant drops below its alert level. <button class="a-link" type="button" onClick="{{showLow}}">Show them</button></span></div>
+      <div class="a-views" role="tablist"><sc-for list="{{tabs}}" as="v" hint-placeholder-count="6"><button class="{{v.cls}}" type="button" role="tab" aria-selected="{{v.on}}" onClick="{{v.go}}">{{v.label}}<b>{{v.n}}</b></button></sc-for></div>
+      <div class="a-bar"><label class="a-search"><span class="i i-search"></span><input class="a-input" value="{{q}}" onChange="{{onQ}}" placeholder="Name, SKU, brand or part code" aria-label="Search products"></label><div class="a-bar-chips"><button class="a-fchip" type="button"><span class="i i-folder-tree"></span>Category</button><button class="a-fchip" type="button"><span class="i i-tag"></span>Brand</button><button class="a-fchip" type="button"><span class="i i-boxes"></span>Stock</button><button class="a-fchip" type="button"><span class="i i-layers"></span>Collection</button></div></div>
+      <section class="a-card" aria-label="Products">
+        <div class="a-table-wrap"><table class="a-table is-wide">
+          <thead><tr><th class="is-check"><span class="a-check"></span></th><th>Product</th><th>Category</th><th>Variants</th><th>Price</th><th>Stock</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+          <tbody>
+            <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+              <tr>
+                <td class="is-check"><span class="a-check"></span></td>
+                <td><a class="flex items-center gap-3" href="{{r.href}}"><sc-if value="{{r.img}}" hint-placeholder-val="{{ false }}"><img class="a-thumb" src="{{r.img}}" alt="" style="object-fit:contain;background:#fff"></sc-if><sc-if value="{{r.noImg}}" hint-placeholder-val="{{ true }}"><span class="a-thumb ph is-sm" data-photo="{{r.ph}}" style="display:grid;place-items:center"><span class="{{r.icon}}"></span></span></sc-if><span class="min-w-0"><b class="text-navy" style="font-weight:600">{{r.name}}</b><span class="a-sub">{{r.brand}}<sc-if value="{{r.sample}}" hint-placeholder-val="{{ false }}"> · <span class="v-sample" style="height:18px;font-size:9.5px;margin:0">Sample</span></sc-if></span></span></a></td>
+                <td style="white-space:normal;max-width:200px">{{r.cat}}</td>
+                <td>{{r.vars}}<span class="a-sub">{{r.opts}}</span></td>
+                <td><span class="a-money">{{r.price}}</span><span class="a-sub">{{r.mrp}}</span></td>
+                <td><span class="{{r.stCls}}">{{r.stock}}</span><span class="a-sub">{{r.stockSub}}</span></td>
+                <td><span class="{{r.statusCls}}">{{r.status}}</span></td>
+                <td>{{r.upd}}</td>
+                <td class="is-num"><a class="a-btn a-btn-ghost a-btn-sm a-btn-icon" href="{{r.href}}" aria-label="Edit"><span class="i i-pencil"></span></a></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table></div>
+        <div class="a-card-foot"><span>Showing {{shown}} of 248 · prices include VAT</span><div class="a-pager"><button type="button" aria-label="Previous page"><span class="i i-chevron-left"></span></button><button class="is-on" type="button">1</button><button type="button">2</button><button type="button">3</button><button type="button" aria-label="Next page"><span class="i i-chevron-right"></span></button></div></div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const P = [
+      ['../assets/c9ea845b540e931548117afdb5ae8a65.jpg', '', 'i i-printer', 'Better Day CE505A / CF280A Black Toner', 'Better Day · compatible', 'Printers & Supplies › Toner cartridges', '1 variant', 'No options', '৳1,450', 'MRP ৳1,800', 'ok', '42 in stock', 'Best seller', 'Active', '2 h ago', false, 'AdminProduct-toner.dc.html'],
+      ['../assets/fd111676d187ad84eb1cdef897ce4776.jpg', '', 'i i-printer', 'Better Day Canon CRG 070H Black Toner', 'Better Day · compatible', 'Printers & Supplies › Toner cartridges', '1 variant', 'No options', '৳3,250', 'MRP ৳3,900', 'ok', '18 in stock', '', 'Active', 'Yesterday', false, 'AdminProduct-toner.dc.html'],
+      ['../assets/1bb1b89d15ac65da8322547e81decbdf.jpg', '', 'i i-printer', 'Better Day HP 151A (W1510A) Black Toner', 'Better Day · compatible', 'Printers & Supplies › Toner cartridges', '1 variant', 'No options', '৳2,150', 'MRP ৳2,600', 'low', '4 in stock', 'Alert at 5', 'Active', 'Yesterday', false, 'AdminProduct-toner.dc.html'],
+      ['', 'prod-tshirt', 'i i-shirt', 'Classic Cotton Crew T-shirt', 'Tessra', 'Fashion & Lifestyle › Men › T-shirts', '20 variants', 'Size × Colour', '৳650', 'MRP ৳850', 'ok', '186 in stock', 'Navy M lowest (6)', 'Active', 'Today', true, 'AdminProduct.dc.html'],
+      ['', 'prod-powerbank', 'i i-battery-charging', '20,000 mAh Power Bank, 22.5 W', 'Voltaro', 'Electronics & Gadgets › Power banks', '2 variants', 'Capacity', '৳1,990 to ৳2,450', 'MRP from ৳2,390', 'out', '38 in stock', '10,000 mAh out', 'Active', '3 days ago', true, 'AdminProduct.dc.html'],
+      ['', 'prod-headphones', 'i i-headphones', 'Air Wireless Over-ear Headphones', 'Sonaro', 'Electronics & Gadgets › Audio', '3 variants', 'Colour', '৳3,890', 'MRP ৳4,990', 'ok', '27 in stock', '', 'Active', 'Last week', true, 'AdminProduct.dc.html'],
+      ['', 'cat-stationery', 'i i-file-text', 'Double A A4 Copy Paper, 80 gsm', 'Double A', 'Office & Stationery › Paper', '1 variant', 'No options', '৳520', 'MRP ৳580', 'ok', '240 in stock', '', 'Active', 'Last week', true, 'AdminProduct.dc.html'],
+      ['', 'cat-stationery', 'i i-lamp-desk', 'Desk organiser set', 'Quillo', 'Office & Stationery › Desk', '1 variant', 'No options', '৳990', 'MRP ৳1,200', 'pre', 'Pre-order', 'Ships in 10 days', 'Draft', 'Today', true, 'AdminProduct.dc.html']
+    ];
+    const tab = st.tab || 'all';
+    const q = (st.q || '').toLowerCase();
+    const TABS = [['all', 'All', 248], ['active', 'Active', 231], ['draft', 'Drafts', 9], ['low', 'Low stock', 3], ['out', 'Out of stock', 5], ['arch', 'Archived', 3]];
+    const pass = r => (tab === 'all' || (tab === 'active' && r[13] === 'Active') || (tab === 'draft' && r[13] === 'Draft') || (tab === 'low' && r[10] === 'low') || (tab === 'out' && r[10] === 'out')) && (!q || (r[3] + r[4] + r[5]).toLowerCase().indexOf(q) >= 0);
+    const SC = { ok: 'a-stock ok', low: 'a-stock low', out: 'a-stock out', pre: 'a-stock pre' };
+    const rows = P.filter(pass).map(r => ({ img: r[0], noImg: !r[0], ph: r[1], icon: r[2], name: r[3], brand: r[4], cat: r[5], vars: r[6], opts: r[7], price: r[8], mrp: r[9], stCls: SC[r[10]], stock: r[10] === 'out' ? 'Partly out' : r[11], stockSub: r[12], status: r[13], statusCls: 'a-status ' + (r[13] === 'Active' ? 'a-s-booked' : 'a-s-draft'), upd: r[14], sample: r[15], href: r[16] }));
+    return {
+      m: !!p.m,
+      tabs: TABS.map(t => ({ label: t[1], n: t[2], on: tab === t[0], cls: 'a-view' + (tab === t[0] ? ' is-active' : ''), go: () => this.setState({ tab: t[0] }) })),
+      rows, shown: rows.length, showLow: () => this.setState({ tab: 'low' }),
+      q: st.q || '', onQ: e => this.setState({ q: e && e.target ? e.target.value : '' }),
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

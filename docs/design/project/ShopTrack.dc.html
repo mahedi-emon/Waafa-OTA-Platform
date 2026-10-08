@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · Track order</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="0" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead is-shop">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><span aria-current="page">Track order</span></nav>
+        <div class="ww-listhead"><div><h1>Track your order</h1><p>Enter the order number from your SMS or email and the mobile number you ordered with.</p></div></div>
+        <form class="ww-trackform" onSubmit="{{find}}">
+          <label class="w-field"><span class="w-label">Order number</span><input class="w-input" value="{{ref}}" onInput="{{typeRef}}" placeholder="ORD-261008-0042" autocapitalize="characters"></label>
+          <label class="w-field"><span class="w-label">Mobile number</span><input class="w-input" value="01712-345678" inputmode="tel"></label>
+          <button class="w-btn w-btn-navy" type="submit"><span class="i i-search"></span>Track</button>
+        </form>
+      </div>
+    </section>
+    <section class="ww-sec" style="padding-top:24px">
+      <div class="w-wrap">
+        <sc-if value="{{found}}" hint-placeholder-val="{{ true }}">
+          <div class="ww-trackgrid">
+            <div class="ww-panel ww-trackmain">
+              <div class="ww-trackhead">
+                <div><span class="ww-card-brand">Order</span><b class="ww-trackref">ORD-261008-0042</b><small>Placed Thu 8 Oct, 3:42 pm · 4 items · ৳5,200</small></div>
+                <span class="ww-statuspill"><i></i>{{statusLabel}}</span>
+              </div>
+              <div class="ww-hsteps" role="list" aria-label="Order progress"><sc-for list="{{hsteps}}" as="h" hint-placeholder-count="5"><div class="{{h.cls}}" role="listitem"><span class="ww-hdot"><span class="{{h.icon}}"></span></span><b>{{h.t}}</b><small>{{h.when}}</small></div></sc-for><span class="ww-hbar"><span style="{{barStyle}}"></span></span></div>
+              <div class="ww-eta"><span class="i i-calendar-check"></span><div><b>{{eta}}</b><small>{{etaSub}}</small></div></div>
+              <h2 class="ww-subh">Updates</h2>
+              <div class="ww-timeline">
+                <sc-for list="{{events}}" as="e" hint-placeholder-count="5"><div class="{{e.cls}}"><span class="ww-tdot"><span class="{{e.icon}}"></span></span><div><b>{{e.t}}</b><small>{{e.s}}</small><sc-if value="{{e.courier}}" hint-placeholder-val="{{ false }}"><div class="ww-courier"><span class="i i-truck"></span><span>Courier tracking <code>CN-48213907</code></span><button class="w-btn w-btn-xs w-btn-soft" type="button" style="margin-left:auto"><span class="i i-copy"></span>Copy</button></div></sc-if></div></div></sc-for>
+              </div>
+            </div>
+            <aside class="flex flex-col gap-4">
+              <div class="v-ordersum">
+                <h2 class="v-h3">Items</h2>
+                <div class="v-coitems">
+                  <div class="v-coitem"><span class="v-coitem-img"><span class="i i-shirt"></span><i>2</i></span><span class="min-w-0">Classic Cotton Crew T-shirt<small class="ww-coitem-var">White · M</small></span><b>৳1,300</b></div>
+                  <div class="v-coitem"><span class="v-coitem-img"><span class="i i-battery-charging"></span><i>1</i></span><span class="min-w-0">Voltaro 20,000 mAh Power Bank<small class="ww-coitem-var">20,000 mAh · Black</small></span><b>৳2,450</b></div>
+                  <div class="v-coitem"><span class="v-coitem-img"><img src="../assets/c9ea845b540e931548117afdb5ae8a65.jpg" alt=""><i>1</i></span><span class="min-w-0">Better Day CE505A / CF280A Black Toner<small class="ww-coitem-var">Compatible</small></span><b>৳1,450</b></div>
+                </div>
+                <div class="w-sumrow is-total"><span>To pay on delivery</span><b>৳5,200</b></div>
+                <div class="ww-deliv"><span class="i i-map-pin"></span><div><b>Rahim Uddin</b><small>193/C-1 Motijheel Plaza, 4th floor, Motijheel, Dhaka</small></div></div>
+                <div class="ww-deliv"><span class="i i-banknote"></span><div><b>Cash on delivery</b><small>Open and check the box before you pay the rider</small></div></div>
+              </div>
+              <div class="ww-panel" style="padding:18px">
+                <b style="font:700 15px/1.2 var(--font-sans);color:var(--color-navy-900)">Something not right?</b>
+                <p style="font-size:13.5px;margin-top:6px;color:var(--color-mist-600)">Change the address or cancel before the order leaves our office. After that, talk to us.</p>
+                <div class="flex flex-wrap gap-2" style="margin-top:12px"><a class="w-btn w-btn-wa w-btn-sm" href="{{waHref}}"><span class="i i-whatsapp-fill"></span>WhatsApp us</a><a class="w-btn w-btn-secondary w-btn-sm" href="tel:+8801823232241"><span class="i i-phone"></span>Call</a><a class="w-btn w-btn-ghost w-btn-sm" href="{{L.Refund}}">Returns</a></div>
+              </div>
+            </aside>
+          </div>
+        </sc-if>
+        <sc-if value="{{nf}}" hint-placeholder-val="{{ false }}">
+          <div class="ww-empty" style="max-width:720px;margin:0 auto">
+            <span class="w-tile"><span class="i i-search-x"></span></span>
+            <h2 class="v-h3">We couldn’t find {{ref}}</h2>
+            <p>Check the order number in your SMS or email. It starts with ORD- and has 10 digits. The mobile number must be the one you ordered with.</p>
+            <div class="flex flex-wrap gap-2 justify-center"><a class="w-btn w-btn-wa" href="{{waHref}}"><span class="i i-whatsapp-fill"></span>Ask us on WhatsApp</a><button class="w-btn w-btn-secondary" type="button" onClick="{{demo}}">See a sample order</button></div>
+          </div>
+        </sc-if>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="shop" cart="0" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"stage":{"editor":"enum","options":["placed","confirmed","packed","courier","delivered"],"default":"courier"},"nf":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1966}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Shop','Refund'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const nf = st.nf !== undefined ? st.nf : !!p.nf;
+    const ref = st.ref !== undefined ? st.ref : (nf ? 'ORD-261008-0099' : 'ORD-261008-0042');
+    const STAGES = [['placed', 'Placed', 'i i-receipt', 'Thu 3:42 pm'], ['confirmed', 'Confirmed', 'i i-phone-call', 'Thu 4:05 pm'], ['packed', 'Packed', 'i i-package-check', 'Thu 6:20 pm'], ['courier', 'With courier', 'i i-truck', 'Fri 9:10 am'], ['delivered', 'Delivered', 'i i-house', 'Today']];
+    const stage = p.stage || 'courier';
+    const si = STAGES.findIndex(s => s[0] === stage);
+    const hsteps = STAGES.map((s, i) => ({ t: s[1], icon: i < si || stage === 'delivered' ? 'i i-check' : s[2], when: i <= si ? s[3] : 'Next', cls: 'ww-hstep' + (i < si || (i === si && stage === 'delivered') ? ' is-done' : i === si ? ' is-now' : '') }));
+    const EV = [
+      ['Out for delivery', 'The rider has your parcel and will call 01712-345678 before coming. Fri 9 Oct, 9:10 am', 'i i-truck', 3, true],
+      ['Packed and handed to the courier', 'Fri 9 Oct, 8:30 am · Motijheel warehouse', 'i i-package-check', 2],
+      ['Confirmed by phone', 'Thu 8 Oct, 4:05 pm · we called you and checked the address', 'i i-phone-call', 1],
+      ['Order placed', 'Thu 8 Oct, 3:42 pm · cash on delivery', 'i i-receipt', 0]
+    ];
+    const events = EV.filter(e => e[3] <= si).map((e, i) => ({ t: e[0], s: e[1], icon: i === 0 && stage !== 'delivered' ? e[2] : 'i i-check', cls: 'ww-tstep ' + (i === 0 && stage !== 'delivered' ? 'is-now' : 'is-done'), courier: !!e[4] }));
+    if (stage === 'delivered') events.unshift({ t: 'Delivered', s: 'Fri 9 Oct, 2:15 pm · paid ৳5,200 in cash', icon: 'i i-check', cls: 'ww-tstep is-done', courier: false });
+    const LABEL = { placed: 'Placed', confirmed: 'Confirmed', packed: 'Packed', courier: 'Out for delivery', delivered: 'Delivered' };
+    return {
+      L, m: !!p.m, ref, found: !nf, nf, hsteps, events,
+      statusLabel: LABEL[stage], barStyle: 'width:' + Math.round(si * 100 / (STAGES.length - 1)) + '%',
+      eta: stage === 'delivered' ? 'Delivered Fri 9 Oct, 2:15 pm' : 'Arriving today, Fri 9 Oct', etaSub: stage === 'delivered' ? 'Thank you for shopping with Waafas World' : 'Usually between 12 pm and 6 pm',
+      typeRef: (e) => this.setState({ ref: e && e.target ? e.target.value : '' }),
+      find: (e) => { if (e && e.preventDefault) e.preventDefault(); const r = (this.state && this.state.ref) || ref; this.setState({ nf: r.toUpperCase() !== 'ORD-261008-0042' }); },
+      demo: () => this.setState({ nf: false, ref: 'ORD-261008-0042' }),
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafas World, about my order ' + ref)
+    };
+  }
+}
+</script>
+</body>
+</html>

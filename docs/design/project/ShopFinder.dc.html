@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · Find by model</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="{{cart}}" cat="printers" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead is-shop">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">Printers &amp; Supplies</a><span class="i i-chevron-right"></span><span aria-current="page">Find by model</span></nav>
+        <div class="ww-listhead">
+          <div><h1>Find by model</h1><p>Pick your printer and see only what fits it. Or type the code printed on your old cartridge.</p></div>
+          <span class="ww-note" style="max-width:360px"><span class="i i-info"></span><span>Shown only in categories that have compatibility data. Admin adds it per product under “Compatible with”.</span></span>
+        </div>
+      </div>
+    </section>
+    <section class="ww-sec" style="padding-top:24px">
+      <div class="w-wrap ww-fbm">
+        <div class="ww-fbm-card">
+          <div class="ww-fbm-steps">
+            <div class="{{s1cls}}">
+              <h3><i>1</i>Printer brand</h3>
+              <div class="ww-brandpick"><sc-for list="{{brands}}" as="b" hint-placeholder-count="6"><button class="{{b.cls}}" type="button" aria-pressed="{{b.on}}" onClick="{{b.go}}">{{b.label}}</button></sc-for></div>
+            </div>
+            <div class="{{s2cls}}">
+              <h3><i>2</i>Model</h3>
+              <label class="w-inputicon"><span class="i i-search"></span><input class="w-input" placeholder="{{modelPh}}" value="{{mq}}" onInput="{{typeModel}}" aria-label="Search models"></label>
+              <div class="ww-models" role="listbox" aria-label="Models">
+                <sc-for list="{{models}}" as="mo" hint-placeholder-count="6"><button class="{{mo.cls}}" type="button" role="option" aria-selected="{{mo.on}}" onClick="{{mo.go}}"><span class="i i-printer"></span><span>{{mo.label}}</span><small style="margin-left:auto;font-size:12px;color:var(--color-mist-500)">{{mo.count}}</small></button></sc-for>
+                <sc-if value="{{noModels}}" hint-placeholder-val="{{ false }}"><p style="padding:12px;font-size:13.5px;color:var(--color-mist-600)">No {{br}} model matches “{{mq}}”. Try the part code below.</p></sc-if>
+              </div>
+            </div>
+            <div class="ww-or">or</div>
+            <div class="ww-fbm-step">
+              <h3><i style="background:var(--color-electric-600)"><span class="i i-hash" style="width:13px;height:13px"></span></i>Part code</h3>
+              <form class="flex gap-2" onSubmit="{{findPart}}"><input class="w-input" style="flex:1" placeholder="CF280A, 05A or TN-2380" value="{{pq}}" onInput="{{typePart}}" aria-label="Part code"><button class="w-btn w-btn-navy" type="submit">Find</button></form>
+              <small style="font-size:12.5px;color:var(--color-mist-500)">The code is on the cartridge label or its box.</small>
+            </div>
+            <div class="ww-fbm-step">
+              <h3 style="font-size:13.5px;color:var(--color-mist-600)"><span class="i i-bookmark" style="width:16px;height:16px"></span>Your printers on this device</h3>
+              <div class="flex flex-wrap gap-2"><sc-for list="{{saved}}" as="sv" hint-placeholder-count="2"><button class="ww-xchip" type="button" onClick="{{sv.go}}"><span class="i i-printer"></span>{{sv.label}}</button></sc-for></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ww-fbm-res" aria-live="polite">
+          <div class="ww-fbm-pick" key="{{pickKey}}" style="animation:w-fade .35s var(--ease-out) both">
+            <span class="w-tile"><span class="{{pickIcon}}"></span></span>
+            <div class="min-w-0"><b>{{pickTitle}}</b><small>{{pickSub}}</small></div>
+            <sc-if value="{{canSave}}" hint-placeholder-val="{{ true }}"><button class="w-btn w-btn-sm" type="button" style="margin-left:auto;background:rgb(255 255 255/.12);color:#fff;box-shadow:inset 0 0 0 1px rgb(255 255 255/.25)" onClick="{{savePrinter}}"><span class="{{saveIcon}}"></span>{{saveLabel}}</button></sc-if>
+          </div>
+          <sc-if value="{{hasRes}}" hint-placeholder-val="{{ true }}">
+            <div class="ww-toolbar" style="margin:0"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" type="button" aria-pressed="{{t.on}}" onClick="{{t.go}}">{{t.label}}<small style="margin-left:6px;opacity:.7">{{t.n}}</small></button></sc-for></div>
+            <div class="ww-grid is-3"><sc-for list="{{items}}" as="it" hint-placeholder-count="6"><dc-import name="PCard" p="{{it}}" on-add="{{it.add}}" style="display:contents" hint-size="100%,430px"></dc-import></sc-for></div>
+            <div class="ww-note"><span class="i i-badge-check"></span><span><b style="color:var(--color-navy-900)">Original</b> is made by the printer brand. <b style="color:var(--color-navy-900)">Compatible</b> is made by another company to fit, and costs less. Every card says which it is.</span></div>
+          </sc-if>
+          <sc-if value="{{noRes}}" hint-placeholder-val="{{ false }}">
+            <div class="ww-empty"><span class="w-tile" style="width:64px;height:64px;border-radius:20px"><span class="i i-search-x" style="width:28px;height:28px"></span></span><h2 class="v-h3">Nothing matches “{{pq}}”</h2><p class="text-subtle" style="max-width:420px">Check the code on the label, or send us a photo of it. We’ll tell you what fits and add it to the shop.</p><div class="flex flex-wrap gap-2 justify-center"><a class="w-btn w-btn-wa" href="{{waHref}}"><span class="i i-whatsapp-fill"></span>Send a photo on WhatsApp</a><button class="w-btn w-btn-secondary" type="button" onClick="{{reset}}">Pick by model instead</button></div></div>
+          </sc-if>
+          <div class="v-gfnote" style="margin:0"><span class="w-tile"><span class="i i-headset"></span></span><p><b>Can’t find your printer?</b> Send a photo of the label on the front or back to 01823-232241 on WhatsApp. Saturday to Thursday, 10 am to 6 pm.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="shop" cart="{{cart}}" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="v-toastwrap" role="status"><div class="w-toast"><span class="w-tile"><span class="i i-check"></span></span><span class="min-w-0"><b>{{toastTitle}}</b><br><span style="opacity:.8">{{toast}}</span></span><a class="v-toast-link" href="{{L.ShopCart}}">View cart</a></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"cart":{"editor":"int","default":4},"mode":{"editor":"enum","options":["model","part","none"],"default":"model"},"$preview":{"width":1440,"height":2351}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Shop','ShopList','ShopProduct','ShopCart'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const BD1 = '../assets/c9ea845b540e931548117afdb5ae8a65.jpg', BD2 = '../assets/fd111676d187ad84eb1cdef897ce4776.jpg', BD3 = '../assets/1bb1b89d15ac65da8322547e81decbdf.jpg';
+    const MODELS = {
+      HP: [['LaserJet P2035', 4], ['LaserJet P2055d', 4], ['LaserJet Pro 400 M401dn', 6], ['LaserJet Pro 400 MFP M425dn', 5], ['LaserJet Pro 4003dn', 3], ['LaserJet M111w', 2], ['LaserJet MFP M135a', 3]],
+      Canon: [['imageCLASS LBP6030', 3], ['i-SENSYS MF3010', 3], ['imageCLASS MF264dw II', 2], ['imageCLASS LBP246dw', 2]],
+      Brother: [['HL-L2321D', 2], ['DCP-L2540DW', 3], ['MFC-L2700DW', 3]],
+      Epson: [['EcoTank L3250', 2], ['EcoTank L3210', 2], ['EcoTank L5290', 2]],
+      Ricoh: [['MP 2014', 2], ['SP 230DNw', 2]],
+      Kyocera: [['ECOSYS P2040dn', 2], ['ECOSYS M2040dn', 3]]
+    };
+    const mode = st.mode || p.mode || 'model';
+    const br = st.br || 'HP';
+    const mq = st.mq !== undefined ? st.mq : '';
+    const md = st.md || 'LaserJet Pro 400 M401dn';
+    const pq = st.pq !== undefined ? st.pq : (mode === 'none' ? 'XP-9912' : mode === 'part' ? 'CF280A' : '');
+    const brands = Object.keys(MODELS).map(b => ({ label: b, on: br === b, cls: br === b ? 'is-on' : '', go: () => this.setState({ br: b, md: MODELS[b][0][0], mq: '', mode: 'model' }) }));
+    const list = MODELS[br].filter(x => !mq || x[0].toLowerCase().indexOf(mq.toLowerCase()) >= 0);
+    const models = list.map(x => ({ label: x[0], count: x[1] + ' fit', on: md === x[0] && mode === 'model', cls: 'ww-model' + (md === x[0] && mode === 'model' ? ' is-on' : ''), go: () => this.setState({ md: x[0], mode: 'model' }) }));
+    const cart = st.cart !== undefined ? st.cart : (p.cart !== undefined ? +p.cart : 4);
+    const add = (d, prod) => { clearTimeout(this._t); const c = (this.state && this.state.cart !== undefined) ? this.state.cart : cart; this.setState({ cart: Math.max(0, c + d), toast: d > 0 ? prod.title : '' }); if (d > 0) this._t = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const ALL = [
+      { id: 'bd280', kind: 'Toner', title: 'Better Day CE505A / CF280A Black Toner', brand: 'Better Day', spec: 'Compatible · up to 2,700 pages', price: 1450, mrp: 1800, img: BD1, stock: 'in', badge: 'Best seller', parts: ['CF280A', '80A', 'CE505A', '05A'] },
+      { id: 'hp80', kind: 'Toner', title: 'HP 80A Original Black Toner (CF280A)', brand: 'HP', spec: 'Original · up to 2,700 pages', price: 7200, mrp: 7900, icon: 'printer', phCap: 'Photo from Admin', stock: 'in', sample: true, parts: ['CF280A', '80A'] },
+      { id: 'hp80x', kind: 'Toner', title: 'HP 80X High Yield Black Toner (CF280X)', brand: 'HP', spec: 'Original · up to 6,900 pages', price: 11900, mrp: 12800, icon: 'printer', phCap: 'Photo from Admin', stock: 'low', left: 3, sample: true, parts: ['CF280X', '80X'] },
+      { id: 'drum', kind: 'Drum', title: 'Compatible Imaging Drum for 80A Toners', brand: 'Better Day', spec: 'Compatible · about 12,000 pages', price: 2350, mrp: 2800, icon: 'circle-dot', phCap: 'Photo from Admin', stock: 'pre', ships: '20 Oct', sample: true, parts: [] },
+      { id: 'paper', kind: 'Paper', title: 'Double A A4 Copy Paper, 80 gsm', brand: 'Double A', spec: '500 sheets · 1 ream', price: 520, mrp: 580, icon: 'file-text', phCap: 'Photo from Admin', stock: 'in', sample: true, parts: [] },
+      { id: 'paper5', kind: 'Paper', title: 'Double A A4 Copy Paper, box of 5 reams', brand: 'Double A', spec: '2,500 sheets', price: 2490, mrp: 2900, icon: 'package', phCap: 'Photo from Admin', stock: 'in', sample: true, parts: [] }
+    ];
+    let res = ALL;
+    let pickTitle = br + ' ' + md, pickIcon = 'i i-printer';
+    if (mode === 'part' || mode === 'none') {
+      const q = pq.toUpperCase().replace(/\s/g, '');
+      res = ALL.filter(x => x.parts.some(c => c.replace(/-/g, '') === q.replace(/-/g, '')));
+      pickTitle = 'Part code ' + pq.toUpperCase(); pickIcon = 'i i-hash';
+    }
+    const tab = st.tab || 'All';
+    const kinds = ['All'].concat(['Toner', 'Drum', 'Paper'].filter(k => res.some(x => x.kind === k)));
+    const tabs = kinds.map(k => ({ label: k, n: k === 'All' ? res.length : res.filter(x => x.kind === k).length, on: tab === k, cls: 'w-chip' + (tab === k ? ' is-on' : ''), go: () => this.setState({ tab: k }) }));
+    const shown = res.filter(x => tab === 'All' || x.kind === tab).map(x => Object.assign({}, x, { href: L.ShopProduct, add }));
+    const savedList = st.savedList || ['HP LaserJet P2035', 'Canon imageCLASS LBP6030'];
+    const isSaved = savedList.indexOf(br + ' ' + md) >= 0;
+    const saved = savedList.map(s => ({ label: s, go: () => { const sp = s.split(' '); const b = sp.shift(); this.setState({ br: b, md: sp.join(' '), mode: 'model', mq: '' }); } }));
+    return {
+      L, m: !!p.m, cart, br, mq, pq,
+      s1cls: 'ww-fbm-step is-done', s2cls: 'ww-fbm-step' + (mode === 'model' ? ' is-done' : ''),
+      brands, models, noModels: !list.length, modelPh: 'Search ' + br + ' models, e.g. M401',
+      typeModel: (e) => this.setState({ mq: e && e.target ? e.target.value : '' }),
+      typePart: (e) => this.setState({ pq: e && e.target ? e.target.value : '' }),
+      findPart: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ mode: 'part', tab: 'All' }); },
+      reset: () => this.setState({ mode: 'model', pq: '' }),
+      pickKey: mode + br + md + pq, pickIcon, pickTitle,
+      pickSub: res.length ? res.length + ' products fit' + (mode === 'model' ? ' · checked against Admin compatibility lists' : ' · originals and compatibles') : 'No product carries this code yet',
+      canSave: mode === 'model', saveIcon: isSaved ? 'i i-check' : 'i i-bookmark', saveLabel: isSaved ? 'Saved' : 'Save printer',
+      savePrinter: () => { if (!isSaved) this.setState({ savedList: savedList.concat([br + ' ' + md]) }); },
+      saved, tabs, items: shown, hasRes: res.length > 0, noRes: res.length === 0,
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafas World, which cartridge fits my printer? Code: ' + pq),
+      toast: st.toast || '', toastTitle: 'Added to cart'
+    };
+  }
+}
+</script>
+</body>
+</html>

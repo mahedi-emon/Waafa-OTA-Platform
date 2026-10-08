@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · Printing Solutions</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="0" cat="{{barCat}}" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-b2bhero">
+      <div class="w-wrap v-b2bhero-in">
+        <div class="flex flex-col gap-4">
+          <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><span aria-current="page">Printing Solutions</span></nav>
+          <span class="v-eyebrow">Waafa International · Printing Solutions</span>
+          <h1 class="v-h1 v-h1-page">Printing that keeps working</h1>
+          <p class="v-lead">Toner on a schedule, printer servicing and one monthly invoice for every branch. Serving Dhaka’s offices since 2010.</p>
+          <div class="flex flex-wrap gap-3"><a class="w-btn w-btn-primary v-magnet" href="#form"><span class="i i-send"></span>Request a quote</a><a class="w-btn w-btn-secondary" href="https://wa.me/8801823232241"><span class="i i-whatsapp"></span>Talk on WhatsApp</a></div>
+          <div class="v-b2bproof"><span><b>Since 2010</b>serving offices in Dhaka</span><span><b>One invoice</b>for every branch</span><span><b>Motijheel</b>an office you can visit</span></div>
+        </div>
+        <div class="v-b2bmedia"><div class="v-photo " data-photo="printing" data-src="https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&w=1600&q=80" style="height:100%;border-radius:28px"><video class="fx-video" poster="../assets/9b3bbe5a346b3ae74b16ea7d9501ff0b.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"><source src="../assets/94f3de300204ed62000d892d773ce10b.webm" type="video/webm"><source src="../assets/1ef6d4ef264f59baa09e7c306ceff910.mp4" type="video/mp4"></video><div class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">Office printer, Waafas World</span><span class="w-ph-credit">Mahrous Houses · Unsplash</span></div></div></div>
+      </div>
+    </section>
+    <section class="v-sec w-reveal" aria-labelledby="svc-t">
+      <div class="w-wrap">
+        <div class="v-head"><div class="v-head-text"><span class="v-eyebrow">What we do</span><h2 class="v-h2" id="svc-t">Services</h2></div></div>
+        <div class="v-svcgrid w-stagger-in"><div class="v-svc"><span class="w-tile"><span class="i i-calendar-check"></span></span><h3>Toner on a schedule</h3><p>We track your usage and deliver toner before it runs out, at a fixed price.</p></div><div class="v-svc"><span class="w-tile"><span class="i i-settings"></span></span><h3>Servicing and repair</h3><p>On-site checks and repairs for laser printers and copiers.</p></div><div class="v-svc"><span class="w-tile"><span class="i i-printer"></span></span><h3>New printers</h3><p>The right printer for each desk, delivered and set up.</p></div><div class="v-svc"><span class="w-tile"><span class="i i-receipt"></span></span><h3>One monthly invoice</h3><p>All branches on one bill, with a clear breakdown per printer.</p></div></div>
+      </div>
+    </section>
+    <section class="v-sec is-tint w-reveal" aria-labelledby="how-t">
+      <div class="w-wrap v-b2bsplit">
+        <div class="flex flex-col gap-4">
+          <span class="v-eyebrow on-tint">How it works</span>
+          <h2 class="v-h2" id="how-t">From first call to a running plan</h2>
+          <ol class="v-howsteps v-howsteps-lg"><li><span>1</span><div><b>Tell us about your printers</b><small>Models, branches and roughly how many pages you print</small></div></li><li><span>2</span><div><b>We visit and propose a plan</b><small>Usually within a week, at no cost</small></div></li><li><span>3</span><div><b>You approve a fixed monthly price</b><small>No surprise charges</small></div></li><li><span>4</span><div><b>We keep you supplied</b><small>Toner arrives before it runs out</small></div></li></ol>
+        </div>
+        <div id="form">
+          <sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
+            <form class="w-formcard v-b2bform" onSubmit="{{send}}">
+              <div class="w-formcard-head"><h2 class="v-h3">Request a quote</h2><p class="text-14 text-muted" style="margin-top:4px">We usually reply within one working day, Saturday to Thursday.</p></div>
+              <div class="w-formcard-body">
+                <div class="w-grid-2"><div class="w-field"><label class="w-label" for="q-co">Company <span class="w-req">*</span></label><input class="w-input" id="q-co" placeholder="e.g. Rahman Textiles Ltd."></div><div class="w-field"><label class="w-label" for="q-nm">Your name <span class="w-req">*</span></label><input class="w-input" id="q-nm" placeholder="Full name"></div></div>
+                <div class="w-grid-2"><div class="w-field"><label class="w-label" for="q-ph">Mobile <span class="w-req">*</span></label><div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880</button><input id="q-ph" inputmode="tel" placeholder="1712-345678"></div></div><div class="w-field"><label class="w-label" for="q-em">Work email <span class="w-req">*</span></label><input class="w-input" id="q-em" type="email" placeholder="name@company.com"></div></div>
+                <div class="w-grid-3"><label class="w-field"><span class="w-label">Printers</span><span class="w-select"><select class="w-input"><option>1 to 5</option><option>6 to 20</option><option>21 to 50</option><option>More than 50</option></select></span></label><label class="w-field"><span class="w-label">Pages a month</span><span class="w-select"><select class="w-input"><option>Under 2,000</option><option>2,000 to 10,000</option><option>10,000 to 50,000</option><option>Over 50,000</option></select></span></label><label class="w-field"><span class="w-label">Branches</span><span class="w-select"><select class="w-input"><option>1</option><option>2 to 5</option><option>6 or more</option></select></span></label></div>
+                <div class="w-field"><span class="w-label">What do you need?</span><div class="w-pills"><button class="{{chips.a.cls}}" type="button" onClick="{{chips.a.go}}">Toner on a schedule</button><button class="{{chips.b.cls}}" type="button" onClick="{{chips.b.go}}">Printer servicing</button><button class="{{chips.c.cls}}" type="button" onClick="{{chips.c.go}}">New printers</button><button class="{{chips.d.cls}}" type="button" onClick="{{chips.d.go}}">Paper and supplies</button><button class="{{chips.e.cls}}" type="button" onClick="{{chips.e.go}}">Managed print</button></div></div>
+                <label class="w-field"><span class="w-label">Printer models <span class="w-opt">(optional)</span></span><textarea class="w-input v-textarea" rows="3" placeholder="For example: 6 × HP LaserJet Pro M404, 2 × Canon iR 2206"></textarea></label>
+                <button class="{{consentCls}}" type="button" role="checkbox" aria-checked="{{consent}}" onClick="{{toggleConsent}}"><span class="v-cbox"></span><span>Waafa International may contact me about this request.</span></button>
+              </div>
+              <div class="w-formcard-foot"><span class="v-foot-note"><span class="i i-lock"></span>Shared only with our team</span><button class="w-btn w-btn-primary v-foot-go" type="submit"><span class="i i-send"></span>Request a quote</button></div>
+            </form>
+          </sc-if>
+          <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+            <section class="w-formcard v-done" data-fx-confetti=""><div class="w-success">
+              <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"/><path d="M28 45 l11 11 l22 -24"/></svg>
+              <span class="v-eyebrow" style="justify-content:center">Request received</span>
+              <h2 class="v-h2" style="font-size:26px">Thank you. Our printing team will call you within one working day.</h2>
+              <div class="w-ref"><span class="text-13 text-muted">Reference</span><b>PRN-261008-0015</b></div>
+              <p class="w-note" style="justify-content:center"><span class="i i-mail"></span><span>A copy is on its way to your email.</span></p>
+              <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20my%20reference%20is%20PRN-261008-0015"><span class="i i-whatsapp-fill"></span>Send reference on WhatsApp</a>
+            </div></section>
+          </sc-if>
+        </div>
+      </div>
+    </section>
+    <section class="v-sec w-reveal" aria-labelledby="faq-t">
+      <div class="w-wrap v-faq">
+        <div class="flex flex-col gap-3"><span class="v-eyebrow" style="align-self:flex-start">Questions</span><h2 class="v-h2" id="faq-t">Good to know</h2></div>
+        <div class="w-acc"><details class="w-acc-item" open><summary class="w-acc-q">Do you work with small offices?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Yes. Many of our clients have five printers or fewer.</div></details><details class="w-acc-item"><summary class="w-acc-q">Can you supply original and compatible toner?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Yes. Every quote says which one you get, and you can mix both.</div></details><details class="w-acc-item"><summary class="w-acc-q">Do you service printers outside Dhaka?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Inside Dhaka on site; outside Dhaka by courier or with a local partner. Ask us for your city.</div></details></div>
+      </div>
+    </section>
+
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="shop" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m": {"editor": "boolean", "default": false}, "done": {"editor": "boolean", "default": false}, "$preview":{"width":1440,"height":3292}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Shop','ShopList','ShopProduct','ShopCart','ShopCheckout','ShopDone','ShopTrack','ShopFinder','Printing','Trading','Refund','Contact','OfflinePay'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const done = st.done !== undefined ? st.done : !!p.done;
+    const consent = st.consent !== undefined ? st.consent : true;
+    const chip = st.chip || {};
+    const chips = {};
+    ['a','b','c','d','e'].forEach(k => { chips[k] = { cls: 'w-chip' + (chip[k] ? ' is-active' : ''), go: () => this.setState({ chip: Object.assign({}, chip, { [k]: !chip[k] }) }) }; });
+    return { barCat: 'printing',
+      L, m: !!p.m, cart: 0, toast: '', isDone: done, notDone: !done, chips,
+      consent, consentCls: 'v-checkrow v-consent' + (consent ? ' is-on' : ''), toggleConsent: () => this.setState({ consent: !consent }),
+      send: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ done: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

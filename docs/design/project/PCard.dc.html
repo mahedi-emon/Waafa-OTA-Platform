@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World product card</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<article class="{{cls}}">
+  <a class="ww-card-link" href="{{href}}" aria-label="{{p.title}}"></a>
+  <div class="ww-card-media">
+    <sc-if value="{{p.img}}" hint-placeholder-val="{{ false }}"><img src="{{p.img}}" alt="{{p.title}}" loading="lazy"></sc-if>
+    <sc-if value="{{noImg}}" hint-placeholder-val="{{ true }}"><div class="ph is-sm" data-photo="{{p.ph}}" role="img" aria-label="{{p.title}}"><div class="ph-in"><span class="ph-ic"><span class="{{icon}}"></span></span><span class="ph-cap">{{phCap}}</span></div></div></sc-if>
+    <div class="ww-card-tags">
+      <sc-if value="{{off}}" hint-placeholder-val="{{ true }}"><span class="ww-off">−{{off}}%</span></sc-if>
+      <sc-if value="{{p.badge}}" hint-placeholder-val="{{ false }}"><span class="w-badge w-badge-premium"><span class="w-tri"></span>{{p.badge}}</span></sc-if>
+    </div>
+    <sc-if value="{{p.sample}}" hint-placeholder-val="{{ false }}"><span class="w-sample">Sample</span></sc-if>
+  </div>
+  <div class="ww-card-body">
+    <span class="ww-card-brand">{{p.brand}}</span>
+    <h3 class="ww-card-title">{{p.title}}</h3>
+    <span class="ww-card-spec">{{p.spec}}</span>
+    <div class="ww-card-price"><b>{{priceF}}</b><sc-if value="{{mrpF}}" hint-placeholder-val="{{ true }}"><s>{{mrpF}}</s></sc-if></div>
+    <div class="ww-card-foot">
+      <span class="{{stockCls}}">{{stockLabel}}</span>
+      <sc-if value="{{cta.opts}}" hint-placeholder-val="{{ false }}"><a class="ww-opts" href="{{href}}">Choose options<span class="i i-chevron-right"></span></a></sc-if>
+      <sc-if value="{{cta.add}}" hint-placeholder-val="{{ true }}"><button class="ww-add" type="button" onClick="{{add}}" aria-label="{{addAria}}"><span class="i i-shopping-cart"></span><span>{{addLabel}}</span></button></sc-if>
+      <sc-if value="{{cta.adding}}" hint-placeholder-val="{{ false }}"><button class="ww-add is-adding" type="button" aria-busy="true"><span class="ww-spin"></span><span>Adding</span></button></sc-if>
+      <sc-if value="{{cta.added}}" hint-placeholder-val="{{ false }}"><button class="ww-add is-added" type="button"><span class="i i-check"></span><span>Added</span></button></sc-if>
+      <sc-if value="{{cta.step}}" hint-placeholder-val="{{ false }}"><div class="{{stepCls}}" role="group" aria-label="Quantity in cart"><button type="button" aria-label="One less" onClick="{{dec}}"><span class="{{decIcon}}"></span></button><output aria-live="polite"><span class="{{rollCls}}" key="{{qty}}">{{qty}}</span></output><button type="button" aria-label="One more" onClick="{{inc}}"><span class="i i-plus"></span></button></div></sc-if>
+      <sc-if value="{{cta.oos}}" hint-placeholder-val="{{ false }}"><span class="ww-oos">Sold out</span></sc-if>
+    </div>
+  </div>
+</article>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"p":{"editor":null},"onAdd":{"editor":null},"href":{"editor":"text","default":""},"variant":{"editor":"enum","options":["grid","compact"],"default":"grid"},"demo":{"editor":"enum","options":["","adding","added","step","max"],"default":""},"$preview":{"width":260,"height":480}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._a); clearTimeout(this._b); clearTimeout(this._c); }
+  renderVals() {
+    const P = this.props || {};
+    const st = this.state || {};
+    const DEF = { id: 'tee', title: 'Classic Cotton Crew T-shirt', brand: 'Fashion & Lifestyle', spec: 'Sizes S to XXL · 4 colours', price: 650, mrp: 850, stock: 'in', img: '', ph: 'prod-tshirt', icon: 'shirt', phCap: 'Photo: T-shirt', options: false, sample: true, badge: '' };
+    const p = Object.assign({}, DEF, P.p || {});
+    const fmt = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const off = p.off !== undefined ? p.off : (p.mrp && p.mrp > p.price ? Math.round((p.mrp - p.price) * 100 / p.mrp) : 0);
+    const demo = P.demo || '';
+    const phase = st.phase || (demo === 'adding' ? 'adding' : demo === 'added' ? 'added' : (demo === 'step' || demo === 'max') ? 'step' : 'idle');
+    const qty = st.qty !== undefined ? st.qty : (demo === 'max' ? 10 : demo === 'step' ? 2 : 1);
+    const MAX = 10;
+    const out = p.stock === 'out';
+    const pre = p.stock === 'pre';
+    const notify = (d) => { if (typeof P.onAdd === 'function') { try { P.onAdd(d, p); } catch (e) {} } };
+    const stop = (e) => { if (e) { if (e.preventDefault) e.preventDefault(); if (e.stopPropagation) e.stopPropagation(); } };
+    const STOCK = { in: ['is-in', 'In stock'], low: ['is-low', p.left ? 'Only ' + p.left + ' left' : 'Low stock'], out: ['is-out', 'Out of stock'], pre: ['is-pre', p.ships ? 'Ships ' + p.ships : 'Pre-order'] };
+    const sk = STOCK[p.stock] || STOCK.in;
+    const href = P.href || p.href || 'ShopProduct.dc.html';
+    return {
+      p, off, href, noImg: !p.img,
+      cls: 'ww-card' + (P.variant === 'compact' ? ' is-compact' : '') + (out ? ' is-out' : ''),
+      icon: 'i i-' + (p.icon || 'package'), phCap: p.phCap || 'Product photo',
+      priceF: fmt(p.price), mrpF: p.mrp && p.mrp > p.price ? fmt(p.mrp) : '',
+      stockCls: 'ww-stock ' + sk[0], stockLabel: sk[1],
+      addLabel: pre ? 'Pre-order' : 'Add', addAria: (pre ? 'Pre-order ' : 'Add to cart: ') + p.title,
+      cta: { opts: !!p.options && !out, add: !p.options && !out && phase === 'idle', adding: phase === 'adding', added: phase === 'added', step: !p.options && phase === 'step', oos: out },
+      qty, rollCls: st.dir === 'down' ? 'down' : 'up',
+      stepCls: 'ww-step' + (st.shake || demo === 'max' ? ' is-max' : ''),
+      decIcon: qty <= 1 ? 'i i-trash' : 'i i-minus',
+      add: (e) => {
+        stop(e);
+        this.setState({ phase: 'adding' });
+        clearTimeout(this._a); clearTimeout(this._b);
+        this._a = setTimeout(() => this.setState({ phase: 'added' }), 560);
+        this._b = setTimeout(() => { this.setState({ phase: 'step', qty: 1, dir: 'up' }); notify(1); }, 1150);
+      },
+      inc: (e) => {
+        stop(e);
+        if (qty >= MAX) { this.setState({ shake: true }); clearTimeout(this._c); this._c = setTimeout(() => this.setState({ shake: false }), 360); return; }
+        this.setState({ qty: qty + 1, dir: 'up' }); notify(1);
+      },
+      dec: (e) => {
+        stop(e);
+        if (qty <= 1) { this.setState({ phase: 'idle', qty: 1 }); notify(-1); return; }
+        this.setState({ qty: qty - 1, dir: 'down' }); notify(-1);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

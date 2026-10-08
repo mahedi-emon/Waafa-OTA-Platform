@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Gallery</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="gallery" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <sc-if value="{{isAlbums}}" hint-placeholder-val="{{ true }}">
+      <section class="v-pagehead wc-head">
+        <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+        <div class="w-wrap">
+          <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Gallery</span></nav>
+          <div class="v-pagehead-in">
+            <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">Gallery</span><h1 class="v-h1 v-h1-page">Trips, in travellers’ own photos</h1><p class="v-lead">Albums from our tours, shared with each traveller’s permission. Until real albums are added in Admin, these are sample photos.</p></div>
+            <div class="flex flex-wrap items-center gap-2"><span class="v-sample">Sample photos</span><a class="v-pillbtn" href="{{L.Feedback}}"><span class="i i-image-plus"></span>Share your photos</a></div>
+          </div>
+        </div>
+      </section>
+      <section class="v-sec" style="padding-top:22px">
+        <div class="w-wrap flex flex-col gap-6">
+          <a class="wc-galfeat" href="#" onClick="{{openFeat}}">
+            <sc-for list="{{feat}}" as="x" hint-placeholder-count="5"><span class="wc-ph"><span class="v-photo" data-photo="{{x.key}}" data-src="{{x.src}}"><span class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">{{x.subj}}</span><span class="w-ph-credit">{{x.credit}}</span></span></span></span></sc-for>
+            <span class="wc-galfeat-cap"><span class="flex flex-col"><small>Latest album</small><b>Sajek Valley group trip</b><span>14–16 Sep 2026 · 22 travellers · 32 photos</span></span><span class="w-btn w-btn-white"><span class="i i-images"></span>Open album</span></span>
+          </a>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="wc-chips" role="tablist" aria-label="Filter albums"><sc-for list="{{chips}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" type="button" role="tab" aria-selected="{{c.on}}" onClick="{{c.go}}">{{c.label}}<small>{{c.n}}</small></button></sc-for></div>
+            <span class="text-13 text-muted">{{albumCount}}</span>
+          </div>
+          <div class="wc-albums" key="{{cat}}">
+            <sc-for list="{{albums}}" as="a" hint-placeholder-count="8">
+              <a class="wc-album" href="{{L.GalleryAlbum}}" onClick="{{a.go}}">
+                <span class="wc-album-stack"><span class="wc-ph"><span class="v-photo" data-photo="{{a.ph.key}}" data-src="{{a.ph.src}}"><span class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">{{a.ph.subj}}</span><span class="w-ph-credit">{{a.ph.credit}}</span></span></span></span><span class="wc-album-n"><span class="i i-images"></span>{{a.n}}</span></span>
+                <span><b>{{a.title}}</b><small><span class="i i-map-pin"></span>{{a.place}} · {{a.date}}</small></span>
+              </a>
+            </sc-for>
+          </div>
+          <div class="v-gfnote" style="margin:6px 0 0"><span class="w-tile"><span class="i i-shield-check"></span></span><p><b>Your photos, your say.</b> We only post photos that travellers send us and agree to share. Want one taken down? Message us on WhatsApp and it’s gone the same day.</p></div>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{isAlbum}}" hint-placeholder-val="{{ false }}">
+      <section class="v-sec" style="padding-top:18px">
+        <div class="w-wrap flex flex-col gap-6">
+          <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Gallery}}" onClick="{{back}}">Gallery</a><span class="i i-chevron-right"></span><span aria-current="page">Sajek Valley group trip</span></nav>
+          <div class="wc-albumhead">
+            <div><h1>Sajek Valley group trip</h1><div class="wc-albummeta"><span><span class="i i-calendar-days"></span>14–16 Sep 2026</span><span><span class="i i-users"></span>22 travellers</span><span><span class="i i-images"></span>32 photos</span><span><span class="i i-camera"></span>Shared by the group, sample photos</span></div></div>
+            <div class="flex flex-wrap gap-2"><a class="w-btn w-btn-secondary" href="{{L.Gallery}}" onClick="{{back}}"><span class="i i-arrow-left"></span>All albums</a><a class="w-btn w-btn-primary" href="{{L.PackageDetail}}"><span class="i i-map"></span>See this tour</a></div>
+          </div>
+          <div class="wc-masonry">
+            <sc-for list="{{photos}}" as="x" hint-placeholder-count="12"><button type="button" onClick="{{x.go}}" aria-label="{{x.label}}"><span class="wc-ph" style="{{x.h}}"><span class="v-photo" data-photo="{{x.key}}" data-src="{{x.src}}"><span class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">{{x.subj}}</span><span class="w-ph-credit">{{x.credit}}</span></span></span></span></button></sc-for>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{lbOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="wc-lightbox wa-r" role="dialog" aria-modal="true" aria-label="Photo viewer">
+      <div class="wc-lb-top"><span class="w-tile" style="background:rgb(255 255 255/.1);color:#fff"><span class="i i-images"></span></span><div><b>Sajek Valley group trip</b><small>{{lb.n}} of {{lb.total}} · {{lb.subj}}</small></div><a class="wc-lb-btn" href="#" aria-label="Download photo"><span class="i i-download"></span></a><button class="wc-lb-btn" type="button" aria-label="Close" onClick="{{closeLb}}" style="margin-left:0"><span class="i i-x"></span></button></div>
+      <div class="wc-lb-stage">
+        <button class="wc-lb-btn" type="button" aria-label="Previous photo" onClick="{{prev}}"><span class="i i-chevron-left"></span></button>
+        <div class="wc-lb-photo" key="{{lb.key}}"><span class="wc-ph"><span class="v-photo" data-photo="{{lb.key}}" data-src="{{lb.srcL}}"><span class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Photo</span><span class="w-ph-subj">{{lb.subj}}</span><span class="w-ph-credit">{{lb.credit}}</span></span></span></span></div>
+        <button class="wc-lb-btn" type="button" aria-label="Next photo" onClick="{{next}}"><span class="i i-chevron-right"></span></button>
+      </div>
+      <div class="wc-lb-bottom">
+        <div class="wc-lb-cap"><span>{{lb.subj}} · {{lb.credit}}</span><span class="text-13" style="opacity:.6">← → to move · Esc to close · swipe on a phone</span></div>
+        <div class="wc-lb-thumbs"><sc-for list="{{thumbs}}" as="t" hint-placeholder-count="8"><button class="{{t.cls}}" type="button" aria-label="{{t.label}}" onClick="{{t.go}}"><span class="wc-ph"><span class="v-photo" data-photo="{{t.key}}" data-src="{{t.src}}"><span class="w-ph"></span></span></span></button></sc-for></div>
+      </div>
+    </div>
+  </sc-if>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"view":{"editor":"enum","options":["albums","album"],"default":"albums"},"lightbox":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2361}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Feedback','PackageDetail','Gallery'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    L.GalleryAlbum = 'Gallery-album' + sx + '.dc.html';
+    const PH = {"coxsbazar":["Cox’s Bazar beach","photo-1711077470004-cb6a7258c082","Masum Ahmed"],"coxsbazar-alt":["Cox’s Bazar","photo-1609501285437-4eb001f82684","Nafiul Hasan"],"sajek":["Sajek Valley above the clouds","photo-1673632417072-b1366fda0e22","Sium Ahameed Bhuyan"],"sajek-alt":["Sajek Valley","photo-1673632417265-a7bcbc90383c","Sium Ahameed Bhuyan"],"maldives":["Maldives overwater villas","photo-1514282401047-d79a71a590e8","Ishan @seefromthesky"],"maldives-alt":["Maldives","photo-1574226780565-388f10f8121e","Rayyu Maldives"],"dubai":["Dubai skyline","photo-1512453979798-5ea266f8880c","David Rodrigo"],"dubai-desert":["Dubai desert","photo-1528702748617-c64d49f918af","Fredrik Öhlander"],"nepal":["Nepal","photo-1518002054494-3a6f94352e9d","Giuseppe Mondì"],"nepal-alt":["Nepal","photo-1562462181-b228e3cff9ad","Meera Pankhania"],"cappadocia":["Cappadocia balloons","photo-1699519324068-8cade0601b53","Chloé Lefleur"],"cappadocia-alt":["Cappadocia, Türkiye","photo-1680469814298-9a1220de2cf2","Ricky LK"],"bali":["Bali temple","photo-1537996194471-e657df975ab4","Aron Visuals"],"bali-alt":["Bali","photo-1518548419970-58e3b4079ab2","Harry Kessell"],"thailand":["Thailand islands","photo-1534008897995-27a23e859048","Humphrey M"],"thailand-alt":["Thailand","photo-1506665531195-3566af2b4dfa","Evan Krause"],"singapore":["Singapore Marina Bay","photo-1525625293386-3f8f99389edd","Hu Chen"],"kualalumpur":["Kuala Lumpur, Petronas Towers","photo-1597148543182-830ef7bbb904","Ismail Bashiri"]};
+    const ph = (k, w) => ({ key: k, subj: PH[k][0], credit: PH[k][2] + ' · Unsplash', src: 'https://images.unsplash.com/' + PH[k][1] + '?auto=format&fit=crop&w=' + (w || 900) + '&q=80' });
+    const ALB = [
+      ['Sajek Valley group trip', 'Sajek, Rangamati', 'Sep 2026', 32, 'sajek', 'bd'], ['Family weekend in Cox’s Bazar', 'Cox’s Bazar', 'Aug 2026', 24, 'coxsbazar', 'bd'],
+      ['Honeymoon in the Maldives', 'Malé atolls', 'Jul 2026', 18, 'maldives', 'intl'], ['Dubai with the kids', 'Dubai', 'Jun 2026', 41, 'dubai', 'intl'],
+      ['Pokhara and the Annapurnas', 'Pokhara, Nepal', 'May 2026', 27, 'nepal', 'intl'], ['Balloons over Cappadocia', 'Cappadocia, Türkiye', 'Apr 2026', 20, 'cappadocia', 'intl'],
+      ['Office team trip to Bali', 'Bali, Indonesia', 'Mar 2026', 36, 'bali', 'group'], ['Island hopping in Thailand', 'Krabi and Phuket', 'Feb 2026', 29, 'thailand', 'group']
+    ];
+    const cat = st.cat || 'all';
+    const CH = [['all', 'All'], ['bd', 'Bangladesh'], ['intl', 'International'], ['group', 'Group and office trips']];
+    const chips = CH.map(c => ({ label: c[1], n: c[0] === 'all' ? ALB.length : ALB.filter(a => a[5] === c[0]).length, on: cat === c[0], cls: 'w-chip' + (cat === c[0] ? ' is-on' : ''), go: () => this.setState({ cat: c[0] }) }));
+    const albums = ALB.filter(a => cat === 'all' || a[5] === cat).map(a => ({ title: a[0], place: a[1], date: a[2], n: a[3], ph: ph(a[4]), go: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ view: 'album' }); } }));
+    const feat = ['sajek', 'sajek-alt', 'coxsbazar-alt', 'nepal-alt', 'bali-alt'].map(k => ph(k, 1600));
+    const view = st.view || p.view || 'albums';
+    const PK = ['sajek', 'sajek-alt', 'coxsbazar', 'nepal', 'coxsbazar-alt', 'thailand-alt', 'bali', 'maldives-alt', 'cappadocia-alt', 'dubai-desert', 'singapore', 'kualalumpur'];
+    const HS = [300, 200, 240, 340, 210, 260, 320, 220, 280, 200, 250, 300];
+    const lbi = st.lb !== undefined ? st.lb : (p.lightbox ? 2 : -1);
+    const photos = PK.map((k, i) => Object.assign(ph(k), { h: 'height:' + HS[i] + 'px', label: 'Open photo ' + (i + 1), go: () => this.setState({ lb: i }) }));
+    const cur = lbi >= 0 ? PK[lbi] : PK[0];
+    const lb = Object.assign(ph(cur, 1600), { n: lbi + 1, total: PK.length, srcL: ph(cur, 1600).src });
+    const thumbs = PK.map((k, i) => Object.assign(ph(k, 300), { cls: i === lbi ? 'is-on' : '', label: 'Photo ' + (i + 1), go: () => this.setState({ lb: i }) }));
+    return {
+      L, m: !!p.m, cat, chips, albums, feat, albumCount: albums.length + ' albums · newest first',
+      isAlbums: view === 'albums', isAlbum: view === 'album', photos,
+      openFeat: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ view: 'album' }); },
+      back: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ view: 'albums', lb: -1 }); },
+      lbOpen: lbi >= 0, lb, thumbs,
+      closeLb: () => this.setState({ lb: -1 }),
+      prev: () => this.setState({ lb: (lbi - 1 + PK.length) % PK.length }),
+      next: () => this.setState({ lb: (lbi + 1) % PK.length })
+    };
+  }
+}
+</script>
+</body>
+</html>

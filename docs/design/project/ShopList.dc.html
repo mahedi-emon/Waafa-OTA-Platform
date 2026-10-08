@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · category listing</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="{{cart}}" cat="{{barCat}}" q="{{q}}" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead is-shop">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><sc-if value="{{crumb2}}" hint-placeholder-val="{{ true }}"><a href="{{L.ShopList}}">{{crumb2}}</a><span class="i i-chevron-right"></span></sc-if><span aria-current="page">{{title}}</span></nav>
+        <div class="ww-listhead">
+          <div><h1>{{title}}</h1><p>{{lead}}</p></div>
+          <sc-if value="{{isDeals}}" hint-placeholder-val="{{ false }}">
+            <div class="ww-count" role="timer" aria-label="Deals end soon"><span class="ww-count-lbl"><b>Ends in</b><small>Sun 12 Oct, 11:59 pm</small></span><span class="ww-count-u"><span class="ww-count-n" key="{{cd.d}}">{{cd.d}}</span><span class="ww-count-l">days</span></span><span class="ww-count-sep">:</span><span class="ww-count-u"><span class="ww-count-n" key="{{cd.h}}">{{cd.h}}</span><span class="ww-count-l">hrs</span></span><span class="ww-count-sep">:</span><span class="ww-count-u"><span class="ww-count-n" key="{{cd.mi}}">{{cd.mi}}</span><span class="ww-count-l">min</span></span><span class="ww-count-sep">:</span><span class="ww-count-u"><span class="ww-count-n" key="{{cd.s}}">{{cd.s}}</span><span class="ww-count-l">sec</span></span></div>
+          </sc-if>
+        </div>
+        <sc-if value="{{hasSubs}}" hint-placeholder-val="{{ true }}"><div class="ww-subcats"><sc-for list="{{subs}}" as="s" hint-placeholder-count="6"><button class="{{s.cls}}" type="button" onClick="{{s.go}}"><span class="ww-subcat-ic"><span class="{{s.icon}}"></span></span>{{s.label}}<small>{{s.count}}</small></button></sc-for></div></sc-if>
+      </div>
+    </section>
+    <section class="ww-sec" style="padding-top:22px">
+      <div class="w-wrap ww-listgrid">
+        <aside class="ww-rail-f" aria-label="Filters">
+          <div class="ww-fhead"><b>Filters</b><button class="v-link" type="button" style="min-height:0;font-size:13.5px" onClick="{{clear}}">Clear all</button></div>
+          <sc-for list="{{groups}}" as="g" hint-placeholder-count="5">
+            <div class="ww-fgroup">
+              <div class="ww-ftitle">{{g.title}}<small>{{g.sub}}</small></div>
+              <sc-if value="{{g.isCheck}}" hint-placeholder-val="{{ true }}"><div class="ww-checks"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="checkbox" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="ww-cbox"></span>{{o.label}}<small>{{o.count}}</small></button></sc-for></div></sc-if>
+              <sc-if value="{{g.isSwatch}}" hint-placeholder-val="{{ false }}"><div class="ww-swatches"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" style="{{o.sw}}" aria-label="{{o.label}}" aria-pressed="{{o.on}}" onClick="{{o.go}}" title="{{o.label}}"></button></sc-for></div></sc-if>
+              <sc-if value="{{g.isSize}}" hint-placeholder-val="{{ false }}"><div class="ww-sizes"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" aria-pressed="{{o.on}}" onClick="{{o.go}}">{{o.label}}</button></sc-for></div></sc-if>
+              <sc-if value="{{g.isRange}}" hint-placeholder-val="{{ false }}">
+                <div class="ww-range">
+                  <div class="ww-hist" aria-hidden="true"><sc-for list="{{hist}}" as="h" hint-placeholder-count="16"><span class="{{h.cls}}" style="{{h.st}}"></span></sc-for></div>
+                  <div class="ww-track"><span class="ww-track-fill" style="{{rng.fill}}"></span><span class="ww-thumb" style="{{rng.a}}" role="slider" aria-label="Minimum price" aria-valuenow="{{rng.min}}" tabindex="0"></span><span class="ww-thumb" style="{{rng.b}}" role="slider" aria-label="Maximum price" aria-valuenow="{{rng.max}}" tabindex="0"></span></div>
+                  <div class="ww-range-vals"><span>{{rng.minF}}</span><i>to</i><span>{{rng.maxF}}</span></div>
+                  <div class="flex flex-wrap gap-2"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" aria-pressed="{{o.on}}" onClick="{{o.go}}" style="height:32px;font-size:12.5px">{{o.label}}</button></sc-for></div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </aside>
+        <div class="min-w-0">
+          <sc-if value="{{showFinder}}" hint-placeholder-val="{{ false }}">
+            <div class="ww-finder">
+              <div><b>Find by model</b><p>This category has compatibility data. Pick your printer and we show only what fits.</p></div>
+              <form onSubmit="{{noop}}"><span class="w-select"><select class="w-input" aria-label="Printer brand"><option>HP</option><option>Canon</option><option>Brother</option><option>Epson</option></select></span><span class="w-select"><select class="w-input" aria-label="Printer model"><option>LaserJet P1102</option><option>LaserJet P2035</option><option>LaserJet Pro 4003</option></select></span><a class="w-btn w-btn-navy" href="{{L.ShopFinder}}" style="height:46px"><span class="i i-scan-barcode"></span>Show what fits</a></form>
+            </div>
+          </sc-if>
+          <div class="ww-toolbar">
+            <b>{{countLabel}}</b>
+            <button class="ww-fbtn is-mobile" type="button" onClick="{{openF}}"><span class="i i-sliders-horizontal"></span>Filters<sc-if value="{{fcount}}" hint-placeholder-val="{{ false }}"><em>{{fcount}}</em></sc-if></button>
+            <label class="ww-sort"><span class="hide-m">Sort by</span><span class="w-select"><select class="w-input" aria-label="Sort products"><option>Relevance</option><option>Best selling</option><option>Price, low to high</option><option>Price, high to low</option><option>Newest</option></select></span></label>
+            <div class="ww-viewtog" role="group" aria-label="View"><button class="is-on" type="button" aria-label="Grid view"><span class="i i-layout-grid"></span></button><button type="button" aria-label="List view"><span class="i i-rows-3"></span></button></div>
+          </div>
+          <div class="ww-active"><sc-for list="{{chips}}" as="c" hint-placeholder-count="2"><button class="ww-xchip" type="button" onClick="{{c.go}}">{{c.label}}<span class="i i-x"></span></button></sc-for><span class="v-sample" style="margin-left:auto">Sample products and prices</span></div>
+          <sc-if value="{{has}}" hint-placeholder-val="{{ true }}">
+            <div class="ww-grid is-4 mo-stagger">
+              <sc-for list="{{items}}" as="it" hint-placeholder-count="8"><dc-import name="PCard" p="{{it}}" on-add="{{it.add}}" style="display:contents" hint-size="100%,430px"></dc-import></sc-for>
+              <sc-if value="{{showPromo}}" hint-placeholder-val="{{ true }}"><a class="ww-promo-in" href="{{L.Printing}}"><span class="ww-ring"></span><span class="w-tile" style="background:rgb(255 255 255/.12);color:#fff;box-shadow:inset 0 0 0 1px rgb(255 255 255/.2)"><span class="i i-building-2"></span></span><span class="flex flex-col gap-2"><b style="color:#fff">Buying 20 or more?</b><small>Ask for a corporate price, delivered on your schedule with VAT invoices.</small></span><span class="w-btn w-btn-white w-btn-sm" style="align-self:flex-start">Get a corporate price<span class="i i-arrow-right"></span></span></a></sc-if>
+            </div>
+            <div class="ww-loadmore"><small>Showing {{shown}} of {{total}}</small><div class="ww-loadmore-bar"><span style="{{loadStyle}}"></span></div><button class="v-pillbtn" type="button">Load more<span class="i i-chevron-down"></span></button></div>
+          </sc-if>
+          <sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+            <div class="w-empty v-empty"><span class="v-empty-ic"><span class="i i-search-x"></span></span><h3>No products match these filters</h3><p>Try removing a filter, or ask us on WhatsApp and we’ll source it for you.</p><div class="flex flex-wrap justify-center gap-2"><button class="w-btn w-btn-secondary" type="button" onClick="{{clear}}"><span class="i i-rotate-ccw"></span>Clear filters</button><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafas%20World%2C%20can%20you%20source%20a%20product%20for%20me%3F"><span class="i i-whatsapp-fill"></span>Ask on WhatsApp</a></div></div>
+          </sc-if>
+        </div>
+      </div>
+    </section>
+    <sc-if value="{{fOpen}}" hint-placeholder-val="{{ false }}">
+      <div class="{{fOvCls}}" role="dialog" aria-modal="true" aria-label="Filters">
+        <div class="w-scrim" onClick="{{closeF}}"></div>
+        <div class="w-sheet is-full v-prefsheet">
+          <div class="w-sheet-grab"></div>
+          <div class="w-sheet-head"><span class="w-sheet-title">Filters</span><button class="w-iconbtn" type="button" aria-label="Close" onClick="{{closeF}}"><span class="i i-x"></span></button></div>
+          <div class="w-sheet-body">
+            <sc-for list="{{groups}}" as="g" hint-placeholder-count="5">
+              <div class="ww-fgroup">
+                <div class="ww-ftitle">{{g.title}}<small>{{g.sub}}</small></div>
+                <sc-if value="{{g.isCheck}}" hint-placeholder-val="{{ true }}"><div class="ww-checks"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="checkbox" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="ww-cbox"></span>{{o.label}}<small>{{o.count}}</small></button></sc-for></div></sc-if>
+                <sc-if value="{{g.isSwatch}}" hint-placeholder-val="{{ false }}"><div class="ww-swatches"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" style="{{o.sw}}" aria-label="{{o.label}}" aria-pressed="{{o.on}}" onClick="{{o.go}}"></button></sc-for></div></sc-if>
+                <sc-if value="{{g.isSize}}" hint-placeholder-val="{{ false }}"><div class="ww-sizes"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" aria-pressed="{{o.on}}" onClick="{{o.go}}">{{o.label}}</button></sc-for></div></sc-if>
+                <sc-if value="{{g.isRange}}" hint-placeholder-val="{{ false }}"><div class="ww-range"><div class="ww-hist" aria-hidden="true"><sc-for list="{{hist}}" as="h" hint-placeholder-count="16"><span class="{{h.cls}}" style="{{h.st}}"></span></sc-for></div><div class="ww-track"><span class="ww-track-fill" style="{{rng.fill}}"></span><span class="ww-thumb" style="{{rng.a}}"></span><span class="ww-thumb" style="{{rng.b}}"></span></div><div class="ww-range-vals"><span>{{rng.minF}}</span><i>to</i><span>{{rng.maxF}}</span></div><div class="flex flex-wrap gap-2"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" onClick="{{o.go}}" style="height:32px;font-size:12.5px">{{o.label}}</button></sc-for></div></div></sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div class="w-sheet-foot"><button class="w-btn w-btn-ghost" type="button" onClick="{{clear}}">Clear all</button><button class="w-btn w-btn-primary" type="button" onClick="{{closeF}}">Show {{countLabel}}</button></div>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="shop" cart="{{cart}}" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="v-toastwrap" role="status"><div class="w-toast"><span class="w-tile"><span class="i i-check"></span></span><span class="min-w-0"><b>Added to cart</b><br><span style="opacity:.8">{{toast}}</span></span><a class="v-toast-link" href="{{L.ShopCart}}">View cart</a></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"cart":{"editor":"int","default":4},"cat":{"editor":"enum","options":["electronics","printers","fashion"],"default":"electronics"},"kind":{"editor":"enum","options":["category","search","deals"],"default":"category"},"q":{"editor":"text","default":""},"filters":{"editor":"boolean","default":false},"empty":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2710}}'>
+class Component extends DCLogic {
+  componentDidMount() { if (this.props.kind === 'deals') this._tick = setInterval(() => this.forceUpdate(), 1000); }
+  componentWillUnmount() { clearInterval(this._tick); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Shop','ShopList','ShopProduct','ShopCart','ShopFinder','Printing'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const cart = st.cart !== undefined ? st.cart : (p.cart !== undefined ? +p.cart : 4);
+    const fmt = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const BD1 = '../assets/c9ea845b540e931548117afdb5ae8a65.jpg', BD2 = '../assets/fd111676d187ad84eb1cdef897ce4776.jpg', BD3 = '../assets/1bb1b89d15ac65da8322547e81decbdf.jpg';
+    const CAP = { 'prod-tshirt': 'T-shirt · Md Salman / Unsplash', 'prod-powerbank': 'Power bank · I’M ZION / Unsplash', 'prod-headphones': 'Headphones · C D-X / Unsplash', 'printing-alt': 'Toner · Jakub Żerdzicki / Unsplash' };
+    // id: title, brand, spec, price, mrp, stock, img, ph, icon, options, sample, badge, page, attrs
+    const PR = {
+      pb: ['20,000 mAh Power Bank, 22.5 W', 'Voltaro', '10,000 or 20,000 mAh · USB-C PD', 2450, 2990, 'in', '', 'prod-powerbank', 'battery-charging', 1, 1, 'Best seller', 'ShopProduct-pb', { sub: 'pb', cap: ['10,000 mAh', '20,000 mAh'], col: ['Black', 'White'], con: ['USB-C'] }],
+      pb10: ['10,000 mAh Slim Power Bank', 'Voltaro', '10,000 mAh · 2 USB ports', 1690, 1990, 'in', '', 'prod-powerbank', 'battery-charging', 0, 1, '', 'ShopProduct-pb', { sub: 'pb', cap: ['10,000 mAh'], col: ['Black'], con: ['USB-C'] }],
+      pb30: ['30,000 mAh Power Bank with Display', 'Voltaro', '30,000 mAh · 65 W laptop charging', 3290, 3790, 'low', '', 'prod-powerbank', 'battery-charging', 0, 1, '', 'ShopProduct-pb', { sub: 'pb', cap: ['30,000 mAh'], col: ['Grey'], con: ['USB-C'] }],
+      hp: ['Air Wireless Over-ear Headphones', 'Sonaro', '40-hour battery · 3 colours', 3890, 4990, 'in', '', 'prod-headphones', 'headphones', 1, 1, '', 'ShopProduct-hp', { sub: 'hp', col: ['Black', 'White', 'Blue'], con: ['Bluetooth 5.3'] }],
+      buds: ['Pods Wireless Earbuds', 'Sonaro', '30-hour battery · touch controls', 2190, 2790, 'in', '', '', 'headphones', 0, 1, '', 'ShopProduct-hp', { sub: 'buds', col: ['White'], con: ['Bluetooth 5.3'] }],
+      chg: ['20 W USB-C Fast Charger', 'Voltaro', 'PD 3.0 · compact plug', 790, 990, 'in', '', '', 'plug-zap', 0, 1, '', 'ShopProduct', { sub: 'chg', col: ['White'], con: ['USB-C'] }],
+      cable: ['USB-C to USB-C Cable, 1 m, 60 W', 'Voltaro', 'Braided · fast charge and data', 390, 450, 'in', '', '', 'cable', 0, 1, '', 'ShopProduct', { sub: 'cable', col: ['Black'], con: ['USB-C'] }],
+      spk: ['Mini Bluetooth Speaker, IPX5', 'Sonaro', '12-hour battery · splash-proof', 1890, 2290, 'pre', '', '', 'speaker', 0, 1, '', 'ShopProduct', { sub: 'spk', col: ['Blue', 'Black'], con: ['Bluetooth 5.3'] }],
+      watch: ['Fit Smart Watch, 1.8-inch', 'Klikk', 'Heart rate · 7-day battery', 2790, 3490, 'out', '', '', 'watch', 0, 1, '', 'ShopProduct', { sub: 'watch', col: ['Black'], con: ['Bluetooth 5.3'] }],
+      bd1: ['Better Day CE505A / CF280A Black Toner', 'Better Day', 'Up to 2,700 pages · fits HP LaserJet P2035', 1450, 1800, 'in', BD1, '', 'printer', 0, 0, 'Best seller', 'ShopProduct-toner', { sub: 'toner', kind: 'Compatible', yld: 'mid', col: ['Black'] }],
+      bd2: ['Better Day Canon CRG 070H Black Toner', 'Better Day', 'Up to 9,000 pages · fits Canon LBP243dw', 3250, 3900, 'in', BD2, '', 'printer', 0, 0, '', 'ShopProduct-toner', { sub: 'toner', kind: 'Compatible', yld: 'high', col: ['Black'] }],
+      bd3: ['Better Day HP 151A (W1510A) Black Toner', 'Better Day', 'Up to 3,050 pages · fits HP LaserJet Pro 4003', 2150, 2600, 'low', BD3, '', 'printer', 0, 0, '', 'ShopProduct-toner', { sub: 'toner', kind: 'Compatible', yld: 'mid', col: ['Black'] }],
+      t85: ['85A Compatible Black Toner (CE285A)', 'Printers & Supplies', 'Up to 1,600 pages · fits HP LaserJet P1102', 1350, 1700, 'in', '', 'printing-alt', 'printer', 0, 1, '', 'ShopProduct-toner', { sub: 'toner', kind: 'Compatible', yld: 'low', col: ['Black'], brand: 'Sample brand' }],
+      hp83: ['HP 83A Original Black Toner (CF283A)', 'HP', 'Up to 1,500 pages · fits HP LaserJet Pro M201', 6200, 6900, 'in', '', '', 'printer', 0, 1, '', 'ShopProduct-toner', { sub: 'toner', kind: 'Original', yld: 'low', col: ['Black'] }],
+      cn337: ['Canon 337 Original Black Toner', 'Canon', 'Up to 2,400 pages · fits Canon MF211', 5400, 5900, 'in', '', '', 'printer', 0, 1, '', 'ShopProduct-toner', { sub: 'toner', kind: 'Original', yld: 'mid', col: ['Black'] }],
+      tn2380: ['Brother TN-2380 Original Black Toner', 'Brother', 'Up to 2,600 pages · fits HL-L2320D', 4850, 5300, 'low', '', '', 'printer', 0, 1, '', 'ShopProduct-toner', { sub: 'toner', kind: 'Original', yld: 'mid', col: ['Black'] }],
+      e003: ['Epson 003 Ink Bottle Set, 4 colours', 'Epson', 'Up to 4,500 pages · fits Epson L3110', 3200, 3500, 'in', '', '', 'droplet', 0, 1, '', 'ShopProduct-toner', { sub: 'ink', kind: 'Original', yld: 'high', col: ['Black', 'Cyan', 'Magenta', 'Yellow'] }],
+      paper: ['Double A A4 Copy Paper, 80 gsm', 'Double A', '500 sheets · laser and inkjet', 520, 580, 'in', '', '', 'file-text', 0, 0, '', 'ShopProduct', { sub: 'paper', kind: 'Original', yld: '', col: [] }]
+    };
+    const cat = p.cat || 'electronics';
+    const kind = p.kind || 'category';
+    const CFG = {
+      electronics: { title: 'Electronics & Gadgets', lead: 'Power banks, headphones, chargers and more, with warranty on every item.', crumb2: '', ids: ['pb', 'hp', 'buds', 'pb10', 'pb30', 'chg', 'cable', 'spk', 'watch'],
+        subs: [['all', 'All', 'layout-grid'], ['pb', 'Power banks', 'battery-charging'], ['hp', 'Headphones', 'headphones'], ['buds', 'Earbuds', 'headphones'], ['chg', 'Chargers', 'plug-zap'], ['cable', 'Cables', 'cable'], ['spk', 'Speakers', 'speaker'], ['watch', 'Smart watches', 'watch']],
+        attrs: [['cap', 'Capacity', 'check', ['10,000 mAh', '20,000 mAh', '30,000 mAh']], ['col', 'Colour', 'swatch', ['Black', 'White', 'Blue', 'Grey']], ['con', 'Connectivity', 'check', ['USB-C', 'Bluetooth 5.3']]] },
+      printers: { title: 'Toner cartridges', lead: 'Original and compatible toner. Every card shows the page yield and the printer it fits.', crumb2: 'Printers & Supplies', ids: ['bd1', 'bd2', 'bd3', 't85', 'hp83', 'cn337', 'tn2380', 'e003'],
+        subs: [['all', 'All toner and ink', 'layout-grid'], ['toner', 'Toner cartridges', 'printer'], ['ink', 'Ink bottles', 'droplet'], ['paper', 'Paper', 'file-text']],
+        attrs: [['kind', 'Type', 'check', ['Original', 'Compatible']], ['yld', 'Page yield', 'check', [['low', 'Under 2,000 pages'], ['mid', '2,000 to 5,000 pages'], ['high', 'Over 5,000 pages']]], ['col', 'Colour', 'swatch', ['Black', 'Cyan', 'Magenta', 'Yellow']]] }
+    };
+    const C = CFG[cat] || CFG.electronics;
+    const SW = { Black: '#1C1F26', White: '#F4F5F7', Blue: '#2A5BD7', Grey: '#8C93A1', Cyan: '#14B8D6', Magenta: '#C2187C', Yellow: '#F2C318' };
+    const add = (d, prod) => { clearTimeout(this._t2); const c = (this.state && this.state.cart !== undefined) ? this.state.cart : cart; this.setState({ cart: Math.max(0, c + d), toast: d > 0 ? prod.title : '' }); if (d > 0) this._t2 = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const f0 = { sub: 'all', brands: [], price: 'any', avail: [], a: {} };
+    const emptyF = Object.assign({}, f0, { brands: ['Klikk'], a: { cap: ['30,000 mAh'] } });
+    const fs = Object.assign({}, f0, st.f || (p.empty ? emptyF : {}));
+    fs.a = Object.assign({}, fs.a || {});
+    const setF = (patch) => this.setState({ f: Object.assign({}, fs, patch) });
+    const tog = (arr, x) => (arr || []).indexOf(x) >= 0 ? arr.filter(y => y !== x) : (arr || []).concat([x]);
+    const PRICES = [['any', 'Any', 0, 1e9], ['u1', 'Under ৳1,000', 0, 1000], ['1to3', '৳1,000–3,000', 1000, 3000], ['o3', 'Over ৳3,000', 3000, 1e9]];
+    const pr = PRICES.find(x => x[0] === fs.price) || PRICES[0];
+    const brandOf = id => (PR[id][13].brand || PR[id][1]);
+    const pass = (id, skip) => {
+      const x = PR[id], at = x[13];
+      if (skip !== 'sub' && fs.sub !== 'all' && at.sub !== fs.sub) return false;
+      if (skip !== 'brand' && fs.brands.length && fs.brands.indexOf(brandOf(id)) < 0) return false;
+      if (skip !== 'price' && !(x[3] >= pr[2] && x[3] < pr[3])) return false;
+      if (skip !== 'avail' && fs.avail.length) { const map = { in: 'In stock', low: 'In stock', pre: 'Pre-order', out: 'Out of stock' }; if (fs.avail.indexOf(map[x[5]]) < 0) return false; }
+      for (const k in fs.a) { if (skip === k) continue; const want = fs.a[k] || []; if (!want.length) continue; const have = [].concat(at[k] || []); if (!want.some(w => have.indexOf(w) >= 0)) return false; }
+      return true;
+    };
+    const ids = C.ids.filter(id => pass(id));
+    const mk = (id) => { const x = PR[id]; return { id, title: x[0], brand: x[1], spec: x[2], price: x[3], mrp: x[4], stock: x[5], img: x[6], ph: x[7], icon: x[8], options: !!x[9], sample: !!x[10], badge: x[11], href: x[12] + sx + '.dc.html', phCap: x[7] ? CAP[x[7]] : 'Product photo from Admin', left: x[5] === 'low' ? 3 : 0, ships: x[5] === 'pre' ? '20 Oct' : '', add }; };
+    const subs = C.subs.map(s => ({ label: s[1], icon: 'i i-' + s[2], cls: 'ww-subcat' + (fs.sub === s[0] ? ' is-on' : ''), count: s[0] === 'all' ? C.ids.filter(id => pass(id, 'sub')).length : C.ids.filter(id => PR[id][13].sub === s[0] && pass(id, 'sub')).length, go: () => setF({ sub: s[0] }) })).filter(s => s.count > 0 || s.cls.indexOf('is-on') >= 0);
+    const brands = Array.from(new Set(C.ids.map(brandOf)));
+    const groups = [];
+    groups.push({ title: 'Brand', sub: brands.length + ' brands', isCheck: true, opts: brands.map(b => ({ label: b, on: fs.brands.indexOf(b) >= 0, cls: 'ww-check' + (fs.brands.indexOf(b) >= 0 ? ' is-on' : ''), count: C.ids.filter(id => brandOf(id) === b && pass(id, 'brand')).length, go: () => setF({ brands: tog(fs.brands, b) }) })) });
+    groups.push({ title: 'Price', sub: 'VAT included', isRange: true, opts: PRICES.map(x => ({ label: x[1], on: fs.price === x[0], cls: 'w-chip' + (fs.price === x[0] ? ' is-active' : ''), go: () => setF({ price: x[0] }) })) });
+    groups.push({ title: 'Availability', sub: '', isCheck: true, opts: ['In stock', 'Pre-order', 'Out of stock'].map(a => ({ label: a, on: fs.avail.indexOf(a) >= 0, cls: 'ww-check' + (fs.avail.indexOf(a) >= 0 ? ' is-on' : ''), count: C.ids.filter(id => ({ in: 'In stock', low: 'In stock', pre: 'Pre-order', out: 'Out of stock' })[PR[id][5]] === a && pass(id, 'avail')).length, go: () => setF({ avail: tog(fs.avail, a) }) })) });
+    C.attrs.forEach(at => {
+      const key = at[0], vals = at[3].map(v => Array.isArray(v) ? v : [v, v]);
+      const cur = fs.a[key] || [];
+      const setA = (v) => { const a = Object.assign({}, fs.a); a[key] = tog(cur, v); setF({ a }); };
+      const opts = vals.map(v => ({ label: v[1], on: cur.indexOf(v[0]) >= 0, count: C.ids.filter(id => [].concat(PR[id][13][key] || []).indexOf(v[0]) >= 0 && pass(id, key)).length, go: () => setA(v[0]),
+        cls: at[2] === 'swatch' ? 'ww-sw' + (cur.indexOf(v[0]) >= 0 ? ' is-on' : '') : 'ww-check' + (cur.indexOf(v[0]) >= 0 ? ' is-on' : ''), sw: '--sw:' + (SW[v[0]] || '#ccc') }));
+      groups.push({ title: at[1], sub: 'From this category', isCheck: at[2] === 'check', isSwatch: at[2] === 'swatch', isSize: at[2] === 'size', opts });
+    });
+    // price histogram (decorative counts by price band) + slider positions from the preset
+    const BANDS = [3, 5, 8, 6, 9, 12, 10, 7, 6, 8, 5, 4, 3, 2, 2, 1];
+    const lo = pr[2] / 6000, hi = Math.min(1, pr[3] / 6000);
+    const hist = BANDS.map((n, i) => ({ st: 'height:' + (n * 8) + '%', cls: (i / 16 >= lo && i / 16 < hi) ? 'is-in' : '' }));
+    const rng = { min: pr[2], max: pr[3] > 1e8 ? 6000 : pr[3], minF: fmt(pr[2]), maxF: pr[3] > 1e8 ? fmt(6000) + '+' : fmt(pr[3]), a: 'left:' + (lo * 100) + '%', b: 'left:' + (hi * 100) + '%', fill: 'left:' + (lo * 100) + '%;right:' + (100 - hi * 100) + '%' };
+    const chips = [].concat(
+      fs.sub !== 'all' ? [{ label: (C.subs.find(s => s[0] === fs.sub) || [])[1], go: () => setF({ sub: 'all' }) }] : [],
+      fs.brands.map(b => ({ label: b, go: () => setF({ brands: tog(fs.brands, b) }) })),
+      fs.price !== 'any' ? [{ label: pr[1], go: () => setF({ price: 'any' }) }] : [],
+      fs.avail.map(a => ({ label: a, go: () => setF({ avail: tog(fs.avail, a) }) })),
+      Object.keys(fs.a).reduce((acc, k) => acc.concat((fs.a[k] || []).map(v => ({ label: v, go: () => { const a = Object.assign({}, fs.a); a[k] = tog(a[k], v); setF({ a }); } }))), []));
+    const fOpen = st.fOpen !== undefined ? st.fOpen : !!p.filters;
+    const end = Date.UTC(2026, 9, 12, 17, 59, 59); const left = Math.max(0, Math.floor((end - Date.now()) / 1000)); const two = n => (n < 10 ? '0' : '') + n;
+    const isSearch = kind === 'search', isDeals = kind === 'deals';
+    const q = p.q || (isSearch ? 'power bank' : '');
+    const n = ids.length, total = n ? n + 15 : 0;
+    return {
+      L, cart, m: !!p.m, toast: st.toast || '', q,
+      barCat: isDeals ? 'deals' : isSearch ? '' : cat,
+      title: isSearch ? 'Results for “' + q + '”' : isDeals ? 'Deals of the week' : C.title,
+      lead: isSearch ? 'Searched across products, brands and categories. Did you mean “power banks” in Electronics & Gadgets?' : isDeals ? 'Every deal has an end date set in Admin. Prices go back to normal when the timer ends.' : C.lead,
+      crumb2: isSearch ? '' : isDeals ? '' : C.crumb2, isDeals,
+      cd: { d: two(Math.floor(left / 86400)), h: two(Math.floor(left % 86400 / 3600)), mi: two(Math.floor(left % 3600 / 60)), s: two(left % 60) },
+      hasSubs: !isDeals, subs, groups, hist, rng, chips, fcount: chips.length,
+      showFinder: cat === 'printers' && !isSearch,
+      items: ids.map(mk), has: n > 0, none: n === 0, showPromo: n >= 5 && cat !== 'printers',
+      countLabel: n === 1 ? '1 product' : n + ' products', shown: n, total, loadStyle: 'width:' + (total ? Math.round(n * 100 / total) : 0) + '%',
+      clear: () => this.setState({ f: f0 }),
+      fOpen, fOvCls: 'w-overlay wa-r' + (st.fOut ? ' is-out' : ''),
+      openF: () => this.setState({ fOpen: true, fOut: false }),
+      closeF: () => { this.setState({ fOut: true }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ fOpen: false, fOut: false }), 260); },
+      noop: (e) => { if (e && e.preventDefault) e.preventDefault(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

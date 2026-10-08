@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Waafas World orders</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="orders" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Waafas World</span></div>
+          <h1 class="a-title">Orders</h1>
+          <p>Confirm by phone, verify offline payments, then ship with a courier and tracking number. Stock returns by itself when an order is cancelled.</p>
+        </div>
+        <div class="a-actions"><button class="a-btn a-btn-outline a-hide-sm" type="button"><span class="i i-printer"></span>Packing slips<span class="a-p is-p1">P1</span></button><button class="a-btn a-btn-outline" type="button"><span class="i i-download"></span>Export</button></div>
+      </div>
+      <div class="a-kpis">
+        <div class="a-kpi"><span class="a-kpi-label">To confirm<span class="i i-phone-call"></span></span><span class="a-kpi-n">4</span><span class="a-kpi-d">Call before shipping</span></div>
+        <div class="a-kpi is-alert"><span class="a-kpi-label">Payments to verify<span class="i i-receipt"></span></span><span class="a-kpi-n">2</span><span class="a-kpi-d down">Bank and bKash proofs</span></div>
+        <div class="a-kpi"><span class="a-kpi-label">Ready to ship<span class="i i-package-check"></span></span><span class="a-kpi-n">4</span><span class="a-kpi-d">Courier pickup at 5 pm</span></div>
+        <div class="a-kpi"><span class="a-kpi-label">Delivered, October<span class="i i-truck"></span></span><span class="a-kpi-n">98</span><span class="a-kpi-d up">96% on time</span></div>
+      </div>
+      <div class="a-views" role="tablist"><sc-for list="{{tabs}}" as="v" hint-placeholder-count="6"><button class="{{v.cls}}" type="button" role="tab" aria-selected="{{v.on}}" onClick="{{v.go}}">{{v.label}}<b>{{v.n}}</b></button></sc-for></div>
+      <div class="a-bar"><label class="a-search"><span class="i i-search"></span><input class="a-input" placeholder="Order number, name or phone" aria-label="Search orders"></label><div class="a-bar-chips"><button class="a-fchip" type="button"><span class="i i-wallet"></span>Payment</button><button class="a-fchip" type="button"><span class="i i-map-pin"></span>Delivery zone</button><button class="a-fchip" type="button"><span class="i i-calendar"></span>Date</button></div></div>
+
+      <section class="a-card a-only-lg" aria-label="Orders">
+        <div class="a-table-wrap"><table class="a-table is-wide">
+          <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th class="is-num">Total</th><th>Payment</th><th>Delivery</th><th>Status</th><th>Courier</th><th>Placed</th></tr></thead>
+          <tbody>
+            <sc-for list="{{orders}}" as="o" hint-placeholder-count="8">
+              <tr class="{{o.tr}}" style="cursor:pointer" onClick="{{o.open}}">
+                <td><span class="a-ref">{{o.ref}}</span></td>
+                <td><b class="text-navy" style="font-weight:600">{{o.who}}</b><span class="a-sub">{{o.phone}}</span></td>
+                <td style="white-space:normal;max-width:240px">{{o.items}}<span class="a-sub">{{o.count}}</span></td>
+                <td class="is-num"><span class="a-money">{{o.total}}</span></td>
+                <td><span class="{{o.payCls}}">{{o.pay}}</span><span class="a-sub">{{o.payWay}}</span></td>
+                <td>{{o.zone}}</td>
+                <td><span class="{{o.stCls}}">{{o.st}}</span></td>
+                <td>{{o.courier}}<span class="a-sub">{{o.trk}}</span></td>
+                <td>{{o.t}}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table></div>
+        <div class="a-card-foot"><span>Showing {{shown}} of 128</span><div class="a-pager"><button type="button" aria-label="Previous page"><span class="i i-chevron-left"></span></button><button class="is-on" type="button">1</button><button type="button">2</button><button type="button">3</button><button type="button" aria-label="Next page"><span class="i i-chevron-right"></span></button></div></div>
+      </section>
+      <div class="a-mcards a-hide-lg">
+        <sc-for list="{{orders}}" as="o" hint-placeholder-count="5">
+          <button class="a-mcard" type="button" style="text-align:left;width:100%" onClick="{{o.open}}">
+            <div class="a-mcard-top"><span class="a-ref">{{o.ref}}</span><span class="{{o.stCls}}">{{o.st}}</span></div>
+            <b>{{o.who}} · <span class="a-money">{{o.total}}</span></b>
+            <p>{{o.items}}</p>
+            <div class="flex items-center justify-between"><span class="{{o.payCls}}">{{o.pay}}</span><span class="text-12 a-mute">{{o.t}}</span></div>
+          </button>
+        </sc-for>
+      </div>
+    </main>
+  </div>
+
+  <sc-if value="{{drawerOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="a-ov" role="dialog" aria-modal="true" aria-labelledby="od-t">
+      <div class="a-scrim2" onClick="{{close}}"></div>
+      <aside class="a-drawer">
+        <div class="a-drawer-head"><span class="a-tile"><span class="i i-shopping-bag"></span></span><div class="min-w-0" style="flex:1"><h2 id="od-t">ORD-261008-0041</h2><p>Placed today at 6:52 pm · Nexus Textiles Ltd · 14 items</p></div><button class="a-iconbtn" type="button" aria-label="Close" onClick="{{close}}"><span class="i i-x"></span></button></div>
+        <div class="a-drawer-body">
+          <div class="a-steps"><sc-for list="{{steps}}" as="s" hint-placeholder-count="5"><span class="{{s.cls}}"><i>{{s.n}}</i>{{s.label}}</span></sc-for></div>
+          <div class="flex flex-col gap-2">
+            <div class="a-sec-title">Items</div>
+            <sc-for list="{{lines}}" as="l" hint-placeholder-count="4"><div class="flex items-center gap-3"><sc-if value="{{l.img}}" hint-placeholder-val="{{ true }}"><img class="a-thumb" src="{{l.img}}" alt="" style="object-fit:contain;background:#fff"></sc-if><sc-if value="{{l.noImg}}" hint-placeholder-val="{{ false }}"><span class="a-thumb ph is-sm" data-photo="{{l.ph}}" style="display:grid;place-items:center"><span class="{{l.icon}}"></span></span></sc-if><span class="min-w-0" style="flex:1"><b class="text-navy" style="font-weight:600;font-size:13.5px">{{l.name}}</b><small class="block text-12 a-mute">{{l.sub}}</small></span><span class="a-money">{{l.sum}}</span></div></sc-for>
+            <div class="a-divider"></div>
+            <dl class="a-kv"><dt>Subtotal</dt><dd>৳16,460</dd><dt>Delivery, outside Dhaka</dt><dd>৳150</dd><dt>Coupon TONER5, 5% on toner</dt><dd style="color:var(--color-success-600)">−৳615</dd><dt style="color:var(--color-navy-900);font-weight:700">Total</dt><dd style="font-size:16px">৳15,995</dd></dl>
+          </div>
+          <div class="a-grid2">
+            <div class="flex flex-col gap-2"><div class="a-sec-title">Deliver to</div><p class="text-13" style="line-height:1.55;color:var(--color-mist-700)"><b class="text-navy">Nexus Textiles Ltd · Procurement</b><br>Plot 14, BSCIC Industrial Area, Konabari, Gazipur, Dhaka division<br>01730-118844</p><span class="a-chip is-amber">Note: deliver before 5 pm, gate 2</span></div>
+            <div class="flex flex-col gap-2"><div class="a-sec-title">Payment</div><span class="{{payChip}}">{{payState}}</span><dl class="a-kv"><dt>Method</dt><dd>Bank transfer</dd><dt>Reference</dt><dd>NXT-OCT-118</dd><dt>Amount</dt><dd>৳15,995</dd></dl></div>
+          </div>
+          <div class="a-card" style="box-shadow:none"><div class="a-card-body flex items-center gap-3"><span class="a-thumb ph" style="width:64px;height:64px;display:grid;place-items:center"><span class="i i-image"></span></span><div class="min-w-0" style="flex:1"><b class="text-navy">Payment proof</b><small class="block text-12 a-mute">bank-slip-NXT-OCT-118.jpg · uploaded by the customer</small></div><sc-if value="{{toVerify}}" hint-placeholder-val="{{ true }}"><button class="a-btn a-btn-outline a-btn-sm" type="button" onClick="{{reject}}">Reject</button><button class="a-btn a-btn-blue a-btn-sm" type="button" onClick="{{verify}}"><span class="i i-check"></span>Verify</button></sc-if></div></div>
+          <div class="flex flex-col gap-3">
+            <div class="a-sec-title">Ship it</div>
+            <div class="a-grid2">
+              <label class="a-field"><span class="a-label">Courier</span><span class="a-sel"><select class="a-input" value="{{courier}}" onChange="{{onCourier}}"><option value="">Choose a courier</option><option>Steadfast</option><option>Pathao</option><option>RedX</option><option>Own delivery</option></select></span></label>
+              <label class="a-field"><span class="a-label">Tracking number</span><input class="{{trkCls}}" value="{{trk}}" onChange="{{onTrk}}" placeholder="From the courier"></label>
+            </div>
+            <sc-if value="{{shipErr}}" hint-placeholder-val="{{ false }}"><span class="a-err"><span class="i i-circle-alert"></span>Shipped needs a courier and a tracking number.</span></sc-if>
+            <span class="a-hint">Courier booking through Steadfast, Pathao or RedX, with an SMS on dispatch, arrives in P1.</span>
+          </div>
+        </div>
+        <div class="a-drawer-foot"><button class="a-btn a-btn-ghost" type="button" onClick="{{cancelOrder}}" style="margin-right:auto;color:var(--color-danger-600)">Cancel order</button><button class="a-btn a-btn-outline" type="button" onClick="{{confirmOrder}}"><span class="i i-phone-call"></span>Confirmed by phone</button><button class="a-btn a-btn-primary" type="button" onClick="{{ship}}"><span class="i i-truck"></span>Mark as shipped</button></div>
+      </aside>
+    </div>
+  </sc-if>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="a-toast" role="status"><span class="i i-circle-check"></span>{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"open":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const flash = msg => { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2600); };
+    const SC = { Placed: 'a-s-new', Confirmed: 'a-s-quoted', Processing: 'a-s-progress', Shipped: 'a-s-ship', Delivered: 'a-s-booked', Cancelled: 'a-s-cancelled', Returned: 'a-s-lost' };
+    const PC = { 'Cash on delivery': 'a-chip', 'To verify': 'a-chip is-amber', 'Verified': 'a-chip is-green', 'Paid': 'a-chip is-green', 'Refunded': 'a-chip' };
+    const O = [
+      ['ORD-261008-0042', 'Rahim Uddin', '01712-345678', 'T-shirt White M ×2, power bank 20,000 mAh, toner CE505A / CF280A', '4 items', '৳5,200', 'Cash on delivery', '', 'Inside Dhaka', 'Placed', '—', '', '9 min ago'],
+      ['ORD-261008-0041', 'Nexus Textiles Ltd', '01730-118844', 'Toner CF280A ×4, CRG 070H ×2, A4 paper ×8', '14 items', '৳15,995', 'To verify', 'Bank transfer', 'Outside Dhaka', 'Placed', '—', '', '1 h ago'],
+      ['ORD-261008-0040', 'Sumaiya Islam', '01688-909090', 'Air Wireless Over-ear Headphones, Black', '1 item', '৳3,890', 'To verify', 'bKash · 9KX2L7Q1', 'Inside Dhaka', 'Confirmed', '—', '', '2 h ago'],
+      ['ORD-261008-0039', 'Imran Kabir', '01933-121212', 'Power bank 20,000 mAh, USB-C cable ×2', '3 items', '৳3,380', 'Cash on delivery', '', 'Outside Dhaka', 'Processing', '—', '', '3 h ago'],
+      ['ORD-261007-0031', 'Nexus Textiles Ltd', '01730-118844', 'Toner and paper for the head office', '3 items', '৳21,450', 'Verified', 'Bank transfer', 'Outside Dhaka', 'Shipped', 'Steadfast', 'SF2610078823', 'Yesterday'],
+      ['ORD-261007-0029', 'Farhana Akter', '01819-220114', 'Classic Cotton Crew T-shirt, Navy, M ×2', '2 items', '৳1,380', 'Paid', 'Cash on delivery', 'Inside Dhaka', 'Delivered', 'Pathao', 'PT-77193320', 'Yesterday'],
+      ['ORD-261006-0024', 'Tanvir Hasan', '01911-778201', '10,000 mAh Slim Power Bank', '1 item', '৳1,770', 'Refunded', 'bKash', 'Inside Dhaka', 'Cancelled', '—', 'Stock returned', '2 days ago'],
+      ['ORD-261005-0017', 'Shirin Sultana', '01822-334455', 'Insulated Steel Bottle, 750 ml', '1 item', '৳1,140', 'Refunded', 'Cash on delivery', 'Outside Dhaka', 'Returned', 'RedX', 'RX-5510921', '3 days ago']
+    ];
+    const tab = st.tab || 'all';
+    const TABS = [['all', 'All', 128], ['Placed', 'Placed', 4], ['Confirmed', 'Confirmed', 6], ['Processing', 'Processing', 3], ['Shipped', 'Shipped', 9], ['Delivered', 'Delivered', 98], ['Cancelled', 'Cancelled', 5], ['Returned', 'Returned', 3]];
+    const orders = O.filter(o => tab === 'all' || o[9] === tab).map(o => ({ ref: o[0], who: o[1], phone: o[2], items: o[3], count: o[4], total: o[5], pay: o[6], payCls: PC[o[6]] || 'a-chip', payWay: o[7], zone: o[8], st: o[9], stCls: 'a-status ' + SC[o[9]], courier: o[10], trk: o[11], t: o[12], tr: o[0] === 'ORD-261008-0041' && (st.open !== undefined ? st.open : p.open) ? 'is-selected' : '', open: () => this.setState({ open: true }) }));
+    const verified = !!st.verified, confirmed = !!st.confirmed, shipped = !!st.shipped;
+    const stage = shipped ? 3 : confirmed ? 1 : 0;
+    const STEPS = ['Placed', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
+    const steps = STEPS.map((s, i) => ({ label: s, n: i < stage ? '✓' : String(i + 1), cls: 'a-step' + (i < stage ? ' is-done' : i === stage ? ' is-now' : '') }));
+    const lines = [
+      ['../assets/c9ea845b540e931548117afdb5ae8a65.jpg', 'Better Day CE505A / CF280A Black Toner', '× 4 · ৳1,450 each · SKU BD-CE505A-CF280A', '৳5,800'],
+      ['../assets/fd111676d187ad84eb1cdef897ce4776.jpg', 'Better Day Canon CRG 070H Black Toner', '× 2 · ৳3,250 each · SKU BD-CRG070H', '৳6,500'],
+      ['', 'Double A A4 Copy Paper, 80 gsm', '× 8 reams · ৳520 each · SKU DA-A4-80', '৳4,160']
+    ].map(l => ({ img: l[0], noImg: !l[0], ph: 'cat-stationery', icon: 'i i-file-text', name: l[1], sub: l[2], sum: l[3] }));
+    const courier = st.courier || '', trk = st.trk || '';
+    const drawerOpen = st.open !== undefined ? st.open : !!p.open;
+    return {
+      m: !!p.m,
+      tabs: TABS.map(t => ({ label: t[1], n: t[2], on: tab === t[0], cls: 'a-view' + (tab === t[0] ? ' is-active' : ''), go: () => this.setState({ tab: t[0] }) })),
+      orders, shown: orders.length, drawerOpen, close: () => this.setState({ open: false }), steps, lines,
+      toVerify: !verified, payState: verified ? 'Verified by Farzana H. just now' : 'Proof uploaded · waiting for Accounts', payChip: 'a-chip ' + (verified ? 'is-green' : 'is-amber'),
+      verify: () => { this.setState({ verified: true }); flash('Payment verified. The customer gets an email.'); }, reject: () => flash('Rejected. We’ll ask the customer for a new proof.'),
+      courier, onCourier: e => this.setState({ courier: e && e.target ? e.target.value : '', shipErr: false }), trk, onTrk: e => this.setState({ trk: e && e.target ? e.target.value : '', shipErr: false }),
+      shipErr: !!st.shipErr, trkCls: 'a-input' + (st.shipErr && !trk ? ' is-err' : ''),
+      confirmOrder: () => { this.setState({ confirmed: true }); flash('Marked as confirmed'); },
+      ship: () => { if (!courier || !trk) { this.setState({ shipErr: true }); return; } this.setState({ shipped: true, confirmed: true }); flash('Shipped with ' + courier + '. Tracking ' + trk + ' added.'); },
+      cancelOrder: () => flash('Cancel asks for a reason; stock returns to each variant.'),
+      toast: st.toast || '',
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

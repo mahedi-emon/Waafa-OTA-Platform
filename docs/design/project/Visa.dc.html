@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Visa services</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="visa" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead is-media" style="background-image:url(../assets/6b21e7cdfdec2a8a7da2fded906b1b75.webp);background-size:cover;background-position:center">
+      <video class="fx-video" poster="../assets/6b21e7cdfdec2a8a7da2fded906b1b75.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"><source src="../assets/a61fb91174d7940a92709114719c8cc9.webm" type="video/webm"><source src="../assets/c6ad54f88ebdf209759bc26195337998.mp4" type="video/mp4"></video>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Visa services</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px">
+            <span class="v-eyebrow">Visa services</span>
+            <h1 class="v-h1 v-h1-page">Visa files, prepared properly</h1>
+            <p class="v-lead">Choose your country to see the documents, processing time and fees. Send us your papers and we check them, fill in the forms, book the appointment and follow the file.</p>
+          </div>
+          <div class="v-vsearch">
+            <label class="v-vsearch-field"><span class="i i-search"></span><input class="w-input" placeholder="Which country are you visiting?" aria-label="Search countries" value="{{q}}" onInput="{{onQ}}"></label>
+            <div class="v-vsearch-quick"><span class="text-13 text-muted">Popular:</span><button class="w-chip w-chip-sm" type="button" onClick="{{quick.th}}">Thailand</button><button class="w-chip w-chip-sm" type="button" onClick="{{quick.in}}">India</button><button class="w-chip w-chip-sm" type="button" onClick="{{quick.my}}">Malaysia</button><button class="w-chip w-chip-sm" type="button" onClick="{{quick.ae}}">UAE</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec" style="padding-top:22px">
+      <div class="w-wrap">
+        <div class="v-dfilters" role="group" aria-label="Region">
+          <sc-for list="{{regions}}" as="c" hint-placeholder-count="7"><button class="{{c.cls}}" type="button" aria-pressed="{{c.on}}" onClick="{{c.go}}">{{c.label}}<span class="v-dcount">{{c.count}}</span></button></sc-for>
+        </div>
+        <div class="v-gfbar"><b aria-live="polite">{{countLabel}}</b><span class="v-sample">Sample times and fees</span></div>
+        <sc-if value="{{has}}" hint-placeholder-val="{{ true }}"><div class="v-visas v-visalist w-stagger-in" key="{{gridKey}}"><sc-if value="{{vis.th}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Thailand</div><div class="v-visa-types">Tourist · Business · Medical · Student</div><div class="v-visa-line"><span>About 10 working days</span><span>Our fee from ৳3,500</span></div></div><span class="v-visa-how">Embassy</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 10 working days</b></div><div><small>Our fee from</small><b>৳3,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.my}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/039af49115f270dcd1fee4896f730088.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Malaysia</div><div class="v-visa-types">Tourist · Business · Medical · Student</div><div class="v-visa-line"><span>About 5 working days</span><span>Our fee from ৳3,000</span></div></div><span class="v-visa-how">eVisa</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 5 working days</b></div><div><small>Our fee from</small><b>৳3,000</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.sg}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/a06f4086040ecf0d1169328364940adc.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Singapore</div><div class="v-visa-types">Tourist · Business · Transit</div><div class="v-visa-line"><span>About 7 working days</span><span>Our fee from ৳3,800</span></div></div><span class="v-visa-how">Embassy</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 7 working days</b></div><div><small>Our fee from</small><b>৳3,800</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.ae}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/f93db3c0c172100e0475f05ed5e29b63.svg" alt=""><div style="min-width:0"><div class="v-visa-name">United Arab Emirates</div><div class="v-visa-types">Tourist · Transit</div><div class="v-visa-line"><span>About 4 working days</span><span>Our fee from ৳2,500</span></div></div><span class="v-visa-how">eVisa</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 4 working days</b></div><div><small>Our fee from</small><b>৳2,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.in}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/95b323620f7ad34966c1bf5f7276d390.svg" alt=""><div style="min-width:0"><div class="v-visa-name">India</div><div class="v-visa-types">Tourist · Medical · Business · Student</div><div class="v-visa-line"><span>About 7 working days</span><span>Our fee from ৳1,500</span></div></div><span class="v-visa-how">Visa centre</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 7 working days</b></div><div><small>Our fee from</small><b>৳1,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.tr}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/327b621038f836552788eb78bb9c89c6.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Türkiye</div><div class="v-visa-types">Tourist · Business · Medical</div><div class="v-visa-line"><span>About 15 working days</span><span>Our fee from ৳4,000</span></div></div><span class="v-visa-how">Visa centre</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 15 working days</b></div><div><small>Our fee from</small><b>৳4,000</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.vn}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/9d925abd7f3837d2332ec992a4022607.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Vietnam</div><div class="v-visa-types">Tourist · Business</div><div class="v-visa-line"><span>About 5 working days</span><span>Our fee from ৳2,800</span></div></div><span class="v-visa-how">eVisa</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 5 working days</b></div><div><small>Our fee from</small><b>৳2,800</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.eu}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/241da4a39bf1dddb788006ef486bea27.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Schengen area</div><div class="v-visa-types">Tourist · Business · Student</div><div class="v-visa-line"><span>About 15 working days</span><span>Our fee from ৳6,500</span></div></div><span class="v-visa-how">Visa centre</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 15 working days</b></div><div><small>Our fee from</small><b>৳6,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.id}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/472a992b2e602dcb0029e4d76c9c948d.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Indonesia</div><div class="v-visa-types">Tourist · Business</div><div class="v-visa-line"><span>About 5 working days</span><span>Our fee from ৳3,200</span></div></div><span class="v-visa-how">eVisa</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 5 working days</b></div><div><small>Our fee from</small><b>৳3,200</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.np}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/470fd0a18cb12509e6f94c35c52ec437.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Nepal</div><div class="v-visa-types">Tourist</div><div class="v-visa-line"><span>On arrival</span><span>Our fee from ৳1,000</span></div></div><span class="v-visa-how">On arrival</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>On arrival</b></div><div><small>Our fee from</small><b>৳1,000</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.mv}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/4ad938abd17d62048d0e3b36257dc199.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Maldives</div><div class="v-visa-types">Tourist</div><div class="v-visa-line"><span>On arrival</span><span>Our fee from ৳1,000</span></div></div><span class="v-visa-how">On arrival</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>On arrival</b></div><div><small>Our fee from</small><b>৳1,000</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.cn}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/0ac978ba50f72fcdd244d728dc240e69.svg" alt=""><div style="min-width:0"><div class="v-visa-name">China</div><div class="v-visa-types">Tourist · Business · Student · Medical</div><div class="v-visa-line"><span>About 7 working days</span><span>Our fee from ৳4,500</span></div></div><span class="v-visa-how">Visa centre</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 7 working days</b></div><div><small>Our fee from</small><b>৳4,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.jp}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/0a22842f52b1b465ca4234f911c78fee.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Japan</div><div class="v-visa-types">Tourist · Business · Student</div><div class="v-visa-line"><span>About 7 working days</span><span>Our fee from ৳4,500</span></div></div><span class="v-visa-how">Embassy</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 7 working days</b></div><div><small>Our fee from</small><b>৳4,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.gb}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/81f68b8415acc6a7dbb1a992c6f66028.svg" alt=""><div style="min-width:0"><div class="v-visa-name">United Kingdom</div><div class="v-visa-types">Tourist · Business · Student · Transit</div><div class="v-visa-line"><span>About 15 working days</span><span>Our fee from ৳7,500</span></div></div><span class="v-visa-how">Visa centre</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 15 working days</b></div><div><small>Our fee from</small><b>৳7,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.us}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/cb19144f3caa87a6591eb6a874b17dc6.svg" alt=""><div style="min-width:0"><div class="v-visa-name">United States</div><div class="v-visa-types">Tourist · Business · Student · Transit</div><div class="v-visa-line"><span>Interview date varies</span><span>Our fee from ৳8,500</span></div></div><span class="v-visa-how">Interview</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>Interview date varies</b></div><div><small>Our fee from</small><b>৳8,500</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if><sc-if value="{{vis.ca}}" hint-placeholder-val="{{ true }}"><a class="v-visa" href="{{L.VisaCountry}}">
+  <div class="v-visa-top"><img class="w-flag" src="../assets/65aff658a9421e959007e6edce5c9fdc.svg" alt=""><div style="min-width:0"><div class="v-visa-name">Canada</div><div class="v-visa-types">Tourist · Business · Student</div><div class="v-visa-line"><span>About 30 working days</span><span>Our fee from ৳8,000</span></div></div><span class="v-visa-how">Online</span></div>
+  <div class="v-visa-meta"><div><small>Processing</small><b>About 30 working days</b></div><div><small>Our fee from</small><b>৳8,000</b></div></div>
+  <span class="v-visa-go">See documents<span class="i i-arrow-right"></span></span>
+</a></sc-if></div></sc-if>
+        <sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+          <div class="w-empty v-empty"><span class="v-empty-ic"><span class="i i-passport"></span></span><h3>We don’t list “{{q}}” yet</h3><p>We may still be able to help. Send the country and your travel date on WhatsApp and our visa desk will reply.</p><div class="flex flex-wrap justify-center gap-2"><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20I%20need%20a%20visa%20for"><span class="i i-whatsapp-fill"></span>Ask on WhatsApp</a><button class="w-btn w-btn-secondary" type="button" onClick="{{clear}}"><span class="i i-rotate-ccw"></span>Show all countries</button></div></div>
+        </sc-if>
+      </div>
+    </section>
+    <section class="v-sec is-tint w-reveal" aria-labelledby="vhow-t">
+      <div class="w-wrap v-vhow">
+        <div class="flex flex-col gap-4">
+          <span class="v-eyebrow on-tint">How it works</span>
+          <h2 class="v-h2" id="vhow-t">Four steps, one person following your file</h2>
+          <p class="v-lead">Your documents stay private. Only our visa team sees them, and we delete them 90 days after your case closes.</p>
+          <div class="flex flex-wrap gap-3"><a class="w-btn w-btn-primary v-magnet" href="{{L.VisaApply}}"><span class="i i-upload"></span>Start an application</a><a class="w-btn w-btn-secondary" href="{{L.VisaTrack}}"><span class="i i-search"></span>Track an application</a></div>
+        </div>
+        <ol class="v-vsteps w-stagger-in">
+          <li><span class="v-vstep-n">1</span><span class="w-tile"><span class="i i-upload"></span></span><b>Send your documents</b><small>Upload them here or send photos on WhatsApp</small></li>
+          <li><span class="v-vstep-n">2</span><span class="w-tile"><span class="i i-clipboard-check"></span></span><b>We check and fill the forms</b><small>And tell you exactly what is missing</small></li>
+          <li><span class="v-vstep-n">3</span><span class="w-tile"><span class="i i-calendar-check"></span></span><b>We book and submit</b><small>Appointment, fees and submission</small></li>
+          <li><span class="v-vstep-n">4</span><span class="w-tile"><span class="i i-passport"></span></span><b>You get your passport</b><small>We update you at every step</small></li>
+        </ol>
+      </div>
+    </section>
+    <section class="v-sec w-reveal" aria-labelledby="vfaq-t">
+      <div class="w-wrap v-faq">
+        <div class="flex flex-col gap-3"><span class="v-eyebrow" style="align-self:flex-start">Questions</span><h2 class="v-h2" id="vfaq-t">Good to know</h2><a class="v-link" href="{{L.VisaGuide}}">Read our visa guides<span class="i i-arrow-right"></span></a></div>
+        <div class="w-acc"><details class="w-acc-item" open><summary class="w-acc-q">Do you guarantee a visa?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">No one can. The embassy decides. We make sure your file is complete and correct, which is the part that usually causes refusals.</div></details><details class="w-acc-item"><summary class="w-acc-q">Do I need to come to your office?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Not always. You can upload documents or send them on WhatsApp. Some embassies need you to visit their visa centre in person for fingerprints.</div></details><details class="w-acc-item"><summary class="w-acc-q">How do I pay?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Pay the embassy fee and our service charge by bank transfer, bKash, Nagad or at our Motijheel office. We give you a receipt for both.</div></details><details class="w-acc-item"><summary class="w-acc-q">Which visas do you handle?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Tourist, business, student, medical and transit visas.</div></details></div>
+      </div>
+    </section>
+
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="visa" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m": {"editor": "boolean", "default": false}, "q": {"editor": "text", "default": ""}, "$preview": {"width": 1440, "height": 2600}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Visa','VisaCountry','VisaApply','VisaTrack','VisaGuide','VisaGuidePost','Contact','Faqs','OfflinePay','Packages','PackageDetail'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const pick1 = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => ({ key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on: cur === o[0], cls: b + (cur === o[0] ? (b.indexOf('v-opt') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: o[0] }) })); };
+    const pickN = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => { const on = cur.indexOf(o[0]) >= 0; return { key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on, cls: b + (on ? (b.indexOf('v-checkrow') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: on ? cur.filter(x => x !== o[0]) : cur.concat([o[0]]) }) }; }); };
+    const val = (key, def) => st[key] !== undefined ? st[key] : def;
+    const counter = (key, def, title, subt, min, max, what) => { const v = val(key, def); return { title, sub: subt, val: v, decOff: v <= min, incOff: v >= max, decLabel: 'Remove one ' + what, incLabel: 'Add one ' + what, dec: () => this.setState({ [key]: Math.max(min, v - 1) }), inc: () => this.setState({ [key]: Math.min(max, v + 1) }) }; };
+    const sw = (key, def) => { const on = val(key, def); return { on, cls: 'w-switch' + (on ? ' is-on' : ''), go: () => this.setState({ [key]: !on }) }; };
+    const overlay = (key, def) => { const open = st[key] !== undefined ? st[key] : def; const out = !!st[key + 'Out']; return { open, out,
+      open_: () => this.setState({ [key]: true, [key + 'Out']: false }),
+      close: () => { this.setState({ [key + 'Out']: true }); clearTimeout(this['_o' + key]); this['_o' + key] = setTimeout(() => this.setState({ [key]: false, [key + 'Out']: false }), 260); } }; };
+    const tk = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const D = [["th", "Thailand", "sea"], ["my", "Malaysia", "sea"], ["sg", "Singapore", "sea"], ["ae", "United Arab Emirates", "me"], ["in", "India", "sa"], ["tr", "Türkiye", "eu"], ["vn", "Vietnam", "sea"], ["eu", "Schengen area", "eu"], ["id", "Indonesia", "sea"], ["np", "Nepal", "sa"], ["mv", "Maldives", "sa"], ["cn", "China", "ea"], ["jp", "Japan", "ea"], ["gb", "United Kingdom", "eu"], ["us", "United States", "na"], ["ca", "Canada", "na"]], RG = [["all", "All countries"], ["sa", "South Asia"], ["sea", "Southeast Asia"], ["ea", "East Asia"], ["me", "Middle East"], ["eu", "Europe and UK"], ["na", "North America"]];
+    const q = val('q', p.q || '');
+    const reg = val('reg', 'all');
+    const qq = q.trim().toLowerCase();
+    const alias = { uae: 'ae', dubai: 'ae', schengen: 'eu', europe: 'eu', uk: 'gb', usa: 'us', america: 'us' };
+    const okQ = d => !qq || d[1].toLowerCase().indexOf(qq) >= 0 || alias[qq] === d[0];
+    const vis = {}; let n = 0;
+    D.forEach(d => { const ok = okQ(d) && (reg === 'all' || d[2] === reg); vis[d[0]] = ok; if (ok) n++; });
+    const regions = RG.map(r => ({ label: r[1], on: reg === r[0], cls: 'v-dchip' + (reg === r[0] ? ' is-on' : ''), count: D.filter(d => okQ(d) && (r[0] === 'all' || d[2] === r[0])).length, go: () => this.setState({ reg: r[0] }) }));
+    const quick = {}; [['th', 'Thailand'], ['in', 'India'], ['my', 'Malaysia'], ['ae', 'United Arab Emirates']].forEach(x => { quick[x[0]] = () => this.setState({ q: x[1], reg: 'all' }); });
+    return {
+      L, m: !!p.m, regions, vis, quick, q, has: n > 0, none: n === 0, gridKey: reg + '-' + qq,
+      countLabel: n === 1 ? '1 country' : n + ' countries',
+      onQ: (e) => this.setState({ q: e && e.target ? e.target.value : '' }),
+      clear: () => this.setState({ q: '', reg: 'all' })
+    };
+  }
+}
+</script>
+</body>
+</html>

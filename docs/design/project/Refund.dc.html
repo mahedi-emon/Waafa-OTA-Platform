@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Refund policy</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="more" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">{{D.title}}</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:760px"><span class="v-eyebrow">Policies</span><h1 class="v-h1 v-h1-page">{{D.title}}</h1><p class="v-lead">{{D.lead}}</p></div>
+          <div class="flex flex-wrap items-center gap-2"><span class="wc-updated"><span class="i i-history"></span>Updated 8 Oct 2026</span><span class="v-sample">Sample text for legal review</span></div>
+        </div>
+        <div class="wc-chips" style="margin-top:18px" role="tablist" aria-label="Policies"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><a class="{{t.cls}}" href="{{t.href}}" role="tab" aria-selected="{{t.on}}"><span class="{{t.icon}}"></span>{{t.label}}</a></sc-for></div>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:28px">
+      <div class="w-wrap wc-legal">
+        <nav class="wc-toc" aria-label="Sections"><b>On this page</b><sc-for list="{{toc}}" as="t" hint-placeholder-count="6"><a class="{{t.cls}}" href="{{t.href}}">{{t.label}}</a></sc-for></nav>
+        <div class="wc-prose" style="font-size:16px">
+          <div class="wc-short"><b>In short</b><ul><sc-for list="{{D.short}}" as="s" hint-placeholder-count="4"><li><span class="i i-circle-check"></span><span>{{s}}</span></li></sc-for></ul></div>
+          <sc-for list="{{secs}}" as="s" hint-placeholder-count="6">
+            <section aria-labelledby="{{s.id}}">
+              <h2 id="{{s.id}}">{{s.h}}</h2>
+              <sc-for list="{{s.p}}" as="t" hint-placeholder-count="2"><p>{{t}}</p></sc-for>
+              <sc-if value="{{s.hasTable}}" hint-placeholder-val="{{ false }}"><div class="wc-tablewrap" style="margin-top:14px"><table class="wc-table"><thead><tr><sc-for list="{{s.head}}" as="h" hint-placeholder-count="2"><th>{{h}}</th></sc-for></tr></thead><tbody><sc-for list="{{s.rows}}" as="r" hint-placeholder-count="3"><tr><th scope="row">{{r.a}}</th><td>{{r.b}}</td></tr></sc-for></tbody></table></div></sc-if>
+            </section>
+          </sc-for>
+          <div class="wc-help" style="margin-top:36px"><div><b>Questions about this policy?</b><p>Call 01823-232241 or email info@waafasworld.com. Quote your reference number.</p></div><div class="flex flex-wrap gap-2"><a class="w-btn w-btn-white" href="{{L.Contact}}">Contact us</a></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"doc":{"editor":"enum","options":["refund","privacy","terms"],"default":"refund"},"$preview":{"width":1440,"height":3259}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Contact','Refund','Privacy','Terms'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const DOCS = {
+      refund: { title: 'Refund policy', lead: 'How cancellations, changes and refunds work for flights, hotels, tours, visas and Waafas World orders.',
+        short: ['Airline and hotel rules decide most refunds. We explain them before you pay.', 'Embassy visa fees are never refundable; our service charge is shown separately.', 'Waafas World: faulty items replaced within 7 days; clothing exchanged for size within 7 days.', 'Refunds go back the way you paid: bKash or Nagad in 3 working days, bank in up to 7.'],
+        secs: [
+          ['flights', 'Flights', ['Every fare has its own change and refund rules, set by the airline. Your expert explains them in plain words before you pay, and they are on your ticket.', 'If you cancel, we pass on everything the airline refunds, minus the airline’s penalty. Our service charge is not refundable once the ticket is issued.'], ['When you cancel', 'What you get back'], [['Before the ticket is issued', 'Everything you paid'], ['After issue, refundable fare', 'Airline refund minus airline penalty'], ['After issue, non-refundable fare', 'Unused taxes only, if the airline returns them']]],
+          ['hotels', 'Hotels', ['Free cancellation is possible until the hotel’s deadline, shown on your confirmation. Non-refundable rates are cheaper and are always labelled as such.'], null, null],
+          ['tours', 'Tour packages', ['Packages combine flights, hotels and services that each have their own rules, so the refund depends on how close to departure you cancel.'], ['When you cancel', 'Refund (sample terms)'], [['30 days or more before departure', 'Full refund minus a ৳2,000 processing fee'], ['15 to 29 days before', '50% of the package price'], ['Less than 15 days before', 'No refund, except what airlines and hotels return']]],
+          ['visa', 'Visa services', ['Embassy and visa-centre fees are paid to them and are never refundable, even if the visa is refused. That is their rule, not ours.', 'Our service charge is refunded in full if you cancel before we start preparing your file.'], null, null],
+          ['shop', 'Waafas World orders', ['Tell us within 7 days if an item arrives faulty or damaged, with a photo, and we replace it or refund it.', 'Clothing can be exchanged for another size within 7 days if unworn and with tags. Opened software, ink and toner are exchanged only if faulty.', 'If you refuse a cash-on-delivery parcel without a reason, we may ask for the delivery charge on your next order.'], null, null],
+          ['custom', 'Printing and trading', ['Custom print jobs and sourced goods are made for you, so they cannot be cancelled once production or purchase has started. Your quote shows that date.'], null, null],
+          ['how', 'How to ask for a refund', ['Call, WhatsApp or email us with your reference number (for example FLT-, PKG-, VSA- or ORD-). We confirm the amount in writing before we process it.'], ['You paid with', 'Refund time once approved'], [['bKash or Nagad', 'Within 3 working days'], ['Bank transfer', 'Within 7 working days'], ['Cash at the office', 'Same day, at the office'], ['Airline refunds', 'The airline’s timeline, often 4 to 8 weeks']]]
+        ] },
+      privacy: { title: 'Privacy policy', lead: 'What we collect, why we need it, who sees it, and how to ask us to delete it.',
+        short: ['We collect only what we need to book your trip, process your visa or deliver your order.', 'Passport and visa documents are visible only to our visa team and deleted 90 days after your case closes.', 'We never sell your data or share it with advertisers.', 'Ask us any time to see, correct or delete what we hold about you.'],
+        secs: [
+          ['collect', 'What we collect', ['Contact details: your name, mobile number and, if you give it, your email.', 'Trip details you enter: routes, dates, travellers and preferences. For visas, the documents you upload. For Waafas World, your delivery address.', 'Payment references such as a bKash transaction ID. We never see or store card numbers.'], null, null],
+          ['use', 'How we use it', ['To answer your request, confirm prices, book with airlines and hotels, prepare visa files, deliver orders and send receipts.', 'To send a monthly newsletter, only if you subscribe. Every email has a one-click unsubscribe.'], null, null],
+          ['share', 'Who we share it with', ['Only the people who need it to do the job: the airline, hotel or tour partner you booked, the embassy or visa centre, our courier, and payment providers.'], ['Who', 'What they get'], [['Airlines and hotels', 'Names and passport details as on your booking'], ['Embassies and visa centres', 'Your visa file'], ['Courier partners', 'Name, mobile number and delivery address'], ['Payment providers', 'Amount and reference only']]],
+          ['docs', 'Your documents', ['Visa documents are stored privately. Only our visa team can open them, and we delete them 90 days after your case closes. You can ask us to delete them sooner.'], null, null],
+          ['cookies', 'Cookies', ['We use essential cookies to keep your cart and searches, and privacy-friendly analytics to see which pages help people. No advertising cookies.'], null, null],
+          ['rights', 'Your rights', ['Ask us to see, correct or delete your data by calling 01823-232241 or emailing info@waafasworld.com. We reply within 7 working days.'], null, null]
+        ] },
+      terms: { title: 'Terms of use', lead: 'The rules for using this site and booking with Waafa Tours and Travel, Waafas World and Waafa International.',
+        short: ['Prices marked “from” or “indicative” are a guide; an expert confirms the final price before you pay.', 'A booking is confirmed only when you receive a confirmation with your reference number.', 'You are responsible for valid passports and travel documents; embassies decide visas.', 'These terms follow the laws of Bangladesh.'],
+        secs: [
+          ['site', 'Using this site', ['Use the site for genuine requests and orders. Do not copy its content, scrape prices or try to break its security.'], null, null],
+          ['prices', 'Prices and availability', ['In Manual mode, prices for flights, hotels and packages are indicative. Our expert checks live availability and confirms the price for your dates before you pay. In Live mode, prices come straight from airlines and are held for a limited time.', 'Waafas World prices include VAT. Stock and delivery estimates can change until your order is confirmed.'], null, null],
+          ['bookings', 'Bookings and references', ['Each request gets a reference number, such as FLT-261008-0042. A booking is confirmed only when we send a confirmation with that reference and, for travel, your ticket or voucher.'], null, null],
+          ['payments', 'Payments', ['We accept bKash, Nagad, bank transfer and payment at our office. Waafas World also accepts cash on delivery for orders up to ৳20,000. Instalments (EMI) depend on your card and bank.'], null, null],
+          ['travel', 'Travel documents and visas', ['You are responsible for a passport valid for at least six months, the right visas and any health documents. Embassies decide visa applications; we cannot guarantee an outcome.'], null, null],
+          ['content', 'Reviews and photos', ['When you send feedback or photos, you allow us to show them on this site as you agreed. Ask us and we take them down the same day.'], null, null],
+          ['liability', 'Our responsibility', ['We are responsible for the services we provide. Airlines, hotels and other partners are responsible for theirs, under their own terms, which we share with you before you book.'], null, null],
+          ['law', 'Law and changes', ['These terms follow the laws of Bangladesh. If we change them, the date at the top changes and the version you agreed to applies to your booking.'], null, null]
+        ] }
+    };
+    const dk = p.doc || 'refund';
+    const D = DOCS[dk];
+    const secs = D.secs.map(s => ({ id: s[0], h: s[1], p: s[2], hasTable: !!s[3], head: s[3] || [], rows: (s[4] || []).map(r => ({ a: r[0], b: r[1] })) }));
+    const toc = secs.map((s, i) => ({ label: s.h, href: '#' + s.id, cls: i === 0 ? 'is-on' : '' }));
+    const tabs = [['refund', 'Refund policy', 'i i-undo', 'Refund'], ['privacy', 'Privacy policy', 'i i-lock', 'Privacy'], ['terms', 'Terms of use', 'i i-file-text', 'Terms']].map(t => ({ label: t[1], icon: t[2], href: L[t[3]], on: dk === t[0], cls: 'w-chip' + (dk === t[0] ? ' is-on' : '') }));
+    return { L, m: !!p.m, D, secs, toc, tabs };
+  }
+}
+</script>
+</body>
+</html>

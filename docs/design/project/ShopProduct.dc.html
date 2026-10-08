@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · product page</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="{{cart}}" cat="{{P.cat}}" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="ww-sec" style="padding-top:16px">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">{{P.catName}}</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">{{P.sub}}</a><span class="i i-chevron-right"></span><span aria-current="page">{{P.short}}</span></nav>
+        <div class="ww-pdp">
+          <div class="ww-gal">
+            <div class="{{galCls}}" style="{{zoomStyle}}" onPointerMove="{{zoomMove}}" onPointerLeave="{{zoomOut}}" onClick="{{toggleZoom}}" role="img" aria-label="{{img.alt}}">
+              <sc-if value="{{img.src}}" hint-placeholder-val="{{ false }}"><img src="{{img.src}}" alt="{{img.alt}}" key="{{img.key}}"></sc-if>
+              <sc-if value="{{img.noSrc}}" hint-placeholder-val="{{ true }}"><div class="ph" data-photo="{{img.ph}}" key="{{img.key}}" style="{{img.tint}}"><div class="ph-in"><span class="ph-ic"><span class="{{P.icon}}"></span></span><span class="ph-cap">{{img.cap}}</span><span class="ph-cr">{{img.cr}}</span></div></div></sc-if>
+              <div class="ww-card-tags"><span class="ww-off">−{{off}}%</span><sc-if value="{{P.badge}}" hint-placeholder-val="{{ false }}"><span class="w-badge w-badge-premium"><span class="w-tri"></span>{{P.badge}}</span></sc-if><sc-if value="{{P.sample}}" hint-placeholder-val="{{ false }}"><span class="w-sample">Sample</span></sc-if></div>
+              <span class="ww-gal-count">{{imgIndex}} / {{imgTotal}}</span>
+              <span class="ww-gal-hint"><span class="{{zoomIcon}}"></span>{{zoomHint}}</span>
+            </div>
+            <div class="ww-thumbs" role="tablist" aria-label="Photos">
+              <sc-for list="{{thumbs}}" as="t" hint-placeholder-count="5"><button class="{{t.cls}}" type="button" role="tab" aria-selected="{{t.on}}" aria-label="{{t.label}}" onClick="{{t.go}}"><sc-if value="{{t.src}}" hint-placeholder-val="{{ false }}"><img src="{{t.src}}" alt=""></sc-if><sc-if value="{{t.noSrc}}" hint-placeholder-val="{{ true }}"><span class="ph is-sm" data-photo="{{t.ph}}" style="{{t.tint}}"><span class="ph-in"><span class="ph-ic"><span class="{{t.icon}}"></span></span></span></span></sc-if><sc-if value="{{t.video}}" hint-placeholder-val="{{ false }}"><span class="ww-thumb-play"><span class="i i-circle-play"></span></span></sc-if></button></sc-for>
+            </div>
+          </div>
+          <div class="ww-info">
+            <div class="ww-info-brand"><a href="{{L.ShopList}}">{{P.brand}}</a><span class="w-dot-sep"></span><span>{{P.catName}}</span></div>
+            <h1>{{P.title}}</h1>
+            <div class="ww-info-meta"><span class="{{stockCls}}">{{stockLabel}}</span><span class="w-dot-sep"></span><span>SKU <code>{{sku}}</code></span><span class="w-dot-sep"></span><span>{{P.metaNote}}</span></div>
+            <div class="ww-price"><b><span key="{{priceKey}}">{{priceF}}</span></b><s>{{mrpF}}</s><span class="ww-off">−{{off}}%</span><span class="ww-codbadge" style="margin-left:auto"><span class="i i-banknote"></span>Cash on delivery</span><small>You save {{saveF}} · price includes VAT · sample price set in Admin</small></div>
+            <sc-for list="{{optGroups}}" as="g" hint-placeholder-count="2">
+              <div class="ww-optgroup">
+                <div class="ww-optlabel"><span>{{g.label}}: <b>{{g.value}}</b></span><sc-if value="{{g.help}}" hint-placeholder-val="{{ false }}"><a href="#size-guide">{{g.help}}</a></sc-if></div>
+                <sc-if value="{{g.isSwatch}}" hint-placeholder-val="{{ true }}"><div class="ww-swatches"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" style="{{o.sw}}" aria-label="{{o.label}}" aria-pressed="{{o.on}}" title="{{o.label}}" onClick="{{o.go}}"></button></sc-for></div></sc-if>
+                <sc-if value="{{g.isSize}}" hint-placeholder-val="{{ false }}"><div class="ww-sizes"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="5"><button class="{{o.cls}}" type="button" aria-pressed="{{o.on}}" aria-disabled="{{o.off}}" onClick="{{o.go}}">{{o.label}}</button></sc-for></div></sc-if>
+                <sc-if value="{{g.isPill}}" hint-placeholder-val="{{ false }}"><div class="ww-pills"><sc-for list="{{g.opts}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" type="button" aria-pressed="{{o.on}}" onClick="{{o.go}}"><b>{{o.label}}</b><small>{{o.sub}}</small></button></sc-for></div></sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{P.compat}}" hint-placeholder-val="{{ false }}">
+              <div class="ww-compat">
+                <div class="flex items-center justify-between gap-3"><b class="text-navy" style="font:700 14.5px/1.2 var(--font-sans)">Compatible with</b><a class="v-link" href="{{L.ShopFinder}}" style="min-height:0;font-size:13.5px">Check your printer<span class="i i-arrow-right"></span></a></div>
+                <div class="ww-compat-list"><sc-for list="{{P.compat}}" as="c" hint-placeholder-count="4"><span><span class="i i-printer-check"></span>{{c}}</span></sc-for></div>
+              </div>
+            </sc-if>
+            <div class="ww-buy">
+              <div class="{{stepCls}}" role="group" aria-label="Quantity"><button type="button" aria-label="One less" onClick="{{dec}}"><span class="i i-minus"></span></button><output aria-live="polite"><span class="{{rollCls}}" key="{{qty}}">{{qty}}</span></output><button type="button" aria-label="One more" onClick="{{inc}}"><span class="i i-plus"></span></button></div>
+              <sc-if value="{{canBuy}}" hint-placeholder-val="{{ true }}"><button class="{{addCls}}" type="button" onClick="{{addMain}}"><span class="{{addIcon}}"></span>{{addLabel}}</button></sc-if>
+              <sc-if value="{{cantBuy}}" hint-placeholder-val="{{ false }}"><button class="w-btn w-btn-secondary" type="button" disabled=""><span class="i i-ban"></span>This option is sold out</button></sc-if>
+              <a class="w-btn w-btn-primary ww-buynow" href="{{L.ShopCheckout}}">Buy now</a>
+            </div>
+            <div class="ww-facts">
+              <div class="ww-fact"><span class="i i-truck"></span><div><b>Delivery to <span class="v-inlineselect"><select aria-label="Delivery district" onChange="{{pickZone}}"><option>Dhaka</option><option>Chattogram</option><option>Sylhet</option><option>Khulna</option><option>Rajshahi</option></select></span></b><small>{{zone}}</small></div></div>
+              <div class="ww-fact"><span class="i i-banknote"></span><div><b>Cash on delivery available</b><small>Up to ৳20,000 per order · or bKash, Nagad and bank transfer</small></div></div>
+              <div class="ww-fact"><span class="i i-shield-check"></span><div><b>{{P.warrantyShort}}</b><small>{{P.returnsShort}} · <a class="v-link" href="{{L.Refund}}" style="min-height:0;display:inline;font-size:12.5px">Refund policy</a></small></div></div>
+            </div>
+            <div class="ww-hl"><sc-for list="{{P.hl}}" as="h" hint-placeholder-count="4"><div><span class="{{h.ic}}"></span>{{h.t}}</div></sc-for></div>
+            <div class="ww-bulkcall"><span class="w-tile" style="background:#fff"><span class="i i-building-2"></span></span><div><b>Buying in bulk?</b><small>Get a corporate price for 20 or more, with VAT invoice.</small></div><button class="w-btn w-btn-sm w-btn-navy" type="button" onClick="{{openBulk}}">Get a corporate price</button></div>
+          </div>
+        </div>
+
+        <div class="ww-sections">
+          <div class="flex flex-col gap-4">
+            <section class="ww-panel" aria-labelledby="d-t"><h2 id="d-t">Description</h2><sc-for list="{{P.desc}}" as="d" hint-placeholder-count="2"><p>{{d}}</p></sc-for></section>
+            <section class="ww-panel" aria-labelledby="s-t"><h2 id="s-t">Specifications</h2><table class="ww-spec"><tbody><sc-for list="{{specs}}" as="r" hint-placeholder-count="6"><tr><th scope="row">{{r.k}}</th><td>{{r.v}}</td></tr></sc-for></tbody></table><p class="text-13 text-muted" style="margin-top:12px;font-size:12.5px">Built from this category’s attribute set in Admin. Sample values.</p></section>
+          </div>
+          <div class="flex flex-col gap-4">
+            <section class="ww-panel" aria-labelledby="w-t"><h2 id="w-t">Warranty and returns</h2><div class="ww-warranty"><sc-for list="{{P.war}}" as="w" hint-placeholder-count="3"><div><span class="w-tile"><span class="{{w.ic}}"></span></span><span><b>{{w.t}}</b><small>{{w.s}}</small></span></div></sc-for></div></section>
+            <section class="ww-panel" aria-labelledby="q-t"><h2 id="q-t">Questions before you buy?</h2><p style="font-size:14px">Our team answers on WhatsApp, Saturday to Thursday, 10 am to 6 pm.</p><div class="flex flex-wrap gap-2" style="margin-top:12px"><a class="w-btn w-btn-wa w-btn-sm" href="{{waHref}}"><span class="i i-whatsapp-fill"></span>Ask on WhatsApp</a><a class="w-btn w-btn-secondary w-btn-sm" href="tel:+8801823232241"><span class="i i-phone"></span>01823-232241</a></div></section>
+          </div>
+        </div>
+
+        <div class="ww-head" style="margin:48px 0 16px"><div><h2 style="font-size:24px">You may also like</h2></div><a class="v-pillbtn" href="{{L.ShopList}}">See more<span class="i i-arrow-right"></span></a></div>
+        <div class="ww-rail"><sc-for list="{{related}}" as="it" hint-placeholder-count="5"><dc-import name="PCard" p="{{it}}" on-add="{{it.add}}" style="display:contents" hint-size="100%,430px"></dc-import></sc-for></div>
+        <div class="ww-head" style="margin:36px 0 14px"><div><h2 style="font-size:20px">Recently viewed</h2></div></div>
+        <div class="ww-rail is-compact"><sc-for list="{{recent}}" as="it" hint-placeholder-count="4"><dc-import name="PCard" p="{{it}}" variant="compact" style="display:contents" hint-size="100%,100px"></dc-import></sc-for></div>
+      </div>
+    </section>
+    <div class="ww-buybar is-bottom"><div class="ww-buybar-p"><b>{{priceF}}</b><small>{{variantLine}}</small></div><div class="ww-buybar-btns"><button class="{{addBarCls}}" type="button" onClick="{{addMain}}" aria-label="Add to cart"><span class="{{addIcon}}"></span></button><a class="w-btn w-btn-primary" href="{{L.ShopCheckout}}">Buy now</a></div></div>
+  </main>
+
+  <sc-if value="{{videoOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="ww-videomodal wa-r" role="dialog" aria-modal="true" aria-label="Product video">
+      <div class="ww-video">
+        <sc-if value="{{vHp}}" hint-placeholder-val="{{ false }}"><video class="fx-video" poster="../assets/7699ae99dc67132427617c72a02efbe1.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"><source src="../assets/3c22f6f2c2f30247bc6e39b493cea2f4.webm" type="video/webm"><source src="../assets/7e591e1388a04472a8ae0a1106960692.mp4" type="video/mp4"></video></sc-if><sc-if value="{{vPb}}" hint-placeholder-val="{{ false }}"><video class="fx-video" poster="../assets/2ebbf3bded08c60dedb04ba59b1543ca.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"><source src="../assets/31f0f567fb55f4b449b625b70dd8f3dd.webm" type="video/webm"><source src="../assets/c7debbf09aa34d492cfd898c2390f548.mp4" type="video/mp4"></video></sc-if><sc-if value="{{vToner}}" hint-placeholder-val="{{ false }}"><video class="fx-video" poster="../assets/ad53c651b55aeeebd40d2489ad592b67.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"><source src="../assets/08824d1cdc63231aeebe8acd8a4bf88d.webm" type="video/webm"><source src="../assets/5a9b1f60654fd0f50898272804521fe7.mp4" type="video/mp4"></video></sc-if>
+        <div class="ph is-dark" data-photo="{{P.ph}}"><div class="ph-in"><span class="ph-ic"><span class="i i-play"></span></span><span class="ph-cap">{{P.videoCap}}</span><span class="ph-cr">Video uploaded in Admin, or a YouTube link</span></div></div>
+        <div class="ww-video-ctl"><span class="i i-pause"></span><span class="ww-video-bar"><span></span></span><span style="font:600 12px/1 var(--font-sans)">0:11 / 0:32</span><span class="i i-volume-2"></span><span class="i i-maximize-2"></span></div>
+      </div>
+      <button class="v-iconbtn" type="button" aria-label="Close video" onClick="{{closeVideo}}" style="position:absolute;top:18px;right:18px"><span class="i i-x"></span></button>
+    </div>
+  </sc-if>
+  <sc-if value="{{bulkOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="ww-dialog wa-r" role="dialog" aria-modal="true" aria-labelledby="bq-t">
+      <div class="w-scrim" onClick="{{closeBulk}}"></div>
+      <div class="ww-dialog-card">
+        <sc-if value="{{bulkForm}}" hint-placeholder-val="{{ true }}">
+          <div class="ww-dialog-head"><span class="w-tile"><span class="i i-building-2"></span></span><div><h2 id="bq-t">Corporate price for this item</h2><p>{{P.title}} · current price {{priceF}} each. We reply within one working day.</p></div><button class="v-iconbtn is-plain" type="button" aria-label="Close" onClick="{{closeBulk}}"><span class="i i-x"></span></button></div>
+          <div class="ww-dialog-body">
+            <div class="w-grid-2"><div class="w-field"><label class="w-label" for="bq-q">Quantity <span class="w-req">*</span></label><input class="w-input" id="bq-q" inputmode="numeric" value="50"></div><div class="w-field"><label class="w-label" for="bq-f">How often</label><span class="w-select"><select class="w-input" id="bq-f"><option>One time</option><option>Every month</option><option>Every quarter</option></select></span></div></div>
+            <div class="w-grid-2"><div class="w-field"><label class="w-label" for="bq-c">Company <span class="w-req">*</span></label><input class="w-input" id="bq-c" placeholder="Company name"></div><div class="w-field"><label class="w-label" for="bq-p">Mobile <span class="w-req">*</span></label><input class="w-input" id="bq-p" inputmode="tel" placeholder="+880 1712-345678"></div></div>
+            <div class="w-field"><label class="w-label" for="bq-n">Notes <span class="w-opt">(optional)</span></label><textarea class="w-input v-textarea" id="bq-n" rows="2" placeholder="Variants, delivery address, VAT details"></textarea></div>
+          </div>
+          <div class="ww-dialog-foot"><button class="w-btn w-btn-ghost" type="button" onClick="{{closeBulk}}">Cancel</button><button class="w-btn w-btn-primary" type="button" onClick="{{sendBulk}}"><span class="i i-send"></span>Send request</button></div>
+        </sc-if>
+        <sc-if value="{{bulkDone}}" hint-placeholder-val="{{ false }}"><div class="ww-dialog-body" style="align-items:center;text-align:center;padding:30px 24px"><span class="w-tile" style="width:64px;height:64px;border-radius:50%;background:var(--color-success-50);color:var(--color-success-600)"><span class="i i-circle-check" style="width:32px;height:32px"></span></span><h2 class="v-h3">Request sent</h2><span class="ww-ref">QTE-261008-0008</span><p class="text-subtle" style="max-width:380px">We’ll call or email within one working day.</p><button class="w-btn w-btn-navy" type="button" onClick="{{closeBulk}}">Done</button></div></sc-if>
+      </div>
+    </div>
+  </sc-if>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <!-- phones: the buy bar takes the tab bar’s place on a product page -->
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="v-toastwrap" role="status" style="bottom:96px"><div class="w-toast"><span class="w-tile"><span class="i i-check"></span></span><span class="min-w-0"><b>Added to cart</b><br><span style="opacity:.8">{{toast}}</span></span><a class="v-toast-link" href="{{L.ShopCart}}">View cart</a></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"cart":{"editor":"int","default":4},"p":{"editor":"enum","options":["tee","pb","hp","toner"],"default":"tee"},"video":{"editor":"boolean","default":false},"bulk":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":3292}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._a); clearTimeout(this._b); clearTimeout(this._t2); clearTimeout(this._s); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Shop','ShopList','ShopProduct','ShopCart','ShopCheckout','ShopFinder','Refund'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const fmt = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const BD1 = '../assets/c9ea845b540e931548117afdb5ae8a65.jpg', BD3 = '../assets/1bb1b89d15ac65da8322547e81decbdf.jpg', BD2 = '../assets/fd111676d187ad84eb1cdef897ce4776.jpg';
+    const SW = { White: '#F4F5F7', Navy: '#1E2B55', Black: '#1C1F26', 'Heather grey': '#A7ADB8', 'Studio white': '#EEEDEA', 'Midnight black': '#1C1F26', 'Ocean blue': '#2A5BD7', Grey: '#8C93A1' };
+    const DATA = {
+      tee: { cat: 'fashion', catName: 'Fashion & Lifestyle', sub: 'T-shirts', short: 'Classic Cotton Crew T-shirt', title: 'Classic Cotton Crew T-shirt', brand: 'Tessra', icon: 'i i-shirt', ph: 'prod-tshirt', sample: true, badge: 'New', metaNote: 'Ships in 1–2 days',
+        price: 650, mrp: 850, skuBase: 'TSR-TEE',
+        opts: [{ key: 'col', label: 'Colour', type: 'swatch', vals: ['White', 'Navy', 'Black', 'Heather grey'] }, { key: 'size', label: 'Size', type: 'size', vals: ['S', 'M', 'L', 'XL', 'XXL'], help: 'Size guide' }],
+        def: { col: 'White', size: 'M' }, extra: { XXL: 50 }, out: ['Black|S'], low: ['Navy|XL'],
+        photos: { White: { cr: 'Md Salman · Unsplash · Sample', ph: 'prod-tshirt' } }, more: ['Back view', 'Fabric close-up', 'On model'],
+        hl: [['i i-leaf', '100% combed cotton, 180 GSM'], ['i i-refresh-ccw', 'Pre-shrunk, keeps its shape'], ['i i-ruler', 'Regular fit, ribbed collar'], ['i i-flag', 'Made in Bangladesh']],
+        desc: ['A heavyweight everyday T-shirt in soft combed cotton. The ribbed collar keeps its shape wash after wash, and the regular fit works on its own or under a shirt.', 'Pick a colour to see its own photos, stock and SKU. Every colour and size is a separate variant in Admin, with its own price and stock.'],
+        specs: [['Material', '100% combed cotton'], ['Weight', '180 GSM'], ['Fit', 'Regular'], ['Neck', 'Crew, ribbed'], ['Sleeve', 'Short'], ['Care', 'Machine wash cold, do not tumble dry'], ['Origin', 'Bangladesh']],
+        warrantyShort: 'Easy size exchange', returnsShort: 'Exchange within 7 days if unworn with tags',
+        war: [['i i-refresh-ccw', 'Size exchange in 7 days', 'Unworn, with tags. We collect and deliver the new size in Dhaka.'], ['i i-rotate-ccw', 'Refund if faulty', 'Tell us within 48 hours with a photo.'], ['i i-truck', 'Delivery', 'Next day in Dhaka, 2 to 4 days elsewhere.']],
+        videoCap: '' },
+      pb: { cat: 'electronics', catName: 'Electronics & Gadgets', sub: 'Power banks', short: '20,000 mAh Power Bank', title: 'Voltaro 20,000 mAh Power Bank, 22.5 W Fast Charge', brand: 'Voltaro', icon: 'i i-battery-charging', ph: 'prod-powerbank', sample: true, badge: 'Best seller', metaNote: '6-month warranty',
+        price: 2450, mrp: 2990, skuBase: 'VLT-PB',
+        opts: [{ key: 'cap', label: 'Capacity', type: 'pill', vals: ['10,000 mAh', '20,000 mAh'], subs: { '10,000 mAh': '৳1,690 · 2 charges', '20,000 mAh': '৳2,450 · 4 charges' } }, { key: 'col', label: 'Colour', type: 'swatch', vals: ['Black', 'White'] }],
+        def: { cap: '20,000 mAh', col: 'Black' }, prices: { '10,000 mAh': [1690, 1990], '20,000 mAh': [2450, 2990] }, out: ['10,000 mAh|White'], low: ['20,000 mAh|White'],
+        photos: { Black: { cr: 'I’M ZION · Unsplash · Sample', ph: 'prod-powerbank' } }, more: ['Ports close-up', 'In the hand', 'In the box'], video: true,
+        hl: [['i i-zap', '22.5 W fast charging'], ['i i-smartphone-charging', 'Charges 3 devices at once'], ['i i-plane', 'Under 100 Wh, cabin-bag safe'], ['i i-battery-full', 'LED battery display']],
+        desc: ['Enough power for a phone four times over. Charge your phone, earbuds and a tablet together, and top up the power bank itself from USB-C in about six hours.', 'At 74 Wh it is under the 100 Wh limit most airlines allow in cabin bags. Check your airline before you fly.'],
+        specs: [['Capacity', '20,000 mAh (74 Wh)'], ['Output', 'USB-C PD 22.5 W · USB-A 18 W'], ['Input', 'USB-C 18 W'], ['Ports', '1 × USB-C, 2 × USB-A'], ['Recharge time', 'About 6 hours'], ['Weight', '380 g'], ['In the box', 'Power bank, USB-C cable, guide']],
+        warrantyShort: '6-month seller warranty', returnsShort: 'Replacement if faulty within 7 days',
+        war: [['i i-shield-check', '6-month warranty', 'Repair or replacement by Waafa International.'], ['i i-rotate-ccw', 'Faulty on arrival?', 'We replace it within 7 days.'], ['i i-truck', 'Delivery', 'Next day in Dhaka, 2 to 4 days elsewhere.']],
+        videoCap: '32-second overview: ports, display and fast charging' },
+      hp: { cat: 'electronics', catName: 'Electronics & Gadgets', sub: 'Headphones', short: 'Air Wireless Headphones', title: 'Sonaro Air Wireless Over-ear Headphones', brand: 'Sonaro', icon: 'i i-headphones', ph: 'prod-headphones', sample: true, badge: '', metaNote: '1-year warranty',
+        price: 3890, mrp: 4990, skuBase: 'SNR-AIR',
+        opts: [{ key: 'col', label: 'Colour', type: 'swatch', vals: ['Studio white', 'Midnight black', 'Ocean blue'] }],
+        def: { col: 'Studio white' }, out: [], low: ['Ocean blue'],
+        photos: { 'Studio white': { cr: 'C D-X · Unsplash · Sample', ph: 'prod-headphones' } }, more: ['Folded with case', 'Ear cushion close-up'], video: true,
+        hl: [['i i-battery-full', '40-hour battery'], ['i i-bluetooth', 'Bluetooth 5.3, two devices'], ['i i-mic', 'Clear calls, 2 mics'], ['i i-package', 'Folds flat, case included']],
+        desc: ['Soft over-ear cushions, a 40-hour battery and Bluetooth 5.3 that stays connected to your phone and laptop at the same time.', 'Ten minutes of charging gives about four hours of listening.'],
+        specs: [['Battery', 'Up to 40 hours'], ['Charging', 'USB-C, 10 min for 4 h'], ['Bluetooth', '5.3, multipoint'], ['Weight', '250 g'], ['Microphones', '2, with noise reduction'], ['In the box', 'Headphones, case, USB-C cable, 3.5 mm cable']],
+        warrantyShort: '1-year seller warranty', returnsShort: 'Replacement if faulty within 7 days',
+        war: [['i i-shield-check', '1-year warranty', 'Repair or replacement by Waafa International.'], ['i i-rotate-ccw', 'Faulty on arrival?', 'We replace it within 7 days.'], ['i i-truck', 'Delivery', 'Next day in Dhaka, 2 to 4 days elsewhere.']],
+        videoCap: 'Overview: fit, controls and battery' },
+      toner: { cat: 'printers', catName: 'Printers & Supplies', sub: 'Toner cartridges', short: 'Better Day CE505A / CF280A', title: 'Better Day CE505A / CF280A Black Toner', brand: 'Better Day', icon: 'i i-printer', ph: '', sample: false, badge: 'Best seller', metaNote: 'Compatible · up to 2,700 pages',
+        price: 1450, mrp: 1800, skuBase: 'BD-CF280A', opts: [], def: {}, out: [], low: [],
+        img: BD1, more: ['Cartridge side view', 'In the printer', 'Box and seal'], video: true,
+        compat: ['HP LaserJet P2035', 'HP LaserJet P2055d', 'HP LaserJet Pro 400 M401dn', 'HP LaserJet Pro 400 MFP M425dn'],
+        hl: [['i i-file-text', 'Up to 2,700 pages at 5%'], ['i i-printer-check', 'Fits like the original'], ['i i-badge-check', 'Tested before dispatch'], ['i i-rotate-ccw', 'Replaced if faulty']],
+        desc: ['A compatible black toner for HP LaserJet printers that take the 05A or 80A cartridge. Made by Better Day and sold by Waafa International as a lower-cost alternative to the original.', 'Compatible means it is not made by HP. It fits and prints the same way; yield and density can differ slightly from the original.'],
+        specs: [['Brand', 'Better Day'], ['Type', 'Compatible toner cartridge'], ['Replaces', 'HP CE505A (05A), HP CF280A (80A)'], ['Colour', 'Black'], ['Page yield', 'About 2,700 pages at 5% coverage'], ['Sold by', 'Waafa International, Motijheel']],
+        warrantyShort: 'Replacement if faulty', returnsShort: 'Tell us within 7 days',
+        war: [['i i-shield-check', 'Replacement if faulty', 'Tell us within 7 days with a test print.'], ['i i-printer', 'Not sure it fits?', 'Use Find by model or send us your printer model.'], ['i i-truck', 'Delivery', 'Next day in Dhaka, 2 to 4 days elsewhere.']],
+        videoCap: 'Box, cartridge and part codes' }
+    };
+    const key = p.p || 'tee';
+    const D = DATA[key] || DATA.tee;
+    const sel = Object.assign({}, D.def, st.sel || {});
+    const comboKey = D.opts.map(o => sel[o.key]).join('|');
+    const isOut = D.out.indexOf(comboKey) >= 0 || D.out.indexOf(sel.col) >= 0;
+    const isLow = D.low.indexOf(comboKey) >= 0 || D.low.indexOf(sel.col) >= 0;
+    let price = D.price, mrp = D.mrp;
+    if (D.prices && sel.cap) { price = D.prices[sel.cap][0]; mrp = D.prices[sel.cap][1]; }
+    if (D.extra && sel.size && D.extra[sel.size]) { price += D.extra[sel.size]; mrp += D.extra[sel.size]; }
+    const off = Math.round((mrp - price) * 100 / mrp);
+    const CODES = { White: 'WHT', Navy: 'NVY', Black: 'BLK', 'Heather grey': 'HGR', 'Studio white': 'WHT', 'Midnight black': 'BLK', 'Ocean blue': 'BLU' };
+    const code = s => { s = String(s); if (CODES[s]) return CODES[s]; const mah = s.match(/^([\d,]+)\s*mAh/); if (mah) return (parseInt(mah[1].replace(/,/g, ''), 10) / 1000) + 'K'; return s.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase(); };
+    const sku = D.skuBase + D.opts.map(o => '-' + code(sel[o.key])).join('');
+    const optGroups = D.opts.map(o => ({ label: o.label, value: sel[o.key], help: o.help || '', isSwatch: o.type === 'swatch', isSize: o.type === 'size', isPill: o.type === 'pill',
+      opts: o.vals.map(v => { const trial = Object.assign({}, sel, { [o.key]: v }); const ck = D.opts.map(x => trial[x.key]).join('|'); const off2 = D.out.indexOf(ck) >= 0;
+        const on = sel[o.key] === v;
+        return { label: v, on, off: off2, sw: '--sw:' + (SW[v] || '#ccc'), sub: o.subs ? o.subs[v] : '',
+          cls: o.type === 'swatch' ? 'ww-sw' + (on ? ' is-on' : '') + (off2 ? ' is-off' : '') : o.type === 'size' ? 'ww-size' + (on ? ' is-on' : '') + (off2 ? ' is-off' : '') : 'ww-pill' + (on ? ' is-on' : ''),
+          go: () => this.setState({ sel: Object.assign({}, sel, { [o.key]: v }), img: 0, priceKey: (st.priceKey || 0) + 1 }) }; }) }));
+    // gallery: one main photo (per colour when the product has colours), more shots and an optional video
+    const colour = sel.col;
+    const ph0 = D.img ? { src: D.img } : (D.photos && D.photos[colour]) ? { ph: D.photos[colour].ph, cr: D.photos[colour].cr, cap: '' } : { ph: '', cap: 'Photo of the ' + (colour || '') + ' option, from Admin', cr: 'Each variant has its own photos', tint: colour ? 'background-image:linear-gradient(150deg,' + (SW[colour] || '#ccc') + '22,' + (SW[colour] || '#ccc') + '55)' : '' };
+    const shots = [ph0].concat(D.more.map(t => ({ ph: '', cap: t + ' · from Admin', cr: 'Sample slot' }))).concat(D.video ? [{ ph: D.ph, cap: 'Video', cr: '', video: true }] : []);
+    const ii = Math.min(st.img || 0, shots.length - 1);
+    const cur = shots[ii];
+    const img = { src: cur.src || '', noSrc: !cur.src, ph: cur.ph || '', cap: cur.cap || '', cr: cur.cr || '', tint: cur.tint || '', alt: D.title + (colour ? ', ' + colour : ''), key: ii + '-' + (colour || '') };
+    const thumbs = shots.map((s, i) => ({ src: s.src || '', noSrc: !s.src, ph: s.ph || '', tint: s.tint || '', video: !!s.video, icon: s.video ? 'i i-play' : D.icon, label: s.video ? 'Play video' : 'Photo ' + (i + 1), on: i === ii, cls: 'ww-thumb-b' + (i === ii ? ' is-on' : ''),
+      go: () => { if (s.video) this.setState({ video: true }); else this.setState({ img: i }); } }));
+    const zoom = !!st.zoom;
+    const qty = st.qty || 1;
+    const phase = st.phase || 'idle';
+    const cart = st.cart !== undefined ? st.cart : (p.cart !== undefined ? +p.cart : 4);
+    const ZONES = { Dhaka: 'Tomorrow, Fri 9 Oct · ৳80 · free over ৳5,000', Chattogram: 'In 2 to 3 days · ৳150', Sylhet: 'In 2 to 4 days · ৳150', Khulna: 'In 2 to 4 days · ৳150', Rajshahi: 'In 2 to 4 days · ৳150' };
+    const RELATED = { tee: [['Classic Polo Shirt', 'Tessra', 'Sizes S to XXL · 3 colours', 990, 1290, 'shirt'], ['Everyday Hoodie', 'Tessra', 'Fleece lined · 2 colours', 1890, 2390, 'shirt'], ['Canvas Tote Bag', 'Tessra', '40 L · zip pocket', 690, 890, 'shopping-bag'], ['Cotton Cap', 'Tessra', 'Adjustable · 4 colours', 450, 590, 'shirt'], ['Travel Pouch Set', 'Tessra', '3 sizes', 790, 990, 'luggage']],
+      pb: [['20 W USB-C Fast Charger', 'Voltaro', 'PD 3.0 · compact plug', 790, 990, 'plug-zap'], ['USB-C to USB-C Cable, 1 m', 'Voltaro', 'Braided · 60 W', 390, 450, 'cable'], ['Pods Wireless Earbuds', 'Sonaro', '30-hour battery', 2190, 2790, 'headphones'], ['Mini Bluetooth Speaker', 'Sonaro', 'IPX5 · 12 hours', 1890, 2290, 'speaker'], ['Car Charger, 2 ports', 'Voltaro', '36 W', 590, 790, 'car-taxi-front']],
+      hp: [['Pods Wireless Earbuds', 'Sonaro', '30-hour battery', 2190, 2790, 'headphones'], ['Headphone Stand', 'Klikk', 'Aluminium', 890, 1090, 'headphones'], ['3.5 mm Audio Cable', 'Voltaro', '1.2 m', 290, 350, 'cable'], ['Mini Bluetooth Speaker', 'Sonaro', 'IPX5 · 12 hours', 1890, 2290, 'speaker'], ['20 W USB-C Charger', 'Voltaro', 'PD 3.0', 790, 990, 'plug-zap']],
+      toner: [['Better Day HP 151A (W1510A) Black Toner', 'Better Day', 'Up to 3,050 pages', 2150, 2600, 'printer', BD3], ['Better Day Canon CRG 070H Black Toner', 'Better Day', 'Up to 9,000 pages', 3250, 3900, 'printer', BD2], ['HP 80A Original Black Toner (CF280A)', 'HP', 'Up to 2,700 pages', 7200, 7900, 'printer'], ['Double A A4 Copy Paper, 80 gsm', 'Double A', '500 sheets', 520, 580, 'file-text'], ['Printer Cleaning Kit', 'Sample brand', 'Wipes and brush', 390, 490, 'wrench']] };
+    const add = (d, prod) => { clearTimeout(this._t2); const c = (this.state && this.state.cart !== undefined) ? this.state.cart : cart; this.setState({ cart: Math.max(0, c + d), toast: d > 0 ? prod.title : '' }); if (d > 0) this._t2 = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const related = RELATED[key].map((r, i) => ({ id: key + i, title: r[0], brand: r[1], spec: r[2], price: r[3], mrp: r[4], icon: r[5], img: r[6] || '', ph: '', phCap: 'Product photo from Admin', stock: 'in', sample: !r[6], options: false, href: L.ShopProduct, add }));
+    const recent = [['Better Day CE505A / CF280A Black Toner', 'Better Day', 1450, 1800, BD1, '', 'printer'], ['Classic Cotton Crew T-shirt', 'Tessra', 650, 850, '', 'prod-tshirt', 'shirt'], ['20,000 mAh Power Bank, 22.5 W', 'Voltaro', 2450, 2990, '', 'prod-powerbank', 'battery-charging'], ['Air Wireless Over-ear Headphones', 'Sonaro', 3890, 4990, '', 'prod-headphones', 'headphones']].map((r, i) => ({ id: 'r' + i, title: r[0], brand: r[1], price: r[2], mrp: r[3], img: r[4], ph: r[5], icon: r[6], stock: 'in', spec: '', href: L.ShopProduct }));
+    const canBuy = !isOut;
+    const addLabel = phase === 'adding' ? 'Adding…' : phase === 'added' ? 'Added to cart' : 'Add to cart';
+    const bulkOpen = st.bulk !== undefined ? st.bulk : !!p.bulk;
+    return {
+      L, m: !!p.m, cart, P: Object.assign({}, D, { hl: D.hl.map(h => ({ ic: h[0], t: h[1] })), war: D.war.map(w => ({ ic: w[0], t: w[1], s: w[2] })), compat: D.compat || null }), off, sku,
+      priceF: fmt(price), mrpF: fmt(mrp), saveF: fmt(mrp - price), priceKey: st.priceKey || 0,
+      stockCls: 'ww-stock ' + (isOut ? 'is-out' : isLow ? 'is-low' : 'is-in'), stockLabel: isOut ? 'This option is sold out' : isLow ? 'Only 2 left in this option' : 'In stock',
+      optGroups, img, thumbs, imgIndex: ii + 1, imgTotal: shots.length,
+      galCls: 'ww-gal-main' + (zoom ? ' is-zoom' : ''), zoomStyle: '--zx:' + (st.zx || 50) + '%;--zy:' + (st.zy || 50) + '%',
+      zoomIcon: zoom ? 'i i-zoom-out' : 'i i-zoom-in', zoomHint: zoom ? 'Move to explore · tap to zoom out' : (p.m ? 'Pinch or tap to zoom' : 'Click to zoom'),
+      toggleZoom: () => this.setState({ zoom: !zoom }),
+      zoomMove: (e) => { if (!zoom) return; const r = e.currentTarget.getBoundingClientRect(); this.setState({ zx: Math.round((e.clientX - r.left) * 100 / r.width), zy: Math.round((e.clientY - r.top) * 100 / r.height) }); },
+      zoomOut: () => { if (zoom) this.setState({ zoom: false }); },
+      qty, rollCls: st.dir === 'down' ? 'down' : 'up', stepCls: 'ww-step is-lg' + (st.shake ? ' is-max' : ''),
+      inc: () => { if (qty >= 10) { this.setState({ shake: true }); clearTimeout(this._s); this._s = setTimeout(() => this.setState({ shake: false }), 360); return; } this.setState({ qty: qty + 1, dir: 'up' }); },
+      dec: () => this.setState({ qty: Math.max(1, qty - 1), dir: 'down' }),
+      canBuy, cantBuy: !canBuy,
+      addCls: 'w-btn w-btn-navy ww-addbig' + (phase === 'adding' ? ' is-adding' : phase === 'added' ? ' is-added' : ''),
+      addBarCls: 'w-btn w-btn-navy ww-addbig ww-addbar' + (phase === 'adding' ? ' is-adding' : phase === 'added' ? ' is-added' : ''),
+      addIcon: phase === 'adding' ? 'ww-spin' : phase === 'added' ? 'i i-check' : 'i i-shopping-cart', addLabel,
+      addMain: () => {
+        if (!canBuy || phase !== 'idle') return;
+        this.setState({ phase: 'adding' }); clearTimeout(this._a); clearTimeout(this._b);
+        this._a = setTimeout(() => { const c = (this.state && this.state.cart !== undefined) ? this.state.cart : cart; this.setState({ phase: 'added', cart: c + qty, toast: D.title + (D.opts.length ? ' · ' + D.opts.map(o => sel[o.key]).join(', ') : '') }); }, 650);
+        this._b = setTimeout(() => this.setState({ phase: 'idle', toast: '' }), 2600);
+      },
+      zone: ZONES[st.zone || 'Dhaka'], pickZone: (e) => this.setState({ zone: e && e.target ? e.target.value : 'Dhaka' }),
+      specs: D.specs.map(r => ({ k: r[0], v: r[1] })).concat([{ k: 'SKU', v: sku }]),
+      variantLine: D.opts.length ? D.opts.map(o => sel[o.key]).join(' · ') : 'Inclusive of VAT',
+      related, recent,
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafas World, a question about ' + D.title + ' (' + sku + ')'),
+      videoOpen: st.video !== undefined ? st.video : !!p.video, closeVideo: () => this.setState({ video: false }), vHp: key === 'hp', vPb: key === 'pb', vToner: key === 'toner',
+      bulkOpen, bulkForm: !st.bulkSent, bulkDone: !!st.bulkSent,
+      openBulk: () => this.setState({ bulk: true, bulkSent: false }), closeBulk: () => this.setState({ bulk: false, bulkSent: false }), sendBulk: () => this.setState({ bulkSent: true }),
+      toast: st.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

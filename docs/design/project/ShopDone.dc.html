@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · Order placed</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="0" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="ww-sec" style="padding-top:24px">
+      <div class="w-wrap ww-donegrid">
+        <section class="w-formcard v-done ww-donecard" aria-labelledby="done-t" data-fx-confetti="">
+          <div class="ww-confetti" aria-hidden="true"><sc-for list="{{bits}}" as="c" hint-placeholder-count="24"><i style="{{c}}"></i></sc-for></div>
+          <div class="w-success">
+            <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"/><path d="M28 45 l11 11 l22 -24"/></svg>
+            <span class="v-eyebrow" style="justify-content:center">Order placed</span>
+            <h1 class="v-h2" id="done-t">Thank you, Rahim. Your order is in.</h1>
+            <div class="w-ref"><span class="text-13 text-muted">Order number</span><b>ORD-261008-0042</b><button class="{{copyCls}}" type="button" onClick="{{copyRef}}"><span class="{{copyIc}}"></span>{{copyLabel}}</button></div>
+            <div class="{{payCls}}">
+              <div class="v-paidbox-head"><span class="{{pay.icon}}"></span><b>{{pay.title}}</b></div>
+              <p>{{pay.text}}</p>
+              <sc-if value="{{isBank}}" hint-placeholder-val="{{ false }}">
+                <dl class="ww-bankrows"><div><dt>Account name</dt><dd>Waafa International</dd></div><div><dt>Bank and branch</dt><dd>Set in Admin → Payments</dd></div><div><dt>Account number</dt><dd>Set in Admin → Payments</dd></div><div><dt>Reference</dt><dd><b>ORD-261008-0042</b></dd></div></dl>
+                <label class="v-drop" style="margin-top:4px"><span class="i i-cloud-upload"></span><b>Upload the deposit slip or screenshot</b><small>JPG, PNG or PDF, up to 5 MB · or do it later from Track order</small></label>
+                <a class="v-link" href="{{L.OfflinePay}}" style="min-height:0;font-size:13.5px">How offline payment works<span class="i i-arrow-right"></span></a>
+              </sc-if>
+            </div>
+            <div class="w-next">
+              <sc-for list="{{steps}}" as="s" hint-placeholder-count="3"><div class="w-next-item"><span class="w-next-n">{{s.n}}</span><div><b>{{s.t}}</b><p>{{s.p}}</p></div></div></sc-for>
+            </div>
+            <div class="v-done-actions">
+              <a class="w-btn w-btn-primary" href="{{L.ShopTrack}}"><span class="i i-truck"></span>Track this order</a>
+              <a class="w-btn w-btn-wa" href="{{waHref}}"><span class="i i-whatsapp-fill"></span>WhatsApp us</a>
+              <a class="w-btn w-btn-secondary" href="{{L.Shop}}">Continue shopping</a>
+            </div>
+          </div>
+        </section>
+        <aside class="v-ordersum ww-donesum" aria-labelledby="ds-t">
+          <h2 class="v-h3" id="ds-t">Order summary</h2>
+          <div class="v-coitems">
+            <div class="v-coitem"><span class="v-coitem-img"><span class="i i-shirt"></span><i>2</i></span><span class="min-w-0">Classic Cotton Crew T-shirt<small class="ww-coitem-var">White · M</small></span><b>৳1,300</b></div>
+            <div class="v-coitem"><span class="v-coitem-img"><span class="i i-battery-charging"></span><i>1</i></span><span class="min-w-0">Voltaro 20,000 mAh Power Bank<small class="ww-coitem-var">20,000 mAh · Black</small></span><b>৳2,450</b></div>
+            <div class="v-coitem"><span class="v-coitem-img"><img src="../assets/c9ea845b540e931548117afdb5ae8a65.jpg" alt=""><i>1</i></span><span class="min-w-0">Better Day CE505A / CF280A Black Toner<small class="ww-coitem-var">Compatible</small></span><b>৳1,450</b></div>
+          </div>
+          <div class="w-sumrow"><span>Items (4)</span><b>৳5,200</b></div>
+          <div class="w-sumrow"><span>Delivery · inside Dhaka</span><b>Free</b></div>
+          <div class="w-sumrow is-total"><span>{{totalLabel}}</span><b>৳5,200</b></div>
+          <div class="ww-deliv"><span class="i i-map-pin"></span><div><b>Deliver to Rahim Uddin</b><small>193/C-1 Motijheel Plaza, 4th floor, Motijheel, Dhaka · 01712-345678</small></div></div>
+          <div class="ww-deliv"><span class="i i-calendar-check"></span><div><b>Expected tomorrow, Fri 9 Oct</b><small>We call before the rider comes</small></div></div>
+          <div class="ww-acctcta"><span class="i i-circle-user"></span><div><b>See all your orders in one place</b><small>Log in with your mobile number. No password.</small></div><a class="w-btn w-btn-sm w-btn-secondary" href="{{L.Login}}">Log in</a></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="shop" cart="0" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"pay":{"editor":"enum","options":["cod","mobile","bank","office"],"default":"cod"},"$preview":{"width":1440,"height":1694}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Shop','ShopTrack','OfflinePay','Login'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const _d = new Date(Date.now() + 6 * 3600e3);
+    const _dow = _d.getUTCDay(), _mins = _d.getUTCHours() * 60 + _d.getUTCMinutes();
+    const open = _dow !== 5 && _mins >= 600 && _mins < 1080;
+    const hoursLine = open ? 'We’re open now, until 6 pm, so expect a call within the hour.' : 'We’re closed now, so we call when we open at 10 am.';
+    const PAY = {
+      cod: { icon: 'i i-banknote', title: 'Cash on delivery · pay ৳5,200 when it arrives', text: 'Delivery to Motijheel, Dhaka, usually tomorrow. We’ll call 01712-345678 before the rider comes.' },
+      mobile: { icon: 'i i-smartphone', title: 'bKash payment received · checking it now', text: 'Transaction 8N7A6B5C4D for ৳5,200. We match it with bKash before we pack your order, usually within an hour in office hours.' },
+      bank: { icon: 'i i-landmark', title: 'Bank transfer · send ৳5,200 to pay for this order', text: 'Use your order number as the reference. We hold the items for 2 working days and pack them once the money arrives.' },
+      office: { icon: 'i i-building-2', title: 'Pay at our office · ৳5,200', text: 'Come to 193/C-1 Motijheel Plaza, 4th floor, Saturday to Thursday, 10 am to 6 pm. Bring your order number.' }
+    };
+    const pk = p.pay || 'cod';
+    const STEPS = {
+      cod: [['We confirm your order', hoursLine], ['We pack it and hand it to the courier', 'You get the courier’s tracking number by SMS.'], ['You pay when it arrives', 'Open the box and check it before you pay the rider.']],
+      mobile: [['We check your bKash payment', hoursLine], ['We pack it and hand it to the courier', 'You get the courier’s tracking number by SMS.'], ['It arrives, already paid', 'Nothing to pay the rider.']],
+      bank: [['Transfer the money', 'Use ORD-261008-0042 as the reference so we can match it.'], ['Upload the slip', 'Here, from Track order, or send it on WhatsApp.'], ['We pack and send it', 'Once the money is in our account, usually the same day.']],
+      office: [['We keep it ready for you', 'Within 2 hours in office hours.'], ['Visit us in Motijheel', 'Saturday to Thursday, 10 am to 6 pm.'], ['Pay and collect', 'Cash or card at the counter.']]
+    };
+    const COLORS = ['#003FBE', '#39CCE9', '#00185B', '#0D8CEE', '#A8782F', '#22B565'];
+    const bits = Array.from({ length: 26 }, (_, i) => 'left:' + ((i * 37) % 100) + '%;background:' + COLORS[i % COLORS.length] + ';animation-delay:' + ((i % 7) * 0.09).toFixed(2) + 's;--dx:' + (((i * 53) % 120) - 60) + 'px;--r:' + (180 + (i * 47) % 540) + 'deg;' + (i % 3 === 0 ? 'width:6px;height:6px;border-radius:50%' : ''));
+    const copied = !!st.copied;
+    return {
+      L, m: !!p.m, bits, pay: PAY[pk], isBank: pk === 'bank', payCls: 'v-paidbox' + (pk === 'bank' ? ' is-bank' : ''),
+      steps: STEPS[pk].map((s, i) => ({ n: i + 1, t: s[0], p: s[1] })),
+      totalLabel: pk === 'cod' ? 'To pay on delivery' : pk === 'mobile' ? 'Paid by bKash' : 'Total',
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafas World, my order number is ORD-261008-0042'),
+      copyCls: 'w-btn w-btn-xs ' + (copied ? 'w-btn-navy' : 'w-btn-soft'), copyIc: 'i ' + (copied ? 'i-check' : 'i-copy'), copyLabel: copied ? 'Copied' : 'Copy',
+      copyRef: () => { try { if (navigator.clipboard) navigator.clipboard.writeText('ORD-261008-0042'); } catch (x) {} clearTimeout(this._t); this.setState({ copied: true }); this._t = setTimeout(() => this.setState({ copied: false }), 1600); }
+    };
+  }
+}
+</script>
+</body>
+</html>

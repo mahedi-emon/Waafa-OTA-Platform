@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · top bar</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<header class="a-top wa-r">
+  <button class="a-iconbtn a-burger" type="button" aria-label="Open menu" onClick="{{menu}}"><span class="i i-menu"></span></button>
+  <sc-if value="{{m}}" hint-placeholder-val="{{ false }}"><span class="flex items-center gap-2" style="margin-right:auto"><img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="" style="width:28px;height:28px"><b style="font:800 15px/1 var(--font-display);color:var(--color-navy-900)">Admin</b></span></sc-if>
+  <sc-if value="{{hasCmd}}" hint-placeholder-val="{{ true }}"><button class="a-cmd" type="button" onClick="{{cmd}}" aria-label="Search or jump to (Ctrl K)"><span class="i i-search"></span><span>Search leads, orders, products…</span><kbd>Ctrl K</kbd></button></sc-if><sc-if value="{{noCmd}}" hint-placeholder-val="{{ false }}"><a class="a-cmd" href="AdminCmd.dc.html" aria-label="Search or jump to (Ctrl K)"><span class="i i-search"></span><span>Search leads, orders, products…</span><kbd>Ctrl K</kbd></a></sc-if>
+  <div class="a-top-right">
+    <span class="a-env a-hide-sm"><span class="i i-info"></span>Sample data</span>
+    <a class="a-btn a-btn-ghost a-btn-sm a-hide-sm" href="Home.dc.html"><span class="i i-external-link"></span>View site</a>
+    <button class="a-iconbtn" type="button" aria-label="Notifications, 6 new"><span class="i i-bell"></span><span class="a-dot"></span></button>
+    <span class="a-avatar" style="--av:#0D8CEE" aria-label="Arif Hossain, Super Admin">AH</span>
+  </div>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"$preview":{"width":1184,"height":64}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    return {
+      m: !!p.m, hasCmd: typeof p.onCmd === 'function', noCmd: typeof p.onCmd !== 'function',
+      menu: () => { if (typeof p.onMenu === 'function') p.onMenu(); },
+      cmd: () => { if (typeof p.onCmd === 'function') p.onCmd(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

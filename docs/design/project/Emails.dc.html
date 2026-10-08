@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Email and SMS templates</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="mx wa-r">
+  <div class="mx-head">
+    <div>
+      <span class="mx-eyebrow">12 · Email and SMS</span>
+      <h1>Messages customers and staff receive</h1>
+      <p class="mx-lead">Built with React Email and sent through a queue with retries. Every template is editable in Admin › Settings › Notifications, with variables. One column, 600 px wide, readable in Gmail on a phone.</p>
+    </div>
+    <div class="mx-chips"><span class="mx-chip is-dark"><span class="i i-mail"></span>React Email</span><span class="mx-chip"><span class="i i-send"></span>Resend or SMTP</span><span class="mx-chip"><span class="i i-smartphone"></span>SMS in P1</span></div>
+  </div>
+  <div class="em-grid">
+    <div class="flex flex-col gap-5">
+      <article class="em">
+        <div class="em-meta"><b>Thanks, we got your request · FLT-261008-0042</b><span>To: rahim.uddin@example.com · From: Waafa Tours and Travel</span></div>
+        <div class="em-top"></div>
+        <div class="em-body">
+          <div class="em-logo"><img src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt="WAAFA" style="height:18px"></div>
+          <h4>Thank you, Rahim!</h4>
+          <p>Our travel expert will contact you shortly with the best quotes for your trip.</p>
+          <div class="em-ref"><span>Your reference</span><b>FLT-261008-0042</b></div>
+          <dl class="em-kv"><dt>Trip</dt><dd>Dhaka to Dubai, one way</dd><dt>Date</dt><dd>Thu, 22 Oct 2026</dd><dt>Travellers</dt><dd>1 adult, Economy</dd></dl>
+          <div class="em-steps"><span><i>1</i>An expert checks fares with the airlines.</span><span><i>2</i>We call or WhatsApp you with options, usually within 30 minutes in office hours.</span><span><i>3</i>You choose, pay, and get your e-ticket.</span></div>
+          <span class="em-btn is-wa">WhatsApp us with this reference</span>
+        </div>
+        <div class="em-foot">Waafa Tours and Travel · 193/C-1 Motijheel, Dhaka · 01823-232241 · Saturday to Thursday, 10 am to 6 pm. Fares are confirmed by an expert before you pay.</div>
+      </article>
+      <article class="em">
+        <div class="em-meta"><b>New flight lead FLT-261008-0042 · Rahim Uddin</b><span>To: sales@waafasworld.com · staff alert</span></div>
+        <div class="em-top" style="background:linear-gradient(90deg,#C2261D,#A15C07)"></div>
+        <div class="em-body">
+          <h4>Reply within 30 minutes</h4>
+          <dl class="em-kv"><dt>Customer</dt><dd>Rahim Uddin</dd><dt>Phone</dt><dd>+880 1712-345678</dd><dt>Trip</dt><dd>DAC → DXB · Thu 22 Oct · 1 adult</dd><dt>Prefers</dt><dd>WhatsApp, evening</dd><dt>Source</dt><dd>Facebook · phone</dd></dl>
+          <span class="em-btn">Open in Admin</span>
+        </div>
+        <div class="em-foot">Sent to the Flights group. Real-time alerts with sound and a Telegram message arrive in P1.</div>
+      </article>
+    </div>
+    <div class="flex flex-col gap-5">
+      <article class="em">
+        <div class="em-meta"><b>Your Waafas World order ORD-261008-0042</b><span>To: rahim.uddin@example.com · From: Waafas World</span></div>
+        <div class="em-top"></div>
+        <div class="em-body">
+          <div class="em-logo"><b style="font:800 16px/1 var(--font-display);color:var(--color-navy-900)">Waafas World</b></div>
+          <h4>Order placed. We’ll call to confirm.</h4>
+          <div class="em-ref"><span>Order number</span><b>ORD-261008-0042</b></div>
+          <div class="em-items">
+            <div class="em-item"><span class="ph is-sm" data-photo="prod-tshirt" style="display:grid;place-items:center"><span class="i i-shirt" style="width:18px;height:18px;color:var(--color-mist-500)"></span></span><span><b>Classic Cotton Crew T-shirt</b><br><span class="text-12" style="color:var(--color-mist-500)">White · M · Qty 2</span></span><b>৳1,300</b></div>
+            <div class="em-item"><span class="ph is-sm" data-photo="prod-powerbank" style="display:grid;place-items:center"><span class="i i-battery-charging" style="width:18px;height:18px;color:var(--color-mist-500)"></span></span><span><b>20,000 mAh Power Bank, 22.5 W</b><br><span class="text-12" style="color:var(--color-mist-500)">Voltaro · 20,000 mAh · Black</span></span><b>৳2,450</b></div>
+            <div class="em-item"><img src="../assets/c9ea845b540e931548117afdb5ae8a65.jpg" alt=""><span><b>Better Day CE505A / CF280A Black Toner</b><br><span class="text-12" style="color:var(--color-mist-500)">Qty 1</span></span><b>৳1,450</b></div>
+          </div>
+          <dl class="em-kv"><dt>Delivery, inside Dhaka</dt><dd>Free · 1 to 2 days</dd><dt>Total, cash on delivery</dt><dd style="font-size:15px">৳5,200</dd></dl>
+          <span class="em-btn">Track your order</span>
+        </div>
+        <div class="em-foot">Waafas World by Waafa International · Prices include VAT. Questions? WhatsApp 01823-232241 with your order number.</div>
+      </article>
+      <article class="em">
+        <div class="em-meta"><b>How to pay for ORD-261008-0041</b><span>To: procurement@nexus.example · offline payment</span></div>
+        <div class="em-top"></div>
+        <div class="em-body">
+          <h4>Pay by bank or bKash, then send us the proof</h4>
+          <p>Use your order number as the reference. We ship as soon as Accounts confirms the payment, usually the same working day.</p>
+          <dl class="em-kv"><dt>Amount</dt><dd>৳15,995</dd><dt>Bank</dt><dd>[Bank name] · [Account number]</dd><dt>bKash merchant</dt><dd>[bKash merchant number]</dd><dt>Reference</dt><dd>ORD-261008-0041</dd></dl>
+          <span class="em-btn">Upload payment proof</span>
+        </div>
+        <div class="em-foot">Account details are entered by Accounts in Admin; brackets are placeholders in this design.</div>
+      </article>
+    </div>
+    <div class="flex flex-col gap-5">
+      <article class="em">
+        <div class="em-meta"><b>Your Thailand visa application VSA-261008-0011: documents needed</b><span>To: nasima.k@example.com · status change</span></div>
+        <div class="em-top"></div>
+        <div class="em-body">
+          <div class="em-logo"><img src="../assets/61a59cb3b17e3e720f50e99ccc1fe3b0.png" alt="WAAFA" style="height:18px"></div>
+          <h4>We need two more documents</h4>
+          <p>Hi Nasima, your Thailand tourist visa application is now <b style="color:var(--color-warning-700)">Documents pending</b>. Please send these, and we’ll submit it to the embassy the same day.</p>
+          <div class="em-steps"><span><i>1</i>Employer NOC on letterhead, signed and dated</span><span><i>2</i>Visa application form, signed by each applicant</span></div>
+          <span class="em-btn">Upload documents</span>
+        </div>
+        <div class="em-foot">Your documents are stored privately and used only for this application. Visa officer: Tanvir A. · 01823-232241</div>
+      </article>
+      <div class="mx-card"><span class="mx-eyebrow">SMS · P1</span>
+        <div class="em-sms" style="margin-top:12px">
+          <div class="em-bubble">Your Waafa sign-in code is 481 027. It expires in 5 minutes. Never share this code.<small>WAAFA · 7:41 pm</small></div>
+          <div class="em-bubble">Thanks Rahim! We got your request FLT-261008-0042. An expert will call or WhatsApp you soon. 01823-232241<small>WAAFA · 7:18 pm</small></div>
+          <div class="em-bubble">Waafas World: order ORD-261007-0031 is on its way with Steadfast, tracking SF2610078823. Track: waafasworld.com/shop/track<small>WAAFA · 4:05 pm</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

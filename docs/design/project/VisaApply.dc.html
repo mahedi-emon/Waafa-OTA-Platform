@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Apply for a Thailand visa</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="visa" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead v-pthead">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Visa}}">Visa services</a><span class="i i-chevron-right"></span><a href="{{L.VisaCountry}}">Thailand</a><span class="i i-chevron-right"></span><span aria-current="page">Apply</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px">
+            <span class="v-eyebrow">Thailand visa · apply</span>
+            <h1 class="v-h1 v-h1-page">Apply for your Thailand visa</h1>
+            <p class="v-lead">Four short steps. You can stop at any point and send the rest on WhatsApp; your reference keeps everything together.</p>
+          </div>
+          <ol class="v-howsteps " aria-label="How it works"><li><span>1</span><div><b>Trip and contact</b><small>Visa type, date and applicants</small></div></li><li><span>2</span><div><b>Documents</b><small>Upload or take photos</small></div></li><li><span>3</span><div><b>Office visit</b><small>Optional final check</small></div></li><li><span>4</span><div><b>Check and send</b><small>Pay only when we submit</small></div></li></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-sec" style="padding-top:24px">
+      <div class="w-wrap v-ptgrid">
+        <div class="min-w-0">
+          <sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
+            <div class="w-formcard v-formcard v-ptcard">
+              <div class="w-formcard-head">
+                <div class="v-ptprog v-ptprog4" role="list" aria-label="Steps">
+                  <sc-for list="{{steps}}" as="s" hint-placeholder-count="4"><button class="{{s.cls}}" type="button" role="listitem" onClick="{{s.go}}" disabled="{{s.off}}"><span class="v-ptprog-bar"><span></span></span><span class="v-ptprog-label">{{s.label}}</span></button></sc-for>
+                </div>
+              </div>
+              <div key="{{stepKey}}"><sc-if value="{{is1}}" hint-placeholder-val="{{ true }}"><div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>Your trip and how to reach you</h2><p>Thailand · tourist visa. <a class="v-link" style="min-height:0;display:inline" href="{{L.VisaCountry}}">Change</a></p></div>
+                <div class="w-grid-2"><div class="w-field"><span class="w-label">Visa type</span><div class="w-pills" role="radiogroup" aria-label="Visa type"><sc-for list="{{vtypes}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div></div><div class="w-field"><label class="w-label" for="va-date">Travel date</label><input class="w-input" id="va-date" placeholder="e.g. Thu, 10 Dec 2026" value="Thu, 10 Dec 2026"></div></div>
+                <div class="v-ptnights"><div><b>How many applicants?</b><small>Everyone travelling, including children</small></div><div class="w-counter"><button type="button" aria-label="One applicant fewer" onClick="{{apps.dec}}" disabled="{{apps.decOff}}"><span class="i i-minus"></span></button><output aria-live="polite">{{apps.val}}</output><button type="button" aria-label="One more applicant" onClick="{{apps.inc}}" disabled="{{apps.incOff}}"><span class="i i-plus"></span></button></div></div>
+                <div class="w-field"><label class="w-label" for="va-name">Full name, as in your passport <span class="w-req">*</span></label><input class="w-input" id="va-name" placeholder="e.g. NUSRAT JAHAN" value="NUSRAT JAHAN"></div>
+                <div class="w-grid-2"><div class="w-field"><label class="w-label" for="va-phone">Mobile number <span class="w-req">*</span></label><div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880<span class="i i-chevron-down"></span></button><input id="va-phone" inputmode="tel" autocomplete="tel-national" placeholder="1712-345678" value="1819-224466"></div></div><div class="w-field"><label class="w-label" for="va-mail">Email <span class="w-req">*</span></label><input class="w-input" id="va-mail" type="email" placeholder="you@example.com" value="nusrat.jahan@gmail.com"></div></div></div></sc-if><sc-if value="{{is2}}" hint-placeholder-val="{{ false }}"><div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>Upload documents</h2><p>Clear photos are fine. We tell you if anything needs to be redone.</p></div>
+                <div class="v-privacy"><span class="i i-lock"></span><span><b>Private by design.</b> Only our visa team can open these files. We delete them 90 days after your case closes.</span></div>
+                <div class="v-appl"><div class="v-appl-head"><span class="v-appl-av">NJ</span><div><b>Applicant 1 · Nusrat Jahan</b><small>{{docCount}} of 4 uploaded</small></div></div>
+                <div class="{{docs.pass.cls}}">
+                  <div class="v-doc-head"><span class="w-tile"><span class="{{docs.pass.icon}}"></span></span><div class="min-w-0"><b>Passport bio page</b><small>The page with your photo</small></div><span class="{{docs.pass.badgeCls}}">{{docs.pass.badge}}</span></div>
+                  <sc-if value="{{docs.pass.hasFile}}" hint-placeholder-val="{{ false }}"><div class="w-file"><span class="w-file-ic"><span class="i i-file-text"></span></span><div class="flex flex-col gap-1 min-w-0" style="flex:1"><b class="text-sm text-navy truncate">{{docs.pass.file}}</b><div class="w-progress"><span style="{{docs.pass.bar}}"></span></div></div><span class="text-13 text-muted tabular-nums">{{docs.pass.pct}}</span><button class="w-iconbtn" type="button" aria-label="Remove file" onClick="{{docs.pass.remove}}"><span class="i i-trash"></span></button></div></sc-if>
+                  <sc-if value="{{docs.pass.err}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{docs.pass.err}}</span></sc-if>
+                  <sc-if value="{{docs.pass.empty}}" hint-placeholder-val="{{ true }}"><button class="v-drop v-dropbtn" type="button" onClick="{{docs.pass.add}}"><span class="i i-cloud-upload"></span><b>Choose a file or take a photo</b><small>JPG, PNG or PDF · up to 5 MB</small></button></sc-if>
+                </div><div class="{{docs.photo.cls}}">
+                  <div class="v-doc-head"><span class="w-tile"><span class="{{docs.photo.icon}}"></span></span><div class="min-w-0"><b>Photo</b><small>35 × 45 mm, white background</small></div><span class="{{docs.photo.badgeCls}}">{{docs.photo.badge}}</span></div>
+                  <sc-if value="{{docs.photo.hasFile}}" hint-placeholder-val="{{ false }}"><div class="w-file"><span class="w-file-ic"><span class="i i-file-text"></span></span><div class="flex flex-col gap-1 min-w-0" style="flex:1"><b class="text-sm text-navy truncate">{{docs.photo.file}}</b><div class="w-progress"><span style="{{docs.photo.bar}}"></span></div></div><span class="text-13 text-muted tabular-nums">{{docs.photo.pct}}</span><button class="w-iconbtn" type="button" aria-label="Remove file" onClick="{{docs.photo.remove}}"><span class="i i-trash"></span></button></div></sc-if>
+                  <sc-if value="{{docs.photo.err}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{docs.photo.err}}</span></sc-if>
+                  <sc-if value="{{docs.photo.empty}}" hint-placeholder-val="{{ true }}"><button class="v-drop v-dropbtn" type="button" onClick="{{docs.photo.add}}"><span class="i i-cloud-upload"></span><b>Choose a file or take a photo</b><small>JPG, PNG or PDF · up to 5 MB</small></button></sc-if>
+                </div><div class="{{docs.bank.cls}}">
+                  <div class="v-doc-head"><span class="w-tile"><span class="{{docs.bank.icon}}"></span></span><div class="min-w-0"><b>Bank statement</b><small>Last 6 months, with solvency certificate</small></div><span class="{{docs.bank.badgeCls}}">{{docs.bank.badge}}</span></div>
+                  <sc-if value="{{docs.bank.hasFile}}" hint-placeholder-val="{{ false }}"><div class="w-file"><span class="w-file-ic"><span class="i i-file-text"></span></span><div class="flex flex-col gap-1 min-w-0" style="flex:1"><b class="text-sm text-navy truncate">{{docs.bank.file}}</b><div class="w-progress"><span style="{{docs.bank.bar}}"></span></div></div><span class="text-13 text-muted tabular-nums">{{docs.bank.pct}}</span><button class="w-iconbtn" type="button" aria-label="Remove file" onClick="{{docs.bank.remove}}"><span class="i i-trash"></span></button></div></sc-if>
+                  <sc-if value="{{docs.bank.err}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{docs.bank.err}}</span></sc-if>
+                  <sc-if value="{{docs.bank.empty}}" hint-placeholder-val="{{ true }}"><button class="v-drop v-dropbtn" type="button" onClick="{{docs.bank.add}}"><span class="i i-cloud-upload"></span><b>Choose a file or take a photo</b><small>JPG, PNG or PDF · up to 5 MB</small></button></sc-if>
+                </div><div class="{{docs.job.cls}}">
+                  <div class="v-doc-head"><span class="w-tile"><span class="{{docs.job.icon}}"></span></span><div class="min-w-0"><b>Job or study proof</b><small>No-objection letter, visiting card or student ID</small></div><span class="{{docs.job.badgeCls}}">{{docs.job.badge}}</span></div>
+                  <sc-if value="{{docs.job.hasFile}}" hint-placeholder-val="{{ false }}"><div class="w-file"><span class="w-file-ic"><span class="i i-file-text"></span></span><div class="flex flex-col gap-1 min-w-0" style="flex:1"><b class="text-sm text-navy truncate">{{docs.job.file}}</b><div class="w-progress"><span style="{{docs.job.bar}}"></span></div></div><span class="text-13 text-muted tabular-nums">{{docs.job.pct}}</span><button class="w-iconbtn" type="button" aria-label="Remove file" onClick="{{docs.job.remove}}"><span class="i i-trash"></span></button></div></sc-if>
+                  <sc-if value="{{docs.job.err}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{docs.job.err}}</span></sc-if>
+                  <sc-if value="{{docs.job.empty}}" hint-placeholder-val="{{ true }}"><button class="v-drop v-dropbtn" type="button" onClick="{{docs.job.add}}"><span class="i i-cloud-upload"></span><b>Choose a file or take a photo</b><small>JPG, PNG or PDF · up to 5 MB</small></button></sc-if>
+                </div>
+                </div>
+                <sc-if value="{{multi}}" hint-placeholder-val="{{ true }}"><button class="v-appl v-appl-next" type="button"><span class="v-appl-av is-muted">2</span><div><b>Applicant 2</b><small>Add their documents next, or send them on WhatsApp</small></div><span class="i i-chevron-down"></span></button></sc-if></div></sc-if><sc-if value="{{is3}}" hint-placeholder-val="{{ false }}"><div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>Visit our office? <span class="w-opt" style="font:500 15px var(--font-sans)">(optional)</span></h2><p>Bring original papers for a final check. Open Saturday to Thursday, 10 am to 6 pm.</p></div>
+                <div class="w-field"><span class="w-label">Choose a day</span><div class="w-pills v-daychips" role="radiogroup" aria-label="Office visit day"><sc-for list="{{days}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div></div>
+                <div class="w-field"><span class="w-label">Time</span><div class="w-pills" role="radiogroup" aria-label="Time window"><sc-for list="{{slots}}" as="c" hint-placeholder-count="3"><button class="{{c.cls}}" type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.go}}">{{c.label}}</button></sc-for></div></div>
+                <div class="v-notecard" style="background:var(--color-mist-50);border-color:var(--color-mist-200)"><span class="w-tile"><span class="i i-map-pin"></span></span><div><b>Motijheel Plaza, 4th floor</b><p>193/C-1, East Side, Aziz Square, Box Kalvat Road, Motijheel, Dhaka. Closed on Fridays.</p></div></div>
+                <label class="w-field"><span class="w-label">Notes for the visa desk <span class="w-opt">(optional)</span></span><textarea class="w-input v-textarea" rows="3" placeholder="For example: I travelled to Thailand in 2024, or my passport is being renewed."></textarea></label></div></sc-if><sc-if value="{{is4}}" hint-placeholder-val="{{ false }}"><div class="w-formcard-body v-stepanim v-ptbody"><div class="v-formtitle"><h2>Check and send</h2><p>Nothing is submitted to the embassy until our visa desk has checked your file with you.</p></div>
+                <dl class="v-review">
+                  <div><dt>Visa</dt><dd>Thailand · {{vtypeLabel}}</dd></div>
+                  <div><dt>Applicants</dt><dd>{{apps.val}}</dd></div>
+                  <div><dt>Travel date</dt><dd>Thu, 10 Dec 2026</dd></div>
+                  <div><dt>Documents</dt><dd>{{docCount}} uploaded for applicant 1</dd></div>
+                  <div><dt>Office visit</dt><dd>{{visitLabel}}</dd></div>
+                </dl>
+                <div class="w-feebox v-feebox"><div class="w-sumrow"><span>Embassy fee × {{apps.val}}</span><b>{{fees.emb}}</b></div><div class="w-sumrow"><span>Our service charge × {{apps.val}}</span><b>{{fees.svc}}</b></div><div class="w-sumrow is-total"><span>Total</span><b>{{fees.total}}</b></div></div>
+                <p class="text-13 text-muted">Pay when we submit your file: bank transfer, bKash, Nagad or at our office. Online payment comes later. <span class="v-sample">Sample fees</span></p>
+                <button class="{{consent.cls}}" type="button" role="checkbox" aria-checked="{{consent.on}}" onClick="{{consent.go}}"><span class="v-cbox"></span><span>I confirm the documents are mine and agree that Waafa Tours and Travel may use them only for this visa application.</span></button></div></sc-if></div>
+              <div class="w-formcard-foot">
+                <sc-if value="{{canBack}}" hint-placeholder-val="{{ false }}"><button class="w-btn w-btn-ghost" type="button" onClick="{{back}}"><span class="i i-arrow-left"></span>Back</button></sc-if>
+                <span class="v-foot-note"><span class="i i-lock"></span>{{stepNote}}</span>
+                <sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button class="w-btn w-btn-primary v-foot-go" type="button" onClick="{{next}}">Continue<span class="i i-arrow-right"></span></button></sc-if>
+                <sc-if value="{{isLast}}" hint-placeholder-val="{{ false }}"><button class="{{sendCls}}" type="button" onClick="{{send}}" disabled="{{sending}}"><span class="{{sendIc}}"></span>{{sendLabel}}</button></sc-if>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}"><section class="w-formcard v-done" aria-live="polite" data-fx-confetti=""><div class="w-success">
+              <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"/><path d="M28 45 l11 11 l22 -24"/></svg>
+              <span class="v-eyebrow" style="justify-content:center">Application received</span>
+              <h2 class="v-h2">Thank you! Our visa desk will check your documents and call you.</h2>
+              <div class="w-ref"><span class="text-13 text-muted">Reference</span><b>VSA-261008-0108</b><button class="{{copy.cls}}" type="button" onClick="{{copy.go}}"><span class="{{copy.ic}}"></span>{{copy.label}}</button></div>
+              <div class="v-donetl"><div class="w-timeline"><div class="w-tl-item is-now"><span class="w-tl-dot"></span><div><div class="w-tl-title">New</div><div class="w-tl-meta">Received today</div></div></div><div class="w-tl-item "><span class="w-tl-dot"></span><div><div class="w-tl-title">Documents verified</div><div class="w-tl-meta">We check every page with you</div></div></div><div class="w-tl-item "><span class="w-tl-dot"></span><div><div class="w-tl-title">Submitted to embassy</div><div class="w-tl-meta">We book and submit</div></div></div><div class="w-tl-item "><span class="w-tl-dot"></span><div><div class="w-tl-title">Decision</div><div class="w-tl-meta">The embassy decides</div></div></div><div class="w-tl-item "><span class="w-tl-dot"></span><div><div class="w-tl-title">Passport delivered</div><div class="w-tl-meta">Collect it or we send it</div></div></div></div></div>
+              <div class="v-done-actions"><a class="w-btn w-btn-primary" href="{{L.VisaTrack}}"><span class="i i-search"></span>Track this application</a><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20my%20visa%20reference%20is%20VSA-261008-0108"><span class="i i-whatsapp-fill"></span>WhatsApp the visa desk</a></div>
+              <p class="w-note" style="justify-content:center"><span class="i i-mail"></span><span>We email you each time the status changes.</span></p>
+            </div></section></sc-if>
+        </div>
+        <aside class="v-ptaside">
+          <div class="v-ptticket">
+            <div class="v-ptticket-top"><span class="v-kicker" style="color:rgb(255 255 255/.7)">Your application</span><b>Thailand · {{vtypeLabel}}</b><span class="v-ptticket-rib" aria-hidden="true"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="var" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"/><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"/><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"/><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"/></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#var)"/><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30" fill="none" stroke="#D7D3D0" stroke-opacity=".7" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></span></div>
+            <dl class="v-ptlist">
+              <div class="v-ptrow is-set"><dt><span class="i i-users"></span>Applicants</dt><dd>{{apps.val}}</dd></div>
+              <div class="v-ptrow is-set"><dt><span class="i i-calendar"></span>Travel</dt><dd>Thu, 10 Dec 2026</dd></div>
+              <div class="v-ptrow is-set"><dt><span class="i i-file-text"></span>Documents</dt><dd>{{docCount}} of 4 for applicant 1</dd></div>
+              <div class="v-ptrow is-set"><dt><span class="i i-wallet"></span>Total</dt><dd>{{fees.total}} <span class="text-muted" style="font-weight:500">sample</span></dd></div>
+            </dl>
+            <div class="v-ptticket-foot"><span class="i i-shield-check"></span>Pay only when we submit your file.</div>
+          </div>
+          <div class="w-helpcard">
+            <div class="w-helpcard-ribbon"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="vac" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"/><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"/><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"/><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"/></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#vac)"/><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30" fill="none" stroke="#D7D3D0" stroke-opacity=".7" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></div>
+            <span class="{{hours.clsDark}}" style="align-self:flex-start">{{hours.label}}</span>
+            <h3 class="v-h3" style="color:#fff">Questions about documents?</h3>
+            <p>Our visa desk answers on WhatsApp and by phone, Saturday to Thursday, 10 am to 6 pm.</p>
+            <a class="w-btn w-btn-white" href="tel:+8801823232241"><span class="i i-phone"></span>01823-232241</a>
+            <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20I%20have%20a%20question%20about%20my%20Thailand%20visa%20documents"><span class="i i-whatsapp-fill"></span>WhatsApp</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="visa" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m": {"editor": "boolean", "default": false}, "step": {"editor": "enum", "options": ["1", "2", "3", "4", "done"], "default": "1"}, "err": {"editor": "boolean", "default": false}, "$preview": {"width": 1440, "height": 2000}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Visa','VisaCountry','VisaApply','VisaTrack','VisaGuide','VisaGuidePost','Contact','Faqs','OfflinePay','Packages','PackageDetail'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const pick1 = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => ({ key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on: cur === o[0], cls: b + (cur === o[0] ? (b.indexOf('v-opt') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: o[0] }) })); };
+    const pickN = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => { const on = cur.indexOf(o[0]) >= 0; return { key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on, cls: b + (on ? (b.indexOf('v-checkrow') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: on ? cur.filter(x => x !== o[0]) : cur.concat([o[0]]) }) }; }); };
+    const val = (key, def) => st[key] !== undefined ? st[key] : def;
+    const counter = (key, def, title, subt, min, max, what) => { const v = val(key, def); return { title, sub: subt, val: v, decOff: v <= min, incOff: v >= max, decLabel: 'Remove one ' + what, incLabel: 'Add one ' + what, dec: () => this.setState({ [key]: Math.max(min, v - 1) }), inc: () => this.setState({ [key]: Math.min(max, v + 1) }) }; };
+    const sw = (key, def) => { const on = val(key, def); return { on, cls: 'w-switch' + (on ? ' is-on' : ''), go: () => this.setState({ [key]: !on }) }; };
+    const overlay = (key, def) => { const open = st[key] !== undefined ? st[key] : def; const out = !!st[key + 'Out']; return { open, out,
+      open_: () => this.setState({ [key]: true, [key + 'Out']: false }),
+      close: () => { this.setState({ [key + 'Out']: true }); clearTimeout(this['_o' + key]); this['_o' + key] = setTimeout(() => this.setState({ [key]: false, [key + 'Out']: false }), 260); } }; };
+    const tk = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const _d = new Date(Date.now() + 6 * 3600e3);
+    const _dow = _d.getUTCDay(), _mins = _d.getUTCHours() * 60 + _d.getUTCMinutes();
+    let _open = false, _label;
+    if (_dow !== 5 && _mins >= 600 && _mins < 1080) { _open = true; _label = 'Open now · until 6 pm'; }
+    else if (_dow !== 5 && _mins < 600) _label = 'Closed · opens at 10 am';
+    else if (_dow === 4 || _dow === 5) _label = 'Closed · opens Saturday at 10 am';
+    else _label = 'Closed · opens tomorrow at 10 am';
+    const hours = { open: _open, label: _label, cls: 'v-hours is-sm ' + (_open ? 'is-open' : 'is-closed'), clsDark: 'v-hours is-sm on-dark ' + (_open ? 'is-open' : 'is-closed') };
+    const copied = !!st.copied;
+    const copy = { cls: 'w-btn w-btn-xs ' + (copied ? 'w-btn-navy' : 'w-btn-soft'), ic: 'i ' + (copied ? 'i-check' : 'i-copy'), label: copied ? 'Copied' : 'Copy',
+      go: () => { try { if (navigator.clipboard) navigator.clipboard.writeText('VSA-261008-0108'); } catch (x) {} clearTimeout(this._c); this.setState({ copied: true }); this._c = setTimeout(() => this.setState({ copied: false }), 1600); } };
+    const step = st.step || p.step || '1';
+    const sN = step === 'done' ? 5 : +step;
+    const VT = [['tourist', 'Tourist'], ['business', 'Business'], ['medical', 'Medical'], ['student', 'Student']];
+    const vtypes = pick1('vt', 'tourist', VT);
+    const vtypeLabel = (VT.find(v => v[0] === val('vt', 'tourist')) || VT[0])[1] + ' visa';
+    const apps = counter('apps', 2, '', '', 1, 9, 'applicant');
+    const nA = val('apps', 2);
+    const F = { tourist: [4000, 3500], business: [6000, 4500], medical: [4000, 3500], student: [6000, 5000] }[val('vt', 'tourist')];
+    const fees = { emb: tk(F[0] * nA), svc: tk(F[1] * nA), total: tk((F[0] + F[1]) * nA) };
+    // documents: state per row: 'done' | 'up' | 'err' | 'empty'
+    const d0 = { pass: 'done', photo: 'up', bank: p.err ? 'err' : 'empty', job: 'empty' };
+    const ds = Object.assign({}, d0, st.docs || {});
+    const FILES = { pass: 'passport-nusrat.pdf', photo: 'photo-35x45.jpg', bank: 'bank-statement-6-months.pdf', job: 'noc-letter.pdf' };
+    const setD = (k, v2) => this.setState({ docs: Object.assign({}, ds, { [k]: v2 }) });
+    const docs = {};
+    Object.keys(d0).forEach(k => { const s = ds[k];
+      docs[k] = { cls: 'v-doc' + (s === 'done' ? ' is-done' : '') + (s === 'err' ? ' is-err' : ''), icon: 'i ' + (s === 'done' ? 'i-circle-check' : (s === 'err' ? 'i-circle-alert' : 'i-file-text')),
+        badge: s === 'done' ? 'Uploaded' : (s === 'up' ? 'Uploading' : (s === 'err' ? 'Too large' : 'Needed')), badgeCls: 'w-badge ' + (s === 'done' ? 'w-badge-success' : (s === 'err' ? 'w-badge-danger' : (s === 'up' ? 'w-badge-brand' : 'w-badge-neutral'))),
+        hasFile: s === 'done' || s === 'up', file: FILES[k], pct: s === 'done' ? '100%' : '62%', bar: 'width:' + (s === 'done' ? '100%' : '62%'),
+        err: s === 'err' ? 'bank-statement.pdf is 7.8 MB. Files must be 5 MB or smaller: compress it, or upload a photo of each page.' : '',
+        empty: s === 'empty' || s === 'err', remove: () => setD(k, 'empty'),
+        add: () => { setD(k, 'up'); clearTimeout(this['_u' + k]); this['_u' + k] = setTimeout(() => { const cur = Object.assign({}, (this.state || {}).docs || ds); cur[k] = 'done'; this.setState({ docs: cur }); }, 1400); } };
+    });
+    const docCount = Object.keys(ds).filter(k => ds[k] === 'done').length;
+    const DAYS = [['sat', 'Sat 10 Oct'], ['sun', 'Sun 11 Oct'], ['mon', 'Mon 12 Oct'], ['tue', 'Tue 13 Oct'], ['wed', 'Wed 14 Oct'], ['thu', 'Thu 15 Oct'], ['none', 'No visit needed']];
+    const days = pick1('day', 'sun', DAYS);
+    const SLOTS = [['a', '10 am to 12 pm'], ['b', '12 pm to 3 pm'], ['c', '3 pm to 6 pm']];
+    const slots = pick1('slot', 'a', SLOTS);
+    const dv = val('day', 'sun');
+    const visitLabel = dv === 'none' ? 'No visit' : (DAYS.find(x => x[0] === dv) || DAYS[0])[1] + ', ' + (SLOTS.find(x => x[0] === val('slot', 'a')) || SLOTS[0])[1];
+    const consent = (() => { const on = val('consent', true); return { on, cls: 'v-checkrow v-consent' + (on ? ' is-on' : ''), go: () => this.setState({ consent: !on }) }; })();
+    const LBL = ['Trip', 'Documents', 'Office visit', 'Check and send'];
+    const steps = LBL.map((l, i) => ({ label: l, off: i + 1 > sN, cls: 'v-ptprog-step' + (i + 1 < sN ? ' is-done' : '') + (i + 1 === sN ? ' is-now' : ''), go: () => { if (i + 1 < sN) this.setState({ step: String(i + 1) }); } }));
+    const go = (n) => this.setState({ step: String(n) });
+    const sending = !!st.sending;
+    return {
+      L, m: !!p.m, hours, copy, vtypes, vtypeLabel, apps, fees, docs, docCount, days, slots, visitLabel, consent, steps, multi: nA > 1,
+      stepKey: 's' + step, is1: step === '1', is2: step === '2', is3: step === '3', is4: step === '4', notDone: step !== 'done', isDone: step === 'done',
+      canBack: sN > 1 && sN < 5, notLast: sN < 4, isLast: sN === 4, stepNote: 'Step ' + Math.min(sN, 4) + ' of 4 · Private',
+      back: () => go(Math.max(1, sN - 1)), next: () => go(sN + 1),
+      sending, sendCls: 'w-btn w-btn-primary v-foot-go' + (sending ? ' is-loading' : ''), sendIc: sending ? 'v-spin' : 'i i-send', sendLabel: sending ? 'Sending…' : 'Send application',
+      send: () => { this.setState({ sending: true }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ sending: false, step: 'done' }), 1000); }
+    };
+  }
+}
+</script>
+</body>
+</html>

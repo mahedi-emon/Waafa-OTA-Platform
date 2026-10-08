@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · Cart</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="{{count}}" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="ww-sec" style="padding-top:16px">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><span aria-current="page">Cart</span></nav>
+        <div class="ww-listhead" style="margin:16px 0 18px"><div><h1>Your cart</h1><p>{{headLine}}</p></div>
+          <sc-if value="{{has}}" hint-placeholder-val="{{ true }}"><ol class="ww-costeps" aria-label="Checkout steps"><li class="is-now"><i>1</i>Cart</li><li><i>2</i>Delivery and payment</li><li><i>3</i>Done</li></ol></sc-if>
+        </div>
+        <sc-if value="{{has}}" hint-placeholder-val="{{ true }}">
+          <div class="v-cartgrid">
+            <div class="min-w-0">
+              <div class="v-freeship"><span class="i i-truck"></span><div><b>{{ship.title}}</b><span class="v-freeship-bar"><span style="{{ship.style}}"></span></span><small>{{ship.sub}}</small></div></div>
+              <sc-for list="{{lines}}" as="l" hint-placeholder-count="3">
+                <div class="ww-cartline" key="{{l.id}}">
+                  <a class="ww-cartline-img" href="{{L.ShopProduct}}" aria-label="{{l.title}}">
+                    <sc-if value="{{l.img}}" hint-placeholder-val="{{ false }}"><img src="{{l.img}}" alt=""></sc-if>
+                    <sc-if value="{{l.noImg}}" hint-placeholder-val="{{ true }}"><span class="ph is-sm" data-photo="{{l.ph}}"><span class="ph-in"><span class="ph-ic"><span class="{{l.icon}}"></span></span></span></span></sc-if>
+                  </a>
+                  <div class="ww-cartline-main">
+                    <span class="ww-card-brand">{{l.brand}}</span>
+                    <a class="ww-cartline-title" href="{{L.ShopProduct}}">{{l.title}}</a>
+                    <sc-if value="{{l.hasVar}}" hint-placeholder-val="{{ true }}"><div class="ww-variant"><sc-for list="{{l.vars}}" as="v" hint-placeholder-count="2"><span><sc-if value="{{v.sw}}" hint-placeholder-val="{{ false }}"><i style="{{v.sw}}"></i></sc-if>{{v.t}}</span></sc-for></div></sc-if>
+                    <div class="ww-cartline-unit"><span>{{l.unitF}} each</span><sc-if value="{{l.mrpF}}" hint-placeholder-val="{{ true }}"><s>{{l.mrpF}}</s></sc-if><span class="{{l.stockCls}}">{{l.stockLabel}}</span></div>
+                    <div class="flex flex-wrap gap-4" style="margin-top:2px"><button class="ww-linkbtn" type="button" onClick="{{l.later}}"><span class="i i-bookmark"></span>Save for later</button><button class="ww-linkbtn" type="button" onClick="{{l.remove}}"><span class="i i-trash-2"></span>Remove</button></div>
+                  </div>
+                  <div class="ww-cartline-ctl">
+                    <div class="{{l.stepCls}}" role="group" aria-label="Quantity"><button type="button" aria-label="One less" onClick="{{l.dec}}"><span class="{{l.decIcon}}"></span></button><output aria-live="polite"><span class="{{l.roll}}" key="{{l.qty}}">{{l.qty}}</span></output><button type="button" aria-label="One more" onClick="{{l.inc}}"><span class="i i-plus"></span></button></div>
+                    <b class="ww-cartline-total"><span key="{{l.totalF}}" class="ww-pop">{{l.totalF}}</span></b>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{hasLater}}" hint-placeholder-val="{{ false }}">
+                <div class="ww-later"><b>Saved for later ({{laterN}})</b><sc-for list="{{laterLines}}" as="l" hint-placeholder-count="1"><div class="ww-later-row"><span class="{{l.icon}}"></span><span class="min-w-0">{{l.title}}<small>{{l.unitF}}</small></span><button class="w-btn w-btn-sm w-btn-secondary" type="button" onClick="{{l.back}}">Move to cart</button></div></sc-for></div>
+              </sc-if>
+              <div class="flex flex-wrap items-center justify-between gap-3" style="margin-top:16px">
+                <a class="v-link" href="{{L.Shop}}"><span class="i i-arrow-left"></span>Continue shopping</a>
+                <button class="ww-corpquote" type="button" onClick="{{openBulk}}"><span class="i i-building-2"></span>Buying for a company? <b>Get a corporate quote for this cart</b></button>
+              </div>
+            </div>
+            <aside class="v-ordersum" aria-labelledby="sum-t">
+              <h2 class="v-h3" id="sum-t">Order summary</h2>
+              <div class="ww-zone" role="radiogroup" aria-label="Delivery area"><button class="{{z.in}}" type="button" role="radio" aria-checked="{{z.inOn}}" onClick="{{z.goIn}}">Inside Dhaka</button><button class="{{z.out}}" type="button" role="radio" aria-checked="{{z.outOn}}" onClick="{{z.goOut}}">Outside Dhaka</button></div>
+              <div class="w-sumrow" style="margin-top:8px"><span>Items ({{count}})</span><b>{{mrpTotalF}}</b></div>
+              <div class="w-sumrow"><span>Discount on MRP</span><b class="text-success">−{{saveF}}</b></div>
+              <sc-if value="{{hasDisc}}" hint-placeholder-val="{{ false }}"><div class="w-sumrow"><span>Coupon WELCOME10</span><b class="text-success">−{{discF}}</b></div></sc-if>
+              <div class="w-sumrow"><span>Delivery <small style="color:var(--color-mist-500)">{{zoneEta}}</small></span><b>{{deliveryF}}</b></div>
+              <div class="w-sumrow is-total"><span>Total</span><b><span key="{{totalF}}" class="ww-pop">{{totalF}}</span></b></div>
+              <p class="ww-minorder"><span class="i i-badge-percent"></span>You save {{allSaveF}} on this order</p>
+              <form class="v-coupon" onSubmit="{{applyCoupon}}"><input class="{{couponCls}}" placeholder="Coupon code" aria-label="Coupon code" value="{{couponVal}}" onInput="{{typeCoupon}}"><button class="w-btn w-btn-secondary" type="submit">{{couponBtn}}</button></form>
+              <sc-if value="{{hasDisc}}" hint-placeholder-val="{{ false }}"><span class="w-ok"><span class="i i-check"></span>WELCOME10: 10% off up to ৳300 (sample coupon)</span></sc-if>
+              <sc-if value="{{couponErr}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{couponErr}}</span></sc-if>
+              <a class="w-btn w-btn-primary w-btn-block" href="{{L.ShopCheckout}}">Go to checkout<span class="i i-arrow-right"></span></a>
+              <div class="ww-paywith"><span>Pay with</span><b>Cash on delivery</b><b>bKash</b><b>Nagad</b><b>Bank transfer</b></div>
+              <p class="v-sumnote"><span class="i i-lock"></span>Prices include VAT. Delivery charges are samples, set in Admin.</p>
+            </aside>
+          </div>
+          <div class="ww-head" style="margin:44px 0 14px"><div><h2 style="font-size:22px">Often bought together</h2></div></div>
+          <div class="ww-rail"><sc-for list="{{recs}}" as="it" hint-placeholder-count="5"><dc-import name="PCard" p="{{it}}" on-add="{{it.add}}" style="display:contents" hint-size="100%,430px"></dc-import></sc-for></div>
+        </sc-if>
+        <sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+          <div class="ww-empty" style="padding:56px 20px">
+            <span class="ww-emptyart" aria-hidden="true"><span class="i i-shopping-cart"></span><i></i><i></i><i></i></span>
+            <h2 class="v-h3">Your cart is empty</h2>
+            <p>Start with a category, or pick up where you left off.</p>
+            <div class="ww-emptycats"><sc-for list="{{cats}}" as="c" hint-placeholder-count="6"><a href="{{L.ShopList}}"><span class="{{c.icon}}"></span>{{c.name}}</a></sc-for></div>
+            <a class="w-btn w-btn-primary" href="{{L.Shop}}">Browse Waafas World<span class="i i-arrow-right"></span></a>
+          </div>
+          <div class="ww-head" style="margin:40px 0 14px"><div><h2 style="font-size:20px">Recently viewed</h2></div></div>
+          <div class="ww-rail is-compact"><sc-for list="{{recent}}" as="it" hint-placeholder-count="4"><dc-import name="PCard" p="{{it}}" variant="compact" style="display:contents" hint-size="100%,100px"></dc-import></sc-for></div>
+        </sc-if>
+      </div>
+    </section>
+    <sc-if value="{{has}}" hint-placeholder-val="{{ true }}"><div class="ww-buybar is-bottom ww-cobar"><div class="ww-buybar-p"><b>{{totalF}}</b><small>{{count}} items · {{zoneShort}}</small></div><div class="ww-buybar-btns"><a class="w-btn w-btn-primary" href="{{L.ShopCheckout}}">Checkout<span class="i i-arrow-right"></span></a></div></div></sc-if>
+  </main>
+  <sc-if value="{{bulkOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="ww-dialog wa-r" role="dialog" aria-modal="true" aria-labelledby="cq-t">
+      <div class="w-scrim" onClick="{{closeBulk}}"></div>
+      <div class="ww-dialog-card">
+        <div class="ww-dialog-head"><span class="w-tile"><span class="i i-building-2"></span></span><div><h2 id="cq-t">Corporate quote for this cart</h2><p>{{count}} items, {{totalF}} at today’s prices. We reply with a quote and VAT invoice details within one working day.</p></div><button class="v-iconbtn is-plain" type="button" aria-label="Close" onClick="{{closeBulk}}"><span class="i i-x"></span></button></div>
+        <div class="ww-dialog-body">
+          <div class="w-grid-2"><div class="w-field"><label class="w-label" for="cq-c">Company <span class="w-req">*</span></label><input class="w-input" id="cq-c" placeholder="Company name"></div><div class="w-field"><label class="w-label" for="cq-p">Mobile <span class="w-req">*</span></label><input class="w-input" id="cq-p" inputmode="tel" placeholder="+880 1712-345678"></div></div>
+          <div class="w-field"><label class="w-label" for="cq-x">Multiply this cart by</label><span class="w-select"><select class="w-input" id="cq-x"><option>×1, as it is</option><option>×5</option><option>×10</option><option>×20</option></select></span></div>
+        </div>
+        <div class="ww-dialog-foot"><button class="w-btn w-btn-ghost" type="button" onClick="{{closeBulk}}">Cancel</button><button class="w-btn w-btn-primary" type="button" onClick="{{closeBulk}}"><span class="i i-send"></span>Send request</button></div>
+      </div>
+    </div>
+  </sc-if>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <sc-if value="{{none}}" hint-placeholder-val="{{ false }}"><dc-import name="TabBar" m="{{m}}" active="shop" cart="0" style="display:contents" hint-size="390px,64px"></dc-import></sc-if>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+  <sc-if value="{{undo}}" hint-placeholder-val="{{ false }}"><div class="v-toastwrap" role="status" style="bottom:96px"><div class="w-toast"><span class="w-tile"><span class="i i-trash-2"></span></span><span class="min-w-0"><b>Removed</b><br><span style="opacity:.8">{{undo}}</span></span><button class="v-toast-link" type="button" onClick="{{doUndo}}">Undo</button></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"empty":{"editor":"boolean","default":false},"coupon":{"editor":"enum","options":["","ok","bad"],"default":""},"bulk":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2315}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._u); clearTimeout(this._s); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Shop','ShopList','ShopProduct','ShopCheckout'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const fmt = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const BD1 = '../assets/c9ea845b540e931548117afdb5ae8a65.jpg';
+    const ITEMS = [
+      { id: 'tee', title: 'Classic Cotton Crew T-shirt', brand: 'Tessra · Sample', vars: [{ t: 'White', sw: '--sw:#F4F5F7' }, { t: 'Size M' }], unit: 650, mrp: 850, qty: 2, ph: 'prod-tshirt', icon: 'i i-shirt', stock: 'in' },
+      { id: 'pb', title: 'Voltaro 20,000 mAh Power Bank, 22.5 W', brand: 'Voltaro · Sample', vars: [{ t: '20,000 mAh' }, { t: 'Black', sw: '--sw:#1C1F26' }], unit: 2450, mrp: 2990, qty: 1, ph: 'prod-powerbank', icon: 'i i-battery-charging', stock: 'low' },
+      { id: 'toner', title: 'Better Day CE505A / CF280A Black Toner', brand: 'Better Day · Compatible', vars: [], unit: 1450, mrp: 1800, qty: 1, img: BD1, icon: 'i i-printer', stock: 'in' }
+    ];
+    const qs = Object.assign({}, st.qs || {});
+    ITEMS.forEach(it => { if (qs[it.id] === undefined) qs[it.id] = p.empty ? 0 : it.qty; });
+    const laterIds = st.later || [];
+    const MAX = 10;
+    let mrpT = 0, sub = 0, count = 0;
+    const lines = [];
+    ITEMS.forEach(it => {
+      const q = qs[it.id]; if (!q || laterIds.indexOf(it.id) >= 0) return;
+      mrpT += q * it.mrp; sub += q * it.unit; count += q;
+      lines.push({ id: it.id, title: it.title, brand: it.brand, img: it.img || '', noImg: !it.img, ph: it.ph || '', icon: it.icon, vars: it.vars, hasVar: it.vars.length > 0,
+        unitF: fmt(it.unit), mrpF: fmt(it.mrp), qty: q, totalF: fmt(q * it.unit),
+        stockCls: 'ww-stock ' + (it.stock === 'low' ? 'is-low' : 'is-in'), stockLabel: it.stock === 'low' ? 'Only 2 left in Black' : 'In stock',
+        roll: (st.dir && st.dir[it.id]) === 'down' ? 'down' : 'up', stepCls: 'ww-step' + (st.shake === it.id ? ' is-max' : ''), decIcon: q <= 1 ? 'i i-trash' : 'i i-minus',
+        inc: () => { if (q >= MAX) { this.setState({ shake: it.id }); clearTimeout(this._s); this._s = setTimeout(() => this.setState({ shake: '' }), 360); return; } this.setState({ qs: Object.assign({}, qs, { [it.id]: q + 1 }), dir: { [it.id]: 'up' } }); },
+        dec: () => { if (q <= 1) { this.setState({ qs: Object.assign({}, qs, { [it.id]: 0 }), undo: it.title, undoId: it.id }); clearTimeout(this._u); this._u = setTimeout(() => this.setState({ undo: '' }), 4000); return; } this.setState({ qs: Object.assign({}, qs, { [it.id]: q - 1 }), dir: { [it.id]: 'down' } }); },
+        remove: () => { this.setState({ qs: Object.assign({}, qs, { [it.id]: 0 }), undo: it.title, undoId: it.id }); clearTimeout(this._u); this._u = setTimeout(() => this.setState({ undo: '' }), 4000); },
+        later: () => this.setState({ later: laterIds.concat([it.id]) }) });
+    });
+    const laterLines = ITEMS.filter(it => laterIds.indexOf(it.id) >= 0).map(it => ({ title: it.title, unitF: fmt(it.unit), icon: it.icon, back: () => this.setState({ later: laterIds.filter(x => x !== it.id) }) }));
+    const zone = st.zone || 'in';
+    const FREE = 5000;
+    const del = zone === 'in' ? (sub >= FREE ? 0 : 80) : 150;
+    const cp = st.cp !== undefined ? st.cp : (p.coupon || '');
+    const disc = cp === 'ok' ? Math.min(300, Math.round(sub * 0.1)) : 0;
+    const total = sub - disc + del;
+    const recs = [['20 W USB-C Fast Charger', 'Voltaro', 'PD 3.0 · compact plug', 790, 990, 'plug-zap'], ['USB-C to USB-C Cable, 1 m', 'Voltaro', 'Braided · 60 W', 390, 450, 'cable'], ['Classic Polo Shirt', 'Tessra', 'Sizes S to XXL', 990, 1290, 'shirt', true], ['Double A A4 Copy Paper, 80 gsm', 'Double A', '500 sheets', 520, 580, 'file-text'], ['Pods Wireless Earbuds', 'Sonaro', '30-hour battery', 2190, 2790, 'headphones']]
+      .map((r, i) => ({ id: 'rc' + i, title: r[0], brand: r[1], spec: r[2], price: r[3], mrp: r[4], icon: r[5], options: !!r[6], ph: '', phCap: 'Photo from Admin', sample: true, stock: 'in', href: L.ShopProduct, add: () => {} }));
+    const recent = [['Better Day CE505A / CF280A Black Toner', 'Better Day', 1450, 1800, BD1, '', 'printer'], ['Classic Cotton Crew T-shirt', 'Tessra', 650, 850, '', 'prod-tshirt', 'shirt'], ['20,000 mAh Power Bank, 22.5 W', 'Voltaro', 2450, 2990, '', 'prod-powerbank', 'battery-charging'], ['Air Wireless Over-ear Headphones', 'Sonaro', 3890, 4990, '', 'prod-headphones', 'headphones']].map((r, i) => ({ id: 'r' + i, title: r[0], brand: r[1], price: r[2], mrp: r[3], img: r[4], ph: r[5], icon: r[6], stock: 'in', spec: '', href: L.ShopProduct }));
+    const cats = [['Printers & Supplies', 'printer'], ['Office & Stationery', 'pencil-ruler'], ['Computer & Accessories', 'laptop'], ['Electronics & Gadgets', 'headphones'], ['Home & Kitchen', 'cooking-pot'], ['Fashion & Lifestyle', 'shirt']].map(c => ({ name: c[0], icon: 'i i-' + c[1] }));
+    const has = count > 0;
+    return {
+      L, m: !!p.m, count, has, none: !has && !laterLines.length, lines,
+      headLine: has ? count + ' items · delivery ' + (zone === 'in' ? 'inside Dhaka' : 'outside Dhaka') : 'Nothing here yet',
+      ship: zone === 'out' ? { title: 'Delivery outside Dhaka: ৳150 flat', sub: 'In 2 to 4 days by courier · sample rule, set in Admin', style: 'width:100%' } : sub >= FREE ? { title: 'Free delivery in Dhaka unlocked', sub: 'Orders over ৳5,000 · sample rule, set in Admin', style: 'width:100%' } : { title: 'Add ' + fmt(FREE - sub) + ' more for free delivery in Dhaka', sub: 'Orders over ৳5,000 · sample rule, set in Admin', style: 'width:' + Math.round(sub * 100 / FREE) + '%' },
+      z: { in: zone === 'in' ? 'is-on' : '', out: zone === 'out' ? 'is-on' : '', inOn: zone === 'in', outOn: zone === 'out', goIn: () => this.setState({ zone: 'in' }), goOut: () => this.setState({ zone: 'out' }) },
+      zoneEta: zone === 'in' ? 'tomorrow' : '2 to 4 days', zoneShort: zone === 'in' ? 'Inside Dhaka' : 'Outside Dhaka',
+      mrpTotalF: fmt(mrpT), saveF: fmt(mrpT - sub), hasDisc: disc > 0, discF: fmt(disc), deliveryF: del ? fmt(del) : 'Free', totalF: fmt(total), allSaveF: fmt(mrpT - sub + disc),
+      couponVal: cp === 'ok' ? 'WELCOME10' : cp === 'bad' ? 'FREESHIP' : (st.cv || ''), couponCls: 'w-input' + (cp === 'bad' ? ' is-invalid' : ''), couponBtn: cp === 'ok' ? 'Applied' : 'Apply',
+      couponErr: cp === 'bad' ? 'FREESHIP has expired. Try another code.' : '',
+      typeCoupon: (e) => this.setState({ cv: e && e.target ? e.target.value : '' }),
+      applyCoupon: (e) => { if (e && e.preventDefault) e.preventDefault(); const v = (st.cv || '').trim().toUpperCase(); this.setState({ cp: v === '' || v === 'WELCOME10' ? 'ok' : 'bad' }); },
+      hasLater: laterLines.length > 0, laterN: laterLines.length, laterLines,
+      recs, recent, cats,
+      undo: st.undo || '', doUndo: () => { const id = st.undoId; const it = ITEMS.find(x => x.id === id); this.setState({ qs: Object.assign({}, qs, { [id]: it ? 1 : 0 }), undo: '' }); },
+      bulkOpen: st.bulk !== undefined ? st.bulk : !!p.bulk, openBulk: () => this.setState({ bulk: true }), closeBulk: () => this.setState({ bulk: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

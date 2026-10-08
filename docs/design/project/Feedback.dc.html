@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Feedback</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="feedback" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Feedback</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">Feedback</span><h1 class="v-h1 v-h1-page">What travellers tell us</h1><p class="v-lead">Every review here comes from someone who travelled or shopped with us, shown with their permission, with the service they used and when. No made-up star averages.</p></div>
+          <a class="v-pillbtn" href="https://www.facebook.com/waafatoursandtravel"><span class="i i-facebook"></span>More reviews on Facebook<span class="i i-arrow-up-right"></span></a>
+        </div>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:22px">
+      <div class="w-wrap wc-fbgrid">
+        <div class="flex flex-col gap-4 min-w-0">
+          <div class="flex flex-wrap items-center justify-between gap-3"><div class="wc-chips" role="tablist" aria-label="Filter by service"><sc-for list="{{chips}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" type="button" role="tab" aria-selected="{{c.on}}" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.label}}<small>{{c.n}}</small></button></sc-for></div><span class="v-sample">Sample reviews</span></div>
+          <div class="wc-revs" key="{{svc}}">
+            <sc-for list="{{revs}}" as="r" hint-placeholder-count="6">
+              <article class="wc-rev">
+                <div class="wc-rev-top"><span class="wc-avatar">{{r.ini}}</span><div><b>{{r.name}}</b><small>{{r.where}} · {{r.date}}</small></div><span class="w-sample">Sample</span></div>
+                <sc-if value="{{r.photo}}" hint-placeholder-val="{{ false }}"><span class="wc-ph wc-rev-photo"><span class="v-photo" data-photo="{{r.photo.key}}" data-src="{{r.photo.src}}"><span class="w-ph"><span class="w-ph-tag"><span class="i i-camera"></span>Their photo</span><span class="w-ph-subj">{{r.photo.subj}}</span><span class="w-ph-credit">{{r.photo.credit}}</span></span></span></span></sc-if>
+                <p><q>{{r.text}}</q></p>
+                <div class="wc-rev-foot"><span class="wc-svc"><span class="{{r.icon}}"></span>{{r.svc}}</span><span class="wc-stars" aria-label="{{r.starsLabel}}"><sc-for list="{{r.stars}}" as="s" hint-placeholder-count="5"><span class="i i-star-fill"></span></sc-for></span></div>
+                <sc-if value="{{r.reply}}" hint-placeholder-val="{{ false }}"><div class="ww-note" style="margin-top:2px"><span class="i i-message-circle"></span><span><b style="color:var(--color-navy-900)">Waafa replied:</b> {{r.reply}}</span></div></sc-if>
+              </article>
+            </sc-for>
+          </div>
+        </div>
+        <aside class="w-formcard wc-fbcard" aria-labelledby="fb-t">
+          <sc-if value="{{form}}" hint-placeholder-val="{{ true }}">
+            <div class="w-formcard-body">
+              <div><h2 class="v-h3" id="fb-t">Travelled or shopped with us?</h2><p class="text-13 text-muted" style="margin-top:4px">Tell us how it went. We read every message, good or bad.</p></div>
+              <div class="w-grid-2"><div class="w-field"><label class="w-label" for="f-n">Your name <span class="w-req">*</span></label><input class="w-input" id="f-n" value="{{v.name}}" placeholder="e.g. Nadia Islam"></div><div class="w-field"><label class="w-label" for="f-p">Mobile <span class="w-req">*</span></label><input class="w-input" id="f-p" inputmode="tel" placeholder="01712-345678"></div></div>
+              <div class="w-grid-2"><label class="w-field"><span class="w-label">Service you used <span class="w-req">*</span></span><span class="w-select"><select class="w-input"><option>Tour package</option><option>Flight</option><option>Hotel</option><option>Visa</option><option>Waafas World order</option><option>Printing or trading</option></select></span></label><div class="w-field"><label class="w-label" for="f-r">Reference <span class="w-opt">(optional)</span></label><input class="w-input" id="f-r" placeholder="PKG-261008-0021"></div></div>
+              <div class="w-field"><span class="w-label">How was it? <span class="w-opt">(optional)</span></span><div class="wc-starpick" role="radiogroup" aria-label="Rating"><sc-for list="{{pick}}" as="s" hint-placeholder-count="5"><button class="{{s.cls}}" type="button" role="radio" aria-checked="{{s.on}}" aria-label="{{s.label}}" onClick="{{s.go}}"><span class="i i-star-fill"></span></button></sc-for></div></div>
+              <div class="w-field"><label class="w-label" for="f-t">Your feedback <span class="w-req">*</span></label><textarea class="w-input v-textarea" id="f-t" rows="4" placeholder="What went well? What should we do better?"></textarea></div>
+              <label class="v-drop" style="padding:14px"><span class="i i-image-plus"></span><b>Add a photo from your trip</b><small>Optional · JPG or PNG up to 5 MB</small></label>
+              <button class="{{consentCls}}" type="button" role="checkbox" aria-checked="{{consent}}" onClick="{{toggleConsent}}"><span class="ww-cbox"></span><span>Waafa may show my first name, the service, the month and my photo on this page. My mobile number is never shown.</span></button>
+              <button class="w-btn w-btn-primary w-btn-block" type="button" onClick="{{send}}"><span class="i i-send"></span>Send feedback</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
+            <div class="w-success">
+              <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"></circle><path d="M28 45 l11 11 l22 -24"></path></svg>
+              <h2 class="v-h3">Thank you, Nadia</h2>
+              <p class="text-subtle" style="max-width:320px">We read every message. With your permission, yours appears here after a quick check, usually within two working days.</p>
+              <div class="flex flex-wrap justify-center gap-2"><a class="w-btn w-btn-wa w-btn-sm" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>Talk to us</a><button class="w-btn w-btn-secondary w-btn-sm" type="button" onClick="{{again}}">Write another</button></div>
+            </div>
+          </sc-if>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"sent":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2595}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = { Home: 'Home' + sx + '.dc.html' };
+    const PH = { coxsbazar: ['Cox’s Bazar beach', 'photo-1711077470004-cb6a7258c082', 'Masum Ahmed'], nepal: ['Nepal', 'photo-1518002054494-3a6f94352e9d', 'Giuseppe Mondì'], maldives: ['Maldives overwater villas', 'photo-1514282401047-d79a71a590e8', 'Ishan @seefromthesky'] };
+    const ph = k => ({ key: k, subj: PH[k][0], credit: PH[k][2] + ' · Unsplash', src: 'https://images.unsplash.com/' + PH[k][1] + '?auto=format&fit=crop&w=900&q=80' });
+    const SV = { tour: ['Tour package', 'i i-map'], flight: ['Flight', 'i i-plane'], visa: ['Visa', 'i i-passport'], hotel: ['Hotel', 'i i-hotel'], shop: ['Waafas World', 'i i-shopping-bag'] };
+    const R = [
+      ['NI', 'Nadia I.', 'Cox’s Bazar, 3 nights', 'Sep 2026', 'tour', 5, 'They called the hotel when our room wasn’t ready and sorted it in ten minutes. The kids still talk about the beach horse ride.', 'coxsbazar', ''],
+      ['RU', 'Rahim U.', 'Dhaka to Dubai', 'Sep 2026', 'flight', 5, 'Asked for the cheapest fare with 30 kg baggage. Sadia found one and explained the change rules before I paid. No surprises at the airport.', '', ''],
+      ['TH', 'Tanvir H.', 'Thailand tourist visa', 'Aug 2026', 'visa', 4, 'The checklist was clear and they caught a missing bank letter before submission. Took a day longer than promised, but they kept me updated.', '', 'Thank you, Tanvir. We’ve added a daily status message so delays are never a surprise.'],
+      ['SK', 'Shirin K.', 'Pokhara, 5 nights', 'Jul 2026', 'tour', 5, 'Our guide in Pokhara was waiting at the airport with our names. Everything matched the day-by-day plan we were sent.', 'nepal', ''],
+      ['MA', 'Mahbub A.', 'Office order, 40 items', 'Oct 2026', 'shop', 5, 'Ordered toner and paper for three branches. One VAT invoice, delivered next morning, and they called to confirm the printer models first.', '', ''],
+      ['FR', 'Farzana R.', 'Maldives, 4 nights', 'Jun 2026', 'tour', 5, 'Honeymoon booked in two calls. The seaplane transfer and the villa were exactly what was promised.', 'maldives', ''],
+      ['JH', 'Jahid H.', 'Bangkok hotel', 'Aug 2026', 'hotel', 4, 'Good rate and a quick confirmation. I would have liked the hotel voucher by email as well as WhatsApp.', '', ''],
+      ['ST', 'Sumaiya T.', 'Power bank and earbuds', 'Oct 2026', 'shop', 5, 'Cash on delivery, arrived the next day in Mirpur. Rider let me check the box before paying.', '', '']
+    ];
+    const svc = st.svc || 'all';
+    const CH = [['all', 'All', 'i i-layout-grid'], ['tour', 'Tours', 'i i-map'], ['flight', 'Flights', 'i i-plane'], ['visa', 'Visa', 'i i-passport'], ['hotel', 'Hotels', 'i i-hotel'], ['shop', 'Waafas World', 'i i-shopping-bag']];
+    const chips = CH.map(c => ({ label: c[1], icon: c[2], n: c[0] === 'all' ? R.length : R.filter(r => r[4] === c[0]).length, on: svc === c[0], cls: 'w-chip' + (svc === c[0] ? ' is-on' : ''), go: () => this.setState({ svc: c[0] }) }));
+    const revs = R.filter(r => svc === 'all' || r[4] === svc).map(r => ({ ini: r[0], name: r[1], where: r[2], date: r[3], svc: SV[r[4]][0], icon: SV[r[4]][1], stars: Array.from({ length: r[5] }, (_, i) => i), starsLabel: r[5] + ' out of 5, given by the traveller', text: r[6], photo: r[7] ? ph(r[7]) : null, reply: r[8] }));
+    const rate = st.rate || 0;
+    const pick = [1, 2, 3, 4, 5].map(n => ({ label: n + ' out of 5', on: rate === n, cls: n <= rate ? 'is-on' : '', go: () => this.setState({ rate: n }) }));
+    const consent = st.consent !== undefined ? st.consent : true;
+    const sent = st.sent !== undefined ? st.sent : !!p.sent;
+    return {
+      L, m: !!p.m, svc, chips, revs, pick, v: { name: sent ? 'Nadia Islam' : '' },
+      consent, consentCls: 'wc-consent' + (consent ? ' is-on' : ''), toggleConsent: () => this.setState({ consent: !consent }),
+      form: !sent, sent, send: () => this.setState({ sent: true }), again: () => this.setState({ sent: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

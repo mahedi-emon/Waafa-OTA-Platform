@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Thailand visa</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="visa" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead v-vhead">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Visa}}">Visa services</a><span class="i i-chevron-right"></span><span aria-current="page">Thailand</span></nav>
+        <div class="v-vhead-in">
+          <img class="v-vflag" src="../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg" alt="Flag of Thailand">
+          <div class="flex flex-col gap-3 min-w-0">
+            <span class="v-eyebrow">Thailand visa</span>
+            <h1 class="v-h1 v-h1-page">Thailand visa for Bangladeshi passports</h1>
+            <p class="v-lead">Pick your visa type to see the documents, how long it takes and what it costs. We check every page before it goes to the embassy.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <nav class="w-tabs is-sticky v-vtabs" aria-label="Visa type"><div class="w-wrap flex gap-1" role="tablist">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.go}}">{{t.label}}</button></sc-for>
+    </div></nav>
+    <div class="w-wrap v-pdgrid">
+      <div class="v-pdmain">
+        <sc-if value="{{tab.tourist}}" hint-placeholder-val="{{ true }}">
+            <div class="v-vpanel v-stepanim">
+              <div class="w-facts v-vfacts"><div class="w-fact"><span class="i i-clock"></span><div><small>Processing</small><b>About 10 working days</b></div></div><div class="w-fact"><span class="i i-calendar"></span><div><small>Stay</small><b>Up to 60 days</b></div></div><div class="w-fact"><span class="i i-log-in"></span><div><small>Entry</small><b>Single entry</b></div></div><div class="w-fact"><span class="i i-hourglass"></span><div><small>Valid for</small><b>3 months</b></div></div></div>
+              <section class="v-pdsec"><div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="v-h3">Documents you need</h2><span class="v-sample">Checklist from Admin</span></div><div class="w-checklist v-vchecklist"><div class="w-checkitem"><span class="w-checkitem-n">1</span><div><b>Passport</b><p>Valid for at least 6 months from your travel date, with two blank pages. Bring old passports too.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">2</span><div><b>Two recent photos</b><p>35 × 45 mm, white background, taken in the last 3 months.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">3</span><div><b>Bank statement and solvency certificate</b><p>Last 6 months, signed and sealed by your bank.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">4</span><div><b>National ID card</b><p>A clear copy of both sides.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">5</span><div><b>Proof of work or study</b><p>Job: no-objection letter and visiting card. Business owners: business registration papers. Students: student ID and letter from the institution.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">6</span><div><b>Hotel booking and flight booking</b><p>We can make both for you; no payment needed until the visa is approved.</p></div></div></div></section>
+            </div>
+          </sc-if><sc-if value="{{tab.business}}" hint-placeholder-val="{{ false }}">
+            <div class="v-vpanel v-stepanim">
+              <div class="w-facts v-vfacts"><div class="w-fact"><span class="i i-clock"></span><div><small>Processing</small><b>About 10 working days</b></div></div><div class="w-fact"><span class="i i-calendar"></span><div><small>Stay</small><b>Up to 90 days</b></div></div><div class="w-fact"><span class="i i-log-in"></span><div><small>Entry</small><b>Single or multiple</b></div></div><div class="w-fact"><span class="i i-hourglass"></span><div><small>Valid for</small><b>3 months to 1 year</b></div></div></div>
+              <section class="v-pdsec"><div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="v-h3">Documents you need</h2><span class="v-sample">Checklist from Admin</span></div><div class="w-checklist v-vchecklist"><div class="w-checkitem"><span class="w-checkitem-n">1</span><div><b>Passport</b><p>Valid for at least 6 months from your travel date, with two blank pages. Bring old passports too.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">2</span><div><b>Two recent photos</b><p>35 × 45 mm, white background, taken in the last 3 months.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">3</span><div><b>Bank statement and solvency certificate</b><p>Last 6 months, signed and sealed by your bank.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">4</span><div><b>National ID card</b><p>A clear copy of both sides.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">5</span><div><b>Invitation letter from the Thai company</b><p>On company letterhead, naming you, your dates and the purpose.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">6</span><div><b>Your company’s letter</b><p>Introducing you and confirming the trip, with the company’s registration papers.</p></div></div></div></section>
+            </div>
+          </sc-if><sc-if value="{{tab.medical}}" hint-placeholder-val="{{ false }}">
+            <div class="v-vpanel v-stepanim">
+              <div class="w-facts v-vfacts"><div class="w-fact"><span class="i i-clock"></span><div><small>Processing</small><b>About 7 working days</b></div></div><div class="w-fact"><span class="i i-calendar"></span><div><small>Stay</small><b>Up to 90 days</b></div></div><div class="w-fact"><span class="i i-log-in"></span><div><small>Entry</small><b>Single entry</b></div></div><div class="w-fact"><span class="i i-hourglass"></span><div><small>Valid for</small><b>3 months</b></div></div></div>
+              <section class="v-pdsec"><div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="v-h3">Documents you need</h2><span class="v-sample">Checklist from Admin</span></div><div class="w-checklist v-vchecklist"><div class="w-checkitem"><span class="w-checkitem-n">1</span><div><b>Passport</b><p>Valid for at least 6 months from your travel date, with two blank pages. Bring old passports too.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">2</span><div><b>Two recent photos</b><p>35 × 45 mm, white background, taken in the last 3 months.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">3</span><div><b>Bank statement and solvency certificate</b><p>Last 6 months, signed and sealed by your bank.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">4</span><div><b>National ID card</b><p>A clear copy of both sides.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">5</span><div><b>Hospital appointment letter</b><p>From the Thai hospital, with the treatment and dates.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">6</span><div><b>Medical reports from Bangladesh</b><p>Your doctor’s referral and recent reports.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">7</span><div><b>Attendant’s documents</b><p>If someone travels with you, the same documents for them.</p></div></div></div></section>
+            </div>
+          </sc-if><sc-if value="{{tab.student}}" hint-placeholder-val="{{ false }}">
+            <div class="v-vpanel v-stepanim">
+              <div class="w-facts v-vfacts"><div class="w-fact"><span class="i i-clock"></span><div><small>Processing</small><b>About 15 working days</b></div></div><div class="w-fact"><span class="i i-calendar"></span><div><small>Stay</small><b>Length of the course</b></div></div><div class="w-fact"><span class="i i-log-in"></span><div><small>Entry</small><b>Single entry</b></div></div><div class="w-fact"><span class="i i-hourglass"></span><div><small>Valid for</small><b>3 months, extended in Thailand</b></div></div></div>
+              <section class="v-pdsec"><div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="v-h3">Documents you need</h2><span class="v-sample">Checklist from Admin</span></div><div class="w-checklist v-vchecklist"><div class="w-checkitem"><span class="w-checkitem-n">1</span><div><b>Passport</b><p>Valid for at least 6 months from your travel date, with two blank pages. Bring old passports too.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">2</span><div><b>Two recent photos</b><p>35 × 45 mm, white background, taken in the last 3 months.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">3</span><div><b>Bank statement and solvency certificate</b><p>Last 6 months, signed and sealed by your bank.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">4</span><div><b>National ID card</b><p>A clear copy of both sides.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">5</span><div><b>Admission letter</b><p>From the Thai university or school.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">6</span><div><b>Academic certificates</b><p>SSC, HSC and any degree certificates with transcripts.</p></div></div><div class="w-checkitem"><span class="w-checkitem-n">7</span><div><b>Sponsor’s bank statement</b><p>If a parent or sponsor pays, their statement and a letter.</p></div></div></div></section>
+            </div>
+          </sc-if>
+        <section class="v-pdsec w-reveal">
+          <h2 class="v-h3">Forms to download</h2>
+          <div class="v-dlist"><a class="v-dlrow" href="#"><span class="w-tile"><span class="i i-file-text"></span></span><span><b>Visa application form</b><small>PDF · 2 pages</small></span><span class="i i-download"></span></a><a class="v-dlrow" href="#"><span class="w-tile"><span class="i i-file-text"></span></span><span><b>Personal information sheet</b><small>PDF · 1 page</small></span><span class="i i-download"></span></a><a class="v-dlrow" href="#"><span class="w-tile"><span class="i i-file-text"></span></span><span><b>Document checklist to print</b><small>PDF · 1 page</small></span><span class="i i-download"></span></a></div>
+        </section>
+        <section class="v-pdsec w-reveal">
+          <h2 class="v-h3">Good to know</h2>
+          <div class="v-notecard"><span class="w-tile"><span class="i i-info"></span></span><div><b>Embassy rules change</b><p>We update this page when the embassy changes its list. If anything here differs from what the embassy asks, we follow the embassy and tell you before you pay.</p><a class="v-link" href="{{L.VisaGuidePost}}">Read the Thailand visa guide<span class="i i-arrow-right"></span></a></div></div>
+          <div class="w-acc"><details class="w-acc-item"><summary class="w-acc-q">Can I apply without a job letter?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Yes, if you show other proof of ties to Bangladesh, such as business papers or property documents. We tell you what fits your case.</div></details><details class="w-acc-item"><summary class="w-acc-q">How much money should my bank statement show?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">There is no fixed number, but it should cover your trip comfortably. We look at your statement and advise before you submit.</div></details><details class="w-acc-item"><summary class="w-acc-q">Can my family apply together?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Yes. Add everyone in one application. Children need their birth certificate and both parents’ consent.</div></details></div>
+        </section>
+      </div>
+      <aside class="v-pdaside">
+        <div class="w-bookcard v-bookcard v-vapply">
+          <div class="flex items-center gap-3"><img class="w-flag" src="../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg" alt="" style="width:36px;height:24px;border-radius:5px"><div><b class="text-navy">Thailand · {{fee.type}} visa</b><div class="text-13 text-muted">Per applicant</div></div></div>
+          <div class="w-feebox v-feebox">
+            <div class="w-sumrow"><span>Embassy fee <small class="text-muted">(paid to the embassy)</small></span><b>{{fee.emb}}</b></div>
+            <div class="w-sumrow"><span>Our service charge</span><b>{{fee.svc}}</b></div>
+            <div class="w-sumrow is-total"><span>Total</span><b>{{fee.total}}</b></div>
+          </div>
+          <span class="v-sample" style="align-self:flex-start">Sample fees</span>
+          <a class="w-btn w-btn-primary w-btn-block v-magnet" href="{{L.VisaApply}}"><span class="i i-upload"></span>Apply with WAAFA</a>
+          <a class="w-btn w-btn-wa w-btn-block" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20I%20need%20a%20Thailand%20visa"><span class="i i-whatsapp-fill"></span>Send documents on WhatsApp</a>
+          <p class="v-booknote"><span class="i i-shield-check"></span>Pay when we submit your file, not before.</p>
+        </div>
+      </aside>
+    </div>
+    <div class="w-bookbar v-pdbar">
+      <div class="min-w-0" style="flex:1"><span class="w-from">{{fee.type}} visa, per applicant</span><div class="w-price">{{fee.total}} <small>total</small></div></div>
+      <a class="w-btn w-btn-primary" href="{{L.VisaApply}}"><span class="i i-upload"></span>Apply</a>
+    </div>
+
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="visa" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m": {"editor": "boolean", "default": false}, "vtype": {"editor": "enum", "options": ["tourist", "business", "medical", "student"], "default": "tourist"}, "$preview": {"width": 1440, "height": 2600}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Visa','VisaCountry','VisaApply','VisaTrack','VisaGuide','VisaGuidePost','Contact','Faqs','OfflinePay','Packages','PackageDetail'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const pick1 = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => ({ key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on: cur === o[0], cls: b + (cur === o[0] ? (b.indexOf('v-opt') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: o[0] }) })); };
+    const pickN = (key, def, opts, base) => { const cur = st[key] !== undefined ? st[key] : def; const b = base || 'w-chip'; return opts.map(o => { const on = cur.indexOf(o[0]) >= 0; return { key: o[0], label: o[1], icon: o[2] || '', sub: o[3] || '', on, cls: b + (on ? (b.indexOf('v-checkrow') === 0 || b.indexOf('v-dchip') === 0 ? ' is-on' : ' is-active') : ''), go: () => this.setState({ [key]: on ? cur.filter(x => x !== o[0]) : cur.concat([o[0]]) }) }; }); };
+    const val = (key, def) => st[key] !== undefined ? st[key] : def;
+    const counter = (key, def, title, subt, min, max, what) => { const v = val(key, def); return { title, sub: subt, val: v, decOff: v <= min, incOff: v >= max, decLabel: 'Remove one ' + what, incLabel: 'Add one ' + what, dec: () => this.setState({ [key]: Math.max(min, v - 1) }), inc: () => this.setState({ [key]: Math.min(max, v + 1) }) }; };
+    const sw = (key, def) => { const on = val(key, def); return { on, cls: 'w-switch' + (on ? ' is-on' : ''), go: () => this.setState({ [key]: !on }) }; };
+    const overlay = (key, def) => { const open = st[key] !== undefined ? st[key] : def; const out = !!st[key + 'Out']; return { open, out,
+      open_: () => this.setState({ [key]: true, [key + 'Out']: false }),
+      close: () => { this.setState({ [key + 'Out']: true }); clearTimeout(this['_o' + key]); this['_o' + key] = setTimeout(() => this.setState({ [key]: false, [key + 'Out']: false }), 260); } }; };
+    const tk = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const T = [["tourist", "Tourist"], ["business", "Business"], ["medical", "Medical"], ["student", "Student"]], F = {"tourist": [4000, 3500], "business": [6000, 4500], "medical": [4000, 3500], "student": [6000, 5000]};
+    const tb = val('tab', p.vtype || 'tourist');
+    const tabs = T.map(t => ({ label: t[1], on: tb === t[0], cls: 'w-tab-link' + (tb === t[0] ? ' is-active' : ''), go: () => this.setState({ tab: t[0] }) }));
+    const tab = {}; T.forEach(t => { tab[t[0]] = tb === t[0]; });
+    const fe = F[tb];
+    const fee = { type: (T.find(t => t[0] === tb) || T[0])[1], emb: tk(fe[0]), svc: tk(fe[1]), total: tk(fe[0] + fe[1]) };
+    return { L, m: !!p.m, tabs, tab, fee };
+  }
+}
+</script>
+</body>
+</html>

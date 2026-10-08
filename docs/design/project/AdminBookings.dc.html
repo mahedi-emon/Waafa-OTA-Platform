@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · bookings and lists</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="{{K.nav}}" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>{{K.group}}</span></div>
+          <h1 class="a-title">{{K.title}}</h1>
+          <p>{{K.desc}}</p>
+        </div>
+        <div class="a-actions">
+          <sc-for list="{{K.acts}}" as="b" hint-placeholder-count="2"><a class="{{b.cls}}" href="{{b.href}}" onClick="{{b.go}}"><span class="{{b.icon}}"></span>{{b.label}}<sc-if value="{{b.p}}" hint-placeholder-val="{{ false }}"><span class="a-p is-p1">{{b.p}}</span></sc-if></a></sc-for>
+        </div>
+      </div>
+      <sc-if value="{{K.note}}" hint-placeholder-val="{{ false }}"><div class="a-callout"><span class="i i-info"></span><span>{{K.note}}</span></div></sc-if>
+      <div class="a-views" role="tablist"><sc-for list="{{tabs}}" as="v" hint-placeholder-count="4"><button class="{{v.cls}}" type="button" role="tab" aria-selected="{{v.on}}" onClick="{{v.go}}">{{v.label}}<b>{{v.n}}</b></button></sc-for></div>
+      <div class="a-bar">
+        <label class="a-search"><span class="i i-search"></span><input class="a-input" placeholder="{{K.search}}" value="{{q}}" onChange="{{onQ}}" aria-label="Search"></label>
+        <div class="a-bar-chips"><sc-for list="{{K.filters}}" as="f" hint-placeholder-count="3"><button class="a-fchip" type="button"><span class="{{f.icon}}"></span>{{f.label}}</button></sc-for></div>
+      </div>
+      <section class="a-card" aria-label="{{K.title}}">
+        <div class="a-table-wrap">
+          <table class="a-table is-wide">
+            <thead><tr><sc-for list="{{K.cols}}" as="h" hint-placeholder-count="7"><th class="{{h.cls}}">{{h.label}}</th></sc-for></tr></thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+                <tr class="{{r.cls}}" onClick="{{r.open}}" style="{{r.cur}}">
+                  <sc-for list="{{r.cells}}" as="c" hint-placeholder-count="7">
+                    <td class="{{c.td}}">
+                      <sc-if value="{{c.isText}}" hint-placeholder-val="{{ true }}"><span class="{{c.cls}}">{{c.t}}</span><sc-if value="{{c.s}}" hint-placeholder-val="{{ false }}"><span class="a-sub">{{c.s}}</span></sc-if></sc-if>
+                      <sc-if value="{{c.isRef}}" hint-placeholder-val="{{ false }}"><a class="a-ref" href="{{c.href}}">{{c.t}}</a><sc-if value="{{c.s}}" hint-placeholder-val="{{ false }}"><span class="a-sub">{{c.s}}</span></sc-if></sc-if>
+                      <sc-if value="{{c.isWho}}" hint-placeholder-val="{{ false }}"><span class="a-who"><span class="a-avatar is-sm" style="{{c.av}}">{{c.ini}}</span><span><b>{{c.t}}</b><sc-if value="{{c.s}}" hint-placeholder-val="{{ false }}"><small>{{c.s}}</small></sc-if></span></span></sc-if>
+                      <sc-if value="{{c.isThumb}}" hint-placeholder-val="{{ false }}"><span class="flex items-center gap-3"><span class="a-thumb ph is-sm" data-photo="{{c.ph}}"><span class="{{c.icon}}"></span></span><span class="min-w-0"><b class="text-navy" style="font-weight:600">{{c.t}}</b><span class="a-sub">{{c.s}}</span></span></span></sc-if>
+                      <sc-if value="{{c.isMod}}" hint-placeholder-val="{{ false }}"><span class="a-mod"><span class="{{c.icon}}"></span>{{c.t}}</span><sc-if value="{{c.s}}" hint-placeholder-val="{{ false }}"><span class="a-sub">{{c.s}}</span></sc-if></sc-if>
+                      <sc-if value="{{c.isStars}}" hint-placeholder-val="{{ false }}"><span class="flex items-center gap-2"><span class="wl-stars"><sc-for list="{{c.stars}}" as="x" hint-placeholder-count="5"><span class="i i-star-fill"></span></sc-for></span><span class="a-mute text-12">{{c.t}}</span></span></sc-if>
+                      <sc-if value="{{c.isBar}}" hint-placeholder-val="{{ false }}"><span class="flex items-center gap-2"><span class="a-hbar-track" style="width:84px"><span style="{{c.w}}"></span></span><span class="text-12">{{c.t}}</span></span></sc-if>
+                      <sc-if value="{{c.isTags}}" hint-placeholder-val="{{ false }}"><span class="a-chips"><sc-for list="{{c.tags}}" as="g" hint-placeholder-count="2"><span class="{{g.cls}}">{{g.t}}</span></sc-for></span></sc-if>
+                      <sc-if value="{{c.isActs}}" hint-placeholder-val="{{ false }}"><span class="flex items-center gap-1" style="justify-content:flex-end"><sc-for list="{{c.acts}}" as="b" hint-placeholder-count="2"><button class="{{b.cls}}" type="button" aria-label="{{b.aria}}" onClick="{{b.go}}"><span class="{{b.icon}}"></span>{{b.label}}</button></sc-for></span></sc-if>
+                    </td>
+                  </sc-for>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}"><div class="wl-empty" style="margin:16px;box-shadow:none"><span class="w-tile"><span class="i i-search-x"></span></span><h2 class="v-h3">Nothing here yet</h2><p>{{K.empty}}</p></div></sc-if>
+        <div class="a-card-foot"><span>{{footNote}}</span><div class="a-pager"><button type="button" aria-label="Previous page"><span class="i i-chevron-left"></span></button><button class="is-on" type="button">1</button><button type="button">2</button><button type="button">3</button><button type="button" aria-label="Next page"><span class="i i-chevron-right"></span></button></div></div>
+      </section>
+    </main>
+  </div>
+
+  <sc-if value="{{drawerOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="a-ov" role="dialog" aria-modal="true" aria-labelledby="dr-t">
+      <div class="a-scrim2" onClick="{{closeDrawer}}"></div>
+      <aside class="a-drawer">
+        <div class="a-drawer-head"><span class="a-tile"><span class="{{D.icon}}"></span></span><div class="min-w-0" style="flex:1"><h2 id="dr-t">{{D.title}}</h2><p>{{D.sub}}</p></div><button class="a-iconbtn" type="button" aria-label="Close" onClick="{{closeDrawer}}"><span class="i i-x"></span></button></div>
+        <div class="a-drawer-body">
+          <sc-if value="{{dk.groupfares}}" hint-placeholder-val="{{ false }}">
+            <div class="a-grid2">
+              <label class="a-field"><span class="a-label">From <span class="w-req">*</span></span><input class="a-input" value="DAC · Dhaka"></label>
+              <label class="a-field"><span class="a-label">To <span class="w-req">*</span></span><input class="a-input" value="DXB · Dubai"></label>
+              <label class="a-field"><span class="a-label">Airline <span class="w-req">*</span></span><span class="a-sel"><select class="a-input"><option>flydubai (FZ)</option><option>Kuwait Airways (KU)</option><option>US-Bangla Airlines (BS)</option></select></span></label>
+              <label class="a-field"><span class="a-label">Trip</span><span class="a-sel"><select class="a-input"><option>One way</option><option>Return</option></select></span></label>
+              <label class="a-field"><span class="a-label">Departure date</span><input class="a-input" value="Wed, 28 Oct 2026"></label>
+              <label class="a-field"><span class="a-label">Return date</span><input class="a-input" placeholder="Optional"></label>
+              <label class="a-field"><span class="a-label">Seats</span><input class="a-input" value="30"></label>
+              <label class="a-field"><span class="a-label">Checked bag</span><input class="a-input" value="20 kg"></label>
+              <label class="a-field"><span class="a-label">Indicative fare per adult</span><span class="a-prefix"><span>৳</span><input class="a-input" value="38,500"></span></label>
+              <label class="a-field"><span class="a-label">Hide after</span><input class="a-input" value="Sun, 25 Oct 2026, 11:59 pm"></label>
+              <label class="a-field a-span2"><span class="a-label">Note on the card</span><input class="a-input" value="Fare confirmed by an expert before payment. Seats on request."></label>
+            </div>
+            <div class="a-switch-row"><span><b>Show on matching search results</b><small>Same route within ±3 days</small></span><span class="w-switch is-on"></span></div>
+            <div class="a-callout is-warn"><span class="i i-triangle-alert"></span><span>Fares here are indicative. The card says so, and every request becomes a lead linked to this fare.</span></div>
+          </sc-if>
+          <sc-if value="{{dk.customers}}" hint-placeholder-val="{{ false }}">
+            <div class="a-who"><span class="a-avatar is-lg" style="--av:#7C5CFF">FA</span><span><b style="font-size:16px">Farhana Akter</b><small>Customer since March 2026 · Dhaka</small></span></div>
+            <div class="a-chips"><span class="a-chip is-violet">Family traveller</span><span class="a-chip">Facebook</span><button class="a-add" type="button" style="height:24px;padding:0 10px"><span class="i i-plus"></span>Tag</button></div>
+            <dl class="a-kv"><dt>Phone</dt><dd>+880 1819-220114</dd><dt>Email</dt><dd>farhana.a@example.com</dd><dt>Leads</dt><dd>4 · 2 booked</dd><dt>Orders</dt><dd>2 · ৳6,480</dd><dt>Lifetime value</dt><dd>৳1,46,480</dd></dl>
+            <div class="a-sec-title">History</div>
+            <div class="a-tl">
+              <div class="a-tl-item"><span class="a-tl-ic is-blue"><span class="i i-map"></span></span><div class="a-tl-body"><b>PKG-261008-0017</b> Maldives 4D/3N · Pending<time>Today</time></div></div>
+              <div class="a-tl-item"><span class="a-tl-ic is-green"><span class="i i-shopping-bag"></span></span><div class="a-tl-body"><b>ORD-260921-0108</b> 2 items · ৳3,280 · Delivered<time>21 Sep</time></div></div>
+              <div class="a-tl-item"><span class="a-tl-ic is-green"><span class="i i-ticket"></span></span><div class="a-tl-body"><b>BKG-260702-0003</b> Dhaka to Bangkok, return · 3 travellers · ৳1,40,000<time>2 Jul</time></div></div>
+            </div>
+            <label class="a-field"><span class="a-label">Private note</span><textarea class="a-input">Prefers WhatsApp. Travels with two children (8 and 11).</textarea></label>
+          </sc-if>
+          <sc-if value="{{dk.bookings}}" hint-placeholder-val="{{ false }}">
+            <dl class="a-kv"><dt>Lead</dt><dd><a class="a-link" href="AdminLead.dc.html">FLT-261008-0042</a></dd><dt>Customer</dt><dd>Rahim Uddin</dd><dt>PNR</dt><dd>7XK2LM · Kuwait Airways</dd><dt>Tickets</dt><dd>229-2614087702</dd><dt>Amount</dt><dd>৳41,200</dd><dt>Payment</dt><dd style="color:var(--color-success-600)">Paid · bKash · BK8F2K91QZ</dd></dl>
+            <div class="a-sec-title">Documents</div>
+            <div class="a-files"><button class="a-file is-on" type="button"><span class="i i-file-check"></span><b>e-ticket-7XK2LM.pdf</b><span class="a-chip">182 KB</span></button><button class="a-file" type="button"><span class="i i-receipt"></span><b>invoice-BKG-261008-0007.pdf</b><span class="a-chip">64 KB</span></button></div>
+            <div class="a-callout"><span class="i i-info"></span><span>Refunds, voids and reissues become tasks here in Phase 2.</span></div>
+          </sc-if>
+        </div>
+        <div class="a-drawer-foot"><button class="a-btn a-btn-ghost" type="button" onClick="{{closeDrawer}}">Close</button><button class="a-btn a-btn-primary" type="button" onClick="{{closeDrawer}}">{{D.cta}}</button></div>
+      </aside>
+    </div>
+  </sc-if>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="a-toast" role="status"><span class="i i-circle-check"></span>{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"kind":{"editor":"enum","options":["bookings","groupfares","customers","packages","coupons","feedback","pages"],"default":"bookings"},"drawer":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const kind = p.kind || 'bookings';
+    const flash = msg => { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const T = (t, s, cls) => ({ isText: true, t, s: s || '', cls: cls || '' });
+    const R = (t, s, href) => ({ isRef: true, t, s: s || '', href: href || '#' });
+    const W = (ini, t, s, c) => ({ isWho: true, ini, t, s: s || '', av: '--av:' + (c || '#0053D7') });
+    const S = (t, cls) => ({ isText: true, t, cls: 'a-status ' + cls });
+    const C = (t, cls) => ({ isText: true, t, cls: 'a-chip ' + (cls || '') });
+    const M = (t, s) => ({ isText: true, t, s: s || '', cls: 'a-money' });
+    const TH = (ph, icon, t, s) => ({ isThumb: true, ph, icon, t, s });
+    const MD = (icon, t, s) => ({ isMod: true, icon, t, s: s || '' });
+    const ST = (n, t) => ({ isStars: true, stars: Array.from({ length: n }, (_, i) => i), t });
+    const B = (pct, t) => ({ isBar: true, w: 'width:' + pct + '%;background:var(--color-electric-600)', t });
+    const TG = arr => ({ isTags: true, tags: arr.map(x => ({ t: x[0], cls: 'a-chip ' + (x[1] || '') })) });
+    const A = arr => ({ isActs: true, acts: arr.map(a => ({ label: a[0], icon: a[1], cls: 'a-btn a-btn-sm ' + (a[2] || 'a-btn-outline') + (a[0] ? '' : ' a-btn-icon'), aria: a[3] || a[0], go: a[4] || (() => {}) })) });
+    const more = () => flash('Menu: edit, duplicate, archive');
+    const KINDS = {
+      bookings: { nav: 'bookings', group: 'Sales', title: 'Bookings', desc: 'Records created from converted leads, with documents and payments. Ticketing, refunds and reconciliation operations arrive with Phase 2.', search: 'Booking, PNR, customer or phone',
+        acts: [['a-btn a-btn-outline', 'i i-download', 'Export', ''], ['a-btn a-btn-primary', 'i i-plus', 'New booking', '']],
+        tabs: [['all', 'All', 38], ['paid', 'Paid', 29], ['part', 'Partly paid', 6], ['due', 'Not paid', 3]], filters: [['Module', 'i i-layers'], ['Agent', 'i i-user'], ['Travel date', 'i i-calendar']],
+        cols: ['Booking', 'Customer', 'Service', 'Travel date', 'PNR or voucher', 'Amount', 'Payment', 'Agent', ''],
+        rows: [
+          ['paid', R('BKG-261008-0007', 'from FLT-261008-0042'), W('RU', 'Rahim Uddin', '01712-345678', '#003FBE'), MD('i i-plane', 'Dhaka to Dubai', 'Kuwait Airways · 1 adult'), T('Thu, 22 Oct'), T('7XK2LM'), M('৳41,200'), S('Paid', 'a-s-paid'), W('NJ', 'Nusrat J.', '', '#0053D7')],
+          ['paid', R('BKG-261007-0006', 'from HTL-261007-0006'), W('IK', 'Imran Kabir', '01933-121212', '#0E6B5C'), MD('i i-hotel', 'Kuala Lumpur, 3 nights', '2 rooms · 4 adults'), T('Mon, 19 Oct'), T('HCN 58312904'), M('৳64,800'), S('Paid', 'a-s-paid'), W('NJ', 'Nusrat J.', '', '#0053D7')],
+          ['part', R('BKG-261006-0005', 'from PKG-260930-0011'), W('FA', 'Farhana Akter', '01819-220114', '#7C5CFF'), MD('i i-map', 'Thailand, Phuket and Krabi 6D/5N', '2 adults, 2 children'), T('Sat, 7 Nov'), T('—'), M('৳2,36,000', '৳1,00,000 paid'), S('Partly paid', 'a-s-verify'), W('SR', 'Sadia R.', '', '#7C5CFF')],
+          ['paid', R('BKG-261005-0004', 'from VSA-260920-0042'), W('TH', 'Tanvir Hasan', '01911-778201', '#A15C07'), MD('i i-passport', 'Thailand tourist visa', '1 applicant'), T('—'), T('Submitted'), M('৳6,500'), S('Paid', 'a-s-paid'), W('SR', 'Sadia R.', '', '#7C5CFF')],
+          ['due', R('BKG-261004-0003', 'from FLT-261003-0090'), W('KH', 'Kamal Hossain', '01714-556677', '#0D8CEE'), MD('i i-plane-takeoff', 'Group fare DAC → DXB', 'flydubai · 6 adults'), T('Wed, 28 Oct'), T('Q4M8NZ'), M('৳2,31,000'), S('Not paid', 'a-s-lost'), W('NJ', 'Nusrat J.', '', '#0053D7')],
+          ['paid', R('BKG-261002-0002', 'from CTR-260925-0003'), W('SS', 'Shirin Sultana', '01822-334455', '#0B7A54'), MD('i i-route', 'Sylhet tea gardens, 3D/2N', 'Corporate retreat · 18 people'), T('Thu, 15 Oct'), T('Voucher sent'), M('৳3,42,000'), S('Paid', 'a-s-paid'), W('MK', 'Mahmudul K.', '', '#0E6B5C')]
+        ], empty: 'Bookings appear when a lead is converted.' },
+      groupfares: { nav: 'groupfares', group: 'Sales', title: 'Group fares', desc: 'Route fares managed here, shown on /flights/group-fares and on matching search results. They hide themselves after the expiry date.', search: 'Route or airline',
+        acts: [['a-btn a-btn-outline', 'i i-file-up', 'Import CSV', 'P1'], ['a-btn a-btn-primary', 'i i-plus', 'New group fare', '', 'drawer']],
+        tabs: [['active', 'Active', 9], ['soon', 'Expiring this week', 3], ['old', 'Expired', 14], ['draft', 'Drafts', 2]], filters: [['Airline', 'i i-plane'], ['Month', 'i i-calendar']],
+        cols: ['Route', 'Airline', 'Dates', 'Baggage', 'Seats left', 'Fare per adult', 'Hides after', 'Requests', 'Status', ''],
+        rows: [
+          ['active', R('DAC → DXB', 'One way'), T('flydubai'), T('Wed, 28 Oct'), T('20 kg'), B(77, '23 of 30'), M('৳38,500', 'indicative'), T('Sun, 25 Oct'), T('6 leads'), S('Active', 'a-s-booked'), A([['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['active', R('DAC → KUL', 'Return'), T('US-Bangla Airlines'), T('2 to 9 Nov'), T('30 kg'), B(45, '18 of 40'), M('৳42,900', 'indicative'), T('Fri, 30 Oct'), T('11 leads'), S('Active', 'a-s-booked'), A([['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['active', R('DAC → BKK', 'Return'), T('Thai Airways'), T('14 to 21 Nov'), T('30 kg'), B(30, '6 of 20'), M('৳39,800', 'indicative'), T('Tue, 10 Nov'), T('4 leads'), S('Active', 'a-s-booked'), A([['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['soon', R('DAC → SIN', 'One way'), T('Singapore Airlines'), T('Mon, 12 Oct'), T('30 kg'), B(15, '3 of 20'), M('৳33,600', 'indicative'), T('Sat, 10 Oct'), T('9 leads'), S('Expiring', 'a-s-pending'), A([['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['active', R('DAC → KTM', 'Return'), T('Biman Bangladesh'), T('5 to 10 Dec'), T('30 kg'), B(90, '27 of 30'), M('৳24,500', 'indicative'), T('Sun, 29 Nov'), T('2 leads'), S('Active', 'a-s-booked'), A([['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['draft', R('DAC → MLE', 'Return'), T('US-Bangla Airlines'), T('20 to 24 Dec'), T('30 kg'), B(100, '25 of 25'), M('৳46,000', 'indicative'), T('Tue, 15 Dec'), T('—'), S('Draft', 'a-s-draft'), A([['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])]
+        ], empty: 'Add a fare to show it on the website.' },
+      customers: { nav: 'customers', group: 'Sales', title: 'Customers', desc: 'One list built from leads and orders, matched by phone number. Merging duplicates arrives in P1.', search: 'Name, phone or email',
+        acts: [['a-btn a-btn-outline', 'i i-download', 'Export', '']],
+        tabs: [['all', 'All', '1,284'], ['travel', 'Travel', 842], ['shop', 'Waafas World', 516], ['corp', 'Corporate', 38]], filters: [['Tags', 'i i-tags'], ['Source', 'i i-globe'], ['Last activity', 'i i-clock']],
+        cols: ['Customer', 'Phone', 'Leads', 'Orders', 'Bookings', 'Lifetime value', 'Tags', 'Last activity'],
+        rows: [
+          ['travel', W('FA', 'Farhana Akter', 'farhana.a@example.com', '#7C5CFF'), T('01819-220114'), T('4'), T('2'), T('2'), M('৳1,46,480'), TG([['Family traveller', 'is-violet']]), T('Today')],
+          ['travel', W('RU', 'Rahim Uddin', 'rahim.uddin@example.com', '#003FBE'), T('01712-345678'), T('2'), T('0'), T('1'), M('৳41,200'), TG([['New', 'is-blue']]), T('Today')],
+          ['corp', W('NT', 'Nexus Textiles Ltd', 'procurement@nexus.example', '#0E6B5C'), T('01730-118844'), T('3'), T('7'), T('0'), M('৳2,18,900'), TG([['Corporate', 'is-dark'], ['Printing', '']]), T('Today')],
+          ['shop', W('MR', 'Mitu Rahman', 'mitu.r@example.com', '#0D8CEE'), T('01556-402210'), T('1'), T('5'), T('0'), M('৳12,640'), TG([['Waafas World', 'is-amber']]), T('Yesterday')],
+          ['travel', W('IK', 'Imran Kabir', 'imran.k@example.com', '#0E6B5C'), T('01933-121212'), T('3'), T('0'), T('2'), M('৳1,08,300'), TG([['Repeat', 'is-green']]), T('2 days ago')],
+          ['shop', W('SI', 'Sumaiya Islam', 'sumaiya.i@example.com', '#A15C07'), T('01688-909090'), T('1'), T('1'), T('0'), M('৳1,250'), TG([]), T('3 days ago')]
+        ], empty: 'Customers appear with their first lead or order.' },
+      packages: { nav: 'packages', group: 'Travel', title: 'Tour packages', desc: 'Packages with a day-by-day itinerary, price table, departures, gallery and SEO. Categories: Domestic, International, Group Tours, Honeymoon, Family, Corporate, Cruise.', search: 'Package or destination',
+        acts: [['a-btn a-btn-primary', 'i i-plus', 'New package', '', '', 'AdminPackage.dc.html']], note: 'Hajj and Umrah packages are not offered.',
+        tabs: [['pub', 'Published', 16], ['draft', 'Drafts', 4], ['sched', 'Scheduled · P1', 0], ['arch', 'Archived', 7]], filters: [['Category', 'i i-layers'], ['Destination', 'i i-map-pin']],
+        cols: ['Package', 'Category', 'From price', 'Next departure', 'Queries, 30 days', 'Status', 'Updated', ''],
+        rows: [
+          ['pub', TH('coxsbazar', 'i i-umbrella', 'Cox’s Bazar and Saint Martin', '3 days, 2 nights · Bangladesh'), C('Domestic'), M('৳14,500', 'per person, twin'), T('Thu, 22 Oct'), T('28'), S('Published', 'a-s-booked'), T('2 days ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])],
+          ['pub', TH('sajek', 'i i-mountain', 'Sajek Valley weekend', '2 days, 1 night · Bangladesh'), C('Domestic'), M('৳8,900', 'per person'), T('Fri, 16 Oct'), T('19'), S('Published', 'a-s-booked'), T('5 days ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])],
+          ['pub', TH('maldives', 'i i-waves', 'Maldives water villa', '4 days, 3 nights · Maldives'), C('Honeymoon', 'is-violet'), M('৳1,18,000', 'per person, twin'), T('Any date'), T('34'), S('Published', 'a-s-booked'), T('Today'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])],
+          ['pub', TH('dubai', 'i i-building-2', 'Dubai city and desert', '5 days, 4 nights · UAE'), C('International', 'is-blue'), M('৳89,500', 'per person, twin'), T('Thu, 5 Nov'), T('41'), S('Published', 'a-s-booked'), T('Yesterday'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])],
+          ['pub', TH('nepal', 'i i-mountain-snow', 'Kathmandu and Pokhara', '5 days, 4 nights · Nepal'), C('International', 'is-blue'), M('৳52,000', 'per person, twin'), T('Sat, 5 Dec'), T('16'), S('Published', 'a-s-booked'), T('1 h ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])],
+          ['draft', TH('bali', 'i i-sun', 'Bali honeymoon', '6 days, 5 nights · Indonesia'), C('Honeymoon', 'is-violet'), M('৳1,02,000', 'per person, twin'), T('—'), T('—'), S('Draft', 'a-s-draft'), T('3 days ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])],
+          ['pub', TH('thailand', 'i i-sunset', 'Phuket and Krabi family', '6 days, 5 nights · Thailand'), C('Family', 'is-green'), M('৳74,000', 'per person, twin'), T('Sat, 7 Nov'), T('23'), S('Published', 'a-s-booked'), T('1 week ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])]
+        ], empty: 'Create a package to show it on Tour Packages.' },
+      coupons: { nav: 'coupons', group: 'Waafas World', title: 'Coupons', desc: 'Codes for Waafas World checkout: a percent or a fixed amount, with a minimum order, a usage limit and dates.', search: 'Code',
+        acts: [['a-btn a-btn-primary', 'i i-plus', 'New coupon', '']],
+        tabs: [['on', 'Active', 4], ['sched', 'Scheduled', 1], ['off', 'Expired', 9]], filters: [['Type', 'i i-percent']],
+        cols: ['Code', 'Discount', 'Applies to', 'Minimum order', 'Used', 'Valid', 'Status', ''],
+        rows: [
+          ['on', R('WELCOME10', 'First order only'), T('10% off', 'up to ৳300'), T('All products'), M('৳500'), B(41, '205 of 500'), T('1 Oct to 31 Dec'), S('Active', 'a-s-booked'), A([['', 'i i-copy', 'a-btn-ghost', 'Copy code', () => flash('WELCOME10 copied')], ['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['on', R('OFFICE200', ''), T('৳200 off'), T('Office & Stationery'), M('৳2,000'), B(12, '24 of 200'), T('1 Oct to 15 Nov'), S('Active', 'a-s-booked'), A([['', 'i i-copy', 'a-btn-ghost', 'Copy code', () => flash('OFFICE200 copied')], ['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['on', R('TONER5', 'Corporate'), T('5% off'), T('Printers & Supplies · toner'), M('৳5,000'), B(30, '15 of 50'), T('Always'), S('Active', 'a-s-booked'), A([['', 'i i-copy', 'a-btn-ghost', 'Copy code', () => flash('TONER5 copied')], ['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['sched', R('ELEVEN11', 'Campaign'), T('11% off', 'up to ৳1,100'), T('Collection: 11.11 deals'), M('৳1,100'), B(0, '0 of 1,000'), T('11 Nov only'), S('Scheduled', 'a-s-new'), A([['', 'i i-copy', 'a-btn-ghost', 'Copy code', () => flash('ELEVEN11 copied')], ['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])],
+          ['off', R('EID15', ''), T('15% off'), T('All products'), M('৳1,000'), B(100, '300 of 300'), T('Ended 20 Jun'), S('Expired', 'a-s-cancelled'), A([['', 'i i-copy', 'a-btn-ghost', 'Copy code', () => flash('EID15 copied')], ['', 'i i-ellipsis', 'a-btn-ghost', 'More', more]])]
+        ], empty: 'No coupons in this view.' },
+      feedback: { nav: 'feedback', group: 'Content', title: 'Feedback', desc: 'New feedback waits here until approved. Phone numbers and emails are never shown on the website.', search: 'Name or service',
+        acts: [['a-btn a-btn-outline', 'i i-download', 'Export', '']], note: 'Comments are shown here exactly as customers wrote them; the sample rows use placeholders instead of invented reviews.',
+        tabs: [['new', 'To review', 3], ['ok', 'Approved', 46], ['hid', 'Hidden', 5]], filters: [['Service', 'i i-layers'], ['Rating', 'i i-star']],
+        cols: ['From', 'Service', 'Rating', 'Comment', 'Photo', 'May publish', 'Sent', ''],
+        rows: [
+          ['new', W('FA', 'Farhana Akter', 'Contact hidden', '#7C5CFF'), MD('i i-map', 'Tour package'), ST(5, '5.0'), T('[Comment as submitted]', 'Up to 600 characters'), T('Yes · 1 photo'), C('Yes', 'is-green'), T('2 days ago'), A([['Approve', 'i i-check', 'a-btn-primary', 'Approve', () => flash('Approved. It shows on the Feedback wall now.')], ['', 'i i-eye-off', 'a-btn-ghost', 'Hide', () => flash('Hidden')]])],
+          ['new', W('IK', 'Imran Kabir', 'Contact hidden', '#0E6B5C'), MD('i i-plane', 'Air ticket'), ST(4, '4.0'), T('[Comment as submitted]'), T('—'), C('Yes', 'is-green'), T('Yesterday'), A([['Approve', 'i i-check', 'a-btn-primary', 'Approve', () => flash('Approved. It shows on the Feedback wall now.')], ['', 'i i-eye-off', 'a-btn-ghost', 'Hide', () => flash('Hidden')]])],
+          ['new', W('MR', 'Mitu Rahman', 'Contact hidden', '#0D8CEE'), MD('i i-shopping-bag', 'Waafas World'), ST(3, '3.0'), T('[Comment as submitted]'), T('—'), C('No', ''), T('5 h ago'), A([['Approve', 'i i-check', 'a-btn-primary', 'Approve', () => flash('This customer did not agree to publish')], ['', 'i i-eye-off', 'a-btn-ghost', 'Hide', () => flash('Hidden')]])]
+        ], empty: 'No feedback in this view.' },
+      pages: { nav: 'pages', group: 'Content', title: 'Pages, blog and FAQs', desc: 'Rich-text pages with a last-updated date, blog posts with SEO fields, and FAQ entries grouped by category.', search: 'Title',
+        acts: [['a-btn a-btn-outline', 'i i-plus', 'New FAQ', ''], ['a-btn a-btn-primary', 'i i-plus', 'New post', '']],
+        tabs: [['pages', 'Pages', 11], ['blog', 'Blog posts', 18], ['faq', 'FAQs', 42], ['bar', 'Announcement bar', 1]], filters: [['Status', 'i i-circle-dot'], ['Author', 'i i-user']],
+        cols: ['Title', 'Type', 'Status', 'SEO', 'Updated by', 'Updated', ''],
+        rows: [
+          ['pages', R('Refund Policy', '/refund-policy'), C('Page'), S('Published', 'a-s-booked'), C('Complete', 'is-green'), W('RI', 'Rumana I.', '', '#A15C07'), T('Today'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-external-link', 'a-btn-ghost', 'View', () => {}]])],
+          ['pages', R('Privacy Policy', '/privacy'), C('Page'), S('Published', 'a-s-booked'), C('Complete', 'is-green'), W('RI', 'Rumana I.', '', '#A15C07'), T('2 days ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-external-link', 'a-btn-ghost', 'View', () => {}]])],
+          ['pages', R('About Us', '/about'), C('Page'), S('Published', 'a-s-booked'), C('Complete', 'is-green'), W('AH', 'Arif Hossain', '', '#0D8CEE'), T('3 days ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-external-link', 'a-btn-ghost', 'View', () => {}]])],
+          ['blog', R('Thailand visa for Bangladeshis: the 2026 checklist', '/blog/thailand-visa-checklist'), C('Blog post', 'is-blue'), S('Draft', 'a-s-draft'), C('Missing meta', 'is-amber'), W('RI', 'Rumana I.', '', '#A15C07'), T('1 h ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-external-link', 'a-btn-ghost', 'View', () => {}]])],
+          ['blog', R('How to pick seats on long flights', '/blog/pick-seats'), C('Blog post', 'is-blue'), S('Published', 'a-s-booked'), C('Complete', 'is-green'), W('RI', 'Rumana I.', '', '#A15C07'), T('Last week'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-external-link', 'a-btn-ghost', 'View', () => {}]])],
+          ['faq', R('Can I pay in instalments?', 'Payments'), C('FAQ', 'is-violet'), S('Published', 'a-s-booked'), C('—'), W('AH', 'Arif Hossain', '', '#0D8CEE'), T('Last week'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-external-link', 'a-btn-ghost', 'View', () => {}]])],
+          ['bar', R('Office closed on Friday · WhatsApp stays open', 'Announcement bar · until Sat 10 Oct'), C('Announcement', 'is-amber'), S('Published', 'a-s-booked'), C('—'), W('AH', 'Arif Hossain', '', '#0D8CEE'), T('Today'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-external-link', 'a-btn-ghost', 'View', () => {}]])]
+        ], empty: 'Nothing in this view.' }
+    };
+    const K0 = KINDS[kind] || KINDS.bookings;
+    const tab = st.tab || K0.tabs[0][0];
+    const q = (st.q || '').toLowerCase();
+    const rowsRaw = K0.rows.filter(r => (tab === 'all' || r[0] === tab) && (!q || JSON.stringify(r.slice(1, 3).map(c => c.t)).toLowerCase().indexOf(q) >= 0));
+    const drawerOpen = st.drawer !== undefined ? st.drawer : !!p.drawer;
+    const hasDrawer = kind === 'groupfares' || kind === 'customers' || kind === 'bookings';
+    const rows = rowsRaw.map((r, i) => ({ cls: '', cur: hasDrawer ? 'cursor:pointer' : '', open: hasDrawer ? () => this.setState({ drawer: true }) : () => {}, cells: r.slice(1).map((c, j) => Object.assign({ td: j === r.length - 2 && c.isActs ? 'is-num' : '' }, c)) }));
+    const D = { bookings: { icon: 'i i-ticket', title: 'BKG-261008-0007', sub: 'Flight · Kuwait Airways · Thu, 22 Oct', cta: 'Save' }, groupfares: { icon: 'i i-plane-takeoff', title: 'New group fare', sub: 'Shows on Group fares and on matching results', cta: 'Publish fare' }, customers: { icon: 'i i-user', title: 'Customer profile', sub: 'Leads, orders and bookings in one place', cta: 'Save note' } }[kind] || { icon: 'i i-info', title: '', sub: '', cta: 'Close' };
+    const total = (K0.tabs.find(t => t[0] === tab) || K0.tabs[0])[2];
+    return {
+      m: !!p.m,
+      K: { nav: K0.nav, group: K0.group, title: K0.title, desc: K0.desc, note: K0.note || '', search: K0.search, empty: K0.empty,
+        acts: K0.acts.map(a => ({ cls: a[0], icon: a[1], label: a[2], p: a[3] || '', href: a[5] || '#', go: a[4] === 'drawer' ? (e => { if (e && e.preventDefault) e.preventDefault(); this.setState({ drawer: true }); }) : (e => { if (!a[5] && e && e.preventDefault) e.preventDefault(); }) })),
+        filters: K0.filters.map(f => ({ label: f[0], icon: f[1] })),
+        cols: K0.cols.map((c, i) => ({ label: c, cls: i === K0.cols.length - 1 && !c ? 'is-num' : '' })) },
+      tabs: K0.tabs.map(t => ({ label: t[1], n: t[2], on: tab === t[0], cls: 'a-view' + (tab === t[0] ? ' is-active' : ''), go: () => this.setState({ tab: t[0] }) })),
+      q: st.q || '', onQ: e => this.setState({ q: e && e.target ? e.target.value : '' }),
+      rows, empty: rows.length === 0, footNote: 'Showing ' + rows.length + ' of ' + total,
+      drawerOpen: hasDrawer && drawerOpen, closeDrawer: () => this.setState({ drawer: false }), D, dk: { groupfares: kind === 'groupfares', customers: kind === 'customers', bookings: kind === 'bookings' },
+      toast: st.toast || '',
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

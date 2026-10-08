@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waafas World · Checkout</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" store="{{ true }}" active="shop" style="display:contents" hint-size="100%,76px"></dc-import>
+  <dc-import name="ShopBar" m="{{m}}" cart="{{cart}}" style="display:contents" hint-size="100%,124px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-sec" style="padding-top:16px">
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><a href="{{L.ShopCart}}">Cart</a><span class="i i-chevron-right"></span><span aria-current="page">Checkout</span></nav>
+        <div class="ww-listhead" style="margin:16px 0 20px"><div><h1>Checkout</h1><p class="flex items-center gap-2"><span class="i i-lock" style="width:15px;height:15px"></span>Your details are only used for this order</p></div><ol class="ww-costeps" aria-label="Checkout steps"><li class="is-done"><i><span class="i i-check" style="width:13px;height:13px"></span></i>Cart</li><li class="is-now"><i>2</i>Delivery and payment</li><li><i>3</i>Done</li></ol></div>
+        <form class="v-cogrid" onSubmit="{{place}}" novalidate="">
+          <div class="v-costeps">
+            <section class="w-formcard v-cosec">
+              <div class="v-cosec-head"><span class="v-cosec-n">1</span><h2>Your contact details</h2></div>
+              <div class="w-formcard-body">
+                <div class="w-grid-2">
+                  <div class="w-field"><label class="w-label" for="c-name">Full name <span class="w-req">*</span></label><input class="w-input" id="c-name" autocomplete="name" value="{{v.name}}" placeholder="e.g. Rahim Uddin"></div>
+                  <div class="w-field"><label class="w-label" for="c-phone">Mobile number <span class="w-req">*</span></label><div class="{{e.phoneCls}}"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880</button><input id="c-phone" inputmode="tel" value="{{v.phone}}" placeholder="1712-345678"></div><sc-if value="{{e.phone}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{e.phone}}</span></sc-if></div>
+                </div>
+                <div class="w-field"><label class="w-label" for="c-mail">Email <span class="w-opt">(optional, for your receipt)</span></label><input class="w-input" id="c-mail" type="email" value="{{v.mail}}" placeholder="you@example.com"></div>
+                <button class="{{vatCls}}" type="button" role="switch" aria-checked="{{vat}}" onClick="{{toggleVat}}"><span class="{{vatSw}}"></span><span><b>I need a VAT invoice for my company</b><small>Add the company name and BIN. The invoice comes with the delivery and by email.</small></span></button>
+                <sc-if value="{{vat}}" hint-placeholder-val="{{ false }}"><div class="w-grid-2" style="animation:v-sum-open .3s var(--ease-out) both"><div class="w-field"><label class="w-label" for="c-co">Company name <span class="w-req">*</span></label><input class="w-input" id="c-co" placeholder="e.g. Rahman Traders Ltd"></div><div class="w-field"><label class="w-label" for="c-bin">BIN <span class="w-req">*</span></label><input class="w-input" id="c-bin" inputmode="numeric" placeholder="13-digit BIN"></div></div></sc-if>
+              </div>
+            </section>
+            <section class="w-formcard v-cosec">
+              <div class="v-cosec-head"><span class="v-cosec-n">2</span><h2>Delivery address</h2></div>
+              <div class="w-formcard-body">
+                <div class="w-grid-3">
+                  <label class="w-field"><span class="w-label">Division <span class="w-req">*</span></span><span class="w-select"><select class="w-input"><option>Dhaka</option><option>Chattogram</option><option>Khulna</option><option>Rajshahi</option><option>Barishal</option><option>Sylhet</option><option>Rangpur</option><option>Mymensingh</option></select></span></label>
+                  <label class="w-field"><span class="w-label">District <span class="w-req">*</span></span><span class="w-select"><select class="w-input"><option>Dhaka</option><option>Gazipur</option><option>Narayanganj</option><option>Narsingdi</option></select></span></label>
+                  <label class="w-field"><span class="w-label">Area or thana <span class="w-req">*</span></span><span class="w-select"><select class="{{e.areaCls}}"><option>{{v.area}}</option><option>Motijheel</option><option>Gulshan</option><option>Dhanmondi</option><option>Mirpur</option><option>Uttara</option></select></span><sc-if value="{{e.area}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>{{e.area}}</span></sc-if></label>
+                </div>
+                <div class="w-field"><label class="w-label" for="c-addr">Address <span class="w-req">*</span></label><input class="w-input" id="c-addr" value="{{v.addr}}" placeholder="House, road, floor, landmark"></div>
+              </div>
+            </section>
+            <section class="w-formcard v-cosec">
+              <div class="v-cosec-head"><span class="v-cosec-n">3</span><h2>Delivery</h2></div>
+              <div class="w-formcard-body v-optgrid">
+                <sc-for list="{{ships}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span><span class="v-payopt-txt"><b>{{o.title}}</b><small>{{o.sub}}</small></span><span class="v-payopt-price">{{o.price}}</span></button></sc-for>
+              </div>
+            </section>
+            <section class="w-formcard v-cosec">
+              <div class="v-cosec-head"><span class="v-cosec-n">4</span><h2>Payment</h2></div>
+              <div class="w-formcard-body v-optgrid">
+                <sc-for list="{{pays}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span><span class="v-payopt-txt"><b>{{o.title}}</b><small>{{o.sub}}</small></span><span class="{{o.icon}}"></span></button></sc-for>
+                <sc-if value="{{payMobile}}" hint-placeholder-val="{{ false }}">
+                  <div class="v-paybox">
+                    <p><b>Send {{total}} to bKash or Nagad merchant 01823-232241</b>, then enter the transaction ID. We confirm your payment before we pack the order.</p>
+                    <div class="w-grid-2"><label class="w-field"><span class="w-label">Paid with</span><span class="w-select"><select class="w-input"><option>bKash</option><option>Nagad</option></select></span></label><div class="w-field"><label class="w-label" for="c-trx">Transaction ID <span class="w-req">*</span></label><input class="w-input" id="c-trx" placeholder="e.g. 8N7A6B5C4D"></div></div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{payBank}}" hint-placeholder-val="{{ false }}">
+                  <div class="v-paybox">
+                    <p><b>Transfer {{total}} to Waafa International.</b> Bank details appear on the next screen and in your email. Upload the deposit slip or screenshot here or later.</p>
+                    <label class="v-drop"><span class="i i-cloud-upload"></span><b>Upload payment proof</b><small>JPG, PNG or PDF, up to 5 MB</small></label>
+                  </div>
+                </sc-if>
+              </div>
+            </section>
+            <label class="w-field"><span class="w-label">Order note <span class="w-opt">(optional)</span></span><textarea class="w-input v-textarea" rows="2" placeholder="For example: deliver after 2 pm, or call before coming."></textarea></label>
+          </div>
+          <aside class="v-ordersum v-cosum">
+            <h2 class="v-h3">Your order</h2>
+            <div class="v-coitems">
+              <div class="v-coitem"><span class="v-coitem-img"><span class="i i-shirt"></span><i>2</i></span><span class="min-w-0">Classic Cotton Crew T-shirt<small class="ww-coitem-var">White · M</small></span><b>৳1,300</b></div>
+              <div class="v-coitem"><span class="v-coitem-img"><span class="i i-battery-charging"></span><i>1</i></span><span class="min-w-0">Voltaro 20,000 mAh Power Bank<small class="ww-coitem-var">20,000 mAh · Black</small></span><b>৳2,450</b></div>
+              <div class="v-coitem"><span class="v-coitem-img"><img src="../assets/c9ea845b540e931548117afdb5ae8a65.jpg" alt=""><i>1</i></span><span class="min-w-0">Better Day CE505A / CF280A Black Toner<small class="ww-coitem-var">Compatible</small></span><b>৳1,450</b></div>
+            </div>
+            <div class="w-sumrow"><span>Items (4)</span><b>৳5,200</b></div>
+            <div class="w-sumrow"><span>You save on MRP</span><b class="text-success">−৳1,290</b></div>
+            <div class="w-sumrow"><span>Delivery</span><b>{{shipPrice}}</b></div>
+            <div class="w-sumrow is-total"><span>Total</span><b>{{total}}</b></div>
+            <sc-if value="{{errOn}}" hint-placeholder-val="{{ false }}"><button class="w-btn w-btn-primary w-btn-block v-place" type="submit"><span class="i i-lock"></span>{{placeLabel}}</button><span class="w-error" style="justify-content:center"><span class="i i-circle-alert"></span>Fix the 2 highlighted fields to continue.</span></sc-if>
+            <sc-if value="{{errOff}}" hint-placeholder-val="{{ true }}"><a class="w-btn w-btn-primary w-btn-block v-place" href="{{L.ShopDone}}"><span class="i i-lock"></span>{{placeLabel}}</a></sc-if>
+            <p class="v-sumnote">By placing the order you agree to our <a href="{{L.Refund}}">refund policy</a>. Sample prices. Your order number starts with ORD-.</p>
+          </aside>
+        </form>
+      </div>
+    </section>
+
+    <div class="ww-buybar is-bottom ww-cobar"><div class="ww-buybar-p"><b>{{total}}</b><small>{{payShort}}</small></div><div class="ww-buybar-btns"><a class="w-btn w-btn-primary" href="{{L.ShopDone}}"><span class="i i-lock"></span>Place order</a></div></div>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m": {"editor": "boolean", "default": false}, "cart": {"editor": "int", "default": 4}, "err": {"editor": "boolean", "default": false}, "$preview":{"width":1440,"height":2702}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => this.forceUpdate(), 60000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const L = {};
+    ['Home','Shop','ShopList','ShopProduct','ShopCart','ShopCheckout','ShopDone','ShopTrack','ShopFinder','Printing','Trading','Refund','Contact','OfflinePay'].forEach(k => { L[k] = k + (p.m ? '-m' : '') + '.dc.html'; });
+    const err = st.err !== undefined ? st.err : !!p.err;
+    const v = { name: 'Rahim Uddin', phone: err ? '1712-3' : '1712-345678', mail: '', area: err ? 'Choose an area' : 'Motijheel', addr: '193/C-1 Motijheel Plaza, 4th floor' };
+    const e = { phone: err ? 'Check the number: 10 digits after +880, like 1712-345678.' : '', area: err ? 'Choose your area so the courier can find you.' : '' };
+    e.phoneCls = 'w-phone' + (e.phone ? ' is-invalid' : ''); e.areaCls = 'w-input' + (e.area ? ' is-invalid' : '');
+    const ship = st.ship || 'dhaka';
+    const SH = [['dhaka', 'Inside Dhaka', 'Usually next day', 80], ['out', 'Outside Dhaka', '2 to 4 days by courier', 150], ['pick', 'Pick up from our office', 'Motijheel, Saturday to Thursday, 10 am to 6 pm', 0]];
+    const fmt = n => '৳' + n.toLocaleString('en-IN');
+    const SUB = 5200;
+    const sp = (SH.find(x => x[0] === ship) || SH[0])[3];
+    const shipFee = ship === 'dhaka' && SUB >= 5000 ? 0 : sp;
+    const ships = SH.map(x => ({ title: x[1], sub: x[2], price: x[0] === 'dhaka' && SUB >= 5000 ? 'Free' : (x[3] ? fmt(x[3]) : 'Free'), on: ship === x[0], cls: 'w-payopt v-payopt' + (ship === x[0] ? ' is-active' : ''), go: () => this.setState({ ship: x[0] }) }));
+    const pay = st.pay || 'cod';
+    const PY = [['cod', 'Cash on delivery', 'Pay the rider in cash when it arrives · orders up to ৳20,000', 'i i-banknote'], ['mobile', 'bKash or Nagad', 'Send money now, then add the transaction ID', 'i i-smartphone'], ['bank', 'Bank transfer', 'Transfer, then upload the slip', 'i i-landmark'], ['office', 'Pay at our office', 'Cash or card in Motijheel', 'i i-building']];
+    const pays = PY.map(x => ({ title: x[1], sub: x[2], icon: x[3] + ' v-payopt-ic', on: pay === x[0], cls: 'w-payopt v-payopt' + (pay === x[0] ? ' is-active' : ''), go: () => this.setState({ pay: x[0] }) }));
+    return {
+      L, v, e, ships, pays, cart: 4, m: !!p.m, toast: '',
+      payMobile: pay === 'mobile', payBank: pay === 'bank', payShort: (PY.find(x => x[0] === pay) || PY[0])[1],
+      vat: !!st.vat, vatCls: 'ww-vat' + (st.vat ? ' is-on' : ''), vatSw: 'w-switch' + (st.vat ? ' is-on' : ''), toggleVat: () => this.setState({ vat: !st.vat }),
+      shipPrice: shipFee ? fmt(shipFee) : 'Free', total: fmt(SUB + shipFee),
+      errOn: err, errOff: !err, placeLabel: 'Place order · ' + fmt(SUB + shipFee),
+      place: (ev) => { if (ev && ev.preventDefault) ev.preventDefault(); this.setState({ err: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

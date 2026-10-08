@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Offline payment</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="more" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Offline payment</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">Offline payment</span><h1 class="v-h1 v-h1-page">Pay by bank, bKash, Nagad or at our office</h1><p class="v-lead">Pay for a confirmed booking or order without a card. Always use your reference number, then send us the proof so we can match it quickly.</p></div>
+          <span class="v-sample">Account details set in Admin</span>
+        </div>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:24px">
+      <div class="w-wrap flex flex-col gap-10">
+        <div class="wc-paygrid">
+          <div class="wc-pay"><div class="wc-pay-head"><span class="w-tile"><span class="i i-landmark"></span></span><div><b>Bank transfer</b><small>Any bank, by app, BEFTN, NPSB or at the counter</small></div></div><dl><div><dt>Account name</dt><dd>Waafa International</dd></div><div><dt>Bank and branch</dt><dd>[Set in Admin → Payments]</dd></div><div><dt>Account number</dt><dd>[Set in Admin → Payments]</dd></div><div><dt>Routing number</dt><dd>[Set in Admin → Payments]</dd></div><div><dt>Reference</dt><dd>Your booking or order number</dd></div></dl><p>BEFTN transfers can take a working day to arrive. We confirm as soon as the money is in.</p></div>
+          <div class="wc-pay"><div class="wc-pay-head"><span class="w-tile"><span class="i i-smartphone"></span></span><div><b>bKash or Nagad</b><small>Send money or Payment to our merchant number</small></div></div><dl><div><dt>Merchant number</dt><dd>01823-232241</dd></div><div><dt>Type</dt><dd>Payment (merchant)</dd></div><div><dt>Reference</dt><dd>Your booking or order number</dd></div></dl><p>Keep the transaction ID from the confirmation SMS. You will need it below.</p></div>
+          <div class="wc-pay"><div class="wc-pay-head"><span class="w-tile"><span class="i i-building-2"></span></span><div><b>Pay at our office</b><small>Cash or card, Saturday to Thursday, 10 am to 6 pm</small></div></div><dl><div><dt>Address</dt><dd>193/C-1, 4th Floor, Motijheel Plaza</dd></div><div><dt>Bring</dt><dd>Your reference number</dd></div></dl><p>You get a printed receipt on the spot. No proof upload needed.</p></div>
+          <div class="wc-pay"><div class="wc-pay-head"><span class="w-tile"><span class="i i-receipt-text"></span></span><div><b>Cheque or pay order</b><small>For companies and corporate accounts</small></div></div><dl><div><dt>Payable to</dt><dd>Waafa International</dd></div><div><dt>Deliver to</dt><dd>Our Motijheel office</dd></div></dl><p>Bookings are issued once the cheque clears, usually in 2 working days.</p></div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <div class="wc-sec-title"><h2>Three steps</h2></div>
+          <div class="wc-steps">
+            <div class="wc-step"><b>Wait for the confirmed price</b><p>Pay only after your expert confirms the final price, or after you place a Waafas World order.</p></div>
+            <div class="wc-step"><b>Pay with your reference</b><p>Use the reference number (for example FLT-261008-0042 or ORD-261008-0042) as the payment note.</p></div>
+            <div class="wc-step"><b>Send the proof</b><p>Upload the slip or screenshot below. We confirm by SMS, usually within an hour in office hours.</p></div>
+          </div>
+        </div>
+
+        <div class="wc-upload" id="upload">
+          <div class="flex flex-col gap-3"><span class="v-eyebrow">Already paid?</span><h2 class="v-h2">Send us the proof</h2><p class="v-lead" style="font-size:16px">This matches your payment to your booking. You can also send it on WhatsApp with your reference number.</p><a class="w-btn w-btn-wa" style="align-self:flex-start" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>Send on WhatsApp</a></div>
+          <section class="w-formcard" aria-label="Payment proof">
+            <sc-if value="{{form}}" hint-placeholder-val="{{ true }}">
+              <div class="w-formcard-body">
+                <div class="w-grid-2"><div class="w-field"><label class="w-label" for="o-r">Reference number <span class="w-req">*</span></label><input class="w-input" id="o-r" value="ORD-261008-0042"></div><div class="w-field"><label class="w-label" for="o-a">Amount paid <span class="w-req">*</span></label><input class="w-input" id="o-a" inputmode="numeric" value="৳5,200"></div></div>
+                <div class="w-field"><span class="w-label">Paid with <span class="w-req">*</span></span><div class="wc-chips" style="flex-wrap:wrap"><sc-for list="{{methods}}" as="x" hint-placeholder-count="3"><button class="{{x.cls}}" type="button" aria-pressed="{{x.on}}" onClick="{{x.go}}"><span class="{{x.icon}}"></span>{{x.label}}</button></sc-for></div></div>
+                <div class="w-field"><label class="w-label" for="o-t">{{trxLabel}} <span class="w-req">*</span></label><input class="w-input" id="o-t" placeholder="{{trxPh}}"></div>
+                <div class="wc-file"><span class="i i-file-check"></span><div class="min-w-0" style="flex:1"><b>bkash-payment.jpg</b><small>412 KB · uploaded</small><div class="wc-fbar"><span></span></div></div><button class="v-iconbtn is-plain" type="button" aria-label="Remove file"><span class="i i-x"></span></button></div>
+                <button class="w-btn w-btn-primary w-btn-block" type="button" onClick="{{send}}"><span class="i i-send"></span>Send proof</button>
+                <p class="text-13 text-muted" style="text-align:center">JPG, PNG or PDF up to 5 MB. Stored privately with your booking.</p>
+              </div>
+            </sc-if>
+            <sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
+              <div class="w-success"><svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"></circle><path d="M28 45 l11 11 l22 -24"></path></svg><h2 class="v-h3">Proof received for ORD-261008-0042</h2><p class="text-subtle" style="max-width:360px">We match it with the payment and confirm by SMS, usually within an hour in office hours.</p><button class="w-btn w-btn-secondary" type="button" onClick="{{again}}">Send another</button></div>
+            </sc-if>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"sent":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2548}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = { Home: 'Home' + sx + '.dc.html' };
+    const mk = st.mk || 'mobile';
+    const M = [['mobile', 'bKash or Nagad', 'i i-smartphone', 'Transaction ID', 'e.g. 8N7A6B5C4D'], ['bank', 'Bank transfer', 'i i-landmark', 'Bank reference or slip number', 'From your bank app or deposit slip'], ['cheque', 'Cheque or pay order', 'i i-receipt-text', 'Cheque number', 'e.g. 0042871']];
+    const cur = M.find(x => x[0] === mk) || M[0];
+    const methods = M.map(x => ({ label: x[1], icon: x[2], on: mk === x[0], cls: 'w-chip' + (mk === x[0] ? ' is-on' : ''), go: () => this.setState({ mk: x[0] }) }));
+    const sent = st.sent !== undefined ? st.sent : !!p.sent;
+    return { L, m: !!p.m, methods, trxLabel: cur[3], trxPh: cur[4], form: !sent, sent, send: () => this.setState({ sent: true }), again: () => this.setState({ sent: false }) };
+  }
+}
+</script>
+</body>
+</html>

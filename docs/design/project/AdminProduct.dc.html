@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · product editor</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="products" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div class="min-w-0">
+          <div class="a-crumbs"><a href="AdminProducts.dc.html">Products</a><span class="i i-chevron-right"></span><span>{{title}}</span></div>
+          <h1 class="a-title flex items-center gap-3 flex-wrap">{{title}}<span class="{{statusCls}}">{{status}}</span><sc-if value="{{sample}}" hint-placeholder-val="{{ true }}"><span class="v-sample" style="margin:0">Sample</span></sc-if></h1>
+          <p>{{catPath}} · attribute set “{{attrSet}}”</p>
+        </div>
+        <div class="a-actions"><a class="a-btn a-btn-outline" href="{{storeHref}}"><span class="i i-eye"></span>View in store</a><button class="a-btn a-btn-outline a-btn-icon" type="button" aria-label="Duplicate"><span class="i i-copy"></span></button><button class="a-btn a-btn-primary" type="button" onClick="{{save}}"><span class="i i-save"></span>Save</button></div>
+      </div>
+
+      <div class="a-split">
+        <div class="a-stack">
+          <section class="a-card" aria-labelledby="b-t">
+            <div class="a-card-head"><h3 id="b-t">Basics</h3></div>
+            <div class="a-card-body a-grid2">
+              <label class="a-field a-span2"><span class="a-label">Title <span class="w-req">*</span><span class="{{titleCountCls}}">{{titleCount}}/90</span></span><input class="a-input" value="{{title}}" onChange="{{onTitle}}"></label>
+              <label class="a-field"><span class="a-label">Brand</span><span class="a-sel"><select class="a-input" value="{{brand}}" onChange="{{onBrand}}"><sc-for list="{{brands}}" as="b" hint-placeholder-count="4"><option value="{{b}}">{{b}}</option></sc-for></select></span></label>
+              <div class="a-field"><span class="a-label">Category <span class="w-req">*</span></span><div class="a-input flex items-center gap-2" style="cursor:pointer;display:flex"><span class="i i-folder-tree" style="width:15px;height:15px;color:var(--color-mist-500)"></span><span class="min-w-0" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{catPath}}</span><a class="a-link text-12" href="AdminCats.dc.html">Change</a></div></div>
+              <div class="a-field a-span2"><span class="a-label">This product</span><div class="a-seg" style="align-self:flex-start"><button class="{{pt.single}}" type="button" onClick="{{toSingle}}"><span class="i i-package"></span>Is a single item</button><button class="{{pt.vars}}" type="button" onClick="{{toVars}}"><span class="i i-layers"></span>Has options, like size or colour</button></div></div>
+            </div>
+          </section>
+
+          <section class="a-card" aria-labelledby="md-t">
+            <div class="a-card-head"><div><h3 id="md-t">Photos and video</h3><p>Drag to reorder. The first photo is the main one. Alt text is required.</p></div><span class="a-chip">{{mediaCount}} photos</span></div>
+            <div class="a-card-body flex flex-col gap-4">
+              <div class="a-media">
+                <sc-for list="{{media}}" as="x" hint-placeholder-count="4"><div class="{{x.cls}}"><sc-if value="{{x.img}}" hint-placeholder-val="{{ false }}"><img src="{{x.img}}" alt="{{x.alt}}" style="object-fit:contain;background:#fff;padding:6px"></sc-if><sc-if value="{{x.noImg}}" hint-placeholder-val="{{ true }}"><div class="ph is-sm" data-photo="{{x.ph}}"><div class="ph-in"><span class="ph-ic"><span class="{{x.icon}}"></span></span><span class="ph-cap">{{x.cap}}</span></div></div></sc-if><sc-if value="{{x.main}}" hint-placeholder-val="{{ false }}"><span class="a-chip is-dark">Main</span></sc-if></div></sc-for>
+                <button class="a-media-add" type="button"><span class="i i-image-plus"></span>Add photos<small class="a-mute" style="font-weight:500">WebP made for you</small></button>
+              </div>
+              <label class="a-field"><span class="a-label">Video <span class="a-hint">(optional)</span></span><span class="a-prefix"><span><span class="i i-youtube" style="width:16px;height:16px"></span></span><input class="a-input" placeholder="YouTube link, or upload an MP4 up to 50 MB" value="{{video}}"></span></label>
+            </div>
+          </section>
+
+          <sc-if value="{{hasVars}}" hint-placeholder-val="{{ true }}">
+            <section class="a-card" aria-labelledby="v-t">
+              <div class="a-card-head"><div><h3 id="v-t">Options and variants</h3><p>Each combination is a variant with its own SKU, price, MRP, stock and photo</p></div><span class="a-chip is-blue">{{varCount}} variants</span></div>
+              <div class="a-card-body flex flex-col gap-2">
+                <sc-for list="{{opts}}" as="o" hint-placeholder-count="2">
+                  <div class="a-optrow"><div><b class="text-navy" style="font-size:13.5px">{{o.name}}</b><small class="block text-12 a-mute">{{o.hint}}</small></div><div class="a-chips"><sc-for list="{{o.vals}}" as="v" hint-placeholder-count="4"><span class="a-chip" style="height:30px;padding:0 10px;background:#fff;box-shadow:inset 0 0 0 1px var(--color-mist-200)"><sc-if value="{{v.sw}}" hint-placeholder-val="{{ false }}"><span class="a-swatch" style="{{v.sw}}"></span></sc-if>{{v.t}}<span class="a-chip-x"><span class="i i-x"></span></span></span></sc-for><button class="a-add" type="button" style="height:30px;padding:0 10px"><span class="i i-plus"></span>Add</button></div><button class="a-btn a-btn-ghost a-btn-sm a-btn-icon" type="button" aria-label="Remove option"><span class="i i-trash-2"></span></button></div>
+                </sc-for>
+                <button class="a-btn a-btn-ghost a-btn-sm" type="button" style="align-self:flex-start"><span class="i i-plus"></span>Add another option</button>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap" style="padding:10px 18px;border-top:1px solid var(--color-mist-100);background:var(--color-mist-25)"><span class="text-12 a-mute" style="margin-right:auto">Edit many at once:</span><button class="a-btn a-btn-outline a-btn-sm" type="button" onClick="{{bulkPrice}}">Set one price for all</button><button class="a-btn a-btn-outline a-btn-sm" type="button" onClick="{{bulkStock}}">Add stock to all</button></div>
+              <div class="a-table-wrap">
+                <table class="a-vtable">
+                  <thead><tr><th style="width:36px"></th><th>Variant</th><th>SKU</th><th>Price</th><th>MRP</th><th>Stock</th><th>Photo</th></tr></thead>
+                  <tbody>
+                    <sc-for list="{{vrows}}" as="v" hint-placeholder-count="6">
+                      <tr class="{{v.cls}}">
+                        <td><button class="{{v.onCls}}" type="button" role="switch" aria-checked="{{v.on}}" aria-label="{{v.aria}}" onClick="{{v.toggle}}"></button></td>
+                        <td><span class="flex items-center gap-2"><span class="a-swatch" style="{{v.sw}}"></span><b class="text-navy" style="font-weight:600">{{v.name}}</b></span></td>
+                        <td><input class="a-input" value="{{v.sku}}" style="min-width:150px"></td>
+                        <td><span class="a-prefix"><span>৳</span><input class="a-input" value="{{v.price}}" style="width:76px"></span></td>
+                        <td><span class="a-prefix"><span>৳</span><input class="a-input" value="{{v.mrp}}" style="width:76px"></span></td>
+                        <td><span class="flex items-center gap-2"><input class="a-input" value="{{v.stock}}" style="width:64px"><span class="{{v.stCls}}"></span></span></td>
+                        <td><span class="a-thumb ph is-sm" data-photo="{{v.ph}}" style="width:34px;height:34px;display:grid;place-items:center;box-shadow:inset 0 0 0 1px var(--color-mist-200)"><span class="a-swatch" style="{{v.sw}}"></span></span></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+              <div class="a-card-foot"><span>{{vShownNote}}</span><sc-if value="{{moreVars}}" hint-placeholder-val="{{ true }}"><button class="a-link" type="button" onClick="{{showAllVars}}">Show all {{varCount}}</button></sc-if></div>
+            </section>
+          </sc-if>
+          <sc-if value="{{isSingle}}" hint-placeholder-val="{{ false }}">
+            <section class="a-card" aria-labelledby="ps-t">
+              <div class="a-card-head"><div><h3 id="ps-t">Price and stock</h3><p>A product without options is one variant</p></div></div>
+              <div class="a-card-body a-grid3">
+                <label class="a-field"><span class="a-label">Price <span class="w-req">*</span></span><span class="a-prefix"><span>৳</span><input class="a-input" value="{{single.price}}"></span></label>
+                <label class="a-field"><span class="a-label">MRP</span><span class="a-prefix"><span>৳</span><input class="a-input" value="{{single.mrp}}"></span><span class="a-hint">{{single.off}}</span></label>
+                <label class="a-field"><span class="a-label">SKU</span><input class="a-input" value="{{single.sku}}"></label>
+                <label class="a-field"><span class="a-label">In stock</span><input class="a-input" value="{{single.stock}}"></label>
+                <label class="a-field"><span class="a-label">Low-stock alert at</span><input class="a-input" value="{{single.alert}}"></label>
+                <label class="a-field"><span class="a-label">When out of stock</span><span class="a-sel"><select class="a-input"><option>Show Out of stock</option><option>Allow pre-order</option><option>Hide the product</option></select></span></label>
+              </div>
+            </section>
+          </sc-if>
+
+          <section class="a-card" aria-labelledby="sp-t">
+            <div class="a-card-head"><div><h3 id="sp-t">Highlights and specifications</h3><p>Specifications come from the category’s attribute set and power the filters</p></div><a class="a-link text-13" href="AdminCats.dc.html">Edit attribute set</a></div>
+            <div class="a-card-body a-grid2" style="align-items:start">
+              <div class="flex flex-col gap-2"><span class="a-label">Key highlights</span><div class="a-drag"><sc-for list="{{hl}}" as="h" hint-placeholder-count="4"><div class="a-drag-item" style="padding:6px 8px"><span class="i i-grip-vertical grip"></span><input class="a-input" value="{{h}}" style="height:32px;box-shadow:none;padding:0 4px"><button class="a-btn a-btn-ghost a-btn-sm a-btn-icon" type="button" aria-label="Remove"><span class="i i-x"></span></button></div></sc-for></div><button class="a-add" type="button"><span class="i i-plus"></span>Add a highlight</button></div>
+              <div class="flex flex-col gap-2"><span class="a-label">Specifications</span><table class="a-vtable"><tbody><sc-for list="{{specs}}" as="s" hint-placeholder-count="6"><tr><td style="width:44%"><b class="text-navy" style="font-weight:600;font-size:12.5px">{{s.k}}</b><sc-if value="{{s.f}}" hint-placeholder-val="{{ false }}"> <span class="a-p" title="Used as a filter">Filter</span></sc-if></td><td><input class="a-input" value="{{s.v}}"></td></tr></sc-for></tbody></table></div>
+            </div>
+          </section>
+
+          <section class="a-card" aria-labelledby="ds-t">
+            <div class="a-card-head"><h3 id="ds-t">Description</h3></div>
+            <div class="a-card-body"><div class="a-rte"><div class="a-rte-bar"><button class="is-on" type="button" aria-label="Heading"><span class="i i-heading-2"></span></button><button type="button" aria-label="Bold"><span class="i i-bold"></span></button><button type="button" aria-label="Italic"><span class="i i-italic"></span></button><button type="button" aria-label="Underline"><span class="i i-underline"></span></button><span></span><button type="button" aria-label="Bulleted list"><span class="i i-list"></span></button><button type="button" aria-label="Numbered list"><span class="i i-list-ordered"></span></button><button type="button" aria-label="Quote"><span class="i i-quote"></span></button><span></span><button type="button" aria-label="Link"><span class="i i-link"></span></button><button type="button" aria-label="Image"><span class="i i-image"></span></button><button type="button" aria-label="Table"><span class="i i-columns-3"></span></button></div><div class="a-rte-body"><h4>{{descH}}</h4><p>{{descP}}</p><ul><sc-for list="{{descL}}" as="d" hint-placeholder-count="3"><li>{{d}}</li></sc-for></ul></div></div></div>
+          </section>
+
+          <section class="a-card" aria-labelledby="cp-t">
+            <div class="a-card-head"><div><h3 id="cp-t">Compatible with</h3><p>{{compatNote}}</p></div><span class="{{compatChip}}">{{compatState}}</span></div>
+            <sc-if value="{{compatOn}}" hint-placeholder-val="{{ false }}">
+              <div class="a-card-body flex flex-col gap-3">
+                <div class="a-grid2"><label class="a-field"><span class="a-label">Part codes</span><input class="a-input" value="CE505A, CF280A"></label><label class="a-field"><span class="a-label">Also found by</span><input class="a-input" value="05A, 80A"></label></div>
+                <div class="a-field"><span class="a-label">Printer models <span class="a-hint">(6 · from the HP model list)</span></span><div class="a-chips"><sc-for list="{{models}}" as="x" hint-placeholder-count="6"><span class="a-chip is-blue" style="height:28px">{{x}}<span class="a-chip-x"><span class="i i-x"></span></span></span></sc-for><button class="a-add" type="button" style="height:28px;padding:0 10px"><span class="i i-plus"></span>Add model</button></div></div>
+                <div class="flex gap-2"><button class="a-btn a-btn-outline a-btn-sm" type="button"><span class="i i-file-up"></span>Import models from CSV</button><a class="a-btn a-btn-ghost a-btn-sm" href="ShopFinder.dc.html"><span class="i i-search"></span>See it in Find by model</a></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{compatOff}}" hint-placeholder-val="{{ true }}"><div class="a-card-body"><div class="a-callout"><span class="i i-info"></span><span>Fashion & Lifestyle doesn’t use compatibility. Turn it on per category (printer supplies at launch; devices or vehicles later).</span></div></div></sc-if>
+          </section>
+
+          <section class="a-card" aria-labelledby="seo-t">
+            <div class="a-card-head"><div><h3 id="seo-t">Search engine listing</h3><p>How this product can look on Google</p></div></div>
+            <div class="a-card-body a-grid2" style="align-items:start">
+              <div class="flex flex-col gap-3">
+                <label class="a-field"><span class="a-label">URL</span><span class="a-prefix"><span>/shop/p/</span><input class="a-input" value="{{slug}}"></span></label>
+                <label class="a-field"><span class="a-label">Meta title <span class="a-count is-ok">{{seoTitleN}}/60</span></span><input class="a-input" value="{{seoTitle}}"></label>
+                <label class="a-field"><span class="a-label">Meta description <span class="a-count is-ok">{{seoDescN}}/160</span></span><textarea class="a-input" style="min-height:72px" value="{{seoDesc}}"></textarea></label>
+              </div>
+              <div class="a-seo"><small>waafasworld.com <span>› shop › p › {{slug}}</span></small><b>{{seoTitle}}</b><p>{{seoDesc}}</p></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="a-stack a-sticky">
+          <section class="a-card" aria-labelledby="st-t">
+            <div class="a-card-head"><h3 id="st-t">Status</h3></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <label class="a-field"><span class="a-sel"><select class="a-input" value="{{status}}" onChange="{{onStatus}}"><option>Active</option><option>Draft</option><option>Archived</option></select></span></label>
+              <div class="a-switch-row" style="padding-top:2px"><span><b>Cash on delivery</b><small>Allowed for this product</small></span><span class="w-switch is-on"></span></div>
+              <div class="a-switch-row"><span><b>Corporate price button</b><small>“Buying in bulk? Get a corporate price”</small></span><span class="w-switch is-on"></span></div>
+            </div>
+          </section>
+          <div class="a-preview"><small>Store card, live</small><div style="width:250px"><dc-import name="PCard" p="{{card}}" href="{{storeHref}}" style="display:block" hint-size="250px,430px"></dc-import></div></div>
+          <section class="a-card" aria-labelledby="co-t">
+            <div class="a-card-head"><h3 id="co-t">Collections and tags</h3></div>
+            <div class="a-card-body flex flex-col gap-3"><div class="a-chips"><sc-for list="{{cols}}" as="c" hint-placeholder-count="2"><span class="a-chip is-violet">{{c}}<span class="a-chip-x"><span class="i i-x"></span></span></span></sc-for><a class="a-add" href="AdminCollections.dc.html" style="height:24px;padding:0 10px"><span class="i i-plus"></span>Add</a></div><div class="a-chips"><sc-for list="{{tags}}" as="t" hint-placeholder-count="3"><span class="a-chip">#{{t}}</span></sc-for></div></div>
+          </section>
+          <section class="a-card" aria-labelledby="dw-t">
+            <div class="a-card-head"><h3 id="dw-t">Warranty and returns</h3></div>
+            <div class="a-card-body flex flex-col gap-3">
+              <label class="a-field"><span class="a-label">Warranty</span><input class="a-input" value="{{warranty}}"></label>
+              <label class="a-field"><span class="a-label">Returns</span><span class="a-sel"><select class="a-input"><option>7-day return if unused</option><option>Exchange only</option><option>No returns</option></select></span></label>
+            </div>
+          </section>
+        </div>
+      </div>
+      <div class="a-savebar"><span><span class="i i-circle-alert"></span>{{dirtyNote}}</span><div class="flex gap-2"><button class="a-btn a-btn-ghost" type="button" onClick="{{discard}}">Discard</button><button class="a-btn a-btn-primary" type="button" onClick="{{save}}"><span class="i i-save"></span>Save product</button></div></div>
+    </main>
+  </div>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div class="a-toast" role="status"><span class="i i-circle-check"></span>{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"kind":{"editor":"enum","options":["tshirt","toner"],"default":"tshirt"},"$preview":{"width":1440,"height":2800}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const toner = p.kind === 'toner';
+    const flash = msg => { this.setState({ toast: msg, dirty: false }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2400); };
+    const fmt = n => Math.round(n).toLocaleString('en-IN');
+    const title = st.title !== undefined ? st.title : (toner ? 'Better Day CE505A / CF280A Black Toner' : 'Classic Cotton Crew T-shirt');
+    const status = st.status || 'Active';
+    const ptype = st.ptype || (toner ? 'single' : 'vars');
+    const COLORS = [['Navy', '#1C2B5A'], ['White', '#FFFFFF'], ['Black', '#111318'], ['Heather grey', '#B9BCC4']];
+    const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+    const off = st.off || {};
+    const bump = st.bump || 0;
+    const price = st.allPrice || 650;
+    const all = [];
+    COLORS.forEach((c, ci) => SIZES.forEach((s, si) => { const key = c[0] + '/' + s; const stock = Math.max(0, [14, 6, 22, 9, 4][si] + ci * 3 - (c[0] === 'Navy' && s === 'M' ? 3 : 0)) + bump; all.push({ key, name: c[0] + ' / ' + s, sw: '--sw:' + c[1], sku: 'WW-TEE-' + c[0].slice(0, 3).toUpperCase().replace(' ', '') + '-' + s, price: fmt(price + (s === 'XXL' ? 50 : 0)), mrp: fmt(850 + (s === 'XXL' ? 50 : 0)), stock: String(stock), stCls: 'a-stock ' + (stock === 0 ? 'out' : stock < 8 ? 'low' : 'ok'), ph: 'prod-tshirt', on: !off[key] }); }));
+    const showAll = !!st.allVars;
+    const vrows = (showAll ? all : all.slice(0, 7)).map(v => Object.assign({}, v, { cls: v.on ? '' : 'is-off', onCls: 'w-switch' + (v.on ? ' is-on' : ''), aria: (v.on ? 'Turn off ' : 'Turn on ') + v.name, toggle: () => this.setState({ off: Object.assign({}, off, { [v.key]: v.on }), dirty: true }) }));
+    const media = toner
+      ? [['../assets/c9ea845b540e931548117afdb5ae8a65.jpg', 'Better Day CE505A / CF280A toner box, front'], ['../assets/fd111676d187ad84eb1cdef897ce4776.jpg', 'Better Day toner box, side'], ['../assets/1bb1b89d15ac65da8322547e81decbdf.jpg', 'Better Day toner range']].map((m, i) => ({ img: m[0], noImg: false, alt: m[1], main: i === 0, cls: 'a-media-item' + (i === 0 ? ' is-main' : '') }))
+      : [['prod-tshirt', 'Navy, front'], ['prod-tshirt', 'White, front'], ['prod-tshirt', 'Fabric close-up'], ['prod-tshirt', 'Size chart']].map((m, i) => ({ img: '', noImg: true, ph: m[0], icon: 'i i-shirt', cap: m[1], main: i === 0, cls: 'a-media-item' + (i === 0 ? ' is-main' : '') }));
+    const specs = toner
+      ? [['Colour', 'Black', true], ['Page yield', 'Up to 2,700 pages at 5% cover', true], ['Part codes', 'CE505A (05A), CF280A (80A)', true], ['Printer brand', 'HP', true], ['Type', 'Compatible, new build', true], ['In the box', '1 cartridge, sealed', false]]
+      : [['Material', '100% combed cotton', true], ['Fabric weight', '180 GSM', true], ['Fit', 'Regular', true], ['Neck', 'Crew', false], ['Care', 'Machine wash cold, inside out', false], ['Made in', 'Bangladesh', false]];
+    const card = toner
+      ? { id: 'bd1', title, brand: 'Better Day', spec: 'Up to 2,700 pages · fits HP LaserJet P2035', price: 1450, mrp: 1800, stock: 'in', img: '../assets/c9ea845b540e931548117afdb5ae8a65.jpg', ph: 'printing-alt', icon: 'printer', options: false, sample: false, badge: 'Best seller' }
+      : { id: 'tee', title, brand: 'Tessra', spec: 'Sizes S to XXL · 4 colours', price, mrp: 850, stock: 'in', img: '', ph: 'prod-tshirt', icon: 'shirt', phCap: 'Photo: T-shirt', options: true, sample: true };
+    const slug = toner ? 'better-day-ce505a-cf280a-black-toner' : 'classic-cotton-crew-t-shirt';
+    const seoTitle = toner ? 'Better Day CE505A / CF280A Toner for HP LaserJet | Waafas World' : 'Classic Cotton Crew T-shirt, 180 GSM | Waafas World';
+    const seoDesc = toner ? 'Compatible CE505A / CF280A toner for HP LaserJet P2035, P2055 and Pro 400. Up to 2,700 pages. Cash on delivery across Bangladesh.' : 'Soft 180 GSM combed-cotton crew neck in sizes S to XXL and four colours. Cash on delivery across Bangladesh.';
+    return {
+      m: !!p.m, title, onTitle: e => this.setState({ title: e && e.target ? e.target.value : '', dirty: true }), titleCount: title.length, titleCountCls: 'a-count' + (title.length <= 90 ? ' is-ok' : ''),
+      status, statusCls: 'a-status ' + (status === 'Active' ? 'a-s-booked' : 'a-s-draft'), onStatus: e => this.setState({ status: e && e.target ? e.target.value : 'Active', dirty: true }),
+      sample: !toner, brand: st.brand || (toner ? 'Better Day' : 'Tessra'), onBrand: e => this.setState({ brand: e && e.target ? e.target.value : '', dirty: true }),
+      brands: toner ? ['Better Day', 'HP', 'Canon', 'Brother'] : ['Tessra', 'Unbranded', 'Other'],
+      catPath: toner ? 'Printers & Supplies › Toner cartridges' : 'Fashion & Lifestyle › Men › T-shirts', attrSet: toner ? 'Toner and ink' : 'Apparel',
+      storeHref: toner ? 'ShopProduct-toner.dc.html' : 'ShopProduct.dc.html',
+      pt: { single: ptype === 'single' ? 'is-on' : '', vars: ptype === 'vars' ? 'is-on' : '' }, toSingle: () => this.setState({ ptype: 'single', dirty: true }), toVars: () => this.setState({ ptype: 'vars', dirty: true }),
+      hasVars: ptype === 'vars', isSingle: ptype === 'single',
+      media, mediaCount: media.length, video: toner ? '' : '',
+      varCount: all.length, vrows, moreVars: !showAll, showAllVars: () => this.setState({ allVars: true }), vShownNote: showAll ? 'All ' + all.length + ' variants · ' + all.filter(v => v.on).length + ' on sale' : 'Showing 7 of ' + all.length + ' · ' + all.filter(v => v.on).length + ' on sale',
+      opts: [{ name: 'Size', hint: 'Shown as buttons', vals: SIZES.map(s => ({ t: s, sw: '' })) }, { name: 'Colour', hint: 'Shown as swatches, each with photos', vals: COLORS.map(c => ({ t: c[0], sw: '--sw:' + c[1] })) }],
+      bulkPrice: () => { this.setState({ allPrice: 699, dirty: true }); flash('Price set to ৳699 on every variant (XXL +৳50)'); }, bulkStock: () => { this.setState({ bump: bump + 10, dirty: true }); flash('Added 10 to every variant'); },
+      single: { price: '1,450', mrp: '1,800', off: '19% off shows on the card', sku: 'BD-CE505A-CF280A', stock: '42', alert: '5' },
+      hl: toner ? ['Up to 2,700 pages at 5% cover', 'Fits HP LaserJet P2035, P2055 and Pro 400', 'Sealed and tested before dispatch'] : ['Soft 180 GSM combed cotton', 'Sizes S to XXL, four colours', 'Keeps its shape after washing'],
+      specs: specs.map(s => ({ k: s[0], v: s[1], f: s[2] })),
+      descH: toner ? 'Sharp text, page after page' : 'An everyday crew neck', descP: toner ? 'A compatible cartridge that replaces both CE505A (05A) and CF280A (80A). Prints crisp black text for offices that print every day.' : 'Made from soft combed cotton that keeps its shape. A regular fit that works under a jacket or on its own.',
+      descL: toner ? ['Drop-in replacement, no setup', 'Same page count as the originals', '6-month replacement warranty'] : ['Pre-shrunk fabric', 'Double-stitched hems', 'Printed size label, no itch'],
+      compatOn: toner, compatOff: !toner, compatState: toner ? 'On for this category' : 'Not used', compatChip: 'a-chip ' + (toner ? 'is-green' : ''),
+      compatNote: toner ? 'Shown on the product page and used by Find by model' : 'Only categories that need it show this list',
+      models: ['HP LaserJet P2035', 'P2035n', 'P2055d', 'P2055dn', 'Pro 400 M401dn', 'Pro 400 M425dn'],
+      cols: toner ? ['Office essentials', 'Printer supplies'] : ['Everyday basics', 'Under ৳999'], tags: toner ? ['toner', 'hp', '80a'] : ['tshirt', 'cotton', 'basics'],
+      warranty: toner ? '6-month replacement' : 'No warranty · 7-day exchange for size',
+      slug, seoTitle, seoTitleN: Math.min(60, seoTitle.length), seoDesc, seoDescN: seoDesc.length, card,
+      dirtyNote: st.dirty ? 'You have unsaved changes' : 'Saved 2 minutes ago', discard: () => this.setState({ title: undefined, off: {}, dirty: false, allPrice: undefined, bump: 0 }),
+      save: () => flash('Saved. The store updates now.'), toast: st.toast || '',
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · FAQs</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="more" style="display:contents" hint-size="100%,76px"></dc-import>
+  <main class="w-main" id="main">
+    <section class="v-pagehead wc-head">
+      <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
+      <div class="w-wrap">
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">FAQs</span></nav>
+        <div class="v-pagehead-in">
+          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">FAQs</span><h1 class="v-h1 v-h1-page">Answers before you ask</h1><p class="v-lead">Payments, refunds, visas, deliveries and how a booking works here. Can’t find it? We’re one call away.</p></div>
+          <label class="v-vsearch-field" style="max-width:520px;width:100%"><span class="i i-search"></span><input class="w-input" placeholder="Search, e.g. refund, bKash, baggage" aria-label="Search FAQs" value="{{q}}" onInput="{{typeQ}}"></label>
+        </div>
+      </div>
+    </section>
+    <section class="v-sec" style="padding-top:24px">
+      <div class="w-wrap wc-faqgrid">
+        <nav class="wc-faqnav" aria-label="Topics"><sc-for list="{{cats}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" type="button" onClick="{{c.go}}"><span class="{{c.icon}}"></span>{{c.label}}<small>{{c.n}}</small></button></sc-for></nav>
+        <div class="flex flex-col gap-6 min-w-0">
+          <div class="wc-acc" key="{{cat}}{{q}}">
+            <sc-for list="{{items}}" as="f" hint-placeholder-count="5">
+              <div class="{{f.cls}}">
+                <button type="button" aria-expanded="{{f.open}}" onClick="{{f.go}}">{{f.q}}<span class="wc-q-ic"><span class="i i-plus"></span></span></button>
+                <sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><div class="wc-q-a"><sc-for list="{{f.a}}" as="t" hint-placeholder-count="1"><p>{{t}}</p></sc-for><sc-if value="{{f.link}}" hint-placeholder-val="{{ false }}"><p><a href="{{f.href}}">{{f.link}} →</a></p></sc-if></div></sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{none}}" hint-placeholder-val="{{ false }}"><div class="ww-empty"><span class="w-tile"><span class="i i-search-x"></span></span><h2 class="v-h3">No answer for “{{q}}” yet</h2><p>Ask us directly. We add the questions people ask most to this page.</p><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>Ask on WhatsApp</a></div></sc-if>
+          </div>
+          <div class="wc-help"><div><b>Still need help?</b><p>Saturday to Thursday, 10 am to 6 pm. A person answers.</p></div><div class="flex flex-wrap gap-2"><a class="w-btn w-btn-white" href="tel:+8801823232241"><span class="i i-phone"></span>01823-232241</a><a class="w-btn w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>WhatsApp</a></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <dc-import name="TabBar" m="{{m}}" active="more" style="display:contents" hint-size="390px,64px"></dc-import>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"q":{"editor":"text","default":""},"$preview":{"width":1440,"height":1625}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','OfflinePay','Refund','Visa','ShopTrack','Baggage','Emi','Contact'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const F = {
+      book: ['Booking and payment', 'i i-calendar-check', [
+        ['How does booking work on this site?', ['You search or pick a trip and send a request with your contact details. A travel expert checks the live fare or availability and calls or messages you to confirm the price before you pay anything.', 'You get a reference number at once, for example FLT-261008-0042 for a flight or PKG-261008-0021 for a package.'], '', ''],
+        ['Why do prices say “from” or “indicative”?', ['Airline and hotel prices change by the hour. The price you see is a guide; the expert confirms the exact price for your dates before you pay.'], '', ''],
+        ['How can I pay?', ['bKash, Nagad, bank transfer, or cash or card at our Motijheel office. Waafas World orders can also be paid in cash on delivery.'], 'How offline payment works', 'OfflinePay'],
+        ['Can I pay in instalments?', ['Yes, on selected cards and amounts. Use the EMI calculator to see the monthly amount, then tell your travel expert you want EMI.'], 'Open the EMI calculator', 'Emi']
+      ]],
+      flight: ['Flights', 'i i-plane', [
+        ['How much baggage can I take?', ['It depends on the airline, route and fare. Your expert tells you before you pay, and it is printed on your ticket.'], 'See baggage information', 'Baggage'],
+        ['Can I change or cancel my ticket?', ['Most fares allow a change for a fee; some are non-refundable. We explain the rules of your fare in plain words before you pay.'], 'Read the refund policy', 'Refund'],
+        ['Do you offer student or group fares?', ['Yes. Group fares with fixed seats are on the Group fares page, and you can ask for student fares in the search.'], '', '']
+      ]],
+      tour: ['Tours and hotels', 'i i-map', [
+        ['What is included in a tour package?', ['Each package page lists what is included and what is not: hotels, transfers, meals, tours and visa help. Prices are per person, twin sharing, unless the page says otherwise.'], '', ''],
+        ['Can you plan a custom trip?', ['Yes. Use Plan my trip: five short questions about where, when, who and your budget. We send a plan and price within one working day.'], '', '']
+      ]],
+      visa: ['Visa', 'i i-passport', [
+        ['Which visas do you help with?', ['Tourist, business, student, medical and transit visas. We do not process work permits or recruitment.'], 'Check a country', 'Visa'],
+        ['How do I send my documents?', ['Upload JPG, PNG or PDF files up to 5 MB each on the apply page, or bring them to our office. Only our visa team can open uploaded files, and we delete them 90 days after your case closes.'], '', ''],
+        ['Is the visa fee refundable if my visa is refused?', ['The embassy fee is not refundable; that is the embassy’s rule. Our service charge is shown separately on every country page.'], 'Read the refund policy', 'Refund']
+      ]],
+      shop: ['Waafas World orders', 'i i-shopping-bag', [
+        ['How long does delivery take?', ['Usually the next day inside Dhaka and 2 to 4 days elsewhere. Your product page shows the estimate for your district.'], '', ''],
+        ['Can I pay cash on delivery?', ['Yes, for orders up to ৳20,000. Open and check the box before you pay the rider.'], '', ''],
+        ['Where is my order?', ['Enter your order number (ORD-…) and mobile number on Track order to see each step and the courier tracking number.'], 'Track an order', 'ShopTrack'],
+        ['Can I return something?', ['Faulty items are replaced if you tell us within 7 days. Clothing can be exchanged for another size within 7 days if unworn with tags.'], 'Read the refund policy', 'Refund']
+      ]],
+      refund: ['Refunds and changes', 'i i-undo', [
+        ['How long do refunds take?', ['Once approved, we refund to the method you paid with: bKash or Nagad in 3 working days, bank transfer in up to 7 working days. Airline refunds follow the airline’s timeline.'], 'Read the refund policy', 'Refund']
+      ]]
+    };
+    const q = (st.q !== undefined ? st.q : (p.q || '')).trim();
+    const cat = st.cat || 'book';
+    const all = [];
+    Object.keys(F).forEach(k => F[k][2].forEach((x, i) => all.push({ k, i, x })));
+    const match = x => !q || (x[0] + ' ' + x[1].join(' ')).toLowerCase().indexOf(q.toLowerCase()) >= 0;
+    const cats = Object.keys(F).map(k => ({ label: F[k][0], icon: F[k][1], n: F[k][2].filter(match).length, cls: (!q && cat === k) ? 'is-on' : '', go: () => this.setState({ cat: k, q: '' }) }));
+    const list = q ? all.filter(o => match(o.x)) : all.filter(o => o.k === cat);
+    const openKey = st.open !== undefined ? st.open : (list[0] ? list[0].k + list[0].i : '');
+    const items = list.map(o => { const key = o.k + o.i; const open = openKey === key || (!!q && list.length <= 3); return { q: o.x[0], a: o.x[1], link: o.x[2], href: o.x[3] ? L[o.x[3]] : '', open, cls: 'wc-q' + (open ? ' is-open' : ''), go: () => this.setState({ open: openKey === key ? '' : key }) }; });
+    return { L, m: !!p.m, q, cat, cats, items, none: !items.length, typeQ: (e) => this.setState({ q: e && e.target ? e.target.value : '', open: undefined }) };
+  }
+}
+</script>
+</body>
+</html>

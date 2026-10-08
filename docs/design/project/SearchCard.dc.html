@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Search card</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="w-search-wrap wa-r">
+  <div class="{{cardCls}}">
+    <span class="fx-beam-ring" aria-hidden="true"></span>
+    <div class="w-search-bar">
+      <div class="w-stabs" role="tablist" aria-label="What do you want to book?" style="--i:{{tabIdx}}">
+        <span class="w-stabs-ind" aria-hidden="true"></span>
+        <button class="{{tb.flight.cls}}" type="button" role="tab" aria-selected="{{tb.flight.on}}" onClick="{{tb.flight.go}}"><span class="i i-plane"></span>Flight</button>
+        <button class="{{tb.hotel.cls}}" type="button" role="tab" aria-selected="{{tb.hotel.on}}" onClick="{{tb.hotel.go}}"><span class="i i-bed"></span>Hotel</button>
+        <button class="{{tb.tour.cls}}" type="button" role="tab" aria-selected="{{tb.tour.on}}" onClick="{{tb.tour.go}}"><span class="i i-map"></span>Tour</button>
+        <button class="{{tb.visa.cls}}" type="button" role="tab" aria-selected="{{tb.visa.on}}" onClick="{{tb.visa.go}}"><span class="i i-passport"></span>Visa</button>
+      </div>
+      <div class="w-search-opts">
+        <sc-if value="{{isFlight}}" hint-placeholder-val="{{ true }}">
+          <div class="w-trip">
+            <div class="w-seg is-sm" role="radiogroup" aria-label="Trip type">
+              <span class="w-seg-ind" style="width:calc((100% - 12px) / 3);transform:{{tripX}}"></span>
+              <button class="{{tp.oneway.cls}}" type="button" role="radio" aria-checked="{{tp.oneway.on}}" onClick="{{tp.oneway.go}}">One way</button>
+              <button class="{{tp.round.cls}}" type="button" role="radio" aria-checked="{{tp.round.on}}" onClick="{{tp.round.go}}">Round trip</button>
+              <button class="{{tp.multi.cls}}" type="button" role="radio" aria-checked="{{tp.multi.on}}" onClick="{{tp.multi.go}}">Multi-city</button>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{isHotel}}" hint-placeholder-val="{{ false }}"><span class="w-search-note"><span class="i i-info"></span>Hotels in Bangladesh and abroad, confirmed by our team</span></sc-if>
+        <sc-if value="{{isTour}}" hint-placeholder-val="{{ false }}"><span class="w-search-note"><span class="i i-info"></span>Group and private tours, planned around your dates</span></sc-if>
+        <sc-if value="{{isVisa}}" hint-placeholder-val="{{ false }}"><span class="w-search-note"><span class="i i-info"></span>For Bangladeshi passport holders</span></sc-if>
+      </div>
+    </div>
+
+    <sc-if value="{{showSimple}}" hint-placeholder-val="{{ true }}">
+      <div class="w-sfields">
+        <div class="w-pair">
+          <button class="{{f.from.cls}}" type="button" onClick="{{f.from.open}}">
+            <span class="w-sfield-label"><span class="i i-plane-takeoff"></span>From</span>
+            <span class="w-sfield-value"><span>{{f.from.city}}</span><span class="w-sfield-code">{{f.from.code}}</span></span>
+            <span class="w-sfield-sub">{{f.from.name}}</span>
+          </button>
+          <button class="{{f.to.cls}}" type="button" onClick="{{f.to.open}}">
+            <span class="w-sfield-label"><span class="i i-plane-landing"></span>To</span>
+            <span class="w-sfield-value"><span>{{f.to.city}}</span><span class="w-sfield-code">{{f.to.code}}</span></span>
+            <span class="w-sfield-sub">{{f.to.name}}</span>
+          </button>
+          <span class="w-swapwrap"><button class="w-swapbtn" type="button" style="--spin:{{spins}}" aria-label="Swap from and to" onClick="{{swap}}"><span class="i i-arrow-left-right"></span></button></span>
+        </div>
+        <div class="w-pair is-row">
+          <button class="{{f.dep.cls}}" type="button" onClick="{{f.dep.open}}">
+            <span class="w-sfield-label"><span class="i i-calendar"></span>Departure</span>
+            <span class="w-sfield-value"><span>{{f.dep.val}}</span></span>
+            <span class="w-sfield-sub">{{f.dep.sub}}</span>
+          </button>
+          <button class="{{f.ret.cls}}" type="button" onClick="{{f.ret.open}}">
+            <span class="w-sfield-label"><span class="i i-calendar"></span>Return</span>
+            <span class="w-sfield-value"><span>{{f.ret.val}}</span></span>
+            <span class="w-sfield-sub">{{f.ret.sub}}</span>
+          </button>
+        </div>
+        <button class="{{f.pax.cls}}" type="button" onClick="{{f.pax.open}}">
+          <span class="w-sfield-label"><span class="i i-users"></span>Travellers</span>
+          <span class="w-sfield-value"><span>{{f.pax.val}}</span></span>
+          <span class="w-sfield-sub">{{f.pax.sub}}</span>
+        </button>
+        <a class="w-btn w-btn-primary w-search-go w-sheen" href="{{L.Flights}}"><span class="i i-search"></span><span class="lbl-sm">Search flights</span><span class="lbl-lg">Search</span></a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{showMulti}}" hint-placeholder-val="{{ false }}">
+      <div class="w-legs">
+        <sc-for list="{{legs}}" as="lg" hint-placeholder-count="2">
+          <div class="w-sfields is-leg">
+            <div class="w-leg-top"><b>{{lg.label}}</b><sc-if value="{{lg.canRemove}}" hint-placeholder-val="{{ false }}"><button class="w-leg-x" type="button" onClick="{{lg.remove}}" aria-label="{{lg.removeLabel}}"><span class="i i-x"></span>Remove</button></sc-if></div>
+            <div class="w-pair">
+              <button class="{{lg.fromCls}}" type="button" onClick="{{lg.openFrom}}">
+                <span class="w-sfield-label"><span class="i i-plane-takeoff"></span>From</span>
+                <span class="w-sfield-value"><span>{{lg.fromCity}}</span><span class="w-sfield-code">{{lg.from}}</span></span>
+              </button>
+              <button class="{{lg.toCls}}" type="button" onClick="{{lg.openTo}}">
+                <span class="w-sfield-label"><span class="i i-plane-landing"></span>To</span>
+                <span class="w-sfield-value"><span>{{lg.toCity}}</span><span class="w-sfield-code">{{lg.to}}</span></span>
+              </button>
+            </div>
+            <button class="{{lg.dateCls}}" type="button" onClick="{{lg.openDate}}">
+              <span class="w-sfield-label"><span class="i i-calendar"></span>Date</span>
+              <span class="w-sfield-value"><span>{{lg.dateVal}}</span></span>
+            </button>
+          </div>
+        </sc-for>
+        <div class="w-sfields is-legfoot">
+          <sc-if value="{{canAddLeg}}" hint-placeholder-val="{{ true }}"><button class="w-leg-add" type="button" onClick="{{addLeg}}"><span class="i i-plus"></span>Add another flight</button></sc-if>
+          <button class="{{f.pax.cls}}" type="button" onClick="{{f.pax.open}}">
+            <span class="w-sfield-label"><span class="i i-users"></span>Travellers</span>
+            <span class="w-sfield-value"><span>{{f.pax.val}}</span></span>
+            <span class="w-sfield-sub">{{f.pax.sub}}</span>
+          </button>
+          <a class="w-btn w-btn-primary w-search-go w-sheen" href="{{L.Flights}}"><span class="i i-search"></span><span class="lbl-sm">Search flights</span><span class="lbl-lg">Search</span></a>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isHotel}}" hint-placeholder-val="{{ false }}">
+      <div class="w-sfields">
+        <button class="{{f.city.cls}}" type="button" onClick="{{f.city.open}}">
+          <span class="w-sfield-label"><span class="i i-map-pin"></span>Where</span>
+          <span class="w-sfield-value"><span>{{f.city.val}}</span></span>
+          <span class="w-sfield-sub">{{f.city.sub}}</span>
+        </button>
+        <div class="w-pair is-row">
+          <button class="{{f.hin.cls}}" type="button" onClick="{{f.hin.open}}">
+            <span class="w-sfield-label"><span class="i i-calendar"></span>Check-in</span>
+            <span class="w-sfield-value"><span>{{f.hin.val}}</span></span>
+            <span class="w-sfield-sub">{{f.hin.sub}}</span>
+          </button>
+          <button class="{{f.hout.cls}}" type="button" onClick="{{f.hout.open}}">
+            <span class="w-sfield-label"><span class="i i-calendar"></span>Check-out</span>
+            <span class="w-sfield-value"><span>{{f.hout.val}}</span></span>
+            <span class="w-sfield-sub">{{f.hout.sub}}</span>
+          </button>
+        </div>
+        <button class="{{f.rooms.cls}}" type="button" onClick="{{f.rooms.open}}">
+          <span class="w-sfield-label"><span class="i i-bed"></span>Rooms and guests</span>
+          <span class="w-sfield-value"><span>{{f.rooms.val}}</span></span>
+          <span class="w-sfield-sub">{{f.rooms.sub}}</span>
+        </button>
+        <a class="w-btn w-btn-primary w-search-go w-sheen" href="{{L.Hotels}}"><span class="i i-search"></span><span class="lbl-sm">Search hotels</span><span class="lbl-lg">Search</span></a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isTour}}" hint-placeholder-val="{{ false }}">
+      <div class="w-sfields">
+        <button class="{{f.dest.cls}}" type="button" onClick="{{f.dest.open}}">
+          <span class="w-sfield-label"><span class="i i-map"></span>Where to</span>
+          <span class="w-sfield-value"><span>{{f.dest.val}}</span></span>
+          <span class="w-sfield-sub">{{f.dest.sub}}</span>
+        </button>
+        <button class="{{f.month.cls}}" type="button" onClick="{{f.month.open}}">
+          <span class="w-sfield-label"><span class="i i-calendar"></span>When</span>
+          <span class="w-sfield-value"><span>{{f.month.val}}</span></span>
+          <span class="w-sfield-sub">{{f.month.sub}}</span>
+        </button>
+        <button class="{{f.tpax.cls}}" type="button" onClick="{{f.tpax.open}}">
+          <span class="w-sfield-label"><span class="i i-users"></span>Travellers</span>
+          <span class="w-sfield-value"><span>{{f.tpax.val}}</span></span>
+          <span class="w-sfield-sub">{{f.tpax.sub}}</span>
+        </button>
+        <a class="w-btn w-btn-primary w-search-go w-sheen" href="{{L.Packages}}"><span class="i i-search"></span><span class="lbl-sm">Find tours</span><span class="lbl-lg">Search</span></a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isVisa}}" hint-placeholder-val="{{ false }}">
+      <div class="w-sfields">
+        <button class="{{f.vc.cls}}" type="button" onClick="{{f.vc.open}}">
+          <span class="w-sfield-label"><span class="i i-globe"></span>Visa for</span>
+          <span class="w-sfield-value"><img class="w-flag" src="{{f.vc.flag}}" alt=""><span>{{f.vc.val}}</span></span>
+          <span class="w-sfield-sub">{{f.vc.sub}}</span>
+        </button>
+        <button class="{{f.vtype.cls}}" type="button" onClick="{{f.vtype.open}}">
+          <span class="w-sfield-label"><span class="i i-file-text"></span>Visa type</span>
+          <span class="w-sfield-value"><span>{{f.vtype.val}}</span></span>
+          <span class="w-sfield-sub">{{f.vtype.sub}}</span>
+        </button>
+        <button class="{{f.vpax.cls}}" type="button" onClick="{{f.vpax.open}}">
+          <span class="w-sfield-label"><span class="i i-users"></span>Applicants</span>
+          <span class="w-sfield-value"><span>{{f.vpax.val}}</span></span>
+          <span class="w-sfield-sub">{{f.vpax.sub}}</span>
+        </button>
+        <a class="w-btn w-btn-primary w-search-go w-sheen" href="{{L.VisaCountry}}"><span class="i i-search"></span><span class="lbl-sm">Check requirements</span><span class="lbl-lg">Check</span></a>
+      </div>
+    </sc-if>
+
+    <div class="w-search-foot">
+      <div class="w-recent">
+        <span class="w-recent-label">{{pop.label}}</span>
+        <sc-for list="{{pop.items}}" as="c" hint-placeholder-count="4"><button class="w-chip" type="button" onClick="{{c.go}}">{{c.label}}</button></sc-for>
+      </div>
+      <span class="w-search-help"><span class="i i-headset"></span><span>{{helpA}} <b>{{helpB}}</b></span></span>
+    </div>
+  </div>
+
+  <sc-if value="{{pk.on}}" hint-placeholder-val="{{ false }}">
+    <div class="{{pk.wrapCls}}" role="dialog" aria-label="{{pk.title}}">
+      <div class="w-scrim" style="{{pk.scrimStyle}}" onClick="{{close}}"></div>
+      <div class="{{pk.sheetCls}}" style="{{pk.sheetStyle}}">
+        <div class="w-sheet-grab" onPointerDown="{{dragStart}}" onPointerMove="{{dragMove}}" onPointerUp="{{dragEnd}}" onPointerCancel="{{dragEnd}}"></div>
+        <div class="w-sheet-head"><span class="w-sheet-title">{{pk.title}}</span><button class="w-iconbtn" type="button" aria-label="Close" onClick="{{close}}"><span class="i i-x"></span></button></div>
+
+        <sc-if value="{{pk.isList}}" hint-placeholder-val="{{ false }}">
+          <div class="w-pick-search"><label class="w-control"><span class="i i-search"></span><input class="w-input" type="search" placeholder="{{pk.ph}}" aria-label="{{pk.ph}}" autocomplete="off" value="{{q}}" onInput="{{onQ}}"></label></div>
+          <div class="w-sheet-body">
+            <sc-if value="{{pk.hasRecent}}" hint-placeholder-val="{{ false }}">
+              <div class="w-list-label">Recent</div>
+              <div class="w-recent"><sc-for list="{{pk.recent}}" as="rc" hint-placeholder-count="2"><button class="w-recent-chip" type="button" onClick="{{rc.pick}}"><span class="i i-history"></span>{{rc.city}}<b>{{rc.code}}</b></button></sc-for></div>
+            </sc-if>
+            <sc-for list="{{pk.groups}}" as="g" hint-placeholder-count="2">
+              <div class="w-list-label">{{g.label}}</div>
+              <sc-for list="{{g.items}}" as="it" hint-placeholder-count="4">
+                <button class="{{it.cls}}" type="button" onClick="{{it.pick}}">
+                  <sc-if value="{{it.flag}}" hint-placeholder-val="{{ false }}"><img class="w-flag" src="{{it.flag}}" alt=""></sc-if>
+                  <sc-if value="{{it.ic}}" hint-placeholder-val="{{ true }}"><span class="w-ap-ic"><span class="{{it.ic}}"></span></span></sc-if>
+                  <span class="min-w-0"><span class="w-ap-city">{{it.pre}}<mark>{{it.hit}}</mark>{{it.post}}</span><span class="w-ap-name">{{it.sub}}</span></span>
+                  <sc-if value="{{it.code}}" hint-placeholder-val="{{ false }}"><span class="w-ap-code">{{it.code}}</span></sc-if>
+                </button>
+              </sc-for>
+            </sc-for>
+            <sc-if value="{{pk.none}}" hint-placeholder-val="{{ false }}">
+              <div class="w-pick-empty"><span class="i i-search"></span><b>No match for “{{q}}”</b><span>Check the spelling, or tell our travel expert where you want to go. We book places that aren’t listed too.</span><a class="w-btn w-btn-sm w-btn-wa" href="https://wa.me/8801823232241"><span class="i i-whatsapp-fill"></span>Ask on WhatsApp</a></div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{pk.isCal}}" hint-placeholder-val="{{ false }}">
+          <div class="{{cal.rangeCls}}">
+            <button class="{{cal.aCls}}" type="button" onClick="{{cal.focusA}}"><small>{{cal.aLabel}}</small><b>{{cal.aVal}}</b></button>
+            <sc-if value="{{cal.showB}}" hint-placeholder-val="{{ true }}"><button class="{{cal.bCls}}" type="button" onClick="{{cal.focusB}}"><small>{{cal.bLabel}}</small><b>{{cal.bVal}}</b></button></sc-if>
+          </div>
+          <div class="w-pick-dow lg:hidden" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+          <div class="w-sheet-body">
+            <div class="lg:hidden">
+              <sc-for list="{{cal.all}}" as="mo" hint-placeholder-count="3">
+                <div class="w-cal">
+                  <div class="w-cal-month">{{mo.title}}</div>
+                  <div class="w-cal-grid"><sc-for list="{{mo.days}}" as="d" hint-placeholder-count="30"><button class="{{d.cls}}" type="button" onClick="{{d.pick}}" aria-label="{{d.label}}"><span>{{d.n}}</span></button></sc-for></div>
+                </div>
+              </sc-for>
+            </div>
+            <div class="hidden lg:block">
+              <div class="w-calwin">
+                <button class="w-cal-nav is-prev" type="button" aria-label="Previous month" onClick="{{cal.prev}}" disabled="{{cal.prevOff}}"><span class="i i-chevron-left"></span></button>
+                <button class="w-cal-nav is-next" type="button" aria-label="Next month" onClick="{{cal.next}}" disabled="{{cal.nextOff}}"><span class="i i-chevron-right"></span></button>
+                <div class="w-cal-pair">
+                  <sc-for list="{{cal.win}}" as="mo" hint-placeholder-count="2">
+                    <div class="w-cal">
+                      <div class="w-cal-month">{{mo.title}}</div>
+                      <div class="w-cal-dow" aria-hidden="true"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+                      <div class="w-cal-grid"><sc-for list="{{mo.days}}" as="d" hint-placeholder-count="30"><button class="{{d.cls}}" type="button" onClick="{{d.pick}}" aria-label="{{d.label}}"><span>{{d.n}}</span></button></sc-for></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="w-sheet-foot">
+            <span class="w-pick-sum"><b>{{cal.sumA}}</b>{{cal.sumB}}</span>
+            <button class="w-btn w-btn-primary" type="button" onClick="{{close}}">Done</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{pk.isCount}}" hint-placeholder-val="{{ false }}">
+          <div class="w-sheet-body">
+            <div class="w-pick-rows">
+              <sc-for list="{{cnt.rows}}" as="r" hint-placeholder-count="3">
+                <div class="w-pax-row">
+                  <div><div class="w-pax-title">{{r.title}}</div><div class="w-pax-sub">{{r.sub}}</div></div>
+                  <div class="w-counter">
+                    <button type="button" aria-label="{{r.decLabel}}" onClick="{{r.dec}}" disabled="{{r.decOff}}"><span class="i i-minus"></span></button>
+                    <output aria-live="polite">{{r.val}}</output>
+                    <button type="button" aria-label="{{r.incLabel}}" onClick="{{r.inc}}" disabled="{{r.incOff}}"><span class="i i-plus"></span></button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{cnt.hasAges}}" hint-placeholder-val="{{ false }}">
+              <span class="w-pick-label">{{cnt.agesLabel}}</span>
+              <div class="w-ages">
+                <sc-for list="{{cnt.ages}}" as="ag" hint-placeholder-count="1">
+                  <label class="w-field"><span class="w-label">{{ag.label}}</span><span class="w-select"><select class="w-input" aria-label="{{ag.label}}"><option>Select age</option><option>2 years</option><option>3 years</option><option>4 years</option><option>5 years</option><option>6 years</option><option>7 years</option><option>8 years</option><option>9 years</option><option>10 years</option><option>11 years</option></select></span></label>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{cnt.hasCabin}}" hint-placeholder-val="{{ false }}">
+              <span class="w-pick-label">Cabin class</span>
+              <div class="w-classes" role="radiogroup" aria-label="Cabin class">
+                <sc-for list="{{cnt.cabins}}" as="cb" hint-placeholder-count="4"><button class="{{cb.cls}}" type="button" role="radio" aria-checked="{{cb.on}}" onClick="{{cb.go}}"><span class="w-radio"></span>{{cb.label}}</button></sc-for>
+              </div>
+              <span class="w-pick-label">More options</span>
+              <div>
+                <button class="w-pick-opt" type="button" role="switch" aria-checked="{{cnt.direct}}" onClick="{{cnt.toggleDirect}}"><span><b>Direct flights only</b><small>No stops on the way</small></span><span class="{{cnt.directCls}}"></span></button>
+                <button class="w-pick-opt" type="button" role="switch" aria-checked="{{cnt.flex}}" onClick="{{cnt.toggleFlex}}"><span><b>My dates are flexible</b><small>We also check 3 days before and after</small></span><span class="{{cnt.flexCls}}"></span></button>
+                <button class="w-pick-opt" type="button" role="switch" aria-checked="{{cnt.student}}" onClick="{{cnt.toggleStudent}}"><span><b>Student fare</b><small>Some airlines give extra baggage with a valid student ID</small></span><span class="{{cnt.studentCls}}"></span></button>
+                <label class="w-field" style="padding-top:12px"><span class="w-label">Preferred airline <span class="w-opt">(optional)</span></span><span class="w-select"><select class="w-input"><option>Any airline</option><option>Biman Bangladesh Airlines</option><option>US-Bangla Airlines</option><option>NOVOAIR</option><option>Emirates</option><option>Qatar Airways</option><option>Singapore Airlines</option><option>Malaysia Airlines</option><option>Thai Airways</option><option>Turkish Airlines</option><option>IndiGo</option><option>Air Arabia</option></select></span></label>
+              </div>
+            </sc-if>
+            <sc-if value="{{cnt.hasNat}}" hint-placeholder-val="{{ false }}">
+              <label class="w-field" style="padding-top:16px"><span class="w-label">Guest nationality</span><span class="w-select"><select class="w-input" aria-label="Guest nationality"><option>Bangladesh</option><option>India</option><option>Nepal</option><option>Sri Lanka</option><option>Pakistan</option><option>United Kingdom</option><option>United States</option><option>Other</option></select></span></label>
+            </sc-if>
+            <sc-if value="{{cnt.note}}" hint-placeholder-val="{{ false }}"><p class="w-note" style="padding-top:12px"><span class="i i-info"></span><span>{{cnt.note}}</span></p></sc-if>
+          </div>
+          <div class="w-sheet-foot">
+            <span class="w-pick-sum"><b>{{cnt.sumA}}</b>{{cnt.sumB}}</span>
+            <button class="w-btn w-btn-primary" type="button" onClick="{{close}}">Done</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{pk.isMonth}}" hint-placeholder-val="{{ false }}">
+          <div class="w-sheet-body">
+            <div class="w-months" role="radiogroup" aria-label="Month">
+              <sc-for list="{{months}}" as="mo" hint-placeholder-count="8"><button class="{{mo.cls}}" type="button" role="radio" aria-checked="{{mo.on}}" onClick="{{mo.go}}"><span class="w-radio"></span>{{mo.label}}</button></sc-for>
+            </div>
+            <p class="w-note" style="padding-top:14px"><span class="i i-info"></span><span>Exact dates are agreed with your travel expert.</span></p>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":null,"default":false},"tab":{"editor":"enum","options":["flight","hotel","tour","visa"],"default":"flight"},"trip":{"editor":"enum","options":["oneway","round","multi"],"default":"oneway"},"sheet":{"editor":"enum","options":["","from","to","dates","pax","hcity","hdates","rooms","tdest","tmonth","tpax","vcountry","vtype","vpax"],"default":""},"mode":{"editor":"enum","options":["manual","live"],"default":"manual"},"q":{"editor":"text","default":""},"solid":{"editor":"boolean","default":false},"$preview":{"width":1240,"height":240}}'>
+class Component extends DCLogic {
+  componentWillUnmount() { clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const set = (o) => this.setState(o);
+    const noop = () => {};
+    const sfx = p.m ? '-m' : '';
+    const L = {};
+    ['Flights','Hotels','Packages','VisaCountry'].forEach(k => { L[k] = k + sfx + '.dc.html'; });
+    const FLAG = {
+      ae: '../assets/f93db3c0c172100e0475f05ed5e29b63.svg', bd: '../assets/878febeb6b9994272a5acd24b65ecb5e.svg', ca: '../assets/65aff658a9421e959007e6edce5c9fdc.svg',
+      cn: '../assets/0ac978ba50f72fcdd244d728dc240e69.svg', eu: '../assets/241da4a39bf1dddb788006ef486bea27.svg', gb: '../assets/81f68b8415acc6a7dbb1a992c6f66028.svg',
+      id: '../assets/472a992b2e602dcb0029e4d76c9c948d.svg', in: '../assets/95b323620f7ad34966c1bf5f7276d390.svg', jp: '../assets/0a22842f52b1b465ca4234f911c78fee.svg',
+      mv: '../assets/4ad938abd17d62048d0e3b36257dc199.svg', my: '../assets/039af49115f270dcd1fee4896f730088.svg', np: '../assets/470fd0a18cb12509e6f94c35c52ec437.svg',
+      sg: '../assets/a06f4086040ecf0d1169328364940adc.svg', th: '../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg', tr: '../assets/327b621038f836552788eb78bb9c89c6.svg',
+      us: '../assets/cb19144f3caa87a6591eb6a874b17dc6.svg', vn: '../assets/9d925abd7f3837d2332ec992a4022607.svg'
+    };
+
+    // ---------- reference data (sample)
+    const AP = [
+      ['DAC', 'Dhaka', 'Hazrat Shahjalal International Airport', 'Bangladesh'],
+      ['CGP', 'Chattogram', 'Shah Amanat International Airport', 'Bangladesh'],
+      ['ZYL', 'Sylhet', 'Osmani International Airport', 'Bangladesh'],
+      ['CXB', 'Cox’s Bazar', 'Cox’s Bazar Airport', 'Bangladesh'],
+      ['JSR', 'Jashore', 'Jashore Airport', 'Bangladesh'],
+      ['SPD', 'Saidpur', 'Saidpur Airport', 'Bangladesh'],
+      ['RJH', 'Rajshahi', 'Shah Makhdum Airport', 'Bangladesh'],
+      ['BZL', 'Barishal', 'Barishal Airport', 'Bangladesh'],
+      ['DXB', 'Dubai', 'Dubai International Airport', 'United Arab Emirates'],
+      ['KUL', 'Kuala Lumpur', 'Kuala Lumpur International Airport', 'Malaysia'],
+      ['SIN', 'Singapore', 'Singapore Changi Airport', 'Singapore'],
+      ['BKK', 'Bangkok', 'Suvarnabhumi Airport', 'Thailand'],
+      ['CCU', 'Kolkata', 'Netaji Subhas Chandra Bose International Airport', 'India'],
+      ['DEL', 'Delhi', 'Indira Gandhi International Airport', 'India'],
+      ['KTM', 'Kathmandu', 'Tribhuvan International Airport', 'Nepal'],
+      ['MLE', 'Malé', 'Velana International Airport', 'Maldives'],
+      ['DOH', 'Doha', 'Hamad International Airport', 'Qatar'],
+      ['IST', 'Istanbul', 'Istanbul Airport', 'Türkiye'],
+      ['CAN', 'Guangzhou', 'Guangzhou Baiyun International Airport', 'China'],
+      ['LHR', 'London', 'Heathrow Airport', 'United Kingdom'],
+      ['JFK', 'New York', 'John F. Kennedy International Airport', 'United States'],
+      ['YYZ', 'Toronto', 'Toronto Pearson International Airport', 'Canada']
+    ];
+    const apBy = {}; AP.forEach(a => { apBy[a[0]] = a; });
+    const CITIES = [
+      ['Cox’s Bazar', 'Bangladesh'], ['Sylhet', 'Bangladesh'], ['Srimangal', 'Bangladesh'], ['Dhaka', 'Bangladesh'], ['Chattogram', 'Bangladesh'], ['Bandarban', 'Bangladesh'], ['Kuakata', 'Bangladesh'],
+      ['Bangkok', 'Thailand'], ['Kuala Lumpur', 'Malaysia'], ['Singapore', 'Singapore'], ['Dubai', 'United Arab Emirates'], ['Kathmandu', 'Nepal'], ['Malé', 'Maldives'], ['Kolkata', 'India'], ['Istanbul', 'Türkiye']
+    ];
+    const DESTS = [
+      ['Cox’s Bazar', 'Sea beach, Inani and Himchari', '', 'bd'], ['Sajek Valley', 'Hills above the clouds', '', 'bd'], ['Srimangal', 'Tea gardens and forest', '', 'bd'],
+      ['Bandarban', 'Hills, lakes and waterfalls', '', 'bd'], ['Sundarbans', 'Mangrove forest by boat', '', 'bd'], ['Saint Martin’s Island', 'Coral island, seasonal', '', 'bd'],
+      ['Maldives', 'Island resorts and lagoons', 'mv', ''], ['Nepal', 'Kathmandu, Pokhara, Nagarkot', 'np', ''], ['Thailand', 'Bangkok, Phuket, Phi Phi', 'th', ''],
+      ['Malaysia', 'Kuala Lumpur, Langkawi', 'my', ''], ['Singapore', 'City breaks and family trips', 'sg', ''], ['Dubai', 'City, desert and shopping', 'ae', ''],
+      ['Türkiye', 'Istanbul and Cappadocia', 'tr', ''], ['Bali, Indonesia', 'Temples, rice terraces, beaches', 'id', ''], ['Vietnam', 'Hanoi, Ha Long Bay, Da Nang', 'vn', ''], ['India', 'Darjeeling, Kashmir, Kerala', 'in', '']
+    ];
+    const VISAS = [
+      ['th', 'Thailand', 'Asia'], ['my', 'Malaysia', 'Asia'], ['sg', 'Singapore', 'Asia'], ['in', 'India', 'Asia'], ['vn', 'Vietnam', 'Asia'], ['id', 'Indonesia', 'Asia'], ['cn', 'China', 'Asia'], ['jp', 'Japan', 'Asia'],
+      ['ae', 'United Arab Emirates', 'Middle East and Türkiye'], ['tr', 'Türkiye', 'Middle East and Türkiye'],
+      ['eu', 'Schengen area', 'Europe and North America'], ['gb', 'United Kingdom', 'Europe and North America'], ['us', 'United States', 'Europe and North America'], ['ca', 'Canada', 'Europe and North America']
+    ];
+    const VTYPES = [['Tourist', 'Holidays and sightseeing', 'i i-map'], ['Business', 'Meetings, trade fairs and sourcing', 'i i-briefcase'], ['Medical', 'Treatment, with an attendant if needed', 'i i-activity'], ['Student', 'Study and admission', 'i i-book-open'], ['Transit', 'Changing planes on the way', 'i i-plane']];
+
+    // ---------- dates
+    const TODAY = '2026-10-08';
+    const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const DOWL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const MONL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const z = (n) => (n < 10 ? '0' : '') + n;
+    const pd = (s) => { const a = s.split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); };
+    const fmt = (s) => { if (!s) return ''; const d = pd(s); return DOW[d.getDay()] + ', ' + d.getDate() + ' ' + MON[d.getMonth()]; };
+    const dayName = (s) => (s ? DOWL[pd(s).getDay()] : '');
+    const nights = (a, b) => Math.round((pd(b) - pd(a)) / 864e5);
+    const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+
+    // ---------- state (props seed the first render so artboards can show any frame)
+    const tab = st.tab || p.tab || 'flight';
+    const trip = st.trip || p.trip || 'oneway';
+    const open = st.open !== undefined ? st.open : (p.sheet || '');
+    const mode = p.mode === 'live' ? 'live' : 'manual';
+    const leg = st.leg || 0;
+    const from = st.from || 'DAC', to = st.to || 'DXB';
+    const dep = st.dep || '2026-10-22';
+    const ret = st.ret !== undefined ? st.ret : '2026-10-29';
+    const legs = st.legs || [{ from: 'DAC', to: 'DXB', date: '2026-10-22' }, { from: 'DXB', to: 'IST', date: '2026-10-27' }];
+    const adt = st.adt || 1, chd = st.chd || 0, inf = st.inf || 0;
+    const cabin = st.cabin || 'Economy';
+    const direct = !!st.direct, student = !!st.student;
+    const city = st.city || 'Cox’s Bazar', cityCountry = st.cityCountry || 'Bangladesh';
+    const hin = st.hin || '2026-10-22';
+    const hout = st.hout !== undefined ? st.hout : '2026-10-24';
+    const rooms = st.rooms || 1, hadt = st.hadt || 2, hchd = st.hchd || 0;
+    const dest = st.dest || 'Maldives', destSub = st.destSub || 'Island resorts and lagoons';
+    const month = st.month || '2026-12';
+    const tadt = st.tadt || 2, tchd = st.tchd || 0;
+    const vc = st.vc || 'th', vtype = st.vtype || 'Tourist', vpax = st.vpax || 1;
+    const q = st.q !== undefined ? st.q : (p.q || '');
+    const calB = !!st.calB;
+    const calOff = st.calOff || 0;
+    const spins = st.spins || 0;
+
+    const exit = (after) => {
+      clearTimeout(this._t);
+      this._t = setTimeout(() => this.setState(Object.assign({ open: '', out: false, flung: false, dy: 0, q: '' }, after || {})), 260);
+    };
+    const close = () => { if (open) { this.setState({ out: true }); exit(); } };
+    const go = (key, extra) => () => { clearTimeout(this._t); set(Object.assign({ open: key, out: false, flung: false, dy: 0, q: '' }, extra || {})); };
+    const fieldCls = (key, empty) => 'w-sfield' + (key && open === key ? ' is-active' : '') + (empty ? ' is-empty' : '');
+
+    // ---------- tabs and trip type
+    const tabs = ['flight', 'hotel', 'tour', 'visa'];
+    const tb = {};
+    tabs.forEach(k => { tb[k] = { cls: 'w-stab' + (tab === k ? ' is-active' : ''), on: tab === k, go: () => set({ tab: k, open: '', q: '' }) }; });
+    const trips = ['oneway', 'round', 'multi'];
+    const tp = {};
+    trips.forEach(k => { tp[k] = { cls: 'w-seg-btn' + (trip === k ? ' is-active' : ''), on: trip === k, go: () => set(k === 'round' && !st.ret ? { trip: k, ret: ret || '2026-10-29', open: '' } : { trip: k, open: '' }) }; });
+
+    // ---------- pickers: choose
+    const pickAp = (code) => {
+      if (trip === 'multi') {
+        const nl = legs.map(x => Object.assign({}, x));
+        const side = open === 'from' ? 'from' : 'to';
+        nl[leg][side] = code;
+        if (side === 'to' && nl[leg + 1]) nl[leg + 1].from = code;
+        set({ legs: nl, open: side === 'from' ? 'to' : 'dates', q: '' });
+        return;
+      }
+      if (open === 'from') set(code === to ? { from: code, to: from, open: 'to', q: '' } : { from: code, open: 'to', q: '' });
+      else set(Object.assign(code === from ? { to: code, from: to } : { to: code }, { open: 'dates', calB: false, q: '' }));
+    };
+    const pickDate = (id) => {
+      if (open === 'hdates') {
+        if (calB && id > hin) set({ hout: id, calB: false });
+        else set({ hin: id, hout: '', calB: true });
+        return;
+      }
+      if (trip === 'multi') {
+        const nl = legs.map(x => Object.assign({}, x));
+        nl[leg].date = id;
+        for (let k = leg + 1; k < nl.length; k++) if (nl[k].date < id) nl[k].date = id;
+        set({ legs: nl });
+        return;
+      }
+      if (trip === 'oneway') { set({ dep: id }); return; }
+      if (calB && id >= dep) set({ ret: id, calB: false });
+      else set({ dep: id, ret: '', calB: true });
+    };
+
+    // ---------- calendar months
+    const mkMonths = (count, a, b, single) => {
+      const out = [];
+      for (let k = 0; k < count; k++) {
+        const f = new Date(2026, 9 + k, 1), y = f.getFullYear(), m = f.getMonth();
+        const dim = new Date(y, m + 1, 0).getDate();
+        const days = [];
+        for (let i = 0; i < f.getDay(); i++) days.push({ n: '', cls: 'w-cal-day is-blank', pick: noop, label: 'Empty' });
+        for (let d = 1; d <= dim; d++) {
+          const id = y + '-' + z(m + 1) + '-' + z(d);
+          let c = 'w-cal-day';
+          if (id < TODAY) c += ' is-past';
+          if (id === TODAY) c += ' is-today';
+          const isA = a && id === a, isB = b && id === b;
+          if (isA) c += ' is-start';
+          if (isB || (isA && (single || !b))) c += ' is-end';
+          if (a && b && id > a && id < b) c += ' in-range';
+          days.push({ n: d, cls: c, pick: id < TODAY ? noop : () => pickDate(id), label: DOWL[new Date(y, m, d).getDay()] + ' ' + d + ' ' + MONL[m] + ' ' + y });
+        }
+        out.push({ title: MONL[m] + ' ' + y, days });
+      }
+      return out;
+    };
+
+    // ---------- fields
+    const apF = (code, key) => { const a = apBy[code] || apBy.DAC; return { cls: fieldCls(key), city: a[1], code: a[0], name: a[2], open: go(key, { leg: 0 }) }; };
+    const n = adt + chd + inf;
+    const f = {
+      from: apF(from, 'from'), to: apF(to, 'to'),
+      dep: { cls: 'w-sfield' + (open === 'dates' && (!calB || trip !== 'round') ? ' is-active' : ''), val: fmt(dep), sub: dayName(dep), open: go('dates', { calB: false }) },
+      ret: trip === 'oneway'
+        ? { cls: fieldCls('', true), val: 'Add return', sub: 'Optional', open: go('dates', { trip: 'round', ret: '', calB: true }) }
+        : { cls: 'w-sfield' + (open === 'dates' && calB ? ' is-active' : '') + (!ret ? ' is-empty' : ''), val: ret ? fmt(ret) : 'Choose date', sub: ret ? plural(nights(dep, ret), 'night', 'nights') : 'Return date', open: go('dates', { calB: true }) },
+      pax: { cls: fieldCls('pax'), val: plural(n, 'traveller', 'travellers'), sub: cabin + (student ? ' · student fare' : ''), open: go('pax') },
+      city: { cls: fieldCls('hcity'), val: city, sub: cityCountry, open: go('hcity') },
+      hin: { cls: 'w-sfield' + (open === 'hdates' && !calB ? ' is-active' : ''), val: fmt(hin), sub: dayName(hin), open: go('hdates', { calB: false }) },
+      hout: { cls: 'w-sfield' + (open === 'hdates' && calB ? ' is-active' : '') + (!hout ? ' is-empty' : ''), val: hout ? fmt(hout) : 'Choose date', sub: hout ? plural(nights(hin, hout), 'night', 'nights') : 'Check-out date', open: go('hdates', { calB: true }) },
+      rooms: { cls: fieldCls('rooms'), val: plural(rooms, 'room', 'rooms') + ', ' + plural(hadt + hchd, 'guest', 'guests'), sub: 'Nationality: Bangladesh', open: go('rooms') },
+      dest: { cls: fieldCls('tdest'), val: dest, sub: destSub, open: go('tdest') },
+      month: { cls: fieldCls('tmonth'), val: month === 'flex' ? 'I’m flexible' : MONL[+month.slice(5) - 1] + ' ' + month.slice(0, 4), sub: month === 'flex' ? 'Any time in the next 6 months' : 'Exact dates agreed with you', open: go('tmonth') },
+      tpax: { cls: fieldCls('tpax'), val: plural(tadt, 'adult', 'adults') + (tchd ? ', ' + plural(tchd, 'child', 'children') : ''), sub: 'Private or group tour', open: go('tpax') },
+      vc: { cls: fieldCls('vcountry'), val: (VISAS.find(v => v[0] === vc) || VISAS[0])[1], flag: FLAG[vc], sub: 'Passport: Bangladesh', open: go('vcountry') },
+      vtype: { cls: fieldCls('vtype'), val: vtype, sub: (VTYPES.find(v => v[0] === vtype) || VTYPES[0])[1], open: go('vtype') },
+      vpax: { cls: fieldCls('vpax'), val: plural(vpax, 'applicant', 'applicants'), sub: 'Each needs their own passport', open: go('vpax') }
+    };
+
+    // multi-city legs
+    const legItems = legs.map((l, i) => ({
+      label: 'Flight ' + (i + 1),
+      from: l.from, to: l.to, fromCity: (apBy[l.from] || [])[1], toCity: (apBy[l.to] || [])[1],
+      dateVal: fmt(l.date),
+      fromCls: 'w-sfield' + (open === 'from' && leg === i ? ' is-active' : ''),
+      toCls: 'w-sfield' + (open === 'to' && leg === i ? ' is-active' : ''),
+      dateCls: 'w-sfield' + (open === 'dates' && leg === i ? ' is-active' : ''),
+      openFrom: go('from', { leg: i }), openTo: go('to', { leg: i }), openDate: go('dates', { leg: i }),
+      canRemove: legs.length > 2, removeLabel: 'Remove flight ' + (i + 1),
+      remove: () => set({ legs: legs.filter((x, j) => j !== i), open: '' })
+    }));
+    const addLeg = () => {
+      const last = legs[legs.length - 1];
+      const d = pd(last.date); d.setDate(d.getDate() + 3);
+      set({ legs: legs.concat([{ from: last.to, to: last.to === 'DAC' ? 'DXB' : 'DAC', date: d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()) }]) });
+    };
+
+    // ---------- picker content
+    const KIND = { from: 'ap', to: 'ap', dates: 'cal', hdates: 'cal', pax: 'count', rooms: 'count', tpax: 'count', vpax: 'count', hcity: 'list', tdest: 'list', vcountry: 'list', vtype: 'list', tmonth: 'month' };
+    const POS = { from: '', to: ' at-to', dates: ' at-mid', hdates: ' at-mid', pax: ' at-end', rooms: ' at-end', tpax: ' at-end', vpax: ' at-end', hcity: '', tdest: '', vcountry: '', vtype: ' at-mid', tmonth: ' at-mid' };
+    const TITLE = {
+      from: 'Where are you flying from?', to: 'Where are you flying to?', dates: trip === 'oneway' ? 'Choose your departure date' : (trip === 'multi' ? 'Date for flight ' + (leg + 1) : 'Choose your dates'),
+      pax: 'Travellers and cabin class', hcity: 'Where do you want to stay?', hdates: 'Check-in and check-out', rooms: 'Rooms and guests',
+      tdest: 'Where would you like to go?', tmonth: 'When do you want to travel?', tpax: 'Who is travelling?', vcountry: 'Which country is the visa for?', vtype: 'What is the visit for?', vpax: 'How many people are applying?'
+    };
+    const kind = KIND[open] || '';
+    const ql = q.trim().toLowerCase();
+    const hl = (txt) => {
+      if (!ql) return { pre: txt, hit: '', post: '' };
+      const i = txt.toLowerCase().indexOf(ql);
+      return i < 0 ? { pre: txt, hit: '', post: '' } : { pre: txt.slice(0, i), hit: txt.slice(i, i + ql.length), post: txt.slice(i + ql.length) };
+    };
+    let groups = [], ph = '', recent = [];
+    if (kind === 'ap') {
+      ph = 'City or airport, e.g. Dubai or DXB';
+      const cur = trip === 'multi' ? legs[leg][open === 'from' ? 'from' : 'to'] : (open === 'from' ? from : to);
+      const m = AP.filter(a => !ql || (a[0] + ' ' + a[1] + ' ' + a[2] + ' ' + a[3]).toLowerCase().indexOf(ql) >= 0)
+        .map(a => Object.assign({ cls: 'w-ap' + (a[0] === cur ? ' is-hl' : ''), code: a[0], sub: a[2] + ', ' + a[3], flag: '', ic: 'i i-plane', pick: () => pickAp(a[0]) }, hl(a[1])));
+      groups = [{ label: ql ? 'In Bangladesh' : 'Bangladesh', items: m.filter(x => apBy[x.code][3] === 'Bangladesh') }, { label: ql ? 'Abroad' : 'Popular from Bangladesh', items: m.filter(x => apBy[x.code][3] !== 'Bangladesh') }];
+      if (!ql) recent = (open === 'from' ? ['DAC', 'CGP'] : ['KUL', 'DXB', 'BKK']).filter(c => apBy[c]).map(c => ({ code: c, city: apBy[c][1], pick: () => pickAp(c) }));
+    } else if (open === 'hcity') {
+      ph = 'City, area or hotel name';
+      const m = CITIES.filter(c => !ql || (c[0] + ' ' + c[1]).toLowerCase().indexOf(ql) >= 0)
+        .map(c => Object.assign({ cls: 'w-ap' + (c[0] === city ? ' is-hl' : ''), code: '', sub: c[1], flag: '', ic: 'i i-map-pin', grp: c[1] === 'Bangladesh', pick: () => set({ city: c[0], cityCountry: c[1], open: 'hdates', calB: false, q: '' }) }, hl(c[0])));
+      groups = [{ label: 'In Bangladesh', items: m.filter(x => x.grp) }, { label: 'Abroad', items: m.filter(x => !x.grp) }];
+    } else if (open === 'tdest') {
+      ph = 'Country, city or place';
+      const m = DESTS.filter(d => !ql || (d[0] + ' ' + d[1]).toLowerCase().indexOf(ql) >= 0)
+        .map(d => Object.assign({ cls: 'w-ap' + (d[0] === dest ? ' is-hl' : ''), code: '', sub: d[1], flag: d[2] ? FLAG[d[2]] : '', ic: d[2] ? '' : 'i i-map-pin', grp: d[3] === 'bd', pick: () => set({ dest: d[0], destSub: d[1], open: 'tmonth', q: '' }) }, hl(d[0])));
+      groups = [{ label: 'In Bangladesh', items: m.filter(x => x.grp) }, { label: 'Abroad', items: m.filter(x => !x.grp) }];
+    } else if (open === 'vcountry') {
+      ph = 'Country name';
+      const m = VISAS.filter(v => !ql || v[1].toLowerCase().indexOf(ql) >= 0)
+        .map(v => Object.assign({ cls: 'w-ap' + (v[0] === vc ? ' is-hl' : ''), code: '', sub: 'Visa help for Bangladeshi passports', flag: FLAG[v[0]], ic: '', grp: v[2], pick: () => set({ vc: v[0], open: 'vtype', q: '' }) }, hl(v[1])));
+      groups = ['Asia', 'Middle East and Türkiye', 'Europe and North America'].map(g => ({ label: g, items: m.filter(x => x.grp === g) }));
+    } else if (open === 'vtype') {
+      ph = 'Search visa types';
+      const m = VTYPES.filter(v => !ql || v[0].toLowerCase().indexOf(ql) >= 0)
+        .map(v => Object.assign({ cls: 'w-ap' + (v[0] === vtype ? ' is-hl' : ''), code: '', sub: v[1], flag: '', ic: v[2], pick: () => set({ vtype: v[0], open: 'vpax', q: '' }) }, hl(v[0])));
+      groups = [{ label: 'Purpose of the visit', items: m }];
+    }
+    groups = groups.filter(g => g.items.length);
+
+    // calendar data
+    let cal = {};
+    if (kind === 'cal') {
+      const isH = open === 'hdates';
+      let a, b, single = false, aLabel = 'Departure', bLabel = 'Return';
+      if (isH) { a = hin; b = hout; aLabel = 'Check-in'; bLabel = 'Check-out'; }
+      else if (trip === 'multi') { a = legs[leg].date; b = ''; single = true; aLabel = 'Flight ' + (leg + 1); }
+      else if (trip === 'oneway') { a = dep; b = ''; single = true; }
+      else { a = dep; b = ret; }
+      const six = mkMonths(6, a, b, single);
+      const off = Math.min(calOff, 4);
+      const nn = a && b ? nights(a, b) : 0;
+      cal = {
+        all: six.slice(0, 4), win: six.slice(off, off + 2),
+        prev: () => set({ calOff: Math.max(0, off - 1) }), next: () => set({ calOff: Math.min(4, off + 1) }),
+        prevOff: off === 0, nextOff: off >= 4,
+        rangeCls: 'w-pick-range' + (trip === 'multi' && !isH ? ' is-single' : ''),
+        showB: !(trip === 'multi' && !isH),
+        aLabel, bLabel,
+        aVal: fmt(a) || 'Choose date',
+        bVal: single ? 'Add return' : (fmt(b) || 'Choose date'),
+        aCls: 'w-pick-rbox' + (!calB || single ? ' is-active' : ''),
+        bCls: 'w-pick-rbox' + (calB && !single ? ' is-active' : '') + (!b ? ' is-empty' : ''),
+        focusA: () => set({ calB: false }),
+        focusB: single ? (isH ? noop : () => set({ trip: 'round', ret: '', calB: true })) : () => set({ calB: true }),
+        sumA: isH ? (b ? plural(nn, 'night', 'nights') : 'Choose check-out') : (single ? fmt(a) : (b ? fmt(a) + ' – ' + fmt(b) : 'Choose a return date')),
+        sumB: isH ? (b ? fmt(a) + ' – ' + fmt(b) : 'Tap the day you leave') : (single ? (trip === 'oneway' ? 'One way' : 'Flight ' + (leg + 1)) : (b ? plural(nn, 'night', 'nights') + ' away' : 'Tap the day you fly back'))
+      };
+    }
+
+    // counters
+    const row = (title, sub, val, min, max, apply, what) => ({
+      title, sub, val, decOff: val <= min, incOff: val >= max,
+      decLabel: 'Remove one ' + what, incLabel: 'Add one ' + what,
+      dec: () => set(apply(Math.max(min, val - 1))), inc: () => set(apply(Math.min(max, val + 1)))
+    });
+    let cnt = {};
+    if (open === 'pax') {
+      cnt = {
+        rows: [
+          row('Adults', '12 years and over', adt, 1, 9 - chd, v => ({ adt: v, inf: Math.min(inf, v) }), 'adult'),
+          row('Children', '2 to 11 years', chd, 0, 9 - adt, v => ({ chd: v }), 'child'),
+          row('Infants', 'Under 2, on an adult’s lap', inf, 0, adt, v => ({ inf: v }), 'infant')
+        ],
+        hasAges: chd > 0, ages: Array.from({ length: chd }, (x, i) => ({ label: 'Child ' + (i + 1) })),
+        hasCabin: true,
+        cabins: ['Economy', 'Premium economy', 'Business', 'First'].map(c => ({ label: c, on: cabin === c, cls: 'w-optcard' + (cabin === c ? ' is-active' : ''), go: () => set({ cabin: c }) })),
+        direct, student, flex: !!st.flex,
+        directCls: 'w-switch' + (direct ? ' is-on' : ''), studentCls: 'w-switch' + (student ? ' is-on' : ''), flexCls: 'w-switch' + (st.flex ? ' is-on' : ''),
+        toggleDirect: () => set({ direct: !direct }), toggleStudent: () => set({ student: !student }), toggleFlex: () => set({ flex: !st.flex }),
+        agesLabel: 'Children’s ages on the travel date',
+        note: '', sumA: plural(n, 'traveller', 'travellers'), sumB: cabin + (direct ? ' · direct only' : '') + (st.flex ? ' · ±3 days' : '')
+      };
+    } else if (open === 'rooms') {
+      cnt = {
+        rows: [
+          row('Rooms', 'Up to 5 in one booking', rooms, 1, 5, v => ({ rooms: v, hadt: Math.max(hadt, v) }), 'room'),
+          row('Adults', '12 years and over', hadt, rooms, 16, v => ({ hadt: v }), 'adult'),
+          row('Children', 'Under 12', hchd, 0, 8, v => ({ hchd: v }), 'child')
+        ],
+        hasAges: hchd > 0, ages: Array.from({ length: hchd }, (x, i) => ({ label: 'Child ' + (i + 1) })), agesLabel: 'Children’s ages at check-in',
+        hasNat: true, note: '',
+        sumA: plural(rooms, 'room', 'rooms'), sumB: plural(hadt + hchd, 'guest', 'guests')
+      };
+    } else if (open === 'tpax') {
+      cnt = {
+        rows: [row('Adults', '12 years and over', tadt, 1, 30, v => ({ tadt: v }), 'adult'), row('Children', 'Under 12', tchd, 0, 10, v => ({ tchd: v }), 'child')],
+        note: 'Travelling as a group of 10 or more? We plan group tours with one price per person.',
+        sumA: plural(tadt + tchd, 'traveller', 'travellers'), sumB: 'Private or group tour'
+      };
+    } else if (open === 'vpax') {
+      cnt = {
+        rows: [row('Applicants', 'Adults and children', vpax, 1, 10, v => ({ vpax: v }), 'applicant')],
+        note: 'Family applying together? Add everyone. Each person needs their own passport and documents.',
+        sumA: plural(vpax, 'applicant', 'applicants'), sumB: 'Passport: Bangladesh'
+      };
+    }
+
+    const months = ['flex', '2026-10', '2026-11', '2026-12', '2027-01', '2027-02', '2027-03', '2027-04'].map(k => ({
+      label: k === 'flex' ? 'I’m flexible' : MON[+k.slice(5) - 1] + ' ' + k.slice(0, 4), on: month === k,
+      cls: 'w-optcard' + (month === k ? ' is-active' : ''), go: () => set({ month: k, open: 'tpax' })
+    }));
+
+    // sheet presentation + drag to dismiss
+    const dy = st.dy || 0;
+    let sheetStyle = 'transform:translateY(0);transition:transform .48s var(--spring)';
+    if (st.dragging) sheetStyle = 'transform:translateY(' + dy + 'px);transition:none';
+    if (st.flung) sheetStyle = 'transform:translateY(105%);transition:transform .26s cubic-bezier(.4,0,1,1)';
+    const SHEET = { ap: ' is-full', list: ' is-full', cal: ' is-wide', count: ' is-narrow', month: '' };
+    const pk = {
+      on: !!kind, title: TITLE[open] || '',
+      wrapCls: 'w-picker wa-r' + (POS[open] || '') + (st.out ? ' is-out' : ''),
+      sheetCls: 'w-sheet' + (SHEET[kind] || '') + (st.dragging ? ' is-dragging' : ''),
+      sheetStyle, scrimStyle: st.dragging ? 'opacity:' + Math.max(0.2, 1 - dy / 420).toFixed(3) : (st.flung ? 'opacity:0;transition:opacity .26s' : ''),
+      isList: kind === 'ap' || kind === 'list', isCal: kind === 'cal', isCount: kind === 'count', isMonth: kind === 'month',
+      groups, ph, recent, hasRecent: recent.length > 0, none: (kind === 'ap' || kind === 'list') && groups.length === 0
+    };
+
+    // popular chips (no counts, no prices)
+    const POP = {
+      flight: { label: 'Popular:', items: [['Cox’s Bazar', 'CXB'], ['Kuala Lumpur', 'KUL'], ['Kolkata', 'CCU'], ['Bangkok', 'BKK'], ['Singapore', 'SIN']].map(x => ({ label: x[0], go: () => set(trip === 'multi' ? { trip: 'round', to: x[1] } : { to: x[1] }) })) },
+      hotel: { label: 'Popular:', items: [['Cox’s Bazar', 'Bangladesh'], ['Sylhet', 'Bangladesh'], ['Bangkok', 'Thailand'], ['Kuala Lumpur', 'Malaysia']].map(x => ({ label: x[0], go: () => set({ city: x[0], cityCountry: x[1] }) })) },
+      tour: { label: 'Popular:', items: [['Maldives', 'Island resorts and lagoons'], ['Nepal', 'Kathmandu, Pokhara, Nagarkot'], ['Thailand', 'Bangkok, Phuket, Phi Phi'], ['Sajek Valley', 'Hills above the clouds']].map(x => ({ label: x[0], go: () => set({ dest: x[0], destSub: x[1] }) })) },
+      visa: { label: 'Popular:', items: [['th', 'Thailand'], ['my', 'Malaysia'], ['in', 'India'], ['sg', 'Singapore']].map(x => ({ label: x[1], go: () => set({ vc: x[0] }) })) }
+    };
+    const HELP = {
+      flight: mode === 'live' ? ['Live fares from airlines. Need a hand?', '01823-232241'] : ['A travel expert confirms the fare with you before you pay.', 'No payment now.'],
+      hotel: ['We check rates and availability, then confirm with you.', 'No payment now.'],
+      tour: ['Tell us roughly when; we’ll send a day-by-day plan and price.', 'Free to ask.'],
+      visa: ['See the documents you need, then apply with our help.', 'Embassies decide visas.']
+    };
+
+    return {
+      L, tb, tp, f, cal, cnt, pk, months, q, spins,
+      cardCls: 'w-search fx-beam' + (p.solid ? ' is-solid' : ''),
+      tabIdx: tabs.indexOf(tab),
+      tripX: 'translateX(calc(' + trips.indexOf(trip) + ' * (100% + 2px)))',
+      isFlight: tab === 'flight', isHotel: tab === 'hotel', isTour: tab === 'tour', isVisa: tab === 'visa',
+      showSimple: tab === 'flight' && trip !== 'multi', showMulti: tab === 'flight' && trip === 'multi',
+      legs: legItems, canAddLeg: legs.length < 5, addLeg,
+      swap: () => set({ from: to, to: from, spins: spins + 1 }),
+      pop: POP[tab], helpA: HELP[tab][0], helpB: HELP[tab][1],
+      close,
+      onQ: (e) => set({ q: e && e.target ? e.target.value : '' }),
+      dragStart: (e) => {
+        this._drag = { y0: e.clientY, y: e.clientY, t: e.timeStamp, v: 0 };
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+        set({ dragging: true, dy: 0 });
+      },
+      dragMove: (e) => {
+        const d = this._drag; if (!d) return;
+        const dt = Math.max(1, e.timeStamp - d.t);
+        d.v = (e.clientY - d.y) / dt; d.y = e.clientY; d.t = e.timeStamp;
+        set({ dy: Math.max(0, e.clientY - d.y0) });
+      },
+      dragEnd: (e) => {
+        const d = this._drag; if (!d) return;
+        this._drag = null;
+        const moved = Math.max(0, e.clientY - d.y0);
+        if (moved > 96 || (moved > 24 && d.v > 0.55)) { set({ dragging: false, flung: true }); exit(); }
+        else set({ dragging: false, dy: 0 });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

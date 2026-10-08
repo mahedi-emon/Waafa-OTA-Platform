@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA — Components, core controls</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa ds" style="width:1440px;height:2820px;padding:64px;display:flex;flex-direction:column;gap:28px">
+  <div class="flex items-end justify-between gap-6">
+    <div class="flex flex-col gap-3"><span class="w-eyebrow">Stage B · Components 1 of 2</span><h1 class="ds-h" style="font-size:52px">Core controls</h1></div>
+    <p class="ds-note" style="max-width:460px;text-align:right">Every control maps to a shadcn/ui primitive (left tag) and, where motion matters, to the 21st.dev or Motion pattern it learned from (right tag). Click around — the toggles, chips, tabs and steppers work.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px">
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Buttons</h2><div class="flex gap-2"><span class="ds-map">shadcn · Button</span><span class="ds-map">Magic UI · Shimmer Button</span></div></div>
+      <div class="flex flex-wrap items-center gap-3">
+        <button class="w-btn w-btn-primary w-sheen" type="button"><span class="i i-search"></span>Search flights</button>
+        <button class="w-btn w-btn-secondary" type="button">Modify search</button>
+        <button class="w-btn w-btn-navy w-arrow" type="button">View package<span class="i i-arrow-right"></span></button>
+        <button class="w-btn w-btn-soft" type="button">Request this fare</button>
+        <button class="w-btn w-btn-ghost" type="button">Cancel</button>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <button class="w-btn w-btn-wa" type="button"><span class="i i-whatsapp-fill"></span>Chat on WhatsApp</button>
+        <button class="w-btn w-btn-primary w-btn-lg" type="button">Send my query</button>
+        <button class="w-btn w-btn-primary w-btn-sm" type="button">Add to cart</button>
+        <button class="w-btn w-btn-primary is-loading" type="button" aria-label="Sending">Send</button>
+        <button class="w-btn w-btn-primary" type="button" disabled="">Disabled</button>
+        <button class="w-btn w-btn-secondary w-btn-icon" type="button" aria-label="Share"><span class="i i-share"></span></button>
+      </div>
+      <p class="ds-note">Heights 48 / 38 / 56; radius 12; press scales to 0.975 in 150 ms. One primary per screen. Sheen sweeps once every 5 s on the search button only, and on hover.</p>
+    </section>
+
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Tabs &amp; segmented control</h2><div class="flex gap-2"><span class="ds-map">shadcn · Tabs, ToggleGroup</span><span class="ds-map">Motion · layoutId</span></div></div>
+      <div class="w-search is-solid" style="padding:8px">
+        <div class="w-stabs" style="--i:{{tab}}">
+          <span class="w-stabs-ind"></span>
+          <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+            <button class="{{t.cls}}" type="button" onClick="{{t.pick}}"><span class="{{t.icon}}"></span>{{t.label}}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="w-seg" role="radiogroup" aria-label="Trip type">
+          <span class="w-seg-ind" style="width:calc((100% - 12px) / 3);transform:{{segX}}"></span>
+          <sc-for list="{{segs}}" as="s" hint-placeholder-count="3">
+            <button class="{{s.cls}}" type="button" role="radio" aria-checked="{{s.on}}" onClick="{{s.pick}}">{{s.label}}</button>
+          </sc-for>
+        </div>
+        <span class="ds-note">Spring: visualDuration 0.35, bounce 0.18</span>
+      </div>
+      <p class="ds-note">Mobile: the search tabs are a segmented control with icons; from 1024 px they become underline tabs and the indicator turns into the 3 px ribbon line.</p>
+    </section>
+
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Text fields</h2><div class="flex gap-2"><span class="ds-map">shadcn · Input, Label, Textarea, Form</span></div></div>
+      <div class="w-grid-2">
+        <div class="w-field"><label class="w-label" for="c-name">Full name <span class="w-req">*</span></label><input class="w-input" id="c-name" value="Rahim Uddin"></div>
+        <div class="w-field"><label class="w-label" for="c-mail">Email <span class="w-opt">(optional)</span></label><input class="w-input is-focus" id="c-mail" placeholder="you@example.com"></div>
+        <div class="w-field"><label class="w-label" for="c-bad">Passport number</label><input class="w-input is-invalid" id="c-bad" value="A12" aria-invalid="true" aria-describedby="c-bad-e"><span class="w-error" id="c-bad-e"><span class="i i-circle-alert"></span>Enter all 9 characters, as printed on the bio page.</span></div>
+        <div class="w-field"><label class="w-label" for="c-ok">Promo code</label><input class="w-input is-valid" id="c-ok" value="WAAFA10"><span class="w-ok"><span class="i i-circle-check"></span>Code applied — ৳500 off</span></div>
+        <div class="w-field"><label class="w-label" for="c-sel">Best time to call</label><div class="w-select"><select class="w-input" id="c-sel"><option>Evening, 6 pm – 9 pm</option><option>Morning</option><option>Afternoon</option></select></div></div>
+        <div class="w-field"><label class="w-label" for="c-srch">Search</label><div class="w-control"><span class="i i-search"></span><input class="w-input" id="c-srch" placeholder="City, airport or code"></div></div>
+      </div>
+      <div class="w-field"><label class="w-label" for="c-notes">Notes for our expert <span class="w-opt">(optional)</span></label><textarea class="w-input" id="c-notes" placeholder="Seat preference, meal needs, flexible dates…"></textarea><span class="w-help">Never shown publicly. 0 / 500</span></div>
+      <p class="ds-note">50 px tall, 16 px text (no iOS zoom on focus). Errors appear under the field, are announced with aria-describedby, and say how to fix the problem.</p>
+    </section>
+
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Phone, OTP &amp; upload</h2><div class="flex gap-2"><span class="ds-map">shadcn · InputOTP</span><span class="ds-map">Origin UI · phone input, file upload</span></div></div>
+      <div class="w-field"><label class="w-label" for="c-ph">Phone number <span class="w-req">*</span></label>
+        <div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code, Bangladesh +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880<span class="i i-chevron-down"></span></button><input id="c-ph" inputmode="tel" value="1823-232241" aria-describedby="c-ph-h"></div>
+        <span class="w-help" id="c-ph-h">We’ll call or WhatsApp this number. Defaults to +880; travellers abroad can change it.</span></div>
+      <div class="w-field"><span class="w-label">Verification code</span><div class="w-otp" style="max-width:360px"><input value="4" aria-label="Digit 1"><input value="8" aria-label="Digit 2"><input value="2" aria-label="Digit 3"><input class="is-focus" aria-label="Digit 4"><input aria-label="Digit 5"><input aria-label="Digit 6"></div></div>
+      <div class="grid gap-3" style="grid-template-columns:1fr 1fr">
+        <div class="w-drop"><span class="i i-upload"></span><b class="text-navy text-sm">Passport bio page</b><span class="w-help">JPG, PNG or PDF · up to 5 MB</span></div>
+        <div class="flex flex-col gap-2">
+          <div class="w-file"><span class="w-file-ic"><span class="i i-file-text"></span></span><div class="flex flex-col gap-1 min-w-0" style="flex:1"><b class="text-sm text-navy truncate">passport-rahim.pdf</b><div class="w-progress"><span style="width:100%"></span></div></div><span class="i i-circle-check text-success"></span></div>
+          <div class="w-file"><span class="w-file-ic"><span class="i i-image"></span></span><div class="flex flex-col gap-1 min-w-0" style="flex:1"><b class="text-sm text-navy truncate">photo-2x2.jpg</b><div class="w-progress"><span style="width:62%"></span></div></div><span class="text-13 text-muted tabular-nums">62%</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Choice controls</h2><div class="flex gap-2"><span class="ds-map">shadcn · Checkbox, RadioGroup, Switch</span></div></div>
+      <div class="grid gap-4" style="grid-template-columns:1fr 1fr">
+        <div class="flex flex-col gap-3">
+          <label class="w-check"><input type="checkbox" checked="">Direct flights only</label>
+          <label class="w-check"><input type="checkbox">Flexible dates ±3 days</label>
+          <label class="w-check"><input type="checkbox" checked="">I agree that Waafa may contact me about this query</label>
+        </div>
+        <div class="flex flex-col gap-3">
+          <label class="w-check"><input type="radio" name="pc" checked="">Call me</label>
+          <label class="w-check"><input type="radio" name="pc">WhatsApp</label>
+          <label class="w-check"><input type="radio" name="pc">Email</label>
+        </div>
+      </div>
+      <div class="flex flex-col gap-3" style="border-top:1px solid var(--color-mist-100);padding-top:16px">
+        <div class="flex items-center justify-between gap-4"><div><b class="text-navy text-15">Email required on queries</b><p class="text-13 text-muted">Admin setting · lead form</p></div><button class="{{swCls}}" type="button" role="switch" aria-checked="{{swOn}}" aria-label="Email required on queries" onClick="{{toggleSw}}"></button></div>
+        <div class="flex items-center justify-between gap-4"><div><b class="text-navy text-15">Flights · Live mode</b><p class="text-13 text-muted">Locked until a flight provider passes its health check</p></div><span class="flex items-center gap-2"><span class="i i-lock i-16 text-muted"></span><span class="w-switch is-locked" role="switch" aria-checked="false" aria-disabled="true" aria-label="Flights live mode, locked"></span></span></div>
+      </div>
+      <div class="grid gap-2" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <button class="w-optcard is-active" type="button"><span class="w-radio"></span>Economy</button>
+        <button class="w-optcard" type="button"><span class="w-radio"></span>Premium Economy</button>
+        <button class="w-optcard" type="button"><span class="w-radio"></span>Business</button>
+        <button class="w-optcard" type="button"><span class="w-radio"></span>First</button>
+      </div>
+    </section>
+
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Steppers &amp; travellers</h2><div class="flex gap-2"><span class="ds-map">custom on shadcn Button</span><span class="ds-map">Motion · number roll</span></div></div>
+      <div>
+        <div class="w-pax-row"><div><div class="w-pax-title">Adults</div><div class="w-pax-sub">12 years and over</div></div><div class="w-counter"><button type="button" aria-label="Remove adult" onClick="{{dec}}" disabled="{{decOff}}"><span class="i i-minus"></span></button><output aria-live="polite">{{count}}</output><button type="button" aria-label="Add adult" onClick="{{inc}}" disabled="{{incOff}}"><span class="i i-plus"></span></button></div></div>
+        <div class="w-pax-row"><div><div class="w-pax-title">Children</div><div class="w-pax-sub">2–11 years · we’ll ask ages</div></div><div class="w-counter"><button type="button" aria-label="Remove child" disabled=""><span class="i i-minus"></span></button><output>0</output><button type="button" aria-label="Add child"><span class="i i-plus"></span></button></div></div>
+        <div class="w-pax-row" style="border-bottom:0"><div><div class="w-pax-title">Infants</div><div class="w-pax-sub">Under 2 · on lap · no more than adults</div></div><div class="w-counter"><button type="button" aria-label="Remove infant" disabled=""><span class="i i-minus"></span></button><output>0</output><button type="button" aria-label="Add infant"><span class="i i-plus"></span></button></div></div>
+      </div>
+      <div class="w-alert w-alert-info" style="padding:10px 14px"><span class="i i-info"></span><div class="text-13">{{paxNote}}</div></div>
+    </section>
+
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Chips, badges &amp; marks</h2><div class="flex gap-2"><span class="ds-map">shadcn · Badge, Toggle</span><span class="ds-map">Motion · layout morph</span></div></div>
+      <div class="flex flex-wrap gap-2">
+        <sc-for list="{{chips}}" as="c" hint-placeholder-count="5">
+          <button class="{{c.cls}}" type="button" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}<span class="w-chip-count">{{c.n}}</span><span class="w-chip-x"><span class="i i-x"></span></span></button>
+        </sc-for>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="w-badge w-badge-premium"><span class="w-tri"></span>Best seller</span>
+        <span class="w-badge w-badge-brand">Group departure</span>
+        <span class="w-badge w-badge-success"><span class="i i-check"></span>Refundable</span>
+        <span class="w-badge w-badge-warning">9 seats left</span>
+        <span class="w-badge w-badge-danger">Sold out</span>
+        <span class="w-badge w-badge-neutral">4D / 3N</span>
+        <span class="w-off">−12%</span>
+        <span class="w-sample">Sample data</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-5">
+        <span class="w-stock in">In stock</span><span class="w-stock low">Low stock</span><span class="w-stock out">Out of stock</span><span class="w-stock pre">Pre-order</span>
+        <span class="w-stars" aria-label="4 out of 5"><span class="i i-star-fill"></span><span class="i i-star-fill"></span><span class="i i-star-fill"></span><span class="i i-star-fill"></span><span class="i i-star-fill is-off"></span></span>
+        <span class="w-airline">BG</span><span class="w-airline is-dark">EK</span>
+        <img class="w-flag" src="../assets/a12d7de8da2cd9d6ebe7477d9ff368b2.svg" alt="Thailand"><img class="w-flag" src="../assets/039af49115f270dcd1fee4896f730088.svg" alt="Malaysia"><img class="w-flag" src="../assets/f93db3c0c172100e0475f05ed5e29b63.svg" alt="United Arab Emirates">
+      </div>
+    </section>
+
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Feedback &amp; status</h2><div class="flex gap-2"><span class="ds-map">shadcn · Alert, Skeleton, Sonner, Progress</span></div></div>
+      <div class="flex flex-col gap-2">
+        <div class="w-alert w-alert-info"><span class="i i-info"></span><div>Fares shown are indicative. Our team confirms the final price before you pay.</div></div>
+        <div class="w-alert w-alert-success"><span class="i i-circle-check"></span><div>Payment proof received. Accounts will verify it within one working day.</div></div>
+        <div class="w-alert w-alert-warn"><span class="i i-triangle-alert"></span><div>Your passport expires within 6 months of travel. Most countries will refuse entry.</div></div>
+        <div class="w-alert w-alert-danger"><span class="i i-circle-x"></span><div>We couldn’t send your query. Check your connection and try again — nothing you typed is lost.</div></div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-toast"><span class="w-tile"><span class="i i-check"></span></span><span>Added to cart · HP 83A toner</span><a class="w-link" style="color:#9FC4FF;margin-left:8px" href="#">View cart</a></div>
+      </div>
+      <div class="grid gap-3" style="grid-template-columns:120px 1fr">
+        <div class="w-skel" style="height:90px;border-radius:14px"></div>
+        <div class="flex flex-col gap-2 justify-center"><div class="w-skel" style="height:16px;width:70%"></div><div class="w-skel" style="height:12px;width:50%"></div><div class="w-skel" style="height:12px;width:35%"></div></div>
+      </div>
+    </section>
+
+    <section class="w-panel flex flex-col gap-5">
+      <div class="flex items-center justify-between gap-3"><h2 class="w-h4">Steps, accordion &amp; success</h2><div class="flex gap-2"><span class="ds-map">shadcn · Accordion</span><span class="ds-map">Origin UI · Stepper · SVG pathLength</span></div></div>
+      <div class="w-steps"><div class="w-step is-done"><span class="w-step-n"><span class="i i-check"></span></span>Your details</div><div class="w-step-line" style="--p:100%"><span></span></div><div class="w-step is-active"><span class="w-step-n">2</span>Trip details</div><div class="w-step-line"><span></span></div><div class="w-step"><span class="w-step-n">3</span>Done</div></div>
+      <div class="w-acc">
+        <details class="w-acc-item" open=""><summary class="w-acc-q">Is the price final?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Prices before booking are indicative. Our expert confirms availability and the exact fare, then you decide.</div></details>
+        <details class="w-acc-item"><summary class="w-acc-q">How do I pay?<span class="w-acc-ic"><span class="i i-plus"></span></span></summary><div class="w-acc-a">Bank transfer, bKash, Nagad or at our Motijheel office. Card and online payment arrive soon.</div></details>
+      </div>
+      <div class="flex items-center gap-4"><svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"/><path d="M28 45 l11 11 l22 -24"/></svg><div><b class="text-navy">Success check draws itself</b><p class="text-13 text-muted">Circle 700 ms, then tick 450 ms (ease-out)</p></div></div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const tab = st.tab ?? 0;
+    const seg = st.seg ?? 1;
+    const count = st.count ?? 2;
+    const swOn = st.sw ?? true;
+    const active = st.chips || { Direct: true };
+    const tabs = [['Flight', 'i i-plane'], ['Hotel', 'i i-bed'], ['Tour', 'i i-map'], ['Visa', 'i i-passport']].map((t, i) => ({
+      label: t[0], icon: t[1], cls: 'w-stab' + (i === tab ? ' is-active' : ''), pick: () => this.setState({ tab: i })
+    }));
+    const segs = ['One-way', 'Round-trip', 'Multi-city'].map((l, i) => ({
+      label: l, on: i === seg, cls: 'w-seg-btn' + (i === seg ? ' is-active' : ''), pick: () => this.setState({ seg: i })
+    }));
+    const chipData = [['Direct', 18], ['1 stop', 42], ['Morning', 21], ['Refundable', 9], ['Biman', 6]];
+    const chips = chipData.map(c => ({
+      label: c[0], n: c[1], on: !!active[c[0]], cls: 'w-chip' + (active[c[0]] ? ' is-active' : ''),
+      pick: () => this.setState({ chips: Object.assign({}, active, { [c[0]]: !active[c[0]] }) })
+    }));
+    return {
+      tab, tabs, segs,
+      segX: 'translateX(calc(' + seg + ' * (100% + 2px)))',
+      count, decOff: count <= 1, incOff: count >= 9,
+      dec: () => this.setState({ count: Math.max(1, count - 1) }),
+      inc: () => this.setState({ count: Math.min(9, count + 1) }),
+      paxNote: count + ' of 9 travellers. Infants can’t outnumber adults.',
+      swOn, swCls: 'w-switch' + (swOn ? ' is-on' : ''), toggleSw: () => this.setState({ sw: !swOn }),
+      chips
+    };
+  }
+}
+</script>
+</body>
+</html>

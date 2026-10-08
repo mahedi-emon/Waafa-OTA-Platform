@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · search activity and reports</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-shell wa-r">
+  <dc-import name="AdminSide" active="{{nav}}" m="{{m}}" open="{{navOpen}}" on-close="{{closeNav}}" style="display:contents" hint-size="256px,1180px"></dc-import>
+  <div class="a-main">
+    <dc-import name="AdminTop" m="{{m}}" on-menu="{{openNav}}" style="display:contents" hint-size="100%,64px"></dc-import>
+    <main class="a-content">
+      <div class="a-head">
+        <div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>{{crumb}}</span></div>
+          <h1 class="a-title">{{title}}</h1>
+          <p>{{desc}}</p>
+        </div>
+        <div class="a-actions"><div class="a-range"><button type="button">Today</button><button class="is-on" type="button">14 days</button><button type="button">This month</button></div><button class="a-btn a-btn-outline" type="button"><span class="i i-download"></span>CSV</button><sc-if value="{{isReports}}" hint-placeholder-val="{{ false }}"><button class="a-btn a-btn-outline a-hide-sm" type="button"><span class="i i-mail"></span>Email weekly<span class="a-p is-p1">P1</span></button></sc-if></div>
+      </div>
+
+      <sc-if value="{{isSearch}}" hint-placeholder-val="{{ true }}">
+        <section class="a-kpis">
+          <div class="a-kpi"><span class="a-kpi-label">Searches today<span class="i i-search"></span></span><span class="a-kpi-n">412</span><span class="a-kpi-d up">+8% on last Thursday</span></div>
+          <div class="a-kpi"><span class="a-kpi-label">Search to lead<span class="i i-trending-up"></span></span><span class="a-kpi-n">6.6%</span><span class="a-kpi-d up">+0.4 points</span></div>
+          <div class="a-kpi"><span class="a-kpi-label">Top route<span class="i i-plane"></span></span><span class="a-kpi-n" style="font-size:24px">DAC → DXB</span><span class="a-kpi-d">412 searches this week</span></div>
+          <div class="a-kpi"><span class="a-kpi-label">On phones<span class="i i-smartphone"></span></span><span class="a-kpi-n">78%</span><span class="a-kpi-d">Android 64% · iPhone 14%</span></div>
+        </section>
+        <div class="a-dash">
+          <section class="a-card" aria-labelledby="sd-t">
+            <div class="a-card-head"><div><h3 id="sd-t">Searches and leads per day</h3><p>All modules · last 14 days</p></div><div class="a-legend"><span><i style="--c:#0053D7"></i>Searches</span><span><i style="--c:#39CCE9"></i>Leads × 10</span></div></div>
+            <div class="a-card-body">
+              <svg class="a-line" viewBox="0 0 640 200" preserveAspectRatio="none" role="img" aria-label="Searches rose from 288 to 412 a day; leads from 17 to 27">
+                <defs><linearGradient id="a-line-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0053D7" stop-opacity=".18"></stop><stop offset="1" stop-color="#0053D7" stop-opacity="0"></stop></linearGradient></defs>
+                <line class="grid" x1="40" y1="16" x2="620" y2="16"></line><line class="grid" x1="40" y1="69" x2="620" y2="69"></line><line class="grid" x1="40" y1="123" x2="620" y2="123"></line><line class="grid" x1="40" y1="176" x2="620" y2="176"></line>
+                <text x="2" y="20">450</text><text x="2" y="127">150</text>
+                <path class="ar" d="M40.0 73.6 L84.6 69.0 L129.2 77.9 L173.8 54.4 L218.5 62.9 L263.1 99.6 L307.7 70.8 L352.3 49.8 L396.9 44.1 L441.5 51.9 L486.2 61.5 L530.8 34.5 L575.4 39.1 L620.0 29.5 L620.0 176 L40.0 176 Z"></path>
+                <path class="l1" d="M40.0 73.6 L84.6 69.0 L129.2 77.9 L173.8 54.4 L218.5 62.9 L263.1 99.6 L307.7 70.8 L352.3 49.8 L396.9 44.1 L441.5 51.9 L486.2 61.5 L530.8 34.5 L575.4 39.1 L620.0 29.5"></path>
+                <path class="l2" d="M40.0 115.6 L84.6 108.4 L129.2 112.0 L173.8 90.7 L218.5 101.3 L263.1 129.8 L307.7 104.9 L352.3 87.1 L396.9 83.6 L441.5 97.8 L486.2 101.3 L530.8 80.0 L575.4 87.1 L620.0 80.0"></path>
+                <circle cx="620" cy="29.5" r="5" fill="#0053D7" stroke="#fff" stroke-width="2"></circle>
+                <text x="40" y="196">25 Sep</text><text x="300" y="196">1 Oct</text><text x="580" y="196">8 Oct</text>
+              </svg>
+            </div>
+          </section>
+          <section class="a-card" aria-labelledby="sm-t">
+            <div class="a-card-head"><div><h3 id="sm-t">By module</h3><p>Searches and the share that became leads</p></div></div>
+            <div class="a-card-body"><sc-for list="{{mods}}" as="x" hint-placeholder-count="4"><div class="a-hbar" style="grid-template-columns:96px minmax(0,1fr) 92px"><span class="a-mod"><span class="{{x.icon}}"></span>{{x.label}}</span><span class="a-hbar-track"><span style="{{x.w}}"></span></span><span class="text-right text-13"><b class="text-navy">{{x.n}}</b> <span class="a-mute">· {{x.conv}}</span></span></div></sc-for><div class="a-callout" style="margin-top:12px"><span class="i i-filter"></span><span>Funnel by step (search, results, form step 1, step 2, lead) arrives in P1.</span></div></div>
+          </section>
+        </div>
+        <section class="a-card" aria-labelledby="rs-t">
+          <div class="a-card-head"><div><h3 id="rs-t">Latest searches</h3><p>Every search is logged with module, route, dates, travellers, device and source</p></div><div class="a-seg"><button class="is-on" type="button">All</button><button type="button">Became a lead</button><button type="button">No lead</button></div></div>
+          <div class="a-table-wrap"><table class="a-table is-wide"><thead><tr><th>When</th><th>Module</th><th>Search</th><th>Dates</th><th>Travellers</th><th>Device</th><th>Source</th><th>Lead</th></tr></thead><tbody>
+            <sc-for list="{{recent}}" as="r" hint-placeholder-count="8"><tr><td>{{r.t}}</td><td><span class="a-mod"><span class="{{r.icon}}"></span>{{r.mod}}</span></td><td><b class="text-navy" style="font-weight:600">{{r.q}}</b></td><td>{{r.d}}</td><td>{{r.pax}}</td><td><span class="a-mod"><span class="{{r.dev}}"></span>{{r.devL}}</span></td><td><span class="a-chip">{{r.src}}</span></td><td><sc-if value="{{r.lead}}" hint-placeholder-val="{{ false }}"><a class="a-link" href="AdminLead.dc.html">{{r.lead}}</a></sc-if><sc-if value="{{r.noLead}}" hint-placeholder-val="{{ true }}"><span class="a-mute">—</span></sc-if></td></tr></sc-for>
+          </tbody></table></div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{isReports}}" hint-placeholder-val="{{ false }}">
+        <section class="a-kpis">
+          <div class="a-kpi"><span class="a-kpi-label">Leads, October<span class="i i-inbox"></span></span><span class="a-kpi-n">612</span><span class="a-kpi-d up">+18% on September</span></div>
+          <div class="a-kpi"><span class="a-kpi-label">Booked<span class="i i-badge-check"></span></span><span class="a-kpi-n">38</span><span class="a-kpi-d">6.2% of leads</span></div>
+          <div class="a-kpi"><span class="a-kpi-label">First response<span class="i i-timer"></span></span><span class="a-kpi-n">21 min</span><span class="a-kpi-d up">84% inside 30 minutes</span></div>
+          <div class="a-kpi"><span class="a-kpi-label">Waafas World sales<span class="i i-banknote"></span></span><span class="a-kpi-n">৳4,82,300</span><span class="a-kpi-d up">+12% · 128 orders</span></div>
+        </section>
+        <div class="a-grid2">
+          <section class="a-card" aria-labelledby="src-t">
+            <div class="a-card-head"><div><h3 id="src-t">Leads by source</h3><p>October</p></div></div>
+            <div class="a-card-body"><div class="a-donut"><div class="a-donut-c"><div class="a-pie" style="{{pie}}"></div><b>612<small>leads</small></b></div><div class="flex flex-col gap-2" style="flex:1;min-width:180px"><sc-for list="{{sources}}" as="s" hint-placeholder-count="5"><div class="flex items-center justify-between gap-3 text-13"><span class="flex items-center gap-2"><i style="{{s.c}}" class="a-dot2"></i>{{s.label}}</span><b class="text-navy">{{s.n}} <span class="a-mute" style="font-weight:500">· {{s.pct}}</span></b></div></sc-for></div></div></div>
+          </section>
+          <section class="a-card" aria-labelledby="rt-t">
+            <div class="a-card-head"><div><h3 id="rt-t">First response time</h3><p>How long leads waited for a first reply</p></div></div>
+            <div class="a-card-body"><div class="a-chart" style="height:170px"><sc-for list="{{resp}}" as="b" hint-placeholder-count="6"><div class="a-chart-bar" title="{{b.title}}"><span style="{{b.st}}"></span></div></sc-for></div><div class="a-chart-x"><sc-for list="{{resp}}" as="b" hint-placeholder-count="6"><span>{{b.x}}</span></sc-for></div></div>
+          </section>
+        </div>
+        <section class="a-card" aria-labelledby="ag-t">
+          <div class="a-card-head"><div><h3 id="ag-t">By agent</h3><p>Leaderboard and targets arrive in P1</p></div></div>
+          <div class="a-table-wrap"><table class="a-table"><thead><tr><th>Agent</th><th class="is-num">Assigned</th><th class="is-num">Inside 30 min</th><th class="is-num">Average reply</th><th class="is-num">Quoted</th><th class="is-num">Booked</th><th class="is-num">Booked value</th></tr></thead><tbody>
+            <sc-for list="{{agents}}" as="a" hint-placeholder-count="4"><tr><td><span class="a-who"><span class="a-avatar is-sm" style="{{a.av}}">{{a.ini}}</span><b>{{a.name}}</b></span></td><td class="is-num">{{a.as}}</td><td class="is-num"><span class="{{a.slaCls}}">{{a.sla}}</span></td><td class="is-num">{{a.avg}}</td><td class="is-num">{{a.q}}</td><td class="is-num">{{a.b}}</td><td class="is-num"><span class="a-money">{{a.v}}</span></td></tr></sc-for>
+          </tbody></table></div>
+        </section>
+        <div class="a-grid2">
+          <section class="a-card" aria-labelledby="sc-t">
+            <div class="a-card-head"><div><h3 id="sc-t">Waafas World sales by category</h3><p>October, VAT included</p></div></div>
+            <div class="a-card-body"><sc-for list="{{cats}}" as="c" hint-placeholder-count="5"><div class="a-hbar" style="grid-template-columns:150px minmax(0,1fr) 84px"><span class="text-13">{{c.label}}</span><span class="a-hbar-track"><span style="{{c.w}}"></span></span><b class="text-right text-13 text-navy">{{c.v}}</b></div></sc-for></div>
+          </section>
+          <section class="a-card" aria-labelledby="vc-t">
+            <div class="a-card-head"><div><h3 id="vc-t">Visa cases</h3><p>Open and closed, October</p></div></div>
+            <div class="a-card-body"><sc-for list="{{visa}}" as="c" hint-placeholder-count="5"><div class="a-hbar" style="grid-template-columns:150px minmax(0,1fr) 44px"><span class="text-13">{{c.label}}</span><span class="a-hbar-track"><span style="{{c.w}}"></span></span><b class="text-right text-13 text-navy">{{c.n}}</b></div></sc-for></div>
+          </section>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"view":{"editor":"enum","options":["search","reports"],"default":"search"},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const reports = p.view === 'reports';
+    const mods = [['i i-plane', 'Flights', 2840, '5.9%'], ['i i-hotel', 'Hotels', 760, '7.4%'], ['i i-map', 'Packages', 1120, '8.8%'], ['i i-passport', 'Visa', 690, '9.1%']].map(x => ({ icon: x[0], label: x[1], n: x[2].toLocaleString('en-IN'), conv: x[3], w: 'width:' + Math.round(x[2] / 2840 * 100) + '%;background:var(--color-electric-600)' }));
+    const recent = [
+      ['7:18 pm', 'i i-plane', 'Flight', 'DAC → DXB · one way · Economy', 'Thu, 22 Oct', '1 adult', 'i i-smartphone', 'Android', 'Facebook', 'FLT-261008-0042'],
+      ['7:16 pm', 'i i-plane', 'Flight', 'DAC → DXB · one way', 'Thu, 22 Oct', '1 adult', 'i i-smartphone', 'Android', 'Facebook', 'FLT-261008-0040'],
+      ['7:11 pm', 'i i-hotel', 'Hotel', 'Cox’s Bazar · 1 room', '14 to 16 Nov', '2 adults', 'i i-monitor', 'Desktop', 'Google', ''],
+      ['7:02 pm', 'i i-map', 'Package', 'Maldives · any date', 'November', '2 adults', 'i i-smartphone', 'iPhone', 'Instagram', 'PKG-261008-0017'],
+      ['6:58 pm', 'i i-plane', 'Flight', 'DAC → KUL · return', '30 Oct to 6 Nov', '2 adults, 1 child', 'i i-smartphone', 'Android', 'Direct', ''],
+      ['6:51 pm', 'i i-passport', 'Visa', 'Thailand · tourist', '—', '2 applicants', 'i i-smartphone', 'Android', 'WhatsApp', 'VSA-261008-0011'],
+      ['6:47 pm', 'i i-plane', 'Flight', 'DAC → CXB · one way', 'Fri, 16 Oct', '3 adults', 'i i-monitor', 'Desktop', 'Google', ''],
+      ['6:40 pm', 'i i-plane', 'Flight', 'DAC → BKK · return', '14 to 21 Nov', '2 adults', 'i i-smartphone', 'Android', 'Facebook', '']
+    ].map(r => ({ t: r[0], icon: r[1], mod: r[2], q: r[3], d: r[4], pax: r[5], dev: r[6], devL: r[7], src: r[8], lead: r[9], noLead: !r[9] }));
+    const SRC = [['Website, direct', 214, '#0053D7'], ['Facebook', 168, '#0D8CEE'], ['Google', 121, '#39CCE9'], ['WhatsApp', 74, '#7C5CFF'], ['Phone and walk-in', 35, '#C9A05A']];
+    let acc = 0; const stops = SRC.map(s => { const a = acc; acc += s[1] / 612 * 360; return s[2] + ' ' + a.toFixed(1) + 'deg ' + acc.toFixed(1) + 'deg'; });
+    const resp = [['< 10 min', 188], ['10–30', 326], ['30–60', 61], ['1–3 h', 26], ['3–24 h', 9], ['> 1 day', 2]].map((b, i) => ({ x: b[0], title: b[1] + ' leads', st: 'height:' + Math.round(b[1] / 326 * 150) + 'px;background:' + (i < 2 ? 'var(--color-electric-600)' : i < 3 ? 'var(--color-warning-700)' : 'var(--color-danger-600)') }));
+    const agents = [['NJ', 'Nusrat J.', '#0053D7', 214, '88%', '17 min', 61, 16, '৳9,84,000'], ['SR', 'Sadia R.', '#7C5CFF', 176, '86%', '19 min', 44, 11, '৳6,12,500'], ['MK', 'Mahmudul K.', '#0E6B5C', 131, '79%', '26 min', 29, 7, '৳4,46,000'], ['AH', 'Arif Hossain', '#0D8CEE', 34, '91%', '12 min', 10, 4, '৳3,42,000']]
+      .map(a => ({ ini: a[0], name: a[1], av: '--av:' + a[2], as: a[3], sla: a[4], slaCls: 'a-chip ' + (parseInt(a[4]) >= 85 ? 'is-green' : 'is-amber'), avg: a[5], q: a[6], b: a[7], v: a[8] }));
+    const cats = [['Printers & Supplies', 268400], ['Office & Stationery', 94300], ['Electronics & Gadgets', 71800], ['Fashion & Lifestyle', 31200], ['Computer & Accessories', 16600]].map(c => ({ label: c[0], v: '৳' + c[1].toLocaleString('en-IN'), w: 'width:' + Math.round(c[1] / 268400 * 100) + '%;background:var(--color-gold-400)' }));
+    const visa = [['Submitted', 14], ['Documents pending', 9], ['Under review', 12], ['At the embassy', 18], ['Approved', 41], ['Refused', 3]].map(c => ({ label: c[0], n: c[1], w: 'width:' + Math.round(c[1] / 41 * 100) + '%;background:#7C5CFF' }));
+    return {
+      m: !!p.m, isSearch: !reports, isReports: reports, nav: reports ? 'reports' : 'search', crumb: reports ? 'Insights' : 'Sales',
+      title: reports ? 'Reports' : 'Search activity',
+      desc: reports ? 'Leads by module, status, agent and source; reply times; Waafas World sales and visa cases. Export any table to CSV.' : 'Every search on the website, what people looked for and whether it became a lead. Use it to price group fares and packages.',
+      mods, recent, pie: 'background:conic-gradient(' + stops.join(',') + ')', sources: SRC.map(s => ({ label: s[0], n: s[1], pct: Math.round(s[1] / 612 * 100) + '%', c: 'background:' + s[2] })),
+      resp, agents, cats, visa,
+      navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

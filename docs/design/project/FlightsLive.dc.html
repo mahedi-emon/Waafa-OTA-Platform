@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WAAFA · Flights · Live mode</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="wa is-mobile">
+  <a class="w-skip" href="#main">Skip to content</a>
+  <dc-import name="Header" m="{{m}}" active="flights" style="display:contents" hint-size="100%,76px"></dc-import>
+
+  <div class="w-sum wa-r">
+    <div class="w-wrap w-sum-in">
+      <span class="v-sum-ic" aria-hidden="true"><span class="i i-plane"></span></span>
+      <div class="min-w-0" style="flex:1">
+        <div class="w-sum-route"><span class="w-iata">DAC</span><span class="i i-arrow-right"></span><span class="w-iata">DXB</span><span class="v-sum-cities">Dhaka to Dubai</span></div>
+        <div class="w-sum-meta"><span>One way</span><span class="w-dot-sep"></span><span>{{dayLong}}</span><span class="w-dot-sep"></span><span>1 adult, Economy</span></div>
+      </div>
+      <span class="wl-phase v-hide-xs"><span class="i i-zap"></span>Live · Phase 2</span>
+      <sc-if value="{{isResults}}" hint-placeholder-val="{{ true }}"><a class="v-pillbtn" href="{{L.Flights}}"><span class="i i-pencil"></span><span class="v-hide-xs">Edit search</span></a></sc-if>
+    </div>
+  </div>
+
+  <main class="w-main" id="main">
+    <div class="w-wrap">
+      <nav class="w-crumbs v-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Flights}}">Flights</a><span class="i i-chevron-right"></span><span aria-current="page">{{crumb}}</span></nav>
+
+      <sc-if value="{{isResults}}" hint-placeholder-val="{{ true }}">
+        <div class="wl-mbar" style="margin-top:12px">
+          <button class="{{fChipCls}}" type="button" onClick="{{openF}}"><span class="i i-sliders-horizontal"></span>Filters<sc-if value="{{fCount}}" hint-placeholder-val="{{ false }}"><b>· {{fCount}}</b></sc-if></button>
+          <sc-for list="{{quick}}" as="q" hint-placeholder-count="3"><button class="{{q.cls}}" type="button" aria-pressed="{{q.on}}" onClick="{{q.go}}">{{q.label}}</button></sc-for>
+        </div>
+        <div class="w-results">
+          <div class="{{fScrimCls}}" onClick="{{closeF}}"></div>
+          <aside class="{{railCls}}" aria-label="Filters">
+            <div class="wl-frail-head"><b>Filters</b><button class="v-iconbtn is-plain" type="button" aria-label="Close filters" onClick="{{closeF}}"><span class="i i-x"></span></button></div>
+            <div class="v-pref-head" style="flex-direction:row;align-items:center;justify-content:space-between"><b>Filter flights</b><button class="v-link" type="button" style="min-height:0" onClick="{{clearF}}">Clear all</button></div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Stops</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Stops"><sc-for list="{{fl.stops}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}<small class="v-count" style="margin-left:auto">{{o.n}}</small></button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Price per adult</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Price"><sc-for list="{{fl.prices}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Departure from Dhaka</div>
+              <div class="w-timegrid"><sc-for list="{{fl.times}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" type="button" aria-pressed="{{t.on}}" onClick="{{t.go}}"><span class="{{t.icon}}"></span><b>{{t.label}}</b>{{t.sub}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Airlines</div>
+              <div class="v-checks"><sc-for list="{{fl.airs}}" as="a" hint-placeholder-count="6"><button class="{{a.cls}}" type="button" role="checkbox" aria-checked="{{a.on}}" onClick="{{a.go}}"><span class="v-cbox"></span><span class="w-airline">{{a.code}}</span>{{a.name}}<small class="v-count" style="margin-left:auto">{{a.from}}</small></button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Layover airport</div>
+              <div class="v-checks"><sc-for list="{{fl.vias}}" as="a" hint-placeholder-count="3"><button class="{{a.cls}}" type="button" role="checkbox" aria-checked="{{a.on}}" onClick="{{a.go}}"><span class="v-cbox"></span>{{a.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec">
+              <div class="w-rail-title">Checked bag</div>
+              <div class="v-optlist" role="radiogroup" aria-label="Checked bag"><sc-for list="{{fl.bags}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="w-radio"></span>{{o.label}}</button></sc-for></div>
+            </div>
+            <div class="w-rail-sec" style="border-bottom:0">
+              <button class="w-pick-opt" type="button" role="switch" aria-checked="{{fl.refund}}" onClick="{{fl.toggleRefund}}"><span><b>Refundable fares only</b><small>Refund with a fee, rules in Flight details</small></span><span class="{{fl.refundCls}}"></span></button>
+            </div>
+            <div class="wl-frail-foot"><button class="w-btn w-btn-ghost" type="button" onClick="{{clearF}}">Clear</button><button class="w-btn w-btn-primary" type="button" onClick="{{closeF}}">Show {{countLabel}}</button></div>
+          </aside>
+
+          <div class="v-resmain">
+            <div class="wl-modebar"><span class="i i-shield-check"></span><span><b>Live fares from airlines.</b> Prices include taxes and are checked again before you pay. If a fare changes, we show you first.</span></div>
+            <div class="w-datestrip wl-strip" role="radiogroup" aria-label="Nearby dates">
+              <sc-for list="{{days}}" as="d" hint-placeholder-count="7"><button class="{{d.cls}}" type="button" role="radio" aria-checked="{{d.on}}" onClick="{{d.go}}"><small>{{d.dow}}</small><span>{{d.date}}</span><b>{{d.price}}</b></button></sc-for>
+            </div>
+            <div class="w-sorttabs wl-sort" role="tablist" aria-label="Sort flights">
+              <sc-for list="{{sorts}}" as="s" hint-placeholder-count="3"><button class="{{s.cls}}" type="button" role="tab" aria-selected="{{s.on}}" onClick="{{s.go}}"><b>{{s.label}}</b><span>{{s.sub}}</span></button></sc-for>
+            </div>
+            <div class="wl-count"><span><b>{{countLabel}}</b> · per adult, taxes included</span><span class="wl-live">Live from 2 providers · checked 1 min ago</span></div>
+
+            <sc-if value="{{loading}}" hint-placeholder-val="{{ false }}">
+              <div class="fx-runway" role="progressbar" aria-label="Checking live fares"><span class="fx-runway-fill"></span><span class="fx-runway-plane"><span class="i i-plane"></span></span><span class="fx-runway-label">Checking live fares with the airlines…</span></div>
+              <div class="wl-offers" style="margin-top:14px"><sc-for list="{{skels}}" as="k" hint-placeholder-count="3"><div class="wl-skel"><div class="flex items-center gap-3"><span class="w-skel" style="width:40px;height:40px;border-radius:12px"></span><span class="w-skel" style="width:180px"></span></div><span class="w-skel" style="width:100%;height:30px"></span><span class="w-skel" style="width:60%"></span></div></sc-for></div>
+            </sc-if>
+            <sc-if value="{{showOffers}}" hint-placeholder-val="{{ true }}">
+              <div class="wl-offers" key="{{listKey}}">
+                <sc-for list="{{offers}}" as="o" hint-placeholder-count="4">
+                  <article class="{{o.cls}}">
+                    <div class="w-offer-main">
+                      <div class="flex items-center justify-between gap-3 flex-wrap">
+                        <div class="wl-airrow"><span class="wl-air" style="{{o.ac}}">{{o.code}}</span><div class="wl-airname"><b>{{o.airline}}</b><small>{{o.fno}}</small></div></div>
+                        <div class="wl-tags"><sc-for list="{{o.badges}}" as="t" hint-placeholder-count="1"><span class="{{t.cls}}"><span class="{{t.icon}}"></span>{{t.label}}</span></sc-for></div>
+                      </div>
+                      <div class="w-seg-row">
+                        <div class="w-time">{{o.dep}}<small>DAC</small></div>
+                        <div class="w-dur"><span>{{o.durL}}</span><span class="w-dur-line"><sc-if value="{{o.stop}}" hint-placeholder-val="{{ false }}"><i style="left:50%"></i></sc-if></span><span class="{{o.stopCls}}">{{o.stopL}}</span></div>
+                        <div class="w-time" style="text-align:right">{{o.arr}}<sc-if value="{{o.plus}}" hint-placeholder-val="{{ false }}"><sup>+1</sup></sc-if><small>DXB</small></div>
+                      </div>
+                      <div class="wl-tags"><span class="wl-tag"><span class="i i-briefcase"></span>Cabin 7 kg</span><span class="wl-tag"><span class="i i-luggage"></span>{{o.bagL}}</span><span class="{{o.refCls}}"><span class="i i-rotate-ccw"></span>{{o.refL}}</span><sc-if value="{{o.seats}}" hint-placeholder-val="{{ false }}"><span class="w-seats"><span class="i i-armchair"></span>{{o.seats}} seats left at this price</span></sc-if></div>
+                    </div>
+                    <div class="w-offer-side">
+                      <div class="wl-pricebox"><b>{{o.priceF}}</b><small>per adult · taxes included</small></div>
+                      <div class="wl-offer-acts"><button class="w-btn w-btn-primary" type="button" onClick="{{o.select}}">Select</button><button class="wl-detbtn" type="button" onClick="{{o.details}}">Flight details<span class="i i-chevron-right"></span></button></div>
+                    </div>
+                  </article>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{noOffers}}" hint-placeholder-val="{{ false }}">
+              <div class="wl-empty"><span class="w-tile"><span class="i i-search-x"></span></span><h2 class="v-h3">No flights match these filters</h2><p>Clear a filter, try a nearby date, or ask an expert: they see fares that are not sold online.</p><div class="flex flex-wrap justify-center gap-2"><button class="w-btn w-btn-secondary" type="button" onClick="{{clearF}}"><span class="i i-rotate-ccw"></span>Clear filters</button><a class="w-btn w-btn-primary" href="{{L.Flights}}"><span class="i i-headset"></span>Ask an expert</a></div></div>
+            </sc-if>
+            <div class="w-helpcard-m v-helpm">
+              <span class="w-tile"><span class="i i-headset"></span></span>
+              <div class="min-w-0" style="flex:1"><b class="text-navy text-15">Not sure which fare?</b><div class="text-13 text-muted">An expert compares them with you · 01823-232241</div></div>
+              <a class="w-btn w-btn-sm w-btn-wa" href="https://wa.me/8801823232241" aria-label="WhatsApp a travel expert"><span class="i i-whatsapp-fill"></span></a>
+            </div>
+          </div>
+
+          <aside class="w-aside v-aside" aria-label="Help">
+            <div class="w-helpcard">
+              <div class="w-helpcard-ribbon"><svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="lhr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".45" stop-color="#003FBE" stop-opacity=".7"></stop><stop offset=".8" stop-color="#0D8CEE" stop-opacity=".75"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".85"></stop></linearGradient></defs><path d="M0 190 C 110 190 160 110 250 104 C 330 98 360 60 400 30 L 400 70 C 362 96 332 136 252 142 C 164 150 112 220 0 220 Z" fill="url(#lhr)"></path></svg></div>
+              <span class="{{hours.clsDark}}" style="align-self:flex-start">{{hours.label}}</span>
+              <h3 class="v-h3" style="color:#fff">Want a person to book it?</h3>
+              <p>A travel expert can hold a fare, split payments or find group seats. Same price, no extra fee.</p>
+              <a class="w-btn w-btn-white" href="tel:+8801823232241"><span class="i i-phone"></span>01823-232241</a>
+              <a class="w-btn w-btn-wa" href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20I%27m%20looking%20at%20Dhaka%20to%20Dubai%20flights"><span class="i i-whatsapp-fill"></span>WhatsApp</a>
+            </div>
+            <div class="v-whylist">
+              <b>Booking here</b>
+              <span><span class="i i-badge-check"></span>Fare checked again before you pay</span>
+              <span><span class="i i-wallet"></span>bKash, Nagad, cards and card EMI</span>
+              <span><span class="i i-ticket"></span>E-ticket by email and SMS</span>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isFlow}}" hint-placeholder-val="{{ false }}">
+        <div class="wl-book">
+          <div class="flex flex-col gap-4 min-w-0">
+            <div class="wl-steps" aria-label="Booking steps"><span class="{{stp.a}}"><i>{{stp.aN}}</i><b>Travellers</b></span><span class="wl-step-sep"></span><span class="{{stp.b}}"><i>{{stp.bN}}</i><b>Review and pay</b></span><span class="wl-step-sep"></span><span class="wl-step"><i>3</i><b>E-ticket</b></span></div>
+            <div class="{{holdCls}}" role="timer" aria-live="off"><span class="i i-timer"></span><div class="min-w-0" style="flex:1"><b>{{holdF}}</b> <small>{{holdNote}}</small></div><span class="wl-phase" style="background:rgb(255 255 255/.12);color:#fff">Fare held</span><span class="wl-hold-bar"><span style="{{holdBar}}"></span></span></div>
+
+            <sc-if value="{{isBook}}" hint-placeholder-val="{{ true }}">
+              <section class="wl-card" aria-labelledby="tr-t">
+                <div class="wl-card-head"><h2 id="tr-t"><i>1</i>Traveller, as on the passport</h2><span class="text-13 text-muted">Adult · 12 years or older</span></div>
+                <div class="wl-card-body">
+                  <div class="flex flex-col gap-2"><span class="w-label">Saved travellers</span><div class="wl-saved"><sc-for list="{{saved}}" as="s" hint-placeholder-count="2"><button class="{{s.cls}}" type="button" onClick="{{s.go}}"><span class="w-avatar is-soft">{{s.ini}}</span>{{s.name}}</button></sc-for><button class="wl-savedchip" type="button"><span class="w-avatar" style="background:var(--color-mist-100);color:var(--color-navy-900)"><span class="i i-plus i-14"></span></span>New traveller</button></div></div>
+                  <div class="wl-passnote"><span class="i i-triangle-alert"></span><span>Type names exactly as they appear in the passport. Airlines may refuse boarding if the name on the ticket is different, and name changes are not allowed on this fare.</span></div>
+                  <div class="w-field"><span class="w-label">Title</span><div class="w-pills" role="radiogroup" aria-label="Title"><sc-for list="{{titles}}" as="t" hint-placeholder-count="3"><button class="{{t.cls}}" type="button" role="radio" aria-checked="{{t.on}}" onClick="{{t.go}}">{{t.label}}</button></sc-for></div></div>
+                  <div class="w-grid-2">
+                    <div class="w-field"><label class="w-label" for="b-gn">Given names <span class="w-req">*</span></label><input class="w-input" id="b-gn" value="{{tv.given}}" placeholder="As in passport" autocomplete="given-name"></div>
+                    <div class="w-field"><label class="w-label" for="b-sn">Surname <span class="w-req">*</span></label><input class="w-input" id="b-sn" value="{{tv.sur}}" placeholder="As in passport" autocomplete="family-name"></div>
+                  </div>
+                  <div class="wl-grid3">
+                    <div class="w-field"><label class="w-label" for="b-dob">Date of birth <span class="w-req">*</span></label><input class="w-input" id="b-dob" value="{{tv.dob}}" placeholder="DD / MM / YYYY"></div>
+                    <label class="w-field"><span class="w-label">Nationality <span class="w-req">*</span></span><span class="w-select"><select class="w-input"><option>Bangladesh</option><option>India</option><option>Other</option></select></span></label>
+                    <div class="w-field"><label class="w-label" for="b-ff">Frequent flyer <span class="w-opt">(optional)</span></label><input class="w-input" id="b-ff" placeholder="Programme and number"></div>
+                  </div>
+                  <div class="w-grid-2">
+                    <div class="w-field"><label class="w-label" for="b-pp">Passport number <span class="w-req">*</span></label><input class="w-input" id="b-pp" value="{{tv.pp}}" placeholder="e.g. A01234567"><span class="v-hint"><span class="i i-lock"></span>Encrypted and used only for this booking.</span></div>
+                    <div class="w-field"><label class="w-label" for="b-px">Passport expiry <span class="w-req">*</span></label><input class="w-input" id="b-px" value="{{tv.exp}}" placeholder="DD / MM / YYYY"><span class="v-hint">Must be valid for 6 months after you travel.</span></div>
+                  </div>
+                  <button class="{{saveCls}}" type="button" role="checkbox" aria-checked="{{saveOn}}" onClick="{{toggleSave}}"><span class="v-cbox"></span><span>Save this traveller to my account for next time</span></button>
+                </div>
+              </section>
+              <section class="wl-card" aria-labelledby="ct-t">
+                <div class="wl-card-head"><h2 id="ct-t"><i>2</i>Where we send the e-ticket</h2></div>
+                <div class="wl-card-body">
+                  <div class="w-grid-2">
+                    <div class="w-field"><label class="w-label" for="c-ph">Mobile number <span class="w-req">*</span></label><div class="w-phone"><button class="w-phone-cc" type="button" aria-label="Country code: Bangladesh, +880"><img src="../assets/878febeb6b9994272a5acd24b65ecb5e.svg" alt="">+880<span class="i i-chevron-down"></span></button><input id="c-ph" inputmode="tel" value="1712-345678"></div></div>
+                    <div class="w-field"><label class="w-label" for="c-em">Email <span class="w-req">*</span></label><input class="w-input" id="c-em" type="email" value="rahim.uddin@example.com"></div>
+                  </div>
+                </div>
+              </section>
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <button class="v-link" type="button" style="min-height:44px" onClick="{{backToResults}}"><span class="i i-arrow-left"></span>Choose another flight</button>
+                <button class="w-btn w-btn-primary" type="button" style="border-radius:999px;height:52px;padding:0 26px" onClick="{{toPay}}">Continue to payment<span class="i i-arrow-right"></span></button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{isPay}}" hint-placeholder-val="{{ false }}">
+              <section class="wl-card" aria-labelledby="rv-t">
+                <div class="wl-card-head"><h2 id="rv-t"><i>3</i>Check the details</h2><button class="v-link" type="button" style="min-height:0" onClick="{{toBook}}"><span class="i i-pencil"></span>Edit</button></div>
+                <div class="wl-card-body">
+                  <div class="wl-review">
+                    <div><small>Traveller</small><b>{{ttl}} {{tv.given}} {{tv.sur}}</b><span>Born {{tv.dob}} · passport {{tv.pp}}, expires {{tv.exp}}</span></div>
+                    <div><small>E-ticket goes to</small><b>+880 1712-345678</b><span>rahim.uddin@example.com</span></div>
+                    <div><small>Flight</small><b>{{pk.fno}}</b><span>{{dayLong}} · {{pk.dep}} → {{pk.arr}}{{pk.plusL}} · {{pk.stopL}}</span></div>
+                    <div><small>Bags and rules</small><b>{{pk.bagL}} · cabin 7 kg</b><span>{{pk.refL}}</span></div>
+                  </div>
+                </div>
+              </section>
+              <section class="wl-card" aria-labelledby="pm-t">
+                <div class="wl-card-head"><h2 id="pm-t"><i>4</i>How would you like to pay?</h2><span class="ww-codbadge" style="background:var(--color-electric-50);color:var(--color-brand-700)"><span class="i i-lock"></span>Secure payment</span></div>
+                <div class="wl-card-body">
+                  <div class="wl-recheck"><span class="i i-circle-check"></span><span>Fare checked again with the airline 8 seconds ago: <b>{{totalF}}</b> for 1 adult. No change.</span></div>
+                  <div class="wl-paygrid" role="radiogroup" aria-label="Payment method">
+                    <sc-for list="{{pays}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.go}}"><span class="wl-paylogo" style="{{o.pc}}">{{o.logo}}</span><span><b>{{o.title}}</b><small>{{o.sub}}</small></span><span class="w-radio"></span></button></sc-for>
+                  </div>
+                  <sc-if value="{{payEmi}}" hint-placeholder-val="{{ false }}">
+                    <div class="flex flex-col gap-2"><span class="w-label">Pay in monthly instalments <span class="w-opt">(sample tenures and banks)</span></span><div class="wl-emi"><sc-for list="{{emis}}" as="e" hint-placeholder-count="3"><button class="{{e.cls}}" type="button" onClick="{{e.go}}"><b>{{e.per}}</b><small>{{e.label}}</small></button></sc-for></div><span class="v-hint">0% EMI on selected cards from partner banks. Your bank may charge a processing fee.</span></div>
+                  </sc-if>
+                  <button class="{{agreeCls}}" type="button" role="checkbox" aria-checked="{{agree}}" onClick="{{toggleAgree}}"><span class="v-cbox"></span><span>I have read the fare rules and the <a href="{{L.Refund}}">refund policy</a>. Changes cost ৳5,000 plus any fare difference.</span></button>
+                  <sc-if value="{{agreeErr}}" hint-placeholder-val="{{ false }}"><span class="w-error"><span class="i i-circle-alert"></span>Tick the box to agree to the fare rules.</span></sc-if>
+                </div>
+              </section>
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <button class="v-link" type="button" style="min-height:44px" onClick="{{toBook}}"><span class="i i-arrow-left"></span>Back to travellers</button>
+                <button class="w-btn w-btn-primary wl-paybtn" type="button" style="padding:0 28px" onClick="{{payNow}}"><sc-if value="{{proc}}" hint-placeholder-val="{{ false }}"><span class="wl-proc"><span class="ww-spin"></span>Confirming with the airline…</span></sc-if><sc-if value="{{notProc}}" hint-placeholder-val="{{ true }}"><span class="wl-proc"><span class="i i-lock"></span>Pay {{totalF}}</span></sc-if></button>
+              </div>
+            </sc-if>
+          </div>
+
+          <aside class="wl-sum" aria-label="Your trip">
+            <h3>Your trip</h3>
+            <div class="wl-sum-flight">
+              <div class="flex items-center justify-between gap-2"><div class="wl-airrow"><span class="wl-air" style="{{pk.ac}}">{{pk.code}}</span><div class="wl-airname"><b>{{pk.airline}}</b><small>{{pk.fno}}</small></div></div></div>
+              <div class="wl-sum-route"><span class="w-iata">DAC</span><span class="i i-plane"></span><span class="w-iata">DXB</span></div>
+              <div class="text-13 text-muted">{{dayLong}} · {{pk.dep}} → {{pk.arr}}{{pk.plusL}} · {{pk.durL}} · {{pk.stopL}}</div>
+              <div class="wl-tags"><span class="wl-tag"><span class="i i-luggage"></span>{{pk.bagL}}</span><span class="{{pk.refCls}}"><span class="i i-rotate-ccw"></span>{{pk.refL}}</span></div>
+            </div>
+            <table class="wl-bk"><tbody>
+              <tr><td>Base fare, 1 adult</td><td>{{bk.base}}</td></tr>
+              <tr><td>Taxes and airport fees</td><td>{{bk.tax}}</td></tr>
+              <sc-if value="{{bk.up}}" hint-placeholder-val="{{ false }}"><tr><td>Fare change, agreed</td><td>{{bk.up}}</td></tr></sc-if>
+              <tr class="is-total"><td>Total</td><td>{{totalF}}</td></tr>
+            </tbody></table>
+            <p class="text-13 text-muted">Prices in taka. Card payments are charged in BDT. Sample fixture data for Phase 2.</p>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+        <section class="w-success" style="padding-block:28px 64px" aria-live="polite">
+          <svg class="w-check-anim" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40"></circle><path d="M28 45 l11 11 l22 -24"></path></svg>
+          <span class="v-eyebrow" style="justify-content:center">Booking confirmed</span>
+          <h1 class="v-h2" style="max-width:640px">You’re flying to Dubai. Your e-ticket is ready.</h1>
+          <div class="wl-ticket" style="--notch:#fff">
+            <div class="wl-ticket-main">
+              <div class="flex items-center justify-between gap-3 flex-wrap"><div class="wl-airrow"><span class="wl-air" style="{{pk.ac}}">{{pk.code}}</span><div class="wl-airname"><b>{{pk.airline}}</b><small>{{pk.fno}}</small></div></div><span class="wl-tag is-good"><span class="i i-circle-check"></span>Ticketed</span></div>
+              <div class="w-seg-row"><div class="w-time">{{pk.dep}}<small>DAC · Dhaka</small></div><div class="w-dur"><span>{{pk.durL}}</span><span class="w-dur-line"></span><span class="{{pk.stopCls}}">{{pk.stopL}}</span></div><div class="w-time" style="text-align:right">{{pk.arr}}<small>DXB · Dubai</small></div></div>
+              <div class="wl-ticket-kv"><div><small>Passenger</small><b>RAHIM UDDIN MR</b></div><div><small>Date</small><b>{{dayShort}}</b></div><div><small>E-ticket</small><b>229-2614087702</b></div><div><small>Booking</small><b>BKG-261008-0007</b></div></div>
+            </div>
+            <div class="wl-ticket-side"><small>Airline PNR</small><span class="wl-pnr">7XK2LM</span><span class="wl-qr" aria-hidden="true"><span class="i i-qr-code"></span></span><small>Show at check-in</small></div>
+          </div>
+          <div class="wl-manage">
+            <a href="#"><span class="i i-file-down"></span>Download e-ticket<small>PDF, also emailed</small></a>
+            <a href="#"><span class="i i-calendar-days"></span>Add to calendar<small>Departure reminder</small></a>
+            <a href="#"><span class="i i-refresh-cw"></span>Change or cancel<small>Request, we reply in office hours</small></a>
+            <a href="https://wa.me/8801823232241?text=Hi%20Waafa%2C%20booking%20BKG-261008-0007"><span class="i i-whatsapp"></span>Ask on WhatsApp<small>Quote BKG-261008-0007</small></a>
+          </div>
+          <p class="w-note" style="justify-content:center"><span class="i i-mail-check"></span><span>E-ticket sent to rahim.uddin@example.com and by SMS to 01712-345678. Check in online 48 hours before departure.</span></p>
+        </section>
+      </sc-if>
+    </div>
+  </main>
+
+  <sc-if value="{{detOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="{{detOvCls}}" role="dialog" aria-modal="true" aria-labelledby="dt-t">
+      <div class="w-scrim" onClick="{{closeDet}}"></div>
+      <aside class="w-drawer wl-drawer">
+        <div class="wl-dhead"><span class="wl-air" style="{{dt.ac}}">{{dt.code}}</span><div class="min-w-0"><h2 id="dt-t">{{dt.dep}} → {{dt.arr}}{{dt.plusL}} · {{dt.durL}}</h2><p>{{dt.airline}} · {{dt.fno}} · {{dt.stopL}} · {{dayLong}}</p></div><button class="v-iconbtn is-plain" type="button" aria-label="Close" onClick="{{closeDet}}"><span class="i i-x"></span></button></div>
+        <div class="wl-dtabs" role="tablist"><sc-for list="{{dtabs}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.go}}">{{t.label}}</button></sc-for></div>
+        <div class="wl-dbody">
+          <sc-if value="{{dtab.itin}}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{dt.segs}}" as="g" hint-placeholder-count="2">
+              <div class="flex flex-col gap-3">
+                <div class="wl-seg"><div class="wl-seg-rail"><i></i><i></i></div><div class="wl-seg-body"><div class="wl-seg-pt"><b>{{g.t1}} · {{g.a1}}</b><small>{{g.n1}}</small></div><div class="wl-seg-mid"><span class="i i-plane"></span>{{g.fno}} · {{g.dur}} · {{g.ac}} · Economy</div><div class="wl-seg-pt"><b>{{g.t2}} · {{g.a2}}</b><small>{{g.n2}}</small></div></div></div>
+                <sc-if value="{{g.lay}}" hint-placeholder-val="{{ false }}"><div class="w-layover" style="margin-left:0"><span class="i i-clock"></span>{{g.lay}}</div></sc-if>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{dtab.bag}}" hint-placeholder-val="{{ false }}">
+            <div class="wl-rules">
+              <div class="wl-rule"><span class="w-tile"><span class="i i-briefcase"></span></span><div><b>Cabin bag</b><small>1 piece, up to 56 × 36 × 23 cm</small></div><em>7 kg</em></div>
+              <div class="wl-rule"><span class="w-tile"><span class="i i-luggage"></span></span><div><b>Checked bag</b><small>Per adult, dropped at check-in</small></div><em>{{dt.bagKg}}</em></div>
+              <div class="wl-rule"><span class="w-tile"><span class="i i-baggage-claim"></span></span><div><b>Through to Dubai</b><small>Bags are checked to your final airport</small></div><em class="is-ok">Yes</em></div>
+            </div>
+            <p class="w-note"><span class="i i-info"></span><span>Allowances come from the airline with the fare. They are printed on your e-ticket.</span></p>
+          </sc-if>
+          <sc-if value="{{dtab.rules}}" hint-placeholder-val="{{ false }}">
+            <div class="wl-rules"><sc-for list="{{dt.rules}}" as="r" hint-placeholder-count="4"><div class="wl-rule"><span class="w-tile"><span class="{{r.icon}}"></span></span><div><b>{{r.t}}</b><small>{{r.s}}</small></div><em class="{{r.cls}}">{{r.v}}</em></div></sc-for></div>
+          </sc-if>
+          <sc-if value="{{dtab.price}}" hint-placeholder-val="{{ false }}">
+            <table class="wl-bk"><thead><tr><th>Traveller</th><th>Base fare</th><th>Taxes and fees</th><th>Total</th></tr></thead><tbody>
+              <tr><td>Adult × 1</td><td>{{dt.base}}</td><td>{{dt.tax}}</td><td>{{dt.priceF}}</td></tr>
+              <tr class="is-total"><td>Total</td><td></td><td></td><td>{{dt.priceF}}</td></tr>
+            </tbody></table>
+            <p class="w-note"><span class="i i-info"></span><span>Children (2 to 11) and infants (under 2) are priced by the airline when added to the search.</span></p>
+          </sc-if>
+        </div>
+        <div class="wl-dfoot"><div class="wl-pricebox"><b>{{dt.priceF}}</b><small>1 adult · taxes included</small></div><a class="w-btn w-btn-secondary" href="{{L.Flights}}" style="border-radius:999px"><span class="i i-headset"></span><span class="v-hide-xs">Ask an expert</span></a><button class="w-btn w-btn-primary" type="button" style="margin-left:0" onClick="{{dt.select}}">Select</button></div>
+      </aside>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{pcOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="ww-dialog wa-r" role="alertdialog" aria-modal="true" aria-labelledby="pc-t">
+      <div class="w-scrim"></div>
+      <div class="ww-dialog-card">
+        <div class="ww-dialog-head"><span class="w-tile" style="background:var(--color-warning-50);color:var(--color-warning-700)"><span class="i i-triangle-alert"></span></span><div><h2 id="pc-t">The airline changed this fare</h2><p>When we checked again before payment, {{pk.airline}} returned a higher price for {{pk.fno}}. Nothing has been charged.</p></div></div>
+        <div class="ww-dialog-body">
+          <div class="wl-pc"><div><small>Was</small><s>{{oldF}}</s></div><span class="i i-arrow-right"></span><div><small>Now</small><b>{{newF}}</b></div></div>
+          <span class="wl-pc-diff" style="align-self:center">+ {{diffF}} for 1 adult</span>
+          <p class="w-note"><span class="i i-info"></span><span>Fares change when seats at a price sell out. The new price is held for 15 minutes.</span></p>
+        </div>
+        <div class="ww-dialog-foot" style="flex-wrap:wrap"><button class="w-btn w-btn-ghost" type="button" onClick="{{pcBack}}">See other flights</button><a class="w-btn w-btn-secondary" href="{{L.Flights}}">Ask an expert</a><button class="w-btn w-btn-primary" type="button" onClick="{{pcAccept}}">Continue at {{newF}}</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <dc-import name="Footer" m="{{m}}" style="display:contents" hint-size="100%,700px"></dc-import>
+  <sc-if value="{{isResults}}" hint-placeholder-val="{{ true }}"><dc-import name="TabBar" m="{{m}}" active="none" style="display:contents" hint-size="390px,64px"></dc-import></sc-if>
+  <dc-import name="MotionKit" style="display:contents" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"m":{"editor":"boolean","default":false},"step":{"editor":"enum","options":["results","book","pay","done"],"default":"results"},"offer":{"editor":"boolean","default":false},"price":{"editor":"boolean","default":false},"filters":{"editor":"boolean","default":false},"loading":{"editor":"boolean","default":false},"nomatch":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+  componentDidMount() {
+    this._iv = setInterval(() => {
+      const st = this.state || {}; const p = this.props || {};
+      const step = st.step || p.step || 'results';
+      if (step === 'book' || step === 'pay') this.setState({ hold: Math.max(0, (st.hold !== undefined ? st.hold : 887) - 1) });
+    }, 1000);
+  }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); clearTimeout(this._t2); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const sx = p.m ? '-m' : '';
+    const L = {};
+    ['Home','Flights','FlightsLive','Refund','Baggage'].forEach(k => { L[k] = k + sx + '.dc.html'; });
+    const fmt = n => '৳' + Math.round(n).toLocaleString('en-IN');
+    const dur = mins => Math.floor(mins / 60) + 'h ' + String(mins % 60).padStart(2, '0') + 'm';
+    // fixture offers for Phase 2 (normalised FlightOffer shape)
+    const OF = [
+      { id: 'ku284', code: 'KU', airline: 'Kuwait Airways', fno: 'KU 284 · KU 673', dep: '03:30', arr: '12:40', plus: 0, mins: 670, stops: 1, via: 'KWI', bag: 30, ref: 'fee', price: 41200, seats: 4, c: '#0B5E8A',
+        segs: [['03:30', 'DAC', 'Dhaka, Hazrat Shahjalal Intl, T3', '05:35', 'KWI', 'Kuwait City, Kuwait Intl, T4', 'KU 284', '5h 05m', 'Airbus A320neo', 'Layover 4h 20m in Kuwait City (KWI) · stay airside, no visa needed'], ['09:55', 'KWI', 'Kuwait City, Kuwait Intl, T4', '12:40', 'DXB', 'Dubai Intl, T1', 'KU 673', '1h 45m', 'Airbus A320neo', '']] },
+      { id: 'gf249', code: 'GF', airline: 'Gulf Air', fno: 'GF 249 · GF 504', dep: '02:00', arr: '09:15', plus: 0, mins: 555, stops: 1, via: 'BAH', bag: 23, ref: 'no', price: 43800, seats: 0, c: '#5B2A86',
+        segs: [['02:00', 'DAC', 'Dhaka, Hazrat Shahjalal Intl, T3', '04:20', 'BAH', 'Bahrain Intl', 'GF 249', '5h 20m', 'Airbus A321neo', 'Layover 2h 40m in Bahrain (BAH)'], ['07:00', 'BAH', 'Bahrain Intl', '09:15', 'DXB', 'Dubai Intl, T1', 'GF 504', '1h 15m', 'Airbus A320', '']] },
+      { id: 'fz584', code: 'FZ', airline: 'flydubai', fno: 'FZ 584 · direct', dep: '07:50', arr: '11:05', plus: 0, mins: 315, stops: 0, via: '', bag: 20, ref: 'no', price: 44900, seats: 2, c: '#7A1F2B',
+        segs: [['07:50', 'DAC', 'Dhaka, Hazrat Shahjalal Intl, T3', '11:05', 'DXB', 'Dubai Intl, T2', 'FZ 584', '5h 15m', 'Boeing 737 MAX 8', '']] },
+      { id: 'bs341', code: 'BS', airline: 'US-Bangla Airlines', fno: 'BS 341 · direct', dep: '21:10', arr: '00:30', plus: 1, mins: 320, stops: 0, via: '', bag: 30, ref: 'fee', price: 46200, seats: 9, c: '#01278B',
+        segs: [['21:10', 'DAC', 'Dhaka, Hazrat Shahjalal Intl, T3', '00:30 +1', 'DXB', 'Dubai Intl, T1', 'BS 341', '5h 20m', 'Airbus A330-300', '']] },
+      { id: 'bg147', code: 'BG', airline: 'Biman Bangladesh Airlines', fno: 'BG 147 · direct', dep: '23:45', arr: '03:05', plus: 1, mins: 320, stops: 0, via: '', bag: 30, ref: 'fee', price: 47500, seats: 0, c: '#0E6B5C',
+        segs: [['23:45', 'DAC', 'Dhaka, Hazrat Shahjalal Intl, T3', '03:05 +1', 'DXB', 'Dubai Intl, T1', 'BG 147', '5h 20m', 'Boeing 787-8', '']] },
+      { id: 'qr641', code: 'QR', airline: 'Qatar Airways', fno: 'QR 641 · QR 1002', dep: '08:10', arr: '14:55', plus: 0, mins: 525, stops: 1, via: 'DOH', bag: 30, ref: 'fee', price: 52300, seats: 3, c: '#4A4F5C',
+        segs: [['08:10', 'DAC', 'Dhaka, Hazrat Shahjalal Intl, T3', '10:15', 'DOH', 'Doha, Hamad Intl', 'QR 641', '5h 05m', 'Boeing 787-9', 'Layover 2h 30m in Doha (DOH)'], ['12:45', 'DOH', 'Doha, Hamad Intl', '14:55', 'DXB', 'Dubai Intl, T1', 'QR 1002', '1h 10m', 'Airbus A350-900', '']] },
+      { id: 'ek585', code: 'EK', airline: 'Emirates', fno: 'EK 585 · direct', dep: '19:25', arr: '22:40', plus: 0, mins: 315, stops: 0, via: '', bag: 25, ref: 'no', price: 56400, seats: 0, c: '#A8782F',
+        segs: [['19:25', 'DAC', 'Dhaka, Hazrat Shahjalal Intl, T3', '22:40', 'DXB', 'Dubai Intl, T3', 'EK 585', '5h 15m', 'Boeing 777-300ER', '']] },
+      { id: 'ek583', code: 'EK', airline: 'Emirates', fno: 'EK 583 · direct', dep: '10:15', arr: '13:35', plus: 0, mins: 320, stops: 0, via: '', bag: 30, ref: 'fee', price: 58900, seats: 6, c: '#A8782F',
+        segs: [['10:15', 'DAC', 'Dhaka, Hazrat Shahjalal Intl, T3', '13:35', 'DXB', 'Dubai Intl, T3', 'EK 583', '5h 20m', 'Boeing 777-300ER', '']] }
+    ];
+    const hourOf = t => parseInt(t.split(':')[0], 10);
+    const slotOf = t => { const h = hourOf(t); return h < 6 ? 'early' : h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening'; };
+    // filters
+    const f0 = { stops: 'any', price: 'any', times: [], airs: [], vias: [], bag: 'any', refund: false };
+    const fs = Object.assign({}, f0, st.f || (p.nomatch ? { stops: '0', price: '45', refund: true } : {}));
+    const setF = patch => this.setState({ f: Object.assign({}, fs, patch) });
+    const tog = (arr, x) => arr.indexOf(x) >= 0 ? arr.filter(y => y !== x) : arr.concat([x]);
+    const PR = [['any', 'Any price', 1e9], ['45', 'Up to ৳45,000', 45000], ['50', 'Up to ৳50,000', 50000], ['55', 'Up to ৳55,000', 55000]];
+    const maxP = (PR.find(x => x[0] === fs.price) || PR[0])[2];
+    const pass = (o, skip) => (skip === 'stops' || fs.stops === 'any' || (fs.stops === '0' ? o.stops === 0 : o.stops <= 1)) && (skip === 'price' || o.price <= maxP)
+      && (skip === 'times' || !fs.times.length || fs.times.indexOf(slotOf(o.dep)) >= 0) && (skip === 'airs' || !fs.airs.length || fs.airs.indexOf(o.code) >= 0)
+      && (skip === 'vias' || !fs.vias.length || fs.vias.indexOf(o.via) >= 0) && (fs.bag === 'any' || o.bag >= 30) && (!fs.refund || o.ref === 'fee');
+    const sort = st.sort || 'cheap';
+    const list = OF.filter(o => pass(o)).sort((a, b) => sort === 'fast' ? (a.mins - b.mins || a.price - b.price) : sort === 'early' ? a.dep.localeCompare(b.dep) : a.price - b.price);
+    const cheapest = OF.filter(o => pass(o)).sort((a, b) => a.price - b.price)[0];
+    const fastest = OF.filter(o => pass(o)).sort((a, b) => a.mins - b.mins || a.price - b.price)[0];
+    const earliest = OF.filter(o => pass(o)).sort((a, b) => a.dep.localeCompare(b.dep))[0];
+    const deco = o => {
+      const badges = [];
+      if (cheapest && o.id === cheapest.id) badges.push({ cls: 'wl-tag is-good', icon: 'i i-badge-percent', label: 'Cheapest' });
+      if (fastest && o.id === fastest.id) badges.push({ cls: 'wl-tag is-best', icon: 'i i-zap', label: 'Fastest' });
+      return Object.assign({}, o, { ac: '--ac:' + o.c, durL: dur(o.mins), stop: o.stops > 0, stopL: o.stops ? '1 stop · ' + o.via : 'Direct', stopCls: o.stops ? 'w-dur-stop' : 'w-dur-direct',
+        bagL: 'Checked ' + o.bag + ' kg', refCls: o.ref === 'fee' ? 'wl-tag is-good' : 'wl-tag is-warn', refL: o.ref === 'fee' ? 'Refundable with a fee' : 'Non-refundable',
+        priceF: fmt(o.price), plusL: o.plus ? ' +1' : '', badges });
+    };
+    const fOpen = st.fOpen !== undefined ? st.fOpen : !!p.filters;
+    const step = st.step || p.step || 'results';
+    const pickId = st.pick || 'ku284';
+    const go = (s, extra) => this.setState(Object.assign({ step: s }, extra || {}));
+    const offers = list.map(o => Object.assign(deco(o), { cls: 'w-offer-card wl-offer' + (o.id === pickId && step !== 'results' ? ' is-picked' : ''),
+      select: () => go('book', { pick: o.id, det: '', hold: 887 }), details: () => this.setState({ det: o.id, dt: 'itin', detOut: false }) }));
+    const AIRS = [['KU', 'Kuwait Airways'], ['GF', 'Gulf Air'], ['FZ', 'flydubai'], ['BS', 'US-Bangla Airlines'], ['BG', 'Biman Bangladesh'], ['QR', 'Qatar Airways'], ['EK', 'Emirates']];
+    const TIMES = [['early', 'Early', '00:00–06:00', 'i i-moon'], ['morning', 'Morning', '06:00–12:00', 'i i-sunrise'], ['afternoon', 'Afternoon', '12:00–18:00', 'i i-sun'], ['evening', 'Evening', '18:00–24:00', 'i i-sunset']];
+    const fl = {
+      stops: [['any', 'Any number of stops'], ['0', 'Direct only'], ['1', '1 stop at most']].map(x => ({ label: x[1], on: fs.stops === x[0], cls: 'v-opt' + (fs.stops === x[0] ? ' is-on' : ''), n: OF.filter(o => pass(o, 'stops') && (x[0] === 'any' || (x[0] === '0' ? o.stops === 0 : o.stops <= 1))).length, go: () => setF({ stops: x[0] }) })),
+      prices: PR.map(x => ({ label: x[1], on: fs.price === x[0], cls: 'v-opt' + (fs.price === x[0] ? ' is-on' : ''), go: () => setF({ price: x[0] }) })),
+      times: TIMES.map(x => ({ label: x[1], sub: x[2], icon: x[3], on: fs.times.indexOf(x[0]) >= 0, cls: 'w-timebox' + (fs.times.indexOf(x[0]) >= 0 ? ' is-active' : ''), go: () => setF({ times: tog(fs.times, x[0]) }) })),
+      airs: AIRS.map(a => { const best = OF.filter(o => o.code === a[0] && pass(o, 'airs')).sort((x, y) => x.price - y.price)[0]; return { code: a[0], name: a[1], from: best ? fmt(best.price) : '—', on: fs.airs.indexOf(a[0]) >= 0, cls: 'v-checkrow' + (fs.airs.indexOf(a[0]) >= 0 ? ' is-on' : ''), go: () => setF({ airs: tog(fs.airs, a[0]) }) }; }),
+      vias: [['DOH', 'Doha (DOH)'], ['KWI', 'Kuwait City (KWI)'], ['BAH', 'Bahrain (BAH)']].map(v => ({ label: v[1], on: fs.vias.indexOf(v[0]) >= 0, cls: 'v-checkrow' + (fs.vias.indexOf(v[0]) >= 0 ? ' is-on' : ''), go: () => setF({ vias: tog(fs.vias, v[0]) }) })),
+      bags: [['any', 'Any allowance'], ['30', '30 kg or more']].map(x => ({ label: x[1], on: fs.bag === x[0], cls: 'v-opt' + (fs.bag === x[0] ? ' is-on' : ''), go: () => setF({ bag: x[0] }) })),
+      refund: fs.refund, refundCls: 'w-switch' + (fs.refund ? ' is-on' : ''), toggleRefund: () => setF({ refund: !fs.refund })
+    };
+    const quick = [['Direct only', fs.stops === '0', () => setF({ stops: fs.stops === '0' ? 'any' : '0' })], ['Refundable', fs.refund, () => setF({ refund: !fs.refund })], ['30 kg bag', fs.bag === '30', () => setF({ bag: fs.bag === '30' ? 'any' : '30' })], ['Morning', fs.times.indexOf('morning') >= 0, () => setF({ times: tog(fs.times, 'morning') })]].map(q => ({ label: q[0], on: !!q[1], cls: 'w-chip' + (q[1] ? ' is-on' : ''), go: q[2] }));
+    const fCount = (fs.stops !== 'any' ? 1 : 0) + (fs.price !== 'any' ? 1 : 0) + fs.times.length + fs.airs.length + fs.vias.length + (fs.bag !== 'any' ? 1 : 0) + (fs.refund ? 1 : 0);
+    const SORTS = [['cheap', 'Cheapest', cheapest ? fmt(cheapest.price) + ' · ' + dur(cheapest.mins) : '—'], ['fast', 'Fastest', fastest ? dur(fastest.mins) + ' · ' + fmt(fastest.price) : '—'], ['early', 'Earliest', earliest ? earliest.dep + ' · ' + fmt(earliest.price) : '—']];
+    const sorts = SORTS.map(x => ({ label: x[1], sub: x[2], on: sort === x[0], cls: 'w-sorttab' + (sort === x[0] ? ' is-active' : ''), chip: 'w-chip' + (sort === x[0] ? ' is-on' : ''), go: () => this.setState({ sort: x[0] }) }));
+    const DAYS = [['Mon', '19 Oct', 45600], ['Tue', '20 Oct', 43100], ['Wed', '21 Oct', 42700], ['Thu', '22 Oct', 41200], ['Fri', '23 Oct', 39800], ['Sat', '24 Oct', 46900], ['Sun', '25 Oct', 49500]];
+    const day = st.day !== undefined ? st.day : 3;
+    const low = DAYS.reduce((a, d, i) => d[2] < DAYS[a][2] ? i : a, 0);
+    const days = DAYS.map((d, i) => ({ dow: d[0], date: d[1], price: fmt(d[2]), on: i === day, cls: 'w-dsday' + (i === day ? ' is-active' : '') + (i === low ? ' is-low' : ''),
+      go: () => { this.setState({ day: i, busy: true }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ busy: false }), 900); } }));
+    const DOW = { Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' };
+    const dayLong = DOW[DAYS[day][0]].slice(0, 3) + ', ' + DAYS[day][1] + ' 2026';
+    const loading = !!st.busy || (st.busy === undefined && !!p.loading);
+    // picked offer and money
+    const pkRaw = OF.find(o => o.id === pickId) || OF[0];
+    const pk = deco(pkRaw);
+    const up = st.up || 0;
+    const total = pkRaw.price + up;
+    const base = Math.round(pkRaw.price * 0.78 / 100) * 100;
+    const hold = st.hold !== undefined ? st.hold : 887;
+    const mm = Math.floor(hold / 60), ss = hold % 60;
+    // details drawer
+    const detId = st.det !== undefined ? st.det : (p.offer ? 'ku284' : '');
+    const dRaw = OF.find(o => o.id === detId) || OF[0];
+    const dtab = st.dt || 'itin';
+    const RULES = dRaw.ref === 'fee'
+      ? [['i i-calendar-clock', 'Change the date', 'Up to 24 hours before departure', '৳5,000 + fare difference', ''], ['i i-rotate-ccw', 'Cancel and refund', 'Refund to the way you paid, in up to 7 working days', '৳9,000 fee', ''], ['i i-circle-x', 'No-show', 'Taxes are refunded, the fare is not', 'Not refundable', 'is-no'], ['i i-user', 'Name change', 'Book again with the correct name', 'Not allowed', 'is-no']]
+      : [['i i-calendar-clock', 'Change the date', 'Up to 24 hours before departure', '৳7,500 + fare difference', ''], ['i i-rotate-ccw', 'Cancel and refund', 'Airport taxes are refunded', 'Fare not refundable', 'is-no'], ['i i-circle-x', 'No-show', 'Taxes are refunded, the fare is not', 'Not refundable', 'is-no'], ['i i-user', 'Name change', 'Book again with the correct name', 'Not allowed', 'is-no']];
+    const dt = Object.assign(deco(dRaw), {
+      bagKg: dRaw.bag + ' kg', base: fmt(Math.round(dRaw.price * 0.78 / 100) * 100), tax: fmt(dRaw.price - Math.round(dRaw.price * 0.78 / 100) * 100),
+      segs: dRaw.segs.map(g => ({ t1: g[0], a1: g[1], n1: g[2], t2: g[3], a2: g[4], n2: g[5], fno: g[6], dur: g[7], ac: g[8], lay: g[9] })),
+      rules: RULES.map(r => ({ icon: r[0], t: r[1], s: r[2], v: r[3], cls: r[4] })),
+      select: () => go('book', { pick: dRaw.id, det: '', hold: 887 })
+    });
+    const dtabs = [['itin', 'Itinerary'], ['bag', 'Baggage'], ['rules', 'Fare rules'], ['price', 'Price']].map(x => ({ label: x[1], on: dtab === x[0], cls: 'wl-dtab' + (dtab === x[0] ? ' is-on' : ''), go: () => this.setState({ dt: x[0] }) }));
+    // booking
+    const SAVED = [['RU', 'Rahim Uddin', { given: 'RAHIM', sur: 'UDDIN', dob: '12 / 04 / 1988', pp: 'A0•••••67', exp: '03 / 2031' }], ['FA', 'Farhana Akter', { given: 'FARHANA', sur: 'AKTER', dob: '27 / 09 / 1991', pp: 'B1•••••42', exp: '11 / 2029' }]];
+    const sv = st.sv !== undefined ? st.sv : 0;
+    const tv = sv >= 0 ? SAVED[sv][2] : { given: '', sur: '', dob: '', pp: '', exp: '' };
+    const ttl = st.ttl || (sv === 1 ? 'Ms' : 'Mr');
+    const pm = st.pm || 'ssl';
+    const PAYS = [['ssl', 'SSLCommerz', 'Cards and mobile banking', 'Visa, Mastercard, Amex and more', '--pc:#00185B'], ['bkash', 'bKash', 'bKash', 'Pay from your bKash account', '--pc:#B5135E'], ['nagad', 'Nagad', 'Nagad', 'Pay from your Nagad account', '--pc:#C2410C'], ['emi', 'EMI', 'Card EMI', '3 to 12 months on partner bank cards', '--pc:#003FBE']];
+    const pays = PAYS.map(x => ({ logo: x[1], title: x[2], sub: x[3], pc: x[4], on: pm === x[0], cls: 'wl-payopt' + (pm === x[0] ? ' is-on' : ''), go: () => this.setState({ pm: x[0] }) }));
+    const emi = st.emi || 6;
+    const emis = [3, 6, 12].map(n => ({ per: fmt(Math.ceil(total / n)) + '/mo', label: n + ' months · 0%', cls: emi === n ? 'is-on' : '', go: () => this.setState({ emi: n }) }));
+    const agree = !!st.agree;
+    const pcOpen = st.pc !== undefined ? st.pc : !!p.price;
+    const isResults = step === 'results', isBook = step === 'book', isPay = step === 'pay', isDone = step === 'done';
+    const hours = (() => { const d = new Date(Date.now() + 6 * 3600e3); const dow = d.getUTCDay(), mins = d.getUTCHours() * 60 + d.getUTCMinutes(); let open = false, label; if (dow !== 5 && mins >= 600 && mins < 1080) { open = true; label = 'Open now · until 6 pm'; } else if (dow !== 5 && mins < 600) label = 'Closed · opens at 10 am'; else if (dow === 4 || dow === 5) label = 'Closed · opens Saturday at 10 am'; else label = 'Closed · opens tomorrow at 10 am'; return { label, clsDark: 'v-hours is-sm on-dark ' + (open ? 'is-open' : 'is-closed') }; })();
+    return {
+      L, m: !!p.m, hours, dayLong, dayShort: DAYS[day][1] + ' 2026',
+      crumb: isResults ? 'Dhaka to Dubai · Live' : isDone ? 'Booked' : 'Book your flight',
+      isResults, isFlow: isBook || isPay, isBook, isPay, isDone,
+      days, sorts, offers, loading, showOffers: !loading && offers.length > 0, noOffers: !loading && offers.length === 0, skels: [1, 2, 3], listKey: sort + '-' + day + '-' + fCount,
+      countLabel: offers.length === 1 ? '1 flight' : offers.length + ' flights',
+      quick, fl, fCount, fChipCls: 'w-chip' + (fCount ? ' is-on' : ''),
+      railCls: 'w-rail v-rail wl-frail' + (fOpen ? ' is-open' : ''), fScrimCls: 'wl-fscrim' + (fOpen ? ' is-open' : ''),
+      openF: () => this.setState({ fOpen: true }), closeF: () => this.setState({ fOpen: false }), clearF: () => this.setState({ f: f0 }),
+      detOpen: !!detId, detOvCls: 'w-overlay wa-r wl-ov' + (st.detOut ? ' is-out' : ''), dt, dtabs, dtab: { itin: dtab === 'itin', bag: dtab === 'bag', rules: dtab === 'rules', price: dtab === 'price' },
+      closeDet: () => { this.setState({ detOut: true }); clearTimeout(this._t2); this._t2 = setTimeout(() => this.setState({ det: '', detOut: false }), 280); },
+      pk, totalF: fmt(total), bk: { base: fmt(base), tax: fmt(pkRaw.price - base), up: up ? '+' + fmt(up) : '' },
+      stp: { a: 'wl-step ' + (isBook ? 'is-now' : 'is-done'), aN: isBook ? '1' : '✓', b: 'wl-step ' + (isPay ? 'is-now' : ''), bN: '2' },
+      holdF: String(mm).padStart(2, '0') + ':' + String(ss).padStart(2, '0'), holdNote: hold < 120 ? 'left before the fare is released' : 'left to finish. We hold this fare for you.',
+      holdCls: 'wl-hold' + (hold < 120 ? ' is-low' : ''), holdBar: 'transform:scaleX(' + (hold / 900).toFixed(3) + ')',
+      saved: SAVED.map((s, i) => ({ ini: s[0], name: s[1], cls: 'wl-savedchip' + (sv === i ? ' is-on' : ''), go: () => this.setState({ sv: i, ttl: i === 1 ? 'Ms' : 'Mr' }) })),
+      ttl, tv, titles: ['Mr', 'Ms', 'Mrs'].map(t => ({ label: t, on: ttl === t, cls: 'w-chip' + (ttl === t ? ' is-active' : ''), go: () => this.setState({ ttl: t }) })),
+      saveOn: st.save !== false, saveCls: 'v-checkrow v-consent' + (st.save !== false ? ' is-on' : ''), toggleSave: () => this.setState({ save: st.save === false }),
+      backToResults: () => go('results'), toPay: () => go('pay'), toBook: () => go('book'),
+      pays, payEmi: pm === 'emi', emis,
+      agree, agreeCls: 'v-checkrow v-consent' + (agree ? ' is-on' : ''), toggleAgree: () => this.setState({ agree: !agree, agreeErr: false }), agreeErr: !!st.agreeErr,
+      proc: !!st.proc, notProc: !st.proc,
+      payNow: () => { if (!agree) { this.setState({ agreeErr: true }); return; } this.setState({ proc: true }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ proc: false, step: 'done' }), 1400); },
+      pcOpen, oldF: fmt(pkRaw.price), newF: fmt(pkRaw.price + 2300), diffF: fmt(2300),
+      pcAccept: () => this.setState({ pc: false, up: 2300, step: 'pay' }), pcBack: () => this.setState({ pc: false, step: 'results' })
+    };
+  }
+}
+</script>
+</body>
+</html>

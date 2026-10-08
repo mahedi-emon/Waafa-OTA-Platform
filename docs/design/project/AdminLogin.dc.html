@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · sign in</title>
+<link rel="stylesheet" href="./waafa.css">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../photos.css">
+<script src="./deps.js"></script>
+<script src="./support.js"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+
+<style>body{margin:0}</style>
+</helmet>
+<div class="a-login wa-r">
+  <aside class="a-login-art" aria-hidden="true">
+    <video class="fx-video" poster="../assets/0b44bb71cb46595cecba296825dda949.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"><source src="../assets/64aa71276cdfcc3336210361d516015a.webm" type="video/webm"><source src="../assets/6b0d8502070e0ec120fcacf152da8c82.mp4" type="video/mp4"></video>
+    <div class="a-login-mark"><img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt=""><div><b>Waafa Admin</b><small>Waafa Tours and Travel · Waafas World</small></div></div>
+    <svg class="rib" viewBox="0 0 800 240" preserveAspectRatio="none"><defs><linearGradient id="lg-r" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".7"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".9"></stop></linearGradient></defs><path d="M0 200 C 220 200 330 90 520 80 C 650 72 720 40 800 10 L 800 60 C 724 88 654 128 524 136 C 336 146 224 240 0 240 Z" fill="url(#lg-r)"></path></svg>
+    <div style="position:relative">
+      <h2>Every lead, order and visa case in one place.</h2>
+      <p>Reply inside 30 minutes, convert leads to bookings, ship Waafas World orders and keep the website up to date.</p>
+    </div>
+    <div class="a-login-stats"><div><b>30 min</b><small>Reply target</small></div><div><b>4</b><small>Booking modes</small></div><div><b>8</b><small>Staff roles</small></div></div>
+  </aside>
+  <main class="a-login-form">
+    <img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="Waafa" class="a-hide-lg" style="width:48px;height:48px">
+    <sc-if value="{{isLogin}}" hint-placeholder-val="{{ true }}">
+      <h1>Sign in to Admin</h1>
+      <p>For Waafa staff. This page is not indexed by search engines.</p>
+      <sc-if value="{{err}}" hint-placeholder-val="{{ false }}"><div class="a-callout is-red"><span class="i i-circle-alert"></span><span><b>That email and password don’t match.</b> {{triesLeft}} tries left before a 15-minute lock.</span></div></sc-if>
+      <label class="a-field"><span class="a-label">Work email</span><input class="{{inCls}}" type="email" value="{{email}}" onChange="{{onEmail}}" autocomplete="username"></label>
+      <label class="a-field"><span class="a-label" style="justify-content:space-between">Password<a class="a-link text-12" href="#">Forgot password?</a></span><span class="a-pw"><input class="{{inCls}}" type="{{pwType}}" value="password123" autocomplete="current-password"><button class="a-btn a-btn-ghost a-btn-sm a-btn-icon a-pw-eye" type="button" aria-label="{{pwAria}}" onClick="{{togglePw}}"><span class="{{pwIcon}}"></span></button></span></label>
+      <button class="a-row-check" type="button" onClick="{{toggleKeep}}"><span class="{{keepCls}}"></span>Keep me signed in on this device</button>
+      <button class="a-btn a-btn-primary" type="button" onClick="{{signIn}}"><sc-if value="{{busy}}" hint-placeholder-val="{{ false }}"><span class="ww-spin" style="width:18px;height:18px;border-radius:50%;border:2.5px solid rgb(255 255 255/.35);border-top-color:#fff;animation:mo-spin .7s linear infinite"></span></sc-if>Sign in</button>
+      <p class="text-12 a-mute" style="text-align:center">Two-factor sign-in (authenticator app) arrives in P1 and is required for Super Admin and Admin.</p>
+    </sc-if>
+    <sc-if value="{{isLocked}}" hint-placeholder-val="{{ false }}">
+      <span class="a-tile is-red" style="width:52px;height:52px;border-radius:16px"><span class="i i-lock-keyhole" style="width:24px;height:24px"></span></span>
+      <h1>Too many tries</h1>
+      <p>For safety, sign-in is locked for 15 minutes after 5 failed tries. We emailed the account owner.</p>
+      <div class="flex flex-col gap-2"><div class="flex justify-between text-13"><b class="text-navy">Try again in {{lockF}}</b><span class="a-mute">15:00</span></div><div class="a-lockbar"><span style="{{lockBar}}"></span></div></div>
+      <a class="a-btn a-btn-outline" href="#"><span class="i i-key-round"></span>Reset password by email</a>
+      <p class="text-12 a-mute">Locked: 8 Oct, 7:42 pm · IP 103.x.x.x · Dhaka</p>
+    </sc-if>
+    <sc-if value="{{isTotp}}" hint-placeholder-val="{{ false }}">
+      <span class="a-tile is-dark" style="width:52px;height:52px;border-radius:16px"><span class="i i-shield-check" style="width:24px;height:24px"></span></span>
+      <h1>Enter your 6-digit code <span class="a-p is-p1">P1</span></h1>
+      <p>Open your authenticator app for Waafa Admin. The code changes every 30 seconds.</p>
+      <div class="a-otp" role="group" aria-label="Six-digit code"><sc-for list="{{otp}}" as="o" hint-placeholder-count="6"><input class="{{o.cls}}" value="{{o.v}}" inputmode="numeric" maxlength="1" aria-label="{{o.aria}}"></sc-for></div>
+      <button class="a-btn a-btn-primary" type="button">Verify and sign in</button>
+      <a class="a-link text-13" href="#" style="text-align:center">Use a backup code</a>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"state":{"editor":"enum","options":["login","error","locked","totp"],"default":"login"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  componentDidMount() { this._iv = setInterval(() => { const s = this.state || {}; const p = this.props || {}; if ((s.view || p.state) === 'locked') this.setState({ lock: Math.max(0, (s.lock !== undefined ? s.lock : 838) - 1) }); }, 1000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); }
+  renderVals() {
+    const p = this.props || {};
+    const st = this.state || {};
+    const view = st.view || (p.state === 'error' ? 'login' : p.state) || 'login';
+    const tries = st.tries !== undefined ? st.tries : (p.state === 'error' ? 3 : 0);
+    const lock = st.lock !== undefined ? st.lock : 838;
+    const pw = !!st.pw;
+    const keep = st.keep !== undefined ? st.keep : true;
+    return {
+      isLogin: view === 'login', isLocked: view === 'locked', isTotp: view === 'totp',
+      err: tries > 0, triesLeft: Math.max(0, 5 - tries), inCls: 'a-input' + (tries > 0 ? ' is-err' : ''),
+      email: st.email !== undefined ? st.email : 'arif@waafasworld.com', onEmail: e => this.setState({ email: e && e.target ? e.target.value : '' }),
+      pwType: pw ? 'text' : 'password', pwIcon: pw ? 'i i-eye-off' : 'i i-eye', pwAria: pw ? 'Hide password' : 'Show password', togglePw: () => this.setState({ pw: !pw }),
+      keepCls: 'a-check' + (keep ? ' is-on' : ''), toggleKeep: () => this.setState({ keep: !keep }),
+      busy: !!st.busy,
+      signIn: () => { if (tries >= 4) { this.setState({ view: 'locked', tries: 5 }); return; } this.setState({ busy: true }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ busy: false, tries: tries + 1 }), 700); },
+      lockF: Math.floor(lock / 60) + ':' + String(lock % 60).padStart(2, '0'), lockBar: 'width:' + (lock / 900 * 100).toFixed(1) + '%',
+      otp: ['4', '8', '1', '0', '', ''].map((v, i) => ({ v, cls: i === 4 ? 'is-on' : '', aria: 'Digit ' + (i + 1) }))
+    };
+  }
+}
+</script>
+</body>
+</html>
