@@ -34,7 +34,7 @@ Smoke test for all: `claude mcp list` at the repo root. Servers added or changed
 | serena | `uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project .` | — | "use serena get_symbols_overview on apps/web/src/components/motion/reduced-motion.ts" | Connected (project entry only) |
 | magic (21st.dev) | `npx -y @21st-dev/magic@latest` | `TWENTY_FIRST_API_KEY` → passed as `API_KEY` | "/ui use 21st magic to suggest a pricing card component" (don't install it) | Connected |
 | figma | remote HTTP `https://mcp.figma.com/mcp` | — (OAuth) | "use figma MCP whoami" | Needs authentication: run `/mcp` → figma → Authenticate once |
-| github | remote HTTP `https://api.githubcopilot.com/mcp/`, header `Authorization: Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}` | `GITHUB_PERSONAL_ACCESS_TOKEN` (fine-grained PAT, this repo) | "use github MCP to list open issues in mahedi-emon/Waafa-OTA-Platform" | Fails until the PAT is set |
+| github | remote HTTP `https://api.githubcopilot.com/mcp/`, header `Authorization: Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}` | `GITHUB_PERSONAL_ACCESS_TOKEN` (fine-grained PAT, this repo) | "use github MCP to list open issues in mahedi-emon/Waafa-OTA-Platform" | Connected (PAT in local `.claude/settings.local.json`; cloud: set as env secret) |
 
 Every `${VAR}` uses `${VAR:-}` so a missing variable doesn't break parsing of the whole file; that server just fails auth.
 
