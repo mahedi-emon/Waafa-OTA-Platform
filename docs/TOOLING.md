@@ -19,7 +19,7 @@ Set up on 2026-10-09.
 ```bash
 npx playwright install --with-deps chromium     # browser for the Playwright MCP
 cd apps/web && npm install                       # app deps
-pip install uv  # only if `uvx` is missing (needed by Serena)
+curl -LsSf https://astral.sh/uv/install.sh | sh  # only if `uvx` is missing (needed by Serena)
 ```
 Then set the env vars below in the cloud environment settings.
 
@@ -47,6 +47,11 @@ Every `${VAR}` uses `${VAR:-}` so a missing variable doesn't break parsing of th
   the file to the new `language_servers:` key. The older user-installed `serena.exe` (1.3.1.dev0) can't read that (`KeyError: 'languages'`),
   Fixed on this machine: the user-scope entry was removed (`claude mcp remove serena -s user`) so only the project entry runs, and
   `%APPDATA%\Python\Python312\Scripts` (where `uvx` lives) was added to the user PATH. `claude mcp get serena` → Connected. Takes effect in new sessions.
+  **2026-10-09 re-fix (`CONNECTION_CLOSED`):** the pip-installed `uvx` was gone, so the server couldn't start. Reinstalled uv with the
+  official installer (`irm https://astral.sh/uv/install.ps1 | iex` → uv 0.12.24 in `%USERPROFILE%\.local\bin`, added to user PATH) and
+  pre-cached Serena. A local-scope entry with the absolute `uvx.exe` path was tried as a stale-PATH fallback, but Claude Code then
+  warns "Conflicting scopes" — it was removed (`claude mcp remove serena -s local`). Keep **only the project entry**; if `uvx` isn't
+  found, fix PATH (or open a new terminal) rather than adding a second `serena` entry in another scope.
 - **shadcn:** `npx shadcn@latest mcp init --client claude` was run in `apps/web`. It writes `apps/web/.mcp.json` and adds `shadcn` as a devDependency.
   Claude Code reads `.mcp.json` from the repo root, so the entry was moved there (`-y` added) and the nested file deleted.
   `shadcn init` (components.json) is not run yet — that's part of the foundation build.

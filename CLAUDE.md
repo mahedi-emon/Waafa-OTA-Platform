@@ -22,6 +22,10 @@ Ask before adding a dependency the PRD does not list.
   installed with the owner's 21st.dev key and reviewed for keyboard use, reduced motion and bundle size.
 - Sample data lives in `/fixtures` and is marked Sample. Live-mode (P2) screens run on fixtures only.
 - Animate only transform and opacity; under `prefers-reduced-motion` movement becomes a 150 ms fade.
+- Always use the Serena MCP tools for code navigation and edits (`get_symbols_overview`, `find_symbol`,
+  `find_referencing_symbols`, symbol-level replace/insert) before falling back to plain file reads and grep.
+  If Serena is disconnected, say so and fix it (see `docs/TOOLING.md`) rather than silently skipping it.
+- For UI work, load the `ui-ux-pro-max` skill (`.claude/skills/ui-ux-pro-max`).
 
 ## Never
 - Show trade licence numbers, owner details, ID numbers or fees anywhere (site, seed data, repository).

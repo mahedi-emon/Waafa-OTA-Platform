@@ -1,19 +1,30 @@
+# Dependencies and build output
 node_modules/
+.pnpm-store/
 .next/
+out/
 dist/
+build/
+.turbo/
+coverage/
+*.tsbuildinfo
+.vercel/
+
+# Test and audit output
+playwright-report/
+test-results/
+blob-report/
+.lighthouseci/
+.playwright-mcp/
 
 .DS_Store
 *.log
-.turbo/
-coverage/
+__pycache__/
+*.pyc
 
 # Local secrets and per-machine config (never commit)
-.env
-.env.*
+.env*
 !.env.example
 .claude/settings.local.json
 .serena/cache/
 .serena/project.local.yml
-.playwright-mcp/
-__pycache__/
-*.pyc
