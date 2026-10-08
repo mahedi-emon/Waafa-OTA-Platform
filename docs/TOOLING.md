@@ -31,7 +31,7 @@ Smoke test for all: `claude mcp list` at the repo root. Servers added or changed
 | context7 | `npx -y @upstash/context7-mcp@latest` | `CONTEXT7_API_KEY` (optional, higher rate limits) | "use context7: resolve the library id for next.js" | Connected (first start can time out while npx downloads; retry) |
 | shadcn | `npx -y shadcn@latest mcp` | — | "use shadcn MCP to list components in the @shadcn registry" | Connected |
 | playwright | `npx -y @playwright/mcp@latest --headless` | — | "use playwright to open https://example.com and give the page title" | Connected |
-| serena | `uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project .` | — | "use serena get_symbols_overview on apps/web/src/components/motion/reduced-motion.ts" | Works; locally the user-scope serena entry takes precedence (see notes) |
+| serena | `uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project .` | — | "use serena get_symbols_overview on apps/web/src/components/motion/reduced-motion.ts" | Connected (project entry only) |
 | magic (21st.dev) | `npx -y @21st-dev/magic@latest` | `TWENTY_FIRST_API_KEY` → passed as `API_KEY` | "/ui use 21st magic to suggest a pricing card component" (don't install it) | Connected |
 | figma | remote HTTP `https://mcp.figma.com/mcp` | — (OAuth) | "use figma MCP whoami" | Needs authentication: run `/mcp` → figma → Authenticate once |
 | github | remote HTTP `https://api.githubcopilot.com/mcp/`, header `Authorization: Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}` | `GITHUB_PERSONAL_ACCESS_TOKEN` (fine-grained PAT, this repo) | "use github MCP to list open issues in mahedi-emon/Waafa-OTA-Platform" | Fails until the PAT is set |
@@ -45,7 +45,8 @@ Every `${VAR}` uses `${VAR:-}` so a missing variable doesn't break parsing of th
   Onboarding: Serena `onboarding` tool run, 4 memories written. Indexing: `uvx --from git+https://github.com/oraios/serena serena project index .`.
   `project.yml`: TypeScript language server, ignores `docs/design/vendor` and `docs/design/thumbs`. Current Serena (from git) migrated
   the file to the new `language_servers:` key. The older user-installed `serena.exe` (1.3.1.dev0) can't read that (`KeyError: 'languages'`),
-  so on this machine either remove the user-scope entry (`claude mcp remove serena -s user`) and use the project one via `uvx`, or upgrade it.
+  Fixed on this machine: the user-scope entry was removed (`claude mcp remove serena -s user`) so only the project entry runs, and
+  `%APPDATA%\Python\Python312\Scripts` (where `uvx` lives) was added to the user PATH. `claude mcp get serena` → Connected. Takes effect in new sessions.
 - **shadcn:** `npx shadcn@latest mcp init --client claude` was run in `apps/web`. It writes `apps/web/.mcp.json` and adds `shadcn` as a devDependency.
   Claude Code reads `.mcp.json` from the repo root, so the entry was moved there (`-y` added) and the nested file deleted.
   `shadcn init` (components.json) is not run yet — that's part of the foundation build.
@@ -59,7 +60,7 @@ Every `${VAR}` uses `${VAR:-}` so a missing variable doesn't break parsing of th
 | --- | --- |
 | `frontend-design` (Anthropic) | `npx skills add anthropics/skills --skill frontend-design -a claude-code --copy -y` |
 | `design-taste-frontend` (taste-skill) | `npx skills add Leonxlnx/taste-skill --skill design-taste-frontend -a claude-code --copy -y`. The repo holds 13 skills; only the default "taste" skill was installed. The others are style-specific (brutalist, minimalist…) or image-generation skills, which clash with the real-photos-only rule. Add more with `--skill <name>`. |
-| UI UX Pro Max | `npm i -g uipro-cli` done (v2.2.3). `uipro init --ai claude` was **blocked** by Claude Code's auto-mode permission check, so the owner has to run it once at the repo root: `! uipro init --ai claude`, then commit `.claude/skills/ui-ux-pro-max/`. |
+| `ui-ux-pro-max` | `npm i -g uipro-cli` (v2.2.3), then `uipro init --ai claude` at the repo root. Its search scripts need Python 3: `python .claude/skills/ui-ux-pro-max/scripts/search.py "<query>" --domain style`. `__pycache__/` is gitignored. |
 
 `--copy` writes real files (not symlinks) into `.claude/skills/`, so they are committed and work in the cloud.
 

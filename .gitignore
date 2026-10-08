@@ -15,3 +15,5 @@ coverage/
 .serena/cache/
 .serena/project.local.yml
 .playwright-mcp/
+__pycache__/
+*.pyc
