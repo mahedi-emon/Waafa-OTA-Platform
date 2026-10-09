@@ -50,6 +50,10 @@ jobs:
         if: steps.ws.outputs.ready == 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: Format check
+        if: steps.ws.outputs.ready == 'true'
+        run: pnpm format:check
+
       - name: Lint
         if: steps.ws.outputs.ready == 'true'
         run: pnpm lint
@@ -69,7 +73,7 @@ jobs:
       - name: Playwright version
         if: steps.ws.outputs.ready == 'true'
         id: pw
-        run: echo "version=$(pnpm --filter web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(pnpm --filter @waafa/web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright browsers
         if: steps.ws.outputs.ready == 'true'
@@ -80,7 +84,7 @@ jobs:
 
       - name: Install Playwright browser
         if: steps.ws.outputs.ready == 'true'
-        run: pnpm --filter web exec playwright install --with-deps chromium
+        run: pnpm --filter @waafa/web exec playwright install --with-deps chromium
 
       - name: E2E smoke tests
         if: steps.ws.outputs.ready == 'true'
@@ -128,7 +132,7 @@ jobs:
 
       - name: Build web
         if: steps.lh.outputs.ready == 'true'
-        run: pnpm --filter web... build
+        run: pnpm --filter @waafa/web... build
 
       - name: Lighthouse CI
         if: steps.lh.outputs.ready == 'true'

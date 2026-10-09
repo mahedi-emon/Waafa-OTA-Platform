@@ -1,0 +1,14 @@
+pnpm-lock.yaml
+**/*.md
+docs/
+.claude/
+.serena/
+.github/ISSUE_TEMPLATE/
+**/.next/
+**/.turbo/
+**/coverage/
+**/playwright-report/
+**/test-results/
+**/dist/
+apps/web/public/
+apps/web/next-env.d.ts

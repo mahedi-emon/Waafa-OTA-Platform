@@ -1,0 +1,4 @@
+{
+  "extends": "@waafa/config/tsconfig/library.json",
+  "include": ["src", "*.ts", "*.mjs"]
+}
