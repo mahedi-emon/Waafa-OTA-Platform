@@ -76,6 +76,16 @@ describe("settings repository", () => {
 });
 
 describe("content repository", () => {
+  it("serves page media slots, real footage on the home hero and nothing for an empty slot", async () => {
+    const hero = await content.getMediaSlot("home-hero");
+    expect(hero?.video?.mp4).toBe("/media/video/hero-sky.mp4");
+    expect(hero?.video?.mp4Mobile).toBe("/media/video/hero-sky-m.mp4");
+    expect(hero?.video?.credit).toMatch(/ · (Pexels|Mixkit|Coverr)$/);
+    expect(await content.getMediaSlot("office")).toBeNull();
+    const keys = (await content.listMediaSlots()).map((slot) => slot.key);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
   it("serves published pages by slug, with sections for the contents list", async () => {
     const refund = await content.getPage("refund-policy");
     expect(refund?.sections.map((section) => section.id)).toContain("how");

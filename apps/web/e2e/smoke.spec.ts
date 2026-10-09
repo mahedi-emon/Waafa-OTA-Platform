@@ -1,20 +1,17 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import { collectErrors } from "./errors";
 
 /** Widths every public route must hold (CLAUDE.md Quality gates). */
-const WIDTHS = [320, 390, 768, 1440] as const;
+const WIDTHS = [320, 390, 768, 1024, 1440] as const;
 const ROUTES = ["/"] as const;
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
-function collectErrors(page: Page): string[] {
-  const errors: string[] = [];
-  page.on("console", (message) => {
-    if (message.type() === "error") errors.push(message.text());
-  });
-  page.on("pageerror", (error) => errors.push(error.message));
-  return errors;
-}
-
+/**
+ * Console errors and failed responses. Links to routes that later issues build (A7-A16) are prefetched and 404 for
+ * now: those RSC prefetches are expected; any other 404 (pages, images, scripts) is an error. Remove the prefetch
+ * allowance in A22, when every linked route exists.
+ */
 for (const route of ROUTES) {
   for (const width of WIDTHS) {
     test(`${route} renders cleanly at ${width}px`, async ({ page }) => {

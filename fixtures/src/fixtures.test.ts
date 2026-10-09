@@ -1,3 +1,6 @@
+import { existsSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { BookingModuleSchema, HomeSectionKeySchema, LEAD_PREFIX } from "@waafa/shared";
 import { fixtureRegistry, loadFixtures, parseFixture, type FixtureKey } from "./index";
@@ -100,17 +103,46 @@ describe("compliance (PRD §2 and the CLAUDE.md Never list)", () => {
     expect(numbers.filter((number) => !number.endsWith(company))).toEqual([]);
   });
 
-  it("uses real photos served from /images with a credit for every Unsplash photo", () => {
-    const images: { path: string; src: string; credit: unknown }[] = [];
+  it("uses real media files from apps/web/public/media with a linked credit for every stock photo and clip", () => {
+    const publicDir = fileURLToPath(new URL("../../apps/web/public", import.meta.url));
+    const images: { path: string; node: Record<string, unknown> }[] = [];
+    const videos: { path: string; node: Record<string, unknown> }[] = [];
     walk(data, (node, path) => {
-      if (typeof node.src === "string" && typeof node.alt === "string")
-        images.push({ path, src: node.src, credit: node.credit });
+      if (typeof node.mp4 === "string") videos.push({ path, node });
+      else if (typeof node.src === "string" && typeof node.alt === "string")
+        images.push({ path, node });
     });
     expect(images.length).toBeGreaterThan(0);
-    for (const image of images) {
-      expect(image.src, image.path).toMatch(/^\/images\/(products\/)?[a-z0-9-]+\.jpg$/);
-      if (!image.src.startsWith("/images/products/"))
-        expect(image.credit, image.path).toMatch(/ · Unsplash$/);
+
+    for (const { path, node } of images) {
+      const src = String(node.src);
+      expect(src, path).toMatch(
+        /^\/media\/(photos\/[a-z0-9-]+\.jpg|products\/prod-[a-z0-9-]+\.jpg|video\/[a-z0-9-]+\.webp)$/,
+      );
+      expect(existsSync(join(publicDir, src)), `${path} → ${src} is missing`).toBe(true);
+      if (src.startsWith("/media/photos/")) {
+        expect(node.credit, path).toMatch(/ · Unsplash$/);
+        expect(node.creditUrl, path).toMatch(/^https:\/\/unsplash\.com\/photos\/[\w-]+$/);
+      }
+    }
+
+    for (const { path, node } of videos) {
+      for (const [field, limit] of [
+        ["mp4", 1024 * 1024],
+        ["webm", 1024 * 1024],
+        ["mp4Mobile", 512 * 1024],
+        ["webmMobile", 512 * 1024],
+      ] as const) {
+        const src = node[field];
+        expect(src, `${path}.${field}`).toMatch(/^\/media\/video\/[a-z0-9-]+\.(mp4|webm)$/);
+        const file = join(publicDir, String(src));
+        expect(existsSync(file), `${path}.${field} → ${String(src)} is missing`).toBe(true);
+        expect(statSync(file).size, `${path}.${field} is over budget`).toBeLessThanOrEqual(limit);
+      }
+      expect(node.credit, path).toMatch(/ · (Pexels|Coverr|Mixkit)$/);
+      expect(node.creditUrl, path).toMatch(
+        /^https:\/\/(www\.)?(pexels\.com|coverr\.co|mixkit\.co)\//,
+      );
     }
   });
 

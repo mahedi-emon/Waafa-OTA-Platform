@@ -15,6 +15,8 @@ export const CACHE_TAGS = {
   gallery: "gallery",
   feedback: "feedback",
   team: "team",
+  /** Media library: page-level photo and video slots. */
+  media: "media",
   baggage: "baggage",
   airports: "airports",
   groupFares: "group-fares",

@@ -46,6 +46,7 @@ export function createFixtureSettingsRepository(data: FixtureData): SettingsRepo
           shopPayment: state("shopPayment"),
         },
         onlinePaymentLive: data.paymentSettings.onlinePaymentLive,
+        accountsLive: data.siteSettings.accountsLive,
         codLimit: data.paymentSettings.codLimit,
         maintenance: data.maintenanceSettings,
       };

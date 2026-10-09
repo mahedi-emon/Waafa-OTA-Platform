@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 09 Oct 17:20 Asia/Dhaka · Phase: A · Frontend · Current: #27 · A0 Project setup · Progress: 4/24 issues (17%) · Launch: 13 Oct 2026, 4 days left · Status: Behind by 3 issues (HANDOFF build order expects the layout shell and Home by Fri 9 Oct; cuts proposed in section 10)
+Updated: 09 Oct 20:56 Asia/Dhaka · Phase: A · Frontend · Current: #6 · A6 Layout shell (A5 #5 and A1b #34 in parallel) · Progress: 5/24 issues (21%) · Launch: 13 Oct 2026, 4 days left · Status: Behind by 3 issues (a 90-minute usage-limit pause today; cuts proposed in section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) | 4 | 2 (#27, #5) | 0 | 17% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) | 5 | 3 (#6, #5, #34) | 0 | 21% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -37,11 +37,11 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #27 · A0 Project setup: rules, tracker, guards, hooks and CI — 🟡 In progress
+### #27 · A0 Project setup: rules, tracker, guards, hooks and CI — ✅ Done
 | Field | Value |
 | --- | --- |
-| Opened → closed | 09 Oct 16:52 → — |
-| Branch · PR · merge | `chore/27-project-setup` · — · — |
+| Opened → closed | 09 Oct 16:52 → 09 Oct 17:47 |
+| Branch · PR · merge | `chore/27-project-setup` · #35 · `20614bd` |
 | Built | v4 tracker; CLAUDE.md, README, HANDOFF and PRD corrections; guards, husky + commitlint + attribution hook; CI (guards, attribution, path filters, caches), CodeQL, Dependabot, PR template, issue forms; deny rules; GitHub labels, milestone F, epics, sub-issues, Project fields, squash-only merges |
 | Files and components | `CLAUDE.md`, `README.md`, `docs/TRACKER.md`, `docs/PRD.md`, `docs/design/handoff/HANDOFF.md`, `.claude/settings.json`, `.husky/*`, `commitlint.config.mjs`, `lint-staged.config.mjs`, `scripts/guards.mjs`, `scripts/check-attribution.mjs`, `.github/**`, `components/brand/brandColors.ts` |
 | Screens matched | — |
@@ -52,13 +52,28 @@ Serena memory `audit_findings`.
 | Decisions | D36–D45 |
 | Bugs and follow-ups | #34 (A1b addendum) |
 
-### #34 · A1b v4 addendum: signature moments, beat list, persisted design system, inner-page benchmark — ⬜ Todo
+### #6 · A6 Layout shell: header, mega panels, tab bar, drawer, footer, WhatsApp, loader — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 09 Oct 06:03 → 09 Oct 21:03 |
+| Branch · PR · merge | `feat/6-layout-shell` · #36 · `3723d68` |
+| Built | Sticky header (CSS scroll-timeline solidify, 64/72 px), desktop nav with the Waafas World mega panel and the More panel, help popover and phone help sheet with live office status and copy buttons, full-screen phone drawer, five-tab bar with the raised W disc and a sliding indicator, More sheet above the tab bar, data-driven footer (accordions on phones, live payment methods only, newsletter, code-rendered developer credit), dismissible announcement, floating WhatsApp that names the page, breadcrumbs with JSON-LD, route loader |
+| Files and components | `apps/web/src/components/layout/*` (SiteHeader, DesktopNav, ShopMegaPanel, MorePanel, HelpMenu, HelpPanel, ContactRow, CopyButton, OfficeStatusChip, useOfficeStatus, MobileMenu, MobileMenuBody, MoreGrid, MoreSheetBody, TabBar, CurrentMarker, WithPathname, isActivePath, SiteFooter, FooterAccordion, NewsletterForm, DeveloperCredit, AnnouncementBar, AnnouncementShell, FloatingWhatsApp, Breadcrumbs), `components/icons/MenuIcon.tsx`, `components/seo/JsonLd.tsx`, `lib/currentYear.ts`, `lib/siteUrl.ts`, `app/[locale]/(site)/{layout,loading}.tsx`, restyled `components/ui/navigation-menu.tsx` |
+| Screens matched | Header, Home-shopmenu, Home-moremenu, Home-help, Home-m, Home-m-drawer, Home-m-more, Home-m-help, Footer, TabBar |
+| Admin control | AC-57 to AC-63 (new); AC-01 to AC-16 used |
+| Tests | unit +3 (isActivePath) · e2e 30 (13 new layout tests: panels by keyboard, help, drawer focus return, More sheet, tab bar, announcement memory, WhatsApp message, newsletter, footer credit; smoke and styleguide now include 1024) · axe pass with panels and sheets open · Lighthouse — (A7 adds lighthouserc) |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 |
+| Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
+| Decisions | D46–D53 |
+| Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #34 · A1b v4 addendum: signature moments, beat list, persisted design system, inner-page benchmark — 🟡 In progress
 | Field | Value |
 | --- | --- |
 | Opened → closed | 09 Oct → — |
-| Branch · PR · merge | — |
-| Built | — |
-| Files and components | `docs/design/MOTION.md`, `docs/design/DESIGN.md`, `docs/design/COMPETITOR_BENCHMARK.md`, `design-system/` |
+| Branch · PR · merge | `docs/34-v4-addendum` (pushed) · — · — |
+| Built | MOTION.md §8 signature moments and §9 beat list; reconciled UI UX Pro Max system in `docs/design/design-system/waafa`; DESIGN.md deviation log. Pending: inner-page Lighthouse |
+| Files and components | `docs/design/MOTION.md`, `docs/design/DESIGN.md`, `docs/design/COMPETITOR_BENCHMARK.md`, `docs/design/design-system/waafa/*` |
 | Screens matched | Motion board |
 | Admin control | — |
 | Tests | — |
@@ -67,20 +82,20 @@ Serena memory `audit_findings`.
 | Decisions | — |
 | Bugs and follow-ups | — |
 
-### #5 · A5 Media: real photos with credits, video loops and posters — 🟡 In progress
+### #5 · A5 Media: real photos with credits, video loops and posters — 🟡 In review
 | Field | Value |
 | --- | --- |
 | Opened → closed | 09 Oct 06:03 → — |
-| Branch · PR · merge | `feat/5-media` (WIP commit) · — · — |
-| Built | Earlier session: 31 Unsplash photos and 3 Better Day product shots in `apps/web/public/media`, `VideoSchema`, `MediaSlot` contract, credit URLs. To do: real footage (Pexels, Coverr, Mixkit) instead of the drawn loops, mobile versions, posters, `MEDIA_CREDITS.md` |
-| Files and components | `apps/web/public/media/**`, `fixtures/src/images.ts`, `packages/shared/src/schemas/{common,content,shop}.ts` |
+| Branch · PR · merge | `feat/5-media` · — · — |
+| Built | 31 Unsplash photos and 3 Better Day product shots with sizes and linked credits; six real clips (Mixkit, Pexels) for the home hero, two package previews, the visa and trading headers and the sample headphones, each with 720 px phone files and a first-frame WebP poster; `VideoSchema` (phone sources, credit), `MediaSlot` contract with repository, cached accessor and `media` cache tag; SmartVideo picks the phone files under 768 px; the prototype's drawn loops removed |
+| Files and components | `apps/web/public/media/{photos,products,video}`, `fixtures/src/{images,media,travel,shop,visa,content}.ts`, `packages/shared/src/schemas/{common,content,shop,travel,visa}.ts`, `apps/web/src/lib/data/{types,content,tags}.ts`, `components/media/SmartVideo.tsx`, `docs/design/MEDIA_CREDITS.md` |
 | Screens matched | PhotoBrief |
-| Admin control | media slots (A20 media library) |
-| Tests | — |
-| Widths checked | — |
-| Tools and skills | — |
-| Decisions | D37 |
-| Bugs and follow-ups | — |
+| Admin control | AC-64 (media slots) |
+| Tests | fixtures: every referenced file exists, desktop clips ≤ 1 MB, phone clips ≤ 512 KB, linked credits for every stock photo and clip · repository: home-hero slot, empty office slot, unique keys · e2e styleguide video specimen |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 (styleguide media specimen) |
+| Tools and skills | Serena, a sourcing subagent (WebFetch, WebSearch, Playwright MCP, ffmpeg-static), Read on every poster frame |
+| Decisions | D37, D45, D54, D55 |
+| Bugs and follow-ups | Owner action: real photos of the Motijheel office for the `office` slot |
 
 ### #4 · A4 Data layer and content model — ✅ Done
 | Field | Value |
@@ -147,7 +162,6 @@ Each gets the full block when work starts.
 
 | Issue | Title | Size | Depends on |
 | --- | --- | --- | --- |
-| #6 | A6 Layout shell: header, mega panels, tab bar, drawer, footer, WhatsApp, loader | L | #3, #4, #5 |
 | #7 | A7 Home: 13 sections from data, video hero with word reveal | L | #6, #8 |
 | #8 | A8 Unified search card and pickers | XL | #6 |
 | #9 | A9 Results shell + Flights Manual mode + group fares | L | #8 |
@@ -198,6 +212,7 @@ Each gets the full block when work starts.
 | `/admin` catalogue | AdminGroupFares, -new, AdminPackages, AdminPackage, AdminVisa, AdminProducts, AdminProduct, -toner, AdminCats, AdminCollections, AdminCoupons, AdminOrders, -open, -m | #19 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
 | `/admin` content | AdminPages, AdminHome, AdminTeam, AdminGallery, AdminMedia, AdminFeedback | #20 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
 | `/admin` customers, reports, users, settings | AdminCustomers, -open, AdminReports, AdminUsers, AdminGeneral, AdminModes, -confirm, AdminFooter, AdminPayments, AdminNotify | #21 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| Layout shell (every public route) | Header, Home-shopmenu, Home-moremenu, Home-help, Home-m-drawer, Home-m-more, Home-m-help, Footer, TabBar | #6 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ e2e 13 + axe | — |
 | `/styleguide` (dev only) | Brand, Tokens, Components, Components2, MotionKit, PCard, States | #3 | ✅ | ✅ | ✅ | ⬜ | ✅ | ✅ axe + keyboard | n/a |
 | `/track`, `/login`, `/account` (P1) | Track, Track-nf, Login, Login-otp, Login-err, Account | D (#31) | — | — | — | — | — | — | — |
 
@@ -264,6 +279,14 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-54 | Meet our team (Home bento and carousel, About grid) | `listTeam(placement)` → name, initials, designation, department, bio, photo, whatsappE164, email, linkedinUrl, featured, showOnHome, showOnAbout, visible, order | Content › Team | `GET /api/v1/team?placement=` | ⬜ |
 | AC-55 | Customer emails (lead received, order placed, visa status) | NotificationTemplate → subject, body, variables, channel, enabled | Settings › Notifications | `GET /api/v1/admin/notification-templates` | ⬜ |
 | AC-56 | Lead reference on success screens | `createLead()` → reference, createdAt | Sales › Leads | `POST /api/v1/leads` | ⬜ |
+| AC-57 | Phone drawer main links | `getMenu("drawer")` → items[].label, href, icon, visible | Settings › Footer and menus | `GET /api/v1/menus/drawer` | ⬜ |
+| AC-58 | Phone tab bar (five tabs, Waafas World third, More last) | `getMenu("tabbar")` → items[].label, href, icon, panel (the schema enforces the shape) | Settings › Footer and menus | `GET /api/v1/menus/tabbar` | ⬜ |
+| AC-59 | Phone More sheet extras (Gallery, Feedback, Track order) | `getMenu("more-phone")` → items[] | Settings › Footer and menus | `GET /api/v1/menus/more-phone` | ⬜ |
+| AC-60 | Waafas World panel: store intro and service cards | `getSiteSettings()` → storeIntro; `getMenu("shop-panel")` → items[].label, description, cta, href, icon | Settings › General; Settings › Footer and menus | `GET /api/v1/settings/site`, `GET /api/v1/menus/shop-panel` | ⬜ |
+| AC-61 | Help panel line and Visit row | `getContactSettings()` → helpLine, visitLabel | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
+| AC-62 | Floating WhatsApp prefilled message | `getContactSettings()` → whatsappMessage (`{page}` placeholder) | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
+| AC-63 | Header Log in (hidden until accounts ship) | `getSiteSettings()` → accountsLive | Settings › General | `GET /api/v1/settings/site` | ⬜ |
+| AC-64 | Page-level photos and videos (home hero, flights, group fares, visa, printing, trading headers and form side images) | `getMediaSlot(key)` → image or video (mp4, webm, phone files, poster, credit) | Content › Media library | `GET /api/v1/media/slots/{key}` | ⬜ |
 
 ## 5. Components inventory
 
@@ -292,6 +315,15 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | getOfficeStatus · formatClock | `packages/shared/src/helpers/officeHours.ts` | custom (Asia/Dhaka) | Open now chip |
 | Sample fixtures + `loadFixtures()` | `fixtures/src/` | custom | fixture repositories, Phase B seed |
 | Repository interfaces · fixture repositories · cached accessors | `apps/web/src/lib/data/` | custom on Next 16 Cache Components | every page |
+| NavigationMenu (restyled) | `components/ui/navigation-menu.tsx` | shadcn, restyled (pills, 20 px panels) | header |
+| SiteHeader · DesktopNav · ShopMegaPanel · MorePanel | `components/layout/` | custom on shadcn NavigationMenu | every public page |
+| HelpMenu · HelpPanel · ContactRow · CopyButton · OfficeStatusChip · useOfficeStatus | `components/layout/` | custom on shadcn Popover and vaul Drawer | header, drawer, footer |
+| MobileMenu · MobileMenuBody · MoreGrid | `components/layout/` | custom on shadcn Sheet | phones and tablets |
+| TabBar · MoreSheetBody · CurrentMarker · WithPathname · isActivePath | `components/layout/` | custom (CSS indicator, vaul Drawer) | phones |
+| SiteFooter · FooterAccordion · NewsletterForm · DeveloperCredit | `components/layout/` | custom on shadcn Accordion | every public page |
+| AnnouncementBar · AnnouncementShell · FloatingWhatsApp · Breadcrumbs | `components/layout/` | custom | every public page |
+| MenuIcon | `components/icons/MenuIcon.tsx` | Lucide (allow-listed names from data) | menus, panels, grids |
+| JsonLd | `components/seo/JsonLd.tsx` | custom (escaped JSON) | breadcrumbs, pages |
 
 ## 6. Tooling
 
@@ -413,14 +445,25 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D43 | 09 Oct | Project fields: Phase A start 9 Oct, target 11 Oct; epics B 11–12 Oct, C 12–13 Oct, D 14 Oct–13 Nov; Estimate XS 1, S 2, M 3, L 5, XL 8 | Milestone dates (D5) | #27 |
 | D44 | 09 Oct | FAQ "Which visas do you help with?" no longer mentions recruitment; guards fail on Phase F words in UI code, messages, fixtures and contracts | PRD §2: no copy for unlicensed modules | #27 |
 | D45 | 09 Oct | Media credits live in `docs/design/MEDIA_CREDITS.md` | v4 prompt name (the earlier plan said IMAGE_CREDITS.md) | #5 |
+| D46 | 09 Oct | The header's Log in stays hidden until customer accounts ship (`siteSettings.accountsLive`, P1) | No dead buttons at launch; the board's slot is kept | #6 |
+| D47 | 09 Oct | Shared navs read the pathname only after hydration (`WithPathname`, `CurrentMarker`): the static App Shell renders without an active item, then small marker spans add the bar and a "(current page)" suffix | Cache Components and Partial Prefetching suspend any layout that reads URL data while prerendering (build failure); keeping links mounted preserves focus | #6 |
+| D48 | 09 Oct | `getPublicConfig()` caches for hours and relies on `config` tag revalidation | A cacheLife under five minutes counts as dynamic and pushes the header out of the App Shell | #6 |
+| D49 | 09 Oct | With a single locale, the next-intl request config does not read `next/root-params` | Avoids URL data in shared layouts until Bangla (P1) adds a second locale | #6 |
+| D50 | 09 Oct | Announcement dismissal is remembered per announcement id in localStorage | Simple and private; returning visitors who dismissed it may see a brief collapse after hydration (known issue) | #6 |
+| D51 | 09 Oct | The header tagline shows from 1280 px; nav items tighten between 1024 and 1279 px | The seven items, logo and help button fit on one line at 1024 (taste rule: nav on one line) | #6 |
+| D52 | 09 Oct | Radix NavigationMenu's visually hidden focus proxy is excluded from axe in e2e | Radix forwards focus from it into the open panel; axe flags its aria-hidden and tabindex pattern | #6 |
+| D53 | 09 Oct | E2E allows 404s only for RSC prefetches of routes later issues build; every other 404 fails | Links point at A7–A16 routes that do not exist yet; remove the allowance in A22 | #6 |
+| D54 | 09 Oct | Six real clips ship (hero sky, Maldives, Cappadocia, port, passport, headphones); the printing header uses the Unsplash printer photo and the sample power bank has no video | The only free printer clip was too dark for the brand; no free real power bank footage exists; never a drawn stand-in | #5 |
+| D55 | 09 Oct | Media slots (`MediaSlotKey`) hold page-level photos and videos; the `office` slot stays empty until Waafa sends real office photos; `about-routes` dropped (the route map is a live SVG) | Every page image is admin-replaceable without a stand-in | #5 |
 
 ## 9. Bugs and known issues
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
-| Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 |
+| Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 (PR pending) |
 | Boards disagree on two shop numbers: COD cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample); free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms | P2 | fixtures (shop settings) | Owner question |
 | Phase A references restart at 0001 whenever the dev server restarts (no storage before the API) | P2 | lead intake | By design until Phase C |
+| Visitors who dismissed the announcement may see it collapse right after hydration on their next visit | P2 | announcement bar | Accepted (D50); revisit if field CLS shows it |
 
 ## 10. Cut list
 
@@ -463,6 +506,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 09 Oct 17:30–20:56 | A0 merged (#35) with branch protection; A1b docs pushed; A5 footage sourced by a subagent (7 real clips; power bank skipped, no free real footage); A6 layout shell built and verified at five widths; a usage limit paused work for about 90 minutes | #27, #34, #5, #6 | #35 | e2e 30 · unit all green |
 | 09 Oct 16:30–17:20 | v4 PROMPT 1: audit, tool check (all MCPs and four skills), GitHub planning (labels, milestone F, epics #28–#33, A0 #27, sub-issues, Project fields, squash-only), A0 setup in progress | #27, #5 | — | guards + hook negative tests |
 | 09 Oct 11:27 | A4 data layer and content model: contracts, Sample fixtures, repositories, cached accessors; admin-control matrix seeded (56 rows) | #4 | #26 | unit 168 · e2e 15 |
 | 09 Oct 10:24 | A3 design system: 41 primitives, brand, MotionKit, media, styleguide; fixed overflow, radio names, tabs, OTP and lint issues; usage limit hit mid-issue; low memory stopped servers | #3 | #25 | unit 36 · e2e 15 |

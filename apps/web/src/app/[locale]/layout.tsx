@@ -7,6 +7,7 @@ import { THEME_COLOR } from "@/components/brand/brandColors";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
+import { SITE_URL } from "@/lib/siteUrl";
 import "../globals.css";
 
 const display = Plus_Jakarta_Sans({
@@ -38,6 +39,7 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
   return {
+    metadataBase: new URL(SITE_URL),
     title: { default: t("title"), template: t("titleTemplate") },
     description: t("description"),
   };

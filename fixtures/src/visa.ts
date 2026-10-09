@@ -4,7 +4,7 @@ import type {
   VisaGuideSchema,
   VisaTypeDetailSchema,
 } from "@waafa/shared";
-import { photo } from "./images";
+import { photo, type PhotoKey } from "./images";
 import type { In } from "./input";
 
 type VisaType = In<typeof VisaTypeDetailSchema>;
@@ -154,7 +154,7 @@ function country(
   };
 }
 
-export const visaCountries: Country[] = [
+const countries: Country[] = [
   country(
     "thailand",
     "Thailand",
@@ -293,6 +293,23 @@ export const visaCountries: Country[] = [
     visaType("student", "About 30 working days", 9000),
   ]),
 ];
+
+/** Country photos (PhotoBrief: visa page headers), only where the photo really shows that country. */
+const COVERS: Partial<Record<string, PhotoKey>> = {
+  thailand: "thailand-alt",
+  malaysia: "kualalumpur",
+  singapore: "singapore",
+  "united-arab-emirates": "dubai",
+  turkiye: "cappadocia-alt",
+  indonesia: "bali",
+  nepal: "nepal",
+  maldives: "maldives-alt",
+};
+
+export const visaCountries: Country[] = countries.map((entry) => {
+  const key = COVERS[entry.slug];
+  return key ? { ...entry, cover: photo(key) } : entry;
+});
 
 /* ------------------------------------------------------------------------------------------------
  * Visa Guide (FR-VGD-01): editorial guides linked both ways with the country pages.

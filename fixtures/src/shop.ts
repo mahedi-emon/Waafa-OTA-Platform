@@ -10,7 +10,7 @@ import type {
   ProductSchema,
   StoreRowSchema,
 } from "@waafa/shared";
-import { photo, productShot } from "./images";
+import { photo, productShot, video } from "./images";
 import type { In } from "./input";
 
 /* ------------------------------------------------------------------------------------------------
@@ -355,7 +355,7 @@ export const products: Product[] = [
     warranty: tonerWarranty(),
     images: [
       productShot(
-        "better-day-ce505a-cf280a.jpg",
+        "prod-cf280a.jpg",
         "Better Day CE505A / CF280A black toner cartridge in front of its box",
       ),
     ],
@@ -406,7 +406,7 @@ export const products: Product[] = [
     warranty: tonerWarranty(),
     images: [
       productShot(
-        "better-day-crg-070h.jpg",
+        "prod-crg070h.jpg",
         "Better Day CRG 070H black toner cartridge in front of its box",
       ),
     ],
@@ -452,7 +452,7 @@ export const products: Product[] = [
     warranty: tonerWarranty(),
     images: [
       productShot(
-        "better-day-151a-w1510a.jpg",
+        "prod-w1510a.jpg",
         "Better Day 151A (W1510A) black toner cartridge in front of its box",
       ),
     ],
@@ -678,6 +678,7 @@ export const products: Product[] = [
       ],
     },
     images: [photo("prod-headphones")],
+    video: video("headphones", "Close-up on the stand"),
     options: [
       {
         key: "colour",

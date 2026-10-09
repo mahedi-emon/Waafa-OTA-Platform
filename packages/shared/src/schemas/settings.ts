@@ -42,6 +42,12 @@ export const ContactSettingsSchema = z
     /** Plain sentence shown next to the live Open/Closed chip, e.g. "Saturday to Thursday, 10 am to 6 pm". */
     officeHoursText: z.string().min(1),
     closedText: z.string().min(1),
+    /** One line under "Need help?" in the help panel, e.g. "Talk to a travel expert in Motijheel". */
+    helpLine: z.string().min(1).max(80),
+    /** Short address for the help panel's Visit row, e.g. "Motijheel Plaza, 4th floor". */
+    visitLabel: z.string().min(1).max(60),
+    /** Prefilled WhatsApp message (FR-GLB-04); `{page}` becomes the current page's name. */
+    whatsappMessage: z.string().min(1).max(160),
     socials: z
       .array(
         z
@@ -63,6 +69,10 @@ export const SiteSettingsSchema = z
     companyName: z.string().min(1),
     footerTagline: z.string().min(1),
     footerAbout: z.string().min(1).max(320),
+    /** Two or three sentences introducing the store in the Waafas World menu panel. */
+    storeIntro: z.string().min(1).max(220),
+    /** Customer accounts (P1). Off at launch: the header shows no Log in until accounts ship. */
+    accountsLive: z.boolean().default(false),
     defaultSeo: SeoSchema,
     /** Facebook reviews link used until approved feedback exists (FR-HOME 10). */
     reviewsUrl: z.url().optional(),
@@ -81,6 +91,8 @@ export const MenuItemSchema = z
     icon: z.string().optional(),
     /** Opens the Waafas World mega panel or the More panel instead of navigating on hover/tap. */
     panel: z.enum(["shop", "more"]).optional(),
+    /** Link text on panel cards, e.g. "Get a quote" (Waafas World panel services). */
+    cta: z.string().min(1).max(24).optional(),
     visible: z.boolean().default(true),
   })
   .strict()
@@ -91,10 +103,36 @@ export const MenuItemSchema = z
 
 export const MenuSchema = z
   .object({
-    key: z.enum(["header", "more", "footer-travel", "footer-shop", "footer-help", "legal"]),
+    key: z.enum([
+      "header",
+      "more",
+      /** Phone drawer: the main links above the More grid. */
+      "drawer",
+      /** Phone bottom tab bar: exactly five items; the third is the Waafas World disc (correction 3). */
+      "tabbar",
+      /** Extra items on the phone More sheet after the More menu (Gallery, Feedback, Track order). */
+      "more-phone",
+      /** Service cards in the Waafas World menu panel (Printing Solutions, International Trading, Find by model). */
+      "shop-panel",
+      "footer-travel",
+      "footer-shop",
+      "footer-help",
+      "legal",
+    ]),
     items: z.array(MenuItemSchema),
   })
-  .strict();
+  .strict()
+  .refine(
+    (menu) =>
+      menu.key !== "tabbar" ||
+      (menu.items.length === 5 &&
+        menu.items[2]?.href === "/shop" &&
+        menu.items[4]?.panel === "more"),
+    {
+      message: "The tab bar has five tabs: Waafas World (/shop) in the middle and More last",
+      path: ["items"],
+    },
+  );
 
 export const PaymentMethodBadgeSchema = z
   .object({
@@ -311,6 +349,8 @@ export const PublicConfigSchema = z
       })
       .strict(),
     onlinePaymentLive: z.boolean(),
+    /** Customer accounts (P1): the header's Log in appears only when they are live. */
+    accountsLive: z.boolean(),
     /** Cash-on-delivery cap shown at checkout (FR-SHOP-07). */
     codLimit: TakaSchema,
     maintenance: MaintenanceSettingsSchema,
