@@ -10,5 +10,15 @@
 - D23 grids use grid-cols-1 at phone base; carousels contain inline size. D24 NextIntlClientProvider messages={null};
   client leaves get strings as props or pickMessages scoped provider. D25 WhatsApp/Facebook glyphs from Simple Icons.
 - D26 /styleguide only in dev and STYLEGUIDE=1 builds (turbo build env declares STYLEGUIDE).
+- D27 UI reads only cached accessors in apps/web/src/lib/data/*.ts ('use cache' + cacheLife + cacheTag(CACHE_TAGS));
+  accessors call `repositories` from server-only source.ts; fixture repos are pure and take `now` (unit-tested).
+  cacheTag throws outside 'use cache', so tests target repositories, not accessors.
+- D28 fixtures = zod inputs; loadFixtures() parses (defaults) and deep-freezes -> copy before sort.
+- D29 pages/blog/visa guides = headed sections (id = anchor) for contents lists. D30 visa embassyFee null by default,
+  stay/entry/validity optional (only Thailand has sample figures). D31 sample people: "Sample …", example.com,
+  unassigned 010 phone prefix; test fails on any other BD mobile. D32 gallery albums named after places, feedback
+  pending only, no MD/owner card. D33 package categories[] + months[]; More menu item has no href; snake_case template
+  vars; airline strip = Airline.featuredOrder. D34 Printing/Trading at /shop/printing-solutions, /shop/international-trading.
+  D35 Phase A createLead returns a reference, stores nothing.
 - Gotchas: Radix radios are buttons -> name them with aria-labelledby (axe ignores wrapping labels). Tabs need panels.
   Feature code imports MotionKit files directly (not the barrel). On Windows kill node children of stopped servers.
