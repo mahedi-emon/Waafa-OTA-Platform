@@ -131,5 +131,13 @@ export function createFixtureContentRepository(data: FixtureData): ContentReposi
     async listEmiBanks() {
       return [...data.emiBanks];
     },
+
+    async getMediaSlot(key) {
+      return data.mediaSlots.find((slot) => slot.key === key) ?? null;
+    },
+
+    async listMediaSlots() {
+      return [...data.mediaSlots];
+    },
   };
 }

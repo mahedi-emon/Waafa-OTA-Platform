@@ -1,5 +1,5 @@
 import "server-only";
-import type { Banner, FeedbackService, GalleryCategory } from "@waafa/shared";
+import type { Banner, FeedbackService, GalleryCategory, MediaSlotKey } from "@waafa/shared";
 import { cacheLife, cacheTag } from "next/cache";
 import { repositories } from "./source";
 import { CACHE_TAGS } from "./tags";
@@ -125,4 +125,11 @@ export async function listEmiBanks() {
   cacheLife("hours");
   cacheTag(CACHE_TAGS.settings);
   return repositories.content.listEmiBanks();
+}
+
+export async function getMediaSlot(key: MediaSlotKey) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.media);
+  return repositories.content.getMediaSlot(key);
 }

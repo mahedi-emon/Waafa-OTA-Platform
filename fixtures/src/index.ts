@@ -30,6 +30,7 @@ import {
   LeadFormSettingsSchema,
   LeadSchema,
   MaintenanceSettingsSchema,
+  MediaSlotSchema,
   MenuSchema,
   NotificationTemplateSchema,
   OrderSchema,
@@ -69,6 +70,7 @@ import {
   values,
 } from "./content";
 import { leads, searchLogs } from "./leads";
+import { mediaSlots } from "./media";
 import {
   announcements,
   bookingModes,
@@ -144,6 +146,7 @@ export const fixtureRegistry = {
   team: entry(z.array(TeamMemberSchema), team),
   baggageRules: entry(z.array(BaggageRuleSchema), baggageRules),
   emiBanks: entry(z.array(EmiBankSchema), emiBanks),
+  mediaSlots: entry(z.array(MediaSlotSchema), mediaSlots),
   // Travel
   airports: entry(z.array(AirportSchema), airports),
   airlines: entry(z.array(AirlineSchema), airlines),

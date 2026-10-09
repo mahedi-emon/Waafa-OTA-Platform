@@ -73,14 +73,22 @@ export const ImageSchema = z
 
 /**
  * Muted loop with its poster (HANDOFF: H.264 MP4 + VP9 WebM, poster frame). The poster is the LCP image and
- * the only thing shown under reduced motion or Save-Data. Only real footage or motion graphics, never rendered scenery.
+ * the only thing shown under reduced motion or Save-Data. Real camera footage only: never drawn, rendered or
+ * AI-generated (CLAUDE.md). Phones get the lighter 720 px files when present.
  */
 export const VideoSchema = z
   .object({
     mp4: z.string().min(1),
     webm: z.string().min(1).optional(),
+    /** 720 px-wide versions for screens up to 767 px. */
+    mp4Mobile: z.string().min(1).optional(),
+    webmMobile: z.string().min(1).optional(),
     poster: ImageSchema,
     caption: z.string().max(80).optional(),
+    /** Videographer and source, e.g. "Jane Doe · Pexels". */
+    credit: z.string().max(120).optional(),
+    /** The clip's page on Pexels, Coverr or Mixkit, linked from the credit. */
+    creditUrl: z.url().optional(),
   })
   .strict();
 
