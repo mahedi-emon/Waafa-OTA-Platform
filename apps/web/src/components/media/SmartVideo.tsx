@@ -19,9 +19,15 @@ function subscribeToConnection(onChange: () => void): () => void {
   return () => connection?.removeEventListener("change", onChange);
 }
 
+/** Phones (below the md breakpoint) get the 720 px files; the browser picks the first matching source. */
+const PHONE_QUERY = "(max-width: 767px)";
+
 type SmartVideoProps = {
-  /** MP4 (H.264) is required; WebM (VP9) is offered first when present. */
-  sources: { mp4: string; webm?: string };
+  /**
+   * MP4 (H.264) is required; WebM (VP9) is offered first when present. The `*Mobile` files (720 px wide)
+   * are picked on screens up to 767 px, so phones download about half the bytes.
+   */
+  sources: { mp4: string; webm?: string; mp4Mobile?: string; webmMobile?: string };
   /** Poster frame, rendered with next/image so it is optimised and can be the LCP element. */
   poster: StaticImageData | string;
   /** Describes the poster for people who cannot see it; use "" only when the loop is purely decorative. */
@@ -100,6 +106,12 @@ function SmartVideo({
             playing && "opacity-100",
           )}
         >
+          {sources.webmMobile ? (
+            <source src={sources.webmMobile} type="video/webm" media={PHONE_QUERY} />
+          ) : null}
+          {sources.mp4Mobile ? (
+            <source src={sources.mp4Mobile} type="video/mp4" media={PHONE_QUERY} />
+          ) : null}
           {sources.webm ? <source src={sources.webm} type="video/webm" /> : null}
           <source src={sources.mp4} type="video/mp4" />
         </video>

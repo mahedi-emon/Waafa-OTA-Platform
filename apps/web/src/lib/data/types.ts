@@ -29,6 +29,8 @@ import type {
   LeadCreated,
   LeadCreateInput,
   LeadFormSettings,
+  MediaSlot,
+  MediaSlotKey,
   Menu,
   MenuKey,
   Page,
@@ -114,6 +116,10 @@ export interface ContentRepository {
   listTeam(placement: TeamPlacement): Promise<TeamMember[]>;
   listBaggageRules(query?: BaggageQuery): Promise<BaggageRule[]>;
   listEmiBanks(): Promise<EmiBank[]>;
+  /** The photo or video in a fixed page slot (hero, page headers, form side images); null shows the placeholder. */
+  getMediaSlot(key: MediaSlotKey): Promise<MediaSlot | null>;
+  /** Every filled slot, for the admin media library. */
+  listMediaSlots(): Promise<MediaSlot[]>;
 }
 
 export type GroupFareQuery = { now: Date; to?: string; month?: string };

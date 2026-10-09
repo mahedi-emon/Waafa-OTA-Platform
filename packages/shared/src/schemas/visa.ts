@@ -61,6 +61,8 @@ export const VisaCountrySchema = z
     /** How the file is lodged, shown as a chip on the country card. */
     submission: z.enum(["embassy", "visa-centre", "evisa", "online", "interview", "on-arrival"]),
     popular: z.boolean().default(false),
+    /** Real photo for the country card and page header; the card shows the flag alone without one. */
+    cover: ImageSchema.optional(),
     types: z.array(VisaTypeDetailSchema).min(1),
     forms: z.array(z.object({ label: z.string().min(1), url: z.url() }).strict()).default([]),
     faqs: z

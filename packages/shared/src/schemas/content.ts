@@ -10,6 +10,7 @@ import {
   SeoSchema,
   SlugSchema,
   TakaSchema,
+  VideoSchema,
 } from "./common";
 
 /**
@@ -127,6 +128,40 @@ export const BannerSchema = z
     sample: SampleFlagSchema,
   })
   .strict();
+
+/**
+ * Fixed photo and video slots outside the content collections: page headers, form side images, the home hero
+ * (PhotoBrief usage column). Edited in Admin > Content > Media library; a slot without a record shows its placeholder.
+ */
+export const MediaSlotKeySchema = z.enum([
+  "home-hero",
+  "flights-header",
+  "flights-success",
+  "group-fares-header",
+  "visa-services-header",
+  "visa-apply-side",
+  "visa-guide-header",
+  "visa-track-header",
+  "printing-header",
+  "printing-quote-side",
+  "trading-header",
+  "trading-rfq-side",
+  "shop-service-printing",
+  "office",
+]);
+
+export const MediaSlotSchema = z
+  .object({
+    key: MediaSlotKeySchema,
+    image: ImageSchema.optional(),
+    video: VideoSchema.optional(),
+    sample: SampleFlagSchema,
+  })
+  .strict()
+  .refine((slot) => slot.image !== undefined || slot.video !== undefined, {
+    message: "Add a photo or a video",
+    path: ["image"],
+  });
 
 /** Home trust strip (FR-HOME 2): four admin-edited items with icons. */
 export const TrustItemSchema = z
@@ -325,6 +360,8 @@ export type BlogPost = z.infer<typeof BlogPostSchema>;
 export type FaqCategory = z.infer<typeof FaqCategorySchema>;
 export type Faq = z.infer<typeof FaqSchema>;
 export type Banner = z.infer<typeof BannerSchema>;
+export type MediaSlotKey = z.infer<typeof MediaSlotKeySchema>;
+export type MediaSlot = z.infer<typeof MediaSlotSchema>;
 export type TrustItem = z.infer<typeof TrustItemSchema>;
 export type ValueCard = z.infer<typeof ValueCardSchema>;
 export type TimelineEvent = z.infer<typeof TimelineEventSchema>;

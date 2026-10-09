@@ -9,6 +9,7 @@ import {
   SeoSchema,
   SlugSchema,
   TakaSchema,
+  VideoSchema,
 } from "./common";
 
 export const IataSchema = z.string().regex(/^[A-Z]{3}$/, "Three-letter airport code");
@@ -151,10 +152,7 @@ export const TourPackageSchema = z
     includesShort: z.array(z.string().min(1).max(20)).max(4),
     cover: ImageSchema,
     gallery: z.array(ImageSchema).default([]),
-    video: z
-      .object({ mp4: z.string().min(1), webm: z.string().optional(), poster: ImageSchema })
-      .strict()
-      .optional(),
+    video: VideoSchema.optional(),
     groupSize: z.string().max(40).optional(),
     visaNote: z.string().max(60).optional(),
     /** From price per person on twin sharing (FR-PKG-03), always indicative before confirmation. */
