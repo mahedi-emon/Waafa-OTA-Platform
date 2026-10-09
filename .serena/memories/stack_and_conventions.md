@@ -1,16 +1,18 @@
 # Stack and conventions
-- Web: Next.js latest stable (16.4 now, cacheComponents on), React 19, TypeScript strict, Tailwind v4 (tokens in
-  src/app/globals.css), shadcn/ui (Radix) in src/components/ui, lucide-react, Motion via LazyMotion strict
-  (import from "motion/react", use `m.div` never `motion.div`), Embla, RHF + zod, TanStack Query, nuqs, next-intl.
-- API: NestJS on Fastify, PostgreSQL 16+ Prisma, Redis + BullMQ. Monorepo: pnpm workspaces + Turborepo.
-- Pre-approved deps: PRD/HANDOFF list + vaul, cmdk, sonner, date-fns, recharts, @tanstack/react-table, dnd-kit,
-  tiptap, react-dropzone, @axe-core/playwright, @lhci/cli, k6. Others: justify in PR + TRACKER Decisions.
-- Components: one per file, PascalCase file + export, typed props, no `any`. shadcn files keep CLI names.
-  21st.dev effects in components/fx; feature components in components/<feature>; page-only in app/**/_components.
-- Styling: Tailwind utilities + tokens + cva only. No other CSS files/modules, no inline styles except dynamic values,
-  never paste prototype HTML or import waafa.css, no dangerouslySetInnerHTML (except sanitised admin rich text, JSON-LD).
-- Server Components by default; "use client" only on small interactive leaves.
-- Data only through repository interfaces (apps/web/src/lib/data) typed by packages/shared; fixtures now, API later.
-- Animate only transform/opacity; reduced motion -> 150 ms fade. Money ৳ with Indian grouping (৳1,46,480).
-- Windows: gh at "C:\Program Files\GitHub CLI" (add to PATH per command); scripts cross-platform; Git Bash or PowerShell.
-- Commands (repo root): pnpm install | pnpm dev | pnpm lint | pnpm typecheck | pnpm test | pnpm build | pnpm e2e.
+- Monorepo: pnpm 12 workspaces + Turborepo 2.11. Packages: apps/web (@waafa/web), packages/shared (@waafa/shared),
+  packages/config (@waafa/config: tsconfig/base|library|nextjs.json, eslint/base|next, prettier), fixtures (@waafa/fixtures).
+  Internal packages ship TS source (exports -> src/*.ts); web lists them in next.config transpilePackages.
+- Web: Next 16.4 (cacheComponents + partialPrefetching), React 19.3, TS 6.0.3 strict (+noUncheckedIndexedAccess), ESLint 9,
+  Tailwind 4.3 via @tailwindcss/postcss, shadcn radix-nova (Lucide, cn package, tw-animate-css, shadcn/tailwind.css),
+  motion 14 (motion/react, LazyMotion strict -> m.*), next-intl 4.14 (next/root-params), Vitest 5, Playwright 1.64 + axe.
+- App layout: ONE root layout src/app/[locale]/layout.tsx (fonts, html lang, providers, skip link); public pages in
+  src/app/[locale]/(site)/; admin in src/app/[locale]/admin/ (URL /admin); src/proxy.ts (next-intl) keeps English unprefixed.
+  Messages: apps/web/messages/en.json (typed via src/i18n/next-intl.d.ts). Use Link/useRouter from @/i18n/navigation.
+- globals.css is the only stylesheet: Tailwind default palette removed (--color-*: initial) -> only WAAFA colours;
+  utilities site-container, type-display|h1|h2|h3|lead|label|caption; --primary electric-600; light-only (.dark never set).
+- Components: one per file, PascalCase files/exports, typed props, no any. shadcn files keep CLI names in components/ui.
+  21st.dev -> components/fx; MotionKit -> components/motion; feature -> components/<feature>; page-only -> app/**/_components.
+- Server Components by default; "use client" only on small leaves. Data only via repositories in src/lib/data (A4).
+- Shared formatters: formatTaka (৳1,46,480), formatGrouped, formatDate ("12 Oct 2026"), formatDayMonth, formatTime (24h, Dhaka).
+- Tests: Vitest *.test.ts next to code; e2e in apps/web/e2e (runs next start on :3100 after build).
+- Windows: gh at "C:\Program Files\GitHub CLI"; Dhaka time via PowerShell TimeZoneInfo 'Bangladesh Standard Time'.

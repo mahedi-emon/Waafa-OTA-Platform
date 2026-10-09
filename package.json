@@ -1,0 +1,25 @@
+{
+  "name": "waafa-ota-platform",
+  "private": true,
+  "description": "WAAFA: Waafa Tours and Travel + Waafas World — public site, store, admin and API",
+  "packageManager": "pnpm@12.10.1",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev --filter=@waafa/web",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "e2e": "turbo run e2e --filter=@waafa/web",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@waafa/config": "workspace:*",
+    "prettier": "3.9.9",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "turbo": "2.11.7"
+  }
+}

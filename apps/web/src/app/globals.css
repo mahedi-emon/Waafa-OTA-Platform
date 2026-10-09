@@ -1,26 +1,338 @@
+/* WAAFA design tokens · Tailwind CSS v4 + shadcn/ui
+   Values from docs/design/handoff/tokens.css (source: the prototype's waafa.css), with decision D8:
+   --primary and --ring are electric-600. Rules: docs/design/DESIGN.md and docs/design/MOTION.md.
+   This is the only stylesheet in the app: no CSS modules, no other CSS files. */
+
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* The public site is light-only at launch: shadcn's dark: utilities apply only under a .dark class we never set. */
+@custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* Only WAAFA colours exist: Tailwind's default palette is removed so off-brand colours cannot slip in. */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* brand ramp (logo blues) */
+  --color-midnight-950: #020d39;
+  --color-navy-900: #00185b;
+  --color-royal-800: #01278b;
+  --color-brand-700: #003fbe;
+  --color-electric-600: #0053d7;
+  --color-sky-500: #0d8cee;
+  --color-cyan-400: #39cce9;
+  --color-electric-50: #eef4ff;
+  --color-electric-100: #dce7ff;
+  --color-electric-200: #b8ceff;
+
+  /* metallic accents (logo silver and gold) */
+  --color-silver-300: #d7d3d0;
+  --color-silver-500: #9f9b9c;
+  --color-gold-50: #fbf6ec;
+  --color-gold-100: #f2e4c8;
+  --color-gold-400: #c9a05a;
+  --color-gold-600: #a8782f;
+  --color-ink-950: #0e0d0b;
+
+  /* neutrals: cool, navy-tinted "mist" */
+  --color-mist-25: #fbfcfe;
+  --color-mist-50: #f6f8fb;
+  --color-mist-100: #eff2f7;
+  --color-mist-200: #e3e8f0;
+  --color-mist-300: #cdd5e2;
+  --color-mist-400: #a3adbf;
+  --color-mist-500: #6b7489;
+  --color-mist-600: #556078;
+  --color-mist-700: #3e475c;
+  --color-mist-800: #283044;
+  --color-mist-900: #151b2c;
+  --color-ink-900: #0e1424;
+
+  /* status */
+  --color-success-50: #e7f6ef;
+  --color-success-600: #0b7a54;
+  --color-warning-50: #fff4e2;
+  --color-warning-700: #a15c07;
+  --color-danger-50: #fdedeb;
+  --color-danger-600: #c2261d;
+  --color-whatsapp-500: #22b565;
+  --color-whatsapp-700: #0e7a47;
+
+  /* radius: tags 6 · small 8 · inputs and buttons 12 · cards 16 · panels 20 · search card and sheets 28 */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 32px;
+
+  /* elevation (navy-tinted, never pure black) */
+  --shadow-xs: 0 1px 2px rgb(2 13 57 / 0.06);
+  --shadow-sm: 0 1px 3px rgb(2 13 57 / 0.08), 0 1px 2px rgb(2 13 57 / 0.04);
+  --shadow-md: 0 10px 24px -8px rgb(2 13 57 / 0.14), 0 2px 4px rgb(2 13 57 / 0.04);
+  --shadow-lg: 0 20px 48px -16px rgb(2 13 57 / 0.22), 0 4px 12px -4px rgb(2 13 57 / 0.06);
+  --shadow-xl: 0 36px 80px -28px rgb(2 13 57 / 0.34), 0 8px 20px -8px rgb(2 13 57 / 0.08);
+  --shadow-glass:
+    0 28px 70px -28px rgb(2 13 57 / 0.45), 0 2px 6px rgb(2 13 57 / 0.06),
+    inset 0 1px 0 rgb(255 255 255 / 0.75);
+
+  /* layout */
+  --container-site: 1320px;
+
+  /* motion (MOTION.md §1) */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-rise: rise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  /* transform-only shimmer: a gradient layer slides across the skeleton (MOTION.md §7) */
+  @keyframes shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Fonts come from next/font (variables set on <html>); semantic colours map to the shadcn variables below. */
+@theme inline {
+  --font-sans:
+    var(--font-inter), "Hind Siliguri", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    var(--font-jakarta), "Hind Siliguri", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-display);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* signature gradients and layout sizes (use as bg-(image:--ribbon), h-(--hdr-h)) */
+  --ribbon: linear-gradient(120deg, #020d39 0%, #003fbe 40%, #0d8cee 74%, #39cce9 100%);
+  --ribbon-soft: linear-gradient(120deg, #eaf1ff 0%, #f4f8ff 55%, #edfafd 100%);
+  --hdr-h: 64px;
+  --tab-h: 64px;
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-slow: 300ms;
+  --dur-enter: 560ms;
+
+  /* shadcn/ui semantic variables mapped to the WAAFA palette */
+  --background: #ffffff;
+  --foreground: #0e1424;
+  --card: #ffffff;
+  --card-foreground: #0e1424;
+  --popover: #ffffff;
+  --popover-foreground: #0e1424;
+  --primary: #0053d7;
+  --primary-foreground: #ffffff;
+  --secondary: #eef4ff;
+  --secondary-foreground: #01278b;
+  --muted: #f6f8fb;
+  --muted-foreground: #556078;
+  --accent: #eff2f7;
+  --accent-foreground: #00185b;
+  --destructive: #c2261d;
+  --border: #e3e8f0;
+  --input: #cdd5e2;
+  --ring: #0053d7;
+  --radius: 12px;
+  --chart-1: #0053d7;
+  --chart-2: #0d8cee;
+  --chart-3: #39cce9;
+  --chart-4: #a8782f;
+  --chart-5: #0b7a54;
+  --sidebar: #020d39;
+  --sidebar-foreground: #d7deec;
+  --sidebar-primary: #39cce9;
+  --sidebar-primary-foreground: #020d39;
+  --sidebar-accent: rgb(255 255 255 / 0.08);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.1);
+  --sidebar-ring: #39cce9;
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --hdr-h: 72px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: var(--hdr-h);
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* Page container: 1320 px max, gutters 16 / 28 / 40 px (DESIGN.md §4). */
+@utility site-container {
+  width: 100%;
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: 16px;
+  @variant md {
+    padding-inline: 28px;
+  }
+  @variant xl {
+    padding-inline: 40px;
+  }
+}
+
+/* Type scale (DESIGN.md §3): phone → tablet → desktop. */
+@utility type-display {
+  font: 800 34px/1.06 var(--font-display);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  @variant md {
+    font-size: 48px;
+  }
+  @variant xl {
+    font-size: 60px;
+    letter-spacing: -0.04em;
+  }
+}
+@utility type-h1 {
+  font: 700 28px/1.12 var(--font-display);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  @variant md {
+    font-size: 36px;
+  }
+  @variant xl {
+    font-size: 44px;
+  }
+}
+@utility type-h2 {
+  font: 700 24px/1.18 var(--font-display);
+  letter-spacing: -0.026em;
+  text-wrap: balance;
+  @variant md {
+    font-size: 30px;
+  }
+  @variant xl {
+    font-size: 36px;
+  }
+}
+@utility type-h3 {
+  font: 700 19px/1.25 var(--font-display);
+  letter-spacing: -0.018em;
+  @variant md {
+    font-size: 22px;
+  }
+}
+@utility type-lead {
+  font-size: 15.5px;
+  line-height: 1.55;
+  @variant md {
+    font-size: 17.5px;
+  }
+}
+@utility type-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  @variant md {
+    font-size: 14px;
+  }
+}
+@utility type-caption {
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  @variant md {
+    font-size: 13px;
+  }
+}
+
+/* Reduced motion: movement becomes a short fade (MOTION.md §4). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 150ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scroll-reveal targets stay readable when printed (and without JavaScript, via <noscript> in the layout). */
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

@@ -20,7 +20,8 @@ Set up on 2026-10-09.
 ## Per-session setup (cloud sessions start fresh)
 ```bash
 npx playwright install --with-deps chromium     # browser for the Playwright MCP
-cd apps/web && npm install                       # app deps
+pnpm install                                     # workspace deps (repo root)
+pnpm --filter @waafa/web exec playwright install chromium   # browser for `pnpm e2e`
 curl -LsSf https://astral.sh/uv/install.sh | sh  # only if `uvx` is missing (needed by Serena)
 ```
 Then set the env vars below in the cloud environment settings.
@@ -75,12 +76,23 @@ Every `${VAR}` uses `${VAR:-}` so a missing variable doesn't break parsing of th
 - `web-interface-guidelines.md` — Vercel Web Interface Guidelines: `README.md` + `AGENTS.md` from github.com/vercel-labs/web-interface-guidelines (MIT), same content as vercel.com/design/guidelines.
 - `design-md-format.md` — DESIGN.md format notes from github.com/VoltAgent/awesome-design-md. Format only; no brand files copied. Our `DESIGN.md` is not written yet.
 
+## Monorepo (`#2`, 2026-10-09)
+- pnpm workspaces + Turborepo: `apps/web` (`@waafa/web`), `packages/shared`, `packages/config`, `fixtures` (`@waafa/fixtures`).
+  The npm lockfile from `create-next-app` was replaced by `pnpm-lock.yaml`.
+- pnpm 12 refuses unapproved build scripts: `pnpm-workspace.yaml` → `allowBuilds` denies `@parcel/watcher`, `@swc/core`
+  (both pulled in by next-intl) and `unrs-resolver` (eslint-config-next); all three ship prebuilt binaries.
+- Versions: Next 16.4.0, React 19.3.0, TypeScript 6.0.3 (typescript-eslint 8.71 supports `<6.1`, so not TS 7), ESLint 9,
+  Tailwind 4.3.3 through `@tailwindcss/postcss` (as the bundled Next docs show), Vitest 5, Playwright 1.64, next-intl 4.14.9.
+- shadcn: `shadcn init --base radix --preset nova --pointer` → `components.json` (style `radix-nova`, Lucide), `src/lib/utils.ts`
+  re-exports `cn` from shadcn's `cn` package (clsx + tailwind-merge replacement), `tw-animate-css`, `shadcn/tailwind.css`.
+- next-intl: single root layout `src/app/[locale]/layout.tsx`, locale read with `next/root-params` (no `setRequestLocale`),
+  `src/proxy.ts` keeps English URLs unprefixed. Admin lives at `src/app/[locale]/admin` (URL `/admin`).
+
 ## Animation (`apps/web`)
-- No app existed, so `apps/web` was scaffolded with `create-next-app@latest` (Next 16.4, React 19.3, TS, Tailwind v4, App Router, `src/`, `@/*`, Turbopack), following the README plan of `apps/web`.
-- `npm i motion framer-motion` (both v14). Use `motion` and import from `"motion/react"`; `framer-motion` is installed as asked but code shouldn't import it (same library, separate package, would duplicate the bundle).
-- `src/components/motion/motion-provider.tsx` — `LazyMotion features={domAnimation} strict` + `MotionConfig reducedMotion="user"`; wired into `src/app/layout.tsx`. Because of `strict`, use `m.div`, not `motion.div`.
-- `src/components/motion/reduced-motion.ts` — `REDUCED_FADE` (150 ms), `usePrefersReducedMotion`, `useRiseVariants`, `useSafeTransition`.
-- Verified: `next build`, `tsc --noEmit` and `eslint` pass.
+- `motion` v14 only (import from `"motion/react"`); the duplicate `framer-motion` package was removed in #2.
+- `src/components/motion/MotionProvider.tsx` — `LazyMotion features={domAnimation} strict` + `MotionConfig reducedMotion="user"`;
+  wired into the root layout. Because of `strict`, use `m.div`, not `motion.div`.
+- `src/components/motion/reducedMotion.ts` — `REDUCED_FADE` (150 ms), `usePrefersReducedMotion`, `useRiseVariants`, `useSafeTransition`.
 
 ## Local machine notes (2026-10-09)
 - `gh` 2.102.0 is installed at `C:\Program Files\GitHub CLI\gh.exe` but not on PATH in every shell. PowerShell:

@@ -1,39 +1,41 @@
-# WAAFA website — starter
+# WAAFA OTA Platform
 
-This folder is the start of the code repository. It holds the PRD, the full design prototype and the handoff
-for Claude Code. No app code yet: Claude Code builds it from here.
+One mobile-first website for two brands: **Waafa Tours and Travel** (flights, hotels, tour packages, visa) and
+**Waafas World** by Waafa International (online store at `/shop`, Printing Solutions, International Trading),
+plus the admin panel and the API. Go-live: 13 October 2026. Progress: `docs/TRACKER.md`.
 
-## Start (VS Code + Claude Code)
-1. Unzip this folder and open it in VS Code (File → Open Folder).
-2. Optional: `git init` and make a first commit.
-3. Open the terminal in VS Code and run `claude`.
-4. Paste the kick-off prompt below.
+## Quick start
 
-```
-Read CLAUDE.md, docs/PRD.md and docs/design/handoff/HANDOFF.md.
-Set up the monorepo with apps/web (Next.js App Router, TypeScript strict,
-Tailwind v4, shadcn/ui). Copy docs/design/handoff/tokens.css into
-app/globals.css. Build the layout shell first (Header, Footer, TabBar,
-MotionKit) and Home, matching the Home and Home-m screens in
-docs/design/project/. Phone first (390 px), then 768 and 1440.
-Keep sample data in /fixtures, marked Sample.
+Requirements: Node 22 LTS (20.9 or newer), pnpm 12 (`packageManager` is pinned in `package.json`).
+
+```bash
+pnpm install
+pnpm dev          # http://localhost:3000
 ```
 
-Then go route by route with the table in `docs/design/handoff/HANDOFF.md` (build order: foundation → search and
-Manual mode → packages, visa, content → Waafas World and Admin → launch).
-
-## See the design
-- Open `docs/design/index.html` in Chrome: every screen, offline. Phone screens open in a phone frame.
-- Real photos: in `docs/design/photos/` run `node get-waafa-photos.mjs` (Node 18 or newer, internet). The prototype then shows them.
-- Figma: tokens, styles and core components are in the Figma file; screen images are in the Waafa-Screens zips.
+| Command | What it does |
+| --- | --- |
+| `pnpm build` | Production build of every package (Turborepo) |
+| `pnpm lint` · `pnpm typecheck` · `pnpm test` | ESLint, TypeScript, Vitest |
+| `pnpm e2e` | Playwright + axe smoke tests against the production build |
+| `pnpm format` · `pnpm format:check` | Prettier with Tailwind class sorting |
 
 ## What is where
+
 | Path | What |
 | --- | --- |
-| `CLAUDE.md` | Rules and context Claude Code reads every session |
+| `CLAUDE.md` | Rules for every session (workflow, component rules, admin control, quality gates) |
+| `apps/web` | Next.js app: public site, Waafas World, admin |
+| `apps/api` | NestJS API on Fastify (Phase B) |
+| `packages/shared` | zod contracts, types and formatters shared by web and API |
+| `packages/config` | TypeScript, ESLint and Prettier presets |
+| `fixtures/` | Typed Sample data (every record `sample: true`) |
 | `docs/PRD.md` | Product requirements (source of truth) |
-| `docs/design/index.html` | Prototype navigator (295 screens) |
-| `docs/design/project/` | Screen sources (`.dc.html`), `waafa.css` with every style |
-| `docs/design/handoff/` | `HANDOFF.md`, `tokens.css`, `screens.csv` |
-| `docs/design/assets/` | Logo, product photos, flags, video loops (MP4 + WebM) and posters |
-| `docs/design/photos/` | Real photo download script and credits |
+| `docs/TRACKER.md` | Phase and issue status, matrices, decisions, session log |
+| `docs/design/` | `DESIGN.md`, `MOTION.md`, `COMPETITOR_BENCHMARK.md`, the prototype (`index.html`, `project/`), handoff and assets |
+| `docs/TOOLING.md` | MCP servers, skills and machine notes |
+
+## See the design
+- Open `docs/design/index.html` in a browser: every screen, offline. Phone screens open in a phone frame.
+- Screen sources with exact copy, states and sample data: `docs/design/project/*.dc.html` (phone versions end in `-m`).
+- Real photos: `node docs/design/photos/get-waafa-photos.mjs` (credits in `docs/design/photos/CREDITS.txt`).

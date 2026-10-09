@@ -1,7 +1,7 @@
-export { MotionProvider } from "./motion-provider";
+export { MotionProvider } from "./MotionProvider";
 export {
   REDUCED_FADE,
   usePrefersReducedMotion,
   useRiseVariants,
   useSafeTransition,
-} from "./reduced-motion";
+} from "./reducedMotion";

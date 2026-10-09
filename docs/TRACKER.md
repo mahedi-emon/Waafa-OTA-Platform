@@ -3,9 +3,9 @@
 | | |
 | --- | --- |
 | **Current phase** | A · Frontend |
-| **Current issue** | A2 [#2](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/2) (A1 done) |
-| **Last updated** | 2026-10-09 06:26 (Asia/Dhaka) |
-| **Overall progress** | Launch scope (A–C): 1 / 39 · all phases: 1 / 56 |
+| **Current issue** | A3 [#3](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/3) (A1, A2 done) |
+| **Last updated** | 2026-10-09 06:46 (Asia/Dhaka) |
+| **Overall progress** | Launch scope (A–C): 2 / 39 · all phases: 2 / 56 |
 | **Days left to launch** | 4 (go-live Tue 13 Oct 2026; hard deadline before 14 Oct) |
 
 Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this file after every issue (CLAUDE.md, Workflow step 11).
@@ -37,7 +37,7 @@ Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this fil
 | | Issue | Title | Size |
 | --- | --- | --- | --- |
 | ✅ | [#1](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/1) | A1 · Design direction and competitor benchmark (docs only) | M |
-| ⬜ | [#2](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/2) | A2 · Foundation: monorepo, Next.js app, tokens, fonts, i18n, test tooling | L |
+| ✅ | [#2](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/2) | A2 · Foundation: monorepo, Next.js app, tokens, fonts, i18n, test tooling | L |
 | ⬜ | [#3](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/3) | A3 · Design system in code + /styleguide | L |
 | ⬜ | [#4](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/4) | A4 · Data layer and content model (shared zod contracts + fixtures) | XL |
 | ⬜ | [#5](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/5) | A5 · Media: real photos with credits, video loops and posters | S |
@@ -154,7 +154,10 @@ Rows are added by each issue; an issue is not done until its rows are here.
 
 | Component | Path | Source (shadcn / 21st.dev id / custom) | Used on |
 | --- | --- | --- | --- |
-| MotionProvider | `apps/web/src/components/motion/` | custom (LazyMotion + MotionConfig) | root layout |
+| MotionProvider | `apps/web/src/components/motion/MotionProvider.tsx` | custom (LazyMotion strict + MotionConfig reducedMotion="user") | root layout |
+| reducedMotion helpers | `apps/web/src/components/motion/reducedMotion.ts` | custom (`REDUCED_FADE`, `useRiseVariants`, `useSafeTransition`) | MotionKit (A3) |
+| cn | `apps/web/src/lib/utils.ts` | shadcn (`cn` package) | every component |
+| formatTaka, formatDate, formatTime | `packages/shared/src/format/` | custom | prices, dates (web + API) |
 
 ## Benchmark (Lighthouse mobile)
 
@@ -167,6 +170,12 @@ Lighthouse 13.5.0 mobile (simulated Slow 4G, 4× CPU), median of 3 runs, 9 Oct 2
 Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 ## Session log (newest first)
+
+### 2026-10-09 06:46 (Asia/Dhaka) — A2 foundation (#2)
+- pnpm workspaces + Turborepo (`apps/web`, `packages/shared`, `packages/config`, `fixtures`), cross-platform root scripts, `.gitattributes` LF, `.nvmrc` 22, `.editorconfig`.
+- Next 16.4 on pnpm with Cache Components + Partial Prefetching; tokens in `globals.css` (D8 primary), palette locked to WAAFA colours, type-scale and container utilities; Plus Jakarta Sans + Inter via next/font.
+- shadcn init (radix-nova, Lucide, pointer cursors); next-intl with `next/root-params`, `src/proxy.ts`, unprefixed English.
+- Tests: Vitest 20 passed (taka, dates, cn, message-catalogue compliance guard); Playwright 7 passed (320/390/768/1440, axe, console, overflow, zoom, skip link, locale prefix). Lint, typecheck, build, Prettier clean.
 
 ### 2026-10-09 06:26 (Asia/Dhaka) — A1 design direction and benchmark (#1)
 - Playwright pass over the four competitors at 390 and 1440 px, live DAC → CXB search on GoZayaan, ShareTrip Shop at 390.
@@ -196,6 +205,13 @@ Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.m
 | D9 | 2026-10-09 | Logo in full colour on white or mist-50 only; footer is light (mist-50); no white/silver/dark logo versions | Brand board and CLAUDE.md "never recolour" win over the PRD's "white logo on dark"; the prototype's final footer is mist-50 |
 | D10 | 2026-10-09 | Header 64 px phone, 72 px desktop | PRD FR-GLB-01 (the prototype uses 76 px on desktop) |
 | D11 | 2026-10-09 | Above-the-fold motion is CSS (no hydration wait); blur-in, spotlight, skeleton and chart effects rebuilt with transform/opacity | MOTION.md §5 and §7: LCP and the transform/opacity rule |
+| D12 | 2026-10-09 | TypeScript 6.0.3 and ESLint 9 (not TS 7.0 / ESLint 10) | typescript-eslint 8.71 supports TypeScript `<6.1`; eslint-config-next's plugins are proven on ESLint 9 |
+| D13 | 2026-10-09 | One root layout `app/[locale]/layout.tsx`; site in `(site)`, admin in `[locale]/admin` (URL `/admin`) | `next/root-params` + next-intl without a second root layout; English URLs stay unprefixed via `src/proxy.ts` |
+| D14 | 2026-10-09 | next-intl: `localeDetection: false`, `localeCookie: false` | Language changes only by the visitor's choice (PRD FR-GLB-07); responses stay cacheable |
+| D15 | 2026-10-09 | Tailwind through `@tailwindcss/postcss` (documented in the bundled Next 16.4 docs) instead of the `@tailwindcss/turbopack` loader rule | Follow the framework's documented path |
+| D16 | 2026-10-09 | Tailwind default palette removed (`--color-*: initial`); only WAAFA colours plus white/black exist | Off-brand colours fail to compile into anything, keeping every screen on the tokens |
+| D17 | 2026-10-09 | shadcn `radix-nova` preset with Lucide and pointer cursors; `cn` from shadcn's `cn` package | Radix per the stack; Lucide per the PRD; cursor-pointer per UI UX Pro Max |
+| D18 | 2026-10-09 | `framer-motion` removed; `motion` v14 only. pnpm `allowBuilds` denies `@parcel/watcher`, `@swc/core`, `unrs-resolver` scripts | Same library twice would duplicate the bundle; the three packages ship prebuilt binaries |
 
 ## Known issues and bugs
 _None yet._
@@ -220,5 +236,5 @@ _None yet._
 - [ ] Hosting accounts: Vercel, VPS or Railway, Cloudflare (Turnstile, R2)
 
 ## Next steps
-1. A2 (#2): monorepo foundation and CI green.
-2. A3 → A22 in order.
+1. A3 (#3): design system in code + /styleguide (themed primitives, LogoLockup, MotionKit, SmartImage/SmartVideo, states).
+2. A4 → A22 in order.
