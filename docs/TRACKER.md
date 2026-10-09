@@ -3,9 +3,9 @@
 | | |
 | --- | --- |
 | **Current phase** | A · Frontend |
-| **Current issue** | A4 [#4](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/4) (A1–A3 done) |
-| **Last updated** | 2026-10-09 10:24 (Asia/Dhaka) |
-| **Overall progress** | Launch scope (A–C): 3 / 39 · all phases: 3 / 56 |
+| **Current issue** | A5 [#5](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/5) (A1–A4 done) |
+| **Last updated** | 2026-10-09 11:35 (Asia/Dhaka) |
+| **Overall progress** | Launch scope (A–C): 4 / 39 · all phases: 4 / 56 |
 | **Days left to launch** | 4 (go-live Tue 13 Oct 2026; hard deadline before 14 Oct) |
 
 Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this file after every issue (CLAUDE.md, Workflow step 11).
@@ -39,7 +39,7 @@ Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this fil
 | ✅ | [#1](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/1) | A1 · Design direction and competitor benchmark (docs only) | M |
 | ✅ | [#2](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/2) | A2 · Foundation: monorepo, Next.js app, tokens, fonts, i18n, test tooling | L |
 | ✅ | [#3](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/3) | A3 · Design system in code + /styleguide | L |
-| ⬜ | [#4](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/4) | A4 · Data layer and content model (shared zod contracts + fixtures) | XL |
+| ✅ | [#4](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/4) | A4 · Data layer and content model (shared zod contracts + fixtures) | XL |
 | ⬜ | [#5](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/5) | A5 · Media: real photos with credits, video loops and posters | S |
 | ⬜ | [#6](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/6) | A6 · Layout shell: header, mega panels, tab bar, drawer, footer, WhatsApp, loader | L |
 | ⬜ | [#7](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/7) | A7 · Home: 13 sections from data, video hero with word reveal | L |
@@ -143,12 +143,68 @@ Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this fil
 
 ## Admin-control matrix
 
-Every public element → the data field it reads → the admin screen that edits it → the API endpoint (filled in Phase B).
-Rows are added by each issue; an issue is not done until its rows are here.
+Every public element → the data field it reads → the admin screen that edits it → the API endpoint.
+Seeded by A4 from the zod contracts; UI issues add rows for anything new, and Phase B confirms the endpoints.
+Accessors live in `apps/web/src/lib/data/*.ts`; admin screen names follow the AdminSide board.
 
-| Public element | Data field (repository → field) | Admin screen | API endpoint |
+| Public element | Data field (accessor → field) | Admin screen | API endpoint (planned) |
 | --- | --- | --- | --- |
-| _rows added from A4 onward_ | | | |
+| Brand names (header, footer, metadata) | `getSiteSettings()` → travelBrand, storeName, companyName | Settings › General | `GET /api/v1/settings/site` |
+| Default SEO title, description, share image | `getSiteSettings()` → defaultSeo | Settings › General | `GET /api/v1/settings/site` |
+| Header menu (7 items, order, visibility, Waafas World and More panels) | `getMenu("header")` → items[].label, href, icon, panel, visible | Settings › Footer and menus | `GET /api/v1/menus/header` |
+| More panel and sheet (icon, title, one line) | `getMenu("more")` → items[].label, description, icon, href | Settings › Footer and menus | `GET /api/v1/menus/more` |
+| Waafas World mega panel categories | `listCategories()` → level-1 name, description, icon, order | Waafas World › Categories | `GET /api/v1/shop/categories` |
+| Announcement bar | `getActiveAnnouncement()` → text, link, startsAt, endsAt, enabled | Content › Home and banners | `GET /api/v1/announcements/active` |
+| Hotline chip, Call and WhatsApp buttons, floating WhatsApp | `getContactSettings()` → phoneDisplay, phoneE164, whatsappE164 | Settings › General | `GET /api/v1/settings/contact` |
+| Open now / Closed chip | `getContactSettings()` → officeHours, read with `getOfficeStatus()` in Asia/Dhaka | Settings › General | `GET /api/v1/settings/contact` |
+| Need help? panel, drawer contact block, Contact page, Visit our office | `getContactSettings()` → addressLines, city, country, email, officeHoursText, closedText, mapUrl | Settings › General | `GET /api/v1/settings/contact` |
+| Footer brand column | `getSiteSettings()` → footerTagline, footerAbout; `getContactSettings()` → socials | Settings › General | `GET /api/v1/settings/site` |
+| Footer link columns | `getFooterSettings()` → columns[].title, menu; `getMenu("footer-travel" / "footer-shop" / "footer-help")` | Settings › Footer and menus | `GET /api/v1/settings/footer` |
+| We accept | `getFooterSettings()` → paymentMethods (live ones only), paymentNote | Settings › Footer and menus | `GET /api/v1/settings/footer` |
+| Trust badges (ATAB, TOAB, IATA once held) | `getFooterSettings()` → trustBadges | Settings › Footer and menus | `GET /api/v1/settings/footer` |
+| Newsletter band | `getFooterSettings()` → newsletterTitle, newsletterPlaceholder, newsletterButton | Settings › Footer and menus | `GET /api/v1/settings/footer` |
+| Bottom bar copyright and legal links | `getFooterSettings()` → copyrightHolder; `getMenu("legal")` | Settings › Footer and menus | `GET /api/v1/settings/footer` |
+| Developer credit | Rendered from code (FR-FTR-06) | Not editable, by design | — |
+| Manual or Live body; Send query or Book now | `getPublicConfig()` → modes.{flights, hotels, packages, shopPayment}.mode, liveLocked, lockReason | Settings › Booking modes | `GET /api/v1/config/public` |
+| Online payment at checkout; cash-on-delivery cap | `getPublicConfig()` → onlinePaymentLive, codLimit | Settings › Payments and delivery | `GET /api/v1/config/public` |
+| Maintenance page | `getPublicConfig()` → maintenance.enabled, message | Settings › General | `GET /api/v1/config/public` |
+| Analytics and verification tags | `getTrackingSettings()` → ga4Id, gtmId, metaPixelId, searchConsoleToken | Settings › General | `GET /api/v1/settings/tracking` |
+| Lead forms: consent line, email required, reply promise | `getLeadFormSettings()` → consentText, emailRequired, slaMinutes | Settings › General | `GET /api/v1/settings/lead-form` |
+| Home section order, visibility and heading overrides | `listHomeSections()` → key, enabled, order, title, subtitle | Content › Home and banners | `GET /api/v1/home/sections` |
+| Home trust strip | `listTrustItems()` → icon, title, detail, order | Content › Home and banners | `GET /api/v1/home/trust` |
+| Home offers, store campaigns, results banners | `listBanners(placement)` → kicker, title, body, image, link, code, validityText, startsAt, endsAt, order, enabled | Content › Home and banners | `GET /api/v1/banners?placement=` |
+| Airline strip | `listFeaturedAirlines()` → code, name, featuredOrder | Content › Home and banners | `GET /api/v1/airlines?featured=true` |
+| Destination finder | `listDestinations()` → name, subtitle, iata, image, flightTime, visaNote, visaEasy, bestSeason, fromPrice, tags, order | Content › Home and banners | `GET /api/v1/home/destinations` |
+| Why WAAFA values (Home, About) | `listValues()` → icon, title, body, order | Content › Home and banners | `GET /api/v1/home/values` |
+| Journey timeline (Home, About) | `listTimeline()` → period, text, order | Content › Home and banners | `GET /api/v1/home/timeline` |
+| Group fare cards (Home rail, group fares page, results) | `listGroupFares()`, `getGroupFare()` → airline, cabin, baggage, tripType, from, to, stops, departDate, returnDate, seatsLeft, farePerAdult, expiresAt, notes | Sales › Group fares | `GET /api/v1/group-fares` |
+| Package cards, list filters and sort | `listPackages()` → title, placesLabel, categories, tags, months, durationDays, durationNights, includesShort, cover, fromPrice, popularity | Travel › Tour packages | `GET /api/v1/packages` |
+| Package detail | `getPackage()`, `listRelatedPackages()` → summary, gallery, video, groupSize, visaNote, highlights, itinerary, inclusions, exclusions, prices, departures, anyDate, hotels, visa, terms, faqs, relatedSlugs, seo | Travel › Tour packages | `GET /api/v1/packages/{slug}` |
+| Airport and hotel-city autocomplete | `searchAirports()`, `listPinnedAirports()`, `searchHotelPlaces()` → iata, city, name, country, pinnedRank; place name, city, popular | Seeded reference data (B6) | `GET /api/v1/airports?q=`, `GET /api/v1/hotel-places?q=` |
+| Visa list and country cards | `listVisaCountries()` → name, flagCode, region, submission, popular, types[].type, processingTime, serviceCharge | Travel › Visa | `GET /api/v1/visa/countries` |
+| Visa country page | `getVisaCountry()` → types[].processingTime, stay, entry, validity, checklist, embassyFee, embassyFeeNote, serviceCharge, notes; forms; faqs; guideSlug | Travel › Visa | `GET /api/v1/visa/countries/{slug}` |
+| Visa Guide list and article | `listVisaGuides()`, `getVisaGuide()` → title, summary, cover, sections, tips, updatedAt, readingMinutes, seo | Content › Pages, blog and FAQs | `GET /api/v1/visa/guides` |
+| Store home rows | `listStoreRows()` → key, enabled, order | Waafas World › Collections | `GET /api/v1/shop/store-rows` |
+| Category grid and listing filters | `listCategories()`, `getCategory()`, `getAttributeSet()` → name, slug, icon, description, banner, parentId, level, attributeSetId, compatibility, order, seo; attributes[].filterable | Waafas World › Categories | `GET /api/v1/shop/categories` |
+| Product cards and product page | `listProducts()`, `getProduct()` → title, shortTitle, badges, cardSpec, highlights, description, specs, warranty, images, video, options, variants (sku, price, mrp, stock, lowStockAt, preOrder, images), codEligible, bulkFrom, seo | Waafas World › Products | `GET /api/v1/shop/products` |
+| Brands row and brand pages | `listBrands()`, `getBrand()` → name, logo, description | Waafas World › Products | `GET /api/v1/shop/brands` |
+| Collections | `listCollections()`, `getCollection()` → name, description, image, rule, order | Waafas World › Collections | `GET /api/v1/shop/collections` |
+| Deals with an end date | `listDeals()` → dealPrice, endsAt, product, variant | Waafas World › Products | `GET /api/v1/shop/deals` |
+| Find by model | `listCompatibleModels()`, `findCompatibleProducts()` → brand, model, partCodes; product.compatibleModelIds | Waafas World › Products (compatibility CSV) | `GET /api/v1/shop/compatible-products` |
+| Coupons at checkout | `findCoupon()` → code, type, value, minOrder, maxDiscount, startsAt, endsAt, enabled | Waafas World › Coupons | `POST /api/v1/shop/coupons/validate` |
+| Delivery charges, estimates, free delivery, minimum order, office pick-up | `getShippingSettings()` → zones[].name, areas, charge, estimate; freeDeliveryThreshold; minimumOrder; officePickup | Settings › Payments and delivery | `GET /api/v1/settings/shipping` |
+| Offline Payment page, checkout and order emails | `getPaymentSettings()` → offlineAccounts[].kind, title, lines, instructions | Settings › Payments and delivery | `GET /api/v1/settings/payments` |
+| EMI page | `getEmiSettings()` → minimumAmount, tenuresMonths, cardsNote, appliesTo, interestNote; `listEmiBanks()` → name, tenuresMonths, note | Settings › Payments and delivery | `GET /api/v1/settings/emi` |
+| Refund, Privacy, Terms and About Us text | `getPage(slug)` → title, summary, highlights, sections, lastUpdated, seo | Content › Pages, blog and FAQs | `GET /api/v1/pages/{slug}` |
+| Blog list, post and Home blog strip | `listBlogPosts()`, `getBlogPost()`, `listRelatedBlogPosts()`, `listBlogCategories()` → title, excerpt, intro, sections, cover, category, author, publishedAt, readingMinutes, featured, cta, seo | Content › Pages, blog and FAQs | `GET /api/v1/blog/posts` |
+| FAQs page and Home FAQ strip | `listFaqs()` → category, question, answer, link, order, onHome | Content › Pages, blog and FAQs | `GET /api/v1/faqs` |
+| Baggage table | `listBaggageRules()` → airlineCode, airlineName, scope, cabinClass, cabinAllowance, checkedAllowance, notes, lastVerified | Content › Pages, blog and FAQs | `GET /api/v1/baggage-rules` |
+| Gallery page, albums and Home strip | `listGalleryAlbums()`, `getGalleryAlbum()` → title, category, cover, items (photo or video, caption), publishedAt | Content › Gallery | `GET /api/v1/gallery/albums` |
+| Testimonials wall and Home reviews | `listPublicFeedback()` → name, service, rating, comment, photo, submittedAt (approved with consent only; contact details never leave the server) | Content › Feedback | `GET /api/v1/feedback` |
+| Facebook reviews link (until approved feedback exists) | `getSiteSettings()` → reviewsUrl | Settings › General | `GET /api/v1/settings/site` |
+| Meet our team (Home bento, About grid) | `listTeam(placement)` → name, initials, designation, department, bio, photo, whatsappE164, email, linkedinUrl, featured, showOnHome, showOnAbout, visible, order | Content › Team | `GET /api/v1/team?placement=` |
+| Customer emails (lead received, order placed, visa status) | NotificationTemplate → subject, body, variables, channel, enabled (admin repository arrives with A21) | Settings › Notifications | `GET /api/v1/admin/notification-templates` |
+| Lead reference on success screens | `createLead()` → reference, createdAt | Sales › Leads | `POST /api/v1/leads` |
 
 ## Components inventory
 
@@ -170,6 +226,14 @@ Rows are added by each issue; an issue is not done until its rows are here.
 | SmartImage · SmartVideo | `components/media/` | custom on next/image | photos, hero and package loops |
 | EmptyState · ErrorState | `components/feedback/` | custom on shadcn Empty | lists, results, errors |
 | WhatsAppIcon · FacebookIcon | `components/icons/` | Simple Icons 16.34.0 (CC0) | WhatsApp buttons, socials |
+| zod contracts (settings, content, travel incl. FR-GS-08 models, search, leads, visa, shop, admin) | `packages/shared/src/schemas/` | custom (zod 4, `.strict()`) | web, fixtures, API (Phase B) |
+| makeReference · parseReference · toDhakaIsoString · toDhakaDateString | `packages/shared/src/helpers/reference.ts` | custom | lead and order references, timestamps |
+| toBdE164 · formatBdPhone · whatsappLink | `packages/shared/src/helpers/phone.ts` | custom | forms, contact links |
+| getOfficeStatus · formatClock | `packages/shared/src/helpers/officeHours.ts` | custom (Asia/Dhaka) | Open now chip |
+| Sample fixtures + `loadFixtures()` (parsed, frozen) | `fixtures/src/` | custom | fixture repositories, Phase B seed |
+| Repository interfaces | `apps/web/src/lib/data/types.ts` | custom | data layer |
+| Cached accessors (`'use cache'` + `CACHE_TAGS`) | `apps/web/src/lib/data/{settings,content,travel,visa,shop,leads}.ts` | custom on Next 16 Cache Components | every page |
+| Fixture repositories | `apps/web/src/lib/data/fixtures/` | custom | Phase A data source (`source.ts`) |
 
 ## Benchmark (Lighthouse mobile)
 
@@ -182,6 +246,14 @@ Lighthouse 13.5.0 mobile (simulated Slow 4G, 4× CPU), median of 3 runs, 9 Oct 2
 Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 ## Session log (newest first)
+
+### 2026-10-09 11:35 (Asia/Dhaka) — A4 data layer and content model (#4)
+- Shared zod contracts for every domain (strict objects, shared enums, FR-GS-08 normalised travel models, reference formats), plus reference, phone, office-hours and Dhaka-time helpers.
+- Typed Sample fixtures from the prototype boards: settings and menus, policies and About, blog, FAQs, offers, destinations, gallery, team (initials), baggage, 9 group fares, 11 packages, 16 visa countries and 5 guides, a shop catalogue with variants, compatibility and orders, admin samples. Every record `sample: true`.
+- Repository interfaces, fixture repositories (pure, take `now`) and cached accessors (`'use cache'`, `cacheLife`, `cacheTag`) in `apps/web/src/lib/data`; checked once in the real Next runtime with a temporary route (removed).
+- Admin-control matrix seeded (56 rows).
+- Found and fixed while writing fixtures: invented alt-text details (now the CREDITS subjects), a Sajek photo on a Sreemangal package (package dropped), possibly real phone numbers in samples (now the unassigned 010 prefix), an About intro over its 300-character limit (caught by the schema).
+- Tests: Vitest 168 passed (shared 38, fixtures 75 incl. compliance checks, web 55); Playwright 15 passed. Lint, typecheck, build, Prettier clean.
 
 ### 2026-10-09 10:24 (Asia/Dhaka) — A3 design system (#3)
 - 41 shadcn primitives restyled to the Components/States boards; brand pieces (logo lockup, ribbon, gold triangle, W loader); MotionKit; SmartImage/SmartVideo; empty/error states; taka glyph font; favicon and app icon; dev-only `/styleguide`.
@@ -238,9 +310,20 @@ Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.m
 | D24 | 2026-10-09 | next-intl root provider passes `messages={null}`; client leaves get strings as props or a scoped provider (`pickMessages`) | next-intl v4 otherwise ships the whole catalogue to every page (JS budget) |
 | D25 | 2026-10-09 | WhatsApp and Facebook glyphs from Simple Icons (CC0) | Lucide has no brand icons; visitors look for the WhatsApp mark |
 | D26 | 2026-10-09 | `/styleguide` exists in dev and in `STYLEGUIDE=1` builds (CI e2e), 404 in production; Turbo's build task declares `STYLEGUIDE` | Dev-only page that CI still tests with axe |
+| D27 | 2026-10-09 | UI reads data only through cached accessors in `apps/web/src/lib/data` (`'use cache'` + `cacheLife` + `cacheTag` from `CACHE_TAGS`); they call `repositories` from a `server-only` `source.ts`; fixture repositories are pure and take `now` | Phase C swaps one line in `source.ts`; repositories stay unit-testable outside Next; the tags match the API's revalidation webhook |
+| D28 | 2026-10-09 | Fixtures are written as zod inputs, parsed by `loadFixtures()` (defaults applied) and deep-frozen | A broken fixture fails with an error naming the field; nothing can sort or edit shared data in place |
+| D29 | 2026-10-09 | Pages, blog posts and visa guides store headed sections (id = anchor) instead of one HTML body | The "On this page" and "In this article" lists come from data; each body is sanitised rich text (API sanitises on save) |
+| D30 | 2026-10-09 | Embassy fees default to null ("set by the embassy; confirmed before you pay"); stay, entry and validity are optional; only Thailand carries the prototype's sample figures | No invented visa facts for real countries |
+| D31 | 2026-10-09 | Sample people use "Sample …" names, example.com emails and the unassigned 010 phone prefix; a test fails on any BD mobile except the company's | No real person can be reached through seed data |
+| D32 | 2026-10-09 | Gallery albums are named after places while Unsplash photos stand in; feedback fixtures are pending only; team samples drop the prototype's Managing Director card and personal anecdotes | No invented trips, reviews or owner details (PRD §2) |
+| D33 | 2026-10-09 | Packages carry `categories` (several) and `months`; the More menu item has no href; template variables allow snake_case; the Home airline strip is data (`featuredOrder`) | Matches the boards' filters and admin screens; everything visible stays admin-controlled |
+| D34 | 2026-10-09 | Printing Solutions and International Trading live under `/shop` (`/shop/printing-solutions`, `/shop/international-trading`); category slugs are full words (`printers-and-supplies`) | PRD sitemap lists them as /shop children; readable URLs |
+| D35 | 2026-10-09 | Phase A lead intake validates and returns a well-formed reference but stores nothing | No personal data kept in a dev server's memory; the API takes over in Phase C |
 
 ## Known issues and bugs
-_None yet._
+- Fixture images point at `/images/<key>.jpg` and `/images/products/*.jpg`, which are not in `apps/web/public` yet: A5 (#5) adds the Unsplash photos and the Better Day product shots.
+- The boards disagree on two shop numbers: cash-on-delivery cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample), and free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms.
+- Phase A references restart at 0001 whenever the dev server restarts (no storage before the API).
 
 ## Cut list (if time runs out, in this order — PRD §17)
 1. Gallery video embeds
@@ -255,12 +338,14 @@ _None yet._
 - [ ] Offline payment accounts to publish (bank, bKash, Nagad)
 - [ ] Launch content: packages, visa countries with fees and processing times, group fares
 - [ ] Refund, privacy and terms text, or approval of drafts
-- [ ] Logo vector files (SVG or AI) — the header uses an SVG traced from the PNG until then
+- [ ] Logo vector files (SVG or AI) — the header uses the supplied PNG cut-outs until then
+- [ ] About Us mission and vision wording (sample text drafted from the tagline)
+- [ ] EMI partner banks and their tenures; Better Day toner prices and the printer models each one fits (samples from the prototype)
 - [ ] Staff names and roles for admin accounts; team members who agree to appear on the site
 - [ ] SSLCommerz merchant account status
 - [ ] Email provider for info@ and DNS access for the sending domain
 - [ ] Hosting accounts: Vercel, VPS or Railway, Cloudflare (Turnstile, R2)
 
 ## Next steps
-1. A4 (#4): shared zod contracts, repository interfaces and typed Sample fixtures (all admin-controlled content).
-2. A5 → A22 in order.
+1. A5 (#5): real photos with credits in `apps/web/public/images` (Unsplash set + Better Day product shots), video loops and posters.
+2. A6 → A22 in order, reading every visible field through `apps/web/src/lib/data` accessors.

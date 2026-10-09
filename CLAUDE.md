@@ -51,8 +51,10 @@ motion and speed than gozayaan.com, sharetrip.net, akijair.com and obokash.com �
   packages, visa data, products, contact details, office hours, social links, SEO fields, announcement bar, payment
   and shipping settings, notification templates and booking modes all come from the data layer, and each has an
   admin screen that edits it.
-- Pages read data only through the repository interfaces in `apps/web/src/lib/data` (zod contracts from
-  `packages/shared`). Phase A uses the fixtures implementation; Phase C swaps in the API implementation with no UI change.
+- Pages read data only through the cached accessors in `apps/web/src/lib/data/*.ts` (zod contracts from
+  `packages/shared`), never `@waafa/fixtures` or the repositories directly. Phase A uses the fixtures implementation;
+  Phase C swaps in the API implementation in `source.ts` with no UI change. Time-dependent reads go through accessors
+  that pass `now`; request-time values (the Open now chip) are computed per request or on the client.
 - `docs/TRACKER.md` keeps the **Admin-control matrix**: public element → data field → admin screen → API endpoint
   (endpoint filled in Phase B). An issue is not done until its rows are filled.
 

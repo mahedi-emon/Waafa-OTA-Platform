@@ -11,15 +11,18 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@waafa/shared": "workspace:*"
+    "@waafa/shared": "workspace:*",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@types/node": "^22",
     "@waafa/config": "workspace:*",
     "eslint": "^9",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "5.0.3"
   }
 }
