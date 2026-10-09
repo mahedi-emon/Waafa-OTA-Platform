@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "22"
+  NEXT_TELEMETRY_DISABLED: "1"
+  TURBO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  verify:
+    name: Lint, typecheck, test, build, e2e smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      # The pnpm workspace arrives with issue #2; until then this job only reports a notice.
+      - name: Detect workspace
+        id: ws
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=No workspace yet::pnpm-lock.yaml is missing (issue #2 adds the monorepo); app checks skipped."
+          fi
+
+      - uses: pnpm/action-setup@v6
+        if: steps.ws.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v7
+        if: steps.ws.outputs.ready == 'true'
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        if: steps.ws.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        if: steps.ws.outputs.ready == 'true'
+        run: pnpm lint
+
+      - name: Typecheck
+        if: steps.ws.outputs.ready == 'true'
+        run: pnpm typecheck
+
+      - name: Unit tests
+        if: steps.ws.outputs.ready == 'true'
+        run: pnpm test
+
+      - name: Build
+        if: steps.ws.outputs.ready == 'true'
+        run: pnpm build
+
+      - name: Playwright version
+        if: steps.ws.outputs.ready == 'true'
+        id: pw
+        run: echo "version=$(pnpm --filter web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        if: steps.ws.outputs.ready == 'true'
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+      - name: Install Playwright browser
+        if: steps.ws.outputs.ready == 'true'
+        run: pnpm --filter web exec playwright install --with-deps chromium
+
+      - name: E2E smoke tests
+        if: steps.ws.outputs.ready == 'true'
+        run: pnpm e2e
+
+      - name: Upload Playwright report
+        if: failure() && steps.ws.outputs.ready == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse CI (mobile)
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+
+      # Runs once the home page exists (issue #7 adds apps/web/lighthouserc.json).
+      - name: Detect Lighthouse config
+        id: lh
+        run: |
+          if [ -f apps/web/lighthouserc.json ] && [ -f pnpm-lock.yaml ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Lighthouse skipped::apps/web/lighthouserc.json not present yet."
+          fi
+
+      - uses: pnpm/action-setup@v6
+        if: steps.lh.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v7
+        if: steps.lh.outputs.ready == 'true'
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        if: steps.lh.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web
+        if: steps.lh.outputs.ready == 'true'
+        run: pnpm --filter web... build
+
+      - name: Lighthouse CI
+        if: steps.lh.outputs.ready == 'true'
+        working-directory: apps/web
+        run: pnpm exec lhci autorun

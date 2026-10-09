@@ -8,7 +8,9 @@ Set up on 2026-10-09.
 | File | Purpose |
 | --- | --- |
 | `.mcp.json` | Project MCP servers (context7, shadcn, playwright, serena, magic, figma, github) |
-| `.claude/settings.json` | `{"enableAllProjectMcpServers": true}` — approves the `.mcp.json` servers |
+| `.claude/settings.json` | `enableAllProjectMcpServers: true` (approves the `.mcp.json` servers) and `attribution` with empty `commit`/`pr` and `sessionUrl: false` (no AI attribution in commits or PRs) |
+| `.github/workflows/ci.yml` | CI: install, lint, typecheck, unit tests, build, Playwright smoke; Lighthouse CI once `apps/web/lighthouserc.json` exists |
+| `docs/TRACKER.md` | Status of every phase and issue, tooling table, matrices, decisions, session log |
 | `.claude/skills/` | Project skills (frontend-design, design-taste-frontend; UI UX Pro Max — see below) |
 | `skills-lock.json` | Written by the `skills` CLI; `npx skills experimental_install` restores the skills from it |
 | `.serena/project.yml` | Serena project config (language: typescript). `.serena/cache/` and `project.local.yml` are gitignored |
@@ -79,6 +81,15 @@ Every `${VAR}` uses `${VAR:-}` so a missing variable doesn't break parsing of th
 - `src/components/motion/motion-provider.tsx` — `LazyMotion features={domAnimation} strict` + `MotionConfig reducedMotion="user"`; wired into `src/app/layout.tsx`. Because of `strict`, use `m.div`, not `motion.div`.
 - `src/components/motion/reduced-motion.ts` — `REDUCED_FADE` (150 ms), `usePrefersReducedMotion`, `useRiseVariants`, `useSafeTransition`.
 - Verified: `next build`, `tsc --noEmit` and `eslint` pass.
+
+## Local machine notes (2026-10-09)
+- `gh` 2.102.0 is installed at `C:\Program Files\GitHub CLI\gh.exe` but not on PATH in every shell. PowerShell:
+  `$env:PATH += ";C:\Program Files\GitHub CLI"`; Git Bash: `export PATH="$PATH:/c/Program Files/GitHub CLI"`. Logged in as
+  `mahedi-emon` with scopes `gist, project, read:org, repo, workflow` (enough for Project #4).
+- Node comes from nvm4w: 25.2.1 active, 22.11.0 installed. CI uses Node 22. Node 25 ships without corepack, so pnpm 12.10.1 is
+  installed globally and pinned in the root `packageManager` field.
+- Git Bash has no IANA zone data: get Dhaka time with PowerShell
+  `[TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow,'Bangladesh Standard Time')`.
 
 ## Environment variables
 | Variable | Needed by | Required? |

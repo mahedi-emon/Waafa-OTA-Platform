@@ -1,0 +1,8 @@
+# Decisions (full table in docs/TRACKER.md)
+- D1 Project #4 has no "Todo" status: use Ready (08afe404).
+- D2 Attribution off via `attribution` {commit:"", pr:"", sessionUrl:false} (includeCoAuthoredBy is deprecated).
+- D3 Local Node 25.2.1 (>=20.9) kept; CI Node 22; pnpm 12.10.1 pinned via packageManager (no corepack in Node 25).
+- D4 Labels prefixed type:/area:/priority:; default labels kept.
+- D5 Milestone dues: A 11 Oct, B 12 Oct, C 13 Oct, D 13 Nov, E open.
+- D6 PRD beats skill defaults (Inter + Plus Jakarta Sans, lucide, light-only public site).
+- D7 shadcn files keep CLI names in components/ui; custom components PascalCase files.
