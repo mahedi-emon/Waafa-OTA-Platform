@@ -16,6 +16,7 @@ test-results/
 blob-report/
 .lighthouseci/
 .playwright-mcp/
+docs/design/benchmark/_captures/
 
 .DS_Store
 *.log

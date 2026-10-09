@@ -115,7 +115,7 @@ and check keyboard use, reduced motion and bundle size before shipping. The full
 ### Images and video in the prototype
 
 - Every photo slot shows an original drawn scene as a **prototype stand-in**, because the design canvas can't load external photos. The PRD rule stands for the live site: real photos only (Unsplash or Pexels until Waafa's own arrive), never AI-generated, painted or drawn scenes. Slots are keyed by `data-photo`; `photos.css` and `photos/get-waafa-photos.mjs` in this package swap in the real photos.
-- Twelve short loops (H.264 MP4 + VP9 WebM, 1280×720, 0.1–0.9 MB, poster frame each). The route map, passport and product videos are motion graphics the site can use. The scenery loops (clouds, lagoon, balloons, port, printer, city) are stand-ins: use real footage with a free licence (Pexels or Coverr) at the same size for the live site.
+- Twelve short loops (H.264 MP4 + VP9 WebM, 1280×720, 0.1–0.9 MB, poster frame each). None of them ships: the route map, passport and product videos are drawn motion graphics and the scenery loops (clouds, lagoon, balloons, port, printer, city) are rendered stand-ins. The live site uses real footage with a free licence (Pexels, Coverr or Mixkit) at the same size, and the route map is rebuilt as a live SVG component (real photos and video only).
 - Markup: `<video autoPlay muted loop playsInline poster="…"><source type="video/webm"><source type="video/mp4"></video>`, started only when visible (IntersectionObserver), poster only under reduced motion.
 
 ## Build order to the 13 October launch
@@ -128,6 +128,8 @@ and check keyboard use, reduced motion and bundle size before shipping. The full
 
 ## Kick-off prompt for Claude Code
 
+> Superseded: `CLAUDE.md` (with `docs/claude-code-prompts.md`) is the working brief now. The original prompt stays below for history.
+
 ```
 Read docs/PRD.md and docs/design/handoff/HANDOFF.md.
 Build apps/web with Next.js App Router, TypeScript strict, Tailwind v4 and
@@ -136,14 +138,16 @@ app/globals.css. Start with the layout shell (Header, Footer, TabBar,
 MotionKit) and Home. For every route, open the listed screens in
 docs/design/index.html and docs/design/project/, and match them on a 390 px
 phone first, then 768 and 1440. Use real components, not screenshots. Keep
-sample data in /fixtures, marked Sample. Ask before adding a dependency that
-is not in the PRD.
+sample data in /fixtures, marked Sample. Dependencies named in the PRD, this
+handoff and CLAUDE.md are pre-approved; add anything else only when clearly
+needed, and log it.
 ```
+
 ## Rules the build must keep
 
 Never:
 - show trade licence numbers, owner details, ID numbers or fees on the site, in seed data or in the repository;
-- offer Hajj or Umrah packages, or manpower, recruitment or employment-visa services;
+- offer Hajj or Umrah packages, or manpower, recruitment or employment-visa services in this build (Phase F, after the licence);
 - fake live availability — Manual mode fares are indicative and confirmed by an expert before payment;
 - invent reviews or testimonials — the feedback wall shows approved submissions only;
 - make passport or visa documents public — private bucket, signed and logged links;
@@ -152,7 +156,7 @@ Never:
 Always:
 - keep every page usable on a 320 px phone with the bottom tab bar; the tab label is **Waafas World** and the route is `/shop`;
 - show the WAAFA logo once per page (main header); write "Waafas World" as text next to it, never with a second logo;
-- show prices in taka with VAT included, ৳ sign and Indian grouping (1,46,480); show online payment only when it is live;
+- show prices in taka with VAT included, ৳ sign and lakh grouping (৳1,46,480); show online payment only when it is live;
 - use photos from Unsplash with credits (Photo brief) or Waafa's own product shots;
 - turn movement into short fades under reduced motion;
 - protect form submits with Turnstile, rate limits and an idempotency key;

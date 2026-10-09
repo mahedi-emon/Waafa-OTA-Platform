@@ -1,0 +1,48 @@
+name: Feature
+description: A new screen, flow or capability from the PRD
+title: "<Ax> · <title>"
+labels: ["type: feature"]
+assignees: ["mahedi-emon"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What the visitor, customer or staff member can do afterwards.
+    validations:
+      required: true
+  - type: textarea
+    id: screens
+    attributes:
+      label: Screens to match
+      description: Boards from docs/design/handoff/HANDOFF.md (route table); phone boards end in -m.
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope in / out
+      value: |
+        In:
+        -
+        Out:
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance
+      value: |
+        - [ ] Design: matches the boards; components only; tokens and cva variants
+        - [ ] Motion: MotionKit only; transform and opacity; reduced motion = 150 ms fade
+        - [ ] Admin control: every visible field from the data layer; TRACKER matrix rows filled
+        - [ ] Responsive: 320 / 390 / 768 / 1024 / 1440, no horizontal scroll, 44 px targets
+        - [ ] Accessibility: keyboard pass, axe pass, labels and announced errors
+        - [ ] Performance: first-load JS within 200 KB gzip, Lighthouse mobile within budget
+        - [ ] Tests: Vitest for logic, Playwright e2e for the flow
+    validations:
+      required: true
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+      placeholder: "#6, #8"

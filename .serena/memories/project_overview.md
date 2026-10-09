@@ -14,5 +14,8 @@ docs/design/handoff/tokens.css, docs/design/project/*.dc.html (`-m` = phone), do
 - docs/ — PRD, design prototype, handoff, TRACKER, DESIGN.md, MOTION.md, COMPETITOR_BENCHMARK.md, TOOLING.md
 
 ## Phases
-A Frontend on fixtures (issues #1–#22) → B Backend → C Integration & launch → D P1 → E P2 live booking.
-GitHub Project #4 tracks issues (Status: Ready = todo). See `mem:workflow`, `mem:progress`, `mem:decisions`.
+A Frontend on fixtures (A0 #27, A1–A22 = #1–#22, A1b #34; epic #28) → B Backend (#29) → C Integration & launch (#30)
+→ D P1 (#31) → E Live booking (#32) → F Licensed modules: Hajj & Umrah, Manpower & Recruitment (#33, later, after
+the licence; nothing built now). GitHub Project #4 tracks issues (Status: Ready = todo).
+Owner prompts: docs/claude-code-prompts.md (PROMPT 2 = continue). See `mem:workflow_and_git`, `mem:progress`,
+`mem:decisions`, `mem:session_handoff`.
