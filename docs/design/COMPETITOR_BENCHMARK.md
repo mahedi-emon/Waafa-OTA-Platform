@@ -37,6 +37,23 @@ Raw observations that drive the scores:
 - **Semantics.** GoZayaan's home has no `h1` or `h2` and its `<title>` is just "GoZayaan". Obokash's `h1` is an SEO phrase
   ("Best Hajj Umrah Agency - Visa & Travel Agent in Bangladesh") followed by a 120-word paragraph.
 
+### Inner page: tour package listing (A1b, #34)
+
+Lighthouse 13.5.0 mobile, same preset, **one run per page** on 10 Oct 2026 01:05 Asia/Dhaka (time-boxed; the home
+pages above are medians of three). The package listing is the one inner page all four sites have.
+
+| Site | Page | Performance | Accessibility | Best practices | SEO | FCP | LCP | TBT | CLS | Speed Index | Transfer | Requests |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| GoZayaan | `/tour` (redirects to `/?search=tour`, the home with the Tour tab) | 35 | 73 | 50 | 92 | 5.3 s | 5.6 s | 4,720 ms | 0.011 | 5.7 s | 4.1 MB | 157 |
+| ShareTrip | `/holiday` | 1 | 72 | 73 | 100 | 9.2 s | 26.5 s | 3,780 ms | 0.93 | 41.8 s | 19.4 MB | 215 |
+| Akij Air | `/packages/all` | 27 | 93 | 73 | 100 | 7.2 s | 23.4 s | 2,450 ms | 0 | 11.4 s | 3.9 MB | 101 |
+| Obokash | `/holiday-packages-from-bangladesh` | 34 | 85 | 54 | 100 | 4.0 s | 16.2 s | 1,890 ms | 0 | 6.0 s | 2.1 MB | 111 |
+| **Best of four** | | **35** | **93** | **73** | **100** | **4.0 s** | **5.6 s** | **1,890 ms** | **0** | **5.7 s** | **2.1 MB** | **101** |
+
+Waafa's `/tour-packages` target is the same as the home target (Performance ≥ 90, Accessibility ≥ 95, Best
+practices ≥ 95, SEO 100, LCP ≤ 2.5 s, TBT ≤ 200 ms, CLS ≤ 0.1). Akij Air's 93 accessibility on this page is the
+highest competitor score anywhere in the benchmark, so Waafa's 95 floor still beats it. Measured for Waafa in A11 and A22.
+
 ## 2. Area by area
 
 Each area: what they do, where it is weak, and how Waafa does it better in its own way.

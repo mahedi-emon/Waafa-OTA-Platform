@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 09 Oct 20:56 Asia/Dhaka · Phase: A · Frontend · Current: #6 · A6 Layout shell (A5 #5 and A1b #34 in parallel) · Progress: 5/24 issues (21%) · Launch: 13 Oct 2026, 4 days left · Status: Behind by 3 issues (a 90-minute usage-limit pause today; cuts proposed in section 10)
+Updated: 10 Oct 01:20 Asia/Dhaka · Phase: A · Frontend · Current: #8 · A8 Unified search card and pickers · Progress: 8/24 issues (33%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (HANDOFF expects A8–A10 done on Sat 10; cuts in section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) | 5 | 3 (#6, #5, #34) | 0 | 21% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) | 8 | 1 (#8) | 0 | 33% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -67,26 +67,25 @@ Serena memory `audit_findings`.
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
 
-### #34 · A1b v4 addendum: signature moments, beat list, persisted design system, inner-page benchmark — 🟡 In progress
+### #34 · A1b v4 addendum: signature moments, beat list, persisted design system, inner-page benchmark — ✅ Done
 | Field | Value |
 | --- | --- |
-| Opened → closed | 09 Oct → — |
-| Branch · PR · merge | `docs/34-v4-addendum` (pushed) · — · — |
-| Built | MOTION.md §8 signature moments and §9 beat list; reconciled UI UX Pro Max system in `docs/design/design-system/waafa`; DESIGN.md deviation log. Pending: inner-page Lighthouse |
+| Opened → closed | 09 Oct 17:00 → 10 Oct |
+| Branch · PR · merge | `docs/34-v4-addendum` · see section 13 · squash |
+| Built | MOTION.md §8 signature moments and §9 beat list; reconciled UI UX Pro Max system in `docs/design/design-system/waafa`; DESIGN.md deviation log; Lighthouse mobile on each competitor's package listing (one run each) in COMPETITOR_BENCHMARK §1 and the section 7 table |
 | Files and components | `docs/design/MOTION.md`, `docs/design/DESIGN.md`, `docs/design/COMPETITOR_BENCHMARK.md`, `docs/design/design-system/waafa/*` |
 | Screens matched | Motion board |
 | Admin control | — |
-| Tests | — |
+| Tests | — (docs only) · Lighthouse 13.5.0 mobile × 4 competitor pages |
 | Widths checked | — |
-| Tools and skills | — |
-| Decisions | — |
-| Bugs and follow-ups | — |
+| Tools and skills | Serena, ui-ux-pro-max (`--design-system --persist`, `--page`), design-taste-frontend, Lighthouse CLI |
+| Decisions | Bugs and follow-ups | — |
 
-### #5 · A5 Media: real photos with credits, video loops and posters — 🟡 In review
+### #5 · A5 Media: real photos with credits, video loops and posters — ✅ Done
 | Field | Value |
 | --- | --- |
-| Opened → closed | 09 Oct 06:03 → — |
-| Branch · PR · merge | `feat/5-media` · — · — |
+| Opened → closed | 09 Oct 06:03 → 10 Oct 00:20 |
+| Branch · PR · merge | `feat/5-media` · #37 · `ac2f0b1` |
 | Built | 31 Unsplash photos and 3 Better Day product shots with sizes and linked credits; six real clips (Mixkit, Pexels) for the home hero, two package previews, the visa and trading headers and the sample headphones, each with 720 px phone files and a first-frame WebP poster; `VideoSchema` (phone sources, credit), `MediaSlot` contract with repository, cached accessor and `media` cache tag; SmartVideo picks the phone files under 768 px; the prototype's drawn loops removed |
 | Files and components | `apps/web/public/media/{photos,products,video}`, `fixtures/src/{images,media,travel,shop,visa,content}.ts`, `packages/shared/src/schemas/{common,content,shop,travel,visa}.ts`, `apps/web/src/lib/data/{types,content,tags}.ts`, `components/media/SmartVideo.tsx`, `docs/design/MEDIA_CREDITS.md` |
 | Screens matched | PhotoBrief |
@@ -394,7 +393,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Page | GoZayaan | ShareTrip | Akij Air | Obokash | Waafa | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | Home | 26 / 76 / 50 / 92 · 24.4 s | 1 / 72 / 73 / 100 · 29.2 s | 27 / 79 / 69 / 92 · 25.4 s | 35 / 88 / 54 / 92 · 12.5 s | target ≥ 90 / ≥ 95 / ≥ 95 / 100 · ≤ 2.5 s | measured in A22 |
-| Inner page | — | — | — | — | — | A1b (#34) |
+| Package listing (1 run, 10 Oct) | 35 / 73 / 50 / 92 · 5.6 s | 1 / 72 / 73 / 100 · 26.5 s | 27 / 93 / 73 / 100 · 23.4 s | 34 / 85 / 54 / 100 · 16.2 s | target ≥ 90 / ≥ 95 / ≥ 95 / 100 · ≤ 2.5 s | GoZayaan `/tour` redirects to its home Tour tab; measured for Waafa in A11 and A22 |
 
 ## 8. Decisions
 
@@ -455,6 +454,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D53 | 09 Oct | E2E allows 404s only for RSC prefetches of routes later issues build; every other 404 fails | Links point at A7–A16 routes that do not exist yet; remove the allowance in A22 | #6 |
 | D54 | 09 Oct | Six real clips ship (hero sky, Maldives, Cappadocia, port, passport, headphones); the printing header uses the Unsplash printer photo and the sample power bank has no video | The only free printer clip was too dark for the brand; no free real power bank footage exists; never a drawn stand-in | #5 |
 | D55 | 09 Oct | Media slots (`MediaSlotKey`) hold page-level photos and videos; the `office` slot stays empty until Waafa sends real office photos; `about-routes` dropped (the route map is a live SVG) | Every page image is admin-replaceable without a stand-in | #5 |
+| D56 | 10 Oct | Inner-page competitor Lighthouse uses one run per site on the package listing (time-boxed); GoZayaan's `/tour` redirect to its home Tour tab is recorded as is | Three runs per site would cost about 25 minutes at a point where the build is behind; the scores are far from Waafa's targets, so run-to-run noise cannot change any decision | #34 |
 
 ## 9. Bugs and known issues
 
@@ -473,6 +473,7 @@ or accessibility.
 2. Blog extras (related posts, contents list)
 3. Part-code search in Find by model
 4. Proposed now (behind by 3 issues): 21st.dev desktop-only flourishes (tilt, spotlight, magnetic) move to A22 polish; the About route map ships as a static SVG first
+5. Proposed 10 Oct 01:20 (behind by 6 issues, Phase A due 11 Oct): admin builders (itinerary days, visa checklist, menus, home order) ship as ordered lists with move up/down buttons first, drag-and-drop (dnd-kit) after launch; admin catalogue and content screens (A19–A21) share one list + form pattern instead of bespoke layouts; A22 polish runs inside each issue's verify step, leaving A22 for the cross-route beat check only; Pick-d boards' two-month desktop calendar stays, the phone calendar shows a scrolling list of months
 
 ## 11. Blockers and owner actions
 
