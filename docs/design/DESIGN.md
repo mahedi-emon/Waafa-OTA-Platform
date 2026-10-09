@@ -50,11 +50,11 @@ rounded:
   none: 0
   xs: 6px      # tags, small badges
   sm: 8px      # small buttons, menu items
-  md: 12px     # inputs, buttons
+  md: 12px     # inputs
   lg: 16px     # cards
   xl: 20px     # panels, dialogs
   2xl: 28px    # search card, sheet tops
-  full: 9999px # chips, pills, tab indicator
+  full: 9999px # buttons, chips, pills, tab indicator
 spacing:
   base: 4px
   xxs: 4px
@@ -69,15 +69,15 @@ spacing:
   section-desktop: 88px
   container: 1320px
 components:
-  button-primary: { backgroundColor: "{colors.primary}", textColor: "{colors.on-primary}", typography: "{typography.button-md}", rounded: "{rounded.md}", height: 48px, padding: "0 22px" }
+  button-primary: { backgroundColor: "{colors.primary}", textColor: "{colors.on-primary}", typography: "{typography.button-md}", rounded: "{rounded.full}", height: 48px, padding: "0 20px" }
   button-primary-hover: { backgroundColor: "{colors.primary-hover}" }
   button-primary-active: { backgroundColor: "{colors.primary-active}", transform: "scale(0.98)" }
   button-primary-disabled: { backgroundColor: "{colors.surface-muted}", textColor: "#A3ADBF" }
-  button-secondary: { backgroundColor: "{colors.canvas}", textColor: "{colors.heading}", border: "1px {colors.input-border}", rounded: "{rounded.md}", height: 48px }
-  button-soft: { backgroundColor: "{colors.primary-soft}", textColor: "{colors.primary-hover}", rounded: "{rounded.md}", height: 48px }
-  button-whatsapp: { backgroundColor: "{colors.whatsapp}", textColor: "#FFFFFF", rounded: "{rounded.md}", height: 48px }
-  button-lg: { height: 56px, padding: "0 28px", typography: "{typography.button-lg}", rounded: 14px }
-  button-sm: { height: 38px, padding: "0 14px", rounded: 10px }
+  button-secondary: { backgroundColor: "{colors.canvas}", textColor: "{colors.heading}", border: "1px {colors.input-border}", rounded: "{rounded.full}", height: 48px }
+  button-soft: { backgroundColor: "{colors.primary-soft}", textColor: "{colors.primary-hover}", rounded: "{rounded.full}", height: 48px }
+  button-whatsapp: { backgroundColor: "{colors.whatsapp}", textColor: "#FFFFFF", rounded: "{rounded.full}", height: 48px }
+  button-lg: { height: 56px, padding: "0 28px", typography: "{typography.button-lg}", rounded: "{rounded.full}" }
+  button-sm: { height: 38px, padding: "0 14px", rounded: "{rounded.full}" }
   input: { backgroundColor: "#FFFFFF", border: "1px {colors.input-border}", rounded: "{rounded.md}", height: 52px, fontSize: 16px }
   input-focus: { border: "1px {colors.primary}", ring: "3px rgb(0 83 215 / .16)" }
   input-error: { border: "1px {colors.danger}", helperColor: "{colors.danger}" }
@@ -176,6 +176,8 @@ Dates: "12 Oct 2026". Times: 24-hour in fare cards ("19:40"), 12-hour in office 
 
 - **Grid.** Container 1320 px, gutters 16 / 28 / 40 px (phone / tablet / desktop). 4 px spacing base.
   Section padding 44 / 64 / 88 px. CSS Grid for layouts, never percentage flex maths.
+- **No blow-outs.** Every grid declares `grid-cols-1` at the phone base (a `minmax(0, 1fr)` track), so a carousel,
+  a long word or a row of OTP boxes can never widen the page. Carousels contain their inline size.
 - **Phone first.** Design at 390 px, verify at 320 px, then 768, 1024, 1280 and 1440.
 - **Rhythm.** Each section has one job and one layout family; no family repeats more than once on a page (taste skill).
   The home page alternates: search hero → trust strip → carousel → fare cards → image grid → horizontal scroll → list →
@@ -203,7 +205,8 @@ All primitives are shadcn/ui (Radix) restyled with these tokens; effects come fr
 `components/fx`. Every interactive component ships hover, focus-visible (2 px electric ring + 2 px offset), active (scale
 0.98 or 1 px press), disabled and loading states.
 
-- **Logo lockup.** W mark + WAAFA wordmark (SVG traced from the supplied PNG, never typed) + the tagline in three lines of
+- **Logo lockup.** W mark + WAAFA wordmark (the supplied cut-outs through next/image until the vector originals arrive;
+  never typed, never traced by hand) + the tagline in three lines of
   small caps from 768 px. Header: W 40 px, wordmark 19 px; phone: W 32 px, wordmark 15 px, no tagline; minimum W 28 px
   (PRD), below that the favicon. Clear space ¼ of the W height. Full colour only, on white or mist-50 only: never on navy or
   photos, never recoloured, no white/silver/mono versions (CLAUDE.md, Brand board). The WAAFA logo appears once per page,
@@ -220,8 +223,11 @@ All primitives are shadcn/ui (Radix) restyled with these tokens; effects come fr
   `layoutId`; 64 px tall plus safe-area inset; the WhatsApp button floats above it.
 - **Search card.** Glass, radius 28, four tabs, fields 56-64 px tall on phones, Search button 56 px, swap button 40 px circle
   that rotates 180°. Phone pickers are vaul drawers or full-screen sheets; desktop pickers are popovers.
-- **Buttons.** Primary (electric), secondary (white + mist-300 ring), soft (electric-50), WhatsApp (green), navy, ghost,
-  danger. Heights 56 / 48 / 38 / 32 px. One primary action per view; labels are verbs ("Send query", "Add to cart").
+- **Buttons.** Full pills (measured on the Components board). Primary (electric), secondary (white + mist-300 ring),
+  soft (electric-50), WhatsApp (green, with the WhatsApp glyph), navy, ghost, danger, white and glass for dark bands.
+  Heights 56 / 48 / 38 px, icon buttons 44 px circles. Press scales to 0.975; hover fades a darker overlay
+  (opacity only). Loading keeps the width and shows the 18 px spinner. One primary action per view; labels are
+  verbs ("Send query", "Add to cart").
 - **Inputs.** Label above, 52 px field, 12 px radius, helper text below, error text below in danger with an icon and
   `aria-describedby`; phone input with a country picker (default +880).
 - **Cards.** Radius 16, hairline border. Fare card (boarding-pass anatomy, "Indicative" label), package card (cover,
@@ -281,7 +287,7 @@ Ready-to-use prompts:
 - "Review this page against DESIGN.md Do's and Don'ts and the taste skill pre-flight; list violations and fix them."
 
 ## Known gaps
-- Logo vectors: the lockup is traced from the supplied PNG until the original SVG/AI arrives (owner question).
+- Logo vectors: the lockup uses the supplied PNG cut-outs until the original SVG/AI arrives (owner question).
 - Photography and footage: Unsplash photos and stand-in loops until Waafa's own; scenery loops need licensed footage (A5).
 - Bangla typography (Hind Siliguri) and its line-height adjustments arrive with Bangla in P1.
 - Admin dark mode is P1; the admin uses the light tokens with a midnight sidebar at launch.
