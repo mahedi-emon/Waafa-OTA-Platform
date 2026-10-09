@@ -181,3 +181,44 @@ Respect `prefers-reduced-motion: reduce` first (and `Save-Data` for video):
 | Tilt up to 9° | Up to 6° | Calmer; less motion sickness risk on large cards |
 | Chart grow (Recharts internal) | Block fade + rise, internal animation off | Transform/opacity rule in admin too |
 | Header state via CSS `animation-timeline` on background colour | Same timeline on a background layer's opacity | Transform/opacity rule; same zero-JS behaviour |
+
+## 8. Signature moments
+
+Seven moments no competitor has. Each is built once in MotionKit (`components/motion`) and reused; each answers
+"what happens next" or "did that work". All of them respect the rules in sections 4 and 5: transform and opacity
+(plus `pathLength` / `stroke-dashoffset` on small SVGs), nothing on the LCP element's first paint, and a defined
+end state under reduced motion.
+
+| Moment | Where | Trigger | Motion | Phone / desktop | Reduced motion | MotionKit |
+| --- | --- | --- | --- | --- | --- | --- |
+| Flight path | Home hero (A7) | first paint, 300 ms after load, once per session | a 1.5 px sky-500 path draws from the end of the headline to the search card, 1,200 ms `--ease-out`; a 6 px dot rides the last 20 % and settles on the card edge | phone: short vertical arc above the card; desktop: wide S-curve | path fully drawn, no dot travel | `FlightPath` (server SVG + CSS keyframes, no JS) |
+| Search → results | search card (A8) → `/flights`, `/hotels` (A9, A10) | submit | the card's trip summary (route codes, dates, travellers) becomes the results summary bar: shared element via React `<ViewTransition>` when the installed Next.js/React expose it, else Motion `layoutId="trip-summary"` inside the persistent layout; `spring.sheet` | both | 150 ms cross-fade, no movement | `TripSummaryMorph` |
+| Route arc | flight query page (A9) | page enters (after the morph settles) | arc DAC → DXB draws with `pathLength` 0 → 1, 900 ms; a 16 px plane glides along it with CSS `offset-path` + `offset-distance`, 1,600 ms `--ease-in-out`, then rests at the destination | phone: 160 px arc; desktop: 320 px arc | arc drawn, plane at the destination | `RouteArc` |
+| Boarding-pass success | every success state: flights, hotels, packages, Plan My Trip, visa, orders, contact, feedback | successful submit | a boarding-pass card rises 24 px out of a clipped "slot", `spring.lift`; the reference number sits in tabular figures; `DrawCheck` draws (700 + 450 ms); a light confetti burst (max 24 pieces, transform + opacity, 900 ms) | confetti skipped on phones with Save-Data | card and check shown in place with a 150 ms fade; no confetti | `BoardingPassSuccess` (+ `DrawCheck`, `Confetti`) |
+| Visa checklist | visa apply (A12) | a document is added or removed | the requirement's check draws (350 ms); a 40 px progress ring fills to done / total with `spring.lift`; the count rolls | both | check and ring jump to state, 150 ms fade | `ChecklistProgress` |
+| Store add to cart | product cards and page (A13), cart (A14) | Add to cart | a 48 px ghost of the product image flies to the cart icon along an arc (x linear, y ease-in, 600 ms); the badge pops with `spring.pop`; variant swatch ring slides between swatches (`layoutId="swatch-ring"`); product image cross-fades on variant change (240 ms) | phone: arc to the tab bar's Waafas World disc; desktop: to the header cart | no flight; badge updates with a 150 ms fade; toast confirms | `FlyToCart`, `SwatchGroup` |
+| Magnetic primary buttons | primary CTAs (Search, Send query, Place order) | pointer within the button | pulls up to 6 px toward the pointer with `spring.lift`; returns on leave | desktop only (`(hover: hover) and (pointer: fine)`) | off | `Magnetic` |
+
+**Loading Motion features.** `MotionProvider` loads `domAnimation` (animations, variants, exit, tap, hover, in-view).
+Components that need `layoutId` or drag (TabBar pill, search tabs, swatches, sheets with drag, the trip-summary
+morph) wrap their subtree in a nested `LazyMotion` whose `features` is an async import of `domMax`, so the extra
+~15 KB loads only on pages that use them.
+
+## 9. Beat list
+
+Every competitor effect recorded in `COMPETITOR_BENCHMARK.md` §2.6, the Waafa effect that replaces it, and why it is
+better. "Better" means it explains more, costs less (CLS, LCP, main thread) and works under reduced motion.
+
+| Competitor effect | Waafa replacement | Why it is better |
+| --- | --- | --- |
+| GoZayaan: spinner and fades while results load | Skeleton rows at the final height, cross-faded in, with one plain line ("Checking fares with our team") | No layout shift; says what is happening instead of spinning |
+| GoZayaan: results progress bar | Route arc with the gliding plane on the flight query page | Shows the trip the visitor asked for, not a generic bar; ends in a resting state |
+| GoZayaan: header turns solid on scroll | Same idea, done with a CSS scroll-driven layer (IntersectionObserver fallback), blur after 24 px | No scroll listener on the main thread; no CLS |
+| ShareTrip: carousels with dot pagination and late banners (CLS 0.93) | Embla carousels with reserved aspect ratios, swipe and keyboard, visible next-card peek | Space reserved up front (CLS ≤ 0.1); peek tells phones there is more without dots |
+| ShareTrip: no motion on the home page | Purposeful reveals once, 40–60 ms stagger, hero flight path | Hierarchy and story without decoration; stops under reduced motion |
+| Akij Air: split-flap airport board in the hero | Hero flight-path line plus a rotating destination chip | Calm, CSS-only, never delays LCP; the board's flicker is replaced by one drawn line |
+| Akij Air: airline marquee on a dark band | "Airlines we book" marquee on a light band, pauses on hover, focus and reduced motion | Readable logos, labelled honestly ("we book", never "partners"), accessible |
+| Akij Air: scroll-to-top button with a progress ring | No scroll-to-top (the tab bar and header stay reachable); the progress ring moves to the visa checklist | Progress shown where it means something: the visitor's own file |
+| Akij Air: cookie sheet covering the search on a 390 px phone | Compact consent bar above the tab bar, never over the search button | The first screen's job (search) is never blocked |
+| Obokash: static carousels, no motion | Same carousels with peek, swipe and press feedback; spring sheets on phones | Feels native on Android; every tap is acknowledged |
+| All four: no visible reduced-motion handling | Every effect has a reduced-motion end state (section 4) | Comfortable for motion-sensitive visitors; nothing important hides behind animation |

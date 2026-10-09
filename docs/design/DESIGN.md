@@ -286,6 +286,26 @@ Ready-to-use prompts:
   times, 'Indicative' badge, seats left only if present, Request this fare button."
 - "Review this page against DESIGN.md Do's and Don'ts and the taste skill pre-flight; list violations and fix them."
 
+## Design system files and prototype deviations
+
+- UI UX Pro Max output, reconciled with this file and PRD §16: `docs/design/design-system/waafa/MASTER.md` and page
+  overrides in `pages/` (home, flights, shop, admin). This file wins where they differ.
+- Signature moments and the competitor beat list: `MOTION.md` §8 and §9.
+
+Every visual deviation from the prototype, with the reason (correction 11: the prototype is the floor, not the ceiling).
+
+| Prototype | Build | Why | Decision |
+| --- | --- | --- | --- |
+| White and silver logo versions on dark | Full-colour logo on white or mist-50 only; light footer | Never recolour the logo | D9 |
+| Header 76 px on desktop | 64 px phone, 72 px desktop | PRD FR-GLB-01 | D10 |
+| Mixed button radii | Full pills 48 / 38 / 56 px, icon buttons 44 px | Measured on the Components board; one shape rule | D20 |
+| Blur-in hero headline (filter) | Opacity + small rise in CSS | Transform/opacity rule; LCP off the hydration path | D11 |
+| Accordion height animation | Fade | Transform/opacity rule | D21 |
+| Drawn scenery stand-ins and motion-graphic loops (route map, passport, product animations) | Real photos and real footage; the route map becomes a live SVG | Correction 7: real media only | D37 |
+| Store bar with a W mark beside "Waafas World" | One WAAFA logo in the header, "Waafas World" as text | Corrections 2 and 4 | D36 |
+| Mobile tab labelled "Shop" | "Waafas World", two lines allowed at 320 px | Correction 3 | D36 |
+| "Log in" in the header at launch | Hidden until customer accounts ship (P1) | No dead buttons at launch | A6 |
+
 ## Known gaps
 - Logo vectors: the lockup uses the supplied PNG cut-outs until the original SVG/AI arrives (owner question).
 - Photography and footage: Unsplash photos and stand-in loops until Waafa's own; scenery loops need licensed footage (A5).
