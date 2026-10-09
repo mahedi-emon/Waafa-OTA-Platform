@@ -24,6 +24,9 @@ export const siteSettings: In<typeof SiteSettingsSchema> = {
   footerTagline: "Connecting the World, Creating the Future.",
   footerAbout:
     "Waafa International has served Dhaka’s offices since 2010. In 2026 we opened Waafa Tours and Travel: flights, holidays and visas from the same Motijheel office.",
+  storeIntro:
+    "Waafa International’s online store. Printer and office supplies today, more of what you need every month. Cash on delivery across Bangladesh.",
+  accountsLive: false,
   defaultSeo: {
     title: "Waafa Tours and Travel · Flights, tours and visas from Dhaka",
     description:
@@ -50,6 +53,9 @@ export const contactSettings: In<typeof ContactSettingsSchema> = {
   officeHours: { opensAt: 600, closesAt: 1080, days: [6, 0, 1, 2, 3, 4] },
   officeHoursText: "Saturday to Thursday, 10 am to 6 pm",
   closedText: "Closed on Friday",
+  helpLine: "Talk to a travel expert in Motijheel",
+  visitLabel: "Motijheel Plaza, 4th floor",
+  whatsappMessage: "Hello WAAFA, I have a question about {page}.",
   socials: [{ network: "facebook", url: "https://www.facebook.com/waafatoursandtravel" }],
 };
 
@@ -132,6 +138,66 @@ export const menus: In<typeof MenuSchema>[] = [
         href: "/contact",
         icon: "phone",
         description: "Call, WhatsApp, email or visit us",
+      },
+    ],
+  },
+  {
+    key: "drawer",
+    items: [
+      { id: "dr-home", label: "Home", href: "/", icon: "house" },
+      { id: "dr-flights", label: "Flights", href: "/flights", icon: "plane" },
+      { id: "dr-hotels", label: "Hotels", href: "/hotels", icon: "bed-double" },
+      { id: "dr-packages", label: "Tour Packages", href: "/tour-packages", icon: "map" },
+      { id: "dr-visa", label: "Visa Services", href: "/visa-services", icon: "stamp" },
+      { id: "dr-shop", label: "Waafas World", href: "/shop", icon: "shopping-bag" },
+      { id: "dr-gallery", label: "Gallery", href: "/gallery", icon: "images" },
+      { id: "dr-feedback", label: "Feedback", href: "/feedback", icon: "message-square-quote" },
+    ],
+  },
+  {
+    key: "tabbar",
+    items: [
+      { id: "tb-home", label: "Home", href: "/", icon: "house" },
+      { id: "tb-packages", label: "Packages", href: "/tour-packages", icon: "map" },
+      { id: "tb-shop", label: "Waafas World", href: "/shop", icon: "shopping-bag" },
+      { id: "tb-visa", label: "Visa", href: "/visa-services", icon: "stamp" },
+      { id: "tb-more", label: "More", icon: "layout-grid", panel: "more" },
+    ],
+  },
+  {
+    key: "more-phone",
+    items: [
+      { id: "mp-gallery", label: "Gallery", href: "/gallery", icon: "images" },
+      { id: "mp-feedback", label: "Feedback", href: "/feedback", icon: "message-square-quote" },
+      { id: "mp-track", label: "Track order", href: "/shop/track", icon: "truck" },
+    ],
+  },
+  {
+    key: "shop-panel",
+    items: [
+      {
+        id: "sp-printing",
+        label: "Printing Solutions",
+        href: "/shop/printing-solutions",
+        icon: "layers",
+        description: "Managed printing and toner supply for offices, since 2010.",
+        cta: "Get a quote",
+      },
+      {
+        id: "sp-trading",
+        label: "International Trading",
+        href: "/shop/international-trading",
+        icon: "ship",
+        description: "Export, import, sourcing and supply.",
+        cta: "Send an RFQ",
+      },
+      {
+        id: "sp-finder",
+        label: "Find by model",
+        href: "/shop/finder",
+        icon: "scan-search",
+        description: "Toner and ink that fit your printer.",
+        cta: "Start",
       },
     ],
   },

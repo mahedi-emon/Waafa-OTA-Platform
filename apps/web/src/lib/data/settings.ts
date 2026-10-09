@@ -43,9 +43,14 @@ export async function getActiveAnnouncement() {
 }
 
 /** Booking modes and payment switches, cached for 60 seconds (FR-GS-02). */
+/**
+ * Booking modes, payment switches, COD cap, maintenance. Saving in Admin revalidates the `config` tag at once
+ * (FR-GS-02), so the entry can live for hours; a short cacheLife would push every page that reads it out of the
+ * static App Shell.
+ */
 export async function getPublicConfig() {
   "use cache";
-  cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
+  cacheLife("hours");
   cacheTag(CACHE_TAGS.config);
   return repositories.settings.getPublicConfig();
 }

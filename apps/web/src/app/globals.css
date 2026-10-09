@@ -130,6 +130,15 @@
       transform: translateX(100%);
     }
   }
+  /* header background fades in over the first 24 px of scroll (FR-GLB-01) */
+  @keyframes header-solid {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
   @keyframes rise {
     from {
       opacity: 0;
@@ -191,6 +200,8 @@
   --ribbon-soft: linear-gradient(120deg, #eaf1ff 0%, #f4f8ff 55%, #edfafd 100%);
   --hdr-h: 64px;
   --tab-h: 64px;
+  /* the bottom tab bar plus the phone's home-indicator area */
+  --tab-space: calc(var(--tab-h) + env(safe-area-inset-bottom));
   --dur-fast: 150ms;
   --dur-base: 220ms;
   --dur-slow: 300ms;
@@ -266,6 +277,19 @@
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+}
+
+/*
+ * Header background layer: transparent at the top of the page, solid with blur after 24 px of scroll. Pure CSS
+ * (scroll-driven animation on opacity); browsers without scroll timelines show the solid layer (MOTION.md §2).
+ */
+@utility header-solid-layer {
+  opacity: 1;
+  @supports (animation-timeline: scroll()) {
+    animation: header-solid linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 24px;
   }
 }
 
