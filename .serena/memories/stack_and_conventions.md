@@ -15,4 +15,8 @@
 - Server Components by default; "use client" only on small leaves. Data only via repositories in src/lib/data (A4).
 - Shared formatters: formatTaka (৳1,46,480), formatGrouped, formatDate ("12 Oct 2026"), formatDayMonth, formatTime (24h, Dhaka).
 - Tests: Vitest *.test.ts next to code; e2e in apps/web/e2e (runs next start on :3100 after build).
+- Guards: `pnpm guards` (scripts/guards.mjs) — one stylesheet, no prototype imports, no hex outside globals.css and
+  components/brand (brand hex in components/brand/brandColors.ts, drift-tested), fixtures only in src/lib/data, no
+  framer-motion, no Phase F words, never "Waafa Shop". ESLint: no-explicit-any, react/no-danger (RichText, JsonLd
+  exempt), no-img-element. Hooks (husky): commit-msg = check-attribution + commitlint; pre-commit = prettier + guards.
 - Windows: gh at "C:\Program Files\GitHub CLI"; Dhaka time via PowerShell TimeZoneInfo 'Bangladesh Standard Time'.

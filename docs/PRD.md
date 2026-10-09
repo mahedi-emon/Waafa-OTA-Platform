@@ -35,7 +35,7 @@ Two licensed businesses share one website, and every feature sits under the bran
 | --- | --- | --- |
 | Waafa Tours and Travel | Tours and travels agency, air ticketing, visa processing | Flights, Hotels, Tour Packages, Visa Services, Visa Guide, Baggage Information, EMI, Offline Payment |
 | Waafa International (est. 2010) | Importer, exporter, supplier (non-chemical) | Waafas World: online store for any product category (printer and office supplies first), Printing Solutions, International Business and Trading |
-| Manpower and Recruitment | Not licensed yet | Nowhere: no nav item, page, footer link, SEO text or copy |
+| Manpower and Recruitment | Not licensed yet | Nowhere in this build (no nav item, page, footer link, SEO text or copy); planned as Phase F after the licence |
 
 **Brand identity.** WAAFA stands for "Worldwide Alliance for Advancement, Future & Achievement". The company tagline is "Connecting the World, Creating the Future." Core values: Trust, Quality, Innovation, Excellence, Integrity, Global Vision.
 
@@ -54,8 +54,8 @@ Two licensed businesses share one website, and every feature sits under the bran
 **Compliance rules (non-negotiable).**
 
 1. Trade licence data (licence numbers, owner details, ID numbers, fees) never appears on the site, in seed data or in the repository.
-2. No Hajj or Umrah products. These need a separate Hajj/Umrah agency licence, so the Umrah item in the reference proposals is dropped.
-3. No manpower, recruitment or employment-visa processing. Visa services cover tourist, business, student, medical and transit visas only.
+2. No Hajj or Umrah products in this build. They need a separate Hajj/Umrah agency licence; the module is planned as Phase F once that licence exists, with no route, menu item, copy, seed data or image until then.
+3. No manpower, recruitment or employment-visa processing in this build; it is planned as Phase F once its licence is issued. Visa services cover tourist, business, student, medical and transit visas only.
 4. Fares shown before live booking are labelled indicative (group fares, "from" prices). The site never fakes live availability.
 5. Passport and visa documents are personal data: private storage, role-restricted access, scheduled deletion.
 6. Waafas World lists only goods the Waafa International trade licence covers and never restricted items such as medicines, chemicals, weapons or drugs; it follows Bangladesh's digital commerce rules on pricing, delivery and refunds.
@@ -87,7 +87,7 @@ Launch succeeds if the site is live before 14 October 2026 and every search beco
 | Uptime | 99.5% monthly | Uptime monitor |
 | Phase 2 switch cost | Zero layout changes to go Live | Phase 2 release review |
 
-**Not in the launch scope:** live fares and ticketing, online payment for travel, B2B agent portal, mobile apps, Bangla language (P1), manpower, Hajj and Umrah.
+**Not in the launch scope:** live fares and ticketing, online payment for travel, B2B agent portal, mobile apps, Bangla language (P1); manpower, Hajj and Umrah (Phase F, after the licence).
 
 ## 4. Users, personas and staff roles
 
@@ -125,8 +125,9 @@ Phase 1A ships about 60% of the platform by 13 October, inside the 50 to 70% tar
 | 1B Completion (P1) | By 13 Nov 2026 | Customer accounts (phone OTP, Google); Bangla; SSLCommerz and bKash online payment; SMS; real-time admin alerts and 2FA; quote builder and lead kanban; reminders and reports; reviews; EMI calculator; courier API | Merchant account approved for online payment |
 | 2 Live booking (P2) | When a provider contract lands | Live flight search, booking, ticketing and e-tickets through the first two provider APIs; hotel API booking; instant package booking; pricing engine; booking operations, refunds and reconciliation in admin | IATA accreditation, consolidator API or GDS contract, plus sandbox certification |
 | 3 Scale (P3) | After Phase 2 | B2B agent portal with wallet and credit; iOS and Android apps on the same API; loyalty and referrals; multi-currency checkout | Business decision per item |
+| F Licensed modules | After the licence | Hajj and Umrah; Manpower and Recruitment | Licence issued and the owner's go-ahead |
 
-Manpower and Recruitment joins only after its licence is issued. Hajj and Umrah stay out unless a Hajj agency licence is obtained.
+**Phase F, licensed modules (later).** Hajj and Umrah, and Manpower and Recruitment, are not in this build. Each starts only after its licence is issued and the owner gives the word, as its own phase with a PRD update first. Package categories, visa types, menus and home sections are admin-managed, so these modules can be added later without a redesign.
 
 ```mermaid
 gantt
@@ -173,8 +174,8 @@ The navbar carries seven items; flights and hotels are reached through the searc
 **Mobile navigation (designed first).**
 
 - Top app bar: W mark + WAAFA (tagline hidden below 768 px), call and WhatsApp icons, menu button opening a full-screen drawer with every link and the contact block.
-- Bottom tab bar, always visible, five tabs: Home, Packages, Visa, Shop, More. The Shop tab opens Waafas World; the full name does not fit a tab. More opens the sheet above plus Gallery, Feedback and Login.
-- Inside /shop the top bar shows the W mark with a "Waafas World" label, a product search field and a cart icon with a count; the bottom bar stays, with Shop active.
+- Bottom tab bar, always visible, five tabs: Home, Packages, Waafas World (a raised W disc in the centre), Visa, More. The tab label is always "Waafas World", on two lines if a narrow phone needs it, and opens /shop. More opens the sheet above plus Gallery, Feedback and Login.
+- Inside /shop the header keeps the WAAFA logo with "Waafas World" as text beside it, a product search field and a cart icon with a count; the bottom bar stays, with Waafas World active.
 - Breadcrumbs on every page except Home.
 
 **Sitemap**
@@ -211,7 +212,7 @@ Every page shares a sticky header, a WhatsApp button and a footer whose content 
 - FR-GLB-04 (P0) Floating WhatsApp button, bottom right, above the mobile tab bar; prefilled message names the current page.
 - FR-GLB-05 (P0) Brand loader: the W ribbon draws itself in under 1.2 s for route changes slower than 300 ms; static when reduced motion is on.
 - FR-GLB-06 (P0) One shared style for toasts, skeletons, empty states and error states.
-- FR-GLB-07 (P1) Language switch English / Bangla; BDT shown as ৳ with en-BD grouping.
+- FR-GLB-07 (P1) Language switch English / Bangla. BDT shown as ৳ with lakh grouping (৳1,46,480).
 
 **Dynamic footer (FR-FTR)** — every link, label and contact line is edited in Admin > Settings > Footer.
 
@@ -321,7 +322,7 @@ Packages and visas are admin-managed content with query and apply forms at launc
 
 Waafas World is a single-vendor store for any kind of product: it opens with printer and office supplies and can grow into any category without a redesign. It keeps the full functionality of [ShareTrip Shop](https://sharetrip.net/shop), minus marketplace parts.
 
-**Name and place.** The nav label is "Waafas World", matching the waafasworld.com domain; the route stays /shop and the mobile tab reads "Shop". The store header shows the W mark with a "Waafas World" label, a product search field and the cart.
+**Name and place.** The nav label is "Waafas World", matching the waafasworld.com domain; the route stays /shop and the mobile tab also reads "Waafas World". The store header keeps the WAAFA logo with "Waafas World" as text beside it (no second mark), a product search field and the cart.
 
 **Functionality carried over from the reference, adapted to one vendor:** campaign banner carousel, store-wide search, category icon grid with All categories, featured brands with product counts, Top selling, New arrivals, product cards showing sale price against crossed-out MRP, category, brand, campaign and product routes, and a cart. Dropped: seller names on cards and the "Become a partner" section.
 
@@ -529,7 +530,7 @@ The site must feel instant on a mid-range Android phone on 4G, pass a security r
 
 **Reliability and operations (NFR-OPS)** — 99.5% monthly uptime; `/health` and `/ready` endpoints with an uptime monitor; Sentry on web and API with release tags; structured logs with request IDs kept 14 days; local, staging and production environments; migrations run in the deploy pipeline; a queue with retries and a dead-letter list for email, SMS and provider calls.
 
-**Localisation (NFR-L10N)** — English at launch with every string in next-intl message files from day one; Bangla in P1 with a Bengali web font; Asia/Dhaka time zone; dates as "12 Oct 2026"; taka as ৳ with lakh grouping (৳1,23,456), to be confirmed with the owner.
+**Localisation (NFR-L10N)** — English at launch with every string in next-intl message files from day one; Bangla in P1 with a Bengali web font; Asia/Dhaka time zone; dates as "12 Oct 2026"; taka as ৳ with lakh grouping (৳1,46,480), VAT included.
 
 **Compatibility (NFR-COMP)** — last two versions of Chrome, Safari (iOS 15 and later), Samsung Internet, Firefox and Edge; Android 9+ phones with 2 GB RAM; layouts hold from 320 px wide.
 
@@ -630,7 +631,7 @@ Ribbon gradient: 120°, #020D39 to #003FBE to #0D8CEE to #39CCE9.
 
 - Header lockup: W mark, then the WAAFA wordmark in the logo's own style (crossbar-less A shapes with gold triangles), then the tagline "Worldwide Alliance for Advancement, Future & Achievement" in small caps on desktop.
 - The wordmark is an SVG traced from the logo, never a font substitute. Request the original vector files; until then trace the PNG.
-- Versions: full colour on light, white with silver edges on dark, favicon and app icon from the W mark. Inside the store, the W mark sits beside a "Waafas World" label in the heading font; there is no separate store logo. Minimum W height 28 px; clear space of at least a quarter of the mark's height.
+- Versions: full colour on light, white with silver edges on dark, favicon and app icon from the W mark. Inside the store, "Waafas World" is set as text in the heading font beside the main WAAFA logo; there is no second mark and no separate store logo. The raised W disc in the mobile tab bar is a navigation icon. Minimum W height 28 px; clear space of at least a quarter of the mark's height.
 
 **Signature elements.**
 

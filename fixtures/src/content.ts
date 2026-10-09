@@ -640,7 +640,7 @@ export const faqs: In<typeof FaqSchema>[] = [
     category: "visa",
     question: "Which visas do you help with?",
     answer:
-      "Tourist, business, student, medical and transit visas. We do not process work permits or recruitment.",
+      "Tourist, business, student, medical and transit visas, for the countries listed on our visa pages.",
     link: { label: "Check a country", href: "/visa-services" },
     order: 1,
     sample: true,

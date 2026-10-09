@@ -8,7 +8,10 @@ Set up on 2026-10-09.
 | File | Purpose |
 | --- | --- |
 | `.mcp.json` | Project MCP servers (context7, shadcn, playwright, serena, magic, figma, github) |
-| `.claude/settings.json` | `enableAllProjectMcpServers: true` (approves the `.mcp.json` servers) and `attribution` with empty `commit`/`pr` and `sessionUrl: false` (no AI attribution in commits or PRs) |
+| `.claude/settings.json` | `enableAllProjectMcpServers: true` (approves the `.mcp.json` servers) and `attribution` with empty `commit`/`pr` and `sessionUrl: false` (no AI attribution in commits or PRs); `permissions.deny` blocks force pushes, `git config`, `--no-verify`, `reset --hard` and `gh repo delete` |
+| `.husky/`, `commitlint.config.mjs`, `lint-staged.config.mjs` | Git hooks installed by `pnpm install`: commit-msg runs `scripts/check-attribution.mjs` (no co-author or AI attribution) and commitlint (Conventional Commits); pre-commit runs Prettier on staged files and `scripts/guards.mjs` |
+| `scripts/guards.mjs` | Repository rules (`pnpm guards`, CI job Guards): one stylesheet, no prototype imports, no hex outside tokens/brand, fixtures behind the data layer, no framer-motion, Phase F words, store name |
+| `.github/workflows/codeql.yml`, `.github/dependabot.yml` | CodeQL (security-extended) on PRs touching code and weekly; grouped weekly dependency updates (majors by hand) |
 | `.github/workflows/ci.yml` | CI: install, lint, typecheck, unit tests, build, Playwright smoke; Lighthouse CI once `apps/web/lighthouserc.json` exists |
 | `docs/TRACKER.md` | Status of every phase and issue, tooling table, matrices, decisions, session log |
 | `.claude/skills/` | Project skills (frontend-design, design-taste-frontend; UI UX Pro Max — see below) |
@@ -35,7 +38,7 @@ Smoke test for all: `claude mcp list` at the repo root. Servers added or changed
 | shadcn | `npx -y shadcn@latest mcp` | — | "use shadcn MCP to list components in the @shadcn registry" | Connected |
 | playwright | `npx -y @playwright/mcp@latest --headless` | — | "use playwright to open https://example.com and give the page title" | Connected |
 | serena | `uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project .` | — | "use serena get_symbols_overview on apps/web/src/components/motion/reduced-motion.ts" | Connected (project entry only) |
-| magic (21st.dev) | `npx -y @21st-dev/magic@latest` | `TWENTY_FIRST_API_KEY` → passed as `API_KEY` | "/ui use 21st magic to suggest a pricing card component" (don't install it) | Connected |
+| magic (21st.dev) | `npx -y @21st-dev/magic@latest` | `TWENTY_FIRST_API_KEY` → passed as `API_KEY` (CLI installs accept `${API_KEY_21ST:-$TWENTY_FIRST_API_KEY}`) | "/ui use 21st magic to suggest a pricing card component" (don't install it) | Connected |
 | figma | remote HTTP `https://mcp.figma.com/mcp` | — (OAuth) | "use figma MCP whoami" | Needs authentication: run `/mcp` → figma → Authenticate once |
 | github | remote HTTP `https://api.githubcopilot.com/mcp/`, header `Authorization: Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}` | `GITHUB_PERSONAL_ACCESS_TOKEN` (fine-grained PAT, this repo) | "use github MCP to list open issues in mahedi-emon/Waafa-OTA-Platform" | Connected (PAT in local `.claude/settings.local.json`; cloud: set as env secret) |
 

@@ -1,220 +1,280 @@
-# WAAFA OTA Platform — tracker
+# WAAFA — Build Tracker
+Updated: 09 Oct 17:20 Asia/Dhaka · Phase: A · Frontend · Current: #27 · A0 Project setup · Progress: 4/24 issues (17%) · Launch: 13 Oct 2026, 4 days left · Status: Behind by 3 issues (HANDOFF build order expects the layout shell and Home by Fri 9 Oct; cuts proposed in section 10)
 
-| | |
-| --- | --- |
-| **Current phase** | A · Frontend |
-| **Current issue** | A5 [#5](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/5) (A1–A4 done) |
-| **Last updated** | 2026-10-09 11:27 (Asia/Dhaka) |
-| **Overall progress** | Launch scope (A–C): 4 / 39 · all phases: 4 / 56 |
-| **Days left to launch** | 4 (go-live Tue 13 Oct 2026; hard deadline before 14 Oct) |
+Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
-Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this file after every issue (CLAUDE.md, Workflow step 11).
+## 0. Audit (first session)
 
-## Tooling
+Step 0 of the v4 master prompt (`docs/claude-code-prompts.md`, PROMPT 1), run on 9 Oct 16:30–17:00. Full notes:
+Serena memory `audit_findings`.
 
-| Tool | Kind | Status | Last tested | Result / notes |
-| --- | --- | --- | --- | --- |
-| serena | MCP | ✅ | 2026-10-09 | Project `Waafa-OTA-Platform` active (TypeScript LS); `list_memories` → 4 memories |
-| context7 | MCP | ✅ | 2026-10-09 | `resolve-library-id "Next.js"` → `/vercel/next.js` (versions up to v16.2.9 indexed) |
-| shadcn | MCP | ✅ | 2026-10-09 | `list_items_in_registries @shadcn` → 61 ui items |
-| playwright | MCP | ✅ | 2026-10-09 | Opened https://example.com, screenshot saved (`.playwright-mcp/`, gitignored) |
-| magic (21st.dev) | MCP | ✅ | 2026-10-09 | `search "flight search card"` → 5 components (ravikatiyar162/flight-search, …) |
-| github | MCP | ✅ | 2026-10-09 | `get_me` → mahedi-emon |
-| figma | MCP | ⬜ | — | Not needed for Phase A; needs OAuth via `/mcp` |
-| gh CLI | CLI | ✅ | 2026-10-09 | 2.102.0, logged in as mahedi-emon, scopes gist, project, read:org, repo, workflow. Not on PATH by default (see CLAUDE.md) |
-| Node / pnpm | Runtime | ✅ | 2026-10-09 | Node 25.2.1 active (≥ 20.9; 22.11.0 also installed via nvm4w); pnpm 12.10.1 global; corepack not bundled with Node 25 |
-| Python / uvx | Runtime | ✅ | 2026-10-09 | Python 3.12.6 (UI UX Pro Max scripts), uvx 0.12.24 (Serena) |
-| frontend-design | Skill | ✅ | 2026-10-09 | Loaded |
-| design-taste-frontend (taste) | Skill | ✅ | 2026-10-09 | Loaded; PRD overrides its Inter/lucide/dark-mode defaults (Decision D6) |
-| ui-ux-pro-max | Skill | ✅ | 2026-10-09 | Loaded; design-system query "premium OTA travel booking + e-commerce, Bangladesh, mobile-first" run, kept for A1 |
-| web-interface-guidelines.md | Reference | ✅ | 2026-10-09 | `docs/design/web-interface-guidelines.md` present |
-| awesome-design-md format | Reference | ✅ | 2026-10-09 | `docs/design/design-md-format.md` present |
-| Lighthouse | CLI | ✅ | 2026-10-09 | `npx -y lighthouse@13.5.0` with local Chrome 155 (headless); 12 runs for the benchmark |
-
-## Phase checklists
-
-### A · Frontend (milestone 1, due 11 Oct)
-| | Issue | Title | Size |
+| Area | Found | Verdict | Belongs to |
 | --- | --- | --- | --- |
-| ✅ | [#1](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/1) | A1 · Design direction and competitor benchmark (docs only) | M |
-| ✅ | [#2](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/2) | A2 · Foundation: monorepo, Next.js app, tokens, fonts, i18n, test tooling | L |
-| ✅ | [#3](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/3) | A3 · Design system in code + /styleguide | L |
-| ✅ | [#4](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/4) | A4 · Data layer and content model (shared zod contracts + fixtures) | XL |
-| ⬜ | [#5](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/5) | A5 · Media: real photos with credits, video loops and posters | S |
-| ⬜ | [#6](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/6) | A6 · Layout shell: header, mega panels, tab bar, drawer, footer, WhatsApp, loader | L |
-| ⬜ | [#7](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/7) | A7 · Home: 13 sections from data, video hero with word reveal | L |
-| ⬜ | [#8](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/8) | A8 · Unified search card and pickers | XL |
-| ⬜ | [#9](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/9) | A9 · Results shell + Flights Manual mode + group fares | L |
-| ⬜ | [#10](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/10) | A10 · Hotels Manual mode | S |
-| ⬜ | [#11](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/11) | A11 · Tour packages (list, detail, query) + Plan My Trip | XL |
-| ⬜ | [#12](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/12) | A12 · Visa services (list, country, apply) + Visa Guide | L |
-| ⬜ | [#13](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/13) | A13 · Waafas World catalogue: store home, listing, product, finder, search | XL |
-| ⬜ | [#14](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/14) | A14 · Shop cart, checkout (COD + offline payment), order success, track order | L |
-| ⬜ | [#15](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/15) | A15 · Printing Solutions and International Trading | M |
-| ⬜ | [#16](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/16) | A16 · Gallery, Feedback, team, About, Contact, FAQs, Blog, policies, Baggage, EMI, Offline Payment | XL |
-| ⬜ | [#17](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/17) | A17 · 404, 500, offline, maintenance + Live-mode (P2) bodies on fixtures | L |
-| ⬜ | [#18](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/18) | A18 · Admin: shell, sign-in, dashboard, leads, search activity, bookings | XL |
-| ⬜ | [#19](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/19) | A19 · Admin catalogue: group fares, packages, visa, shop | XL |
-| ⬜ | [#20](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/20) | A20 · Admin content: pages, blog, FAQs, banners, home order, menus, media, SEO | XL |
-| ⬜ | [#21](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/21) | A21 · Admin customers, marketing, reports, users and roles, settings | L |
-| ⬜ | [#22](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/22) | A22 · Frontend QA and polish against the benchmark | L |
+| Git identity | `Mahedi Hasan Emon <mahedi.emon62@gmail.com>` | ✅ owner | — |
+| History on origin | 13 commits, all authored by the owner (6 with the Gmail address, 7 squash merges with the GitHub noreply address and "GitHub" as committer); no co-author trailer, no AI attribution | ✅ nothing to rewrite | — |
+| main | A1–A4 merged (PRs #23–#26): monorepo, Next 16.4, design system, MotionKit, data layer | ✅ keep | — |
+| Earlier-session work in progress | A5 media on `feat/5-media` (now committed there as WIP, copy in `stash@{0}`): 31 Unsplash photos, 3 Better Day product shots, `VideoSchema`, `MediaSlot`, credit URLs | ✅ keep photos and contracts | #5 |
+| Drawn loops | A5 WIP shipped the prototype's drawn motion graphics (route map, passport, headphones, power bank) and a pan over a product still | ❌ breaks "real media only" | #5 replaces with real footage |
+| Rules files | CLAUDE.md (v3), HANDOFF kick-off prompt with "Ask before adding a dependency" and a broken code fence, PRD with the "Shop" tab and a W-mark store header | ❌ superseded | #27 (fixed) |
+| Copy | A FAQ answer mentioned recruitment | ❌ Phase F copy | #27 (reworded) |
+| Guards | No guards script, hooks, commitlint, attribution check, CodeQL, Dependabot, PR template or issue forms | ❌ missing | #27 (added) |
+| Hex colours | Styleguide swatch list and `themeColor` outside `components/brand` | ❌ | #27 (moved to `components/brand/brandColors.ts`) |
+| GitHub settings | Merge commits and rebase allowed, branches kept after merge, no branch protection | ❌ | #27 (squash-only; protection) |
+| Secrets | `.mcp.json` uses env references only; `.claude/settings.local.json` (gitignored) holds the 21st.dev key and a GitHub PAT; no `.env` files | ✅ | — |
+| A1 docs vs v4 | MOTION.md has no signature moments or beat list; ui-ux-pro-max design system not persisted; no inner-page Lighthouse | ⚠️ gap | #34 (A1b) |
+| Machine | Node 25.2.1 (22.11 installed), pnpm 12.10.1, Python 3.12, Docker Desktop; ffmpeg and Vercel CLI missing; about 1–2 GB free memory | ⚠️ | owner actions; one build at a time |
 
-### B · Backend (milestone 2, due 12 Oct) — issues opened when Phase A closes
-| | Item |
+## 1. Overview
+
+| Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
+| --- | --- | --- | --- | --- | --- | --- |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) | 4 | 2 (#27, #5) | 0 | 17% |
+| B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
+| C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
+| D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
+| E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
+| F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
+
+## 2. Issue log
+
+### #27 · A0 Project setup: rules, tracker, guards, hooks and CI — 🟡 In progress
+| Field | Value |
 | --- | --- |
-| ⬜ | B1 · API foundation: NestJS on Fastify, config, `/health` `/ready`, RFC 7807, request IDs, OpenAPI, docker-compose (Postgres, Redis, Mailpit) |
-| ⬜ | B2 · Prisma schema from the shared contracts, migrations, seed from `fixtures/` |
-| ⬜ | B3 · Auth and roles: argon2id, JWT + rotating refresh cookies, role guards, login rate limit + lockout, audit log |
-| ⬜ | B4 · Settings + public config (Golden Switch, 60 s cache, `config` tag revalidation) |
-| ⬜ | B5 · Leads + search logs: idempotency keys, Turnstile verification, Redis rate limits, duplicate guard, BullMQ email alerts |
-| ⬜ | B6 · Travel: airports, group fares (auto-expiry), packages, provider adapters (Manual + contract-tested stubs) |
-| ⬜ | B7 · Visa: countries, types, applications, private R2 documents with 10-minute signed links, retention job, download audit |
-| ⬜ | B8 · Shop: catalogue, variants, attribute sets, collections, compatibility CSV, cart, orders, stock, coupons, shipping zones |
-| ⬜ | B9 · CMS: pages, blog, FAQs, banners, menus, gallery, feedback moderation, team, media (R2), SEO fields, sanitised rich text |
-| ⬜ | B10 · Notifications (templates, queue, retries, delivery log), customers, reports |
-| ⬜ | B11 · API tests: Supertest, provider contract tests, k6 load scripts |
+| Opened → closed | 09 Oct 16:52 → — |
+| Branch · PR · merge | `chore/27-project-setup` · — · — |
+| Built | v4 tracker; CLAUDE.md, README, HANDOFF and PRD corrections; guards, husky + commitlint + attribution hook; CI (guards, attribution, path filters, caches), CodeQL, Dependabot, PR template, issue forms; deny rules; GitHub labels, milestone F, epics, sub-issues, Project fields, squash-only merges |
+| Files and components | `CLAUDE.md`, `README.md`, `docs/TRACKER.md`, `docs/PRD.md`, `docs/design/handoff/HANDOFF.md`, `.claude/settings.json`, `.husky/*`, `commitlint.config.mjs`, `lint-staged.config.mjs`, `scripts/guards.mjs`, `scripts/check-attribution.mjs`, `.github/**`, `components/brand/brandColors.ts` |
+| Screens matched | — |
+| Admin control | — |
+| Tests | unit +19 (brand colours vs globals.css) · guards negative test · hook rejects a co-author trailer |
+| Widths checked | — (no UI change; styleguide swatches render from `brandColors.ts`) |
+| Tools and skills | Serena, Context7 (Next.js 16, husky), shadcn MCP, magic MCP, Playwright MCP, GitHub MCP + gh; skills ui-ux-pro-max, design-taste-frontend, frontend-design, design-superpowers:design-review (tool check) |
+| Decisions | D36–D45 |
+| Bugs and follow-ups | #34 (A1b addendum) |
 
-### C · Integration & Launch (milestone 3, due 13 Oct)
-| | Item |
+### #34 · A1b v4 addendum: signature moments, beat list, persisted design system, inner-page benchmark — ⬜ Todo
+| Field | Value |
 | --- | --- |
-| ⬜ | C1 · API repositories replace fixtures behind the same interfaces (no UI change) |
-| ⬜ | C2 · Admin wired to the API with optimistic updates and audit trail |
-| ⬜ | C3 · SEO and analytics: sitemaps, robots, OG images, JSON-LD audit, GA4/GTM/Pixel after consent, Search Console |
-| ⬜ | C4 · Security: nonce CSP and headers, Turnstile live, rate limits verified, secrets in env only |
-| ⬜ | C5 · Full e2e + Lighthouse CI + axe + k6 on staging; owner sign-off on 12 Oct |
-| ⬜ | C6 · Production deploy (Vercel + API Docker), Sentry, uptime monitor, backups |
+| Opened → closed | 09 Oct → — |
+| Branch · PR · merge | — |
+| Built | — |
+| Files and components | `docs/design/MOTION.md`, `docs/design/DESIGN.md`, `docs/design/COMPETITOR_BENCHMARK.md`, `design-system/` |
+| Screens matched | Motion board |
+| Admin control | — |
+| Tests | — |
+| Widths checked | — |
+| Tools and skills | — |
+| Decisions | — |
+| Bugs and follow-ups | — |
 
-### D · P1 completion (milestone 4, due 13 Nov)
-| | Item |
+### #5 · A5 Media: real photos with credits, video loops and posters — 🟡 In progress
+| Field | Value |
 | --- | --- |
-| ⬜ | D1 · Customer accounts (phone OTP, Google), My account, `/track`, guest-to-account linking |
-| ⬜ | D2 · Bangla (bn) with a Bengali web font |
-| ⬜ | D3 · SSLCommerz and bKash online payment (shop first) |
-| ⬜ | D4 · SMS gateway adapter, real-time admin alerts with sound, Telegram alert, 2FA (TOTP) |
-| ⬜ | D5 · Quote builder, lead kanban, reminders, round-robin assignment, scheduled reports |
-| ⬜ | D6 · Reviews (packages, products) with moderation, wishlist, campaign pages with countdowns, flash sales |
-| ⬜ | D7 · EMI calculator, courier APIs (Steadfast, Pathao, RedX), partial lead capture, curated hotels |
+| Opened → closed | 09 Oct 06:03 → — |
+| Branch · PR · merge | `feat/5-media` (WIP commit) · — · — |
+| Built | Earlier session: 31 Unsplash photos and 3 Better Day product shots in `apps/web/public/media`, `VideoSchema`, `MediaSlot` contract, credit URLs. To do: real footage (Pexels, Coverr, Mixkit) instead of the drawn loops, mobile versions, posters, `MEDIA_CREDITS.md` |
+| Files and components | `apps/web/public/media/**`, `fixtures/src/images.ts`, `packages/shared/src/schemas/{common,content,shop}.ts` |
+| Screens matched | PhotoBrief |
+| Admin control | media slots (A20 media library) |
+| Tests | — |
+| Widths checked | — |
+| Tools and skills | — |
+| Decisions | D37 |
+| Bugs and follow-ups | — |
 
-### E · Live booking (milestone 5)
-| | Item |
+### #4 · A4 Data layer and content model — ✅ Done
+| Field | Value |
 | --- | --- |
-| ⬜ | E1 · First two flight provider APIs: search, revalidate, book (PNR), ticket, e-ticket PDF |
-| ⬜ | E2 · Hotel API booking and vouchers |
-| ⬜ | E3 · Instant package booking with advance or full payment |
-| ⬜ | E4 · Pricing engine, circuit breaker and kill switch |
-| ⬜ | E5 · Booking operations: refunds, reissues, reconciliation |
+| Opened → closed | 09 Oct 06:03 → 09 Oct 11:29 |
+| Branch · PR · merge | `feat/4-data-layer` · #26 · `088c1b1` |
+| Built | Shared zod contracts for every domain; reference, phone, office-hours and Dhaka-time helpers; typed Sample fixtures (parsed and frozen); repository interfaces, fixture repositories (pure, take `now`) and cached accessors (`'use cache'`, `cacheLife`, `cacheTag`) |
+| Files and components | `packages/shared/src/**`, `fixtures/src/**`, `apps/web/src/lib/data/**` |
+| Screens matched | Data from every board |
+| Admin control | rows AC-01 to AC-56 seeded |
+| Tests | unit 168 (shared 38, fixtures 75 incl. compliance, web 55) · e2e 15 · axe pass · Lighthouse — |
+| Widths checked | — (no UI) |
+| Tools and skills | Serena, Context7, Playwright |
+| Decisions | D27–D35 |
+| Bugs and follow-ups | Known issues 1–3 (section 9) |
 
-## Route ↔ screen matrix
+### #3 · A3 Design system in code + /styleguide — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 09 Oct 06:03 → 09 Oct 10:28 |
+| Branch · PR · merge | `feat/3-design-system` · #25 · `3348229` |
+| Built | 41 shadcn primitives restyled to the Components and States boards; brand pieces (logo lockup, ribbon, gold triangle, W loader); MotionKit; SmartImage and SmartVideo; empty and error states; taka glyph font; favicon and app icon; dev-only `/styleguide` |
+| Files and components | `apps/web/src/components/{ui,brand,motion,media,feedback,icons}/**`, `app/[locale]/(site)/styleguide/**` |
+| Screens matched | Brand, Tokens, Components, Components2, MotionKit, PCard, States |
+| Admin control | — |
+| Tests | unit 36 · e2e 15 (320/390/768/1440, axe, keyboard, reduced motion) · axe pass |
+| Widths checked | 320 · 390 · 768 · 1440 |
+| Tools and skills | Serena, Context7, shadcn, Playwright; ui-ux-pro-max, design-taste-frontend, frontend-design |
+| Decisions | D17–D26 |
+| Bugs and follow-ups | Fixed in-issue: horizontal scroll at 320/390, Radix radio names, tabs without panels, OTP console error, image aspect warning, set-state-in-effect |
 
-| Route | Screens | Issue | 320 | 390 | 768 | 1440 | Tests | Lighthouse (P/A/SEO) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `/` | Home, Home-t, Home-m, Home-help, Home-mfull, Home-mfull2, Home-lower, Home-m-drawer, Home-m-more, Home-shopmenu, Home-moremenu | #7 (#6, #8) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/flights` | Flights, Flights-2, Flights-done, Flights-err, Flights-edit, FlightsFare, Flights-m-*, Pick-* | #9 (#8) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/flights` Live (P2, fixtures) | FlightsLive, -offer, -loading, -nomatch, -book, -pay, -price, -done, -m-* | #17 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/flights/group-fares` | GroupFares, GroupFares-empty, GroupFares-m, GroupFares-m-empty | #9 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/hotels` | Hotels, Hotels-2, Hotels-done, Hotels-m-* | #10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/hotels` Live (P2, fixtures) | HotelsLive, -map, -detail, -book, -done, -m-* | #17 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/tour-packages` | Packages, Packages-empty, Packages-m, Packages-m-filters | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/tour-packages/[slug]` | PackageDetail, -photos, -query, -done, PackageDetail-m-* | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/plan-my-trip` | PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-* | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/visa-services` | Visa, Visa-none, Visa-m | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/visa-services/[country]` | VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/visa-guide`, `/visa-guide/[country]` | VisaGuide, VisaGuidePost (+ -m) | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop` | Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop/c/[slug]`, brand, collection, deals | ShopList, -printers, -empty, -m, -m-filters, -m-fashion, ShopCats, ShopDeals | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop/p/[slug]` | ShopProduct, -pb, -hp, -toner, -video, -bulk, -m-* | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop/finder`, `/shop/search` | ShopFinder, -part, -none, ShopSearch | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop/cart` → checkout → order | Shop-mini, ShopCart, -empty, -coupon, ShopCheckout, -err, ShopDone, -bank | #14 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop/track` | ShopTrack, -nf, -delivered | #14 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| Printing Solutions, International Trading | Printing, Printing-done, Trading, Trading-done (+ -m) | #15 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/gallery`, `/gallery/[album]` | Gallery, Gallery-album, Gallery-photo (+ -m) | #16 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/feedback` | Feedback, Feedback-sent, Feedback-m | #16 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| More pages | About, Contact, Faqs, Blog, BlogPost, Refund, Privacy, Terms, Baggage, Emi, OfflinePay (+ -m, -sent) | #16 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| 404, 500, offline, maintenance | Error, Error500, Offline, Maintenance, States (+ -m) | #17 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/admin/login` | AdminLogin, -error, -locked, -totp, AdminLogin-m | #18 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
-| `/admin` shell + dashboard | AdminSide, AdminTop, AdminNav-m, AdminCmd, AdminDash, AdminDash-m | #18 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
-| `/admin/leads`, `/admin/leads/[ref]` | AdminLeads, -bulk, -board, -m, AdminLead, -convert, -lost, -m | #18 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
-| `/admin/search`, `/admin/bookings` | AdminSearch, AdminBookings, -open | #18 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
-| `/admin` catalogue | AdminGroupFares, -new, AdminPackages, AdminPackage, AdminVisa, AdminProducts, AdminProduct, -toner, AdminCats, AdminCollections, AdminCoupons, AdminOrders, -open, -m | #19 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
-| `/admin` content | AdminPages, AdminHome, AdminTeam, AdminGallery, AdminMedia, AdminFeedback | #20 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
-| `/admin` customers, reports, users, settings | AdminCustomers, -open, AdminReports, AdminUsers, AdminGeneral, AdminModes, -confirm, AdminFooter, AdminPayments, AdminNotify | #21 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
-| `/styleguide` (dev only) | Brand, Tokens, Components, Components2, MotionKit, PCard, States | #3 | ✅ | ✅ | ✅ | ✅ | ✅ axe + keyboard | n/a |
-| `/track`, `/login`, `/account` (P1) | Track, Track-nf, Login, Login-otp, Login-err, Account | D1 | — | — | — | — | — | — |
+### #2 · A2 Foundation: monorepo, Next.js app, tokens, fonts, i18n, test tooling — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 09 Oct 06:03 → 09 Oct 06:50 |
+| Branch · PR · merge | `feat/2-foundation` · #24 · `f740523` |
+| Built | pnpm workspaces + Turborepo; Next 16.4 with Cache Components; tokens in `globals.css` with the default palette removed; Plus Jakarta Sans + Inter; shadcn init; next-intl with unprefixed English; Vitest and Playwright + axe |
+| Files and components | root configs, `apps/web`, `packages/{shared,config}`, `fixtures` |
+| Screens matched | — |
+| Admin control | — |
+| Tests | unit 20 · e2e 7 (320/390/768/1440, axe, console, overflow, zoom, skip link) |
+| Widths checked | 320 · 390 · 768 · 1440 |
+| Tools and skills | Serena, Context7, shadcn, Playwright |
+| Decisions | D12–D16 |
+| Bugs and follow-ups | none |
 
-## Admin-control matrix
+### #1 · A1 Design direction and competitor benchmark — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 09 Oct 06:03 → 09 Oct 06:28 |
+| Branch · PR · merge | `feat/1-design-direction` · #23 · `4fde3b7` |
+| Built | Playwright pass over the four competitors at 390 and 1440 px, live DAC → CXB search; Lighthouse mobile ×3 per home page; COMPETITOR_BENCHMARK.md, DESIGN.md, MOTION.md |
+| Files and components | `docs/design/{COMPETITOR_BENCHMARK,DESIGN,MOTION}.md` |
+| Screens matched | Main (Stage A research) |
+| Admin control | — |
+| Tests | — (docs) |
+| Widths checked | — |
+| Tools and skills | Playwright, Lighthouse 13.5; ui-ux-pro-max, design-taste-frontend, frontend-design |
+| Decisions | D8–D11 |
+| Bugs and follow-ups | v4 gaps → #34 |
 
-Every public element → the data field it reads → the admin screen that edits it → the API endpoint.
-Seeded by A4 from the zod contracts; UI issues add rows for anything new, and Phase B confirms the endpoints.
-Accessors live in `apps/web/src/lib/data/*.ts`; admin screen names follow the AdminSide board.
+### Todo (A6–A22), in build order
+Each gets the full block when work starts.
 
-| Public element | Data field (accessor → field) | Admin screen | API endpoint (planned) |
+| Issue | Title | Size | Depends on |
 | --- | --- | --- | --- |
-| Brand names (header, footer, metadata) | `getSiteSettings()` → travelBrand, storeName, companyName | Settings › General | `GET /api/v1/settings/site` |
-| Default SEO title, description, share image | `getSiteSettings()` → defaultSeo | Settings › General | `GET /api/v1/settings/site` |
-| Header menu (7 items, order, visibility, Waafas World and More panels) | `getMenu("header")` → items[].label, href, icon, panel, visible | Settings › Footer and menus | `GET /api/v1/menus/header` |
-| More panel and sheet (icon, title, one line) | `getMenu("more")` → items[].label, description, icon, href | Settings › Footer and menus | `GET /api/v1/menus/more` |
-| Waafas World mega panel categories | `listCategories()` → level-1 name, description, icon, order | Waafas World › Categories | `GET /api/v1/shop/categories` |
-| Announcement bar | `getActiveAnnouncement()` → text, link, startsAt, endsAt, enabled | Content › Home and banners | `GET /api/v1/announcements/active` |
-| Hotline chip, Call and WhatsApp buttons, floating WhatsApp | `getContactSettings()` → phoneDisplay, phoneE164, whatsappE164 | Settings › General | `GET /api/v1/settings/contact` |
-| Open now / Closed chip | `getContactSettings()` → officeHours, read with `getOfficeStatus()` in Asia/Dhaka | Settings › General | `GET /api/v1/settings/contact` |
-| Need help? panel, drawer contact block, Contact page, Visit our office | `getContactSettings()` → addressLines, city, country, email, officeHoursText, closedText, mapUrl | Settings › General | `GET /api/v1/settings/contact` |
-| Footer brand column | `getSiteSettings()` → footerTagline, footerAbout; `getContactSettings()` → socials | Settings › General | `GET /api/v1/settings/site` |
-| Footer link columns | `getFooterSettings()` → columns[].title, menu; `getMenu("footer-travel" / "footer-shop" / "footer-help")` | Settings › Footer and menus | `GET /api/v1/settings/footer` |
-| We accept | `getFooterSettings()` → paymentMethods (live ones only), paymentNote | Settings › Footer and menus | `GET /api/v1/settings/footer` |
-| Trust badges (ATAB, TOAB, IATA once held) | `getFooterSettings()` → trustBadges | Settings › Footer and menus | `GET /api/v1/settings/footer` |
-| Newsletter band | `getFooterSettings()` → newsletterTitle, newsletterPlaceholder, newsletterButton | Settings › Footer and menus | `GET /api/v1/settings/footer` |
-| Bottom bar copyright and legal links | `getFooterSettings()` → copyrightHolder; `getMenu("legal")` | Settings › Footer and menus | `GET /api/v1/settings/footer` |
-| Developer credit | Rendered from code (FR-FTR-06) | Not editable, by design | — |
-| Manual or Live body; Send query or Book now | `getPublicConfig()` → modes.{flights, hotels, packages, shopPayment}.mode, liveLocked, lockReason | Settings › Booking modes | `GET /api/v1/config/public` |
-| Online payment at checkout; cash-on-delivery cap | `getPublicConfig()` → onlinePaymentLive, codLimit | Settings › Payments and delivery | `GET /api/v1/config/public` |
-| Maintenance page | `getPublicConfig()` → maintenance.enabled, message | Settings › General | `GET /api/v1/config/public` |
-| Analytics and verification tags | `getTrackingSettings()` → ga4Id, gtmId, metaPixelId, searchConsoleToken | Settings › General | `GET /api/v1/settings/tracking` |
-| Lead forms: consent line, email required, reply promise | `getLeadFormSettings()` → consentText, emailRequired, slaMinutes | Settings › General | `GET /api/v1/settings/lead-form` |
-| Home section order, visibility and heading overrides | `listHomeSections()` → key, enabled, order, title, subtitle | Content › Home and banners | `GET /api/v1/home/sections` |
-| Home trust strip | `listTrustItems()` → icon, title, detail, order | Content › Home and banners | `GET /api/v1/home/trust` |
-| Home offers, store campaigns, results banners | `listBanners(placement)` → kicker, title, body, image, link, code, validityText, startsAt, endsAt, order, enabled | Content › Home and banners | `GET /api/v1/banners?placement=` |
-| Airline strip | `listFeaturedAirlines()` → code, name, featuredOrder | Content › Home and banners | `GET /api/v1/airlines?featured=true` |
-| Destination finder | `listDestinations()` → name, subtitle, iata, image, flightTime, visaNote, visaEasy, bestSeason, fromPrice, tags, order | Content › Home and banners | `GET /api/v1/home/destinations` |
-| Why WAAFA values (Home, About) | `listValues()` → icon, title, body, order | Content › Home and banners | `GET /api/v1/home/values` |
-| Journey timeline (Home, About) | `listTimeline()` → period, text, order | Content › Home and banners | `GET /api/v1/home/timeline` |
-| Group fare cards (Home rail, group fares page, results) | `listGroupFares()`, `getGroupFare()` → airline, cabin, baggage, tripType, from, to, stops, departDate, returnDate, seatsLeft, farePerAdult, expiresAt, notes | Sales › Group fares | `GET /api/v1/group-fares` |
-| Package cards, list filters and sort | `listPackages()` → title, placesLabel, categories, tags, months, durationDays, durationNights, includesShort, cover, fromPrice, popularity | Travel › Tour packages | `GET /api/v1/packages` |
-| Package detail | `getPackage()`, `listRelatedPackages()` → summary, gallery, video, groupSize, visaNote, highlights, itinerary, inclusions, exclusions, prices, departures, anyDate, hotels, visa, terms, faqs, relatedSlugs, seo | Travel › Tour packages | `GET /api/v1/packages/{slug}` |
-| Airport and hotel-city autocomplete | `searchAirports()`, `listPinnedAirports()`, `searchHotelPlaces()` → iata, city, name, country, pinnedRank; place name, city, popular | Seeded reference data (B6) | `GET /api/v1/airports?q=`, `GET /api/v1/hotel-places?q=` |
-| Visa list and country cards | `listVisaCountries()` → name, flagCode, region, submission, popular, types[].type, processingTime, serviceCharge | Travel › Visa | `GET /api/v1/visa/countries` |
-| Visa country page | `getVisaCountry()` → types[].processingTime, stay, entry, validity, checklist, embassyFee, embassyFeeNote, serviceCharge, notes; forms; faqs; guideSlug | Travel › Visa | `GET /api/v1/visa/countries/{slug}` |
-| Visa Guide list and article | `listVisaGuides()`, `getVisaGuide()` → title, summary, cover, sections, tips, updatedAt, readingMinutes, seo | Content › Pages, blog and FAQs | `GET /api/v1/visa/guides` |
-| Store home rows | `listStoreRows()` → key, enabled, order | Waafas World › Collections | `GET /api/v1/shop/store-rows` |
-| Category grid and listing filters | `listCategories()`, `getCategory()`, `getAttributeSet()` → name, slug, icon, description, banner, parentId, level, attributeSetId, compatibility, order, seo; attributes[].filterable | Waafas World › Categories | `GET /api/v1/shop/categories` |
-| Product cards and product page | `listProducts()`, `getProduct()` → title, shortTitle, badges, cardSpec, highlights, description, specs, warranty, images, video, options, variants (sku, price, mrp, stock, lowStockAt, preOrder, images), codEligible, bulkFrom, seo | Waafas World › Products | `GET /api/v1/shop/products` |
-| Brands row and brand pages | `listBrands()`, `getBrand()` → name, logo, description | Waafas World › Products | `GET /api/v1/shop/brands` |
-| Collections | `listCollections()`, `getCollection()` → name, description, image, rule, order | Waafas World › Collections | `GET /api/v1/shop/collections` |
-| Deals with an end date | `listDeals()` → dealPrice, endsAt, product, variant | Waafas World › Products | `GET /api/v1/shop/deals` |
-| Find by model | `listCompatibleModels()`, `findCompatibleProducts()` → brand, model, partCodes; product.compatibleModelIds | Waafas World › Products (compatibility CSV) | `GET /api/v1/shop/compatible-products` |
-| Coupons at checkout | `findCoupon()` → code, type, value, minOrder, maxDiscount, startsAt, endsAt, enabled | Waafas World › Coupons | `POST /api/v1/shop/coupons/validate` |
-| Delivery charges, estimates, free delivery, minimum order, office pick-up | `getShippingSettings()` → zones[].name, areas, charge, estimate; freeDeliveryThreshold; minimumOrder; officePickup | Settings › Payments and delivery | `GET /api/v1/settings/shipping` |
-| Offline Payment page, checkout and order emails | `getPaymentSettings()` → offlineAccounts[].kind, title, lines, instructions | Settings › Payments and delivery | `GET /api/v1/settings/payments` |
-| EMI page | `getEmiSettings()` → minimumAmount, tenuresMonths, cardsNote, appliesTo, interestNote; `listEmiBanks()` → name, tenuresMonths, note | Settings › Payments and delivery | `GET /api/v1/settings/emi` |
-| Refund, Privacy, Terms and About Us text | `getPage(slug)` → title, summary, highlights, sections, lastUpdated, seo | Content › Pages, blog and FAQs | `GET /api/v1/pages/{slug}` |
-| Blog list, post and Home blog strip | `listBlogPosts()`, `getBlogPost()`, `listRelatedBlogPosts()`, `listBlogCategories()` → title, excerpt, intro, sections, cover, category, author, publishedAt, readingMinutes, featured, cta, seo | Content › Pages, blog and FAQs | `GET /api/v1/blog/posts` |
-| FAQs page and Home FAQ strip | `listFaqs()` → category, question, answer, link, order, onHome | Content › Pages, blog and FAQs | `GET /api/v1/faqs` |
-| Baggage table | `listBaggageRules()` → airlineCode, airlineName, scope, cabinClass, cabinAllowance, checkedAllowance, notes, lastVerified | Content › Pages, blog and FAQs | `GET /api/v1/baggage-rules` |
-| Gallery page, albums and Home strip | `listGalleryAlbums()`, `getGalleryAlbum()` → title, category, cover, items (photo or video, caption), publishedAt | Content › Gallery | `GET /api/v1/gallery/albums` |
-| Testimonials wall and Home reviews | `listPublicFeedback()` → name, service, rating, comment, photo, submittedAt (approved with consent only; contact details never leave the server) | Content › Feedback | `GET /api/v1/feedback` |
-| Facebook reviews link (until approved feedback exists) | `getSiteSettings()` → reviewsUrl | Settings › General | `GET /api/v1/settings/site` |
-| Meet our team (Home bento, About grid) | `listTeam(placement)` → name, initials, designation, department, bio, photo, whatsappE164, email, linkedinUrl, featured, showOnHome, showOnAbout, visible, order | Content › Team | `GET /api/v1/team?placement=` |
-| Customer emails (lead received, order placed, visa status) | NotificationTemplate → subject, body, variables, channel, enabled (admin repository arrives with A21) | Settings › Notifications | `GET /api/v1/admin/notification-templates` |
-| Lead reference on success screens | `createLead()` → reference, createdAt | Sales › Leads | `POST /api/v1/leads` |
+| #6 | A6 Layout shell: header, mega panels, tab bar, drawer, footer, WhatsApp, loader | L | #3, #4, #5 |
+| #7 | A7 Home: 13 sections from data, video hero with word reveal | L | #6, #8 |
+| #8 | A8 Unified search card and pickers | XL | #6 |
+| #9 | A9 Results shell + Flights Manual mode + group fares | L | #8 |
+| #10 | A10 Hotels Manual mode | S | #8, #9 |
+| #11 | A11 Tour packages (list, detail, query) + Plan My Trip | XL | #6, #8 |
+| #12 | A12 Visa services (list, country, apply) + Visa Guide | L | #6 |
+| #13 | A13 Waafas World catalogue: store home, listing, product, finder, search | XL | #6 |
+| #14 | A14 Cart, checkout (COD + offline payment), order success, track order | L | #13 |
+| #15 | A15 Printing Solutions and International Trading | M | #6 |
+| #16 | A16 Gallery, Feedback, team, About, Contact, FAQs, Blog, policies, Baggage, EMI, Offline Payment | XL | #6 |
+| #17 | A17 System states: 404, 500, offline, maintenance, loading + LiveBody placeholder | L | #9, #10 |
+| #18 | A18 Admin: shell, sign-in, dashboard, leads, search activity, bookings | XL | #3, #4 |
+| #19 | A19 Admin catalogue: group fares, packages, visa, shop | XL | #18 |
+| #20 | A20 Admin content: pages, blog, FAQs, banners, home order, menus, media, SEO | XL | #18 |
+| #21 | A21 Admin customers, marketing, reports, users and roles, settings | L | #18 |
+| #22 | A22 Frontend QA and polish against the benchmark | L | #5–#21 |
 
-## Components inventory
+## 3. Route ↔ screen matrix
 
-| Component | Path | Source (shadcn / 21st.dev id / custom) | Used on |
+| Route | Screens | Issue | 320 | 390 | 768 | 1024 | 1440 | Tests | Lighthouse mobile |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `/` | Home, Home-t, Home-m, Home-help, Home-mfull, Home-mfull2, Home-lower, Home-m-drawer, Home-m-more, Home-shopmenu, Home-moremenu | #7 (#6, #8) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/flights` | Flights, Flights-2, Flights-done, Flights-err, Flights-edit, FlightsFare, Flights-m-*, Pick-* | #9 (#8) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/flights` Live placeholder | FlightsLive (placeholder only; full Live bodies in Phase E) | #17 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/flights/group-fares` | GroupFares, GroupFares-empty, GroupFares-m, GroupFares-m-empty | #9 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/hotels` | Hotels, Hotels-2, Hotels-done, Hotels-m-* | #10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/tour-packages` | Packages, Packages-empty, Packages-m, Packages-m-filters | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/tour-packages/[slug]` | PackageDetail, -photos, -query, -done, PackageDetail-m-* | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/plan-my-trip` | PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-* | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/visa-services` | Visa, Visa-none, Visa-m | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/visa-services/[country]` | VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/visa-guide`, `/visa-guide/[country]` | VisaGuide, VisaGuidePost (+ -m) | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/shop` | Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/shop/c/[slug]`, brand, collection, deals | ShopList, -printers, -empty, -m, -m-filters, -m-fashion, ShopCats, ShopDeals | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/shop/p/[slug]` | ShopProduct, -pb, -hp, -toner, -video, -bulk, -m-* | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/shop/finder`, `/shop/search` | ShopFinder, -part, -none, ShopSearch | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/shop/cart` → checkout → order | Shop-mini, ShopCart, -empty, -coupon, ShopCheckout, -err, ShopDone, -bank | #14 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/shop/track` | ShopTrack, -nf, -delivered | #14 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/shop/printing-solutions`, `/shop/international-trading` | Printing, Printing-done, Trading, Trading-done (+ -m) | #15 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/gallery`, `/gallery/[album]` | Gallery, Gallery-album, Gallery-photo (+ -m) | #16 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/feedback` | Feedback, Feedback-sent, Feedback-m | #16 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| More pages | About, Contact, Faqs, Blog, BlogPost, Refund, Privacy, Terms, Baggage, Emi, OfflinePay (+ -m, -sent) | #16 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| 404, 500, offline, maintenance | Error, Error500, Offline, Maintenance, States (+ -m) | #17 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/admin/login` | AdminLogin, -error, -locked, -totp, AdminLogin-m | #18 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| `/admin` shell + dashboard | AdminSide, AdminTop, AdminNav-m, AdminCmd, AdminDash, AdminDash-m | #18 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| `/admin/leads`, `/admin/leads/[ref]` | AdminLeads, -bulk, -board, -m, AdminLead, -convert, -lost, -m | #18 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| `/admin/search`, `/admin/bookings` | AdminSearch, AdminBookings, -open | #18 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| `/admin` catalogue | AdminGroupFares, -new, AdminPackages, AdminPackage, AdminVisa, AdminProducts, AdminProduct, -toner, AdminCats, AdminCollections, AdminCoupons, AdminOrders, -open, -m | #19 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| `/admin` content | AdminPages, AdminHome, AdminTeam, AdminGallery, AdminMedia, AdminFeedback | #20 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| `/admin` customers, reports, users, settings | AdminCustomers, -open, AdminReports, AdminUsers, AdminGeneral, AdminModes, -confirm, AdminFooter, AdminPayments, AdminNotify | #21 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| `/styleguide` (dev only) | Brand, Tokens, Components, Components2, MotionKit, PCard, States | #3 | ✅ | ✅ | ✅ | ⬜ | ✅ | ✅ axe + keyboard | n/a |
+| `/track`, `/login`, `/account` (P1) | Track, Track-nf, Login, Login-otp, Login-err, Account | D (#31) | — | — | — | — | — | — | — |
+
+## 4. Admin-control matrix
+
+Every public element → the data field it reads → the admin screen that edits it → the API endpoint (planned in A4,
+confirmed in Phase B) → verified against the live API (Phase C). Accessors live in `apps/web/src/lib/data/*.ts`.
+
+| # | Public element | Data field (accessor → field) | Admin screen | API endpoint | Verified |
+| --- | --- | --- | --- | --- | --- |
+| AC-01 | Brand names (header, footer, metadata) | `getSiteSettings()` → travelBrand, storeName, companyName | Settings › General | `GET /api/v1/settings/site` | ⬜ |
+| AC-02 | Default SEO title, description, share image | `getSiteSettings()` → defaultSeo | Settings › General | `GET /api/v1/settings/site` | ⬜ |
+| AC-03 | Header menu (7 items, order, visibility, Waafas World and More panels) | `getMenu("header")` → items[].label, href, icon, panel, visible | Settings › Footer and menus | `GET /api/v1/menus/header` | ⬜ |
+| AC-04 | More panel and sheet (icon, title, one line) | `getMenu("more")` → items[].label, description, icon, href | Settings › Footer and menus | `GET /api/v1/menus/more` | ⬜ |
+| AC-05 | Waafas World mega panel categories | `listCategories()` → level-1 name, description, icon, order | Waafas World › Categories | `GET /api/v1/shop/categories` | ⬜ |
+| AC-06 | Announcement bar | `getActiveAnnouncement()` → text, link, startsAt, endsAt, enabled | Content › Home and banners | `GET /api/v1/announcements/active` | ⬜ |
+| AC-07 | Hotline chip, Call and WhatsApp buttons, floating WhatsApp | `getContactSettings()` → phoneDisplay, phoneE164, whatsappE164 | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
+| AC-08 | Open now / Closed chip | `getContactSettings()` → officeHours, read with `getOfficeStatus()` in Asia/Dhaka on the client | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
+| AC-09 | Need help? panel, drawer contact block, Contact page, Visit our office | `getContactSettings()` → addressLines, city, country, email, officeHoursText, closedText, mapUrl | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
+| AC-10 | Footer brand column | `getSiteSettings()` → footerTagline, footerAbout; `getContactSettings()` → socials | Settings › General | `GET /api/v1/settings/site` | ⬜ |
+| AC-11 | Footer link columns | `getFooterSettings()` → columns[].title, menu; `getMenu("footer-travel" / "footer-shop" / "footer-help")` | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
+| AC-12 | We accept | `getFooterSettings()` → paymentMethods (live ones only), paymentNote | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
+| AC-13 | Trust badges (ATAB, TOAB, IATA once held) | `getFooterSettings()` → trustBadges | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
+| AC-14 | Newsletter band | `getFooterSettings()` → newsletterTitle, newsletterPlaceholder, newsletterButton | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
+| AC-15 | Bottom bar copyright and legal links | `getFooterSettings()` → copyrightHolder; `getMenu("legal")` | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
+| AC-16 | Developer credit | Rendered from code (FR-FTR-06) | Not editable, by design | — | — |
+| AC-17 | Manual or Live body; Send query or Book now | `getPublicConfig()` → modes.{flights, hotels, packages, shopPayment}.mode, liveLocked, lockReason | Settings › Booking modes | `GET /api/v1/config/public` | ⬜ |
+| AC-18 | Online payment at checkout; cash-on-delivery cap | `getPublicConfig()` → onlinePaymentLive, codLimit | Settings › Payments and delivery | `GET /api/v1/config/public` | ⬜ |
+| AC-19 | Maintenance page | `getPublicConfig()` → maintenance.enabled, message | Settings › General | `GET /api/v1/config/public` | ⬜ |
+| AC-20 | Analytics and verification tags | `getTrackingSettings()` → ga4Id, gtmId, metaPixelId, searchConsoleToken | Settings › General | `GET /api/v1/settings/tracking` | ⬜ |
+| AC-21 | Lead forms: consent line, email required, reply promise | `getLeadFormSettings()` → consentText, emailRequired, slaMinutes | Settings › General | `GET /api/v1/settings/lead-form` | ⬜ |
+| AC-22 | Home section order, visibility and heading overrides | `listHomeSections()` → key, enabled, order, title, subtitle | Content › Home and banners | `GET /api/v1/home/sections` | ⬜ |
+| AC-23 | Home trust strip | `listTrustItems()` → icon, title, detail, order | Content › Home and banners | `GET /api/v1/home/trust` | ⬜ |
+| AC-24 | Home offers, store campaigns, results banners | `listBanners(placement)` → kicker, title, body, image, link, code, validityText, startsAt, endsAt, order, enabled | Content › Home and banners | `GET /api/v1/banners?placement=` | ⬜ |
+| AC-25 | Airline strip | `listFeaturedAirlines()` → code, name, featuredOrder | Content › Home and banners | `GET /api/v1/airlines?featured=true` | ⬜ |
+| AC-26 | Destination finder | `listDestinations()` → name, subtitle, iata, image, flightTime, visaNote, visaEasy, bestSeason, fromPrice, tags, order | Content › Home and banners | `GET /api/v1/home/destinations` | ⬜ |
+| AC-27 | Why WAAFA values (Home, About) | `listValues()` → icon, title, body, order | Content › Home and banners | `GET /api/v1/home/values` | ⬜ |
+| AC-28 | Journey timeline (Home, About) | `listTimeline()` → period, text, order | Content › Home and banners | `GET /api/v1/home/timeline` | ⬜ |
+| AC-29 | Group fare cards (Home rail, group fares page, results) | `listGroupFares()`, `getGroupFare()` → airline, cabin, baggage, tripType, from, to, stops, departDate, returnDate, seatsLeft, farePerAdult, expiresAt, notes | Sales › Group fares | `GET /api/v1/group-fares` | ⬜ |
+| AC-30 | Package cards, list filters and sort | `listPackages()` → title, placesLabel, categories, tags, months, durationDays, durationNights, includesShort, cover, fromPrice, popularity | Travel › Tour packages | `GET /api/v1/packages` | ⬜ |
+| AC-31 | Package detail | `getPackage()`, `listRelatedPackages()` → summary, gallery, video, groupSize, visaNote, highlights, itinerary, inclusions, exclusions, prices, departures, anyDate, hotels, visa, terms, faqs, relatedSlugs, seo | Travel › Tour packages | `GET /api/v1/packages/{slug}` | ⬜ |
+| AC-32 | Airport and hotel-city autocomplete | `searchAirports()`, `listPinnedAirports()`, `searchHotelPlaces()` → iata, city, name, country, pinnedRank; place name, city, popular | Seeded reference data (B6) | `GET /api/v1/airports?q=`, `GET /api/v1/hotel-places?q=` | ⬜ |
+| AC-33 | Visa list and country cards | `listVisaCountries()` → name, flagCode, region, submission, popular, cover, types[].type, processingTime, serviceCharge | Travel › Visa | `GET /api/v1/visa/countries` | ⬜ |
+| AC-34 | Visa country page | `getVisaCountry()` → types[].processingTime, stay, entry, validity, checklist, embassyFee, embassyFeeNote, serviceCharge, notes; forms; faqs; guideSlug | Travel › Visa | `GET /api/v1/visa/countries/{slug}` | ⬜ |
+| AC-35 | Visa Guide list and article | `listVisaGuides()`, `getVisaGuide()` → title, summary, cover, sections, tips, updatedAt, readingMinutes, seo | Content › Pages, blog and FAQs | `GET /api/v1/visa/guides` | ⬜ |
+| AC-36 | Store home rows | `listStoreRows()` → key, enabled, order | Waafas World › Collections | `GET /api/v1/shop/store-rows` | ⬜ |
+| AC-37 | Category grid and listing filters | `listCategories()`, `getCategory()`, `getAttributeSet()` → name, slug, icon, description, banner, parentId, level, attributeSetId, compatibility, order, seo; attributes[].filterable | Waafas World › Categories | `GET /api/v1/shop/categories` | ⬜ |
+| AC-38 | Product cards and product page | `listProducts()`, `getProduct()` → title, shortTitle, badges, cardSpec, highlights, description, specs, warranty, images, video, options, variants (sku, price, mrp, stock, lowStockAt, preOrder, images), codEligible, bulkFrom, seo | Waafas World › Products | `GET /api/v1/shop/products` | ⬜ |
+| AC-39 | Brands row and brand pages | `listBrands()`, `getBrand()` → name, logo, description | Waafas World › Products | `GET /api/v1/shop/brands` | ⬜ |
+| AC-40 | Collections | `listCollections()`, `getCollection()` → name, description, image, rule, order | Waafas World › Collections | `GET /api/v1/shop/collections` | ⬜ |
+| AC-41 | Deals with an end date | `listDeals()` → dealPrice, endsAt, product, variant | Waafas World › Products | `GET /api/v1/shop/deals` | ⬜ |
+| AC-42 | Find by model | `listCompatibleModels()`, `findCompatibleProducts()` → brand, model, partCodes; product.compatibleModelIds | Waafas World › Products (compatibility CSV) | `GET /api/v1/shop/compatible-products` | ⬜ |
+| AC-43 | Coupons at checkout | `findCoupon()` → code, type, value, minOrder, maxDiscount, startsAt, endsAt, enabled | Waafas World › Coupons | `POST /api/v1/shop/coupons/validate` | ⬜ |
+| AC-44 | Delivery charges, estimates, free delivery, minimum order, office pick-up | `getShippingSettings()` → zones[].name, areas, charge, estimate; freeDeliveryThreshold; minimumOrder; officePickup | Settings › Payments and delivery | `GET /api/v1/settings/shipping` | ⬜ |
+| AC-45 | Offline Payment page, checkout and order emails | `getPaymentSettings()` → offlineAccounts[].kind, title, lines, instructions | Settings › Payments and delivery | `GET /api/v1/settings/payments` | ⬜ |
+| AC-46 | EMI page | `getEmiSettings()` → minimumAmount, tenuresMonths, cardsNote, appliesTo, interestNote; `listEmiBanks()` → name, tenuresMonths, note | Settings › Payments and delivery | `GET /api/v1/settings/emi` | ⬜ |
+| AC-47 | Refund, Privacy, Terms and About Us text | `getPage(slug)` → title, summary, highlights, sections, lastUpdated, seo | Content › Pages, blog and FAQs | `GET /api/v1/pages/{slug}` | ⬜ |
+| AC-48 | Blog list, post and Home blog strip | `listBlogPosts()`, `getBlogPost()`, `listRelatedBlogPosts()`, `listBlogCategories()` → title, excerpt, intro, sections, cover, category, author, publishedAt, readingMinutes, featured, cta, seo | Content › Pages, blog and FAQs | `GET /api/v1/blog/posts` | ⬜ |
+| AC-49 | FAQs page and Home FAQ strip | `listFaqs()` → category, question, answer, link, order, onHome | Content › Pages, blog and FAQs | `GET /api/v1/faqs` | ⬜ |
+| AC-50 | Baggage table | `listBaggageRules()` → airlineCode, airlineName, scope, cabinClass, cabinAllowance, checkedAllowance, notes, lastVerified | Content › Pages, blog and FAQs | `GET /api/v1/baggage-rules` | ⬜ |
+| AC-51 | Gallery page, albums and Home strip | `listGalleryAlbums()`, `getGalleryAlbum()` → title, category, cover, items (photo or video, caption), publishedAt | Content › Gallery | `GET /api/v1/gallery/albums` | ⬜ |
+| AC-52 | Testimonials wall and Home reviews | `listPublicFeedback()` → name, service, rating, comment, photo, submittedAt (approved with consent only) | Content › Feedback | `GET /api/v1/feedback` | ⬜ |
+| AC-53 | Facebook reviews link (until approved feedback exists) | `getSiteSettings()` → reviewsUrl | Settings › General | `GET /api/v1/settings/site` | ⬜ |
+| AC-54 | Meet our team (Home bento and carousel, About grid) | `listTeam(placement)` → name, initials, designation, department, bio, photo, whatsappE164, email, linkedinUrl, featured, showOnHome, showOnAbout, visible, order | Content › Team | `GET /api/v1/team?placement=` | ⬜ |
+| AC-55 | Customer emails (lead received, order placed, visa status) | NotificationTemplate → subject, body, variables, channel, enabled | Settings › Notifications | `GET /api/v1/admin/notification-templates` | ⬜ |
+| AC-56 | Lead reference on success screens | `createLead()` → reference, createdAt | Sales › Leads | `POST /api/v1/leads` | ⬜ |
+
+## 5. Components inventory
+
+| Component | Path | Source (shadcn · 21st.dev id · custom) | Used on |
 | --- | --- | --- | --- |
 | MotionProvider | `apps/web/src/components/motion/MotionProvider.tsx` | custom (LazyMotion strict + MotionConfig reducedMotion="user") | root layout |
-| reducedMotion helpers | `apps/web/src/components/motion/reducedMotion.ts` | custom (`REDUCED_FADE`, `useRiseVariants`, `useSafeTransition`) | MotionKit (A3) |
+| reducedMotion helpers | `apps/web/src/components/motion/reducedMotion.ts` | custom (`REDUCED_FADE`, `useRiseVariants`, `useSafeTransition`) | MotionKit |
+| PageTransition · Reveal · Stagger · StaggerItem · CountUp · Marquee · Parallax · PressScale · DrawCheck | `apps/web/src/components/motion/` | custom on Motion (MotionKit) | site-wide |
 | cn | `apps/web/src/lib/utils.ts` | shadcn (`cn` package) | every component |
 | formatTaka, formatDate, formatTime | `packages/shared/src/format/` | custom | prices, dates (web + API) |
-| shadcn primitives (41) | `apps/web/src/components/ui/` | shadcn radix-nova, restyled to the Components/States boards | everywhere |
+| shadcn primitives (41) | `apps/web/src/components/ui/` | shadcn radix-nova, restyled to the Components and States boards | everywhere |
 | Button (pill, loading, 9 variants) | `components/ui/button.tsx` | shadcn, rewritten | everywhere |
 | Badge (premium, discount, status) | `components/ui/badge.tsx` | shadcn, rewritten | cards, admin |
 | Toaster | `components/ui/sonner.tsx` | shadcn + Sonner, light-only, above the tab bar | site layout |
@@ -222,130 +282,195 @@ Accessors live in `apps/web/src/lib/data/*.ts`; admin screen names follow the Ad
 | RibbonBand · RibbonDivider · RibbonLine | `components/brand/` | custom (prototype ribbon geometry) | hero, dividers, tabs, progress |
 | GoldTriangle | `components/brand/GoldTriangle.tsx` | custom | premium badges |
 | BrandLoader | `components/brand/BrandLoader.tsx` | custom (W strokes, CSS) | route loading |
-| PageTransition · Reveal · Stagger · StaggerItem · CountUp · Marquee · Parallax · PressScale · DrawCheck | `components/motion/` | custom on Motion (MotionKit) | site-wide |
+| brandColors (BRAND_PALETTE, RIBBON_STOPS, THEME_COLOR) | `components/brand/brandColors.ts` | custom, drift-tested against globals.css | styleguide, viewport metadata |
 | SmartImage · SmartVideo | `components/media/` | custom on next/image | photos, hero and package loops |
 | EmptyState · ErrorState | `components/feedback/` | custom on shadcn Empty | lists, results, errors |
 | WhatsAppIcon · FacebookIcon | `components/icons/` | Simple Icons 16.34.0 (CC0) | WhatsApp buttons, socials |
-| zod contracts (settings, content, travel incl. FR-GS-08 models, search, leads, visa, shop, admin) | `packages/shared/src/schemas/` | custom (zod 4, `.strict()`) | web, fixtures, API (Phase B) |
-| makeReference · parseReference · toDhakaIsoString · toDhakaDateString | `packages/shared/src/helpers/reference.ts` | custom | lead and order references, timestamps |
+| zod contracts | `packages/shared/src/schemas/` | custom (zod 4, `.strict()`) | web, fixtures, API (Phase B) |
+| makeReference · parseReference · toDhakaIsoString · toDhakaDateString | `packages/shared/src/helpers/reference.ts` | custom | lead and order references |
 | toBdE164 · formatBdPhone · whatsappLink | `packages/shared/src/helpers/phone.ts` | custom | forms, contact links |
 | getOfficeStatus · formatClock | `packages/shared/src/helpers/officeHours.ts` | custom (Asia/Dhaka) | Open now chip |
-| Sample fixtures + `loadFixtures()` (parsed, frozen) | `fixtures/src/` | custom | fixture repositories, Phase B seed |
-| Repository interfaces | `apps/web/src/lib/data/types.ts` | custom | data layer |
-| Cached accessors (`'use cache'` + `CACHE_TAGS`) | `apps/web/src/lib/data/{settings,content,travel,visa,shop,leads}.ts` | custom on Next 16 Cache Components | every page |
-| Fixture repositories | `apps/web/src/lib/data/fixtures/` | custom | Phase A data source (`source.ts`) |
+| Sample fixtures + `loadFixtures()` | `fixtures/src/` | custom | fixture repositories, Phase B seed |
+| Repository interfaces · fixture repositories · cached accessors | `apps/web/src/lib/data/` | custom on Next 16 Cache Components | every page |
 
-## Benchmark (Lighthouse mobile)
+## 6. Tooling
 
-Lighthouse 13.5.0 mobile (simulated Slow 4G, 4× CPU), median of 3 runs, 9 Oct 2026. Perf / A11y / Best practices / SEO · LCP.
+Tested 9 Oct 2026 (v4 Step 1).
 
-| Page | gozayaan.com | sharetrip.net | akijair.com | obokash.com | Waafa (target / actual) |
-| --- | --- | --- | --- | --- | --- |
-| Home | 26 / 76 / 50 / 92 · 24.4 s | 1 / 72 / 73 / 100 · 29.2 s | 27 / 79 / 69 / 92 · 25.4 s | 35 / 88 / 54 / 92 · 12.5 s | ≥ 90 / ≥ 95 / ≥ 95 / 100 · ≤ 2.5 s / — |
+| Tool or skill | Kind | Status | Last tested | Used for |
+| --- | --- | --- | --- | --- |
+| serena | MCP | ✅ | 09 Oct | Symbol reads and edits, memories (`list_memories` → 8; project active, TypeScript LS) |
+| context7 | MCP | ✅ | 09 Oct | Library docs before use (`resolve` Next.js → `/vercel/next.js` up to v16.2.9; Cache Components docs; husky v9.1.7) |
+| shadcn | MCP | ✅ | 09 Oct | Registry search/view/add (`search "sidebar"` in `@shadcn` → 31 items; pass `registries` because `components.json` is in `apps/web`) |
+| magic (21st.dev) | MCP | ✅ | 09 Oct | Component search, inspiration, logos (`search "flight search card"` → 5); key from `TWENTY_FIRST_API_KEY` |
+| playwright | MCP | ✅ | 09 Oct | Screenshots at every width, console, network, traces (example.com at 390 px) |
+| github | MCP | ✅ | 09 Oct | Issues and PRs (`get_me` → mahedi-emon); Projects through `gh` |
+| gh CLI | CLI | ✅ | 09 Oct | Issues, Project #4 fields, sub-issues, merges (2.102, scopes repo, project, workflow) |
+| figma (project) | MCP | ⏸ off | — | Not needed; claude.ai Figma connector available if the handoff lacks a detail |
+| ui-color-palette | MCP (plugin) | ❌ 503 | 09 Oct | Palette scales and contrast; server down ("Service temporarily unavailable"); its skills wait for it |
+| figma-desktop, framer, sketch, penpot, gitlab | MCP (plugin) | ❌ not connected | 09 Oct | Not needed for this build |
+| Claude Docs, Notion, Google Drive connectors | MCP | available | — | Not used (repo docs are the source) |
+| Node / pnpm | Runtime | ✅ | 09 Oct | Node 25.2.1 local (22.11.0 installed; CI Node 22), pnpm 12.10.1 |
+| Python | Runtime | ✅ | 09 Oct | 3.12 for UI UX Pro Max (`search.py --design-system` ran) |
+| uvx | Runtime | ✅ | 09 Oct | Serena server |
+| Docker Desktop | Runtime | ✅ installed | 09 Oct | API dependencies in Phase B |
+| ffmpeg | CLI | ❌ missing | 09 Oct | Media transcoding: use `ffmpeg-static` (A5) |
+| Vercel CLI | CLI | ❌ missing | 09 Oct | Preview deployments: owner action |
+| Lighthouse | CLI | ✅ | 09 Oct | `npx -y lighthouse@13.5.0` with local Chrome (benchmark) |
+| husky + lint-staged + commitlint | Git hooks | ✅ | 09 Oct | Commit-msg attribution check, Conventional Commits, Prettier, guards |
+| ui-ux-pro-max | Skill (project) | ✅ loaded | 09 Oct | Design system, UX and stack rules, pre-delivery checklist |
+| design-taste-frontend | Skill (project) | ✅ loaded | 09 Oct | Anti-template direction, layout and copy rules |
+| frontend-design | Skill (project) | ✅ loaded | 09 Oct | Aesthetic direction, typography, restraint |
+| design-superpowers:design-review | Skill | ✅ loaded | 09 Oct | Review pass on every finished screen |
+| design-superpowers:design | Skill | available | — | Composing features from the design system |
+| design-superpowers:creative | Skill | available | — | Visual direction, moodboards |
+| design-superpowers:ds-make | Skill | available | — | Tokens and component variants |
+| design-superpowers:ds-manage | Skill | available | — | DS docs and drift checks |
+| design-superpowers:ds-consumer | Skill | available | — | Choosing DS components for features |
+| design-superpowers:ds-producer | Skill | available | — | DS governance checklists |
+| design-superpowers:map-design | Skill | available | — | Extracting a DESIGN.md from an artifact |
+| design-superpowers:figma-setup | Skill | available | — | Figma plugin setup (not needed) |
+| design:accessibility-review | Skill | available | — | WCAG audits of screens |
+| design:design-critique | Skill | available | — | Usability and hierarchy critique |
+| design:design-handoff | Skill | available | — | Spec sheets |
+| design:design-system | Skill | available | — | DS audits and docs |
+| design:ux-copy | Skill | available | — | Microcopy, errors, empty states |
+| design:research-synthesis | Skill | available | — | Research synthesis (not needed) |
+| design:user-research | Skill | available | — | Research plans (not needed) |
+| 21st:21st-ui | Skill | available | — | Choosing and adapting 21st.dev components |
+| ui-color-palette:* (14 skills) | Skill | ⏸ MCP down | — | build-color-system, scale-palette, audit-palette, generate-code, generate-semantic-code, generate-source-colors, manage-palettes, figma, penpot, framer, sketch, help, gh-cli, gitlab-cli-skills |
+| figma:* (14 skills) | Skill | available | — | figma-use, figma-generate-design, figma-generate-library, figma-design-to-code, figma-implement-motion, figma-code-connect, figma-create-new-file, figma-generate-diagram, figma-generative-plugins, figma-shaders, figma-swiftui, figma-use-figjam, figma-use-motion, figma-use-slides (only if the handoff lacks a detail) |
+| dataviz | Skill | available | — | Admin charts (A18, A21) |
+| code-review | Skill | available | — | Diff review before PRs |
+| simplify | Skill | available | — | Cleanup passes |
+| security-review | Skill | available | — | Security review (Phase B/C) |
+| run | Skill | available | — | Launching the app to verify changes |
+| update-config · fewer-permission-prompts · keybindings-help | Skill | available | — | Claude Code settings |
+| loop · schedule | Skill | available | — | Recurring checks (not needed) |
+| init · plugin-authoring · claude-api · skill-creator | Skill | available | — | Not needed for this build |
+| artifact-design · artifact-diagramming · artifact-capabilities | Skill | available | — | Shareable pages (not needed) |
+| claude-in-chrome · built-in-browser · chrome-browser · computer-use | Skill | available | — | Browser control (Playwright MCP used instead) |
+| deep-research | Skill | available | — | Multi-source research (not needed) |
+| docs · docx · pdf · pptx · xlsx · google-workspace | Skill | available | — | Documents (not needed) |
+| import-memory · morning | Skill | available | — | Not needed |
 
-Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.md`.
+## 7. Benchmark
 
-## Session log (newest first)
+Lighthouse 13.5.0 mobile (simulated Slow 4G, 4× CPU), median of 3 runs, 9 Oct 2026. Perf / A11y / Best practices /
+SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
-### 2026-10-09 11:27 (Asia/Dhaka) — A4 data layer and content model (#4)
-- Shared zod contracts for every domain (strict objects, shared enums, FR-GS-08 normalised travel models, reference formats), plus reference, phone, office-hours and Dhaka-time helpers.
-- Typed Sample fixtures from the prototype boards: settings and menus, policies and About, blog, FAQs, offers, destinations, gallery, team (initials), baggage, 9 group fares, 11 packages, 16 visa countries and 5 guides, a shop catalogue with variants, compatibility and orders, admin samples. Every record `sample: true`.
-- Repository interfaces, fixture repositories (pure, take `now`) and cached accessors (`'use cache'`, `cacheLife`, `cacheTag`) in `apps/web/src/lib/data`; checked once in the real Next runtime with a temporary route (removed).
-- Admin-control matrix seeded (56 rows).
-- Found and fixed while writing fixtures: invented alt-text details (now the CREDITS subjects), a Sajek photo on a Sreemangal package (package dropped), possibly real phone numbers in samples (now the unassigned 010 prefix), an About intro over its 300-character limit (caught by the schema).
-- Tests: Vitest 168 passed (shared 38, fixtures 75 incl. compliance checks, web 55); Playwright 15 passed. Lint, typecheck, build, Prettier clean.
+| Page | GoZayaan | ShareTrip | Akij Air | Obokash | Waafa | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Home | 26 / 76 / 50 / 92 · 24.4 s | 1 / 72 / 73 / 100 · 29.2 s | 27 / 79 / 69 / 92 · 25.4 s | 35 / 88 / 54 / 92 · 12.5 s | target ≥ 90 / ≥ 95 / ≥ 95 / 100 · ≤ 2.5 s | measured in A22 |
+| Inner page | — | — | — | — | — | A1b (#34) |
 
-### 2026-10-09 10:24 (Asia/Dhaka) — A3 design system (#3)
-- 41 shadcn primitives restyled to the Components/States boards; brand pieces (logo lockup, ribbon, gold triangle, W loader); MotionKit; SmartImage/SmartVideo; empty/error states; taka glyph font; favicon and app icon; dev-only `/styleguide`.
-- Found and fixed: horizontal scroll at 320/390 px (grid tracks), axe `button-name` on Radix radio cards (aria-labelledby), tabs without panels, OTP `defaultValue` console error, next/image aspect warning, `set-state-in-effect` lint errors (useSyncExternalStore).
-- Tests: Vitest 36 passed; Playwright 15 passed (home + styleguide at 320/390/768/1440 with axe, keyboard dialog/accordion, toast, reduced motion). Lint, typecheck, build, Prettier clean.
-- Usage limit hit mid-issue; resumed after reset. Background dev/prod servers were stopped by Claude Code for low memory (machine has ~1.2 GB free): run builds and e2e one at a time, `--workers=2`.
+## 8. Decisions
 
-### 2026-10-09 06:46 (Asia/Dhaka) — A2 foundation (#2)
-- pnpm workspaces + Turborepo (`apps/web`, `packages/shared`, `packages/config`, `fixtures`), cross-platform root scripts, `.gitattributes` LF, `.nvmrc` 22, `.editorconfig`.
-- Next 16.4 on pnpm with Cache Components + Partial Prefetching; tokens in `globals.css` (D8 primary), palette locked to WAAFA colours, type-scale and container utilities; Plus Jakarta Sans + Inter via next/font.
-- shadcn init (radix-nova, Lucide, pointer cursors); next-intl with `next/root-params`, `src/proxy.ts`, unprefixed English.
-- Tests: Vitest 20 passed (taka, dates, cn, message-catalogue compliance guard); Playwright 7 passed (320/390/768/1440, axe, console, overflow, zoom, skip link, locale prefix). Lint, typecheck, build, Prettier clean.
+| ID | Date | Decision | Why | Issue |
+| --- | --- | --- | --- | --- |
+| D1 | 09 Oct | Project Status "Todo" maps to the existing **Ready** option | Project #4 has Backlog/Ready/In progress/In review/Done and no Todo | Step 0 |
+| D2 | 09 Oct | `.claude/settings.json` uses `attribution` (`commit: ""`, `pr: ""`, `sessionUrl: false`) | `includeCoAuthoredBy` is deprecated | Step 0 |
+| D3 | 09 Oct | Local Node 25.2.1 kept; CI runs Node 22 LTS; pnpm pinned via `packageManager` | Works without switching the machine-wide nvm4w link | Step 0 |
+| D4 | 09 Oct | Labels use `type:`, `area:`, `priority:` prefixes; GitHub default labels kept | Clear grouping; nothing deleted | Step 0 |
+| D5 | 09 Oct | Milestone dues: A 11 Oct, B 12 Oct, C 13 Oct, D 13 Nov, E and F open | PRD §5 launch week | Step 0 |
+| D6 | 09 Oct | PRD wins over skill defaults: Plus Jakarta Sans + Inter, lucide-react, light-only public site | Skills push other fonts, icons and dark mode | #1 |
+| D7 | 09 Oct | shadcn primitives keep CLI file names in `components/ui`; everything else PascalCase | `shadcn add` and diffs keep working | #2 |
+| D8 | 09 Oct | `--primary` = electric-600 #0053D7 (brand-700 #003FBE for hover and links), `--ring` = electric-600 | PRD §16 and the prototype's primary button | #1 |
+| D9 | 09 Oct | Logo in full colour on white or mist-50 only; light footer (mist-50) | Never recolour the logo | #1 |
+| D10 | 09 Oct | Header 64 px phone, 72 px desktop | PRD FR-GLB-01 | #1 |
+| D11 | 09 Oct | Above-the-fold motion is CSS; blur-in, spotlight, skeleton and chart effects rebuilt with transform and opacity | LCP and the transform/opacity rule | #1 |
+| D12 | 09 Oct | TypeScript 6.0.3 and ESLint 9 | typescript-eslint 8.71 supports TypeScript < 6.1 | #2 |
+| D13 | 09 Oct | One root layout `app/[locale]/layout.tsx`; site in `(site)`, admin in `[locale]/admin` | `next/root-params` + next-intl; English unprefixed via `src/proxy.ts` | #2 |
+| D14 | 09 Oct | next-intl: `localeDetection: false`, `localeCookie: false` | Language changes only by choice; responses stay cacheable | #2 |
+| D15 | 09 Oct | Tailwind through `@tailwindcss/postcss` | Documented path in the bundled Next 16.4 docs | #2 |
+| D16 | 09 Oct | Tailwind default palette removed; only WAAFA colours exist | Off-brand colours cannot compile | #2 |
+| D17 | 09 Oct | shadcn `radix-nova` preset with Lucide and pointer cursors; `cn` from shadcn's package | Radix per the stack; Lucide per the PRD | #2 |
+| D18 | 09 Oct | `framer-motion` removed; `motion` v14 only; pnpm `allowBuilds` denies three packages' scripts | No duplicate animation bundle; prebuilt binaries | #2 |
+| D19 | 09 Oct | LogoLockup renders the supplied logo cut-outs through next/image | Tracing would alter the logo; vectors are an owner question | #3 |
+| D20 | 09 Oct | Buttons are full pills (48 / 38 / 56 px, icon 44 px) | Measured on the Components board | #3 |
+| D21 | 09 Oct | Hover colours swap instantly or fade an overlay; accordion fades instead of animating height | Transform/opacity-only rule | #3 |
+| D22 | 09 Oct | "Waafa Taka": 2.6 KB Hind Siliguri subset for ৳ (U+09F3) | Inter and Plus Jakarta Sans have no taka glyph | #3 |
+| D23 | 09 Oct | Grids declare `grid-cols-1` at the phone base; carousels contain inline size; OTP boxes 40 px below 640 px | Horizontal scroll found at 320/390 px | #3 |
+| D24 | 09 Oct | next-intl root provider passes `messages={null}`; client leaves get strings as props or `pickMessages` | Otherwise the whole catalogue ships to every page | #3 |
+| D25 | 09 Oct | WhatsApp and Facebook glyphs from Simple Icons (CC0) | Lucide has no brand icons | #3 |
+| D26 | 09 Oct | `/styleguide` only in dev and `STYLEGUIDE=1` builds; 404 in production | Dev-only page that CI still tests | #3 |
+| D27 | 09 Oct | UI reads data only through cached accessors (`'use cache'` + `cacheLife` + `cacheTag`) that call `repositories` from server-only `source.ts`; fixture repositories are pure and take `now` | Phase C swaps one line; repositories stay unit-testable | #4 |
+| D28 | 09 Oct | Fixtures are zod inputs, parsed by `loadFixtures()` and deep-frozen | Broken fixtures fail loudly; shared data cannot be mutated | #4 |
+| D29 | 09 Oct | Pages, blog posts and visa guides store headed sections (id = anchor) | Contents lists come from data; sanitised rich text per section | #4 |
+| D30 | 09 Oct | Embassy fees default to null; stay, entry and validity optional; only Thailand carries sample figures | No invented visa facts | #4 |
+| D31 | 09 Oct | Sample people use "Sample …" names, example.com emails and the unassigned 010 prefix | No real person reachable through seed data | #4 |
+| D32 | 09 Oct | Gallery albums named after places; feedback fixtures pending only; no MD card in team samples | No invented trips, reviews or owner details | #4 |
+| D33 | 09 Oct | Packages carry `categories` and `months`; More menu item has no href; snake_case template variables; airline strip = `featuredOrder` | Matches the boards' filters and admin screens | #4 |
+| D34 | 09 Oct | Printing Solutions and International Trading at `/shop/printing-solutions` and `/shop/international-trading` | PRD sitemap lists them as /shop children | #4 |
+| D35 | 09 Oct | Phase A lead intake validates and returns a reference but stores nothing | No personal data in a dev server's memory | #4 |
+| D36 | 09 Oct | v4 prompt adopted mid-build: issues #1–#22 reused as A1–A22, A0 = #27, epics #28–#33, A1b = #34 for the v4 doc gaps; A17 narrowed to system states + LiveBody placeholder (full Live bodies move to Phase E) | Keep finished work and history; the v4 backlog keeps A17's Live bodies for Phase E | #27 |
+| D37 | 09 Oct | The prototype's drawn motion graphics (route map, passport, product animations) are not shipped; real footage only; the route map becomes a live SVG component | Correction 7 (real media only) beats HANDOFF's "motion graphics the site can use"; HANDOFF fixed | #27, #5 |
+| D38 | 09 Oct | `dangerouslySetInnerHTML` allowed in `components/content/RichText.tsx` and `components/seo/JsonLd.tsx` only (ESLint `react/no-danger` + guards) | JSON-LD needs raw script text; everything else is components | #27 |
+| D39 | 09 Oct | Hex guard covers `apps/web/src` (UI code); brand colours for metadata live in `components/brand/brandColors.ts` with a drift test against `globals.css` | Product swatch colours in fixtures are data, not styling | #27 |
+| D40 | 09 Oct | `.mcp.json` keeps `TWENTY_FIRST_API_KEY` (set in local settings); CLI installs use `${API_KEY_21ST:-$TWENTY_FIRST_API_KEY}` | `API_KEY_21ST` is not set on this machine; the magic MCP works today | #27 |
+| D41 | 09 Oct | husky writes the local `core.hooksPath` (its install step); CI sets `HUSKY=0` | Required for the hooks; git identity is untouched | #27 |
+| D42 | 09 Oct | CI path filtering at job level (dorny/paths-filter v4); Guards and Authorship jobs always run | Required checks report "skipped" (passing) instead of "pending" on docs-only PRs | #27 |
+| D43 | 09 Oct | Project fields: Phase A start 9 Oct, target 11 Oct; epics B 11–12 Oct, C 12–13 Oct, D 14 Oct–13 Nov; Estimate XS 1, S 2, M 3, L 5, XL 8 | Milestone dates (D5) | #27 |
+| D44 | 09 Oct | FAQ "Which visas do you help with?" no longer mentions recruitment; guards fail on Phase F words in UI code, messages, fixtures and contracts | PRD §2: no copy for unlicensed modules | #27 |
+| D45 | 09 Oct | Media credits live in `docs/design/MEDIA_CREDITS.md` | v4 prompt name (the earlier plan said IMAGE_CREDITS.md) | #5 |
 
-### 2026-10-09 06:26 (Asia/Dhaka) — A1 design direction and benchmark (#1)
-- Playwright pass over the four competitors at 390 and 1440 px, live DAC → CXB search on GoZayaan, ShareTrip Shop at 390.
-- Lighthouse mobile ×3 on each home page (best of four: Perf 35, A11y 88, BP 73, SEO 100, LCP 12.5 s).
-- Wrote `docs/design/COMPETITOR_BENCHMARK.md`, `docs/design/DESIGN.md` (awesome-design-md format), `docs/design/MOTION.md`.
-- Decisions D8-D11 logged. No code changed.
+## 9. Bugs and known issues
 
-### 2026-10-09 06:10 (Asia/Dhaka) — Step 0 setup and tool check
-- Serena activated and instructions read; memories listed. Environment checked (Node 25.2.1, pnpm 12.10.1, gh 2.102.0 with project scope).
-- Tools tested: serena, context7, shadcn, playwright, magic, github MCPs; skills frontend-design, design-taste-frontend, ui-ux-pro-max (design-system query run).
-- `.claude/settings.json`: `attribution` commit/pr empty, `sessionUrl` false. Baseline commit `03b47a4` pushed (no trailer, verified with `git log -1 --format=%B`).
-- CLAUDE.md rewritten (Workflow, Component rules, Admin control, Quality gates, dependency rule replaced).
-- GitHub: 17 labels, 5 milestones, issues #1–#22 (A1–A22) on Project #4 with Status Ready, Priority P0 and Size.
-
-## Decisions
-
-| # | Date | Decision | Why |
+| Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
-| D1 | 2026-10-09 | Project Status "Todo" maps to the existing **Ready** option | Project #4 has Backlog/Ready/In progress/In review/Done and no Todo; its schema is left untouched |
-| D2 | 2026-10-09 | `.claude/settings.json` uses `attribution` (`commit: ""`, `pr: ""`, `sessionUrl: false`), not `includeCoAuthoredBy` | Settings reference marks `includeCoAuthoredBy` deprecated since v2.0.62 |
-| D3 | 2026-10-09 | Local Node 25.2.1 kept; CI runs Node 22 LTS; pnpm pinned via `packageManager` | Meets "at least 20.9" without switching the machine-wide nvm4w link; corepack is not bundled with Node 25 |
-| D4 | 2026-10-09 | Labels use `type:`, `area:`, `priority:` prefixes; GitHub default labels kept | Clear grouping; nothing deleted |
-| D5 | 2026-10-09 | Milestone due dates follow the PRD gantt: A 11 Oct, B 12 Oct, C 13 Oct, D 13 Nov, E open | PRD §5 launch week |
-| D6 | 2026-10-09 | PRD wins over skill defaults: Plus Jakarta Sans + Inter, lucide-react, light-only public site | Skills (taste) discourage Inter/lucide and push dark mode; PRD §15–16 decides |
-| D7 | 2026-10-09 | shadcn primitives keep CLI file names in `components/ui`; all other components use PascalCase files | `shadcn add` and diffs keep working; custom code follows the PascalCase rule |
-| D8 | 2026-10-09 | `--primary` = electric-600 #0053D7 (brand-700 #003FBE for hover and links), `--ring` = electric-600 | PRD §16 and the prototype's `.w-btn-primary` use electric-600; `tokens.css` maps `--primary` to brand-700, the outlier |
-| D9 | 2026-10-09 | Logo in full colour on white or mist-50 only; footer is light (mist-50); no white/silver/dark logo versions | Brand board and CLAUDE.md "never recolour" win over the PRD's "white logo on dark"; the prototype's final footer is mist-50 |
-| D10 | 2026-10-09 | Header 64 px phone, 72 px desktop | PRD FR-GLB-01 (the prototype uses 76 px on desktop) |
-| D11 | 2026-10-09 | Above-the-fold motion is CSS (no hydration wait); blur-in, spotlight, skeleton and chart effects rebuilt with transform/opacity | MOTION.md §5 and §7: LCP and the transform/opacity rule |
-| D12 | 2026-10-09 | TypeScript 6.0.3 and ESLint 9 (not TS 7.0 / ESLint 10) | typescript-eslint 8.71 supports TypeScript `<6.1`; eslint-config-next's plugins are proven on ESLint 9 |
-| D13 | 2026-10-09 | One root layout `app/[locale]/layout.tsx`; site in `(site)`, admin in `[locale]/admin` (URL `/admin`) | `next/root-params` + next-intl without a second root layout; English URLs stay unprefixed via `src/proxy.ts` |
-| D14 | 2026-10-09 | next-intl: `localeDetection: false`, `localeCookie: false` | Language changes only by the visitor's choice (PRD FR-GLB-07); responses stay cacheable |
-| D15 | 2026-10-09 | Tailwind through `@tailwindcss/postcss` (documented in the bundled Next 16.4 docs) instead of the `@tailwindcss/turbopack` loader rule | Follow the framework's documented path |
-| D16 | 2026-10-09 | Tailwind default palette removed (`--color-*: initial`); only WAAFA colours plus white/black exist | Off-brand colours fail to compile into anything, keeping every screen on the tokens |
-| D17 | 2026-10-09 | shadcn `radix-nova` preset with Lucide and pointer cursors; `cn` from shadcn's `cn` package | Radix per the stack; Lucide per the PRD; cursor-pointer per UI UX Pro Max |
-| D18 | 2026-10-09 | `framer-motion` removed; `motion` v14 only. pnpm `allowBuilds` denies `@parcel/watcher`, `@swc/core`, `unrs-resolver` scripts | Same library twice would duplicate the bundle; the three packages ship prebuilt binaries |
-| D19 | 2026-10-09 | LogoLockup renders the supplied logo cut-outs through next/image, not a hand-traced SVG | Tracing the 3D gradients and silver edges would alter the logo (never recolour); vectors are an open owner question |
-| D20 | 2026-10-09 | Buttons are full pills (48 / 38 / 56 px, icon 44 px); DESIGN.md corrected | Measured on the prototype's Components board |
-| D21 | 2026-10-09 | Hover colours swap instantly or fade an overlay's opacity; shadcn's height-based accordion animation replaced by a fade | Transform/opacity-only rule (PRD §14, MOTION.md) |
-| D22 | 2026-10-09 | "Waafa Taka": 2.6 KB subset of Hind Siliguri SemiBold (OFL, renamed) for the ৳ sign via next/font/local, unicode-range U+09F3 | Inter and Plus Jakarta Sans have no taka glyph; the Tokens board specifies Hind Siliguri for ৳ |
-| D23 | 2026-10-09 | Every grid declares `grid-cols-1` at the phone base; carousel viewports use `contain: inline-size`; OTP boxes 40 px below 640 px | Found horizontal scroll at 320/390 px caused by auto grid tracks |
-| D24 | 2026-10-09 | next-intl root provider passes `messages={null}`; client leaves get strings as props or a scoped provider (`pickMessages`) | next-intl v4 otherwise ships the whole catalogue to every page (JS budget) |
-| D25 | 2026-10-09 | WhatsApp and Facebook glyphs from Simple Icons (CC0) | Lucide has no brand icons; visitors look for the WhatsApp mark |
-| D26 | 2026-10-09 | `/styleguide` exists in dev and in `STYLEGUIDE=1` builds (CI e2e), 404 in production; Turbo's build task declares `STYLEGUIDE` | Dev-only page that CI still tests with axe |
-| D27 | 2026-10-09 | UI reads data only through cached accessors in `apps/web/src/lib/data` (`'use cache'` + `cacheLife` + `cacheTag` from `CACHE_TAGS`); they call `repositories` from a `server-only` `source.ts`; fixture repositories are pure and take `now` | Phase C swaps one line in `source.ts`; repositories stay unit-testable outside Next; the tags match the API's revalidation webhook |
-| D28 | 2026-10-09 | Fixtures are written as zod inputs, parsed by `loadFixtures()` (defaults applied) and deep-frozen | A broken fixture fails with an error naming the field; nothing can sort or edit shared data in place |
-| D29 | 2026-10-09 | Pages, blog posts and visa guides store headed sections (id = anchor) instead of one HTML body | The "On this page" and "In this article" lists come from data; each body is sanitised rich text (API sanitises on save) |
-| D30 | 2026-10-09 | Embassy fees default to null ("set by the embassy; confirmed before you pay"); stay, entry and validity are optional; only Thailand carries the prototype's sample figures | No invented visa facts for real countries |
-| D31 | 2026-10-09 | Sample people use "Sample …" names, example.com emails and the unassigned 010 phone prefix; a test fails on any BD mobile except the company's | No real person can be reached through seed data |
-| D32 | 2026-10-09 | Gallery albums are named after places while Unsplash photos stand in; feedback fixtures are pending only; team samples drop the prototype's Managing Director card and personal anecdotes | No invented trips, reviews or owner details (PRD §2) |
-| D33 | 2026-10-09 | Packages carry `categories` (several) and `months`; the More menu item has no href; template variables allow snake_case; the Home airline strip is data (`featuredOrder`) | Matches the boards' filters and admin screens; everything visible stays admin-controlled |
-| D34 | 2026-10-09 | Printing Solutions and International Trading live under `/shop` (`/shop/printing-solutions`, `/shop/international-trading`); category slugs are full words (`printers-and-supplies`) | PRD sitemap lists them as /shop children; readable URLs |
-| D35 | 2026-10-09 | Phase A lead intake validates and returns a well-formed reference but stores nothing | No personal data kept in a dev server's memory; the API takes over in Phase C |
+| Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 |
+| Boards disagree on two shop numbers: COD cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample); free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms | P2 | fixtures (shop settings) | Owner question |
+| Phase A references restart at 0001 whenever the dev server restarts (no storage before the API) | P2 | lead intake | By design until Phase C |
 
-## Known issues and bugs
-- Fixture images point at `/images/<key>.jpg` and `/images/products/*.jpg`, which are not in `apps/web/public` yet: A5 (#5) adds the Unsplash photos and the Better Day product shots.
-- The boards disagree on two shop numbers: cash-on-delivery cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample), and free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms.
-- Phase A references restart at 0001 whenever the dev server restarts (no storage before the API).
+## 10. Cut list
 
-## Cut list (if time runs out, in this order — PRD §17)
+If time runs out, cut in this order (PRD §17). Never cut security, lead capture, the admin leads module, compliance
+or accessibility.
 1. Gallery video embeds
 2. Blog extras (related posts, contents list)
 3. Part-code search in Find by model
+4. Proposed now (behind by 3 issues): 21st.dev desktop-only flourishes (tilt, spotlight, magnetic) move to A22 polish; the About route map ships as a static SVG first
 
-## Blockers and owner questions (PRD §17)
-- [ ] Production domain (the email uses waafasworld.com)
-- [ ] Office floor: Facebook says 4th floor, trade licence says 5th; which goes on the site? (site uses 4th until answered)
-- [ ] Hotline and WhatsApp numbers (office hours confirmed: Saturday to Thursday, 10 am to 6 pm)
-- [ ] Waafas World: launch categories and product list with prices, stock and photos; delivery areas and charges; cash-on-delivery limit
-- [ ] Offline payment accounts to publish (bank, bKash, Nagad)
-- [ ] Launch content: packages, visa countries with fees and processing times, group fares
-- [ ] Refund, privacy and terms text, or approval of drafts
-- [ ] Logo vector files (SVG or AI) — the header uses the supplied PNG cut-outs until then
-- [ ] About Us mission and vision wording (sample text drafted from the tagline)
-- [ ] EMI partner banks and their tenures; Better Day toner prices and the printer models each one fits (samples from the prototype)
-- [ ] Staff names and roles for admin accounts; team members who agree to appear on the site
-- [ ] SSLCommerz merchant account status
-- [ ] Email provider for info@ and DNS access for the sending domain
-- [ ] Hosting accounts: Vercel, VPS or Railway, Cloudflare (Turnstile, R2)
+## 11. Blockers and owner actions
 
-## Next steps
-1. A5 (#5): real photos with credits in `apps/web/public/images` (Unsplash set + Better Day product shots), video loops and posters.
-2. A6 → A22 in order, reading every visible field through `apps/web/src/lib/data` accessors.
+| Item | What I need from the owner | Exact steps | Needed by |
+| --- | --- | --- | --- |
+| Vercel (web hosting, preview per PR) | An account and a logged-in CLI | `npm i -g vercel` → `vercel login` → tell me; I run `vercel link` in `apps/web` and connect the GitHub repo | 11 Oct |
+| API hosting | Railway project or a small VPS | Railway: create a project and an API token (`railway login`); VPS: Ubuntu 24.04, 2 GB RAM, SSH key access | 11 Oct |
+| PostgreSQL 16 + Redis | Managed instances (Railway, Neon or Supabase for Postgres; Railway or Upstash for Redis) | Create both; put the URLs in the host's env settings (never in chat or the repo) | 11 Oct |
+| Cloudflare R2 + Turnstile | R2 buckets (public media, private documents) and a Turnstile site | Cloudflare dashboard → R2 → two buckets + an API token (Object Read & Write); Turnstile → add site → site key + secret | 12 Oct |
+| Email (Resend) + DNS | Resend account and DNS access for the sending domain | Resend → add domain → add the SPF, DKIM and DMARC records it shows at the DNS host | 12 Oct |
+| Domain | Production domain (waafasworld.com?) and DNS access | Confirm the domain; give DNS access or add the Vercel records I send | 12 Oct |
+| Sentry | Project DSNs for web and API | sentry.io → new projects (Next.js, Node) → copy the DSNs into the host env | 13 Oct |
+| GA4, GTM, Meta Pixel | Measurement IDs | GA4 property → web stream ID; GTM container ID; Meta Events Manager → Pixel ID | 13 Oct |
+| 21st.dev key name (optional) | Nothing required | Works through `TWENTY_FIRST_API_KEY`; to use `API_KEY_21ST` set it as a Windows user variable and restart VS Code | — |
+| Context7 key (optional) | Higher rate limits | context7.com → API key → set `CONTEXT7_API_KEY` as a Windows user variable | — |
+| Branch protection | — | Applied by me in A0 (public repo) | done in #27 |
+| Content (PRD §17) | Domain; office floor (4th vs 5th; site shows 4th); hotline and WhatsApp numbers; Waafas World launch categories, products, prices, stock, photos, delivery areas, charges, COD limit; offline payment accounts (bank, bKash, Nagad); launch packages, visa countries with fees and times, group fares; refund, privacy and terms text or approval of drafts; logo vector files; About mission and vision; EMI banks and tenures; Better Day toner prices and compatible models; staff names, roles and team members who agree to appear; SSLCommerz status; email provider for info@ | Send what is ready; drafts stay marked Sample until replaced | 11 Oct |
+
+## 12. Later phases (E live booking · F licensed modules)
+
+| Item | Waiting for | Notes |
+| --- | --- | --- |
+| E · Live flights (#32) | IATA accreditation, consolidator API or GDS contract, sandbox certification | Golden Switch UI ships with Live locked; A17 adds the LiveBody placeholder in the same slot |
+| E · Live hotels (#32) | Hotel API contract | Same ResultsBody slot |
+| E · Instant package booking (#32) | Online payment (Phase D) | Package detail keeps the query flow until then |
+| F · Hajj and Umrah (#33) | Hajj agency licence and the owner's go-ahead | Package categories are admin-managed; PRD update first |
+| F · Manpower and Recruitment (#33) | Recruiting licence and the owner's go-ahead | Visa types and menus are admin-managed; PRD update first |
+| D · P1 (#31) | Merchant account (SSLCommerz, bKash), SMS gateway, launch | Accounts, Bangla, payments, SMS, 2FA, quote builder, reviews, EMI calculator, couriers |
+
+## 13. Session log (newest first)
+
+| Date and time | Summary | Issues | PRs | Tests |
+| --- | --- | --- | --- | --- |
+| 09 Oct 16:30–17:20 | v4 PROMPT 1: audit, tool check (all MCPs and four skills), GitHub planning (labels, milestone F, epics #28–#33, A0 #27, sub-issues, Project fields, squash-only), A0 setup in progress | #27, #5 | — | guards + hook negative tests |
+| 09 Oct 11:27 | A4 data layer and content model: contracts, Sample fixtures, repositories, cached accessors; admin-control matrix seeded (56 rows) | #4 | #26 | unit 168 · e2e 15 |
+| 09 Oct 10:24 | A3 design system: 41 primitives, brand, MotionKit, media, styleguide; fixed overflow, radio names, tabs, OTP and lint issues; usage limit hit mid-issue; low memory stopped servers | #3 | #25 | unit 36 · e2e 15 |
+| 09 Oct 06:46 | A2 foundation: workspaces, Next 16.4, tokens, fonts, shadcn, next-intl, Vitest, Playwright + axe | #2 | #24 | unit 20 · e2e 7 |
+| 09 Oct 06:26 | A1 design direction and benchmark (docs only) | #1 | #23 | — |
+| 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
+
+## 14. Next steps
+1. Finish A0 (#27): CI green, squash-merge, branch protection, memories.
+2. A5 (#5): real footage from Pexels/Coverr/Mixkit (hero sky, Cox's Bazar sea, passport, port, printer), ffmpeg-static transcodes (720p ≤ 1 MB, mobile 720 px wide, AVIF/WebP posters), MEDIA_CREDITS.md, drop the drawn loops.
+3. A1b (#34) docs addendum in parallel (subagent: inner-page Lighthouse), then A6 layout shell and A8/A7 in order.

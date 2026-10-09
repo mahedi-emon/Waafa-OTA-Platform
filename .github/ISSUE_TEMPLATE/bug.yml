@@ -1,0 +1,51 @@
+name: Bug
+description: Something does not work as the PRD or the boards say
+title: "fix: <what is wrong>"
+labels: ["type: bug"]
+assignees: ["mahedi-emon"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: Observed behaviour, with the route and the screen width.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+      description: Expected behaviour (PRD requirement or board name).
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - P0 (blocks launch, data loss, security, compliance)
+        - P1 (broken flow or major visual defect)
+        - P2 (minor)
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Screenshots, console errors, trace or test output.
+  - type: checkboxes
+    id: regression
+    attributes:
+      label: Fix plan
+      options:
+        - label: The fix adds a regression test (Vitest or Playwright)

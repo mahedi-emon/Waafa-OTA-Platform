@@ -17,10 +17,75 @@ env:
   NODE_VERSION: "22"
   NEXT_TELEMETRY_DISABLED: "1"
   TURBO_TELEMETRY_DISABLED: "1"
+  HUSKY: "0"
 
 jobs:
+  # Docs-only changes skip the app jobs (they report "skipped", which branch protection accepts).
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            code:
+              - "apps/**"
+              - "packages/**"
+              - "fixtures/**"
+              - "scripts/**"
+              - "package.json"
+              - "pnpm-lock.yaml"
+              - "pnpm-workspace.yaml"
+              - "turbo.json"
+              - "prettier.config.mjs"
+              - "commitlint.config.mjs"
+              - "lint-staged.config.mjs"
+              - ".github/workflows/ci.yml"
+
+  # The owner is the only author: no co-author trailer or AI attribution in commits, PR title or body.
+  attribution:
+    name: Authorship and attribution
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Commits (message and author)
+        run: node scripts/check-attribution.mjs --range "origin/${{ github.base_ref }}..${{ github.event.pull_request.head.sha }}"
+      # Dependabot bodies quote upstream changelogs, so only human PRs get the text check.
+      - name: Pull request title and body
+        if: github.actor != 'dependabot[bot]'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node scripts/check-attribution.mjs --text "$(printf '%s\n%s' "$PR_TITLE" "$PR_BODY")"
+
+  # Component rules and compliance (scripts/guards.mjs): no install needed, runs on every change.
+  guards:
+    name: Guards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: node scripts/guards.mjs
+
   verify:
     name: Lint, typecheck, test, build, e2e smoke
+    needs: changes
+    if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -29,72 +94,57 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # The pnpm workspace arrives with issue #2; until then this job only reports a notice.
-      - name: Detect workspace
-        id: ws
-        run: |
-          if [ -f pnpm-lock.yaml ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=No workspace yet::pnpm-lock.yaml is missing (issue #2 adds the monorepo); app checks skipped."
-          fi
-
       - uses: pnpm/action-setup@v6
-        if: steps.ws.outputs.ready == 'true'
 
       - uses: actions/setup-node@v7
-        if: steps.ws.outputs.ready == 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
       - name: Install
-        if: steps.ws.outputs.ready == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Format check
-        if: steps.ws.outputs.ready == 'true'
         run: pnpm format:check
 
       - name: Lint
-        if: steps.ws.outputs.ready == 'true'
         run: pnpm lint
 
       - name: Typecheck
-        if: steps.ws.outputs.ready == 'true'
         run: pnpm typecheck
 
       - name: Unit tests
-        if: steps.ws.outputs.ready == 'true'
         run: pnpm test
 
+      - name: Next.js build cache
+        uses: actions/cache@v6
+        with:
+          path: apps/web/.next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('apps/web/src/**', 'packages/**/src/**', 'fixtures/src/**') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
       - name: Build
-        if: steps.ws.outputs.ready == 'true'
         run: pnpm build
 
       - name: Playwright version
-        if: steps.ws.outputs.ready == 'true'
         id: pw
         run: echo "version=$(pnpm --filter @waafa/web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright browsers
-        if: steps.ws.outputs.ready == 'true'
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
 
       - name: Install Playwright browser
-        if: steps.ws.outputs.ready == 'true'
         run: pnpm --filter @waafa/web exec playwright install --with-deps chromium
 
-      - name: E2E smoke tests
-        if: steps.ws.outputs.ready == 'true'
+      - name: E2E smoke tests (390 and 1440 px, axe)
         run: pnpm e2e
 
       - name: Upload Playwright report
-        if: failure() && steps.ws.outputs.ready == 'true'
+        if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report
@@ -103,17 +153,18 @@ jobs:
 
   lighthouse:
     name: Lighthouse CI (mobile)
-    needs: verify
+    needs: [changes, verify]
+    if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
 
-      # Runs once the home page exists (issue #7 adds apps/web/lighthouserc.json).
+      # Runs once the home page exists (A7 adds apps/web/lighthouserc.json).
       - name: Detect Lighthouse config
         id: lh
         run: |
-          if [ -f apps/web/lighthouserc.json ] && [ -f pnpm-lock.yaml ]; then
+          if [ -f apps/web/lighthouserc.json ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"

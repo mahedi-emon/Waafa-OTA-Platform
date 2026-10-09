@@ -12,7 +12,13 @@ export default defineConfig([
       ...sharedRules,
       // Raw <img> skips next/image optimisation; SmartImage wraps next/image instead.
       "@next/next/no-img-element": "error",
+      // Raw HTML only in RichText (server-sanitised admin rich text) and JsonLd (structured data).
+      "react/no-danger": "error",
     },
+  },
+  {
+    files: ["**/components/content/RichText.tsx", "**/components/seo/JsonLd.tsx"],
+    rules: { "react/no-danger": "off" },
   },
   globalIgnores([
     ".next/**",

@@ -1,0 +1,31 @@
+name: Change request
+description: Change something already built or planned (copy, layout, behaviour, scope)
+title: "change: <what to change>"
+labels: ["type: feature"]
+assignees: ["mahedi-emon"]
+body:
+  - type: textarea
+    id: change
+    attributes:
+      label: Change
+      description: What should be different, and where (route, board, admin screen).
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+    validations:
+      required: true
+  - type: textarea
+    id: docs
+    attributes:
+      label: Documents to update
+      description: PRD section, HANDOFF row, DESIGN.md or MOTION.md entry that this change touches.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance
+      value: |
+        - [ ] Documents updated in the same PR (Decisions row in TRACKER)
+        - [ ] 320 / 390 / 768 / 1024 / 1440 checked; tests updated
