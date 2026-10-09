@@ -1,11 +1,12 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
+import { collectErrors } from "./errors";
 
 /**
  * The dev-only styleguide (issue #3). Production builds return 404 unless built with STYLEGUIDE=1,
  * so these checks skip themselves when the page is not part of the build.
  */
-const WIDTHS = [320, 390, 768, 1440] as const;
+const WIDTHS = [320, 390, 768, 1024, 1440] as const;
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 async function openStyleguide(page: Page) {
@@ -16,11 +17,7 @@ async function openStyleguide(page: Page) {
 
 for (const width of WIDTHS) {
   test(`styleguide is clean at ${width}px`, async ({ page }) => {
-    const errors: string[] = [];
-    page.on("console", (message) => {
-      if (message.type() === "error") errors.push(message.text());
-    });
-    page.on("pageerror", (error) => errors.push(error.message));
+    const errors = collectErrors(page);
 
     await page.setViewportSize({ width, height: 900 });
     await openStyleguide(page);
