@@ -1,0 +1,5 @@
+Waafa Taka is a subset of Hind Siliguri SemiBold containing only the taka sign (U+09F3),
+renamed as the SIL Open Font License requires for modified fonts.
+
+Original copyright notice: Copyright (c) 2015 Indian Type Foundry (info@indiantypefoundry.com)
+Licence: SIL Open Font License, Version 1.1 (http://scripts.sil.org/OFL)
