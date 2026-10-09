@@ -3,9 +3,9 @@
 | | |
 | --- | --- |
 | **Current phase** | A · Frontend |
-| **Current issue** | Step 0 done → A1 [#1](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/1) |
-| **Last updated** | 2026-10-09 06:10 (Asia/Dhaka) |
-| **Overall progress** | Launch scope (A–C): 0 / 39 · all phases: 0 / 56 (Step 0 complete) |
+| **Current issue** | A2 [#2](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/2) (A1 done) |
+| **Last updated** | 2026-10-09 06:26 (Asia/Dhaka) |
+| **Overall progress** | Launch scope (A–C): 1 / 39 · all phases: 1 / 56 |
 | **Days left to launch** | 4 (go-live Tue 13 Oct 2026; hard deadline before 14 Oct) |
 
 Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this file after every issue (CLAUDE.md, Workflow step 11).
@@ -29,14 +29,14 @@ Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this fil
 | ui-ux-pro-max | Skill | ✅ | 2026-10-09 | Loaded; design-system query "premium OTA travel booking + e-commerce, Bangladesh, mobile-first" run, kept for A1 |
 | web-interface-guidelines.md | Reference | ✅ | 2026-10-09 | `docs/design/web-interface-guidelines.md` present |
 | awesome-design-md format | Reference | ✅ | 2026-10-09 | `docs/design/design-md-format.md` present |
-| Lighthouse | CLI | ⬜ | — | Run in A1 via `npx lighthouse` (mobile) |
+| Lighthouse | CLI | ✅ | 2026-10-09 | `npx -y lighthouse@13.5.0` with local Chrome 155 (headless); 12 runs for the benchmark |
 
 ## Phase checklists
 
 ### A · Frontend (milestone 1, due 11 Oct)
 | | Issue | Title | Size |
 | --- | --- | --- | --- |
-| ⬜ | [#1](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/1) | A1 · Design direction and competitor benchmark (docs only) | M |
+| ✅ | [#1](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/1) | A1 · Design direction and competitor benchmark (docs only) | M |
 | ⬜ | [#2](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/2) | A2 · Foundation: monorepo, Next.js app, tokens, fonts, i18n, test tooling | L |
 | ⬜ | [#3](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/3) | A3 · Design system in code + /styleguide | L |
 | ⬜ | [#4](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/4) | A4 · Data layer and content model (shared zod contracts + fixtures) | XL |
@@ -158,13 +158,21 @@ Rows are added by each issue; an issue is not done until its rows are here.
 
 ## Benchmark (Lighthouse mobile)
 
+Lighthouse 13.5.0 mobile (simulated Slow 4G, 4× CPU), median of 3 runs, 9 Oct 2026. Perf / A11y / Best practices / SEO · LCP.
+
 | Page | gozayaan.com | sharetrip.net | akijair.com | obokash.com | Waafa (target / actual) |
 | --- | --- | --- | --- | --- | --- |
-| Home | — | — | — | — | ≥ 90 / 95 / 95, above all four / — |
+| Home | 26 / 76 / 50 / 92 · 24.4 s | 1 / 72 / 73 / 100 · 29.2 s | 27 / 79 / 69 / 92 · 25.4 s | 35 / 88 / 54 / 92 · 12.5 s | ≥ 90 / ≥ 95 / ≥ 95 / 100 · ≤ 2.5 s / — |
 
-Filled in A1 (`docs/design/COMPETITOR_BENCHMARK.md` has the detail).
+Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 ## Session log (newest first)
+
+### 2026-10-09 06:26 (Asia/Dhaka) — A1 design direction and benchmark (#1)
+- Playwright pass over the four competitors at 390 and 1440 px, live DAC → CXB search on GoZayaan, ShareTrip Shop at 390.
+- Lighthouse mobile ×3 on each home page (best of four: Perf 35, A11y 88, BP 73, SEO 100, LCP 12.5 s).
+- Wrote `docs/design/COMPETITOR_BENCHMARK.md`, `docs/design/DESIGN.md` (awesome-design-md format), `docs/design/MOTION.md`.
+- Decisions D8-D11 logged. No code changed.
 
 ### 2026-10-09 06:10 (Asia/Dhaka) — Step 0 setup and tool check
 - Serena activated and instructions read; memories listed. Environment checked (Node 25.2.1, pnpm 12.10.1, gh 2.102.0 with project scope).
@@ -184,6 +192,10 @@ Filled in A1 (`docs/design/COMPETITOR_BENCHMARK.md` has the detail).
 | D5 | 2026-10-09 | Milestone due dates follow the PRD gantt: A 11 Oct, B 12 Oct, C 13 Oct, D 13 Nov, E open | PRD §5 launch week |
 | D6 | 2026-10-09 | PRD wins over skill defaults: Plus Jakarta Sans + Inter, lucide-react, light-only public site | Skills (taste) discourage Inter/lucide and push dark mode; PRD §15–16 decides |
 | D7 | 2026-10-09 | shadcn primitives keep CLI file names in `components/ui`; all other components use PascalCase files | `shadcn add` and diffs keep working; custom code follows the PascalCase rule |
+| D8 | 2026-10-09 | `--primary` = electric-600 #0053D7 (brand-700 #003FBE for hover and links), `--ring` = electric-600 | PRD §16 and the prototype's `.w-btn-primary` use electric-600; `tokens.css` maps `--primary` to brand-700, the outlier |
+| D9 | 2026-10-09 | Logo in full colour on white or mist-50 only; footer is light (mist-50); no white/silver/dark logo versions | Brand board and CLAUDE.md "never recolour" win over the PRD's "white logo on dark"; the prototype's final footer is mist-50 |
+| D10 | 2026-10-09 | Header 64 px phone, 72 px desktop | PRD FR-GLB-01 (the prototype uses 76 px on desktop) |
+| D11 | 2026-10-09 | Above-the-fold motion is CSS (no hydration wait); blur-in, spotlight, skeleton and chart effects rebuilt with transform/opacity | MOTION.md §5 and §7: LCP and the transform/opacity rule |
 
 ## Known issues and bugs
 _None yet._
@@ -208,6 +220,5 @@ _None yet._
 - [ ] Hosting accounts: Vercel, VPS or Railway, Cloudflare (Turnstile, R2)
 
 ## Next steps
-1. A1 (#1): competitor benchmark with Playwright + Lighthouse, then DESIGN.md and MOTION.md.
-2. A2 (#2): monorepo foundation and CI green.
-3. A3 → A22 in order.
+1. A2 (#2): monorepo foundation and CI green.
+2. A3 → A22 in order.

@@ -6,3 +6,7 @@
 - D5 Milestone dues: A 11 Oct, B 12 Oct, C 13 Oct, D 13 Nov, E open.
 - D6 PRD beats skill defaults (Inter + Plus Jakarta Sans, lucide, light-only public site).
 - D7 shadcn files keep CLI names in components/ui; custom components PascalCase files.
+- D8 --primary/--ring = electric-600 #0053D7 (tokens.css said brand-700; PRD + prototype say electric-600).
+- D9 Logo full colour on white/mist-50 only, light footer, no white/dark logo versions (Brand board + never recolour).
+- D10 Header 64 px phone / 72 px desktop (PRD; prototype 76).
+- D11 Above-the-fold motion in CSS; blur-in/spotlight/skeleton/chart effects rebuilt with transform/opacity.
