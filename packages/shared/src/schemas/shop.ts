@@ -8,6 +8,7 @@ import {
   SeoSchema,
   SlugSchema,
   TakaSchema,
+  VideoSchema,
 } from "./common";
 import { PrivateFileSchema } from "./leads";
 
@@ -144,15 +145,7 @@ export const ProductSchema = z
       })
       .strict(),
     images: z.array(ImageSchema).min(1),
-    video: z
-      .object({
-        mp4: z.string().min(1),
-        webm: z.string().optional(),
-        poster: ImageSchema,
-        caption: z.string().max(80),
-      })
-      .strict()
-      .optional(),
+    video: VideoSchema.optional(),
     options: z.array(ProductOptionSchema).default([]),
     variants: z.array(VariantSchema).min(1),
     defaultVariantId: IdSchema,
