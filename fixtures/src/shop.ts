@@ -359,7 +359,6 @@ export const products: Product[] = [
         "Better Day CE505A / CF280A black toner cartridge in front of its box",
       ),
     ],
-    video: video("toner-cf280a", "Box, cartridge and part codes"),
     variants: [
       { id: "bd-cf280a", sku: "BD-CF280A", options: {}, price: 1450, mrp: 1800, stock: 24 },
     ],
@@ -577,7 +576,6 @@ export const products: Product[] = [
       ],
     },
     images: [photo("prod-powerbank")],
-    video: video("power-bank", "Overview: ports, display and fast charging"),
     options: [
       {
         key: "capacity",
@@ -680,7 +678,7 @@ export const products: Product[] = [
       ],
     },
     images: [photo("prod-headphones")],
-    video: video("headphones", "Overview: fit, controls and battery"),
+    video: video("headphones", "Close-up on the stand"),
     options: [
       {
         key: "colour",

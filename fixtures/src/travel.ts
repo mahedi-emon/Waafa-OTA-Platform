@@ -5,7 +5,7 @@ import type {
   HotelPlaceSchema,
   TourPackageSchema,
 } from "@waafa/shared";
-import { photo } from "./images";
+import { photo, video } from "./images";
 import type { In } from "./input";
 
 type Airport = In<typeof AirportSchema>;
@@ -283,6 +283,7 @@ export const tourPackages: TourPackage[] = [
     includesShort: ["Flights", "Hotels", "Visa help"],
     cover: photo("cappadocia"),
     gallery: [photo("cappadocia"), photo("cappadocia-alt")],
+    video: video("cappadocia", "Balloons over Cappadocia at sunrise"),
     groupSize: "Up to 16 travellers",
     visaNote: "Needed, we prepare it",
     fromPrice: 145000,
@@ -441,6 +442,7 @@ export const tourPackages: TourPackage[] = [
     includesShort: ["Flights", "Hotel", "Breakfast"],
     cover: photo("maldives"),
     gallery: [photo("maldives"), photo("maldives-alt")],
+    video: video("maldives", "The lagoon and overwater villas from the air"),
     visaNote: "Free visa on arrival",
     fromPrice: 64900,
     highlights: [

@@ -58,3 +58,13 @@ Real camera footage, muted, 6–10 s, 1280×720 H.264 MP4 + VP9 WebM (≤ 1 MB e
 
 | Key | What it shows | Videographer | Source and licence | Used on |
 | --- | --- | --- | --- | --- |
+| `hero-sky` | Aircraft wing above scattered clouds under a pink and pale-blue sunset sky | Mixkit | [Mixkit, Pink sunset seen from a plane window](https://mixkit.co/free-stock-video/pink-sunset-seen-from-a-plane-window-4204/) · Mixkit Stock Video Free License | Home hero (media slot `home-hero`) |
+| `maldives` | Island ringed by overwater villas in a turquoise lagoon, from the air | Ibrahim Asad | [Mixkit, Bungalow stilt houses](https://mixkit.co/free-stock-video/bungalow-stilt-houses-2892/) · Mixkit Stock Video Free License | Maldives package (card hover preview, detail) |
+| `cappadocia` | Hot-air balloons in a golden sunrise sky above Cappadocia (cropped so no balloon lettering shows) | İbrahim Açıkgöz | [Pexels](https://www.pexels.com/video/breathtaking-hot-air-balloons-over-cappadocia-sunrise-35676033/) · Pexels License | Istanbul and Cappadocia package |
+| `port` | Container ship under gantry cranes at dusk, from the air | willy one | [Pexels](https://www.pexels.com/video/aerial-view-of-busy-shipping-port-at-dusk-35907902/) · Pexels License | International Trading header (`trading-header`) |
+| `passport` | A hand pulls a passport from a suitcase pocket | Taryn Elliott | [Pexels](https://www.pexels.com/video/video-of-person-pulling-passport-from-bag-4684104/) · Pexels License | Visa Services header (`visa-services-header`) |
+| `headphones` | White over-ear headphones on a stand | Pavel Danilyuk | [Pexels](https://www.pexels.com/video/close-up-video-of-a-headphone-8004705/) · Pexels License | Sample headphones product video |
+
+Not shipped: the prototype's drawn motion graphics (route map, passport, product animations) and its rendered scenery
+loops (Decision D37); a dark Coverr printer clip (the Printing Solutions header uses the Unsplash printer photo
+instead); a power bank clip (no free real footage found; the sample power bank has photos only).
