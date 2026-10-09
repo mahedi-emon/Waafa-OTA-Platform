@@ -100,6 +100,11 @@ Every `${VAR}` uses `${VAR:-}` so a missing variable doesn't break parsing of th
   `mahedi-emon` with scopes `gist, project, read:org, repo, workflow` (enough for Project #4).
 - Node comes from nvm4w: 25.2.1 active, 22.11.0 installed. CI uses Node 22. Node 25 ships without corepack, so pnpm 12.10.1 is
   installed globally and pinned in the root `packageManager` field.
+- Stopping a background `next dev` / `next start` shell does not stop its `node.exe` children on Windows, and Playwright's
+  `reuseExistingServer` then talks to a stale server (500s on new build assets). Before `pnpm e2e`, free ports 3000/3100:
+  PowerShell `Get-NetTCPConnection -LocalPort 3100 -State Listen | % { Stop-Process -Id $_.OwningProcess }`.
+- The machine often has only ~1–2 GB RAM free: run build and e2e one at a time (`playwright test --workers=2`).
+- Font subsetting (the ৳ glyph) used fontTools + brotli in a throwaway venv in the session scratchpad, not the global Python.
 - Git Bash has no IANA zone data: get Dhaka time with PowerShell
   `[TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow,'Bangladesh Standard Time')`.
 

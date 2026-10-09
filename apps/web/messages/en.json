@@ -7,6 +7,17 @@
   "Common": {
     "skipToContent": "Skip to content"
   },
+  "Brand": {
+    "name": "WAAFA",
+    "homeLabel": "WAAFA home",
+    "taglineLine1": "Worldwide Alliance",
+    "taglineLine2": "for Advancement,",
+    "taglineLine3": "Future & Achievement"
+  },
+  "Loader": {
+    "page": "Loading…",
+    "fares": "Finding fares…"
+  },
   "Home": {
     "title": "Waafa Tours and Travel",
     "body": "Flights, hotels, tour packages and visas from our Motijheel office in Dhaka. The new website opens on 13 October 2026."

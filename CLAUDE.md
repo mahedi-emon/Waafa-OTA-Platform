@@ -40,6 +40,10 @@ motion and speed than gozayaan.com, sharetrip.net, akijair.com and obokash.com â
   One component per file, PascalCase file and export names, typed props, no `any`. Hooks `useX.ts`, utilities camelCase.
 - Server Components by default; `"use client"` only on small interactive leaves.
 - Never ship default shadcn: restyle radii, colours, shadows and type with our tokens.
+- Grids declare `grid-cols-1` at the phone base (no blow-outs at 320 px). Import components from their own files,
+  not barrels. Radix radios/tabs: name radios with `aria-labelledby`, give every tab a panel.
+- Translations stay on the server (`NextIntlClientProvider messages={null}`); pass strings to client leaves as props
+  or wrap them in a scoped provider (`pickMessages`).
 
 ## Admin control
 - Nothing a visitor sees is hard-coded, except the footer developer credit and the compliance rules. Texts, images,

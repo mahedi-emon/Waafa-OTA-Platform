@@ -3,9 +3,9 @@
 | | |
 | --- | --- |
 | **Current phase** | A · Frontend |
-| **Current issue** | A3 [#3](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/3) (A1, A2 done) |
-| **Last updated** | 2026-10-09 06:46 (Asia/Dhaka) |
-| **Overall progress** | Launch scope (A–C): 2 / 39 · all phases: 2 / 56 |
+| **Current issue** | A4 [#4](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/4) (A1–A3 done) |
+| **Last updated** | 2026-10-09 10:24 (Asia/Dhaka) |
+| **Overall progress** | Launch scope (A–C): 3 / 39 · all phases: 3 / 56 |
 | **Days left to launch** | 4 (go-live Tue 13 Oct 2026; hard deadline before 14 Oct) |
 
 Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this file after every issue (CLAUDE.md, Workflow step 11).
@@ -38,7 +38,7 @@ Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this fil
 | --- | --- | --- | --- |
 | ✅ | [#1](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/1) | A1 · Design direction and competitor benchmark (docs only) | M |
 | ✅ | [#2](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/2) | A2 · Foundation: monorepo, Next.js app, tokens, fonts, i18n, test tooling | L |
-| ⬜ | [#3](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/3) | A3 · Design system in code + /styleguide | L |
+| ✅ | [#3](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/3) | A3 · Design system in code + /styleguide | L |
 | ⬜ | [#4](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/4) | A4 · Data layer and content model (shared zod contracts + fixtures) | XL |
 | ⬜ | [#5](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/5) | A5 · Media: real photos with credits, video loops and posters | S |
 | ⬜ | [#6](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/6) | A6 · Layout shell: header, mega panels, tab bar, drawer, footer, WhatsApp, loader | L |
@@ -138,7 +138,7 @@ Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked. Update this fil
 | `/admin` catalogue | AdminGroupFares, -new, AdminPackages, AdminPackage, AdminVisa, AdminProducts, AdminProduct, -toner, AdminCats, AdminCollections, AdminCoupons, AdminOrders, -open, -m | #19 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
 | `/admin` content | AdminPages, AdminHome, AdminTeam, AdminGallery, AdminMedia, AdminFeedback | #20 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
 | `/admin` customers, reports, users, settings | AdminCustomers, -open, AdminReports, AdminUsers, AdminGeneral, AdminModes, -confirm, AdminFooter, AdminPayments, AdminNotify | #21 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
-| `/styleguide` (dev only) | Brand, Tokens, Components, Components2, MotionKit, PCard, States | #3 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | n/a |
+| `/styleguide` (dev only) | Brand, Tokens, Components, Components2, MotionKit, PCard, States | #3 | ✅ | ✅ | ✅ | ✅ | ✅ axe + keyboard | n/a |
 | `/track`, `/login`, `/account` (P1) | Track, Track-nf, Login, Login-otp, Login-err, Account | D1 | — | — | — | — | — | — |
 
 ## Admin-control matrix
@@ -158,6 +158,18 @@ Rows are added by each issue; an issue is not done until its rows are here.
 | reducedMotion helpers | `apps/web/src/components/motion/reducedMotion.ts` | custom (`REDUCED_FADE`, `useRiseVariants`, `useSafeTransition`) | MotionKit (A3) |
 | cn | `apps/web/src/lib/utils.ts` | shadcn (`cn` package) | every component |
 | formatTaka, formatDate, formatTime | `packages/shared/src/format/` | custom | prices, dates (web + API) |
+| shadcn primitives (41) | `apps/web/src/components/ui/` | shadcn radix-nova, restyled to the Components/States boards | everywhere |
+| Button (pill, loading, 9 variants) | `components/ui/button.tsx` | shadcn, rewritten | everywhere |
+| Badge (premium, discount, status) | `components/ui/badge.tsx` | shadcn, rewritten | cards, admin |
+| Toaster | `components/ui/sonner.tsx` | shadcn + Sonner, light-only, above the tab bar | site layout |
+| LogoLockup | `components/brand/LogoLockup.tsx` | custom (supplied logo cut-outs) | header, footer |
+| RibbonBand · RibbonDivider · RibbonLine | `components/brand/` | custom (prototype ribbon geometry) | hero, dividers, tabs, progress |
+| GoldTriangle | `components/brand/GoldTriangle.tsx` | custom | premium badges |
+| BrandLoader | `components/brand/BrandLoader.tsx` | custom (W strokes, CSS) | route loading |
+| PageTransition · Reveal · Stagger · StaggerItem · CountUp · Marquee · Parallax · PressScale · DrawCheck | `components/motion/` | custom on Motion (MotionKit) | site-wide |
+| SmartImage · SmartVideo | `components/media/` | custom on next/image | photos, hero and package loops |
+| EmptyState · ErrorState | `components/feedback/` | custom on shadcn Empty | lists, results, errors |
+| WhatsAppIcon · FacebookIcon | `components/icons/` | Simple Icons 16.34.0 (CC0) | WhatsApp buttons, socials |
 
 ## Benchmark (Lighthouse mobile)
 
@@ -170,6 +182,12 @@ Lighthouse 13.5.0 mobile (simulated Slow 4G, 4× CPU), median of 3 runs, 9 Oct 2
 Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 ## Session log (newest first)
+
+### 2026-10-09 10:24 (Asia/Dhaka) — A3 design system (#3)
+- 41 shadcn primitives restyled to the Components/States boards; brand pieces (logo lockup, ribbon, gold triangle, W loader); MotionKit; SmartImage/SmartVideo; empty/error states; taka glyph font; favicon and app icon; dev-only `/styleguide`.
+- Found and fixed: horizontal scroll at 320/390 px (grid tracks), axe `button-name` on Radix radio cards (aria-labelledby), tabs without panels, OTP `defaultValue` console error, next/image aspect warning, `set-state-in-effect` lint errors (useSyncExternalStore).
+- Tests: Vitest 36 passed; Playwright 15 passed (home + styleguide at 320/390/768/1440 with axe, keyboard dialog/accordion, toast, reduced motion). Lint, typecheck, build, Prettier clean.
+- Usage limit hit mid-issue; resumed after reset. Background dev/prod servers were stopped by Claude Code for low memory (machine has ~1.2 GB free): run builds and e2e one at a time, `--workers=2`.
 
 ### 2026-10-09 06:46 (Asia/Dhaka) — A2 foundation (#2)
 - pnpm workspaces + Turborepo (`apps/web`, `packages/shared`, `packages/config`, `fixtures`), cross-platform root scripts, `.gitattributes` LF, `.nvmrc` 22, `.editorconfig`.
@@ -212,6 +230,14 @@ Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.m
 | D16 | 2026-10-09 | Tailwind default palette removed (`--color-*: initial`); only WAAFA colours plus white/black exist | Off-brand colours fail to compile into anything, keeping every screen on the tokens |
 | D17 | 2026-10-09 | shadcn `radix-nova` preset with Lucide and pointer cursors; `cn` from shadcn's `cn` package | Radix per the stack; Lucide per the PRD; cursor-pointer per UI UX Pro Max |
 | D18 | 2026-10-09 | `framer-motion` removed; `motion` v14 only. pnpm `allowBuilds` denies `@parcel/watcher`, `@swc/core`, `unrs-resolver` scripts | Same library twice would duplicate the bundle; the three packages ship prebuilt binaries |
+| D19 | 2026-10-09 | LogoLockup renders the supplied logo cut-outs through next/image, not a hand-traced SVG | Tracing the 3D gradients and silver edges would alter the logo (never recolour); vectors are an open owner question |
+| D20 | 2026-10-09 | Buttons are full pills (48 / 38 / 56 px, icon 44 px); DESIGN.md corrected | Measured on the prototype's Components board |
+| D21 | 2026-10-09 | Hover colours swap instantly or fade an overlay's opacity; shadcn's height-based accordion animation replaced by a fade | Transform/opacity-only rule (PRD §14, MOTION.md) |
+| D22 | 2026-10-09 | "Waafa Taka": 2.6 KB subset of Hind Siliguri SemiBold (OFL, renamed) for the ৳ sign via next/font/local, unicode-range U+09F3 | Inter and Plus Jakarta Sans have no taka glyph; the Tokens board specifies Hind Siliguri for ৳ |
+| D23 | 2026-10-09 | Every grid declares `grid-cols-1` at the phone base; carousel viewports use `contain: inline-size`; OTP boxes 40 px below 640 px | Found horizontal scroll at 320/390 px caused by auto grid tracks |
+| D24 | 2026-10-09 | next-intl root provider passes `messages={null}`; client leaves get strings as props or a scoped provider (`pickMessages`) | next-intl v4 otherwise ships the whole catalogue to every page (JS budget) |
+| D25 | 2026-10-09 | WhatsApp and Facebook glyphs from Simple Icons (CC0) | Lucide has no brand icons; visitors look for the WhatsApp mark |
+| D26 | 2026-10-09 | `/styleguide` exists in dev and in `STYLEGUIDE=1` builds (CI e2e), 404 in production; Turbo's build task declares `STYLEGUIDE` | Dev-only page that CI still tests with axe |
 
 ## Known issues and bugs
 _None yet._
@@ -236,5 +262,5 @@ _None yet._
 - [ ] Hosting accounts: Vercel, VPS or Railway, Cloudflare (Turnstile, R2)
 
 ## Next steps
-1. A3 (#3): design system in code + /styleguide (themed primitives, LogoLockup, MotionKit, SmartImage/SmartVideo, states).
-2. A4 → A22 in order.
+1. A4 (#4): shared zod contracts, repository interfaces and typed Sample fixtures (all admin-controlled content).
+2. A5 → A22 in order.

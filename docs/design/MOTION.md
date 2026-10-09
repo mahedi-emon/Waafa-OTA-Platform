@@ -143,8 +143,10 @@ Respect `prefers-reduced-motion: reduce` first (and `Save-Data` for video):
 ## 5. Performance rules
 
 1. **Transform and opacity only.** No animating width, height, top, left, margin, colour, background-position, filter
-   or box-shadow. Shadows change by fading a pre-rendered shadow layer's opacity. Exceptions: SVG `pathLength` strokes on
-   small icons (loader, success check, ribbon), and the confetti canvas.
+   or box-shadow. Shadows change by fading a pre-rendered shadow layer's opacity. Hover colours either swap instantly
+   or fade an overlay layer's opacity (buttons use a `::before` overlay inside an isolated stacking context).
+   The accordion opens at full height and fades its text in (no height animation). Exceptions: SVG stroke draws on
+   small icons (loader, success check, ribbon edge), and the confetti canvas.
 2. **Above the fold never waits for JavaScript.** Hero motion (word reveal, chip, media fade) is CSS; the LCP element
    (hero poster or headline) is visible in the server HTML. Never server-render `opacity: 0` on above-the-fold content,
    and never put `Reveal` on it. `PageTransition` skips the first load.
