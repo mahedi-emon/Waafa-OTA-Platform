@@ -140,7 +140,9 @@ describe("compliance (PRD §2 and the CLAUDE.md Never list)", () => {
         expect(statSync(file).size, `${path}.${field} is over budget`).toBeLessThanOrEqual(limit);
       }
       expect(node.credit, path).toMatch(/ · (Pexels|Coverr|Mixkit)$/);
-      expect(node.creditUrl, path).toMatch(/^https:\/\/(www\.)?(pexels\.com|coverr\.co|mixkit\.co)\//);
+      expect(node.creditUrl, path).toMatch(
+        /^https:\/\/(www\.)?(pexels\.com|coverr\.co|mixkit\.co)\//,
+      );
     }
   });
 

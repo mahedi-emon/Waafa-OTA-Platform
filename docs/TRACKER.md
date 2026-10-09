@@ -52,11 +52,11 @@ Serena memory `audit_findings`.
 | Decisions | D36–D45 |
 | Bugs and follow-ups | #34 (A1b addendum) |
 
-### #6 · A6 Layout shell: header, mega panels, tab bar, drawer, footer, WhatsApp, loader — 🟡 In progress
+### #6 · A6 Layout shell: header, mega panels, tab bar, drawer, footer, WhatsApp, loader — ✅ Done
 | Field | Value |
 | --- | --- |
-| Opened → closed | 09 Oct 06:03 → — |
-| Branch · PR · merge | `feat/6-layout-shell` · — · — |
+| Opened → closed | 09 Oct 06:03 → 09 Oct 21:03 |
+| Branch · PR · merge | `feat/6-layout-shell` · #36 · `3723d68` |
 | Built | Sticky header (CSS scroll-timeline solidify, 64/72 px), desktop nav with the Waafas World mega panel and the More panel, help popover and phone help sheet with live office status and copy buttons, full-screen phone drawer, five-tab bar with the raised W disc and a sliding indicator, More sheet above the tab bar, data-driven footer (accordions on phones, live payment methods only, newsletter, code-rendered developer credit), dismissible announcement, floating WhatsApp that names the page, breadcrumbs with JSON-LD, route loader |
 | Files and components | `apps/web/src/components/layout/*` (SiteHeader, DesktopNav, ShopMegaPanel, MorePanel, HelpMenu, HelpPanel, ContactRow, CopyButton, OfficeStatusChip, useOfficeStatus, MobileMenu, MobileMenuBody, MoreGrid, MoreSheetBody, TabBar, CurrentMarker, WithPathname, isActivePath, SiteFooter, FooterAccordion, NewsletterForm, DeveloperCredit, AnnouncementBar, AnnouncementShell, FloatingWhatsApp, Breadcrumbs), `components/icons/MenuIcon.tsx`, `components/seo/JsonLd.tsx`, `lib/currentYear.ts`, `lib/siteUrl.ts`, `app/[locale]/(site)/{layout,loading}.tsx`, restyled `components/ui/navigation-menu.tsx` |
 | Screens matched | Header, Home-shopmenu, Home-moremenu, Home-help, Home-m, Home-m-drawer, Home-m-more, Home-m-help, Footer, TabBar |
@@ -82,20 +82,20 @@ Serena memory `audit_findings`.
 | Decisions | — |
 | Bugs and follow-ups | — |
 
-### #5 · A5 Media: real photos with credits, video loops and posters — 🟡 In progress
+### #5 · A5 Media: real photos with credits, video loops and posters — 🟡 In review
 | Field | Value |
 | --- | --- |
 | Opened → closed | 09 Oct 06:03 → — |
-| Branch · PR · merge | `feat/5-media` (WIP commit) · — · — |
-| Built | Earlier session: 31 Unsplash photos and 3 Better Day product shots in `apps/web/public/media`, `VideoSchema`, `MediaSlot` contract, credit URLs. To do: real footage (Pexels, Coverr, Mixkit) instead of the drawn loops, mobile versions, posters, `MEDIA_CREDITS.md` |
-| Files and components | `apps/web/public/media/**`, `fixtures/src/images.ts`, `packages/shared/src/schemas/{common,content,shop}.ts` |
+| Branch · PR · merge | `feat/5-media` · — · — |
+| Built | 31 Unsplash photos and 3 Better Day product shots with sizes and linked credits; six real clips (Mixkit, Pexels) for the home hero, two package previews, the visa and trading headers and the sample headphones, each with 720 px phone files and a first-frame WebP poster; `VideoSchema` (phone sources, credit), `MediaSlot` contract with repository, cached accessor and `media` cache tag; SmartVideo picks the phone files under 768 px; the prototype's drawn loops removed |
+| Files and components | `apps/web/public/media/{photos,products,video}`, `fixtures/src/{images,media,travel,shop,visa,content}.ts`, `packages/shared/src/schemas/{common,content,shop,travel,visa}.ts`, `apps/web/src/lib/data/{types,content,tags}.ts`, `components/media/SmartVideo.tsx`, `docs/design/MEDIA_CREDITS.md` |
 | Screens matched | PhotoBrief |
-| Admin control | media slots (A20 media library) |
-| Tests | — |
-| Widths checked | — |
-| Tools and skills | — |
-| Decisions | D37 |
-| Bugs and follow-ups | — |
+| Admin control | AC-64 (media slots) |
+| Tests | fixtures: every referenced file exists, desktop clips ≤ 1 MB, phone clips ≤ 512 KB, linked credits for every stock photo and clip · repository: home-hero slot, empty office slot, unique keys · e2e styleguide video specimen |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 (styleguide media specimen) |
+| Tools and skills | Serena, a sourcing subagent (WebFetch, WebSearch, Playwright MCP, ffmpeg-static), Read on every poster frame |
+| Decisions | D37, D45, D54, D55 |
+| Bugs and follow-ups | Owner action: real photos of the Motijheel office for the `office` slot |
 
 ### #4 · A4 Data layer and content model — ✅ Done
 | Field | Value |
@@ -286,6 +286,7 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-61 | Help panel line and Visit row | `getContactSettings()` → helpLine, visitLabel | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
 | AC-62 | Floating WhatsApp prefilled message | `getContactSettings()` → whatsappMessage (`{page}` placeholder) | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
 | AC-63 | Header Log in (hidden until accounts ship) | `getSiteSettings()` → accountsLive | Settings › General | `GET /api/v1/settings/site` | ⬜ |
+| AC-64 | Page-level photos and videos (home hero, flights, group fares, visa, printing, trading headers and form side images) | `getMediaSlot(key)` → image or video (mp4, webm, phone files, poster, credit) | Content › Media library | `GET /api/v1/media/slots/{key}` | ⬜ |
 
 ## 5. Components inventory
 
@@ -452,12 +453,14 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D51 | 09 Oct | The header tagline shows from 1280 px; nav items tighten between 1024 and 1279 px | The seven items, logo and help button fit on one line at 1024 (taste rule: nav on one line) | #6 |
 | D52 | 09 Oct | Radix NavigationMenu's visually hidden focus proxy is excluded from axe in e2e | Radix forwards focus from it into the open panel; axe flags its aria-hidden and tabindex pattern | #6 |
 | D53 | 09 Oct | E2E allows 404s only for RSC prefetches of routes later issues build; every other 404 fails | Links point at A7–A16 routes that do not exist yet; remove the allowance in A22 | #6 |
+| D54 | 09 Oct | Six real clips ship (hero sky, Maldives, Cappadocia, port, passport, headphones); the printing header uses the Unsplash printer photo and the sample power bank has no video | The only free printer clip was too dark for the brand; no free real power bank footage exists; never a drawn stand-in | #5 |
+| D55 | 09 Oct | Media slots (`MediaSlotKey`) hold page-level photos and videos; the `office` slot stays empty until Waafa sends real office photos; `about-routes` dropped (the route map is a live SVG) | Every page image is admin-replaceable without a stand-in | #5 |
 
 ## 9. Bugs and known issues
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
-| Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 |
+| Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 (PR pending) |
 | Boards disagree on two shop numbers: COD cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample); free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms | P2 | fixtures (shop settings) | Owner question |
 | Phase A references restart at 0001 whenever the dev server restarts (no storage before the API) | P2 | lead intake | By design until Phase C |
 | Visitors who dismissed the announcement may see it collapse right after hydration on their next visit | P2 | announcement bar | Accepted (D50); revisit if field CLS shows it |
