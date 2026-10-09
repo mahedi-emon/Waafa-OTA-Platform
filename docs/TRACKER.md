@@ -4,7 +4,7 @@
 | --- | --- |
 | **Current phase** | A · Frontend |
 | **Current issue** | A5 [#5](https://github.com/mahedi-emon/Waafa-OTA-Platform/issues/5) (A1–A4 done) |
-| **Last updated** | 2026-10-09 11:35 (Asia/Dhaka) |
+| **Last updated** | 2026-10-09 11:27 (Asia/Dhaka) |
 | **Overall progress** | Launch scope (A–C): 4 / 39 · all phases: 4 / 56 |
 | **Days left to launch** | 4 (go-live Tue 13 Oct 2026; hard deadline before 14 Oct) |
 
@@ -247,7 +247,7 @@ Detail, weights and the area-by-area review: `docs/design/COMPETITOR_BENCHMARK.m
 
 ## Session log (newest first)
 
-### 2026-10-09 11:35 (Asia/Dhaka) — A4 data layer and content model (#4)
+### 2026-10-09 11:27 (Asia/Dhaka) — A4 data layer and content model (#4)
 - Shared zod contracts for every domain (strict objects, shared enums, FR-GS-08 normalised travel models, reference formats), plus reference, phone, office-hours and Dhaka-time helpers.
 - Typed Sample fixtures from the prototype boards: settings and menus, policies and About, blog, FAQs, offers, destinations, gallery, team (initials), baggage, 9 group fares, 11 packages, 16 visa countries and 5 guides, a shop catalogue with variants, compatibility and orders, admin samples. Every record `sample: true`.
 - Repository interfaces, fixture repositories (pure, take `now`) and cached accessors (`'use cache'`, `cacheLife`, `cacheTag`) in `apps/web/src/lib/data`; checked once in the real Next runtime with a temporary route (removed).

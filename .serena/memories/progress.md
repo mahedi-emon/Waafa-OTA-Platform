@@ -1,5 +1,5 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
-- 2026-10-09 11:35 Dhaka — A4 (#4) data layer done on feat/4-data-layer, PR #26 (CI pending at time of writing):
+- 2026-10-09 11:27 Dhaka — A4 (#4) data layer done on feat/4-data-layer, PR #26 (CI pending at time of writing):
   shared zod contracts (packages/shared/src/schemas), helpers (reference, phone, officeHours, Dhaka time),
   Sample fixtures (fixtures/src, parsed+frozen by loadFixtures, compliance tests), repository interfaces +
   fixture repositories + cached accessors (apps/web/src/lib/data). Admin-control matrix 56 rows. Vitest 168, PW 15.
