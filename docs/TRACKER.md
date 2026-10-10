@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 13:30 Asia/Dhaka · Phase: A · Frontend · Current: #13 · A13 Waafas World store (after #12 A12 visa merges) · Progress: 14/24 issues (58%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
+Updated: 10 Oct 15:30 Asia/Dhaka · Phase: A · Frontend · Current: #14 · A14 Cart and checkout (after #13 A13 store merges) · Progress: 15/24 issues (62%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 14 | 1 (#13) | 0 | 58% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 15 | 1 (#14) | 0 | 62% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -67,6 +67,21 @@ Serena memory `audit_findings`.
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
 
+### #13 · A13 Waafas World catalogue: store home, listings, product, finder, search — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 13:35 → 10 Oct 15:30 |
+| Branch · PR · merge | `feat/13-store` · see section 13 · squash |
+| Built | Store bar under the header ("Waafas World" as text from settings, no second mark; search with grouped suggestions and keyboard support; categories, deals and Find by model links; cart with a live count). `/shop`: admin-ordered rows that hide when empty (campaign carousel with bulk and finder strips, categories with counts, collections, deals with a Dhaka-time countdown, best sellers, brands, new arrivals, recently viewed, Waafa International services, corporate band, trust row). Listings for category (attribute filters from the category set, sub-category chips, finder strip), brand, collection, search and deals, plus all categories: GET filters (brand, price band, availability, attributes), sort, count, Load more, empty state with WhatsApp sourcing, bulk strip. Product page: gallery that follows the variant with thumbnails and a lazy zoom lightbox, stock badge, SKU, price against MRP and saving, swatch and size selectors with sold-out states, quantity, Add to cart and Buy now, delivery by zone, COD limit, warranty and refund link, Compatible with, highlights, description with product video, spec table, warranty cards, corporate quote (QTE) and WhatsApp, related and recently viewed, phone buy bar, Product JSON-LD. Find by model (brand → model, part code). PCard: percent off, badges, stock, Add to cart → stepper, Choose options. Guest cart in localStorage (A14 builds the cart page). Deals apply one effective price everywhere |
+| Files and components | `app/[locale]/(site)/shop/{layout,page}.tsx`, `shop/_components/CampaignCarousel.tsx`, `shop/{c,brand,collection}/[slug]/page.tsx`, `shop/{search,deals,categories,finder}/page.tsx`, `shop/p/[slug]/{page.tsx,_components/ProductView.tsx}`, `components/shop/{ShopBar,ShopSearchBox,CartButton,useCart,ProductCard,AddToCartControl,StockBadge,ProductListing,ListingHeader,ListingSkeleton,DealCountdown,RecentlyViewed,useRecentlyViewed,BulkQuote,BulkQuoteDialog}`, `components/forms/FilterDisclosure.tsx` (moved), `components/media/PhotoLightbox.tsx` (moved), `lib/shop/{variants,cart,deals,catalogue}.ts`, `lib/leads/bulkLeadForm.ts`; shared: bulk lead module (QTE), `ShopContentSchema`, store row title and subtitle, `shop-service-trading` media slot; fixtures: shop content, collection photos; repository attribute filter |
+| Screens matched | Shop, Shop-m, Shop-suggest, Shop-bulk, ShopCats, ShopCats-m, ShopList, ShopList-printers, ShopList-empty, ShopList-m, ShopList-m-filters, ShopList-m-fashion, ShopDeals, ShopDeals-m, ShopProduct, -pb, -hp, -toner, -video, -bulk, ShopProduct-m-*, ShopFinder, -part, -none, ShopFinder-m, ShopSearch, ShopSearch-m (Shop-mega is the A6 header panel) |
+| Admin control | AC-24, AC-36 – AC-42, AC-60 used; AC-95 – AC-99 new |
+| Tests | unit +24 (variant resolution and option picking, availability, price/MRP/percent off, price range, stock badges, images, cart add/merge/clamp/remove/parse, deals, bulk quote contract, attribute filters in the repository); e2e +6 (suggestions → product, attribute filter → variant changes update SKU and price → sold-out → cart count, card stepper persists after reload, finder by model and part code, corporate quote QTE, deal timers); suite 60 passed · axe pass · no overflow at 320 / 390 / 768 / 1024 / 1440 on 10 store routes · Lighthouse mobile `/shop` 67 / 100 / 96 / 100, category 75 / 100 / 96 / 92 → meta description fixed, product 75 / 99 → label fixed / 96 / 100, finder 77 / 100 / 96 / 100 |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 |
+| Tools and skills | Serena, Context7, Playwright MCP and scripts, Lighthouse CLI; skills frontend-design, ui-ux-pro-max rules (44 px swatches and steppers, labelled groups, sold-out states) |
+| Decisions | D92 – D101 |
+| Bugs and follow-ups | Fixed in-issue: deals countdown overflowed 2-column phone grid; phone buy bar cut the price at 320 px; stacked buy buttons collapsed on phones; zoom button name included badge text; category pages without a description had no meta description. Follow-ups: cart page, mini-cart and fly-to-cart (A14); numeric attribute ranges (D96); #39 perf |
+
 ### #12 · A12 Visa services (list, country, apply) + Visa Guide — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -75,7 +90,7 @@ Serena memory `audit_findings`.
 | Built | `/visa-services`: GET search, popular links, region chips with counts, country cards (code mark, types, processing, fee from, submission chip), empty state with WhatsApp, how it works, visa questions. `/visa-services/[country]`: a tab per visa type kept in `?type=`, facts, documents checklist with a progress ring, forms, good to know, guide link, questions (FAQPage JSON-LD), sticky fee card (embassy fee, service charge, total) and a phone bar. `/visa-services/[country]/apply`: shared LeadRequestCard (contact first), then trip (type, date, applicants), four document slots (JPG, PNG or PDF up to 5 MB; files stay in the browser, only name, type and size are sent), optional office visit day and window from admin office days, notes, review with fees, consent → VSA reference. `/visa-guide` and `/visa-guide/[slug]`: featured guide and list; article with an On this page list, sanitised rich text, fees, tips, questions and the service link (both ways). Dynamic param pages (package detail, visa country, apply, guide) now await params inside Suspense |
 | Files and components | `app/[locale]/(site)/visa-services/{page.tsx,[country]/page.tsx,[country]/_components/{VisaTypeProvider,useVisaType,VisaTypeTabs,VisaChecklist,VisaFeeCard,VisaFeeBar}.tsx,[country]/apply/{page.tsx,_components/{VisaApplyRequest,VisaFileStep,DocumentSlot}.tsx}}`, `app/[locale]/(site)/visa-guide/{page.tsx,[slug]/page.tsx}`, `components/content/RichText.tsx`, `components/seo/Canonical.tsx`, `components/visa/VisaCountryCard.tsx` (submission chip), `lib/visa/visaFiles.ts`, `lib/leads/visaLeadForm.ts`, `lib/content/sanitizeRichText.ts`, `app/sitemap.ts` |
 | Screens matched | Visa, Visa-none, Visa-m, VisaCountry, VisaCountry-medical, VisaCountry-m, VisaApply, VisaApply-2, -3, -4, -err, -done, VisaApply-m-*, VisaGuide, VisaGuidePost (+ -m) |
-| Admin control | AC-33, AC-34, AC-35, AC-64 used; AC-92 – AC-94 new |
+| Admin control | AC-33, AC-34, AC-35 used; AC-92 – AC-94 new (visa header media slots are not used yet) |
 | Tests | unit +11 (file type and size, extension fallback, application schema, fee maths, visa lead contract without storage keys, sanitiser); e2e +4 (search → country → tab in URL → checklist ring → Apply link, empty state, apply with a rejected then accepted file → VSA reference, guide ↔ service links); suite 54 passed · axe pass · no overflow at 320 / 390 / 768 / 1024 / 1440 · Lighthouse mobile `/visa-services` 77 / 100 / 96 / 100, country 76 / 99 → heading fixed / 96 / 100, apply 70 / 100 / 96 / 69 (noindex by design), `/visa-guide` 85 / 100 / 96 / 100, guide article 82 / 100 / 96 / 100 |
 | Widths checked | 320 · 390 · 768 · 1024 · 1440 |
 | Tools and skills | Serena, Context7 (Next.js Cache Components instant navigation, sanitize-html, next-intl metadata), Playwright MCP and scripts, Lighthouse CLI; skills frontend-design, ui-ux-pro-max rules |
@@ -283,10 +298,10 @@ Each gets the full block when work starts.
 | `/visa-services` | Visa, Visa-none, Visa-m | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 77 / 100 / 96 / 100 |
 | `/visa-services/[country]` (+ `/apply`) | VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 76 / 99 / 96 / 100 · apply 70 / 100 / 96 / 69 (noindex) |
 | `/visa-guide`, `/visa-guide/[country]` | VisaGuide, VisaGuidePost (+ -m) | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 85 and 82 / 100 / 96 / 100 |
-| `/shop` | Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop/c/[slug]`, brand, collection, deals | ShopList, -printers, -empty, -m, -m-filters, -m-fashion, ShopCats, ShopDeals | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop/p/[slug]` | ShopProduct, -pb, -hp, -toner, -video, -bulk, -m-* | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/shop/finder`, `/shop/search` | ShopFinder, -part, -none, ShopSearch | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/shop` | Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 67 / 100 / 96 / 100 |
+| `/shop/c/[slug]`, brand, collection, deals, categories | ShopList, -printers, -empty, -m, -m-filters, -m-fashion, ShopCats, ShopDeals | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 75 / 100 / 96 / 92 → fixed |
+| `/shop/p/[slug]` | ShopProduct, -pb, -hp, -toner, -video, -bulk, -m-* | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 75 / 99 → fixed / 96 / 100 |
+| `/shop/finder`, `/shop/search` | ShopFinder, -part, -none, ShopSearch | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 77 / 100 / 96 / 100 |
 | `/shop/cart` → checkout → order | Shop-mini, ShopCart, -empty, -coupon, ShopCheckout, -err, ShopDone, -bank | #14 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | `/shop/track` | ShopTrack, -nf, -delivered | #14 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | `/shop/printing-solutions`, `/shop/international-trading` | Printing, Printing-done, Trading, Trading-done (+ -m) | #15 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
@@ -406,6 +421,11 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-92 | Visa fee card and phone bar (embassy fee, service charge, total per type) | `getVisaCountry()` → types[].embassyFee, embassyFeeNote, serviceCharge | Travel › Visa | `GET /api/v1/visa/countries/{slug}` | ⬜ |
 | AC-93 | Visa office visit days and address on the apply step | `getContactSettings()` → officeHours.days, addressLines | Settings › Contact and hours | `GET /api/v1/settings/contact` | ⬜ |
 | AC-94 | Visa applications (country, type, travel date, applicants, document metadata, visit, notes) | `POST /api/leads` → `createLead()` (Phase C: files to the private bucket, signed and logged links) | Leads and Visa applications (A18) | `POST /api/v1/leads`, `POST /api/v1/visa/files` | ⬜ |
+| AC-95 | Store bar (store name, tagline, search suggestions index, finder link when a category has compatibility) | `getSiteSettings()` → storeName; `getShopContent()` → tagline; `listCategories()`, `listBrands()`, `listProducts()` | Settings › General; Content › Store; Waafas World › Products | `GET /api/v1/shop/search-index` | ⬜ |
+| AC-96 | Store row headings | `listStoreRows()` → title, subtitle (fallback to defaults) | Waafas World › Store home | `GET /api/v1/shop/rows` | ⬜ |
+| AC-97 | Store strips, corporate band, service cards and trust row | `getShopContent()` → bulkStrip, finderStrip, corporate, services[] (title, sub, body, cta, href, mediaSlot), trust[]; `getMediaSlot()` | Content › Store; Media library | `GET /api/v1/content/shop` | ⬜ |
+| AC-98 | Product page delivery and COD lines | `getShippingSettings()` → zones (name, charge, estimate); `getPaymentSettings()` → codLimit | Settings › Shipping; Settings › Payments | `GET /api/v1/config/public` | ⬜ |
+| AC-99 | Corporate and bulk quotes | `POST /api/leads` → `createLead()` (QTE reference) | Leads (A18) | `POST /api/v1/leads` | ⬜ |
 
 ## 5. Components inventory
 
@@ -617,6 +637,16 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D89 | 10 Oct | The visa type on a country page is client state mirrored to `?type=` with replaceState | Keeps the country page fully static while links from the search card and shares open the right tab | #12 |
 | D90 | 10 Oct | Fully static pages set their canonical with a hoisted `<link rel="canonical">` (Canonical component), not `alternates.canonical` | On a page with no dynamic holes Next treats metadata alternates as runtime data on the `/[locale]` shell and the build fails | #12 |
 | D91 | 10 Oct | Visa checklist ticks live in memory only (no storage); the progress ring is a small SVG stroke animation | A planning aid, nothing to persist; MOTION.md allows small SVG drawing; reduced motion shows the end state | #12 |
+| D92 | 10 Oct | Corporate and bulk quotes are a new lead module `bulk` with the QTE reference, reusing LeadRequestCard in a dialog with store wording for step 1 | The boards show QTE references; leads stay in one admin inbox | #13 |
+| D93 | 10 Oct | Store copy that is not a list (strips, corporate band, service cards, trust row) is `ShopContent` in the data layer; store rows gain an optional title and subtitle | Nothing visitor-facing is hard-coded; row headings fall back to message defaults | #13 |
+| D94 | 10 Oct | Running deals are applied once (`withDeals`): the deal variant sells at the deal price everywhere, with the normal price as MRP; a deal never raises a price | Cards, product page and cart must agree on one price | #13 |
+| D95 | 10 Oct | The guest cart lives in localStorage behind a `useSyncExternalStore` store shared by every tab; the cart page, mini-cart and fly-to-cart arrive in A14 (the cart link 404s until then) | FR-SHOP-06 "guest carts persist across visits" without an account; one store for A13 and A14 | #13 |
+| D96 | 10 Oct | Listing filters are a GET form (like D81); category attributes filter when they are select attributes with options; numeric ranges (page yield, watts, battery) wait for a range control | Works before hydration, shareable URLs; no fixture has numeric values per product yet | #13 |
+| D97 | 10 Oct | Find by model is two GET steps (brand, then model) plus part-code search, without client JS | Fast and accessible; the model list depends on the brand | #13 |
+| D98 | 10 Oct | Store home hides top-level categories with no products | FR-CAT-06: categories open when real products exist | #13 |
+| D99 | 10 Oct | Product video plays as a muted loop under the description (SmartVideo with poster and reduced-motion stop), not inside the gallery | Keeps the gallery light; the poster is real footage | #13 |
+| D100 | 10 Oct | Product zoom reuses the photo lightbox (shared `PhotoLightbox`, loaded on first tap); pinch zoom on phones is the browser's | One lightbox for packages and products; no extra library | #13 |
+| D101 | 10 Oct | Fully static store pages (`/shop`, categories, deals) use the Canonical component (D90) | Same build rule as the visa guide list | #13 |
 
 ## 9. Bugs and known issues
 
@@ -675,6 +705,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 13:30–15:30 | A12 merged (#45); A13 Waafas World catalogue: store bar, store home rows, listings with attribute filters, product page with variants, finder, deals, corporate quote, guest cart | #12, #13 | #45 | unit 297 · e2e 60 · axe pass · Lighthouse 67–77 |
 | 10 Oct 12:10–13:30 | A11 merged (#44); A12 visa list, country tabs with checklist ring and fee card, apply with local document checks, Visa Guide with sanitised rich text; Suspense for param pages; canonical fix for static pages | #11, #12 | #44 | unit 166 · e2e 54 · axe pass · Lighthouse 70–85 |
 | 10 Oct 09:45–12:10 | A11 packages list, package detail with booking card and inline query, Plan my trip; chip radio fix in flights and hotels; lazy lightbox | #11 | see #11 block | unit 155 · e2e 50 · axe pass · Lighthouse 68–73 |
 | 10 Oct 08:40–09:45 | A9 merged (#42); A10 hotels Manual on the shared results shell; request flow refactored into LeadRequestCard + ContactStep + Leads strings | #9, #10 | #42 | unit 148 · e2e 45 · axe pass |
@@ -689,6 +720,6 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. A13 (#13) Waafas World store at `/shop`: catalogue, categories, product page, search and filters (any category; printer and office supplies first).
-2. A14–A16 cart, checkout without online payment (COD cap, shipping zones), track order; then A17 static pages (branded 404, About, Contact, Gallery, Feedback, policies).
+1. A14 (#14) cart page and mini-cart drawer with fly-to-cart, coupon, delivery by zone, one-page checkout (COD cap, offline payment with proof), ORD success, track order.
+2. A15 (#15) Printing Solutions and International Trading pages with PRN and TRD forms; then A16 content pages and A17 system states (branded 404).
 3. #39 perf (client JS on every page, fonts, HTML size); owner decision on launch scope (section 10 item 5).

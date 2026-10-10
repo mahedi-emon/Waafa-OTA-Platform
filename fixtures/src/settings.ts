@@ -617,7 +617,7 @@ export const shopContent: In<typeof ShopContentSchema> = {
       body: "Send a request for quotation with the product, quantity and destination.",
       cta: "Send an RFQ",
       href: "/shop/international-trading",
-      mediaSlot: "trading-header",
+      mediaSlot: "shop-service-trading",
     },
   ],
   trust: [

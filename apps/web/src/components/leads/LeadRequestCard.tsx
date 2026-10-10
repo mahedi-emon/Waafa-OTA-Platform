@@ -21,6 +21,8 @@ type LeadRequestCardProps<T> = {
   /** Shown under the header, e.g. the chosen group fare or package. */
   banner?: ReactNode;
   secondStepLabel: string;
+  /** Overrides the travel wording of step 1 (title, email hint). */
+  contactCopy?: { title?: string; emailHint?: string };
   countries: Array<{ code: string; name: string; dial: string }>;
   emailRequired: boolean;
   phoneDisplay: string;
@@ -214,6 +216,7 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
               defaultValues={contact}
               emailRequired={props.emailRequired}
               countries={props.countries}
+              {...(props.contactCopy ? { copy: props.contactCopy } : {})}
               onSubmit={(values) => {
                 setContact(values);
                 goTo("second");

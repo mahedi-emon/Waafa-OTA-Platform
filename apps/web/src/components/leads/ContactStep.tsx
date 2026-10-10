@@ -16,10 +16,18 @@ type ContactStepProps = {
   emailRequired: boolean;
   countries: Array<{ code: string; name: string; dial: string }>;
   onSubmit: (values: ContactStepValues) => void;
+  /** Module copy that replaces the travel defaults, e.g. for Waafas World quotes. */
+  copy?: { title?: string; emailHint?: string };
 };
 
 /** Step 1 (Flights, Flights-err): how the travel expert reaches the visitor. Errors show under each field. */
-function ContactStep({ defaultValues, emailRequired, countries, onSubmit }: ContactStepProps) {
+function ContactStep({
+  defaultValues,
+  emailRequired,
+  countries,
+  onSubmit,
+  copy,
+}: ContactStepProps) {
   const t = useTranslations("Leads");
   const schema = useMemo(() => contactStepSchema(emailRequired), [emailRequired]);
   const form = useForm<ContactStepValues>({
@@ -39,7 +47,9 @@ function ContactStep({ defaultValues, emailRequired, countries, onSubmit }: Cont
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
       <div>
-        <h3 className="font-display text-[18px] font-bold text-navy-900">{t("contact.title")}</h3>
+        <h3 className="font-display text-[18px] font-bold text-navy-900">
+          {copy?.title ?? t("contact.title")}
+        </h3>
         <p className="text-[14px] text-mist-600">{t("contact.lead")}</p>
       </div>
       <p aria-live="polite" className="sr-only">
@@ -107,7 +117,7 @@ function ContactStep({ defaultValues, emailRequired, countries, onSubmit }: Cont
             t("contact.emailOptional")
           )
         }
-        hint={t("contact.emailHint")}
+        hint={copy?.emailHint ?? t("contact.emailHint")}
         error={error("email")}
       >
         {(describedBy) => (

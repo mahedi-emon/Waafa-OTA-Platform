@@ -8,8 +8,8 @@ import type { Image } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";
 
 /** The lightbox (Dialog + Embla) loads on the first tap, keeping it out of the first load. */
-const PackageLightbox = dynamic(() =>
-  import("./PackageLightbox").then((module) => module.PackageLightbox),
+const PhotoLightbox = dynamic(() =>
+  import("@/components/media/PhotoLightbox").then((module) => module.PhotoLightbox),
 );
 
 /** Desktop grid per photo count: the first photo is always the large one on the left. */
@@ -78,7 +78,7 @@ function PackageGallery({ images, title, labels }: PackageGalleryProps) {
         </button>
       ) : null}
       {start !== null ? (
-        <PackageLightbox
+        <PhotoLightbox
           images={images}
           title={title}
           start={start}

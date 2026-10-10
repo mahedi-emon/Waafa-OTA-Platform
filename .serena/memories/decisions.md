@@ -33,6 +33,11 @@
   in RichText (server-only). D89 visa type client state mirrored to ?type= (replaceState). D90 fully static pages use
   the Canonical component (hoisted link), NOT alternates.canonical (build fails on /[locale] shell). D91 checklist
   ticks not stored; SVG ring.
+- D92 bulk lead module QTE (dialog, store wording via contactCopy). D93 ShopContent + StoreRow title/subtitle.
+  D94 withDeals = one effective price. D95 guest cart localStorage store (components/shop/useCart); cart page A14.
+  D96 listing GET filters, select attributes only (`a.<key>` params). D97 finder two GET steps. D98 hide empty
+  categories on store home. D99 product video under description. D100 shared PhotoLightbox. D101 Canonical on static
+  store pages.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
   children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
   (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on

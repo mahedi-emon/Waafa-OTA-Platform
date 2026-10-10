@@ -50,6 +50,9 @@ async function BulkQuote({ trigger, product }: BulkQuoteProps) {
           items: t("items"),
           itemsPlaceholder: t("itemsPlaceholder"),
           notes: t("notes"),
+          submit: t("submit"),
+          contactTitle: t("contactTitle"),
+          emailHint: t("emailHint"),
           errors: {
             companyRequired: t("errors.companyRequired"),
             itemsRequired: t("errors.itemsRequired"),

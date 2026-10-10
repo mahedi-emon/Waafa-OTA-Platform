@@ -12,7 +12,7 @@ import { Link } from "@/i18n/navigation";
 import { listPackages } from "@/lib/data/travel";
 import type { PackageSort } from "@/lib/data/types";
 import { formatMonth } from "@/lib/search/isoDate";
-import { FilterDisclosure } from "./_components/FilterDisclosure";
+import { FilterDisclosure } from "@/components/forms/FilterDisclosure";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Packages");

@@ -1321,7 +1321,10 @@
       "finderBody": "This category has compatibility data. Pick your printer and we show only what fits.",
       "finderCta": "Find what fits",
       "subcategories": "In this category",
-      "endsIn": "Ends in"
+      "endsIn": "Ends in",
+      "any": "Any",
+      "anyBrand": "Any brand",
+      "categoryMeta": "{category} at Waafas World. Prices include VAT, with cash on delivery across Bangladesh."
     },
     "countdown": {
       "days": "days",
@@ -1418,7 +1421,10 @@
       "errors": {
         "companyRequired": "Tell us the company name",
         "itemsRequired": "Tell us what you need"
-      }
+      },
+      "submit": "Send request",
+      "contactTitle": "How can our account manager reach you?",
+      "emailHint": "We send the quote here too."
     }
   }
 }

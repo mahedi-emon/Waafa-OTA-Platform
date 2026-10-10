@@ -30,6 +30,9 @@ export type BulkQuoteLabels = {
   items: string;
   itemsPlaceholder: string;
   notes: string;
+  submit: string;
+  contactTitle: string;
+  emailHint: string;
   errors: { companyRequired: string; itemsRequired: string };
   success: {
     title: string;
@@ -159,7 +162,7 @@ function BulkStep({
           {tLeads("back")}
         </Button>
         <Button type="submit" size="lg" loading={sending}>
-          {tLeads("submit")}
+          {labels.submit}
         </Button>
       </div>
     </form>
@@ -193,6 +196,7 @@ function BulkQuoteDialog({
           title={labels.title}
           lead={labels.lead}
           secondStepLabel={labels.step}
+          contactCopy={{ title: labels.contactTitle, emailHint: labels.emailHint }}
           countries={props.countries}
           emailRequired={props.emailRequired}
           phoneDisplay={props.phoneDisplay}
