@@ -173,7 +173,7 @@ function adminRoutes(): RouteDoc[] {
     route("get", "/orders/{id}", "Order detail with history and proofs"),
     route("patch", "/orders/{id}", "Status with courier and tracking number, payment verified", OrderUpdateInputSchema),
     route("get", "/feedback", "Feedback by status"),
-    route("patch", "/feedback/{id}", "Approve, hide or return to pending", FeedbackModerationInputSchema),
+    route("patch", "/feedback/{id}", "Approve, reject or return to pending", FeedbackModerationInputSchema),
     route("get", "/payment-proofs", "Payment proofs by status"),
     route("patch", "/payment-proofs/{id}", "Verify or reject (verifying marks the order paid)", PaymentProofReviewInputSchema),
     route("get", "/search-logs", "Search activity with top routes and the search-to-lead rate"),

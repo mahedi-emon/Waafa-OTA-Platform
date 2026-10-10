@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { IdSchema, IsoDateSchema, IsoDateTimeSchema, SampleFlagSchema, TakaSchema } from "./common";
+import { FeedbackSchema } from "./content";
 import { LeadModuleSchema, LeadPrioritySchema, LeadStatusSchema } from "./leads";
 import { OrderStatusSchema } from "./shop";
 
@@ -132,11 +133,11 @@ export const OrderUpdateInputSchema = z
   });
 
 export const FeedbackListQuerySchema = z
-  .object({ status: z.enum(["pending", "approved", "hidden"]).optional(), ...paging })
+  .object({ status: FeedbackSchema.shape.status.optional(), ...paging })
   .strict();
 
 export const FeedbackModerationInputSchema = z
-  .object({ status: z.enum(["pending", "approved", "hidden"]) })
+  .object({ status: FeedbackSchema.shape.status })
   .strict();
 
 export const PaymentProofListQuerySchema = z
