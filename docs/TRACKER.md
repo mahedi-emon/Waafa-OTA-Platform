@@ -67,11 +67,26 @@ Serena memory `audit_findings`.
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
 
-### #56 · B3 Public API: snapshot, intake and notifications — 🟡 In review
+### #57 · B4 Admin API — 🟡 In review
 | Field | Value |
 | --- | --- |
-| Opened → closed | 11 Oct 00:05 → (PR open) |
-| Branch · PR · merge | `feat/56-public-intake` · see section 13 · squash |
+| Opened → closed | 11 Oct 01:20 → (PR open) |
+| Branch · PR · merge | `feat/57-admin-api` · see section 13 · squash |
+| Built | Under `/api/v1/admin`, staff Bearer token and roles: dashboard (KPIs for the person's modules, leads by module and status, orders and revenue this month, pending feedback and proofs, top routes, activity); leads (saved views all, open, mine, unassigned, overdue by the admin SLA; module, status, assignee, created dates, search by reference, name, email or phone; detail with timeline, duplicate links; status rules with first-response and closed stamps, Booked amount, Cancelled and Lost reason; priority and assignee; notes, calls, emails, WhatsApp; bulk assign and status; CSV export with formula neutralising and a byte order mark); orders (list, detail with history and proofs, workflow transitions, courier required to ship, payment verified, cancellation puts stock back; Accounts may verify payment only); feedback moderation (approval needs consent, refreshes the public wall); payment proofs (verify marks the order paid); search activity with top routes and the search-to-lead rate; subscribers; email log; generic content for every CONTENT_MODEL key (overview by role, read, create, save with optimistic version and id moves, delete, reorder, settings) validated with the shared schemas; users and roles (add with a first password, roles, deactivate with sign-out everywhere, reset, last Super Admin kept), own password change, staff directory, audit log. Every write is audited; content writes rebuild the snapshot and call the web's revalidation |
+| Files and components | `apps/api/src/admin/{access,admin.controllers,admin.module,leads.service,orders.service,inbox.service,content-admin.service,users.service,dashboard.service}.ts`, `src/docs/openapi.ts` (admin routes), `src/features.ts`, `test/admin.test.ts`; `packages/shared/src/schemas/admin.ts` (list queries and inputs) |
+| Screens matched | — (admin screens in A18 – A21) |
+| Admin control | Every content row is written through `PUT /api/v1/admin/content/:key/:id` or `PUT /api/v1/admin/settings/:key` |
+| Tests | API +11 (roles and tokens, lead lists by role and view, status rules with timeline and audit, bulk and CSV, order workflow and restock, proof verification, feedback moderation into the snapshot, content validation, versions, reorder and delete, settings versions and role boundaries, staff management and passwords, dashboard and search activity) |
+| Widths checked | — |
+| Tools and skills | Serena; Prisma groupBy and aggregates |
+| Decisions | D135 |
+| Bugs and follow-ups | Customers, reports and bookings records are post-launch (cut list) |
+
+### #56 · B3 Public API: snapshot, intake and notifications — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 00:05 → 11 Oct 01:20 |
+| Branch · PR · merge | `feat/56-public-intake` · #62 · `d179a0f` |
 | Built | Under `/api/v1/public`, server to server with the intake key (constant-time check): GET snapshot (every content key the site renders, private keys empty, approved feedback without contact details; ETag and 304, rebuilt after writes); POST leads for every module (per-day references from an atomic sequence, duplicate flag for the same phone and module within 24 hours, a "created" activity, customer and staff emails); POST orders priced on the server with the shared `priceCart`, running deals and scheduled coupons, product documents locked FOR UPDATE while stock is taken, refusals (changed, minimum, cod, pickup) returned as 409 with the quote; POST orders/track (order number plus the last ten digits of the phone); POST feedback (pending, staff alert), payment-proofs (accounts alert with the account name), search-logs and subscribers. Idempotency-Key header (UUID) on every create: the outcome is replayed for 24 hours, refusals release the key. Per-visitor limits behind the web's. Notifications: admin templates with `{{variables}}`, BullMQ queue with 5 retries and backoff when Redis is set (worker process), in-process otherwise, every email in the notification log; Resend, SMTP (Mailpit) or memory. Web revalidation client (HMAC-signed, batched). OpenAPI 3.1 from the zod contracts at /api/v1/openapi.json outside production |
 | Files and components | `apps/api/src/public/{public.controller,public.module,intake.service}.ts`, `src/content/content.service.ts`, `src/notifications/{mailer,notification.service}.ts`, `src/revalidate/revalidate.service.ts`, `src/common/{idempotency.service,references,serverKey}.ts`, `src/services.module.ts`, `src/docs/openapi.ts`, `src/worker.ts`, `src/features.ts`, `test/public.test.ts`; `packages/shared/src/helpers/{leadSummary,deals}.ts`, `OrderTrackInputSchema`, `SubscriberInputSchema` |
 | Screens matched | — |
@@ -812,6 +827,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D132 | 11 Oct | Orders lock the product documents (SELECT … FOR UPDATE) while pricing and taking stock | Launch volume makes the serialisation cheap and it rules out overselling; stock rows move to their own table with the D125 normalisation | #56 |
 | D133 | 11 Oct | Emails go through a BullMQ queue (5 attempts, exponential backoff, failed jobs kept) when REDIS_URL is set and in process otherwise; staff alerts go to STAFF_ALERT_EMAIL until per-module recipients exist in Settings › Notifications; every email is logged | A slow mail provider never slows a submit; development and tests need no Redis | #56 |
 | D134 | 11 Oct | OpenAPI 3.1 is built from a route table and the shared zod contracts (`z.toJSONSchema`) and served outside production only | No extra dependency; the contracts the API validates with are the ones documented | #56 |
+| D135 | 11 Oct | Lead access by role: Travel Sales sees flights, hotels, packages, plan my trip, contact, EMI and bulk; Visa Officer sees visa; Shop Manager sees printing, trading and bulk; Admin and Super Admin see all. Content by area: home and content for Content Editor, travel for Content Editor and Travel Sales, visa for Visa Officer and Content Editor, shop for Shop Manager, settings for Admin (shipping for Shop Manager, payments for Accounts, announcements for Content Editor) | PRD §4 role table; a lead outside a person's modules answers 404, not 403, so references can't be probed | #57 |
 
 ## 9. Bugs and known issues
 

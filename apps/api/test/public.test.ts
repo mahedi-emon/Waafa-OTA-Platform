@@ -65,6 +65,7 @@ describe.skipIf(!dbAvailable)("public intake (B3)", () => {
     mailer.sent.length = 0;
     await resetDatabase(prisma);
     await seedDatabase(prisma, loadFixtures());
+    app.get(ContentService).invalidate();
   });
 
   it("refuses callers without the intake key", async () => {
