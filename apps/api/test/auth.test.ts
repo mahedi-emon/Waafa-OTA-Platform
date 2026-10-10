@@ -93,6 +93,26 @@ describe.skipIf(!dbAvailable)("staff auth", () => {
     expect(await prisma.auditLog.count({ where: { action: "staff.locked" } })).toBe(1);
   });
 
+  it("lets two refreshes at the same moment both succeed (#66)", async () => {
+    const first = (await login("agent@example.com", PASSWORD)).json();
+    const refresh = () =>
+      app.inject({
+        method: "POST",
+        url: "/api/v1/auth/refresh",
+        payload: { refreshToken: first.refreshToken },
+      });
+    const [a, b] = [await refresh(), await refresh()];
+    expect([a.statusCode, b.statusCode]).toEqual([200, 200]);
+    for (const response of [a, b]) {
+      const me = await app.inject({
+        method: "GET",
+        url: "/api/v1/auth/me",
+        headers: { authorization: `Bearer ${response.json().accessToken}` },
+      });
+      expect(me.statusCode).toBe(200);
+    }
+  });
+
   it("rotates refresh tokens and closes every session when an old one comes back", async () => {
     const first = (await login("agent@example.com", PASSWORD)).json();
     const rotated = await app.inject({
@@ -104,6 +124,11 @@ describe.skipIf(!dbAvailable)("staff auth", () => {
     const second = rotated.json();
     expect(second.refreshToken).not.toBe(first.refreshToken);
 
+    // Past the 30-second window for concurrent refreshes, the old token counts as stolen.
+    await prisma.staffSession.updateMany({
+      where: { rotatedAt: { not: null } },
+      data: { rotatedAt: new Date(Date.now() - 60_000) },
+    });
     const reuse = await app.inject({
       method: "POST",
       url: "/api/v1/auth/refresh",

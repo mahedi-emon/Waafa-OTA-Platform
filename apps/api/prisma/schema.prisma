@@ -37,6 +37,8 @@ model StaffSession {
   refreshHash String    @unique
   expiresAt   DateTime  @db.Timestamptz(3)
   revokedAt   DateTime? @db.Timestamptz(3)
+  /// Set when the session was closed by a refresh (rotation), not by sign-out or reuse detection.
+  rotatedAt   DateTime? @db.Timestamptz(3)
   userAgent   String?
   ip          String?
   createdAt   DateTime  @default(now()) @db.Timestamptz(3)

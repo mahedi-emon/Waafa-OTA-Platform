@@ -16,6 +16,8 @@ import {
 
 export const MAX_FAILED_LOGINS = 5;
 export const LOCK_MINUTES = 15;
+/** A rotated refresh token presented again within this window is a concurrent refresh, not a stolen token (#66). */
+export const REFRESH_GRACE_MS = 30_000;
 
 export type SessionTokens = {
   accessToken: string;
@@ -94,16 +96,26 @@ export class AuthService {
       include: { user: true },
     });
     if (!session) throw problems.unauthorized();
+    const usable = session.expiresAt > now && session.user.status === "active";
     if (session.revokedAt) {
-      // A rotated token came back: someone else may hold it. Close every session of this person.
+      // Two requests refreshing at the same moment (a page and its prefetches) both present the token: one that
+      // was rotated in the last 30 seconds still opens a session (#66).
+      const concurrent =
+        session.rotatedAt !== null &&
+        now.getTime() - session.rotatedAt.getTime() <= REFRESH_GRACE_MS;
+      if (concurrent && usable) return this.openSession(session.user, meta, now);
+      // A rotated token came back later: someone else may hold it. Close every session of this person.
       await this.prisma.staffSession.updateMany({
         where: { userId: session.userId, revokedAt: null },
         data: { revokedAt: now },
       });
       throw problems.unauthorized();
     }
-    if (session.expiresAt <= now || session.user.status !== "active") throw problems.unauthorized();
-    await this.prisma.staffSession.update({ where: { id: session.id }, data: { revokedAt: now } });
+    if (!usable) throw problems.unauthorized();
+    await this.prisma.staffSession.update({
+      where: { id: session.id },
+      data: { revokedAt: now, rotatedAt: now },
+    });
     return this.openSession(session.user, meta, now);
   }
 
