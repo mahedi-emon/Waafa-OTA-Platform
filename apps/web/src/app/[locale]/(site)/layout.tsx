@@ -1,4 +1,8 @@
-import { getTranslations } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
+import { MaintenanceScreen } from "@/components/feedback/MaintenanceScreen";
+import { OfflineNotice } from "@/components/feedback/OfflineNotice";
+import { SupportContactProvider } from "@/components/feedback/SupportContact";
 import { MenuIcon } from "@/components/icons/MenuIcon";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
@@ -7,7 +11,8 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { TabBar } from "@/components/layout/TabBar";
 import { Toaster } from "@/components/ui/sonner";
-import { getContactSettings, getMenu } from "@/lib/data/settings";
+import { pickMessages } from "@/i18n/pickMessages";
+import { getContactSettings, getMenu, getPublicConfig } from "@/lib/data/settings";
 
 /**
  * Public site frame (A6): announcement, sticky header, page, footer, phone tab bar and the floating WhatsApp button.
@@ -15,13 +20,19 @@ import { getContactSettings, getMenu } from "@/lib/data/settings";
  * tab bar on phones.
  */
 export default async function SiteLayout({ children }: LayoutProps<"/[locale]">) {
-  const [contact, tabbar, more, morePhone, t] = await Promise.all([
+  const [contact, config, tabbar, more, morePhone, messages, t, tErrors] = await Promise.all([
     getContactSettings(),
+    getPublicConfig(),
     getMenu("tabbar"),
     getMenu("more"),
     getMenu("more-phone"),
+    getMessages(),
     getTranslations("Layout"),
+    getTranslations("Errors.offline"),
   ]);
+  if (config.maintenance.enabled) {
+    return <MaintenanceScreen maintenance={config.maintenance} contact={contact} />;
+  }
 
   const tabs = (tabbar?.items ?? []).map((item) => ({
     id: item.id,
@@ -35,7 +46,18 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
     <div className="flex min-h-dvh flex-col pb-(--tab-space) lg:pb-0">
       <AnnouncementBar />
       <SiteHeader />
-      <div className="flex flex-1 flex-col">{children}</div>
+      <SupportContactProvider
+        value={{
+          phoneDisplay: contact.phoneDisplay,
+          phoneE164: contact.phoneE164,
+          whatsappE164: contact.whatsappE164,
+        }}
+      >
+        {/* The error boundary sits between this layout and the page, so its strings come from here. */}
+        <NextIntlClientProvider messages={pickMessages(messages, ["Errors"])}>
+          <div className="flex flex-1 flex-col">{children}</div>
+        </NextIntlClientProvider>
+      </SupportContactProvider>
       <SiteFooter />
       {tabs.length === 5 ? (
         <TabBar
@@ -59,6 +81,15 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
         e164={contact.whatsappE164}
         messageTemplate={contact.whatsappMessage}
         label={t("whatsappChat")}
+      />
+      <OfflineNotice
+        phoneE164={contact.phoneE164}
+        labels={{
+          title: tErrors("title"),
+          body: tErrors("body"),
+          retry: tErrors("retry"),
+          call: tErrors("call"),
+        }}
       />
       <Toaster />
     </div>

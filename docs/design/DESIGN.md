@@ -317,6 +317,8 @@ Every visual deviation from the prototype, with the reason (correction 11: the p
 | About hero office photo | Navy visit card (figure, address, hours) while the slot is empty | No stand-in media (correction 7) | D112 |
 | Map embeds on About and Contact | Get directions link to the map | No third-party iframe on first load | D113 |
 | Gallery video tiles play in place | Poster with a play mark that opens YouTube or Facebook | Video embeds are on the cut list | D114 |
+| Offline as its own screen | Notice above the tab bar on the current page | No service worker yet; nothing the visitor typed is lost | D117 |
+| 404 search box "Search trips, visas or products" | Home plus five popular pages | No site-wide search route yet | D118 |
 
 ## Known gaps
 - Logo vectors: the lockup uses the supplied PNG cut-outs until the original SVG/AI arrives (owner question).

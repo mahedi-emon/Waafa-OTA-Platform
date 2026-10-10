@@ -77,7 +77,9 @@ test.describe("packages at 390", () => {
   test("shows not found for an unknown package", async ({ page }) => {
     // The layout shell streams first (Cache Components), so the status stays 200; Next adds noindex (D78).
     await page.goto("/tour-packages/not-a-real-trip");
-    await expect(page.getByText("This page could not be found.")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "This page took a different flight", level: 1 }),
+    ).toBeVisible();
     await expect(page.locator('meta[name="robots"][content="noindex"]').first()).toBeAttached();
   });
 });

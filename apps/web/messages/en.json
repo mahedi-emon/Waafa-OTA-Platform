@@ -2247,5 +2247,52 @@
       "body": "We match it with the payment and confirm by SMS, usually within an hour in office hours.",
       "another": "Send another"
     }
+  },
+  "Errors": {
+    "notFound": {
+      "metaTitle": "Page not found",
+      "code": "404",
+      "title": "This page took a different flight",
+      "lead": "The link may be old or mistyped. Start again from one of these.",
+      "links": "Popular pages",
+      "home": "Home",
+      "packages": "Tour packages",
+      "visa": "Visa services",
+      "store": "Waafas World",
+      "track": "Track an order",
+      "contact": "Contact us"
+    },
+    "error": {
+      "code": "Error",
+      "title": "Something went wrong on our side",
+      "lead": "Your request was not lost. Try again in a minute; if it still fails, call or WhatsApp us and quote the code below.",
+      "id": "Error ID",
+      "retry": "Try again",
+      "whatsapp": "WhatsApp us",
+      "whatsappMessage": "Hi Waafa, the website showed an error. Error ID: {code}",
+      "call": "Call {phone}",
+      "home": "Go to the home page"
+    },
+    "offline": {
+      "title": "You’re offline",
+      "body": "Check your Wi-Fi or mobile data. Anything you typed stays on this page until you’re back.",
+      "retry": "Try again",
+      "call": "Call us instead"
+    },
+    "maintenance": {
+      "metaTitle": "Back soon",
+      "code": "Maintenance",
+      "title": "We’re making the site better",
+      "backBy": "Back by {time}, {date}, Bangladesh time.",
+      "whatsapp": "WhatsApp us",
+      "call": "Call {phone}"
+    }
+  },
+  "Results": {
+    "live": {
+      "title": "Instant booking is not open yet",
+      "body": "Our travel experts confirm every fare and room by hand for now. Send a request, call or message us and we reply in office hours.",
+      "contact": "Contact a travel expert"
+    }
   }
 }

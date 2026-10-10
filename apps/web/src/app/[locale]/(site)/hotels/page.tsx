@@ -1,12 +1,11 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { CloudOff } from "lucide-react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { daysBetween } from "@waafa/shared";
-import { EmptyState } from "@/components/feedback/EmptyState";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HelpCard } from "@/components/results/HelpCard";
+import { LivePlaceholder } from "@/components/results/LivePlaceholder";
 import { ResultsBody } from "@/components/results/ResultsBody";
 import { TripSummaryBar } from "@/components/results/TripSummaryBar";
 import { SearchCard } from "@/components/search/SearchCard";
@@ -91,9 +90,7 @@ async function HotelResults({
                 />
               </NextIntlClientProvider>
             }
-            live={
-              <EmptyState icon={CloudOff} title={t("card.title")} description={t("card.lead")} />
-            }
+            live={<LivePlaceholder />}
           />
         </div>
         <HelpCard pageName={t("breadcrumb")} />

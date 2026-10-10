@@ -4,9 +4,9 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { formatDate, formatTaka, type FlightSearch, type GroupFare } from "@waafa/shared";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { EmptyState } from "@/components/feedback/EmptyState";
 import { GroupFaresRail } from "@/components/results/GroupFaresRail";
 import { HelpCard } from "@/components/results/HelpCard";
+import { LivePlaceholder } from "@/components/results/LivePlaceholder";
 import { ResultsBody } from "@/components/results/ResultsBody";
 import { TripSummaryBar } from "@/components/results/TripSummaryBar";
 import { SearchCard } from "@/components/search/SearchCard";
@@ -22,7 +22,6 @@ import {
 import { loadFlightSearch, parseFlightValues } from "@/lib/search/flightParams";
 import { formatFieldDate } from "@/lib/search/isoDate";
 import { isPhoneCountry, dialCode } from "@/lib/leads/phone";
-import { CloudOff } from "lucide-react";
 import { FlightRequest, type GroupFareSummary } from "./_components/FlightRequest";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -160,9 +159,7 @@ async function FlightsResults({
                 />
               </NextIntlClientProvider>
             }
-            live={
-              <EmptyState icon={CloudOff} title={t("card.title")} description={t("card.lead")} />
-            }
+            live={<LivePlaceholder />}
           />
           <GroupFaresRail to={first?.to} excludeId={fare?.id} />
         </div>
