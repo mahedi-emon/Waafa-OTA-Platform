@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 20:42 Asia/Dhaka · Phase: A · Frontend · Current: review-fix issue, then lean Phase B and admin · Progress: 19/24 issues (79%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 5 issues; launch-critical order in section 14 (owner accounts needed now, section 11)
+Updated: 10 Oct 21:07 Asia/Dhaka · Phase: A · Frontend + B · Backend (launch order) · Current: #55 · B2 Staff auth (after #54 B1 merges) · Progress: Phase A 19/24 (79%), Phase B 1/4 · Launch: 13 Oct 2026, 3 days left · Status: Behind; launch-critical order in section 14 (owner accounts needed now, section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -29,7 +29,7 @@ Serena memory `audit_findings`.
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
 | A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 19 | 0 | 0 | 79% |
-| B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
+| B · Backend | 12 Oct · epic #29 | 4 (#54 – #57, launch scope) | 1 | 1 (#55) | 0 | 25% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #54 · B1 API foundation and database — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 20:45 → 10 Oct 21:07 |
+| Branch · PR · merge | `feat/54-api-foundation` · see section 13 · squash |
+| Built | apps/api: NestJS 12 on the Fastify adapter (ESM, run with tsx), env validated with zod (production refuses to start without Redis, an email provider and real secrets), pino logs with request IDs (incoming x-request-id kept) and redacted secrets, RFC 7807 problem responses, helmet, CORS for the web origins, /health and /ready (database check), graceful shutdown. PostgreSQL through Prisma 7 with the pg driver adapter: staff and sessions, reference sequences, idempotency records, leads and activities, search logs, orders with item snapshots and status events, feedback, payment proofs, subscribers, admin content documents and settings, audit and notification logs, with indexes on every filter. An idempotent seed loads the Sample content through the shared content model and creates the first Super Admin from env (12+ characters, argon2id); it never overwrites admin edits. Dockerfile (migrate, seed, start), docker-compose (PostgreSQL 16, Redis 7, Mailpit), CI PostgreSQL service |
+| Files and components | `apps/api/{package.json,tsconfig.json,eslint.config.mjs,vitest.config.ts,prisma.config.ts,Dockerfile,.env.example}`, `apps/api/prisma/{schema.prisma,migrations,seed.ts}`, `apps/api/src/{app,main,features,core.module}.ts`, `src/config/env.ts`, `src/prisma/prisma.service.ts`, `src/common/problem.ts`, `src/health/health.controller.ts`, `src/seed/seedDatabase.ts`, `apps/api/test/*`, `packages/shared/src/content/registry.ts` (CONTENT_MODEL), `docker-compose.yml`, CI service, README API section |
+| Screens matched | — |
+| Admin control | Every content and settings row (AC-01 – AC-109) now has its storage: Setting (singletons) or ContentDocument (collections) |
+| Tests | API +8 (env rules, content model covers every fixture key, /health and /ready, request ID and RFC 7807 404, idempotent seed that keeps admin edits, weak first password refused) |
+| Widths checked | — |
+| Tools and skills | Serena, WebFetch for the NestJS 12 migration guide and the Prisma 7 upgrade guide (Context7 disconnected), local PostgreSQL 17 binaries |
+| Decisions | D125 – D128 |
+| Bugs and follow-ups | B2 auth (#55), B3 public intake (#56), B4 admin API (#57) |
 
 ### #51 · Review findings for A6 – A16 (lead quality, navigation, links, SEO) — ✅ Done
 | Field | Value |
@@ -755,6 +770,10 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D122 | 10 Oct | `RATE_LIMIT_FACTOR` raises the per-client limits for the Playwright test server only | Parallel e2e runs send many forms from one address; production keeps the real limits | #51 |
 | D123 | 10 Oct | The footer names the brand in text instead of repeating the logo | Correction 4: one WAAFA logo per page, in the header | #51 |
 | D124 | 10 Oct | Request steps ask for travellers (flights) and rooms and guests (hotels) even when a search prefilled them | Leads without a search were sent as one adult or two adults in one room | #51 |
+| D125 | 10 Oct | Launch data model: transactional records (staff, sessions, leads, orders, feedback, proofs, subscribers, search logs, audit) are relational tables; admin-managed content and settings are JSON documents validated by the shared CONTENT_MODEL schemas, one table each | Thirty-plus content entities in two days is not possible as tables; one validated document path serves the seed, the snapshot and one generic admin editor. Normalising hot collections (products, packages) into tables follows after launch | #54 |
+| D126 | 10 Oct | The API runs TypeScript through tsx (dev and production) and injects dependencies with explicit @Inject tokens | NestJS 12 and the workspace packages ship TypeScript source; tsx (esbuild) has no decorator metadata, explicit tokens make DI independent of it | #54 |
+| D127 | 10 Oct | Local development without Docker uses a private PostgreSQL cluster on port 5433 started from the installed binaries; the owner's own PostgreSQL service is never touched | The machine has 1–2 GB free; Docker Desktop is off; no access to the existing service's password | #54 |
+| D128 | 10 Oct | The seed creates the first Super Admin only from SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD (12+ characters) and never overwrites admin edits | No default password in the repository; the seed is safe on every deploy | #54 |
 
 ## 9. Bugs and known issues
 
@@ -815,6 +834,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 20:45–21:07 | #51 merged (#53); Phase B launch issues #54 – #57 opened under epic #29; B1 API foundation and database (NestJS 12, Fastify, Prisma 7, seed, Docker, CI PostgreSQL) | #54 | see #54 block | API 8 passed |
 | 10 Oct 20:40–20:42 | A17 merged (#50); review issues opened (#51 fixes, #52 motion, polish list on #22); #51 lead quality, navigation, links and SEO fixes; compliance grep clean | #51 | see #51 block | e2e 87 passed |
 | 10 Oct 19:50–20:02 | A16 merged (#49); A17 branded 404, error boundary, global error, offline notice, maintenance screen, Live placeholder | #17 | see #17 block | e2e 81 passed |
 | 10 Oct 18:00–19:45 | Session review (link/SEO and board-fidelity subagents; two audits stopped by the account rate limit); A16 information pages, feedback and payment-proof intake, page blocks, sitemap rewrite | #16 | see #16 block | unit 207 web + 48 shared + 82 fixtures · e2e 77 passed |

@@ -12,3 +12,7 @@ docs/
 **/dist/
 apps/web/public/
 apps/web/next-env.d.ts
+
+# Prisma client (generated)
+apps/api/src/generated
+apps/api/prisma/migrations

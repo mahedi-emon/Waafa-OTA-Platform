@@ -1,0 +1,25 @@
+# Local services for the API (B1): PostgreSQL 16, Redis 7 and Mailpit (email inbox at http://localhost:8025).
+#   docker compose up -d
+# Then in apps/api/.env: DATABASE_URL=postgresql://waafa:waafa@localhost:5432/waafa, REDIS_URL=redis://localhost:6379,
+# SMTP_URL=smtp://localhost:1025. Without Docker, see README "API without Docker".
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: waafa
+      POSTGRES_PASSWORD: waafa
+      POSTGRES_DB: waafa
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U waafa"]
+      interval: 5s
+      retries: 10
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ["1025:1025", "8025:8025"]
+volumes:
+  pgdata:

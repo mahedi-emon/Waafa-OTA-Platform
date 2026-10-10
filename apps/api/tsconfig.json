@@ -1,0 +1,10 @@
+{
+  "extends": "@waafa/config/tsconfig/base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "types": ["node"]
+  },
+  "include": ["src", "prisma", "test", "*.ts"]
+}

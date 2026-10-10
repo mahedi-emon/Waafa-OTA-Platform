@@ -31,6 +31,31 @@ pnpm dev                                                     # http://localhost:
 | `pnpm e2e` | Playwright + axe tests against the production build |
 | `pnpm format` · `pnpm format:check` | Prettier with Tailwind class sorting |
 
+## API (apps/api)
+
+NestJS on Fastify, PostgreSQL through Prisma 7, Redis + BullMQ. Copy `apps/api/.env.example` to `apps/api/.env`.
+
+```bash
+docker compose up -d                       # PostgreSQL 16, Redis 7, Mailpit (http://localhost:8025)
+pnpm --filter @waafa/api migrate:dev       # apply migrations
+pnpm --filter @waafa/api seed              # Sample content + first Super Admin (SEED_ADMIN_EMAIL / _PASSWORD)
+pnpm --filter @waafa/api dev               # http://localhost:4000/health
+pnpm --filter @waafa/api test              # Vitest against API_TEST_DATABASE_URL
+```
+
+**API without Docker** (machines short on memory): start a private PostgreSQL cluster with the installed binaries
+and point `DATABASE_URL` at it; Redis is optional in development (jobs then run in-process).
+
+```bash
+initdb -D ../waafa-local/pgdata -U waafa --auth=trust -E UTF8
+pg_ctl -D ../waafa-local/pgdata -o "-p 5433" -l ../waafa-local/pg.log start
+createdb -h localhost -p 5433 -U waafa waafa && createdb -h localhost -p 5433 -U waafa waafa_test
+# DATABASE_URL=postgresql://waafa@localhost:5433/waafa
+```
+
+The production image is `apps/api/Dockerfile` (built from the repository root); it runs migrations and the
+idempotent seed, then starts the API. The same image runs the job worker with `pnpm --filter @waafa/api worker`.
+
 ## What is where
 
 | Path | What |
