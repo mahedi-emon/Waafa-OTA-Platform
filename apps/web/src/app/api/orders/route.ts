@@ -7,7 +7,11 @@ import { clientKey, createRateLimiter } from "@/lib/rateLimit";
 
 const MAX_BODY_BYTES = 16_384;
 const allow = createRateLimiter({ limit: 6, windowMs: 60_000 });
-const once = createIdempotencyStore<PlaceOrderResult>({ ttlMs: 10 * 60_000 });
+// Only placed orders are remembered: after a refusal the visitor fixes the cart and may send the same key (#61).
+const once = createIdempotencyStore<PlaceOrderResult>({
+  ttlMs: 10 * 60_000,
+  keep: (result) => result.ok,
+});
 
 /**
  * Checkout intake (FR-SHOP-07): same-site only, 16 KB, 6 per minute per client, Turnstile when configured, idempotent

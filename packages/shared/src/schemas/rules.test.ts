@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { LeadCreateInputSchema, LeadSchema } from "./leads";
 import { FlightSearchSchema, HotelSearchSchema, TravellersSchema } from "./search";
 import { ModuleModeSchema } from "./settings";
-import { OrderSchema, ProductSchema } from "./shop";
+import { InvoiceDetailsSchema, OrderSchema, ProductSchema } from "./shop";
 
 const oneWay = {
   tripType: "one-way" as const,
@@ -222,5 +222,15 @@ describe("catalogue and order integrity", () => {
     };
     expect(OrderSchema.safeParse(order).success).toBe(true);
     expect(OrderSchema.safeParse({ ...order, total: 1300 }).success).toBe(false);
+  });
+});
+
+describe("VAT invoice details (FR-SHOP-07)", () => {
+  it("accepts a BIN of 9 to 13 digits and nothing else", () => {
+    const valid = { companyName: "Rahman Traders", bin: "123456789" };
+    expect(InvoiceDetailsSchema.safeParse(valid).success).toBe(true);
+    expect(InvoiceDetailsSchema.safeParse({ ...valid, bin: "1234567890123" }).success).toBe(true);
+    expect(InvoiceDetailsSchema.safeParse({ ...valid, bin: "12345678" }).success).toBe(false);
+    expect(InvoiceDetailsSchema.safeParse({ ...valid, bin: "ddddddddd" }).success).toBe(false);
   });
 });

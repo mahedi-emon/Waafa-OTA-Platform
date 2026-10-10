@@ -22,6 +22,19 @@ describe("createIdempotencyStore", () => {
   });
 });
 
+describe("createIdempotencyStore keep (#61)", () => {
+  it("forgets results that keep() rejects, so the same key can run again", async () => {
+    const once = createIdempotencyStore<{ ok: boolean }>({ ttlMs: 1_000, keep: (r) => r.ok });
+    const refused = vi.fn(async () => ({ ok: false }));
+    await expect(once("k", refused, 0)).resolves.toEqual({ ok: false });
+    await Promise.resolve();
+    const placed = vi.fn(async () => ({ ok: true }));
+    await expect(once("k", placed, 1)).resolves.toEqual({ ok: true });
+    await expect(once("k", placed, 2)).resolves.toEqual({ ok: true });
+    expect(placed).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("isIdempotencyKey", () => {
   it("accepts UUIDs only", () => {
     expect(isIdempotencyKey("3f2a7c1e-9b4d-4e6f-8a1b-2c3d4e5f6a7b")).toBe(true);

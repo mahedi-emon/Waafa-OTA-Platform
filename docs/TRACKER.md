@@ -67,11 +67,26 @@ Serena memory `audit_findings`.
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
 
+### #56 · B3 Public API: snapshot, intake and notifications — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 00:05 → (PR open) |
+| Branch · PR · merge | `feat/56-public-intake` · see section 13 · squash |
+| Built | Under `/api/v1/public`, server to server with the intake key (constant-time check): GET snapshot (every content key the site renders, private keys empty, approved feedback without contact details; ETag and 304, rebuilt after writes); POST leads for every module (per-day references from an atomic sequence, duplicate flag for the same phone and module within 24 hours, a "created" activity, customer and staff emails); POST orders priced on the server with the shared `priceCart`, running deals and scheduled coupons, product documents locked FOR UPDATE while stock is taken, refusals (changed, minimum, cod, pickup) returned as 409 with the quote; POST orders/track (order number plus the last ten digits of the phone); POST feedback (pending, staff alert), payment-proofs (accounts alert with the account name), search-logs and subscribers. Idempotency-Key header (UUID) on every create: the outcome is replayed for 24 hours, refusals release the key. Per-visitor limits behind the web's. Notifications: admin templates with `{{variables}}`, BullMQ queue with 5 retries and backoff when Redis is set (worker process), in-process otherwise, every email in the notification log; Resend, SMTP (Mailpit) or memory. Web revalidation client (HMAC-signed, batched). OpenAPI 3.1 from the zod contracts at /api/v1/openapi.json outside production |
+| Files and components | `apps/api/src/public/{public.controller,public.module,intake.service}.ts`, `src/content/content.service.ts`, `src/notifications/{mailer,notification.service}.ts`, `src/revalidate/revalidate.service.ts`, `src/common/{idempotency.service,references,serverKey}.ts`, `src/services.module.ts`, `src/docs/openapi.ts`, `src/worker.ts`, `src/features.ts`, `test/public.test.ts`; `packages/shared/src/helpers/{leadSummary,deals}.ts`, `OrderTrackInputSchema`, `SubscriberInputSchema` |
+| Screens matched | — |
+| Admin control | Section 4 API column filled: every content row → `GET /api/v1/public/snapshot`; leads, orders, track, feedback, proofs, search logs → `POST /api/v1/public/*` |
+| Tests | API +11 (intake key, snapshot ETag and 304, lead references, replay and duplicate flag with emails, Idempotency-Key and unknown fields, order pricing, stock and tracking, refusal then retry with the same key, two orders racing for the last item, feedback moderation and privacy, payment proof alert, search logs and subscribers, OpenAPI); shared +2 (lead summary) +1 (BIN); web +1 (idempotency keep) |
+| Widths checked | — |
+| Tools and skills | Serena; zod 4 `toJSONSchema`; BullMQ, nodemailer |
+| Decisions | D130 – D134 |
+| Bugs and follow-ups | #60 VAT invoice BIN regex (fixed here), #61 checkout stuck after a refusal (fixed here). The local PostgreSQL was stopped by the system for low memory on 11 Oct; API database tests ran in CI |
+
 ### #55 · B2 Staff auth, roles and audit log — ✅ Done
 | Field | Value |
 | --- | --- |
-| Opened → closed | 10 Oct 21:15 → 10 Oct 21:21 |
-| Branch · PR · merge | `feat/55-staff-auth` · see section 13 · squash |
+| Opened → closed | 10 Oct 21:15 → 11 Oct 00:02 |
+| Branch · PR · merge | `feat/55-staff-auth` · #59 · `de36338` |
 | Built | POST /api/v1/auth/login, /refresh, /logout and GET /auth/me: argon2id passwords, 15-minute HS256 access tokens bound to an open session, rotating 7-day refresh tokens stored only as SHA-256 hashes, reuse detection (an old refresh token closes every session of that person), lockout for 15 minutes after five wrong passwords (audited), one error message for unknown emails and wrong passwords, 5 sign-ins per 15 minutes per address (the web passes the visitor address with the server key). StaffGuard + @Roles (Super Admin passes every check) and the audit service for every admin write |
 | Files and components | `apps/api/src/auth/{auth.controller,auth.service,auth.guard,auth.module,tokens,principal}.ts`, `src/audit/audit.service.ts`, `src/common/rateLimit.ts`, `src/features.ts`, `test/auth.test.ts` |
 | Screens matched | — (admin sign-in screen in A18) |
@@ -430,117 +445,119 @@ Each gets the full block when work starts.
 Every public element → the data field it reads → the admin screen that edits it → the API endpoint (planned in A4,
 confirmed in Phase B) → verified against the live API (Phase C). Accessors live in `apps/web/src/lib/data/*.ts`.
 
+Phase B (D130): the web reads every public row from one cached snapshot, `GET /api/v1/public/snapshot` (content keys as in `CONTENT_MODEL`, ETag), and the admin edits them through `PUT /api/v1/admin/content/:key/:id` and `PUT /api/v1/admin/settings/:key` (B4). Visitor submissions go to `POST /api/v1/public/*`.
+
 | # | Public element | Data field (accessor → field) | Admin screen | API endpoint | Verified |
 | --- | --- | --- | --- | --- | --- |
-| AC-01 | Brand names (header, footer, metadata) | `getSiteSettings()` → travelBrand, storeName, companyName | Settings › General | `GET /api/v1/settings/site` | ⬜ |
-| AC-02 | Default SEO title, description, share image | `getSiteSettings()` → defaultSeo | Settings › General | `GET /api/v1/settings/site` | ⬜ |
-| AC-03 | Header menu (7 items, order, visibility, Waafas World and More panels) | `getMenu("header")` → items[].label, href, icon, panel, visible | Settings › Footer and menus | `GET /api/v1/menus/header` | ⬜ |
-| AC-04 | More panel and sheet (icon, title, one line) | `getMenu("more")` → items[].label, description, icon, href | Settings › Footer and menus | `GET /api/v1/menus/more` | ⬜ |
-| AC-05 | Waafas World mega panel categories | `listCategories()` → level-1 name, description, icon, order | Waafas World › Categories | `GET /api/v1/shop/categories` | ⬜ |
-| AC-06 | Announcement bar | `getActiveAnnouncement()` → text, link, startsAt, endsAt, enabled | Content › Home and banners | `GET /api/v1/announcements/active` | ⬜ |
-| AC-07 | Hotline chip, Call and WhatsApp buttons, floating WhatsApp | `getContactSettings()` → phoneDisplay, phoneE164, whatsappE164 | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
-| AC-08 | Open now / Closed chip | `getContactSettings()` → officeHours, read with `getOfficeStatus()` in Asia/Dhaka on the client | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
-| AC-09 | Need help? panel, drawer contact block, Contact page, Visit our office | `getContactSettings()` → addressLines, city, country, email, officeHoursText, closedText, mapUrl | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
-| AC-10 | Footer brand column | `getSiteSettings()` → footerTagline, footerAbout; `getContactSettings()` → socials | Settings › General | `GET /api/v1/settings/site` | ⬜ |
-| AC-11 | Footer link columns | `getFooterSettings()` → columns[].title, menu; `getMenu("footer-travel" / "footer-shop" / "footer-help")` | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
-| AC-12 | We accept | `getFooterSettings()` → paymentMethods (live ones only), paymentNote | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
-| AC-13 | Trust badges (ATAB, TOAB, IATA once held) | `getFooterSettings()` → trustBadges | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
-| AC-14 | Newsletter band | `getFooterSettings()` → newsletterTitle, newsletterPlaceholder, newsletterButton | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
-| AC-15 | Bottom bar copyright and legal links | `getFooterSettings()` → copyrightHolder; `getMenu("legal")` | Settings › Footer and menus | `GET /api/v1/settings/footer` | ⬜ |
+| AC-01 | Brand names (header, footer, metadata) | `getSiteSettings()` → travelBrand, storeName, companyName | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-02 | Default SEO title, description, share image | `getSiteSettings()` → defaultSeo | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-03 | Header menu (7 items, order, visibility, Waafas World and More panels) | `getMenu("header")` → items[].label, href, icon, panel, visible | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-04 | More panel and sheet (icon, title, one line) | `getMenu("more")` → items[].label, description, icon, href | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-05 | Waafas World mega panel categories | `listCategories()` → level-1 name, description, icon, order | Waafas World › Categories | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-06 | Announcement bar | `getActiveAnnouncement()` → text, link, startsAt, endsAt, enabled | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-07 | Hotline chip, Call and WhatsApp buttons, floating WhatsApp | `getContactSettings()` → phoneDisplay, phoneE164, whatsappE164 | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-08 | Open now / Closed chip | `getContactSettings()` → officeHours, read with `getOfficeStatus()` in Asia/Dhaka on the client | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-09 | Need help? panel, drawer contact block, Contact page, Visit our office | `getContactSettings()` → addressLines, city, country, email, officeHoursText, closedText, mapUrl | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-10 | Footer brand column | `getSiteSettings()` → footerTagline, footerAbout; `getContactSettings()` → socials | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-11 | Footer link columns | `getFooterSettings()` → columns[].title, menu; `getMenu("footer-travel" / "footer-shop" / "footer-help")` | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-12 | We accept | `getFooterSettings()` → paymentMethods (live ones only), paymentNote | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-13 | Trust badges (ATAB, TOAB, IATA once held) | `getFooterSettings()` → trustBadges | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-14 | Newsletter band | `getFooterSettings()` → newsletterTitle, newsletterPlaceholder, newsletterButton | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-15 | Bottom bar copyright and legal links | `getFooterSettings()` → copyrightHolder; `getMenu("legal")` | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
 | AC-16 | Developer credit | Rendered from code (FR-FTR-06) | Not editable, by design | — | — |
-| AC-17 | Manual or Live body; Send query or Book now | `getPublicConfig()` → modes.{flights, hotels, packages, shopPayment}.mode, liveLocked, lockReason | Settings › Booking modes | `GET /api/v1/config/public` | ⬜ |
-| AC-18 | Online payment at checkout; cash-on-delivery cap | `getPublicConfig()` → onlinePaymentLive, codLimit | Settings › Payments and delivery | `GET /api/v1/config/public` | ⬜ |
-| AC-19 | Maintenance page | `getPublicConfig()` → maintenance.enabled, message | Settings › General | `GET /api/v1/config/public` | ⬜ |
-| AC-20 | Analytics and verification tags | `getTrackingSettings()` → ga4Id, gtmId, metaPixelId, searchConsoleToken | Settings › General | `GET /api/v1/settings/tracking` | ⬜ |
-| AC-21 | Lead forms: consent line, email required, reply promise | `getLeadFormSettings()` → consentText, emailRequired, slaMinutes | Settings › General | `GET /api/v1/settings/lead-form` | ⬜ |
-| AC-22 | Home section order, visibility and heading overrides | `listHomeSections()` → key, enabled, order, title, subtitle | Content › Home and banners | `GET /api/v1/home/sections` | ⬜ |
-| AC-23 | Home trust strip | `listTrustItems()` → icon, title, detail, order | Content › Home and banners | `GET /api/v1/home/trust` | ⬜ |
-| AC-24 | Home offers, store campaigns, results banners | `listBanners(placement)` → kicker, title, body, image, link, code, validityText, startsAt, endsAt, order, enabled | Content › Home and banners | `GET /api/v1/banners?placement=` | ⬜ |
-| AC-25 | Airline strip | `listFeaturedAirlines()` → code, name, featuredOrder | Content › Home and banners | `GET /api/v1/airlines?featured=true` | ⬜ |
-| AC-26 | Destination finder | `listDestinations()` → name, subtitle, iata, image, flightTime, visaNote, visaEasy, bestSeason, fromPrice, tags, order | Content › Home and banners | `GET /api/v1/home/destinations` | ⬜ |
-| AC-27 | Why WAAFA values (Home, About) | `listValues()` → icon, title, body, order | Content › Home and banners | `GET /api/v1/home/values` | ⬜ |
-| AC-28 | Journey timeline (Home, About) | `listTimeline()` → period, text, order | Content › Home and banners | `GET /api/v1/home/timeline` | ⬜ |
-| AC-29 | Group fare cards (Home rail, group fares page, results) | `listGroupFares()`, `getGroupFare()` → airline, cabin, baggage, tripType, from, to, stops, departDate, returnDate, seatsLeft, farePerAdult, expiresAt, notes | Sales › Group fares | `GET /api/v1/group-fares` | ⬜ |
-| AC-30 | Package cards, list filters and sort | `listPackages()` → title, placesLabel, categories, tags, months, durationDays, durationNights, includesShort, cover, fromPrice, popularity | Travel › Tour packages | `GET /api/v1/packages` | ⬜ |
-| AC-31 | Package detail | `getPackage()`, `listRelatedPackages()` → summary, gallery, video, groupSize, visaNote, highlights, itinerary, inclusions, exclusions, prices, departures, anyDate, hotels, visa, terms, faqs, relatedSlugs, seo | Travel › Tour packages | `GET /api/v1/packages/{slug}` | ⬜ |
-| AC-32 | Airport and hotel-city autocomplete | `searchAirports()`, `listPinnedAirports()`, `searchHotelPlaces()` → iata, city, name, country, pinnedRank; place name, city, popular | Seeded reference data (B6) | `GET /api/v1/airports?q=`, `GET /api/v1/hotel-places?q=` | ⬜ |
-| AC-33 | Visa list and country cards | `listVisaCountries()` → name, flagCode, region, submission, popular, cover, types[].type, processingTime, serviceCharge | Travel › Visa | `GET /api/v1/visa/countries` | ⬜ |
-| AC-34 | Visa country page | `getVisaCountry()` → types[].processingTime, stay, entry, validity, checklist, embassyFee, embassyFeeNote, serviceCharge, notes; forms; faqs; guideSlug | Travel › Visa | `GET /api/v1/visa/countries/{slug}` | ⬜ |
-| AC-35 | Visa Guide list and article | `listVisaGuides()`, `getVisaGuide()` → title, summary, cover, sections, tips, updatedAt, readingMinutes, seo | Content › Pages, blog and FAQs | `GET /api/v1/visa/guides` | ⬜ |
-| AC-36 | Store home rows | `listStoreRows()` → key, enabled, order | Waafas World › Collections | `GET /api/v1/shop/store-rows` | ⬜ |
-| AC-37 | Category grid and listing filters | `listCategories()`, `getCategory()`, `getAttributeSet()` → name, slug, icon, description, banner, parentId, level, attributeSetId, compatibility, order, seo; attributes[].filterable | Waafas World › Categories | `GET /api/v1/shop/categories` | ⬜ |
-| AC-38 | Product cards and product page | `listProducts()`, `getProduct()` → title, shortTitle, badges, cardSpec, highlights, description, specs, warranty, images, video, options, variants (sku, price, mrp, stock, lowStockAt, preOrder, images), codEligible, bulkFrom, seo | Waafas World › Products | `GET /api/v1/shop/products` | ⬜ |
-| AC-39 | Brands row and brand pages | `listBrands()`, `getBrand()` → name, logo, description | Waafas World › Products | `GET /api/v1/shop/brands` | ⬜ |
-| AC-40 | Collections | `listCollections()`, `getCollection()` → name, description, image, rule, order | Waafas World › Collections | `GET /api/v1/shop/collections` | ⬜ |
-| AC-41 | Deals with an end date | `listDeals()` → dealPrice, endsAt, product, variant | Waafas World › Products | `GET /api/v1/shop/deals` | ⬜ |
-| AC-42 | Find by model | `listCompatibleModels()`, `findCompatibleProducts()` → brand, model, partCodes; product.compatibleModelIds | Waafas World › Products (compatibility CSV) | `GET /api/v1/shop/compatible-products` | ⬜ |
-| AC-43 | Coupons at checkout | `findCoupon()` → code, type, value, minOrder, maxDiscount, startsAt, endsAt, enabled | Waafas World › Coupons | `POST /api/v1/shop/coupons/validate` | ⬜ |
-| AC-44 | Delivery charges, estimates, free delivery, minimum order, office pick-up | `getShippingSettings()` → zones[].name, areas, charge, estimate; freeDeliveryThreshold; minimumOrder; officePickup | Settings › Payments and delivery | `GET /api/v1/settings/shipping` | ⬜ |
-| AC-45 | Offline Payment page, checkout and order emails | `getPaymentSettings()` → offlineAccounts[].kind, title, lines, instructions | Settings › Payments and delivery | `GET /api/v1/settings/payments` | ⬜ |
-| AC-46 | EMI page | `getEmiSettings()` → minimumAmount, tenuresMonths, cardsNote, appliesTo, interestNote; `listEmiBanks()` → name, tenuresMonths, note | Settings › Payments and delivery | `GET /api/v1/settings/emi` | ⬜ |
-| AC-47 | Refund, Privacy, Terms and About Us text | `getPage(slug)` → title, summary, highlights, sections, lastUpdated, seo | Content › Pages, blog and FAQs | `GET /api/v1/pages/{slug}` | ⬜ |
-| AC-48 | Blog list, post and Home blog strip | `listBlogPosts()`, `getBlogPost()`, `listRelatedBlogPosts()`, `listBlogCategories()` → title, excerpt, intro, sections, cover, category, author, publishedAt, readingMinutes, featured, cta, seo | Content › Pages, blog and FAQs | `GET /api/v1/blog/posts` | ⬜ |
-| AC-49 | FAQs page and Home FAQ strip | `listFaqs()` → category, question, answer, link, order, onHome | Content › Pages, blog and FAQs | `GET /api/v1/faqs` | ⬜ |
-| AC-50 | Baggage table | `listBaggageRules()` → airlineCode, airlineName, scope, cabinClass, cabinAllowance, checkedAllowance, notes, lastVerified | Content › Pages, blog and FAQs | `GET /api/v1/baggage-rules` | ⬜ |
-| AC-51 | Gallery page, albums and Home strip | `listGalleryAlbums()`, `getGalleryAlbum()` → title, category, cover, items (photo or video, caption), publishedAt | Content › Gallery | `GET /api/v1/gallery/albums` | ⬜ |
-| AC-52 | Testimonials wall and Home reviews | `listPublicFeedback()` → name, service, rating, comment, photo, submittedAt (approved with consent only) | Content › Feedback | `GET /api/v1/feedback` | ⬜ |
-| AC-53 | Facebook reviews link (until approved feedback exists) | `getSiteSettings()` → reviewsUrl | Settings › General | `GET /api/v1/settings/site` | ⬜ |
-| AC-54 | Meet our team (Home bento and carousel, About grid) | `listTeam(placement)` → name, initials, designation, department, bio, photo, whatsappE164, email, linkedinUrl, featured, showOnHome, showOnAbout, visible, order | Content › Team | `GET /api/v1/team?placement=` | ⬜ |
+| AC-17 | Manual or Live body; Send query or Book now | `getPublicConfig()` → modes.{flights, hotels, packages, shopPayment}.mode, liveLocked, lockReason | Settings › Booking modes | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-18 | Online payment at checkout; cash-on-delivery cap | `getPublicConfig()` → onlinePaymentLive, codLimit | Settings › Payments and delivery | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-19 | Maintenance page | `getPublicConfig()` → maintenance.enabled, message | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-20 | Analytics and verification tags | `getTrackingSettings()` → ga4Id, gtmId, metaPixelId, searchConsoleToken | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-21 | Lead forms: consent line, email required, reply promise | `getLeadFormSettings()` → consentText, emailRequired, slaMinutes | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-22 | Home section order, visibility and heading overrides | `listHomeSections()` → key, enabled, order, title, subtitle | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-23 | Home trust strip | `listTrustItems()` → icon, title, detail, order | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-24 | Home offers, store campaigns, results banners | `listBanners(placement)` → kicker, title, body, image, link, code, validityText, startsAt, endsAt, order, enabled | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-25 | Airline strip | `listFeaturedAirlines()` → code, name, featuredOrder | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-26 | Destination finder | `listDestinations()` → name, subtitle, iata, image, flightTime, visaNote, visaEasy, bestSeason, fromPrice, tags, order | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-27 | Why WAAFA values (Home, About) | `listValues()` → icon, title, body, order | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-28 | Journey timeline (Home, About) | `listTimeline()` → period, text, order | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-29 | Group fare cards (Home rail, group fares page, results) | `listGroupFares()`, `getGroupFare()` → airline, cabin, baggage, tripType, from, to, stops, departDate, returnDate, seatsLeft, farePerAdult, expiresAt, notes | Sales › Group fares | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-30 | Package cards, list filters and sort | `listPackages()` → title, placesLabel, categories, tags, months, durationDays, durationNights, includesShort, cover, fromPrice, popularity | Travel › Tour packages | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-31 | Package detail | `getPackage()`, `listRelatedPackages()` → summary, gallery, video, groupSize, visaNote, highlights, itinerary, inclusions, exclusions, prices, departures, anyDate, hotels, visa, terms, faqs, relatedSlugs, seo | Travel › Tour packages | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-32 | Airport and hotel-city autocomplete | `searchAirports()`, `listPinnedAirports()`, `searchHotelPlaces()` → iata, city, name, country, pinnedRank; place name, city, popular | Seeded reference data (B6) | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-33 | Visa list and country cards | `listVisaCountries()` → name, flagCode, region, submission, popular, cover, types[].type, processingTime, serviceCharge | Travel › Visa | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-34 | Visa country page | `getVisaCountry()` → types[].processingTime, stay, entry, validity, checklist, embassyFee, embassyFeeNote, serviceCharge, notes; forms; faqs; guideSlug | Travel › Visa | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-35 | Visa Guide list and article | `listVisaGuides()`, `getVisaGuide()` → title, summary, cover, sections, tips, updatedAt, readingMinutes, seo | Content › Pages, blog and FAQs | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-36 | Store home rows | `listStoreRows()` → key, enabled, order | Waafas World › Collections | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-37 | Category grid and listing filters | `listCategories()`, `getCategory()`, `getAttributeSet()` → name, slug, icon, description, banner, parentId, level, attributeSetId, compatibility, order, seo; attributes[].filterable | Waafas World › Categories | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-38 | Product cards and product page | `listProducts()`, `getProduct()` → title, shortTitle, badges, cardSpec, highlights, description, specs, warranty, images, video, options, variants (sku, price, mrp, stock, lowStockAt, preOrder, images), codEligible, bulkFrom, seo | Waafas World › Products | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-39 | Brands row and brand pages | `listBrands()`, `getBrand()` → name, logo, description | Waafas World › Products | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-40 | Collections | `listCollections()`, `getCollection()` → name, description, image, rule, order | Waafas World › Collections | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-41 | Deals with an end date | `listDeals()` → dealPrice, endsAt, product, variant | Waafas World › Products | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-42 | Find by model | `listCompatibleModels()`, `findCompatibleProducts()` → brand, model, partCodes; product.compatibleModelIds | Waafas World › Products (compatibility CSV) | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-43 | Coupons at checkout | `findCoupon()` → code, type, value, minOrder, maxDiscount, startsAt, endsAt, enabled | Waafas World › Coupons | snapshot `coupons` (web quote); `POST /api/v1/public/orders` reprices | ⬜ |
+| AC-44 | Delivery charges, estimates, free delivery, minimum order, office pick-up | `getShippingSettings()` → zones[].name, areas, charge, estimate; freeDeliveryThreshold; minimumOrder; officePickup | Settings › Payments and delivery | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-45 | Offline Payment page, checkout and order emails | `getPaymentSettings()` → offlineAccounts[].kind, title, lines, instructions | Settings › Payments and delivery | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-46 | EMI page | `getEmiSettings()` → minimumAmount, tenuresMonths, cardsNote, appliesTo, interestNote; `listEmiBanks()` → name, tenuresMonths, note | Settings › Payments and delivery | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-47 | Refund, Privacy, Terms and About Us text | `getPage(slug)` → title, summary, highlights, sections, lastUpdated, seo | Content › Pages, blog and FAQs | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-48 | Blog list, post and Home blog strip | `listBlogPosts()`, `getBlogPost()`, `listRelatedBlogPosts()`, `listBlogCategories()` → title, excerpt, intro, sections, cover, category, author, publishedAt, readingMinutes, featured, cta, seo | Content › Pages, blog and FAQs | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-49 | FAQs page and Home FAQ strip | `listFaqs()` → category, question, answer, link, order, onHome | Content › Pages, blog and FAQs | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-50 | Baggage table | `listBaggageRules()` → airlineCode, airlineName, scope, cabinClass, cabinAllowance, checkedAllowance, notes, lastVerified | Content › Pages, blog and FAQs | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-51 | Gallery page, albums and Home strip | `listGalleryAlbums()`, `getGalleryAlbum()` → title, category, cover, items (photo or video, caption), publishedAt | Content › Gallery | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-52 | Testimonials wall and Home reviews | `listPublicFeedback()` → name, service, rating, comment, photo, submittedAt (approved with consent only) | Content › Feedback | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-53 | Facebook reviews link (until approved feedback exists) | `getSiteSettings()` → reviewsUrl | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-54 | Meet our team (Home bento and carousel, About grid) | `listTeam(placement)` → name, initials, designation, department, bio, photo, whatsappE164, email, linkedinUrl, featured, showOnHome, showOnAbout, visible, order | Content › Team | `GET /api/v1/public/snapshot` | ⬜ |
 | AC-55 | Customer emails (lead received, order placed, visa status) | NotificationTemplate → subject, body, variables, channel, enabled | Settings › Notifications | `GET /api/v1/admin/notification-templates` | ⬜ |
-| AC-56 | Lead reference on success screens | `createLead()` → reference, createdAt | Sales › Leads | `POST /api/v1/leads` | ⬜ |
-| AC-57 | Phone drawer main links | `getMenu("drawer")` → items[].label, href, icon, visible | Settings › Footer and menus | `GET /api/v1/menus/drawer` | ⬜ |
-| AC-58 | Phone tab bar (five tabs, Waafas World third, More last) | `getMenu("tabbar")` → items[].label, href, icon, panel (the schema enforces the shape) | Settings › Footer and menus | `GET /api/v1/menus/tabbar` | ⬜ |
-| AC-59 | Phone More sheet extras (Gallery, Feedback, Track order) | `getMenu("more-phone")` → items[] | Settings › Footer and menus | `GET /api/v1/menus/more-phone` | ⬜ |
-| AC-60 | Waafas World panel: store intro and service cards | `getSiteSettings()` → storeIntro; `getMenu("shop-panel")` → items[].label, description, cta, href, icon | Settings › General; Settings › Footer and menus | `GET /api/v1/settings/site`, `GET /api/v1/menus/shop-panel` | ⬜ |
-| AC-61 | Help panel line and Visit row | `getContactSettings()` → helpLine, visitLabel | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
-| AC-62 | Floating WhatsApp prefilled message | `getContactSettings()` → whatsappMessage (`{page}` placeholder) | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
-| AC-63 | Header Log in (hidden until accounts ship) | `getSiteSettings()` → accountsLive | Settings › General | `GET /api/v1/settings/site` | ⬜ |
-| AC-64 | Page-level photos and videos (home hero, flights, group fares, visa, printing, trading headers and form side images) | `getMediaSlot(key)` → image or video (mp4, webm, phone files, poster, credit) | Content › Media library | `GET /api/v1/media/slots/{key}` | ⬜ |
-| AC-65 | Search card From default, Popular flight chips | `getSearchSettings()` → defaultOrigin, popularFlights[] | Settings › General › Search | `GET /api/v1/settings/search` | ⬜ |
-| AC-66 | Hotel nationality list | `getSearchSettings()` → hotelNationalities[] (names from Intl) | Settings › General › Search | `GET /api/v1/settings/search` | ⬜ |
-| AC-67 | Tour tab destinations and Popular chips | `listDestinations()` → slug, name, subtitle, iata, tags (domestic), order | Content › Destinations | `GET /api/v1/destinations` | ⬜ |
-| AC-68 | Visa tab countries, regions, types, Popular chips | `listVisaCountries()` → slug, name, flagCode, region, popular, types[].type | Visa › Countries | `GET /api/v1/visa/countries` | ⬜ |
-| AC-69 | Preferred airline list | `listAirlines()` → code, name | Flights › Airlines | `GET /api/v1/airlines` | ⬜ |
-| AC-70 | Flight help line (Manual vs Live) and Live hotline | `getPublicConfig()` → modes.flights.mode; `getContactSettings()` → phoneDisplay, whatsappE164 | Settings › Booking modes; Settings › General | `GET /api/v1/config` | ⬜ |
-| AC-71 | Search activity (every submitted search) | `logSearch()` → module, summary, params, device, source | Admin › Search activity (A18) | `POST /api/v1/search-logs`, `GET /api/v1/search-logs` | ⬜ |
-| AC-72 | Hero headline, accent line, lead, rotating destinations | `getHomeContent()` → hero.title, titleAccent, lead, rotatingLabel, rotating[] | Content › Home | `GET /api/v1/content/home` | ⬜ |
-| AC-73 | Home section order, visibility, kicker, heading, lead | `listHomeSections()` → key, enabled, order, kicker, title, subtitle | Content › Home and banners | `GET /api/v1/home-sections` | ⬜ |
-| AC-74 | Home offers | `listBanners("home-offers")` → kicker, title, body, image, link, code, validityText, schedule | Content › Home and banners | `GET /api/v1/banners?placement=home-offers` | ⬜ |
-| AC-75 | Home trust strip | `listTrustItems()` → icon, title, detail, order | Content › Home | `GET /api/v1/content/trust` | ⬜ |
-| AC-76 | Why WAAFA figure and story; values; journey | `getHomeContent()` → why; `listValues()`; `listTimeline()` | Content › Home; Content › About | `GET /api/v1/content/home`, `/values`, `/timeline` | ⬜ |
-| AC-77 | Waafas World band copy and perks; services row | `getHomeContent()` → store; `getMenu("shop-panel")`; `listCategories()`; `listProducts({sort:"popular"})` | Content › Home; Settings › Footer and menus; Waafas World | `GET /api/v1/content/home`, `/menus/shop-panel`, `/shop/*` | ⬜ |
-| AC-78 | Reviews cards (Facebook link, Leave feedback) and testimonials | `getHomeContent()` → reviews; `getSiteSettings()` → reviewsUrl; `listPublicFeedback()` (approved only) | Content › Home; Content › Feedback moderation | `GET /api/v1/feedback?status=approved` | ⬜ |
-| AC-79 | Closing band and office card | `getHomeContent()` → cta; `getContactSettings()`; `getMediaSlot("office")` | Content › Home; Settings › General; Media library | `GET /api/v1/content/home`, `/settings/contact` | ⬜ |
+| AC-56 | Lead reference on success screens | `createLead()` → reference, createdAt | Sales › Leads | `POST /api/v1/public/leads` | ⬜ |
+| AC-57 | Phone drawer main links | `getMenu("drawer")` → items[].label, href, icon, visible | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-58 | Phone tab bar (five tabs, Waafas World third, More last) | `getMenu("tabbar")` → items[].label, href, icon, panel (the schema enforces the shape) | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-59 | Phone More sheet extras (Gallery, Feedback, Track order) | `getMenu("more-phone")` → items[] | Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-60 | Waafas World panel: store intro and service cards | `getSiteSettings()` → storeIntro; `getMenu("shop-panel")` → items[].label, description, cta, href, icon | Settings › General; Settings › Footer and menus | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-61 | Help panel line and Visit row | `getContactSettings()` → helpLine, visitLabel | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-62 | Floating WhatsApp prefilled message | `getContactSettings()` → whatsappMessage (`{page}` placeholder) | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-63 | Header Log in (hidden until accounts ship) | `getSiteSettings()` → accountsLive | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-64 | Page-level photos and videos (home hero, flights, group fares, visa, printing, trading headers and form side images) | `getMediaSlot(key)` → image or video (mp4, webm, phone files, poster, credit) | Content › Media library | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-65 | Search card From default, Popular flight chips | `getSearchSettings()` → defaultOrigin, popularFlights[] | Settings › General › Search | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-66 | Hotel nationality list | `getSearchSettings()` → hotelNationalities[] (names from Intl) | Settings › General › Search | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-67 | Tour tab destinations and Popular chips | `listDestinations()` → slug, name, subtitle, iata, tags (domestic), order | Content › Destinations | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-68 | Visa tab countries, regions, types, Popular chips | `listVisaCountries()` → slug, name, flagCode, region, popular, types[].type | Visa › Countries | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-69 | Preferred airline list | `listAirlines()` → code, name | Flights › Airlines | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-70 | Flight help line (Manual vs Live) and Live hotline | `getPublicConfig()` → modes.flights.mode; `getContactSettings()` → phoneDisplay, whatsappE164 | Settings › Booking modes; Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-71 | Search activity (every submitted search) | `logSearch()` → module, summary, params, device, source | Admin › Search activity (A18) | `POST /api/v1/public/search-logs`, `GET /api/v1/admin/search-logs` (B4) | ⬜ |
+| AC-72 | Hero headline, accent line, lead, rotating destinations | `getHomeContent()` → hero.title, titleAccent, lead, rotatingLabel, rotating[] | Content › Home | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-73 | Home section order, visibility, kicker, heading, lead | `listHomeSections()` → key, enabled, order, kicker, title, subtitle | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-74 | Home offers | `listBanners("home-offers")` → kicker, title, body, image, link, code, validityText, schedule | Content › Home and banners | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-75 | Home trust strip | `listTrustItems()` → icon, title, detail, order | Content › Home | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-76 | Why WAAFA figure and story; values; journey | `getHomeContent()` → why; `listValues()`; `listTimeline()` | Content › Home; Content › About | `GET /api/v1/public/snapshot`, `/values`, `/timeline` | ⬜ |
+| AC-77 | Waafas World band copy and perks; services row | `getHomeContent()` → store; `getMenu("shop-panel")`; `listCategories()`; `listProducts({sort:"popular"})` | Content › Home; Settings › Footer and menus; Waafas World | `GET /api/v1/public/snapshot`, `/menus/shop-panel`, `/shop/*` | ⬜ |
+| AC-78 | Reviews cards (Facebook link, Leave feedback) and testimonials | `getHomeContent()` → reviews; `getSiteSettings()` → reviewsUrl; `listPublicFeedback()` (approved only) | Content › Home; Content › Feedback moderation | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-79 | Closing band and office card | `getHomeContent()` → cta; `getContactSettings()`; `getMediaSlot("office")` | Content › Home; Settings › General; Media library | `GET /api/v1/public/snapshot`, `/settings/contact` | ⬜ |
 | AC-80 | Home JSON-LD (Organization, TravelAgency) | `getSiteSettings()`, `getContactSettings()` → names, address, hours, socials | Settings › General | — (rendered from settings) | ⬜ |
-| AC-81 | Flight request form options: email required, consent text, phone countries | `getLeadFormSettings()` → emailRequired, consentText, phoneCountries | Settings › Lead form options | `GET /api/v1/settings/lead-form` | ⬜ |
-| AC-82 | Flights booking mode (Manual body vs Live body) | `getPublicConfig()` → modes.flights.mode | Settings › Booking modes | `GET /api/v1/config/public` | ⬜ |
-| AC-83 | Preferences airlines and trip airline list | `listFeaturedAirlines()`, `listAirlines()` | Flights › Airlines | `GET /api/v1/airlines` | ⬜ |
-| AC-84 | Group fares page, rail and fare banner | `listGroupFares({to, month})`, `getGroupFare(id)` → airline, route, dates, baggage, seats, fare, expiry | Flights › Group fares | `GET /api/v1/group-fares`, `/group-fares/:id` | ⬜ |
-| AC-85 | Flight leads (reference, contact, trip, preferences, group fare) | `POST /api/leads` → `createLead()` → LeadCreated | Leads (A18) | `POST /api/v1/leads` | ⬜ |
-| AC-86 | Hotels booking mode | `getPublicConfig()` → modes.hotels.mode | Settings › Booking modes | `GET /api/v1/config/public` | ⬜ |
-| AC-87 | Hotel leads (place, dates, rooms, nationality, budget band, meals, preferences) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
-| AC-88 | Package booking card and bar (from price, prices per sharing, departures with seats, any date) | `getPackage()` → fromPrice, prices, departures, anyDate | Travel › Tour packages | `GET /api/v1/packages/{slug}` | ⬜ |
-| AC-89 | Package leads (package, departure, travellers, room sharing, contact preference, notes) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
-| AC-90 | Plan my trip place chips (In Bangladesh, Abroad) | `getSearchSettings()` → planTripPlaces | Settings › Search | `GET /api/v1/settings/search` | ⬜ |
-| AC-91 | Plan my trip leads (places, month or dates, nights, travellers, trip for, budget band, hotels, interests, flights, visa) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
-| AC-92 | Visa fee card and phone bar (embassy fee, service charge, total per type) | `getVisaCountry()` → types[].embassyFee, embassyFeeNote, serviceCharge | Travel › Visa | `GET /api/v1/visa/countries/{slug}` | ⬜ |
-| AC-93 | Visa office visit days and address on the apply step | `getContactSettings()` → officeHours.days, addressLines | Settings › Contact and hours | `GET /api/v1/settings/contact` | ⬜ |
-| AC-94 | Visa applications (country, type, travel date, applicants, document metadata, visit, notes) | `POST /api/leads` → `createLead()` (Phase C: files to the private bucket, signed and logged links) | Leads and Visa applications (A18) | `POST /api/v1/leads`, `POST /api/v1/visa/files` | ⬜ |
-| AC-95 | Store bar (store name, tagline, search suggestions index, finder link when a category has compatibility) | `getSiteSettings()` → storeName; `getShopContent()` → tagline; `listCategories()`, `listBrands()`, `listProducts()` | Settings › General; Content › Store; Waafas World › Products | `GET /api/v1/shop/search-index` | ⬜ |
-| AC-96 | Store row headings | `listStoreRows()` → title, subtitle (fallback to defaults) | Waafas World › Store home | `GET /api/v1/shop/rows` | ⬜ |
-| AC-97 | Store strips, corporate band, service cards and trust row | `getShopContent()` → bulkStrip, finderStrip, corporate, services[] (title, sub, body, cta, href, mediaSlot), trust[]; `getMediaSlot()` | Content › Store; Media library | `GET /api/v1/content/shop` | ⬜ |
-| AC-98 | Product page delivery and COD lines | `getShippingSettings()` → zones (name, charge, estimate); `getPaymentSettings()` → codLimit | Settings › Shipping; Settings › Payments | `GET /api/v1/config/public` | ⬜ |
-| AC-99 | Corporate and bulk quotes | `POST /api/leads` → `createLead()` (QTE reference) | Leads (A18) | `POST /api/v1/leads` | ⬜ |
-| AC-100 | Cart and checkout delivery charges, free-delivery threshold, minimum order, office pick-up | `getShippingSettings()` → zones, freeDeliveryThreshold, minimumOrder, officePickup | Settings › Shipping | `GET /api/v1/config/public` | ⬜ |
-| AC-101 | Coupons at the cart | `findCoupon(code)` → Coupon | Waafas World › Coupons | `POST /api/v1/shop/quote` | ⬜ |
-| AC-102 | Payment accounts, cash-on-delivery limit, per-product COD eligibility | `getPaymentSettings()` → offlineAccounts, codLimit; `Product.codEligible` | Settings › Payments; Products | `GET /api/v1/config/public` | ⬜ |
-| AC-103 | Orders and Track order (status, courier, tracking number, payment verified) | `createOrder()`, `findOrder()` → Order | Waafas World › Orders | `POST /api/v1/orders`, `GET /api/v1/orders/track` | ⬜ |
-| AC-104 | Service page copy: hero, facts, services, steps, form heading, questions, SEO | `getServicePage(key)` → ServicePage | Content › Pages › Service pages | `GET /api/v1/content/service-pages/:key` | ⬜ |
-| AC-105 | Service page photos and the trading loop | `getMediaSlot("printing-header" | "printing-quote-side" | "trading-header" | "trading-rfq-side")` | Content › Media library | `GET /api/v1/content/media-slots` | ⬜ |
-| AC-106 | Information page cards (About services and routes, baggage facts and rules, EMI and offline payment steps) | `listPageBlocks(page)` → icon, title, body, link, tone, order | Content › Page blocks | `GET /api/v1/content/page-blocks` | ⬜ |
-| AC-107 | Feedback form (pending until moderated) | `POST /api/feedback` → `createFeedback()` | Content › Feedback moderation | `POST /api/v1/feedback` | ⬜ |
-| AC-108 | Offline payment proofs | `POST /api/payment-proof` → `submitPaymentProof()` | Waafas World › Orders; Leads (payments) | `POST /api/v1/payment-proofs` | ⬜ |
-| AC-109 | Contact page messages (CNT) | `POST /api/leads` (module contact) → `createLead()` | Leads | `POST /api/v1/leads` | ⬜ |
+| AC-81 | Flight request form options: email required, consent text, phone countries | `getLeadFormSettings()` → emailRequired, consentText, phoneCountries | Settings › Lead form options | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-82 | Flights booking mode (Manual body vs Live body) | `getPublicConfig()` → modes.flights.mode | Settings › Booking modes | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-83 | Preferences airlines and trip airline list | `listFeaturedAirlines()`, `listAirlines()` | Flights › Airlines | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-84 | Group fares page, rail and fare banner | `listGroupFares({to, month})`, `getGroupFare(id)` → airline, route, dates, baggage, seats, fare, expiry | Flights › Group fares | `GET /api/v1/public/snapshot`, `/group-fares/:id` | ⬜ |
+| AC-85 | Flight leads (reference, contact, trip, preferences, group fare) | `POST /api/leads` → `createLead()` → LeadCreated | Leads (A18) | `POST /api/v1/public/leads` | ⬜ |
+| AC-86 | Hotels booking mode | `getPublicConfig()` → modes.hotels.mode | Settings › Booking modes | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-87 | Hotel leads (place, dates, rooms, nationality, budget band, meals, preferences) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/public/leads` | ⬜ |
+| AC-88 | Package booking card and bar (from price, prices per sharing, departures with seats, any date) | `getPackage()` → fromPrice, prices, departures, anyDate | Travel › Tour packages | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-89 | Package leads (package, departure, travellers, room sharing, contact preference, notes) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/public/leads` | ⬜ |
+| AC-90 | Plan my trip place chips (In Bangladesh, Abroad) | `getSearchSettings()` → planTripPlaces | Settings › Search | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-91 | Plan my trip leads (places, month or dates, nights, travellers, trip for, budget band, hotels, interests, flights, visa) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/public/leads` | ⬜ |
+| AC-92 | Visa fee card and phone bar (embassy fee, service charge, total per type) | `getVisaCountry()` → types[].embassyFee, embassyFeeNote, serviceCharge | Travel › Visa | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-93 | Visa office visit days and address on the apply step | `getContactSettings()` → officeHours.days, addressLines | Settings › Contact and hours | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-94 | Visa applications (country, type, travel date, applicants, document metadata, visit, notes) | `POST /api/leads` → `createLead()` (Phase C: files to the private bucket, signed and logged links) | Leads and Visa applications (A18) | `POST /api/v1/public/leads`, `POST /api/v1/visa/files` | ⬜ |
+| AC-95 | Store bar (store name, tagline, search suggestions index, finder link when a category has compatibility) | `getSiteSettings()` → storeName; `getShopContent()` → tagline; `listCategories()`, `listBrands()`, `listProducts()` | Settings › General; Content › Store; Waafas World › Products | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-96 | Store row headings | `listStoreRows()` → title, subtitle (fallback to defaults) | Waafas World › Store home | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-97 | Store strips, corporate band, service cards and trust row | `getShopContent()` → bulkStrip, finderStrip, corporate, services[] (title, sub, body, cta, href, mediaSlot), trust[]; `getMediaSlot()` | Content › Store; Media library | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-98 | Product page delivery and COD lines | `getShippingSettings()` → zones (name, charge, estimate); `getPaymentSettings()` → codLimit | Settings › Shipping; Settings › Payments | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-99 | Corporate and bulk quotes | `POST /api/leads` → `createLead()` (QTE reference) | Leads (A18) | `POST /api/v1/public/leads` | ⬜ |
+| AC-100 | Cart and checkout delivery charges, free-delivery threshold, minimum order, office pick-up | `getShippingSettings()` → zones, freeDeliveryThreshold, minimumOrder, officePickup | Settings › Shipping | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-101 | Coupons at the cart | `findCoupon(code)` → Coupon | Waafas World › Coupons | snapshot `coupons` (web quote); `POST /api/v1/public/orders` reprices | ⬜ |
+| AC-102 | Payment accounts, cash-on-delivery limit, per-product COD eligibility | `getPaymentSettings()` → offlineAccounts, codLimit; `Product.codEligible` | Settings › Payments; Products | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-103 | Orders and Track order (status, courier, tracking number, payment verified) | `createOrder()`, `findOrder()` → Order | Waafas World › Orders | `POST /api/v1/public/orders`, `POST /api/v1/public/orders/track` | ⬜ |
+| AC-104 | Service page copy: hero, facts, services, steps, form heading, questions, SEO | `getServicePage(key)` → ServicePage | Content › Pages › Service pages | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-105 | Service page photos and the trading loop | `getMediaSlot("printing-header" | "printing-quote-side" | "trading-header" | "trading-rfq-side")` | Content › Media library | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-106 | Information page cards (About services and routes, baggage facts and rules, EMI and offline payment steps) | `listPageBlocks(page)` → icon, title, body, link, tone, order | Content › Page blocks | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-107 | Feedback form (pending until moderated) | `POST /api/feedback` → `createFeedback()` | Content › Feedback moderation | `POST /api/v1/public/feedback` | ⬜ |
+| AC-108 | Offline payment proofs | `POST /api/payment-proof` → `submitPaymentProof()` | Waafas World › Orders; Leads (payments) | `POST /api/v1/public/payment-proofs` | ⬜ |
+| AC-109 | Contact page messages (CNT) | `POST /api/leads` (module contact) → `createLead()` | Leads | `POST /api/v1/public/leads` | ⬜ |
 
 ## 5. Components inventory
 
@@ -790,6 +807,11 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D127 | 10 Oct | Local development without Docker uses a private PostgreSQL cluster on port 5433 started from the installed binaries; the owner's own PostgreSQL service is never touched | The machine has 1–2 GB free; Docker Desktop is off; no access to the existing service's password | #54 |
 | D128 | 10 Oct | The seed creates the first Super Admin only from SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD (12+ characters) and never overwrites admin edits | No default password in the repository; the seed is safe on every deploy | #54 |
 | D129 | 10 Oct | The admin is a backend-for-frontend: the web signs staff in through the API server to server and keeps the tokens in its own httpOnly, Secure, SameSite cookies; the API takes Bearer tokens only and never sets cookies | No cross-site cookies between the web and API domains, no CSRF surface on the API | #55 |
+| D130 | 11 Oct | The web reads all public content from one snapshot, `GET /api/v1/public/snapshot` (ETag, server to server), instead of the per-entity GET endpoints planned in A4 | One request per revalidation; the fixture repositories run unchanged on the snapshot; the admin's writes invalidate it and revalidate the web by key | #56 |
+| D131 | 11 Oct | Public intake is server to server: the web keeps same-site, Turnstile and visitor limits; the API checks the intake key in constant time, adds per-visitor limits at twice the web's numbers and takes an Idempotency-Key header (UUID). Only successful outcomes are replayed (24 h); refusals release the key | A refused order must be fixable without a new page load (#61); a double tap must never make two leads or orders | #56 |
+| D132 | 11 Oct | Orders lock the product documents (SELECT … FOR UPDATE) while pricing and taking stock | Launch volume makes the serialisation cheap and it rules out overselling; stock rows move to their own table with the D125 normalisation | #56 |
+| D133 | 11 Oct | Emails go through a BullMQ queue (5 attempts, exponential backoff, failed jobs kept) when REDIS_URL is set and in process otherwise; staff alerts go to STAFF_ALERT_EMAIL until per-module recipients exist in Settings › Notifications; every email is logged | A slow mail provider never slows a submit; development and tests need no Redis | #56 |
+| D134 | 11 Oct | OpenAPI 3.1 is built from a route table and the shared zod contracts (`z.toJSONSchema`) and served outside production only | No extra dependency; the contracts the API validates with are the ones documented | #56 |
 
 ## 9. Bugs and known issues
 
@@ -801,6 +823,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Visitors who dismissed the announcement may see it collapse right after hydration on their next visit | P2 | announcement bar | Accepted (D50); revisit if field CLS shows it |
 | #39 Home first-load JS 346 KB and simulated LCP 4.1 s over budget (shell alone 308 KB, 84); picker open long tasks 180–430 ms at 4x CPU | P1 | `/`, search pickers | Open, due with A7 |
 | #51 Lead steps lost travellers and rooms without a search; broken deep links; footer second logo; SEO gaps | P1 | flights, hotels, store bar, footer, SEO | Fixed in #51 |
+| #60 VAT invoice BIN accepted only the letter d (regex lost its backslash), so every VAT-invoice order failed | P0 | checkout, shared contract | Fixed in #56 with a regression test |
+| #61 After a refused order the checkout kept the idempotency key and the web cached the refusal, so fixing the cart did not help for 10 minutes | P0 | checkout | Fixed in #56 with a regression test |
 | #52 Signature motion moments missing (flight path, results morph, route arc, add-to-cart arc, magnetic buttons) | P1 | home, flights, store | Open |
 | Hotel stay picks past 30 nights reset the check-in | P2 | search card | Fixed in #8 with a regression test |
 | Chip radios in the flights and hotels second steps were off-centre (the hidden radio stayed in the flow) | P2 | `/flights`, `/hotels` | Fixed in #11; e2e covers the steps |

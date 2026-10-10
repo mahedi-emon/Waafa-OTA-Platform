@@ -493,6 +493,15 @@ export const FeedbackCreateInputSchema = z
   })
   .strict();
 
+/** Footer newsletter sign-up (FR-FTR-05): the address and where the form was. */
+export const SubscriberInputSchema = z
+  .object({
+    email: z.email().max(160),
+    source: z.string().trim().min(1).max(120).optional(),
+  })
+  .strict();
+
 export type PageBlockPage = z.infer<typeof PageBlockPageSchema>;
 export type PageBlock = z.infer<typeof PageBlockSchema>;
 export type FeedbackCreateInput = z.infer<typeof FeedbackCreateInputSchema>;
+export type SubscriberInput = z.infer<typeof SubscriberInputSchema>;
