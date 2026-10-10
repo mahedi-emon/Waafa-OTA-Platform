@@ -1,11 +1,13 @@
 # Session handoff (update at every session end)
-Updated 2026-10-10 ~02:40 Dhaka.
-Where we are: #34 (A1b) merged (PR #38, eb6ceaf), closed, Project Done. A8 (#8) built on `feat/8-search-card`
-(commit cda9e4d pushed): search card + pickers + URL state + logging + recent + Back restore; all gates green
-(guards, lint, typecheck, unit 241, e2e 31, axe). Independent subagent review running; then PR "Closes #8" → CI →
-squash-merge → close → Project Done. Perf budget gap (shell 84/308 KB, with card ~75/346 KB; picker long tasks
-180–430 ms at 4x CPU) logged as #39 (P1, Ready, due with A7).
-Next three steps: 1) apply review fixes, PR #8 merge; 2) A7 Home (#7): 13 sections from data, video hero with poster
-LCP, search card slot, team bento; fix #39 alongside (hero poster LCP, trim client JS: zod via NewsletterForm,
-unused JS); 3) A9 results shell + flights Manual mode (search → results bar morph, route arc).
-Deadline: behind by ~6 issues (Phase A due 11 Oct); cuts proposed in TRACKER section 10 item 5.
+Updated 2026-10-10 08:40 Dhaka.
+Done this session: #34 A1b (PR #38), #8 A8 search card (PR #40), #7 A7 Home (PR #41). In progress: #9 A9 on
+`feat/9-flights` — results shell, Flights Manual request, /api/leads (idempotency, rate limit, Turnstile-ready),
+boarding-pass success, /flights/group-fares; all gates green locally (unit 144, e2e 43, axe). Next: PR "Closes #9" →
+CI → squash-merge → close → Project Done (item PVTI_lAHOBsdPus4BmHeEzg_hv10).
+Open bug #39 (P1): perf budget (Home 71–74, /flights 65; JS ~350 KB, fonts 78 KB, HTML 69 KB on simulated Slow 4G).
+Next three steps: 1) merge #9; 2) A10 hotels Manual (reuse results shell, LeadSuccess, FormField/PhoneField,
+/api/leads; add hotelLeadForm like flightLeadForm); 3) A11 packages + Plan My Trip, then A12 visa.
+Owner decision pending: launch scope for 13 Oct (behind ~6 issues; TRACKER section 10 item 5).
+Gotchas: shell scripts with regex via node -e lose backslashes (use Serena replace_content or files in scratchpad);
+PowerShell paths with [locale] need -LiteralPath; `new Date()` in server components fails prerender (use client
+hooks like useDhakaToday); RHF: use useWatch not watch() (React Compiler lint).

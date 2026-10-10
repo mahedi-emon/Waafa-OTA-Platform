@@ -255,6 +255,12 @@ export const LeadFormSettingsSchema = z
     consentText: z.string().min(1),
     /** First-response target in minutes during office hours (PRD §3: 30). */
     slaMinutes: z.number().int().positive(),
+    /** Countries offered in the phone field's country picker (ISO codes, first is the default). */
+    phoneCountries: z
+      .array(z.string().regex(/^[A-Z]{2}$/))
+      .min(1)
+      .max(40)
+      .default(["BD"]),
   })
   .strict();
 

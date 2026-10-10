@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 06:15 Asia/Dhaka · Phase: A · Frontend · Current: #7 · A7 Home (then #9 A9 results + flights Manual) · Progress: 10/24 issues (42%) after #7 merges · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (cuts in section 10; owner decision needed on launch scope)
+Updated: 10 Oct 08:40 Asia/Dhaka · Phase: A · Frontend · Current: #9 · A9 Results + Flights Manual (then #10 A10 Hotels) · Progress: 11/24 issues (46%) after #9 merges · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 10 | 1 (#7) | 0 | 42% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 11 | 1 (#9) | 0 | 46% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #9 · A9 Results shell + Flights Manual mode + group fares — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 06:40 → 10 Oct |
+| Branch · PR · merge | `feat/9-flights` · see section 13 · squash |
+| Built | `/flights` results shell: trip summary bar with Edit (the A8 card opens prefilled from the URL), preferences rail (sheet below 1280 px), ResultsBody switching Manual/Live from the public config, sticky help card (call, WhatsApp, live office status, why ask WAAFA); Manual two-step request (React Hook Form + zod: contact with +880 phone picker, then the trip prefilled from the URL or the group fare with a fixed date, contact preference, best time, notes, consent); `POST /api/leads` (same-site, 16 KB, rate limit, Turnstile when keys exist, idempotency key per request); boarding-pass success (drawn check, light confetti, reference, three steps, WhatsApp with the reference); error state; group fares rail; `/flights/group-fares` with a no-JS filter form, sort, empty state and the rules note |
+| Files and components | `app/[locale]/(site)/flights/{page.tsx,_components/*,group-fares/page.tsx}`, `components/results/{TripSummaryBar,HelpCard,ResultsBody,GroupFaresRail}`, `components/leads/{LeadSuccess,Confetti}`, `components/forms/{FormField,PhoneField}`, `lib/leads/{flightLeadForm,phone,idempotency,turnstile}.ts`, `lib/http/readCappedBody.ts`, `lib/search/flightDraft.ts`, `app/api/leads/route.ts`, `FlightPreferencesSchema`, `LeadFormSettings.phoneCountries` |
+| Screens matched | Flights, Flights-2, Flights-done, Flights-err, Flights-edit, FlightsFare, Flights-m, Flights-m-2, Flights-m-done, Flights-m-err, Flights-m-prefs, FlightsFare-m, GroupFares, GroupFares-empty, GroupFares-m, GroupFares-m-empty |
+| Admin control | AC-81 – AC-85 |
+| Tests | unit +14 (phone E.164, idempotency, flight lead form, flight draft); e2e +6 (search → steps → success with reference, validation, step 2 rules, one idempotency key on double submit, group fare request with fixed date, empty filter); suite 43 · axe pass · Lighthouse mobile `/flights` 65 / 100 / 96 / 100, `/flights/group-fares` 77 / 99 / 96 / 100 (#39) |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 |
+| Tools and skills | Serena, shadcn primitives, Playwright scripts, Lighthouse CLI; skills design-taste-frontend, frontend-design, ui-ux-pro-max rules |
+| Decisions | D71 – D74 |
+| Bugs and follow-ups | #39 (perf); search → results layoutId morph and the route arc are deferred to A22 polish (D74) |
 
 ### #7 · A7 Home: 13 sections from data, video hero with word reveal — ✅ Done
 | Field | Value |
@@ -332,6 +347,11 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-78 | Reviews cards (Facebook link, Leave feedback) and testimonials | `getHomeContent()` → reviews; `getSiteSettings()` → reviewsUrl; `listPublicFeedback()` (approved only) | Content › Home; Content › Feedback moderation | `GET /api/v1/feedback?status=approved` | ⬜ |
 | AC-79 | Closing band and office card | `getHomeContent()` → cta; `getContactSettings()`; `getMediaSlot("office")` | Content › Home; Settings › General; Media library | `GET /api/v1/content/home`, `/settings/contact` | ⬜ |
 | AC-80 | Home JSON-LD (Organization, TravelAgency) | `getSiteSettings()`, `getContactSettings()` → names, address, hours, socials | Settings › General | — (rendered from settings) | ⬜ |
+| AC-81 | Flight request form options: email required, consent text, phone countries | `getLeadFormSettings()` → emailRequired, consentText, phoneCountries | Settings › Lead form options | `GET /api/v1/settings/lead-form` | ⬜ |
+| AC-82 | Flights booking mode (Manual body vs Live body) | `getPublicConfig()` → modes.flights.mode | Settings › Booking modes | `GET /api/v1/config/public` | ⬜ |
+| AC-83 | Preferences airlines and trip airline list | `listFeaturedAirlines()`, `listAirlines()` | Flights › Airlines | `GET /api/v1/airlines` | ⬜ |
+| AC-84 | Group fares page, rail and fare banner | `listGroupFares({to, month})`, `getGroupFare(id)` → airline, route, dates, baggage, seats, fare, expiry | Flights › Group fares | `GET /api/v1/group-fares`, `/group-fares/:id` | ⬜ |
+| AC-85 | Flight leads (reference, contact, trip, preferences, group fare) | `POST /api/leads` → `createLead()` → LeadCreated | Leads (A18) | `POST /api/v1/leads` | ⬜ |
 
 ## 5. Components inventory
 
@@ -522,6 +542,10 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D68 | 10 Oct | Home carousels (offers, fares, packages, posts, team) are CSS scroll-snap rows on phones and grids on desktop; Embla stays for galleries that need arrows | No carousel JS on Home (#39 budget); native swipe and keyboard scroll | #7 |
 | D69 | 10 Oct | Non-list Home copy lives in one `HomeContent` record (hero, why, store, reviews, cta); section headings use `HomeSection.kicker/title/subtitle` | Everything a visitor reads is admin-editable without a schema per section | #7 |
 | D70 | 10 Oct | Countries and airlines show code chips, team members without photos show initials on the ribbon | No flags, logos or stock faces until real assets exist | #7 |
+| D71 | 10 Oct | Lead intake is `POST /api/leads` (route handler) with an idempotency key, rate limit, 16 KB cap and same-site check; Turnstile turns on when `TURNSTILE_SECRET_KEY` exists | One endpoint for every module; Phase C points it at the API without UI changes | #9 |
+| D72 | 10 Oct | Step 2 uses native date inputs and shadcn selects for From/To instead of the full pickers | The trip is already chosen in the search card; native date pickers are fast and accessible on phones; Edit search opens the full card | #9 |
+| D73 | 10 Oct | Group fares filter with a plain GET form (no client JS); sorting is server-side | Shareable URLs, works before hydration, no bundle cost | #9 |
+| D74 | 10 Oct | The search → results `layoutId` morph and the route arc with a gliding plane are deferred to A22 polish | Results routes are full page loads today (Activity keeps Home); building the morph needs a persistent layout and `domMax` (budget #39) | #9 |
 
 ## 9. Bugs and known issues
 
@@ -576,6 +600,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 06:15–08:40 | A7 Home merged (#41); A9 results shell, Flights Manual two-step request, lead intake API with idempotency and rate limits, boarding-pass success, group fares page and rail | #7, #9 | #41 | unit 144 · e2e 43 · axe pass |
 | 10 Oct 01:00–06:15 | #34 A1b closed (inner-page competitor Lighthouse); A8 search card built, independent subagent review (15 findings, 14 fixed), merged; perf budget gap logged as #39; A7 Home built (13 sections from data, CSS reveals, snap rows, JSON-LD, robots and sitemap) | #34, #8, #39, #7 | #38, #40 | unit 245 · e2e 37 · axe pass · Lighthouse / 71–74 / 100 / 96 / 100 |
 | 09 Oct 17:30–20:56 | A0 merged (#35) with branch protection; A1b docs pushed; A5 footage sourced by a subagent (7 real clips; power bank skipped, no free real footage); A6 layout shell built and verified at five widths; a usage limit paused work for about 90 minutes | #27, #34, #5, #6 | #35 | e2e 30 · unit all green |
 | 09 Oct 16:30–17:20 | v4 PROMPT 1: audit, tool check (all MCPs and four skills), GitHub planning (labels, milestone F, epics #28–#33, A0 #27, sub-issues, Project fields, squash-only), A0 setup in progress | #27, #5 | — | guards + hook negative tests |
@@ -586,6 +611,6 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. A9 (#9) results shell + flights Manual mode (2-step form, Turnstile test keys, boarding-pass success, group fares page and rail); hosts the search card in compact form and the search → results morph.
-2. #39 perf budget alongside A9: trim client JS (zod off the layout bundle, lazy NewsletterForm, unused JS), font subsetting, smaller HTML payload; re-measure `/` median of 3.
-3. A10 hotels Manual mode, then A11 packages and A12 visa; owner decision on launch scope (section 10 item 5 and section 11).
+1. A10 (#10) Hotels Manual mode on the same results shell and lead API (hotel lead form, rooms and guests from the URL).
+2. A11 (#11) Tour packages list, detail and query + Plan My Trip; A12 (#12) visa list, country page and apply.
+3. #39 perf alongside (client JS, fonts, HTML size); owner decision on launch scope (section 10 item 5).

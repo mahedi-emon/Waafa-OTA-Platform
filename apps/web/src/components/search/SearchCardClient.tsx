@@ -21,6 +21,7 @@ import {
   firstErrorField,
   initialSearchState,
   searchReducer,
+  type FlightDraft,
   type SearchTab,
 } from "@/lib/search/searchState";
 import { FlightPanel } from "./FlightPanel";
@@ -43,7 +44,13 @@ import { useIsDesktop } from "./useIsDesktop";
 import { useRecentSearches } from "./useRecentSearches";
 import { VisaPanel } from "./VisaPanel";
 
-type SearchCardClientProps = { data: SearchCardData; source: string; className?: string };
+type SearchCardClientProps = {
+  data: SearchCardData;
+  source: string;
+  className?: string;
+  /** The trip from the URL (results pages): the card opens with it filled in. */
+  initialFlight?: FlightDraft | null;
+};
 
 const PickerSheet = dynamic(() => import("./PickerSheet").then((mod) => mod.PickerSheet), {
   ssr: false,
@@ -94,12 +101,13 @@ function sendSearchLog(body: string) {
  * The search card's interactive island (SearchCard board): glass card, four tabs, fields that open pickers,
  * validation with announced errors, URL building, async search logging and recent searches.
  */
-function SearchCardClient({ data, source, className }: SearchCardClientProps) {
+function SearchCardClient({ data, source, className, initialFlight }: SearchCardClientProps) {
   const t = useTranslations("Search");
   const router = useRouter();
-  const [state, dispatch] = useReducer(searchReducer, data.defaultOrigin, (origin) =>
-    initialSearchState({ origin }),
-  );
+  const [state, dispatch] = useReducer(searchReducer, data.defaultOrigin, (origin) => {
+    const base = initialSearchState({ origin });
+    return initialFlight ? { ...base, flight: initialFlight } : base;
+  });
   const isDesktop = useIsDesktop();
   const today = useDhakaToday();
   const [recent, saveRecent] = useRecentSearches();
