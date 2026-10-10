@@ -41,8 +41,7 @@ function ObjectField({ schema, path, value, optional, bare = false }: ObjectFiel
     <div className="flex flex-col gap-4">
       {preview ? (
         <div
-          role="img"
-          aria-label={typeof record.alt === "string" ? record.alt : ""}
+          aria-hidden="true"
           className="h-32 w-48 rounded-xl border border-mist-200 bg-mist-100 bg-cover bg-center"
           style={{ backgroundImage: `url("${preview.replace(/"/g, "%22")}")` }}
         />
