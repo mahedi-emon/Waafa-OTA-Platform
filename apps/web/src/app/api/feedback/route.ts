@@ -9,8 +9,5 @@ export const POST = createSubmissionHandler({
   maxBytes: 8_192,
   field: "feedback",
   schema: FeedbackCreateInputSchema,
-  run: async (input) => {
-    const stored = await submitFeedback(input);
-    return { firstName: stored.name.split(/\s+/)[0] ?? stored.name };
-  },
+  run: (input, context) => submitFeedback(input, context),
 });

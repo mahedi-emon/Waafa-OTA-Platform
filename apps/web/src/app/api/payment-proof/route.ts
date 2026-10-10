@@ -9,8 +9,5 @@ export const POST = createSubmissionHandler({
   maxBytes: 8_192,
   field: "proof",
   schema: PaymentProofInputSchema,
-  run: async (input) => {
-    const stored = await submitPaymentProof(input);
-    return { reference: stored.reference, receivedAt: stored.createdAt };
-  },
+  run: (input, context) => submitPaymentProof(input, context),
 });

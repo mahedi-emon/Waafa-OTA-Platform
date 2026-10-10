@@ -225,12 +225,14 @@ async function BlogContent({ searchParams }: Pick<PageProps<"/[locale]/blog">, "
           <p className="mt-1 text-[14.5px] text-white/80">{t("newsletterLead")}</p>
         </div>
         <NewsletterForm
+          source="blog"
           placeholder={footer.newsletterPlaceholder}
           button={footer.newsletterButton}
           labels={{
             email: tFooter("emailLabel"),
             invalid: tFooter("invalidEmail"),
             subscribed: tFooter("subscribed"),
+            failed: tFooter("subscribeFailed"),
           }}
         />
       </section>

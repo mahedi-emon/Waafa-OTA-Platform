@@ -11,9 +11,8 @@ const allow = createRateLimiter({ limit: 30, windowMs: 60_000 });
  */
 export async function POST(request: Request) {
   if (!isSameSite(request)) return new Response(null, { status: 403 });
-  if (!allow(`search-log:${clientKey(request.headers)}`)) {
-    return new Response(null, { status: 429 });
-  }
+  const ip = clientKey(request.headers);
+  if (!allow(`search-log:${ip}`)) return new Response(null, { status: 429 });
   const text = await readCappedBody(request, MAX_BODY_BYTES);
   if (text === null) return new Response(null, { status: 413 });
   let body: unknown;
@@ -22,6 +21,11 @@ export async function POST(request: Request) {
   } catch {
     return new Response(null, { status: 400 });
   }
-  const logged = await logSearch(body);
-  return new Response(null, { status: logged ? 204 : 400 });
+  try {
+    const logged = await logSearch(body, { clientIp: ip });
+    return new Response(null, { status: logged ? 204 : 400 });
+  } catch {
+    // Logging never blocks a visitor: a search the API could not store is dropped.
+    return new Response(null, { status: 202 });
+  }
 }

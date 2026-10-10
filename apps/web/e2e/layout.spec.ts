@@ -103,7 +103,9 @@ test.describe("desktop header (1440)", () => {
     const input = page.getByLabel("Email address");
     await input.fill("not-an-email");
     await page.getByRole("button", { name: "Subscribe" }).click();
-    await expect(page.locator("#newsletter-error")).toContainText("Enter a valid email address");
+    await expect(page.locator("#newsletter-error-footer")).toContainText(
+      "Enter a valid email address",
+    );
     await input.fill("sample@example.com");
     await page.getByRole("button", { name: "Subscribe" }).click();
     await expect(page.getByText(/Fare drops and visa news will reach you/)).toBeVisible();

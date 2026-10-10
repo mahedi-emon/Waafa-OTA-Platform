@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { LeadCreateInputSchema, type LeadCreated } from "@waafa/shared";
 import { createLead } from "@/lib/data/leads";
+import { intakeFailure } from "@/lib/http/intakeFailure";
 import { isSameSite, readCappedBody } from "@/lib/http/readCappedBody";
 import { createIdempotencyStore, isIdempotencyKey } from "@/lib/leads/idempotency";
 import { verifyTurnstile } from "@/lib/leads/turnstile";
@@ -45,9 +46,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const created = await once(body.idempotencyKey, () => createLead(parsed.data));
+    const key = body.idempotencyKey;
+    const created = await once(key, () =>
+      createLead(parsed.data, { clientIp: ip, idempotencyKey: key }),
+    );
     return NextResponse.json(created, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "unavailable" }, { status: 503 });
+  } catch (error) {
+    return intakeFailure(error);
   }
 }

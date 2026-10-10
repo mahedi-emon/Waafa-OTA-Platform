@@ -58,6 +58,11 @@ idempotent seed, then starts the API. The same image runs the job worker with `p
 Outside production the OpenAPI document is at `http://localhost:4000/api/v1/openapi.json`. The public endpoints
 (`/api/v1/public/*`) answer only the web server, which sends the `x-intake-key` header.
 
+**Web on the API** (Phase C): copy `apps/web/.env.example` to `apps/web/.env.local` and set `WAAFA_API_URL`
+(for example http://localhost:4000), `WAAFA_INTAKE_KEY` (the API's INTAKE_KEY) and `REVALIDATE_SECRET` (the API's,
+with the API's WEB_REVALIDATE_URL pointing at http://localhost:3000/api/revalidate). Without them the site runs on the
+Sample fixtures.
+
 ## What is where
 
 | Path | What |

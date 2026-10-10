@@ -67,11 +67,26 @@ Serena memory `audit_findings`.
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
 
-### #57 · B4 Admin API — 🟡 In review
+### #64 · C1 Web on the API: snapshot source, intake forwarding, revalidation — 🟡 In review
 | Field | Value |
 | --- | --- |
-| Opened → closed | 11 Oct 01:20 → (PR open) |
-| Branch · PR · merge | `feat/57-admin-api` · see section 13 · squash |
+| Opened → closed | 11 Oct 00:40 → (PR open) |
+| Branch · PR · merge | `feat/64-web-api-source` · see section 13 · squash |
+| Built | API mode when `WAAFA_API_URL` and `WAAFA_INTAKE_KEY` are set (D136): every repository read runs the tested fixture implementation on the API snapshot, read once inside `"use cache"` with the `snapshot` tag (the last good snapshot is served for seconds at a time if the API blips); leads, orders (409 refusals mapped to changed, minimum, cod, pickup), order tracking, feedback, payment proofs, search logs and newsletter sign-ups go to `/api/v1/public/*` with the visitor address and the form's idempotency key; the API's own 429 stays a 429. `POST /api/revalidate` checks the HMAC-SHA256 signature in constant time, refuses calls older than five minutes and expires the snapshot and every data tag at once. The newsletter form posts to the new `/api/newsletter` (busy state, failure message from messages) and no longer repeats the same element ids when the blog page and the footer both show it. `apps/web/.env.example` and the README document the switch |
+| Files and components | `apps/web/src/lib/data/api/{apiClient,snapshot,apiRepositories}.ts` (+ tests), `lib/data/{source,leads,orders,content,tags}.ts`, `lib/http/{intakeFailure,signature}.ts` (+ test), `lib/http/handleSubmission.ts`, `app/api/{revalidate,newsletter}/route.ts`, `app/api/{leads,orders,feedback,payment-proof,search/log}/route.ts`, `shop/track/page.tsx`, `components/layout/NewsletterForm.tsx`, `vitest.config.ts` (server-only alias), `apps/web/.env.example`, `.gitignore` |
+| Screens matched | — (no visual change; newsletter busy state) |
+| Admin control | Section 4 rows now served by the API in API mode |
+| Tests | web +9 (API config, client headers, 204, refusals; snapshot parsing round trip and broken key; HMAC); web unit 219 passed; e2e layout, orders, content, smoke, flights 41 passed in fixture mode |
+| Widths checked | — |
+| Tools and skills | Serena; Next.js 16 bundled docs (cacheLife nesting, revalidateTag `{ expire: 0 }` from route handlers) |
+| Decisions | D136 |
+| Bugs and follow-ups | Turnstile has no browser widget yet: setting TURNSTILE_SECRET_KEY would refuse every form (follow-up issue); API-mode end-to-end run waits for a database (local PostgreSQL stopped for low memory) |
+
+### #57 · B4 Admin API — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 00:33 → 11 Oct 00:58 |
+| Branch · PR · merge | `feat/57-admin-api` · #63 · `0e09e5b` |
 | Built | Under `/api/v1/admin`, staff Bearer token and roles: dashboard (KPIs for the person's modules, leads by module and status, orders and revenue this month, pending feedback and proofs, top routes, activity); leads (saved views all, open, mine, unassigned, overdue by the admin SLA; module, status, assignee, created dates, search by reference, name, email or phone; detail with timeline, duplicate links; status rules with first-response and closed stamps, Booked amount, Cancelled and Lost reason; priority and assignee; notes, calls, emails, WhatsApp; bulk assign and status; CSV export with formula neutralising and a byte order mark); orders (list, detail with history and proofs, workflow transitions, courier required to ship, payment verified, cancellation puts stock back; Accounts may verify payment only); feedback moderation (approval needs consent, refreshes the public wall); payment proofs (verify marks the order paid); search activity with top routes and the search-to-lead rate; subscribers; email log; generic content for every CONTENT_MODEL key (overview by role, read, create, save with optimistic version and id moves, delete, reorder, settings) validated with the shared schemas; users and roles (add with a first password, roles, deactivate with sign-out everywhere, reset, last Super Admin kept), own password change, staff directory, audit log. Every write is audited; content writes rebuild the snapshot and call the web's revalidation |
 | Files and components | `apps/api/src/admin/{access,admin.controllers,admin.module,leads.service,orders.service,inbox.service,content-admin.service,users.service,dashboard.service}.ts`, `src/docs/openapi.ts` (admin routes), `src/features.ts`, `test/admin.test.ts`; `packages/shared/src/schemas/admin.ts` (list queries and inputs) |
 | Screens matched | — (admin screens in A18 – A21) |
@@ -85,7 +100,7 @@ Serena memory `audit_findings`.
 ### #56 · B3 Public API: snapshot, intake and notifications — ✅ Done
 | Field | Value |
 | --- | --- |
-| Opened → closed | 11 Oct 00:05 → 11 Oct 01:20 |
+| Opened → closed | 10 Oct 23:40 → 11 Oct 00:33 |
 | Branch · PR · merge | `feat/56-public-intake` · #62 · `d179a0f` |
 | Built | Under `/api/v1/public`, server to server with the intake key (constant-time check): GET snapshot (every content key the site renders, private keys empty, approved feedback without contact details; ETag and 304, rebuilt after writes); POST leads for every module (per-day references from an atomic sequence, duplicate flag for the same phone and module within 24 hours, a "created" activity, customer and staff emails); POST orders priced on the server with the shared `priceCart`, running deals and scheduled coupons, product documents locked FOR UPDATE while stock is taken, refusals (changed, minimum, cod, pickup) returned as 409 with the quote; POST orders/track (order number plus the last ten digits of the phone); POST feedback (pending, staff alert), payment-proofs (accounts alert with the account name), search-logs and subscribers. Idempotency-Key header (UUID) on every create: the outcome is replayed for 24 hours, refusals release the key. Per-visitor limits behind the web's. Notifications: admin templates with `{{variables}}`, BullMQ queue with 5 retries and backoff when Redis is set (worker process), in-process otherwise, every email in the notification log; Resend, SMTP (Mailpit) or memory. Web revalidation client (HMAC-signed, batched). OpenAPI 3.1 from the zod contracts at /api/v1/openapi.json outside production |
 | Files and components | `apps/api/src/public/{public.controller,public.module,intake.service}.ts`, `src/content/content.service.ts`, `src/notifications/{mailer,notification.service}.ts`, `src/revalidate/revalidate.service.ts`, `src/common/{idempotency.service,references,serverKey}.ts`, `src/services.module.ts`, `src/docs/openapi.ts`, `src/worker.ts`, `src/features.ts`, `test/public.test.ts`; `packages/shared/src/helpers/{leadSummary,deals}.ts`, `OrderTrackInputSchema`, `SubscriberInputSchema` |
@@ -828,6 +843,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D133 | 11 Oct | Emails go through a BullMQ queue (5 attempts, exponential backoff, failed jobs kept) when REDIS_URL is set and in process otherwise; staff alerts go to STAFF_ALERT_EMAIL until per-module recipients exist in Settings › Notifications; every email is logged | A slow mail provider never slows a submit; development and tests need no Redis | #56 |
 | D134 | 11 Oct | OpenAPI 3.1 is built from a route table and the shared zod contracts (`z.toJSONSchema`) and served outside production only | No extra dependency; the contracts the API validates with are the ones documented | #56 |
 | D135 | 11 Oct | Lead access by role: Travel Sales sees flights, hotels, packages, plan my trip, contact, EMI and bulk; Visa Officer sees visa; Shop Manager sees printing, trading and bulk; Admin and Super Admin see all. Content by area: home and content for Content Editor, travel for Content Editor and Travel Sales, visa for Visa Officer and Content Editor, shop for Shop Manager, settings for Admin (shipping for Shop Manager, payments for Accounts, announcements for Content Editor) | PRD §4 role table; a lead outside a person's modules answers 404, not 403, so references can't be probed | #57 |
+| D136 | 11 Oct | The web switches to the API by environment (`WAAFA_API_URL` + `WAAFA_INTAKE_KEY`): reads run the fixture repositories on the cached API snapshot through a proxy, writes call `/api/v1/public/*` from the existing accessors with the visitor address and idempotency key; revalidation expires every tag | One tested read implementation for both sources; no page or component changes; a save in Admin shows on the next request | #64 |
 
 ## 9. Bugs and known issues
 

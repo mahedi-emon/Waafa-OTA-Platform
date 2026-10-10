@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { placeOrder, type PlaceOrderResult } from "@/lib/data/orders";
+import { intakeFailure } from "@/lib/http/intakeFailure";
 import { isSameSite, readCappedBody } from "@/lib/http/readCappedBody";
 import { createIdempotencyStore, isIdempotencyKey } from "@/lib/leads/idempotency";
 import { verifyTurnstile } from "@/lib/leads/turnstile";
@@ -40,13 +41,16 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await once(body.idempotencyKey, () => placeOrder(body.order));
+    const key = body.idempotencyKey;
+    const result = await once(key, () =>
+      placeOrder(body.order, { clientIp: ip, idempotencyKey: key }),
+    );
     if (result.ok) return NextResponse.json(result.order, { status: 201 });
     return NextResponse.json(
       { error: result.reason, quote: result.quote },
       { status: result.reason === "invalid" ? 422 : 409 },
     );
-  } catch {
-    return NextResponse.json({ error: "unavailable" }, { status: 503 });
+  } catch (error) {
+    return intakeFailure(error);
   }
 }
