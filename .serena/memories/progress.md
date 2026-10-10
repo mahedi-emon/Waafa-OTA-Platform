@@ -1,7 +1,10 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
-- 2026-10-10 08:40 Dhaka — #9 A9 built (flights results + Manual request + lead API + group fares); PR pending.
+- 2026-10-10 13:30 Dhaka — #11 merged (PR #44). #12 A12 visa list/country/apply + Visa Guide built on `feat/12-visa`; PR pending.
+  Status: Phase A 14/24 after #12 (58%).
+- 2026-10-10 12:10 Dhaka — #11 A11 packages list, package detail (booking card, inline PKG query), Plan my trip (CTR) built; PR #44.
+- 2026-10-10 09:45 — #9 A9 merged (PR #42), #10 A10 hotels merged (PR #43).
 - 2026-10-10 06:15 — #7 A7 Home merged (PR #41). 03:30 — #8 A8 search card merged (PR #40). 01:20 — #34 A1b (PR #38).
-- Status: Phase A 11/24 after #9 (46%). Behind ~6 issues vs HANDOFF; owner scope decision pending. Bug #39 open (perf).
+- Status: Phase A 13/24 after #11 (54%). Behind ~6 issues vs HANDOFF; owner scope decision pending. Bug #39 open (perf).
 - 2026-10-09 — A0 #27 (PR #35), A6 #6 (PR #36), A5 #5 (PR #37), A4 #4 (PR #26), A3 #3 (PR #25), A2 #2 (PR #24),
   A1 #1 (PR #23).
-- Next: A10 hotels → A11 packages + Plan My Trip → A12 visa → A13–A16 → A17 → A18–A21 admin → A22.
+- Next: A12 visa → A13–A16 store → A17 static pages → A18–A21 admin → A22.

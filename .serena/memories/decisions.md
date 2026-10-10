@@ -23,7 +23,20 @@
 - D57 search tabs/trip pill = CSS transform (no layoutId/domMax). D58 country code chip, no flags. D59 card one row from
   xl (1280). D60 Back restore via sessionStorage snapshot (+ Activity). D61 pickers/popover/vaul/submit logic lazy.
   D62 no tour budget field (board). D63 week starts Sunday; >30-night days disabled.
+- D64–D77 (A7–A10): see TRACKER; D75 one LeadRequestCard (contact first) for every Manual module.
+- D78 unknown package slug = Next not-found, status 200 + noindex (Cache Components streaming); branded 404 in A17.
+  D79 package query inline at #query, booking card choices via PackageBookingProvider. D80 Plan my trip contact first,
+  help card instead of live summary. D81 package filters GET form. D82 plan place chips in SearchSettings.planTripPlaces.
+  D83 native date inputs on Plan my trip. D84 package lightbox via next/dynamic.
+- D85 param pages await params inside Suspense (Next 16.4 instant-navigation check). D86 visa apply = LeadRequestCard,
+  contact first + one trip/documents step. D87 Phase A visa files stay in the browser, metadata only. D88 sanitize-html
+  in RichText (server-only). D89 visa type client state mirrored to ?type= (replaceState). D90 fully static pages use
+  the Canonical component (hoisted link), NOT alternates.canonical (build fails on /[locale] shell). D91 checklist
+  ticks not stored; SVG ring.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
   children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
   (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on
-  hover (add before:hidden); PowerShell Move-Item treats [locale] as wildcard (use bash mv / -LiteralPath).
+  hover (add before:hidden); PowerShell Move-Item treats [locale] as wildcard (use bash mv / -LiteralPath); Radix RadioGroupItem
+  with className "sr-only" stays in the flow (use "absolute inset-0 size-full opacity-0 after:hidden" + relative label);
+  Radix SelectValue is empty on SSR (pass the label as children); a stale `next start` on port 3100 makes e2e test an
+  old build (kill it first).

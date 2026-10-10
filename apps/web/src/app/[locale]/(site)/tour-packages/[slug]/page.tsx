@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CalendarDays, Check, FileCheck2, MapPin, Users, X } from "lucide-react";
@@ -11,6 +12,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PackageCard } from "@/components/travel/PackageCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Accordion,
   AccordionContent,
@@ -71,7 +73,9 @@ const section = "flex scroll-mt-36 flex-col gap-5";
  * nav, highlights, day-by-day itinerary, inclusions, prices and departures, hotels, visa and terms, questions, the
  * inline query (FR-PKG-06) and related trips. A sticky booking card on desktop, a booking bar on phones.
  */
-export default async function PackagePage({ params }: PageProps<"/[locale]/tour-packages/[slug]">) {
+async function PackagePageContent({
+  params,
+}: Pick<PageProps<"/[locale]/tour-packages/[slug]">, "params">) {
   const { slug } = await params;
   const pkg = await getPackage(slug);
   if (!pkg) notFound();
@@ -430,7 +434,7 @@ export default async function PackagePage({ params }: PageProps<"/[locale]/tour-
                         <p className="text-[15px] leading-relaxed text-white/80">{pkg.visa.body}</p>
                         {pkg.visa.countrySlug ? (
                           <Link
-                            href={`/visa/${pkg.visa.countrySlug}`}
+                            href={`/visa-services/${pkg.visa.countrySlug}`}
                             className="mt-1 self-start text-[15px] font-semibold text-cyan-400 underline underline-offset-4"
                           >
                             {t("detail.visaLink")}
@@ -526,5 +530,27 @@ export default async function PackagePage({ params }: PageProps<"/[locale]/tour-
         </section>
       ) : null}
     </main>
+  );
+}
+
+/** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
+export default function PackagePage({ params }: PageProps<"/[locale]/tour-packages/[slug]">) {
+  return (
+    <Suspense
+      fallback={
+        <main
+          id="main"
+          aria-busy="true"
+          className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6"
+        >
+          <Skeleton className="h-5 w-56 rounded-full" />
+          <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
+          <Skeleton className="h-10 w-3/4 rounded-xl" />
+          <Skeleton className="h-[480px] rounded-2xl" />
+        </main>
+      }
+    >
+      <PackagePageContent params={params} />
+    </Suspense>
   );
 }
