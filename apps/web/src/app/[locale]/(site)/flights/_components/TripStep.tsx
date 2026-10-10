@@ -243,13 +243,16 @@ function TripStep({
                 <label
                   key={key}
                   className={cn(
-                    "flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border px-2 text-[14px] font-medium",
+                    "relative flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border px-2 text-[14px] font-medium has-focus-visible:ring-3 has-focus-visible:ring-ring/40",
                     field.value === key
                       ? "border-electric-600 bg-electric-50 text-navy-900"
                       : "border-mist-200 text-ink-900",
                   )}
                 >
-                  <RadioGroupItem value={key} className="sr-only" />
+                  <RadioGroupItem
+                    value={key}
+                    className="absolute inset-0 size-full opacity-0 after:hidden"
+                  />
                   <Icon aria-hidden="true" className="size-4" />
                   {t(`trip.${key}`)}
                 </label>

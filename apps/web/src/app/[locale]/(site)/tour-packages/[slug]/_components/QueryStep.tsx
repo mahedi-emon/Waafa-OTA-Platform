@@ -4,13 +4,12 @@ import { useId } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { cn } from "cn";
-import { HotelBudgetBandSchema, HotelMealsSchema } from "@waafa/shared";
 import { FormField } from "@/components/forms/FormField";
+import { NumberStepper } from "@/components/forms/NumberStepper";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -20,147 +19,148 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { stayStepSchema, type StayStepInput, type StayStepValues } from "@/lib/leads/hotelLeadForm";
+import {
+  packageQuerySchema,
+  type PackageQueryInput,
+  type PackageQueryValues,
+} from "@/lib/leads/packageLeadForm";
 
-type StayStepProps = {
-  defaultValues: StayStepInput;
-  nationalities: Array<{ code: string; name: string }>;
+type QueryStepProps = {
+  defaultValues: PackageQueryInput;
+  departures: Array<{ value: string; label: string }>;
+  sharings: Array<{ value: string; label: string }>;
   consentText: string;
-  today: string;
   sending: boolean;
-  onBack: (values: StayStepInput) => void;
-  onSubmit: (values: StayStepValues) => void;
+  onBack: (values: PackageQueryInput) => void;
+  onSubmit: (values: PackageQueryValues) => void;
 };
 
-/** Hotel request step 2 (Hotels-2): the stay from the search, budget, meals, how to contact, notes and consent. */
-function StayStep({
+/** Package query step 2 (PackageDetail-query): departure, travellers, room sharing, contact, notes and consent. */
+function QueryStep({
   defaultValues,
-  nationalities,
+  departures,
+  sharings,
   consentText,
-  today,
   sending,
   onBack,
   onSubmit,
-}: StayStepProps) {
-  const t = useTranslations("Hotels");
+}: QueryStepProps) {
+  const t = useTranslations("Packages");
   const tLeads = useTranslations("Leads");
   const id = useId();
-  const form = useForm<StayStepInput, unknown, StayStepValues>({
-    resolver: zodResolver(stayStepSchema),
+  const form = useForm<PackageQueryInput, unknown, PackageQueryValues>({
+    resolver: zodResolver(packageQuerySchema),
     defaultValues,
     mode: "onTouched",
   });
   const { errors, submitCount } = form.formState;
-  const checkin = useWatch({ control: form.control, name: "checkin" });
-  const error = (key: keyof StayStepInput) => {
+  const error = (key: keyof PackageQueryInput) => {
     const message = errors[key]?.message;
     if (!message) return undefined;
-    return t.has(`errors.${message}` as "errors.placeRequired")
-      ? t(`errors.${message}` as "errors.placeRequired")
+    return t.has(`errors.${message}` as "errors.departureRequired")
+      ? t(`errors.${message}` as "errors.departureRequired")
       : tLeads(`errors.${message}` as "errors.consentRequired");
   };
   const errorCount = Object.keys(errors).length;
-
-  const choice = (
-    name: "nationality" | "budgetBand" | "meals",
-    label: string,
-    options: Array<{ value: string; label: string }>,
-  ) => (
-    <FormField id={`stay-${name}`} label={label}>
-      {() => (
-        <Controller
-          control={form.control}
-          name={name}
-          render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger id={`stay-${name}`} ref={field.ref} className="h-12 w-full rounded-xl">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+  const stepper = (name: "adults" | "children" | "infants", min: number, max: number) => (
+    <Controller
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <NumberStepper
+          label={t(`query.${name}`)}
+          sub={t(`query.${name}Sub`)}
+          value={field.value}
+          min={min}
+          max={max}
+          onChange={field.onChange}
+          labels={{
+            decrease: t("query.decrease", { label: t(`query.${name}`) }),
+            increase: t("query.increase", { label: t(`query.${name}`) }),
+          }}
         />
       )}
-    </FormField>
+    />
   );
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
-      <div>
-        <h3 className="font-display text-[18px] font-bold text-navy-900">{t("stay.title")}</h3>
-        <p className="text-[14px] text-mist-600">{t("stay.lead")}</p>
-      </div>
+      <h3 className="font-display text-[18px] font-bold text-navy-900">{t("query.stepTitle")}</h3>
       <p aria-live="polite" className="sr-only">
         {submitCount > 0 && errorCount > 0 ? tLeads("errors.summary", { count: errorCount }) : ""}
       </p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField id="stay-place" label={t("stay.place")} error={error("place")}>
+        <FormField id="query-departure" label={t("query.departure")} error={error("departure")}>
           {(describedBy) => (
-            <Input
-              id="stay-place"
-              autoComplete="off"
-              aria-invalid={errors.place ? true : undefined}
-              aria-describedby={describedBy}
-              {...form.register("place")}
+            <Controller
+              control={form.control}
+              name="departure"
+              render={({ field }) => (
+                <Select value={field.value || undefined} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    id="query-departure"
+                    ref={field.ref}
+                    aria-invalid={errors.departure ? true : undefined}
+                    aria-describedby={describedBy}
+                    className="h-12 w-full rounded-xl"
+                  >
+                    <SelectValue>
+                      {departures.find((departure) => departure.value === field.value)?.label}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departures.map((departure) => (
+                      <SelectItem key={departure.value} value={departure.value}>
+                        {departure.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
           )}
         </FormField>
-        {choice(
-          "nationality",
-          t("stay.nationality"),
-          nationalities.map((n) => ({ value: n.code, label: n.name })),
-        )}
-        <FormField id="stay-checkin" label={t("stay.checkin")} error={error("checkin")}>
-          {(describedBy) => (
-            <Input
-              id="stay-checkin"
-              type="date"
-              min={today || undefined}
-              aria-invalid={errors.checkin ? true : undefined}
-              aria-describedby={describedBy}
-              {...form.register("checkin")}
+        <FormField id="query-sharing" label={t("query.roomSharing")}>
+          {() => (
+            <Controller
+              control={form.control}
+              name="roomSharing"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    id="query-sharing"
+                    ref={field.ref}
+                    className="h-12 w-full rounded-xl"
+                  >
+                    <SelectValue>
+                      {sharings.find((sharing) => sharing.value === field.value)?.label}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sharings.map((sharing) => (
+                      <SelectItem key={sharing.value} value={sharing.value}>
+                        {sharing.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
           )}
         </FormField>
-        <FormField id="stay-checkout" label={t("stay.checkout")} error={error("checkout")}>
-          {(describedBy) => (
-            <Input
-              id="stay-checkout"
-              type="date"
-              min={checkin || today || undefined}
-              aria-invalid={errors.checkout ? true : undefined}
-              aria-describedby={describedBy}
-              {...form.register("checkout")}
-            />
-          )}
-        </FormField>
-        {choice(
-          "budgetBand",
-          t("stay.budget"),
-          HotelBudgetBandSchema.options.map((band) => ({
-            value: band,
-            label: t(`stay.budgets.${band}`),
-          })),
-        )}
-        {choice(
-          "meals",
-          t("stay.meals"),
-          HotelMealsSchema.options.map((meal) => ({
-            value: meal,
-            label: t(`stay.mealOptions.${meal}`),
-          })),
-        )}
       </div>
+      <div className="divide-y divide-mist-200 rounded-xl border border-mist-200 px-4">
+        {stepper("adults", 1, 40)}
+        {stepper("children", 0, 20)}
+        {stepper("infants", 0, 20)}
+      </div>
+      {errors.infants ? (
+        <p className="-mt-3 text-[13px] text-danger-600">{error("infants")}</p>
+      ) : null}
 
       <fieldset>
         <legend id={`${id}-contact`} className="mb-2 text-[14px] font-semibold text-ink-900">
-          {t("stay.contactBy")}
+          {t("query.contactBy")}
         </legend>
         <Controller
           control={form.control}
@@ -193,7 +193,7 @@ function StayStep({
                     className="absolute inset-0 size-full opacity-0 after:hidden"
                   />
                   <Icon aria-hidden="true" className="size-4" />
-                  {t(`stay.${key}`)}
+                  {t(`query.${key}`)}
                 </label>
               ))}
             </RadioGroup>
@@ -201,10 +201,10 @@ function StayStep({
         />
       </fieldset>
 
-      <FormField id="stay-notes" label={t("stay.notes")} hint={t("stay.notesHint")}>
+      <FormField id="query-notes" label={t("query.notes")} hint={t("query.notesHint")}>
         {(describedBy) => (
           <Textarea
-            id="stay-notes"
+            id="query-notes"
             rows={3}
             maxLength={1000}
             aria-describedby={describedBy}
@@ -220,23 +220,23 @@ function StayStep({
           <div className="flex flex-col gap-1.5">
             <div className="flex items-start gap-3">
               <Checkbox
-                id="stay-consent"
+                id="query-consent"
                 ref={field.ref}
                 checked={field.value}
                 onCheckedChange={(checked) => field.onChange(checked === true)}
                 aria-invalid={errors.consent ? true : undefined}
-                aria-describedby={errors.consent ? "stay-consent-error" : undefined}
+                aria-describedby={errors.consent ? "query-consent-error" : undefined}
                 className="mt-0.5"
               />
               <label
-                htmlFor="stay-consent"
+                htmlFor="query-consent"
                 className="cursor-pointer text-[14px] leading-relaxed text-ink-900"
               >
                 {consentText}
               </label>
             </div>
             {errors.consent ? (
-              <p id="stay-consent-error" className="pl-8 text-[13px] text-danger-600">
+              <p id="query-consent-error" className="pl-8 text-[13px] text-danger-600">
                 {error("consent")}
               </p>
             ) : null}
@@ -262,4 +262,4 @@ function StayStep({
   );
 }
 
-export { StayStep };
+export { QueryStep };

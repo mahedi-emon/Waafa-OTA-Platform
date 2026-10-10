@@ -305,6 +305,9 @@ Every visual deviation from the prototype, with the reason (correction 11: the p
 | Store bar with a W mark beside "Waafas World" | One WAAFA logo in the header, "Waafas World" as text | Corrections 2 and 4 | D36 |
 | Mobile tab labelled "Shop" | "Waafas World", two lines allowed at 320 px | Correction 3 | D36 |
 | "Log in" in the header at launch | Hidden until customer accounts ship (P1) | No dead buttons at launch | A6 |
+| Package query in a modal (PackageDetail-query) | Inline section under the questions, reached by Send query from the booking card or the phone bar | One shared request card for every module; deep-linkable; no focus trap on phones (D79) | A11 |
+| Plan my trip asks contact last, with a "Your trip so far" summary | Contact first in the shared two-step card; the help card sits beside it | Lead captured early, one flow everywhere (D80); live summary in A22 | A11 |
+| Package gallery always shows five tiles | The bento adapts to 1 to 5 photos | Packages with two photos left empty tiles | A11 |
 
 ## Known gaps
 - Logo vectors: the lockup uses the supplied PNG cut-outs until the original SVG/AI arrives (owner question).

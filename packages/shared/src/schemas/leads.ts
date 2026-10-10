@@ -148,8 +148,16 @@ export const PlanTripLeadPayloadSchema = z
     nights: z.number().int().min(1).max(60),
     travellers: TravellerCountsSchema,
     budgetPerPerson: TakaSchema.optional(),
-    hotelClass: z.enum(["any", "3", "4", "5"]).default("any"),
+    /** Budget per person as the board's bands (PlanTrip): under 30k, 30–60k, 60k–1 lakh, over 1 lakh. */
+    budgetBand: z
+      .enum(["any", "under-30000", "30000-60000", "60000-100000", "over-100000"])
+      .default("any"),
+    hotelClass: z.enum(["any", "3", "4", "5", "resort"]).default("any"),
+    /** Who the trip is for (PlanTrip "This trip is for"). */
+    tripFor: z.enum(["family", "couple", "friends", "solo", "office"]).optional(),
     interests: z.array(z.string().min(1).max(30)).max(10).default([]),
+    includeFlights: z.boolean().default(true),
+    visaHelp: z.boolean().default(false),
     notes,
   })
   .strict()

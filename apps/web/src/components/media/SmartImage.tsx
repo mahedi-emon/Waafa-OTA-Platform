@@ -1,7 +1,7 @@
 import Image, { type ImageProps } from "next/image";
 import { cn } from "cn";
 
-type SmartImageProps = Omit<ImageProps, "alt" | "fill" | "placeholder"> & {
+type SmartImageProps = Omit<ImageProps, "alt" | "placeholder"> & {
   /** Required. Describe the photo; pass "" only for purely decorative images. */
   alt: string;
   /**
