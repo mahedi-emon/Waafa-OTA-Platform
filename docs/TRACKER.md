@@ -95,7 +95,8 @@ Serena memory `audit_findings`.
 | Widths checked | — |
 | Tools and skills | Serena; zod 4 `toJSONSchema`; BullMQ, nodemailer |
 | Decisions | D130 – D134 |
-| Bugs and follow-ups | #60 VAT invoice BIN regex (fixed here), #61 checkout stuck after a refusal (fixed here). The local PostgreSQL was stopped by the system for low memory on 11 Oct; API database tests ran in CI |
+| Bugs and follow-ups | #66 Two refreshes at the same moment (a page and its prefetches near token expiry) were taken for a stolen refresh token and signed staff out | P0 | API auth | Fixed in #66: a token rotated in the last 30 seconds still opens a session; regression test |
+| #60 VAT invoice BIN regex (fixed here), #61 checkout stuck after a refusal (fixed here). The local PostgreSQL was stopped by the system for low memory on 11 Oct; API database tests ran in CI |
 
 ### #55 · B2 Staff auth, roles and audit log — ✅ Done
 | Field | Value |
