@@ -6,5 +6,9 @@ import { absoluteUrl } from "@/lib/siteUrl";
  * countries, products, posts) are listed from the data layer when their pages exist (A9–A16).
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: absoluteUrl("/"), changeFrequency: "daily", priority: 1 }];
+  return [
+    { url: absoluteUrl("/"), changeFrequency: "daily", priority: 1 },
+    { url: absoluteUrl("/flights"), changeFrequency: "weekly", priority: 0.8 },
+    { url: absoluteUrl("/flights/group-fares"), changeFrequency: "daily", priority: 0.8 },
+  ];
 }

@@ -72,11 +72,29 @@ const TravellerCountsSchema = z
 
 const notes = z.string().trim().max(1000).optional();
 
+/** "Your preferences" rail on /flights (FR-FLT-03): optional, sent to the travel expert with the request. */
+export const FlightPreferencesSchema = z
+  .object({
+    stops: z.enum(["any", "direct", "one"]).default("any"),
+    times: z
+      .array(z.enum(["morning", "afternoon", "evening", "night"]))
+      .max(4)
+      .default([]),
+    airlines: z
+      .array(z.string().regex(/^[A-Z0-9]{2}$/))
+      .max(12)
+      .default([]),
+    bag: z.enum(["any", "20", "30"]).default("any"),
+    refundableOnly: z.boolean().default(false),
+  })
+  .strict();
+
 export const FlightLeadPayloadSchema = z
   .object({
     module: z.literal("flights"),
     search: FlightSearchSchema,
     groupFareId: IdSchema.optional(),
+    preferences: FlightPreferencesSchema.optional(),
     notes,
   })
   .strict();
@@ -320,5 +338,6 @@ export type LeadPayload = z.infer<typeof LeadPayloadSchema>;
 export type LeadSource = z.infer<typeof LeadSourceSchema>;
 export type LeadCreateInput = z.infer<typeof LeadCreateInputSchema>;
 export type LeadCreated = z.infer<typeof LeadCreatedSchema>;
+export type FlightPreferences = z.infer<typeof FlightPreferencesSchema>;
 export type LeadActivity = z.infer<typeof LeadActivitySchema>;
 export type Lead = z.infer<typeof LeadSchema>;

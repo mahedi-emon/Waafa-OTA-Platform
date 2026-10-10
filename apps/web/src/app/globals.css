@@ -347,6 +347,30 @@
   }
 }
 
+/* Light confetti for success states (MOTION.md "Boarding-pass success"): transform and opacity only. */
+@keyframes confetti-fall {
+  from {
+    opacity: 1;
+    transform: translate3d(0, -8px, 0) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(var(--dx, 0px), 160px, 0) rotate(var(--rot, 240deg));
+  }
+}
+
+/* Boarding pass slides out of its slot. */
+@keyframes pass-out {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes word-rise {
   from {
     opacity: 0;

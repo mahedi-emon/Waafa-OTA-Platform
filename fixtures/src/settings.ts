@@ -417,6 +417,22 @@ export const leadFormSettings: In<typeof LeadFormSettingsSchema> = {
   consentText:
     "I agree that Waafa Tours and Travel may contact me about this request by phone, WhatsApp or email.",
   slaMinutes: 30,
+  phoneCountries: [
+    "BD",
+    "IN",
+    "AE",
+    "SA",
+    "QA",
+    "OM",
+    "KW",
+    "MY",
+    "SG",
+    "GB",
+    "US",
+    "CA",
+    "AU",
+    "IT",
+  ],
 };
 
 export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
