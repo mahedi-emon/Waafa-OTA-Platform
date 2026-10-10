@@ -59,7 +59,7 @@ async function GalleryBlogFaqSection({ section, reviews }: GalleryBlogFaqSection
                 className={index === 0 ? "col-span-2 row-span-2 md:col-span-2" : undefined}
               >
                 <Link
-                  href={`/gallery?album=${album.slug}`}
+                  href={`/gallery/${album.slug}`}
                   className="group relative block overflow-hidden rounded-2xl outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
                 >
                   <SmartImage

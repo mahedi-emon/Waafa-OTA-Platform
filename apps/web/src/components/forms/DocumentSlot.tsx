@@ -11,6 +11,8 @@ import {
   type VisaFileType,
 } from "@/lib/visa/visaFiles";
 
+const IMAGE_ACCEPT = ".jpg,.jpeg,.png,image/jpeg,image/png";
+
 export type SlotFile = { fileName: string; mimeType: VisaFileType; sizeBytes: number };
 
 type DocumentSlotProps = {
@@ -18,6 +20,8 @@ type DocumentSlotProps = {
   sub: string;
   file: SlotFile | null;
   onChange: (file: SlotFile | null) => void;
+  /** Photos only (JPG or PNG), e.g. a feedback photo; PDFs are rejected. */
+  imagesOnly?: boolean;
   labels: {
     choose: string;
     rule: string;
@@ -33,7 +37,14 @@ type DocumentSlotProps = {
  * One document slot (VisaApply-2): choose a file or take a photo; JPG, PNG or PDF up to 5 MB. The file stays in the
  * browser in Phase A; only its name, type and size are kept.
  */
-function DocumentSlot({ title, sub, file, onChange, labels }: DocumentSlotProps) {
+function DocumentSlot({
+  title,
+  sub,
+  file,
+  onChange,
+  imagesOnly = false,
+  labels,
+}: DocumentSlotProps) {
   const id = useId();
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<keyof DocumentSlotProps["labels"]["errors"] | null>(null);
@@ -42,6 +53,10 @@ function DocumentSlot({ title, sub, file, onChange, labels }: DocumentSlotProps)
     const chosen = list?.[0];
     if (!chosen) return;
     const check = checkVisaFile(chosen);
+    if (check.ok && imagesOnly && check.mimeType === "application/pdf") {
+      setError("fileType");
+      return;
+    }
     if (!check.ok) {
       setError(check.error);
       return;
@@ -108,7 +123,7 @@ function DocumentSlot({ title, sub, file, onChange, labels }: DocumentSlotProps)
         ref={input}
         id={`${id}-input`}
         type="file"
-        accept={VISA_FILE_ACCEPT}
+        accept={imagesOnly ? IMAGE_ACCEPT : VISA_FILE_ACCEPT}
         aria-labelledby={`${id}-title`}
         aria-describedby={error ? `${id}-error` : `${id}-rule`}
         aria-invalid={error ? true : undefined}

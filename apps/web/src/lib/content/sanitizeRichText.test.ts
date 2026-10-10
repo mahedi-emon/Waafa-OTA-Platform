@@ -17,6 +17,16 @@ describe("rich text sanitiser", () => {
     expect(out).toBe("<p>Hi</p><a>x</a>");
   });
 
+  it("keeps simple tables with header scope but no styling attributes", () => {
+    expect(
+      sanitizeRichText(
+        '<table style="width:9px"><thead><tr><th scope="col">Item</th><th>Cost</th></tr></thead><tbody><tr><td colspan="2" class="x">From ৳9,800</td></tr></tbody></table>',
+      ),
+    ).toBe(
+      '<table><thead><tr><th scope="col">Item</th><th>Cost</th></tr></thead><tbody><tr><td colspan="2">From ৳9,800</td></tr></tbody></table>',
+    );
+  });
+
   it("opens external links safely and demotes page-level headings", () => {
     expect(sanitizeRichText('<h2>Fees</h2><a href="https://example.com">Embassy</a>')).toBe(
       '<h3>Fees</h3><a href="https://example.com" target="_blank" rel="noopener noreferrer">Embassy</a>',

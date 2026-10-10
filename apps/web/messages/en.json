@@ -171,7 +171,8 @@
     "phoneCopied": "Phone number copied",
     "copyEmail": "Copy email address",
     "emailCopied": "Email address copied",
-    "current": "current page"
+    "current": "current page",
+    "sample": "Sample"
   },
   "Footer": {
     "nav": "Footer",
@@ -1817,5 +1818,434 @@
       }
     },
     "questions": "Good to know"
+  },
+  "About": {
+    "metaTitle": "About us",
+    "metaDescription": "Waafa International has served Dhaka’s offices since 2010. Meet the team behind Waafa Tours and Travel and Waafas World in Motijheel.",
+    "kicker": "About us",
+    "visit": "Visit our office",
+    "tours": "See our tours",
+    "since": "Serving Dhaka since",
+    "whatWeDo": "What we do",
+    "routesKicker": "From Dhaka",
+    "storyTitle": "Our story",
+    "missionTitle": "Mission and vision",
+    "valuesTitle": "What we stand for",
+    "teamKicker": "Our team",
+    "teamTitle": "The people behind WAAFA",
+    "teamLead": "Trip planners, visa specialists and the Waafas World team, all in one Motijheel office.",
+    "sampleTeam": "Sample team",
+    "sampleTeamNote": "Initials stand in until our team’s own photos are added in Admin.",
+    "visitKicker": "Visit us",
+    "visitLead": "Walk in for visa document checks, office payments and order pick-ups.",
+    "directions": "Get directions",
+    "call": "Call {phone}",
+    "photoCredit": "Photo: {credit}"
+  },
+  "Contact": {
+    "metaTitle": "Contact us",
+    "metaDescription": "Call, WhatsApp, email or visit Waafa in Motijheel, Dhaka. Saturday to Thursday, 10 am to 6 pm.",
+    "kicker": "Contact",
+    "title": "Talk to a person, not a bot",
+    "lead": "One number for travel, visas, Waafas World orders, printing and trading. Call, WhatsApp, email or come to our office in Motijheel.",
+    "channels": {
+      "call": "Call {phone}",
+      "callBody": "Ask for travel, visa or Waafas World.",
+      "whatsapp": "Message us on WhatsApp",
+      "whatsappBody": "Best for photos of documents, printer labels and order questions. We reply in office hours.",
+      "email": "Email {email}",
+      "emailBody": "For quotes, corporate orders and anything with attachments. Reply within one working day.",
+      "visit": "Visit {place}"
+    },
+    "form": {
+      "title": "Send us a message",
+      "lead": "For a quote on flights, tours or visas, the search forms are quicker: they send us your dates and travellers.",
+      "name": "Your name",
+      "namePlaceholder": "e.g. Rahim Uddin",
+      "phone": "Mobile",
+      "phoneCountry": "Country code",
+      "phonePlaceholder": "1712-345678",
+      "topic": "What is it about?",
+      "topics": {
+        "flights": "Flights",
+        "packages": "Tour packages",
+        "visa": "Visa",
+        "shop": "Waafas World order",
+        "printing": "Printing",
+        "trading": "Trading",
+        "other": "Something else"
+      },
+      "message": "Message",
+      "messagePlaceholder": "How can we help?",
+      "email": "Email",
+      "emailHint": "Optional, if you’d like the reply by email",
+      "submit": "Send message",
+      "spam": "Protected from spam. We never share your number.",
+      "errors": {
+        "nameRequired": "Enter your name.",
+        "phoneInvalid": "Enter a valid mobile number.",
+        "messageShort": "Tell us a little more (at least 10 characters).",
+        "emailInvalid": "Enter a valid email address.",
+        "summary": "Check the highlighted fields to send your message."
+      },
+      "failed": "We couldn’t send your message. Try again, or message us on WhatsApp.",
+      "rate": "Too many messages from this connection. Wait a minute and try again.",
+      "searchLink": "Open the search"
+    },
+    "sent": {
+      "title": "Message sent",
+      "line": "Thank you, {name}. Your reference is {reference}. We reply within one working day, usually much sooner in office hours.",
+      "whatsapp": "WhatsApp instead",
+      "whatsappMessage": "Hi Waafa, I just sent a message from the website. Reference {reference}.",
+      "another": "Send another",
+      "reference": "Your reference",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyFailed": "Copy failed"
+    },
+    "hours": {
+      "title": "Office hours",
+      "holidays": "Public holidays are announced on our Facebook page.",
+      "outOfHours": "Out of hours? Leave a WhatsApp message and we reply first thing."
+    },
+    "faqs": "Quick answers on payments, refunds, visas and deliveries are in the FAQs.",
+    "faqsLink": "Read the FAQs",
+    "directions": "Get directions"
+  },
+  "Faqs": {
+    "metaTitle": "FAQs",
+    "metaDescription": "Answers on payments, refunds, visas, deliveries and how a booking works at Waafa Tours and Travel and Waafas World.",
+    "kicker": "FAQs",
+    "title": "Answers before you ask",
+    "lead": "Payments, refunds, visas, deliveries and how a booking works here. Can’t find it? We’re one call away.",
+    "search": "Search the FAQs",
+    "searchPlaceholder": "Search, e.g. refund, bKash, baggage",
+    "clearSearch": "Clear search",
+    "categoriesLabel": "Topics",
+    "all": "All",
+    "categories": {
+      "flights": "Flights",
+      "hotels": "Hotels",
+      "packages": "Tour packages",
+      "visa": "Visa",
+      "payments": "Payments",
+      "shop": "Waafas World",
+      "account": "Your account"
+    },
+    "results": "{count, plural, =0 {No questions} one {# question} other {# questions}}",
+    "noResultTitle": "No answer for “{query}” yet",
+    "noResultBody": "Ask us directly. We add the questions people ask most to this page.",
+    "ask": "Ask on WhatsApp",
+    "askMessage": "Hi Waafa, I have a question: {query}",
+    "helpTitle": "Still need help?",
+    "helpBody": "Saturday to Thursday, 10 am to 6 pm. A person answers.",
+    "call": "Call {phone}",
+    "whatsapp": "WhatsApp"
+  },
+  "Blog": {
+    "metaTitle": "Travel tips, guides and stories",
+    "metaDescription": "Written by our travel and visa desks for travellers from Bangladesh: what to pack, when to go, and the rules nobody explains.",
+    "kicker": "Blog",
+    "title": "Travel tips, guides and stories",
+    "lead": "Written by our travel and visa desks for travellers from Bangladesh: what to pack, when to go, and the rules nobody explains.",
+    "sample": "Sample articles",
+    "sampleNote": "These articles are samples until the team publishes its own in Admin.",
+    "editorsPick": "Editor’s pick",
+    "readGuide": "Read the guide",
+    "minutes": "{minutes} min read",
+    "categoriesLabel": "Topics",
+    "all": "All",
+    "search": "Search articles",
+    "searchButton": "Search",
+    "results": "{count, plural, =0 {No articles} one {# article} other {# articles}}",
+    "emptyTitle": "No articles match",
+    "emptyBody": "Try another word or topic.",
+    "clear": "Show all articles",
+    "more": "Show more articles",
+    "newsletterTitle": "Fare drops and visa news, once a month",
+    "newsletterLead": "One short email. Unsubscribe in one click. We never share your address.",
+    "post": {
+      "sampleArticle": "Sample article",
+      "contents": "In this article",
+      "meta": "{date} · {minutes} min read",
+      "keepReading": "Keep reading",
+      "allArticles": "All articles",
+      "planOwn": "Plan my own trip",
+      "cta": {
+        "flights": {
+          "title": "Want help with the flights?",
+          "body": "Tell us your dates and a travel expert compares the airlines for you, then confirms the price before you pay.",
+          "action": "Ask for a fare"
+        },
+        "packages": {
+          "title": "Want this trip without the planning?",
+          "body": "Our tour packages put flights or transport, hotels and the days in between into one price, confirmed by a person.",
+          "action": "See tour packages"
+        },
+        "visa": {
+          "title": "Need the visa too?",
+          "body": "Send photos of your papers on WhatsApp. We check them, fill in the forms and follow the file until the embassy decides.",
+          "action": "Check a country"
+        },
+        "shop": {
+          "title": "Get it from Waafas World",
+          "body": "Cash on delivery across Bangladesh, with prices that include VAT.",
+          "action": "Open Waafas World"
+        },
+        "contact": {
+          "title": "Questions about your trip?",
+          "body": "A travel expert answers on the phone or WhatsApp, Saturday to Thursday, 10 am to 6 pm.",
+          "action": "Contact us"
+        }
+      }
+    }
+  },
+  "Gallery": {
+    "metaTitle": "Gallery",
+    "metaDescription": "Trips in travellers’ own photos: albums from Waafa tours, shared with each traveller’s permission.",
+    "kicker": "Gallery",
+    "title": "Trips, in travellers’ own photos",
+    "lead": "Albums from our tours, shared with each traveller’s permission.",
+    "sample": "Sample photos",
+    "sampleNote": "Until real albums are added in Admin, these are sample photos.",
+    "share": "Share your photos",
+    "shareMessage": "Hi Waafa, I’d like to share photos from my trip.",
+    "latest": "Latest album",
+    "open": "Open album",
+    "items": "{count, plural, one {# photo} other {# photos}}",
+    "categoriesLabel": "Albums",
+    "all": "All",
+    "categories": {
+      "tours": "Tours",
+      "events": "Events",
+      "office": "Office",
+      "travellers": "Travellers"
+    },
+    "albums": "{count, plural, =0 {No albums} one {# album} other {# albums}}",
+    "consent": "Your photos, your say. We only post photos that travellers send us and agree to share. Want one taken down? Message us on WhatsApp and it’s gone the same day.",
+    "emptyTitle": "No albums here yet",
+    "emptyBody": "Albums appear here after a trip, once travellers agree to share their photos.",
+    "album": {
+      "all": "All albums",
+      "tours": "See our tours",
+      "openPhoto": "Open photo {index} of {total}",
+      "video": "Watch the video",
+      "videoOn": "Opens on {provider}",
+      "providers": {
+        "youtube": "YouTube",
+        "facebook": "Facebook"
+      },
+      "lightbox": {
+        "gallery": "Photos",
+        "previous": "Previous photo",
+        "next": "Next photo"
+      }
+    }
+  },
+  "Feedback": {
+    "metaTitle": "Feedback",
+    "metaDescription": "What travellers tell us: reviews from people who travelled or shopped with Waafa, shown with their permission.",
+    "kicker": "Feedback",
+    "title": "What travellers tell us",
+    "lead": "Every review here comes from someone who travelled or shopped with us, shown with their permission, with the service they used and when. No made-up star averages.",
+    "facebook": "More reviews on Facebook",
+    "categoriesLabel": "Service",
+    "all": "All",
+    "services": {
+      "flights": "Flight",
+      "hotels": "Hotel",
+      "packages": "Tour package",
+      "visa": "Visa",
+      "shop": "Waafas World order",
+      "printing": "Printing or trading",
+      "other": "Something else"
+    },
+    "rating": "{rating} out of 5",
+    "emptyTitle": "No published reviews yet",
+    "emptyBody": "We publish a review only after a traveller sends one and agrees to share it. Tell us how your trip or order went: yours could be the first.",
+    "form": {
+      "title": "Travelled or shopped with us?",
+      "lead": "Tell us how it went. We read every message, good or bad.",
+      "name": "Your name",
+      "namePlaceholder": "e.g. Nadia Islam",
+      "phone": "Mobile",
+      "phoneCountry": "Country code",
+      "phonePlaceholder": "1712-345678",
+      "service": "Service you used",
+      "reference": "Reference",
+      "optional": "(optional)",
+      "referencePlaceholder": "PKG-261008-0021",
+      "rating": "How was it?",
+      "stars": "{count, plural, one {# star} other {# stars}}",
+      "clearRating": "No rating",
+      "comment": "Your feedback",
+      "photo": "Add a photo from your trip",
+      "photoHint": "Optional · JPG or PNG up to 5 MB",
+      "photoChoose": "Choose photo",
+      "photoReplace": "Replace photo",
+      "photoRemove": "Remove {file}",
+      "photoAdded": "Added",
+      "photoBad": "Use a JPG or PNG up to 5 MB.",
+      "consent": "Waafa may show my first name, the service, the month and my photo on this page. My mobile number is never shown.",
+      "submit": "Send feedback",
+      "errors": {
+        "nameRequired": "Enter your name.",
+        "phoneInvalid": "Enter a valid mobile number.",
+        "commentShort": "Write at least a sentence (10 characters).",
+        "referenceInvalid": "Use the reference from your confirmation, for example PKG-261008-0021."
+      },
+      "failed": "We couldn’t send your feedback. Try again in a moment.",
+      "rate": "Too many messages from this connection. Wait a minute and try again.",
+      "photoSub": "A photo from your trip, shown with your review only if you agree below."
+    },
+    "sent": {
+      "title": "Thank you, {name}",
+      "body": "We read every message. With your permission, yours appears here after a quick check, usually within two working days.",
+      "talk": "Talk to us",
+      "another": "Write another"
+    }
+  },
+  "Policy": {
+    "kicker": "Policies",
+    "updated": "Updated {date}",
+    "sample": "Sample text for legal review",
+    "contents": "On this page",
+    "inShort": "In short",
+    "questionsTitle": "Questions about this policy?",
+    "questionsBody": "Call {phone} or email {email}. Quote your reference number.",
+    "contact": "Contact us"
+  },
+  "Baggage": {
+    "metaTitle": "Baggage information",
+    "metaDescription": "Typical economy baggage allowances by airline, bag sizes, and what must go in your cabin bag on flights from Bangladesh.",
+    "kicker": "Baggage information",
+    "title": "What you can carry, and how",
+    "lead": "Typical economy allowances by airline, the size of each bag, and what must go in your cabin bag. Your ticket shows your exact allowance.",
+    "sample": "Sample allowances · set in Admin",
+    "tableTitle": "Allowance by airline",
+    "search": "Search an airline",
+    "scopeLabel": "Route",
+    "scopes": {
+      "international": "International",
+      "domestic": "Domestic"
+    },
+    "classLabel": "Cabin class",
+    "classes": {
+      "economy": "Economy",
+      "premium-economy": "Premium economy",
+      "business": "Business",
+      "first": "First"
+    },
+    "columns": {
+      "airline": "Airline",
+      "cabin": "Cabin bag",
+      "checked": "Checked bag",
+      "note": "Good to know"
+    },
+    "checked": "Checked {date}",
+    "noMatch": "No airline matches “{query}”. Ask us: we check your exact fare.",
+    "noRows": "No allowances listed for this route and class yet. Ask us: we check your exact fare.",
+    "disclaimer": "Allowances depend on your fare (for example Saver, Classic or Flex) and change from time to time. These are typical figures for orientation, updated by our team. Your e-ticket is the final word.",
+    "rulesTitle": "Cabin bag or checked bag?",
+    "moreTitle": "Need more baggage?",
+    "moreBody": "Tell your expert when you book. Extra kilos added to the ticket cost less than paying at the airport.",
+    "searchFlights": "Search flights",
+    "ask": "Ask on WhatsApp",
+    "askMessage": "Hi Waafa, I have a question about the baggage on my flight."
+  },
+  "Emi": {
+    "metaTitle": "EMI: travel now, pay monthly",
+    "metaDescription": "Split a trip or a large Waafas World order into monthly instalments on a partner bank credit card. See the monthly amount first.",
+    "kicker": "EMI",
+    "title": "Travel now, pay monthly",
+    "lead": "Split a trip or a large Waafas World order into {min} to {max} monthly instalments on a credit card from a partner bank. See your monthly amount before you ask.",
+    "sample": "Sample terms · set in Admin",
+    "calculator": "EMI calculator",
+    "amount": "Amount",
+    "amountValue": "Amount: {amount}",
+    "months": "Months",
+    "monthsOption": "{months} months",
+    "perMonth": "You pay each month",
+    "times": "× {months}",
+    "rows": {
+      "amount": "Trip or order amount",
+      "interest": "Interest",
+      "fee": "Bank processing fee",
+      "feeValue": "Shown by your bank",
+      "total": "Total you pay us"
+    },
+    "ask": "Ask for EMI on my booking",
+    "askMessage": "Hi Waafa, I’d like to pay {amount} by EMI over {months} months.",
+    "howTitle": "How it works",
+    "banksTitle": "Partner banks",
+    "banksEmpty": "Partner banks and their tenures are listed here once agreements are live. Until then, ask us which cards qualify.",
+    "bankMonths": "{months} months",
+    "rulesTitle": "EMI rules",
+    "rules": {
+      "minimum": "Minimum amount",
+      "months": "Months",
+      "cards": "Cards",
+      "appliesTo": "Applies to"
+    }
+  },
+  "OfflinePay": {
+    "metaTitle": "Offline payment",
+    "metaDescription": "Pay for a confirmed booking or order by bank transfer, bKash, Nagad or at our Motijheel office, then send us the proof.",
+    "kicker": "Offline payment",
+    "title": "Pay by bank, bKash, Nagad or at our office",
+    "lead": "Pay for a confirmed booking or order without a card. Always use your reference number, then send us the proof so we can match it quickly.",
+    "sample": "Account details set in Admin",
+    "kinds": {
+      "bank": "Any bank, by app, BEFTN, NPSB or at the counter",
+      "bkash": "Send money or Payment to our merchant number",
+      "nagad": "Send money or Payment to our merchant number",
+      "office": "Cash or card, during office hours"
+    },
+    "referenceNote": "Payment note: your booking or order number",
+    "stepsTitle": "Three steps",
+    "proof": {
+      "kicker": "Already paid?",
+      "title": "Send us the proof",
+      "lead": "This matches your payment to your booking. You can also send it on WhatsApp with your reference number.",
+      "whatsapp": "Send on WhatsApp",
+      "whatsappMessage": "Hi Waafa, here is my payment proof. Reference: ",
+      "reference": "Reference number",
+      "referencePlaceholder": "ORD-261008-0042",
+      "name": "Your name",
+      "phone": "Mobile",
+      "phoneCountry": "Country code",
+      "phonePlaceholder": "1712-345678",
+      "amount": "Amount paid (৳)",
+      "amountPlaceholder": "e.g. 12500",
+      "paidWith": "Paid with",
+      "transaction": "Transaction ID",
+      "transactionHint": "From the SMS or the bank receipt. Add it, the slip, or both.",
+      "transactionPlaceholder": "e.g. 8N7A6B5C4D",
+      "slip": "Payment slip or screenshot",
+      "slipHint": "JPG, PNG or PDF up to 5 MB. Stored privately with your booking.",
+      "slipChoose": "Choose file",
+      "slipReplace": "Replace file",
+      "slipRemove": "Remove {file}",
+      "slipAdded": "Added",
+      "slipBad": "Use a JPG, PNG or PDF up to 5 MB.",
+      "submit": "Send proof",
+      "errors": {
+        "referenceInvalid": "Enter the reference, for example ORD-261008-0042.",
+        "nameRequired": "Enter your name.",
+        "phoneInvalid": "Enter a valid mobile number.",
+        "amountInvalid": "Enter the amount you paid.",
+        "accountRequired": "Choose how you paid.",
+        "transactionOrSlip": "Add the transaction ID or the payment slip.",
+        "summary": "Check the highlighted fields to send the proof."
+      },
+      "failed": "We couldn’t send the proof. Try again, or send it on WhatsApp.",
+      "rate": "Too many tries from this connection. Wait a minute and try again.",
+      "slipSub": "A screenshot of the confirmation, or a photo of the deposit slip."
+    },
+    "sent": {
+      "title": "Proof received for {reference}",
+      "body": "We match it with the payment and confirm by SMS, usually within an hour in office hours.",
+      "another": "Send another"
+    }
   }
 }

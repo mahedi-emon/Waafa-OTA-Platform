@@ -1,14 +1,18 @@
 # Session handoff (update at every session end)
-Updated 2026-10-10 16:15 Dhaka.
-Done this session: #13 merged earlier (PR #46); #14 A14 cart, checkout, order success, track built on `feat/14-cart-checkout`:
-all gates green locally (unit web 188 + shared 48 + fixtures 79, e2e 64, axe, build). Next: PR "Closes #14" -> CI ->
-squash-merge -> close -> Project Done -> #15 In progress (Printing Solutions + International Trading, PRN/TRD leads).
-Open bug #39 (P1): perf budget. Owner decision pending: launch scope for 13 Oct (behind ~6 issues; TRACKER section 10).
-Next three steps: 1) merge #14; 2) A15 Printing/Trading pages; 3) A16 content pages, A17 system states, then admin A18-A21.
-A14 leftovers (cut to A22): mini-cart drawer + fly-to-cart arc, save for later, often-bought-together, cart corporate
-quote, Lighthouse + 320/768/1024 screenshots for cart/checkout/track.
-Gotchas: NEVER `taskkill //IM node.exe` (kills the MCP servers: playwright, context7, shadcn, magic); kill servers by
-port PID only. Bash `node -e` strips backslashes in regexes (use Write tool scripts or Edit). Param pages await params
-inside Suspense (D85); static pages use components/seo/Canonical (D90); route handlers and pages are separate module
-graphs, so Phase A in-memory state lives on globalThis (D105); ICU templates to client via t("key", { x: "{x}" });
-RHF use useWatch; `new Date()` only in client hooks or accessors that are not cached.
+Updated 2026-10-10 19:45 Dhaka.
+Done: #14 (PR #47), #15 (PR #48); #16 A16 information pages built on `feat/16-content-pages` (15 routes, feedback and
+payment-proof intake, page blocks, sitemap rewrite); gates green locally (unit 207+48+82, e2e 77). Next: PR "Closes #16"
+→ CI → squash-merge → Project Done → #17 A17 In progress.
+Reviews run 10 Oct (subagents): link/SEO audit and board-fidelity review DONE (findings listed in TRACKER §14 item 2 →
+open a review-fix issue); compliance audit and code-correctness review were cut by the account rate limit → redo them
+(grep or subagent after the limit resets).
+Next three steps: 1) merge #16; 2) A17 system states (catch-all [locale]/[...rest] for branded 404, error.tsx,
+global-error.tsx, offline, maintenance via getPublicConfig().maintenance); 3) review-fix issue, then lean Phase B
+(API + Postgres for leads/orders/feedback/proofs/content, staff auth, email) and admin on one list+form pattern.
+Owner must act now (deploy 13 Oct): Vercel login, Railway (API + Postgres + Redis), domain DNS, Resend, Turnstile; reconnect
+MCP servers (playwright, context7, shadcn, magic) with /mcp.
+Gotchas: NEVER taskkill node.exe (kill by port PID only). Bash `node -e`/sed strip backslashes and heredocs break on
+quotes: write files with the Write tool. Git Bash turns "/path" args into Windows paths: set MSYS_NO_PATHCONV=1 and use
+C:/ paths for scripts. Screenshot script: scratchpad shots.cjs (needs `next start --port 3100`). Radix chip radios in e2e:
+click the label. Param pages await params in Suspense (D85); static pages use Canonical (D90); Phase A in-memory state
+lives on globalThis (D105); React Compiler lint forbids reassigning render locals and manual memo with derived deps.

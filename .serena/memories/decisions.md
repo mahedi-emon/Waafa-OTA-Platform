@@ -41,6 +41,9 @@
 - D102 one shared priceCart (browser sends ids and quantities only). D103 free delivery on pre-coupon subtotal; zone from
   address. D104 one-page checkout, success in place, cart cleared. D105 Phase A store on globalThis. D106 payment proof
   metadata only; DocumentSlot in components/forms. D107 stock not decremented in Phase A; mini-cart drawer etc. cut to A22.
+- D108 service pages = ServicePage record + shared request card. D109 attachments metadata only. D110 PageBlock collection
+  for info page cards. D111 About route chips (map in A22). D112 empty office slot → navy visit card. D113 directions
+  link, no map iframe. D114 gallery videos open externally. D115 optional feedback rating, never an average.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
   children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
   (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on

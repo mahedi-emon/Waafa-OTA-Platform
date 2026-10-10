@@ -20,6 +20,8 @@ import type {
   EmiSettings,
   Faq,
   FaqCategory,
+  Feedback,
+  FeedbackCreateInput,
   FeedbackService,
   FooterSettings,
   GalleryAlbum,
@@ -43,6 +45,10 @@ import type {
   PaymentSettings,
   Product,
   PublicConfig,
+  PageBlock,
+  PageBlockPage,
+  PaymentProof,
+  PaymentProofInput,
   PublicFeedback,
   SearchLog,
   SearchLogInput,
@@ -132,6 +138,10 @@ export interface ContentRepository {
   listTeam(placement: TeamPlacement): Promise<TeamMember[]>;
   listBaggageRules(query?: BaggageQuery): Promise<BaggageRule[]>;
   listEmiBanks(): Promise<EmiBank[]>;
+  /** Cards of an information page (About, Contact, Baggage, EMI, Offline payment), by group then admin order. */
+  listPageBlocks(page: PageBlockPage): Promise<PageBlock[]>;
+  /** Stores public feedback as pending (FR-FDB); it reaches the wall only after a moderator approves it. */
+  createFeedback(input: FeedbackCreateInput, now: Date): Promise<Feedback>;
   /** The photo or video in a fixed page slot (hero, page headers, form side images); null shows the placeholder. */
   getMediaSlot(key: MediaSlotKey): Promise<MediaSlot | null>;
   /** Every filled slot, for the admin media library. */
@@ -248,6 +258,8 @@ export interface LeadsRepository {
   createLead(input: LeadCreateInput, now: Date): Promise<LeadCreated>;
   /** Records a submitted search (FR-SRCH-10); callers never wait on it. */
   logSearch(input: SearchLogInput, now: Date): Promise<void>;
+  /** Stores an offline payment proof for the accounts team to match (OfflinePay board). */
+  submitPaymentProof(input: PaymentProofInput, now: Date): Promise<PaymentProof>;
   /** Search activity for Admin, newest first. */
   listSearchLogs(query?: SearchLogQuery): Promise<ListPage<SearchLog>>;
 }

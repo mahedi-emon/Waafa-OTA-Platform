@@ -1,5 +1,12 @@
 import type { FixtureData } from "@waafa/fixtures";
-import { FaqCategorySchema, type BlogPost, type PublicFeedback } from "@waafa/shared";
+import {
+  FaqCategorySchema,
+  FeedbackCreateInputSchema,
+  toDhakaIsoString,
+  type BlogPost,
+  type Feedback,
+  type PublicFeedback,
+} from "@waafa/shared";
 import { byAdminOrder, isScheduledNow, matchesSearch, paginate } from "../query";
 import type { ContentRepository } from "../types";
 
@@ -11,6 +18,8 @@ function newestFirst(a: BlogPost, b: BlogPost): number {
 
 export function createFixtureContentRepository(data: FixtureData): ContentRepository {
   const publishedPosts = () => data.blogPosts.filter((post) => post.status === "published");
+  /** Feedback sent since the server started (Phase A, in memory), newest first, waiting for moderation. */
+  const received: Feedback[] = [];
 
   return {
     async getPage(slug) {
@@ -134,6 +143,30 @@ export function createFixtureContentRepository(data: FixtureData): ContentReposi
 
     async listEmiBanks() {
       return [...data.emiBanks];
+    },
+
+    async listPageBlocks(page) {
+      return data.pageBlocks
+        .filter((block) => block.page === page)
+        .sort((a, b) => a.group.localeCompare(b.group) || a.order - b.order);
+    },
+
+    async createFeedback(input, now) {
+      const feedback = FeedbackCreateInputSchema.parse(input);
+      const stored: Feedback = {
+        id: `feedback-live-${received.length + 1}`,
+        name: feedback.name,
+        contact: feedback.phone,
+        service: feedback.service,
+        ...(feedback.rating ? { rating: feedback.rating } : {}),
+        comment: feedback.comment,
+        consentToPublish: feedback.consentToPublish,
+        status: "pending",
+        submittedAt: toDhakaIsoString(now),
+        sample: false,
+      };
+      received.unshift(stored);
+      return stored;
     },
 
     async getMediaSlot(key) {

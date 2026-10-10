@@ -2,10 +2,12 @@ import type { FixtureData } from "@waafa/fixtures";
 import {
   LEAD_PREFIX,
   LeadCreateInputSchema,
+  PaymentProofInputSchema,
   SearchLogInputSchema,
   makeReference,
   toDhakaDateString,
   toDhakaIsoString,
+  type PaymentProof,
   type SearchLog,
 } from "@waafa/shared";
 import { paginate } from "../query";
@@ -24,6 +26,8 @@ export function createFixtureLeadsRepository(data: FixtureData): LeadsRepository
   /** Searches logged since the server started, newest first; capped so the dev server cannot grow forever. */
   const logged: SearchLog[] = [];
   let nextLogId = 1;
+  /** Payment proofs received since the server started, newest first (Phase A, in memory). */
+  const proofs: PaymentProof[] = [];
 
   return {
     async createLead(input, now) {
@@ -45,6 +49,19 @@ export function createFixtureLeadsRepository(data: FixtureData): LeadsRepository
       });
       nextLogId += 1;
       logged.length = Math.min(logged.length, MAX_LOGGED_SEARCHES);
+    },
+
+    async submitPaymentProof(input, now) {
+      const proof = PaymentProofInputSchema.parse(input);
+      const stored: PaymentProof = {
+        ...proof,
+        id: `proof-live-${proofs.length + 1}`,
+        status: "received",
+        createdAt: toDhakaIsoString(now),
+        sample: false,
+      };
+      proofs.unshift(stored);
+      return stored;
     },
 
     async listSearchLogs(query = {}) {

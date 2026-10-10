@@ -4,8 +4,10 @@ import type {
   FeedbackService,
   GalleryCategory,
   MediaSlotKey,
+  PageBlockPage,
   ServicePageKey,
 } from "@waafa/shared";
+import { FeedbackCreateInputSchema, type Feedback } from "@waafa/shared";
 import { cacheLife, cacheTag } from "next/cache";
 import { repositories } from "./source";
 import { CACHE_TAGS } from "./tags";
@@ -145,4 +147,16 @@ export async function getMediaSlot(key: MediaSlotKey) {
   cacheLife("hours");
   cacheTag(CACHE_TAGS.media);
   return repositories.content.getMediaSlot(key);
+}
+
+export async function listPageBlocks(page: PageBlockPage) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.pages);
+  return repositories.content.listPageBlocks(page);
+}
+
+/** Public feedback form: validated against the shared contract and stored as pending. Never cached (a write). */
+export async function submitFeedback(input: unknown): Promise<Feedback> {
+  return repositories.content.createFeedback(FeedbackCreateInputSchema.parse(input), new Date());
 }

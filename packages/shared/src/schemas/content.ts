@@ -280,7 +280,8 @@ export const FeedbackSchema = z
     name: z.string().min(1).max(80),
     contact: z.string().min(1).max(120),
     service: FeedbackServiceSchema,
-    rating: z.number().int().min(1).max(5),
+    /** Optional on the form ("How was it?"); the wall shows stars only when given. */
+    rating: z.number().int().min(1).max(5).optional(),
     comment: z.string().min(1).max(1000),
     photo: ImageSchema.optional(),
     consentToPublish: z.boolean(),
@@ -430,3 +431,68 @@ export const ServicePageSchema = z
 
 export type ServicePageKey = z.infer<typeof ServicePageKeySchema>;
 export type ServicePage = z.infer<typeof ServicePageSchema>;
+
+/** Pages whose cards and lists are admin-edited page blocks (About, Contact, Baggage, EMI, Offline payment). */
+export const PageBlockPageSchema = z.enum([
+  "about",
+  "contact",
+  "baggage",
+  "emi",
+  "offline-payment",
+]);
+
+/**
+ * One card on an information page, e.g. a "What we do" service on About, a baggage rule, an EMI step or an offline
+ * payment step. Blocks are grouped per page (`group`) and ordered; the icon is a MenuIcon name.
+ */
+export const PageBlockSchema = z
+  .object({
+    id: IdSchema,
+    page: PageBlockPageSchema,
+    group: z
+      .string()
+      .regex(/^[a-z][a-z0-9-]*$/)
+      .max(40),
+    icon: z.string().max(40).optional(),
+    title: z.string().min(1).max(80),
+    body: z.string().min(1).max(400),
+    link: LinkSchema.optional(),
+    tone: z.enum(["default", "warning", "danger"]).default("default"),
+    order: z.number().int().min(0),
+    sample: SampleFlagSchema,
+  })
+  .strict();
+
+/** What the public feedback form sends (Feedback board). It is stored as pending until a moderator approves it. */
+export const FeedbackCreateInputSchema = z
+  .object({
+    name: z.string().trim().min(2).max(80),
+    phone: z.string().regex(/^\+[1-9]\d{6,14}$/),
+    service: FeedbackServiceSchema,
+    reference: z
+      .string()
+      .trim()
+      .regex(/^[A-Z]{3}-\d{6}-\d{4}$/)
+      .optional(),
+    rating: z.number().int().min(1).max(5).optional(),
+    comment: z.string().trim().min(10).max(1000),
+    /** Phase A keeps the photo in the browser; only its name, type and size travel (D87). */
+    photo: z
+      .object({
+        fileName: z.string().min(1).max(120),
+        mimeType: z.enum(["image/jpeg", "image/png"]),
+        sizeBytes: z
+          .number()
+          .int()
+          .positive()
+          .max(5 * 1024 * 1024),
+      })
+      .strict()
+      .optional(),
+    consentToPublish: z.boolean(),
+  })
+  .strict();
+
+export type PageBlockPage = z.infer<typeof PageBlockPageSchema>;
+export type PageBlock = z.infer<typeof PageBlockSchema>;
+export type FeedbackCreateInput = z.infer<typeof FeedbackCreateInputSchema>;
