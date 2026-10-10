@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 08:40 Asia/Dhaka · Phase: A · Frontend · Current: #9 · A9 Results + Flights Manual (then #10 A10 Hotels) · Progress: 11/24 issues (46%) after #9 merges · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
+Updated: 10 Oct 09:45 Asia/Dhaka · Phase: A · Frontend · Current: #10 · A10 Hotels (then #11 A11 packages) · Progress: 12/24 issues (50%) after #10 merges · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 11 | 1 (#9) | 0 | 46% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 12 | 1 (#10) | 0 | 50% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #10 · A10 Hotels Manual mode — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 09:00 → 10 Oct |
+| Branch · PR · merge | `feat/10-hotels` · see section 13 · squash |
+| Built | `/hotels` on the shared results shell: summary bar (Edit opens the search card on the hotel tab, prefilled), sea view and free cancellation preferences (rail or sheet), Manual/Live switch, help card; two-step hotel request (contact, then the stay prefilled from the URL: place, nationality, dates, budget band, meals, contact preference, notes, consent) with an HTL reference and three next steps. The request card is now a shared `LeadRequestCard` with a shared `ContactStep` and a `Leads` message namespace, reused by flights and the next modules |
+| Files and components | `app/[locale]/(site)/hotels/{page.tsx,_components/{HotelRequest,StayStep}.tsx}`, `components/leads/{LeadRequestCard,ContactStep}.tsx`, `lib/leads/{contactForm,hotelLeadForm}.ts`, `lib/search/flightDraft.ts` (hotel draft), `HotelLeadPayloadSchema` (budget band, meals, sea view, free cancellation) |
+| Screens matched | Hotels, Hotels-2, Hotels-done, Hotels-m, Hotels-m-2, Hotels-m-done |
+| Admin control | AC-86 – AC-87 |
+| Tests | unit +4 (stay rules, hotel lead contract); e2e +2 (search → steps → HTL reference, stay rules); suite 45 · axe pass |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 |
+| Tools and skills | Serena, Playwright scripts; skills frontend-design, ui-ux-pro-max rules |
+| Decisions | D75 – D77 |
+| Bugs and follow-ups | #39 (perf); "Hotels we know" list deferred (D76) |
 
 ### #9 · A9 Results shell + Flights Manual mode + group fares — ✅ Done
 | Field | Value |
@@ -352,6 +367,8 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-83 | Preferences airlines and trip airline list | `listFeaturedAirlines()`, `listAirlines()` | Flights › Airlines | `GET /api/v1/airlines` | ⬜ |
 | AC-84 | Group fares page, rail and fare banner | `listGroupFares({to, month})`, `getGroupFare(id)` → airline, route, dates, baggage, seats, fare, expiry | Flights › Group fares | `GET /api/v1/group-fares`, `/group-fares/:id` | ⬜ |
 | AC-85 | Flight leads (reference, contact, trip, preferences, group fare) | `POST /api/leads` → `createLead()` → LeadCreated | Leads (A18) | `POST /api/v1/leads` | ⬜ |
+| AC-86 | Hotels booking mode | `getPublicConfig()` → modes.hotels.mode | Settings › Booking modes | `GET /api/v1/config/public` | ⬜ |
+| AC-87 | Hotel leads (place, dates, rooms, nationality, budget band, meals, preferences) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
 
 ## 5. Components inventory
 
@@ -546,6 +563,9 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D72 | 10 Oct | Step 2 uses native date inputs and shadcn selects for From/To instead of the full pickers | The trip is already chosen in the search card; native date pickers are fast and accessible on phones; Edit search opens the full card | #9 |
 | D73 | 10 Oct | Group fares filter with a plain GET form (no client JS); sorting is server-side | Shareable URLs, works before hydration, no bundle cost | #9 |
 | D74 | 10 Oct | The search → results `layoutId` morph and the route arc with a gliding plane are deferred to A22 polish | Results routes are full page loads today (Activity keeps Home); building the morph needs a persistent layout and `domMax` (budget #39) | #9 |
+| D75 | 10 Oct | Every Manual module uses one `LeadRequestCard` (contact step, steps indicator, failure, idempotent submit, boarding-pass success) with module-specific second steps; shared copy lives in the `Leads` namespace | One tested flow for flights, hotels, packages, visa and the service forms | #10 |
+| D76 | 10 Oct | The Hotels board’s "Hotels we know" list is deferred until a hotel content type and real hotel photos exist | Needs a new admin collection and photos; the request flow is the launch need (cut list) | #10 |
+| D77 | 10 Oct | The hotel form follows the board (budget band and meals); star preference stays in the contract with "any" and is not asked | The board wins on layout; staff can ask stars in the follow-up | #10 |
 
 ## 9. Bugs and known issues
 
@@ -600,6 +620,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 08:40–09:45 | A9 merged (#42); A10 hotels Manual on the shared results shell; request flow refactored into LeadRequestCard + ContactStep + Leads strings | #9, #10 | #42 | unit 148 · e2e 45 · axe pass |
 | 10 Oct 06:15–08:40 | A7 Home merged (#41); A9 results shell, Flights Manual two-step request, lead intake API with idempotency and rate limits, boarding-pass success, group fares page and rail | #7, #9 | #41 | unit 144 · e2e 43 · axe pass |
 | 10 Oct 01:00–06:15 | #34 A1b closed (inner-page competitor Lighthouse); A8 search card built, independent subagent review (15 findings, 14 fixed), merged; perf budget gap logged as #39; A7 Home built (13 sections from data, CSS reveals, snap rows, JSON-LD, robots and sitemap) | #34, #8, #39, #7 | #38, #40 | unit 245 · e2e 37 · axe pass · Lighthouse / 71–74 / 100 / 96 / 100 |
 | 09 Oct 17:30–20:56 | A0 merged (#35) with branch protection; A1b docs pushed; A5 footage sourced by a subagent (7 real clips; power bank skipped, no free real footage); A6 layout shell built and verified at five widths; a usage limit paused work for about 90 minutes | #27, #34, #5, #6 | #35 | e2e 30 · unit all green |

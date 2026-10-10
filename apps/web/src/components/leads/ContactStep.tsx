@@ -9,7 +9,7 @@ import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { contactStepSchema, type ContactStepValues } from "@/lib/leads/flightLeadForm";
+import { contactStepSchema, type ContactStepValues } from "@/lib/leads/contactForm";
 
 type ContactStepProps = {
   defaultValues: ContactStepValues;
@@ -20,7 +20,7 @@ type ContactStepProps = {
 
 /** Step 1 (Flights, Flights-err): how the travel expert reaches the visitor. Errors show under each field. */
 function ContactStep({ defaultValues, emailRequired, countries, onSubmit }: ContactStepProps) {
-  const t = useTranslations("Flights");
+  const t = useTranslations("Leads");
   const schema = useMemo(() => contactStepSchema(emailRequired), [emailRequired]);
   const form = useForm<ContactStepValues>({
     resolver: zodResolver(schema),

@@ -22,6 +22,7 @@ import {
   initialSearchState,
   searchReducer,
   type FlightDraft,
+  type HotelDraft,
   type SearchTab,
 } from "@/lib/search/searchState";
 import { FlightPanel } from "./FlightPanel";
@@ -50,6 +51,8 @@ type SearchCardClientProps = {
   className?: string;
   /** The trip from the URL (results pages): the card opens with it filled in. */
   initialFlight?: FlightDraft | null;
+  /** The stay from the URL (hotel results): the card opens on the hotel tab with it filled in. */
+  initialHotel?: HotelDraft | null;
 };
 
 const PickerSheet = dynamic(() => import("./PickerSheet").then((mod) => mod.PickerSheet), {
@@ -101,11 +104,18 @@ function sendSearchLog(body: string) {
  * The search card's interactive island (SearchCard board): glass card, four tabs, fields that open pickers,
  * validation with announced errors, URL building, async search logging and recent searches.
  */
-function SearchCardClient({ data, source, className, initialFlight }: SearchCardClientProps) {
+function SearchCardClient({
+  data,
+  source,
+  className,
+  initialFlight,
+  initialHotel,
+}: SearchCardClientProps) {
   const t = useTranslations("Search");
   const router = useRouter();
   const [state, dispatch] = useReducer(searchReducer, data.defaultOrigin, (origin) => {
     const base = initialSearchState({ origin });
+    if (initialHotel) return { ...base, tab: "hotel" as const, hotel: initialHotel };
     return initialFlight ? { ...base, flight: initialFlight } : base;
   });
   const isDesktop = useIsDesktop();

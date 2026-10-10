@@ -10,5 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/"), changeFrequency: "daily", priority: 1 },
     { url: absoluteUrl("/flights"), changeFrequency: "weekly", priority: 0.8 },
     { url: absoluteUrl("/flights/group-fares"), changeFrequency: "daily", priority: 0.8 },
+    { url: absoluteUrl("/hotels"), changeFrequency: "weekly", priority: 0.7 },
   ];
 }

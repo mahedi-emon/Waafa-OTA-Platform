@@ -1,5 +1,5 @@
-import type { Airport, FlightSearch } from "@waafa/shared";
-import { initialSearchState, type FlightDraft } from "./searchState";
+import type { Airport, FlightSearch, HotelPlace, HotelSearch } from "@waafa/shared";
+import { initialSearchState, type FlightDraft, type HotelDraft } from "./searchState";
 
 /**
  * The search card's flight draft for a search read from the URL (results pages): airports come from the data layer
@@ -31,5 +31,25 @@ export function flightDraftFromSearch(
     flex: search.flexibleDates,
     fare: search.fareType,
     airline: search.preferredAirline ?? null,
+  };
+}
+
+/** The hotel tab's draft for a hotel search read from the URL; the place comes from the data layer when known. */
+export function hotelDraftFromSearch(search: HotelSearch, place: HotelPlace | null): HotelDraft {
+  return {
+    place: place ?? {
+      id: search.placeId,
+      kind: "city",
+      name: search.placeLabel,
+      city: search.placeLabel,
+      country: "",
+      popular: false,
+    },
+    checkin: search.checkIn,
+    checkout: search.checkOut,
+    rooms: search.rooms.length,
+    adults: search.rooms.reduce((sum, room) => sum + room.adults, 0),
+    childAges: search.rooms.flatMap((room) => room.childAges),
+    nationality: search.nationality,
   };
 }

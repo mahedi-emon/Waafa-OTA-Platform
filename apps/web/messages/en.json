@@ -450,7 +450,6 @@
       "title": "Your preferences",
       "lead": "Optional. They go to your travel expert with your request.",
       "open": "Your preferences",
-      "count": "{count, plural, =0 {} other {(#)}}",
       "stops": "Stops",
       "stopsAny": "Any number of stops",
       "stopsDirect": "Direct only",
@@ -471,9 +470,7 @@
       "bag20": "20 kg or more",
       "bag30": "30 kg or more",
       "refundable": "Refundable fares only",
-      "refundableSub": "Usually costs a little more",
-      "clear": "Clear all",
-      "save": "Save preferences"
+      "refundableSub": "Usually costs a little more"
     },
     "card": {
       "kicker": "Fare check by a person",
@@ -486,24 +483,7 @@
       "seatsLeft": "{count, plural, one {# seat left} other {# seats left}}"
     },
     "steps": {
-      "label": "Request steps",
-      "contact": "Contact",
-      "trip": "Trip details",
-      "current": "current step"
-    },
-    "contact": {
-      "title": "How can our travel expert reach you?",
-      "lead": "We use these only for this request.",
-      "name": "Full name",
-      "phone": "Mobile number",
-      "country": "Country code",
-      "phoneHint": "We call or WhatsApp you on this number.",
-      "email": "Email",
-      "emailOptional": "Email (optional)",
-      "emailHint": "We send your fare options here too.",
-      "private": "Step 1 of 2 · Private and never shared",
-      "continue": "Continue",
-      "required": "required"
+      "trip": "Trip details"
     },
     "trip": {
       "title": "Check your trip",
@@ -532,49 +512,26 @@
       },
       "notes": "Anything we should know? (optional)",
       "notesHint": "For example: travelling with a baby, need extra baggage, or a wheelchair at the airport.",
-      "back": "Back",
-      "submit": "Send to a travel expert",
       "sending": "Sending",
-      "noPayment": "No payment now",
       "stepOf": "Step 2 of 2"
     },
     "success": {
       "title": "Request sent",
       "lead": "Thank you! Our travel expert will contact you shortly with the best quotes.",
-      "reference": "Reference",
-      "copy": "Copy reference",
-      "copied": "Reference copied",
       "step1Title": "We received your request",
       "step1Open": "Requests are handled in the order they arrive.",
       "step2Title": "We call or WhatsApp you with the best options",
       "step2Body": "From {phone}. Save the number so you know it’s us.",
       "step3Title": "You choose, pay, and get your e-ticket",
       "step3Body": "Pay by bank transfer, bKash, Nagad or at our office. Only after you agree the fare.",
-      "whatsapp": "Send reference on WhatsApp",
-      "whatsappMessage": "Hi Waafa, my flight request reference is {reference}",
-      "again": "Search again",
-      "home": "Home",
-      "emailCopy": "A copy of your request is on its way to your email.",
-      "copyFailed": "Could not copy. Select the reference and copy it instead."
-    },
-    "failure": {
-      "title": "We couldn’t send your request",
-      "body": "Your details are still here. Please try again; if it keeps happening, call or WhatsApp {phone} and we’ll take it from there.",
-      "retry": "Try again",
-      "tooMany": "Too many requests from this connection. Please wait a minute and try again."
+      "whatsappMessage": "Hi Waafa, my flight request reference is {reference}"
     },
     "errors": {
-      "nameRequired": "Enter your full name",
-      "phoneInvalid": "Check the number: it should have 10 digits after +880, like 1712-345678.",
-      "emailRequired": "Add your email so we can send your fare options.",
-      "emailInvalid": "Enter a valid email address, like name@example.com",
       "fromRequired": "Choose where you are flying from",
       "toRequired": "Choose where you are flying to",
       "sameAirport": "From and To can’t be the same airport",
       "departRequired": "Choose a departure date",
-      "returnBeforeDepart": "Return can’t be before departure",
-      "consentRequired": "Tick the box so our expert can contact you.",
-      "summary": "Please fix {count, plural, one {# field} other {# fields}} below."
+      "returnBeforeDepart": "Return can’t be before departure"
     },
     "help": {
       "title": "Rather talk to someone?",
@@ -621,6 +578,136 @@
       "premium-economy": "Premium economy",
       "business": "Business",
       "first": "First"
+    }
+  },
+  "Leads": {
+    "contact": {
+      "title": "How can our travel expert reach you?",
+      "lead": "We use these only for this request.",
+      "name": "Full name",
+      "phone": "Mobile number",
+      "country": "Country code",
+      "phoneHint": "We call or WhatsApp you on this number.",
+      "email": "Email",
+      "emailOptional": "Email (optional)",
+      "emailHint": "We send your fare options here too.",
+      "private": "Step 1 of 2 · Private and never shared",
+      "continue": "Continue",
+      "required": "required"
+    },
+    "steps": {
+      "label": "Request steps",
+      "contact": "Contact"
+    },
+    "success": {
+      "reference": "Reference",
+      "copy": "Copy reference",
+      "copied": "Reference copied",
+      "copyFailed": "Could not copy. Select the reference and copy it instead.",
+      "whatsapp": "Send reference on WhatsApp",
+      "again": "Search again",
+      "home": "Home",
+      "emailCopy": "A copy of your request is on its way to your email."
+    },
+    "failure": {
+      "title": "We couldn’t send your request",
+      "body": "Your details are still here. Please try again; if it keeps happening, call or WhatsApp {phone} and we’ll take it from there.",
+      "retry": "Try again",
+      "tooMany": "Too many requests from this connection. Please wait a minute and try again."
+    },
+    "errors": {
+      "nameRequired": "Enter your full name",
+      "phoneInvalid": "Check the number: it should have 10 digits after +880, like 1712-345678.",
+      "emailRequired": "Add your email so we can send your fare options.",
+      "emailInvalid": "Enter a valid email address, like name@example.com",
+      "consentRequired": "Tick the box so our expert can contact you.",
+      "summary": "Please fix {count, plural, one {# field} other {# fields}} below."
+    },
+    "prefs": {
+      "clear": "Clear all",
+      "save": "Save preferences",
+      "count": "{count, plural, =0 {} other {(#)}}"
+    },
+    "noPayment": "No payment now",
+    "back": "Back",
+    "submit": "Send to a travel expert"
+  },
+  "Hotels": {
+    "metaTitle": "Hotels in Bangladesh and abroad, rates checked by a person",
+    "metaDescription": "Tell us where and when. A WAAFA travel expert checks hotels for your dates and sends the best options with room type, meals and cancellation rules.",
+    "breadcrumb": "Hotels",
+    "summary": {
+      "label": "Your search",
+      "edit": "Edit search",
+      "close": "Close search",
+      "empty": "Tell us where you want to stay",
+      "emptySub": "Search above, or fill in the stay in step 2",
+      "nights": "{count, plural, one {# night} other {# nights}}",
+      "roomsGuests": "{rooms, plural, one {# room} other {# rooms}}, {adults, plural, one {# adult} other {# adults}}"
+    },
+    "prefs": {
+      "title": "Your preferences",
+      "lead": "Optional. They go to your travel expert with your request.",
+      "open": "Your preferences",
+      "seaView": "Sea view",
+      "seaViewSub": "Rooms facing the beach",
+      "freeCancellation": "Free cancellation",
+      "freeCancellationSub": "Usually costs a little more"
+    },
+    "card": {
+      "kicker": "Hotel rates checked by a person",
+      "title": "Get the best hotel rate from our experts",
+      "lead": "Tell us how to reach you. A travel expert checks hotels for your dates and sends the best options with room type, meals and cancellation rules."
+    },
+    "steps": {
+      "stay": "Your stay"
+    },
+    "stay": {
+      "title": "Check your stay",
+      "lead": "We filled this in from your search. Change anything that isn’t right.",
+      "place": "City or hotel",
+      "nationality": "Guest nationality",
+      "checkin": "Check-in",
+      "checkout": "Check-out",
+      "budget": "Budget per night",
+      "budgets": {
+        "any": "Any budget",
+        "under-5000": "Under ৳5,000",
+        "5000-10000": "৳5,000 to ৳10,000",
+        "10000-20000": "৳10,000 to ৳20,000",
+        "over-20000": "Over ৳20,000"
+      },
+      "meals": "Meals",
+      "mealOptions": {
+        "any": "Any",
+        "room-only": "Room only",
+        "breakfast": "Breakfast included",
+        "half-board": "Half board"
+      },
+      "contactBy": "How should we contact you?",
+      "call": "Call",
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "notes": "Anything we should know? (optional)",
+      "notesHint": "For example: a late check-in, a cot for a baby, or connecting rooms."
+    },
+    "success": {
+      "title": "Request sent",
+      "lead": "Thank you! Our travel expert will send you the best hotel options shortly.",
+      "step1Title": "An expert checks hotels and rates for your dates",
+      "step1Body": "Usually within a few working hours, Saturday to Thursday.",
+      "step2Title": "We send you two or three good options",
+      "step2Body": "With room type, meals and cancellation rules.",
+      "step3Title": "You choose and pay to confirm",
+      "step3Body": "Bank transfer, bKash, Nagad or at our office.",
+      "whatsappMessage": "Hi Waafa, my hotel request reference is {reference}"
+    },
+    "errors": {
+      "placeRequired": "Tell us the city or hotel",
+      "checkinRequired": "Choose a check-in date",
+      "checkoutRequired": "Choose a check-out date",
+      "checkoutAfterCheckin": "Check-out must be after check-in",
+      "stayTooLong": "Up to 30 nights in one booking"
     }
   }
 }

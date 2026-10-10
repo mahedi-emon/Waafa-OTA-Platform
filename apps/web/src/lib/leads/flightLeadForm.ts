@@ -7,13 +7,15 @@ import {
   type LeadCreateInput,
 } from "@waafa/shared";
 import { z } from "zod";
-import { isPhoneCountry, toE164 } from "./phone";
+import { contactToLead, type ContactStepValues } from "./contactForm";
 
 /*
  * The two-step flight request (FR-FLT-02 to FR-FLT-05): step 1 asks how to reach the visitor, step 2 confirms the
  * trip prefilled from the URL. Messages are next-intl keys under "Flights.errors"; the server validates again with
  * the shared LeadCreateInputSchema.
  */
+
+export type { ContactStepValues };
 
 export type ErrorKey =
   | "nameRequired"
@@ -26,23 +28,6 @@ export type ErrorKey =
   | "departRequired"
   | "returnBeforeDepart"
   | "consentRequired";
-
-export function contactStepSchema(emailRequired: boolean) {
-  return z
-    .object({
-      name: z.string().trim().min(2, "nameRequired").max(80, "nameRequired"),
-      phoneCountry: z.string().refine((code): boolean => isPhoneCountry(code), "phoneInvalid"),
-      phone: z.string().trim().min(1, "phoneInvalid"),
-      email: emailRequired
-        ? z.string().trim().min(1, "emailRequired").pipe(z.email("emailInvalid"))
-        : z.union([z.literal(""), z.string().trim().pipe(z.email("emailInvalid"))]),
-    })
-    .superRefine((values, ctx) => {
-      if (!isPhoneCountry(values.phoneCountry) || !toE164(values.phone, values.phoneCountry)) {
-        ctx.addIssue({ code: "custom", message: "phoneInvalid", path: ["phone"] });
-      }
-    });
-}
 
 const IATA = /^[A-Z]{3}$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -78,7 +63,6 @@ export const tripStepSchema = z
     }
   });
 
-export type ContactStepValues = z.infer<ReturnType<typeof contactStepSchema>>;
 export type TripStepInput = z.input<typeof tripStepSchema>;
 export type TripStepValues = z.output<typeof tripStepSchema>;
 
@@ -110,9 +94,6 @@ export function buildFlightLead(args: {
   page: string;
 }): LeadCreateInput {
   const { contact, trip, search, preferences } = args;
-  const phone = isPhoneCountry(contact.phoneCountry)
-    ? toE164(contact.phone, contact.phoneCountry)
-    : null;
   const multi = search?.tripType === "multi-city";
   const legs = multi
     ? [{ from: trip.from, to: trip.to, date: trip.depart }, ...(search?.legs.slice(1) ?? [])]
@@ -130,13 +111,7 @@ export function buildFlightLead(args: {
   });
 
   return {
-    contact: {
-      name: contact.name.trim(),
-      phone: phone ?? "",
-      ...(contact.email ? { email: contact.email.trim() } : {}),
-      preferredContact: trip.preferredContact,
-      ...(trip.bestTime ? { bestTime: trip.bestTime } : {}),
-    },
+    contact: contactToLead(contact, trip.preferredContact, trip.bestTime),
     payload: {
       module: "flights",
       search: flightSearch,

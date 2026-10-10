@@ -99,12 +99,26 @@ export const FlightLeadPayloadSchema = z
   })
   .strict();
 
+/** Hotel request extras (Hotels-2): budget band, meals and the two preferences from the rail. */
+export const HotelBudgetBandSchema = z.enum([
+  "any",
+  "under-5000",
+  "5000-10000",
+  "10000-20000",
+  "over-20000",
+]);
+export const HotelMealsSchema = z.enum(["any", "room-only", "breakfast", "half-board"]);
+
 export const HotelLeadPayloadSchema = z
   .object({
     module: z.literal("hotels"),
     search: HotelSearchSchema,
     starPreference: z.enum(["any", "3", "4", "5"]).default("any"),
     budgetPerNight: TakaSchema.optional(),
+    budgetBand: HotelBudgetBandSchema.default("any"),
+    meals: HotelMealsSchema.default("any"),
+    seaView: z.boolean().default(false),
+    freeCancellation: z.boolean().default(false),
     notes,
   })
   .strict();
