@@ -133,7 +133,8 @@ export function submitHotel(hotel: HotelDraft, today: string): SubmitResult {
     rooms: distributeGuests(hotel.rooms, hotel.adults, childAges),
     nationality: hotel.nationality,
   });
-  if (!parsed.success) return fail({ rooms: "tooManyTravellers" });
+  // validateHotel covers dates and ages; a schema miss here can only be the stay itself.
+  if (!parsed.success) return fail({ stay: "checkoutRequired" });
 
   return {
     ok: true,

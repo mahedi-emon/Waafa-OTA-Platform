@@ -10,7 +10,10 @@ import { useSearchCard } from "./SearchCardContext";
 
 type CounterRowProps = { field: CountField; title: string; sub: string };
 
-/** A traveller, room or applicant stepper. − and + disable exactly when a tap would break a limit. */
+/**
+ * A traveller, room or applicant stepper. − and + turn aria-disabled (not disabled) at a limit, so keyboard focus
+ * stays on the button; the new value is announced with its label.
+ */
 function CounterRow({ field, title, sub }: CounterRowProps) {
   const t = useTranslations("Search.counters");
   const { state, dispatch } = useSearchCard();
@@ -31,8 +34,10 @@ function CounterRow({ field, title, sub }: CounterRowProps) {
           variant="secondary"
           size="icon"
           aria-label={t("decrease", { label: title })}
-          disabled={value <= min}
-          onClick={() => dispatch({ type: "count", field, delta: -1 })}
+          aria-disabled={value <= min}
+          onClick={() => {
+            if (value > min) dispatch({ type: "count", field, delta: -1 });
+          }}
         >
           <Minus aria-hidden="true" />
         </Button>
@@ -43,15 +48,17 @@ function CounterRow({ field, title, sub }: CounterRowProps) {
           <RollingNumber value={value} />
         </span>
         <output aria-live="polite" className="sr-only">
-          {value}
+          {`${title}, ${value}`}
         </output>
         <Button
           type="button"
           variant="secondary"
           size="icon"
           aria-label={t("increase", { label: title })}
-          disabled={value >= max}
-          onClick={() => dispatch({ type: "count", field, delta: 1 })}
+          aria-disabled={value >= max}
+          onClick={() => {
+            if (value < max) dispatch({ type: "count", field, delta: 1 });
+          }}
         >
           <Plus aria-hidden="true" />
         </Button>

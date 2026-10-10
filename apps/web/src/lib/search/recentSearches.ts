@@ -17,7 +17,11 @@ const MAX_RECENT_AIRPORTS = 4;
 const RecentSearchSchema = z.object({
   module: z.enum(SEARCH_MODULES),
   label: z.string().min(1).max(120),
-  href: z.string().startsWith("/").max(600),
+  // Same-site paths only: "//host" or "/\host" would leave the site.
+  href: z
+    .string()
+    .regex(/^\/(?![/\\])/)
+    .max(600),
   at: z.number().int().nonnegative(),
   /** The airports of a flight search, for the "Recent" row in the airport picker. */
   airports: z.array(AirportSchema).max(10).optional(),

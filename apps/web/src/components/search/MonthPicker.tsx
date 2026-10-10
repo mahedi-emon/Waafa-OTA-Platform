@@ -13,6 +13,7 @@ function MonthPicker() {
   const t = useTranslations("Search");
   const { state, dispatch, today } = useSearchCard();
   const current = state.tour.month;
+  if (!today) return null;
   const months = Array.from({ length: MONTHS_AHEAD }, (_, index) => addMonths(today, index));
   const options: Array<{ key: string; month: string | null; label: string }> = [
     { key: "flex", month: null, label: t("values.flexibleMonth") },

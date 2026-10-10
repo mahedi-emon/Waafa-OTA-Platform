@@ -25,7 +25,7 @@ function SearchTabList({ active }: SearchTabListProps) {
   return (
     <TabsList
       aria-label={t("tabsLabel")}
-      className="relative grid h-[60px] w-full grid-cols-4 gap-0 overflow-visible rounded-[18px] p-1 sm:h-12 sm:w-auto sm:min-w-[440px] sm:rounded-full"
+      className="relative grid h-[60px] w-full grid-cols-4 gap-0 overflow-visible rounded-[18px] p-1 sm:h-[52px] sm:w-auto sm:min-w-[440px] sm:rounded-full"
     >
       <span
         aria-hidden="true"

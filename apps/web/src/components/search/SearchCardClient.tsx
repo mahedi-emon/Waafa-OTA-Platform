@@ -5,6 +5,7 @@ import {
   useLayoutEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
   useTransition,
   type FormEvent,
@@ -71,6 +72,9 @@ function cameBack(): boolean {
   return entry?.type === "back_forward";
 }
 
+/** Set once the submitted card has been restored in this document. */
+let restoredThisDocument = false;
+
 function sendSearchLog(body: string) {
   try {
     const blob = new Blob([body], { type: "application/json" });
@@ -102,6 +106,8 @@ function SearchCardClient({ data, source, className }: SearchCardClientProps) {
   const [errorNonce, setErrorNonce] = useState(0);
   const [announcement, setAnnouncement] = useState("");
   const [pending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
+  const submitting = useRef(false);
   // The phone sheet (vaul) mounts the first time a picker opens below 1024 px and then stays for its animations.
   const [sheetMounted, setSheetMounted] = useState(false);
   if (!sheetMounted && !isDesktop && state.picker) setSheetMounted(true);
@@ -109,14 +115,19 @@ function SearchCardClient({ data, source, className }: SearchCardClientProps) {
   // Cache Components keep this page mounted (hidden) after navigation: close any picker when it hides.
   useLayoutEffect(() => () => dispatch({ type: "close" }), []);
 
-  // Back after a full page load: bring back the search the visitor submitted from this tab.
+  // Back after a full page load: bring back the search the visitor submitted from this card, once per document
+  // (Activity re-runs effects when the page shows again; edits made since must not be overwritten).
   useEffect(() => {
-    if (!cameBack()) return;
-    void import("@/lib/search/draftSnapshot").then(({ DRAFT_SNAPSHOT_KEY, parseDraft }) => {
-      const draft = parseDraft(sessionStore()?.getItem(DRAFT_SNAPSHOT_KEY));
+    if (restoredThisDocument || !cameBack()) return;
+    restoredThisDocument = true;
+    void import("@/lib/search/draftSnapshot").then(({ draftSnapshotKey, parseDraft }) => {
+      const store = sessionStore();
+      const key = draftSnapshotKey(source);
+      const draft = parseDraft(store?.getItem(key));
+      store?.removeItem(key);
       if (draft) dispatch({ type: "restore", draft });
     });
-  }, []);
+  }, [source]);
 
   const context = useMemo<SearchCardContextValue>(
     () => ({
@@ -134,9 +145,22 @@ function SearchCardClient({ data, source, className }: SearchCardClientProps) {
   // Validation, URL building and logging load on first use (warmed by prefetchPickers), keeping them out of first load.
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    // One submit at a time: a double click or a repeated Enter while the code loads does nothing more.
+    if (submitting.current || pending) return;
+    submitting.current = true;
+    setLoading(true);
+    try {
+      await submitCard();
+    } finally {
+      submitting.current = false;
+      setLoading(false);
+    }
+  };
+
+  const submitCard = async () => {
     const [
       { VISA_TYPE_KEYS, deviceForWidth, submitSearch, toRecentSearch, toSearchLog },
-      { DRAFT_SNAPSHOT_KEY, serializeDraft },
+      { draftSnapshotKey, serializeDraft },
     ] = await Promise.all([import("@/lib/search/submit"), import("@/lib/search/draftSnapshot")]);
     const labels = {
       visaTypes: Object.fromEntries(
@@ -151,7 +175,9 @@ function SearchCardClient({ data, source, className }: SearchCardClientProps) {
       const first = firstErrorField(result.errors);
       if (first) {
         const code = result.errors[first];
-        if (code) setAnnouncement(t(`errors.${code}`));
+        // Clear first, so the same message is announced again on a repeated failed submit.
+        setAnnouncement("");
+        if (code) window.requestAnimationFrame(() => setAnnouncement(t(`errors.${code}`)));
         window.requestAnimationFrame(() =>
           document.getElementById(fieldDomId(errorKeyToFieldId(first)))?.focus(),
         );
@@ -165,13 +191,14 @@ function SearchCardClient({ data, source, className }: SearchCardClientProps) {
     );
     saveRecent(toRecentSearch(submission, Date.now()));
     try {
-      sessionStore()?.setItem(DRAFT_SNAPSHOT_KEY, serializeDraft(state));
+      sessionStore()?.setItem(draftSnapshotKey(source), serializeDraft(state));
     } catch {
       // Storage full or blocked: Back simply shows a fresh card.
     }
     startTransition(() => router.push(submission.href));
   };
 
+  const busy = pending || loading;
   const tab = state.tab;
   const multi = state.flight.trip === "multi-city";
 
@@ -202,16 +229,16 @@ function SearchCardClient({ data, source, className }: SearchCardClientProps) {
               )}
             </div>
             <TabsContent value="flight" className="data-open:animate-none">
-              {multi ? <MultiCityPanel pending={pending} /> : <FlightPanel pending={pending} />}
+              {multi ? <MultiCityPanel pending={busy} /> : <FlightPanel pending={busy} />}
             </TabsContent>
             <TabsContent value="hotel" className="data-open:animate-none">
-              <HotelPanel pending={pending} />
+              <HotelPanel pending={busy} />
             </TabsContent>
             <TabsContent value="tour" className="data-open:animate-none">
-              <TourPanel pending={pending} />
+              <TourPanel pending={busy} />
             </TabsContent>
             <TabsContent value="visa" className="data-open:animate-none">
-              <VisaPanel pending={pending} />
+              <VisaPanel pending={busy} />
             </TabsContent>
           </Tabs>
           <div className="flex flex-col gap-3 border-t border-mist-200/80 pt-3 xl:flex-row xl:items-center xl:justify-between">

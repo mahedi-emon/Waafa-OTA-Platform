@@ -51,7 +51,7 @@ function SearchField({
   buttonClassName,
 }: SearchFieldProps) {
   const t = useTranslations("Search.errors");
-  const { state, errorNonce } = useSearchCard();
+  const { state, dispatch, errorNonce } = useSearchCard();
   const error = fieldErrorCode(state, fieldId);
   const ref = useRef<HTMLButtonElement>(null);
   const id = fieldDomId(fieldId);
@@ -69,7 +69,7 @@ function SearchField({
         ref={ref}
         id={id}
         type="button"
-        onClick={onOpen}
+        onClick={active ? () => dispatch({ type: "close" }) : onOpen}
         aria-haspopup="dialog"
         aria-expanded={active}
         aria-describedby={error ? errorId : undefined}
@@ -97,9 +97,13 @@ function SearchField({
               </span>
             ) : null}
           </span>
-          {sub ? (
-            <span className="truncate text-[12.5px] leading-tight text-mist-600">{sub}</span>
-          ) : null}
+          {/* Always three lines, so fields in a row line up whether or not they have a sub line. */}
+          <span
+            aria-hidden={sub ? undefined : true}
+            className="truncate text-[12.5px] leading-tight text-mist-600"
+          >
+            {sub ?? " "}
+          </span>
         </span>
       </button>
       {error ? (

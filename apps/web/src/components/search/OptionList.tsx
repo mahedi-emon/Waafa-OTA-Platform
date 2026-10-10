@@ -82,7 +82,7 @@ function OptionList({
                 type="button"
                 aria-label={clearLabel}
                 onClick={() => onQueryChange?.("")}
-                className="-mr-1 grid size-9 shrink-0 cursor-pointer place-items-center rounded-full text-mist-500 hover:bg-mist-100 hover:text-navy-900"
+                className="-mr-2 grid size-11 shrink-0 cursor-pointer place-items-center rounded-full text-mist-500 hover:bg-mist-100 hover:text-navy-900"
               >
                 <X aria-hidden="true" className="size-4" />
               </button>

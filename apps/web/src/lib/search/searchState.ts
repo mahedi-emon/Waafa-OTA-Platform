@@ -656,6 +656,7 @@ export function validateHotel(hotel: HotelDraft, today: string): FieldErrors {
   if (!hotel.checkin) errors.stay = "checkinRequired";
   else if (daysBetween(today, hotel.checkin) < 0) errors.stay = "departPast";
   else if (!hotel.checkout) errors.stay = "checkoutRequired";
+  else if (daysBetween(hotel.checkin, hotel.checkout) < 1) errors.stay = "checkoutRequired";
   else if (daysBetween(hotel.checkin, hotel.checkout) > MAX_HOTEL_NIGHTS)
     errors.stay = "stayTooLong";
   if (hotel.childAges.some((age) => age === null)) errors.rooms = "childAgeRequired";

@@ -76,11 +76,11 @@ Serena memory `audit_findings`.
 | Files and components | `apps/web/src/components/search/*` (SearchCard, SearchCardClient, SearchCardContext, SearchTabList, TripTypeToggle, SearchField, SwapButton, SearchSubmit, FlightPanel, MultiCityPanel, HotelPanel, TourPanel, VisaPanel, QuickPicks, HelpLine, PickerAnchor, PickerPopover, PickerSheet, PickerSheetBody, PickerBody, OptionList, OptionIcon, NoMatch, CountryCode, AirportPicker, PlacePicker, DestinationPicker, CountryPicker, VisaTypePicker, DatesPicker, RangeBox, MonthPicker, TravellersPicker, RoomsPicker, PartyPicker, CounterRow, ChildAges, PickerFooter, hooks), `components/fx/BorderBeam.tsx`, `components/motion/RollingNumber.tsx`, `lib/search/*`, `app/api/search/{airports,places,log}/route.ts`, `SearchSettings` contract + fixture |
 | Screens matched | SearchCard, Pick-m-from, Pick-m-to, Pick-m-dates, Pick-m-range, Pick-m-pax, Pick-m-multi, Pick-m-hcity, Pick-m-rooms, Pick-m-tmonth, Pick-m-vcountry, Pick-m-vtype, Pick-d-from, Pick-d-to, Pick-d-dates, Pick-d-range, Pick-d-pax, Pick-d-rooms, Pick-d-tmonth, Pick-d-vcountry |
 | Admin control | AC-32, AC-65 – AC-71 |
-| Tests | unit +54 (search state, URL round trips, submit, recent, draft snapshot, highlight) · e2e 10 (phone sheets, desktop popovers, every tab's URL, validation, keyboard, multi-city, 320 px overflow, axe) · axe pass · Lighthouse mobile `/` 74–83 / 99 / 96 / 92 (shell alone 84; budget gap tracked in #39) |
+| Tests | unit +58 (search state, URL round trips, submit, recent, draft snapshot, highlight, rate limiter) · e2e 11 (phone sheets, desktop popovers, every tab's URL, validation, keyboard, multi-city, 320 px overflow, axe) · axe pass · Lighthouse mobile `/` 74–83 / 99 / 96 / 92 (shell alone 84; budget gap tracked in #39) |
 | Widths checked | 320 · 390 · 768 · 1024 · 1440 |
 | Tools and skills | Serena, Context7 (nuqs, Next.js Activity, react-day-picker v10), shadcn primitives, Playwright MCP, Lighthouse CLI, CDP CPU profile, an independent review subagent; skills design-taste-frontend, frontend-design (direction), ui-ux-pro-max rules |
-| Decisions | D57 – D63 |
-| Bugs and follow-ups | #39 (perf budget and picker long tasks); hotel stay over 30 nights reset check-in (fixed with a regression test) |
+| Decisions | D57 – D65 |
+| Bugs and follow-ups | #39 (perf budget and picker long tasks); hotel stay over 30 nights reset check-in (fixed, regression test); independent review: 15 findings, 14 fixed (phone calendar reach, selected-day contrast, restore once per document, log route byte cap + same-origin + rate limit, stepper focus at limits, popover toggle, 44 px targets, double submit, one-night stays, Dhaka today in calendars and at midnight, same-site recent links, row alignment, repeated announcements); locale-aware formatters move to P1 Bangla (D65) |
 
 ### #34 · A1b v4 addendum: signature moments, beat list, persisted design system, inner-page benchmark — ✅ Done
 | Field | Value |
@@ -491,6 +491,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D61 | 10 Oct | Pickers, Radix Popover/Popper and vaul load on demand (first touch or focus warms them); submit logic loads on first submit | Keeps ~40 KB of picker code out of the first load (budget work continues in #39) | #8 |
 | D62 | 10 Oct | The tour tab has no budget field; budget filtering lives on /tour-packages (A11) | The SearchCard board shows Where to / When / Travellers only; the board wins on layout | #8 |
 | D63 | 10 Oct | Calendars start the week on Sunday; days past a 30-night stay are disabled once check-in is set | Matches the Pick-d-range board; a stray pick past the cap never resets check-in | #8 |
+| D64 | 10 Oct | `/api/search/log` accepts same-site requests only, 4 KB at most, 30 per minute per client (in-memory fixed window in Phase A, Redis in Phase B) | CLAUDE.md requires rate limits on submits; logs must not be floodable | #8 |
+| D65 | 10 Oct | Search date formatters and country names stay English (`en-GB`, `Intl.DisplayNames(["en"])`) until Bangla ships in P1 | One locale at launch; the formatters take a locale parameter when `/bn` is added | #8 |
 
 ## 9. Bugs and known issues
 

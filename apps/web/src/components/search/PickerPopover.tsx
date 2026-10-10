@@ -69,6 +69,11 @@ function PickerPopover({ fieldId }: PickerPopoverProps) {
         collisionPadding={16}
         aria-label={title}
         data-search-picker=""
+        onInteractOutside={(event) => {
+          // A press on the field itself is handled by the field (it toggles), not as an outside click.
+          if (event.target instanceof Node && anchor.current?.contains(event.target))
+            event.preventDefault();
+        }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           returnFocusTo(fieldId);

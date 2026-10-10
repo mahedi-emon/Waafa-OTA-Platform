@@ -70,6 +70,16 @@ describe("recent searches (FR-SRCH-09)", () => {
 
   it("ignores broken or tampered storage", () => {
     expect(parseRecentSearches("not json")).toEqual([]);
+    for (const href of ["//evil.example/x", "/\\evil.example", "https://evil.example"]) {
+      expect(
+        parseRecentSearches(JSON.stringify([{ module: "visa", label: "X", href, at: 1 }])),
+      ).toEqual([]);
+    }
+    expect(
+      parseRecentSearches(
+        JSON.stringify([{ module: "visa", label: "X", href: "/visa-services/thailand", at: 1 }]),
+      ),
+    ).toHaveLength(1);
     expect(parseRecentSearches(JSON.stringify({ module: "flights" }))).toEqual([]);
     expect(
       parseRecentSearches(

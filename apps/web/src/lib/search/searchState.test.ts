@@ -209,6 +209,12 @@ describe("search card: hotels, tours and visa", () => {
     expect(validateHotel(state.hotel, TODAY)).toEqual({});
   });
 
+  it("rejects a check-out on or before check-in (restored or edited drafts)", () => {
+    const state = run(start(), { type: "tab", tab: "hotel" }, { type: "pickPlace", place });
+    const hotel = { ...state.hotel, checkin: "2026-12-04", checkout: "2026-12-04" };
+    expect(validateHotel(hotel, TODAY)).toEqual({ stay: "checkoutRequired" });
+  });
+
   it("keeps at least one adult per room and caps children per room", () => {
     let state = start();
     for (let index = 0; index < 4; index += 1)

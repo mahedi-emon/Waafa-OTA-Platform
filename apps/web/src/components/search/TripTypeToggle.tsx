@@ -29,11 +29,11 @@ function TripTypeToggle() {
         aria-labelledby={labelId}
         value={state.flight.trip}
         onValueChange={(trip) => dispatch({ type: "trip", trip: trip as TripType })}
-        className="relative grid h-10 grid-cols-3 gap-0 rounded-full bg-mist-100 p-1"
+        className="relative grid h-12 grid-cols-3 gap-0 rounded-full bg-mist-100 p-0.5"
       >
         <span
           aria-hidden="true"
-          className="absolute inset-y-1 left-1 w-[calc((100%-8px)/3)] rounded-full bg-white shadow-sm transition-transform duration-350 ease-spring"
+          className="absolute inset-y-0.5 left-0.5 w-[calc((100%-4px)/3)] rounded-full bg-white shadow-sm transition-transform duration-350 ease-spring"
           style={{ transform: `translateX(${index * 100}%)` }}
         />
         {TRIP_TYPES.map((trip) => (

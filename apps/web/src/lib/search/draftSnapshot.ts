@@ -12,7 +12,10 @@ import type { SearchDraft, SearchState } from "./searchState";
  * typed even when the results page was a full page load. Validated on read: a stale or edited value is ignored.
  */
 
-export const DRAFT_SNAPSHOT_KEY = "waafa:search-draft:v1";
+/** One snapshot per card placement ("home", "flights"…), so a results-page card never restores the home search. */
+export function draftSnapshotKey(source: string): string {
+  return `waafa:search-draft:v1:${source}`;
+}
 
 const IsoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const Ages = z.array(z.number().int().min(0).max(11).nullable()).max(9);

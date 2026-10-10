@@ -40,7 +40,7 @@ function MultiCityPanel({ pending }: MultiCityPanelProps) {
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon-sm"
+                    size="icon"
                     aria-label={t("legs.remove", { n })}
                     onClick={() => dispatch({ type: "removeLeg", index })}
                     className="text-mist-600 xl:hidden"

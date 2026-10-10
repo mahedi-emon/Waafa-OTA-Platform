@@ -74,9 +74,17 @@ test.describe("phone (390)", () => {
     await page.locator("#search-travellers").click();
     const sheet = page.getByRole("dialog", { name: "Travellers and cabin class" });
     await expect(sheet).toBeVisible();
-    await expect(sheet.getByRole("button", { name: "Infants: add one" })).toBeEnabled();
+    await expect(sheet.getByRole("button", { name: "Infants: add one" })).not.toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
     await sheet.getByRole("button", { name: "Infants: add one" }).click();
-    await expect(sheet.getByRole("button", { name: "Infants: add one" })).toBeDisabled();
+    const addInfant = sheet.getByRole("button", { name: "Infants: add one" });
+    await expect(addInfant).toHaveAttribute("aria-disabled", "true");
+    // At the limit the button keeps keyboard focus (aria-disabled, not disabled).
+    await addInfant.focus();
+    await page.keyboard.press("Enter");
+    await expect(addInfant).toBeFocused();
     await sheet.getByRole("button", { name: "Children: add one" }).click();
     await sheet.getByRole("combobox", { name: "Child 1" }).click();
     await page.getByRole("option", { name: "7 years" }).click();
@@ -85,6 +93,24 @@ test.describe("phone (390)", () => {
     await sheet.getByRole("button", { name: "Done" }).click();
     await expect(page.locator("#search-travellers")).toContainText("3 travellers");
     await expect(page.locator("#search-travellers")).toContainText("Business");
+  });
+
+  test("re-opens the dates sheet and can move the departure to an earlier month", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const late = dhakaDate(75);
+    const early = dhakaDate(3);
+    await page.locator("#search-depart").click();
+    const dates = page.getByRole("dialog", { name: "Choose your departure date" });
+    await pickDay(page, late);
+    await dates.getByRole("button", { name: "Done" }).click();
+    await page.locator("#search-depart").click();
+    await expect(page.locator(`td[data-day="${late}"] button`)).toBeInViewport();
+    await pickDay(page, early);
+    await dates.getByRole("button", { name: "Done" }).click();
+    const [, , day] = early.split("-");
+    await expect(page.locator("#search-depart")).toContainText(String(Number(day)));
   });
 
   test("shows and announces errors, then focuses the first one", async ({ page }) => {
@@ -125,6 +151,10 @@ test.describe("desktop (1440)", () => {
     await page.locator("#search-to").click();
     const picker = page.getByRole("dialog", { name: "Where are you flying to?" });
     await expect(picker).toBeVisible();
+    // Pressing the open field closes its popover instead of reopening it.
+    await page.locator("#search-to").click();
+    await expect(picker).toBeHidden();
+    await page.locator("#search-to").click();
     await picker.getByRole("option", { name: /Dubai/ }).click();
     const dates = page.getByRole("dialog", { name: "Choose your dates" });
     const depart = dhakaDate(10);

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
 import { MAX_HOTEL_NIGHTS, daysBetween } from "@waafa/shared";
@@ -15,6 +16,16 @@ import {
 import { PickerFooter } from "./PickerFooter";
 import { RangeBox } from "./RangeBox";
 import { useSearchCard } from "./SearchCardContext";
+
+const MAX_MONTHS = 12;
+const PHONE_MIN_MONTHS = 6;
+
+/** Whole months from the month of `from` to the month of `to` (both YYYY-MM-DD). */
+function monthsFrom(from: string, to: string): number {
+  const [fy = 0, fm = 0] = from.split("-").map(Number);
+  const [ty = 0, tm = 0] = to.split("-").map(Number);
+  return (ty - fy) * 12 + (tm - fm);
+}
 
 type Matcher = { before: Date } | { after: Date };
 
@@ -53,6 +64,16 @@ function DatesPicker() {
   const t = useTranslations("Search");
   const { state, dispatch, isDesktop, today } = useSearchCard();
   const picker = state.picker;
+  const scroller = useRef<HTMLDivElement>(null);
+
+  // Phones: bring the chosen day into view once, when the sheet opens.
+  useEffect(() => {
+    if (isDesktop) return;
+    scroller.current
+      ?.querySelector('button[data-range-start="true"], button[data-selected-single="true"]')
+      ?.scrollIntoView({ block: "center" });
+  }, [isDesktop]);
+
   if (!picker || !today) return null;
 
   const stay = picker.key === "stay";
@@ -90,13 +111,18 @@ function DatesPicker() {
 
   const startMonth = isoToLocalDate(`${today.slice(0, 7)}-01`);
   const endMonth = isoToLocalDate(`${addMonths(today, 11)}-01`);
-  const defaultMonth = start ? isoToLocalDate(start) : startMonth;
+  // Desktop pages two months from the selection; phones scroll a run of months from this month (never skipping
+  // earlier ones) that reaches at least three months past the selection.
+  const defaultMonth = isDesktop && start ? isoToLocalDate(start) : startMonth;
+  const selectedOffset = start ? monthsFrom(today, start) : 0;
+  const phoneMonths = Math.min(MAX_MONTHS, Math.max(PHONE_MIN_MONTHS, selectedOffset + 4));
   const onDayClick = (day: Date, modifiers: { disabled?: boolean }) => {
     if (modifiers.disabled) return;
     dispatch({ type: "pickDate", iso: localDateToIso(day) });
   };
   const shared = {
-    numberOfMonths: isDesktop ? 2 : 6,
+    numberOfMonths: isDesktop ? 2 : phoneMonths,
+    today: isoToLocalDate(today),
     hideNavigation: !isDesktop,
     startMonth,
     endMonth,
@@ -166,7 +192,10 @@ function DatesPicker() {
           />
         )}
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 lg:px-5">
+      <div
+        ref={scroller}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 lg:px-5"
+      >
         <Calendar modifiers={modifiers} {...shared} />
       </div>
       <PickerFooter summary={summary} detail={detail} />
