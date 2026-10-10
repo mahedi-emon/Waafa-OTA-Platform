@@ -9,6 +9,7 @@ import type {
 } from "@waafa/shared";
 import { FeedbackCreateInputSchema, type Feedback } from "@waafa/shared";
 import { cacheLife, cacheTag } from "next/cache";
+import { apiConfig, callApi, type IntakeContext } from "./api/apiClient";
 import { repositories } from "./source";
 import { CACHE_TAGS } from "./tags";
 import type { BaggageQuery, BlogQuery, FaqQuery, TeamPlacement } from "./types";
@@ -157,6 +158,18 @@ export async function listPageBlocks(page: PageBlockPage) {
 }
 
 /** Public feedback form: validated against the shared contract and stored as pending. Never cached (a write). */
-export async function submitFeedback(input: unknown): Promise<Feedback> {
-  return repositories.content.createFeedback(FeedbackCreateInputSchema.parse(input), new Date());
+export async function submitFeedback(
+  input: unknown,
+  context: IntakeContext = {},
+): Promise<{ firstName: string }> {
+  const feedback = FeedbackCreateInputSchema.parse(input);
+  const api = apiConfig();
+  if (api) {
+    return callApi<{ firstName: string }>(api, "/api/v1/public/feedback", {
+      ...context,
+      body: feedback,
+    });
+  }
+  const stored: Feedback = await repositories.content.createFeedback(feedback, new Date());
+  return { firstName: stored.name.split(/\s+/)[0] ?? stored.name };
 }

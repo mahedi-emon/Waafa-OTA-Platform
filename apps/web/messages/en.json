@@ -183,6 +183,7 @@
     "emailLabel": "Email address",
     "invalidEmail": "Enter a valid email address, like name@example.com.",
     "subscribed": "Thanks. Fare drops and visa news will reach you once a month.",
+    "subscribeFailed": "We could not add you just now. Try again in a minute.",
     "developedBy": "Developed by",
     "socialLabel": "WAAFA on {network}",
     "emailUs": "Email us"

@@ -10,6 +10,7 @@ import {
 } from "@waafa/shared";
 import { withDeals } from "@/lib/shop/deals";
 import { getPaymentSettings, getShippingSettings } from "./settings";
+import { ApiError, apiConfig, callApi, type IntakeContext } from "./api/apiClient";
 import { repositories } from "./source";
 
 /*
@@ -58,10 +59,32 @@ export type PlaceOrderResult =
   | { ok: false; reason: "invalid" | "changed" | "cod" | "minimum" | "pickup"; quote?: Quote };
 
 /** Validates the checkout payload, prices it from the catalogue and stores the order. */
-export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
+export async function placeOrder(
+  input: unknown,
+  context: IntakeContext = {},
+): Promise<PlaceOrderResult> {
   const parsed = OrderCreateInputSchema.safeParse(input);
   if (!parsed.success) return { ok: false, reason: "invalid" };
   const order = parsed.data;
+  const api = apiConfig();
+  if (api) {
+    try {
+      const created = await callApi<OrderCreated>(api, "/api/v1/public/orders", {
+        ...context,
+        body: order,
+      });
+      return { ok: true, order: created };
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) {
+        const code = error.body.code;
+        const reason = code === "cod" || code === "minimum" || code === "pickup" ? code : "changed";
+        return { ok: false, reason, quote: error.body.quote as Quote | undefined };
+      }
+      if (error instanceof ApiError && error.status === 422)
+        return { ok: false, reason: "invalid" };
+      throw error;
+    }
+  }
   const shipping = await getShippingSettings();
   if (order.pickup && !shipping.officePickup) return { ok: false, reason: "pickup" };
   const delivery: DeliveryChoice = order.pickup
@@ -111,6 +134,20 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
 }
 
 /** Track order: the reference and the phone number on it must both match. */
-export async function trackOrder(reference: string, phone: string): Promise<Order | null> {
-  return repositories.shop.findOrder(reference, phone);
+export async function trackOrder(
+  reference: string,
+  phone: string,
+  context: IntakeContext = {},
+): Promise<Order | null> {
+  const api = apiConfig();
+  if (!api) return repositories.shop.findOrder(reference, phone);
+  try {
+    return await callApi<Order>(api, "/api/v1/public/orders/track", {
+      clientIp: context.clientIp,
+      body: { reference, phone },
+    });
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 422)) return null;
+    throw error;
+  }
 }

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { PackageSearch } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -15,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { trackOrder } from "@/lib/data/orders";
+import { clientKey } from "@/lib/rateLimit";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Track");
@@ -36,7 +38,10 @@ async function TrackContent({
     getTranslations("Track"),
   ]);
   const asked = reference !== "" || phone !== "";
-  const order = reference && phone ? await trackOrder(reference, phone) : null;
+  const order =
+    reference && phone
+      ? await trackOrder(reference, phone, { clientIp: clientKey(await headers()) })
+      : null;
 
   return (
     <main id="main" className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6">

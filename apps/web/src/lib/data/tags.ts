@@ -3,6 +3,8 @@
  * saving in Admin revalidates the tag, and the site follows within seconds (FR-GS-02).
  */
 export const CACHE_TAGS = {
+  /** API mode: the one snapshot every other accessor reads (D130); every admin save expires it. */
+  snapshot: "snapshot",
   /** Booking modes, payment switches, COD cap, maintenance. */
   config: "config",
   settings: "settings",

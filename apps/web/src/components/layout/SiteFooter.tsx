@@ -243,6 +243,7 @@ async function SiteFooter() {
                 email: t("emailLabel"),
                 invalid: t("invalidEmail"),
                 subscribed: t("subscribed"),
+                failed: t("subscribeFailed"),
               }}
             />
           </div>

@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import type { ZodType } from "zod";
 import { createIdempotencyStore, isIdempotencyKey } from "@/lib/leads/idempotency";
 import { verifyTurnstile } from "@/lib/leads/turnstile";
+import type { IntakeContext } from "@/lib/data/api/apiClient";
 import { clientKey, createRateLimiter } from "@/lib/rateLimit";
+import { intakeFailure } from "./intakeFailure";
 import { isSameSite, readCappedBody } from "./readCappedBody";
 
 type SubmissionOptions<Input, Output> = {
@@ -14,7 +16,7 @@ type SubmissionOptions<Input, Output> = {
   /** Body field that carries the payload, e.g. "feedback" for `{ idempotencyKey, feedback }`. */
   field: string;
   schema: ZodType<Input>;
-  run: (input: Input) => Promise<Output>;
+  run: (input: Input, context: IntakeContext) => Promise<Output>;
 };
 
 /**
@@ -55,10 +57,13 @@ export function createSubmissionHandler<Input, Output>(options: SubmissionOption
       return NextResponse.json({ error: "challenge" }, { status: 400 });
     }
     try {
-      const result = await once(body.idempotencyKey, () => options.run(parsed.data));
+      const key = body.idempotencyKey;
+      const result = await once(key, () =>
+        options.run(parsed.data, { clientIp: ip, idempotencyKey: key }),
+      );
       return NextResponse.json(result, { status: 201 });
-    } catch {
-      return NextResponse.json({ error: "unavailable" }, { status: 503 });
+    } catch (error) {
+      return intakeFailure(error);
     }
   };
 }
