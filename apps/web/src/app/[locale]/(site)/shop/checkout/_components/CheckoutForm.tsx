@@ -16,6 +16,7 @@ import { PaymentOptions, type OfflineAccount } from "@/components/shop/PaymentOp
 import { useCart } from "@/components/shop/useCart";
 import { useCartPrefs } from "@/components/shop/useCartPrefs";
 import { useQuote } from "@/components/shop/useQuote";
+import { useTurnstile } from "@/components/forms/useTurnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup } from "@/components/ui/radio-group";
@@ -140,6 +141,7 @@ function CheckoutForm({
   const [failure, setFailure] = useState<Failure>(null);
   const [placed, setPlaced] = useState<Placed | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const turnstile = useTurnstile();
 
   const [mode, division, district, payment, vat, phoneCountry, transactionId] = useWatch({
     control: form.control,
@@ -193,14 +195,17 @@ function CheckoutForm({
     const key = idempotencyKey ?? crypto.randomUUID();
     setIdempotencyKey(key);
     try {
+      const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           idempotencyKey: key,
           order: buildOrderInput(values, lines, prefs.couponCode, proof),
+          turnstileToken,
         }),
       });
+      turnstile.reset();
       if (!response.ok) {
         // A refusal is final for this attempt: the next press is a new order request (#61). Server errors and
         // timeouts keep the key, so a retry can never place the order twice.
@@ -279,6 +284,7 @@ function CheckoutForm({
     <form
       noValidate
       onSubmit={submit}
+      onFocusCapture={turnstile.activate}
       className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-8"
     >
       <div className="flex min-w-0 flex-col gap-4">
@@ -614,6 +620,7 @@ function CheckoutForm({
       </div>
 
       <div className="flex flex-col gap-3">
+        {turnstile.field}
         {ready ? (
           <CheckoutSummary
             quote={quote}
