@@ -163,6 +163,96 @@ jobs:
           path: apps/web/playwright-report
           retention-days: 7
 
+  # API mode end to end: PostgreSQL, the API (migrate, seed, start), the web built against it, admin flows (C1, A18).
+  integration:
+    name: API mode e2e (web on the API, admin)
+    needs: changes
+    if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: waafa
+          POSTGRES_PASSWORD: waafa
+          POSTGRES_DB: waafa
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U waafa" --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      DATABASE_URL: postgresql://waafa:waafa@localhost:5432/waafa
+      JWT_SECRET: ci-jwt-secret-0123456789-0123456789-abcdef
+      REVALIDATE_SECRET: ci-revalidate-secret-0123456789-abc
+      INTAKE_KEY: ci-intake-key-0123456789-abcdef
+      WEB_ORIGINS: http://localhost:3100
+      WEB_REVALIDATE_URL: http://localhost:3100/api/revalidate
+      STAFF_ALERT_EMAIL: desk@example.com
+      SEED_ADMIN_EMAIL: owner@example.com
+      SEED_ADMIN_PASSWORD: ci-owner-password-123
+      WAAFA_API_URL: http://localhost:4000
+      WAAFA_INTAKE_KEY: ci-intake-key-0123456789-abcdef
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Database (migrate and seed)
+        run: |
+          pnpm --filter @waafa/api generate
+          pnpm --filter @waafa/api migrate
+          pnpm --filter @waafa/api seed
+
+      - name: Start the API
+        run: |
+          nohup pnpm --filter @waafa/api start > api.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -sf http://localhost:4000/ready > /dev/null; then echo "API ready"; exit 0; fi
+            sleep 2
+          done
+          cat api.log
+          exit 1
+
+      - name: Build the web on the API
+        run: pnpm --filter @waafa/web... build
+
+      - name: Playwright version
+        id: pw
+        run: echo "version=$(pnpm --filter @waafa/web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+      - name: Install Playwright browser
+        run: pnpm --filter @waafa/web exec playwright install --with-deps chromium
+
+      - name: API mode e2e
+        working-directory: apps/web
+        run: pnpm exec playwright test e2e/api-mode.spec.ts --workers=1
+
+      - name: API log
+        if: failure()
+        run: tail -200 api.log
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-api-mode
+          path: apps/web/playwright-report
+          retention-days: 7
+
   lighthouse:
     name: Lighthouse CI (mobile)
     needs: [changes, verify]
