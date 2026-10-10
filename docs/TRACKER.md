@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 19:45 Asia/Dhaka · Phase: A · Frontend · Current: #17 · A17 System states (after #16 A16 merges) · Progress: 18/24 issues (75%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues; launch-critical order in section 14 (owner accounts needed now, section 11)
+Updated: 10 Oct 20:02 Asia/Dhaka · Phase: A · Frontend · Current: review-fix issue, then lean Phase B and admin · Progress: 19/24 issues (79%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 5 issues; launch-critical order in section 14 (owner accounts needed now, section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 18 | 1 (#17) | 0 | 75% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 19 | 0 | 0 | 79% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #17 · A17 System states: 404, 500, offline, maintenance, Live placeholder — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 19:50 → 10 Oct 20:02 |
+| Branch · PR · merge | `feat/17-system-states` · see section 13 · squash |
+| Built | Branded 404 inside the site frame for unknown URLs (`[...rest]` catch-all) and unknown records (`notFound()`), with Home and five popular pages; the site error boundary (Try again, WhatsApp with the error ID, call, home) using the server digest as the error ID; a last-resort `global-error`; an offline notice above the tab bar (online/offline events, Try again, Call us instead); maintenance mode from Admin settings replacing the public site (logo, message, optional "Back by", WhatsApp and call; noindex), admin and API unaffected; one Live placeholder for the results slot (flights, hotels) |
+| Files and components | `app/[locale]/(site)/{not-found,error}.tsx`, `app/[locale]/(site)/[...rest]/page.tsx`, `app/global-error.tsx`, `components/feedback/{SystemState,SupportContact,OfflineNotice,MaintenanceScreen}.tsx`, `components/results/LivePlaceholder.tsx`, site layout (maintenance switch, Errors messages for the boundary, support contact, offline notice); shared: `MaintenanceSettingsSchema.backAt` |
+| Screens matched | Error, Error500, Error-m, Offline, Offline-m, Maintenance, Maintenance-m, States |
+| Admin control | AC-19 used (maintenance message, now with backAt); AC-07 numbers in the error and offline states |
+| Tests | e2e +4 (unknown URL → branded 404 inside header and footer at 320 and 1440 with axe and noindex, unknown product → same 404, offline notice on and off); package not-found test now expects the branded page; suite 81 passed |
+| Widths checked | 320 · 390 · 1440 |
+| Tools and skills | Serena, Playwright test runner and screenshot script; skills frontend-design, ui-ux-pro-max rules |
+| Decisions | D116 – D119 |
+| Bugs and follow-ups | Footer repeats the WAAFA logo (correction 4: one logo per page) → review-fix issue. Maintenance toggling is tested once the admin settings screen exists (A21) |
 
 ### #16 · A16 Information pages: About, Contact, FAQs, Blog, Gallery, Feedback, policies, Baggage, EMI, Offline payment — ✅ Done
 | Field | Value |
@@ -716,6 +731,10 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D113 | 10 Oct | Contact and About use a Get directions link instead of a map iframe | No third-party embed on first load (performance, privacy) | #16 |
 | D114 | 10 Oct | Gallery videos show the poster and open on YouTube or Facebook in a new tab | Cut list item 1 (video embeds) | #16 |
 | D115 | 10 Oct | Feedback rating is optional and stored only when given; the wall shows stars per review, never an average | Board "How was it? (optional)"; no made-up averages | #16 |
+| D116 | 10 Oct | `global-error` uses fixed English copy | It replaces the root layout, so no messages, data or site frame exist there; every other error uses the translated site boundary | #17 |
+| D117 | 10 Oct | Offline is a notice on the current page, not a separate page | No service worker yet; the visitor keeps the page and what they typed | #17 |
+| D118 | 10 Oct | The 404 omits the board's site-wide search box and shows Home plus five popular pages | There is no site-wide search route yet; a box that searches only one module would mislead | #17 |
+| D119 | 10 Oct | Maintenance mode replaces the public site in the site layout (noindex); admin and API stay reachable | Staff keep working while the public site is closed | #17 |
 
 ## 9. Bugs and known issues
 
@@ -774,6 +793,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 19:50–20:02 | A16 merged (#49); A17 branded 404, error boundary, global error, offline notice, maintenance screen, Live placeholder | #17 | see #17 block | e2e 81 passed |
 | 10 Oct 18:00–19:45 | Session review (link/SEO and board-fidelity subagents; two audits stopped by the account rate limit); A16 information pages, feedback and payment-proof intake, page blocks, sitemap rewrite | #16 | see #16 block | unit 207 web + 48 shared + 82 fixtures · e2e 77 passed |
 | 10 Oct 16:20–17:40 | A14 merged (#47); A15 service pages for printing and trading with PRN and TRD requests, shared ConsentField and StepActions | #15 | see #15 block | unit 192 web + 48 shared + 80 fixtures · e2e +3 |
 | 10 Oct 15:40–16:10 | A13 merged (#46); A14 cart with server pricing and coupons, one-page checkout (COD cap, offline payment with proof, VAT invoice, pick-up), boarding-pass order success, track order by number and phone; globalThis store fix | #14 | see #14 block | unit 188 web + 48 shared + 79 fixtures · e2e 64 passed |

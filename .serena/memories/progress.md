@@ -1,4 +1,6 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-10 20:30 Dhaka — #16 merged (PR #49); #17 A17 system states built (branded 404 via [...rest], error boundary,
+  global-error, offline notice, maintenance screen, Live placeholder). Phase A 19/24 after #17 (79%).
 - 2026-10-10 19:45 Dhaka — #16 A16 information pages built (About, Contact, FAQs, Blog + post, Gallery + album, Feedback,
   Refund/Privacy/Terms, Baggage, EMI, Offline payment; /api/feedback, /api/payment-proof). Phase A 18/24 after #16 (75%).
 - 2026-10-10 17:40 Dhaka — #14 merged (PR #47), #15 merged (PR #48: printing + trading service pages, PRN/TRD requests).

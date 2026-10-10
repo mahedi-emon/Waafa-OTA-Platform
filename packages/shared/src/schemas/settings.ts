@@ -292,6 +292,8 @@ export const MaintenanceSettingsSchema = z
   .object({
     enabled: z.boolean(),
     message: z.string().min(1),
+    /** When the site is expected back, shown as "Back by …" on the maintenance page. */
+    backAt: IsoDateTimeSchema.optional(),
   })
   .strict();
 

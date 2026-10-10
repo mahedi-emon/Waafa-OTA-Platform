@@ -44,6 +44,8 @@
 - D108 service pages = ServicePage record + shared request card. D109 attachments metadata only. D110 PageBlock collection
   for info page cards. D111 About route chips (map in A22). D112 empty office slot → navy visit card. D113 directions
   link, no map iframe. D114 gallery videos open externally. D115 optional feedback rating, never an average.
+- D116 global-error fixed English. D117 offline = notice (no SW). D118 404 without site search box. D119 maintenance
+  replaces the public site in the (site) layout; admin/API unaffected.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
   children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
   (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on
