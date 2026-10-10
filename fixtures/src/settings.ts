@@ -4,6 +4,7 @@ import type {
   ContactSettingsSchema,
   EmiSettingsSchema,
   FooterSettingsSchema,
+  HomeContentSchema,
   HomeSectionSchema,
   LeadFormSettingsSchema,
   MaintenanceSettingsSchema,
@@ -507,6 +508,37 @@ export const searchSettings: In<typeof SearchSettingsSchema> = {
   hotelNationalities: ["BD", "IN", "NP", "LK", "PK", "GB", "US"],
 };
 
+/** Home copy from the Home board (Content › Home). */
+export const homeContent: In<typeof HomeContentSchema> = {
+  hero: {
+    title: "Tell us where.",
+    titleAccent: "We’ll handle the rest.",
+    lead: "Flights, hotels, holidays and visas. A real travel expert checks the price and the rules with you before you pay.",
+    rotatingLabel: "Next stop",
+    rotating: ["Bangkok", "Bali", "Dubai", "Kathmandu", "Maldives"],
+  },
+  why: {
+    figure: "Since 2010",
+    figureLabel: "Dependable service for Dhaka’s offices",
+    body: "Waafa International began in 2010, serving Dhaka’s offices with printing and toner. In 2026 we opened Waafa Tours and Travel, with the same promise: people you can call, and an office you can visit.",
+  },
+  store: {
+    title: "Everything for work and home, delivered",
+    body: "Office supplies, electronics, fashion and more from the team that has served Dhaka’s offices since 2010. Pay cash on delivery anywhere in Bangladesh.",
+    perks: ["Cash on delivery", "Next day in Dhaka", "Easy returns", "Corporate prices"],
+  },
+  reviews: {
+    facebookTitle: "Read reviews on our Facebook page",
+    facebookBody: "Real comments and photos from travellers, in their own words.",
+    feedbackTitle: "Travelled with us? Tell us how it went",
+    feedbackBody: "We only show reviews here with the traveller’s permission.",
+  },
+  cta: {
+    title: "Not sure where to start?",
+    body: "Send your dates and budget on WhatsApp. A travel expert replies with options you can compare, with no obligation to book.",
+  },
+};
+
 /** Analytics IDs are entered by the owner in Admin; nothing loads until they exist. */
 export const trackingSettings: In<typeof TrackingSettingsSchema> = {};
 
@@ -514,15 +546,49 @@ export const trackingSettings: In<typeof TrackingSettingsSchema> = {};
 export const homeSections: In<typeof HomeSectionSchema>[] = [
   { key: "hero", enabled: true, order: 0 },
   { key: "trust", enabled: true, order: 1 },
-  { key: "offers", enabled: true, order: 2, title: "Offers worth a look" },
-  { key: "groupFares", enabled: true, order: 3, title: "Fixed-date seats at a fixed price" },
-  { key: "destinations", enabled: true, order: 4, title: "Find a trip that fits you" },
+  { key: "offers", enabled: true, order: 2, kicker: "This season", title: "Offers worth a look" },
+  {
+    key: "groupFares",
+    enabled: true,
+    order: 3,
+    title: "Fixed-date seats at a fixed price",
+    subtitle:
+      "We hold seats with airlines in advance. If your date matches, these are the simplest fares to book: send the names as in each passport, pay, get your e-ticket.",
+  },
+  {
+    key: "destinations",
+    enabled: true,
+    order: 4,
+    title: "Find a trip that fits you",
+    subtitle: "Filter by visa, flight time or the kind of trip. Prices are per person, from Dhaka.",
+  },
   { key: "packages", enabled: true, order: 5, title: "Trips planned day by day" },
-  { key: "visa", enabled: true, order: 6, title: "Visa files, prepared properly" },
-  { key: "why", enabled: true, order: 7 },
+  {
+    key: "visa",
+    enabled: true,
+    order: 6,
+    title: "Visa files, prepared properly",
+    subtitle:
+      "Send photos of your papers on WhatsApp. We check them, fill in the forms, book the appointment and follow the file until the embassy decides.",
+  },
+  { key: "why", enabled: true, order: 7, title: "What we stand for" },
   { key: "store", enabled: true, order: 8 },
   { key: "testimonials", enabled: false, order: 9 },
-  { key: "galleryBlogFaq", enabled: true, order: 10 },
-  { key: "team", enabled: true, order: 11 },
+  {
+    key: "galleryBlogFaq",
+    enabled: true,
+    order: 10,
+    title: "Trips, in travellers’ own photos",
+    subtitle:
+      "Shared with their permission. Until real ones are added in Admin, these are sample photos.",
+  },
+  {
+    key: "team",
+    enabled: true,
+    order: 11,
+    title: "The people behind WAAFA",
+    subtitle:
+      "Trip planners, visa specialists and the Waafas World team, all in one Motijheel office.",
+  },
   { key: "cta", enabled: true, order: 12 },
 ];

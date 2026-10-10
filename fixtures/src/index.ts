@@ -46,6 +46,7 @@ import {
   TimelineEventSchema,
   TourPackageSchema,
   SearchSettingsSchema,
+  HomeContentSchema,
   TrackingSettingsSchema,
   TrustItemSchema,
   ValueCardSchema,
@@ -86,6 +87,7 @@ import {
   paymentSettings,
   shippingSettings,
   searchSettings,
+  homeContent,
   siteSettings,
   trackingSettings,
 } from "./settings";
@@ -133,6 +135,7 @@ export const fixtureRegistry = {
   maintenanceSettings: entry(MaintenanceSettingsSchema, maintenanceSettings),
   trackingSettings: entry(TrackingSettingsSchema, trackingSettings),
   searchSettings: entry(SearchSettingsSchema, searchSettings),
+  homeContent: entry(HomeContentSchema, homeContent),
   homeSections: entry(z.array(HomeSectionSchema), homeSections),
   // Content
   pages: entry(z.array(PageSchema), pages),

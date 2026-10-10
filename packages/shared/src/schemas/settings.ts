@@ -340,9 +340,55 @@ export const HomeSectionSchema = z
     key: HomeSectionKeySchema,
     enabled: z.boolean(),
     order: z.number().int().min(0),
+    /** Small label above the heading; used sparingly (DESIGN.md: no eyebrow on every section). */
+    kicker: z.string().max(40).optional(),
     /** Optional heading override; empty uses the default copy. */
     title: z.string().max(80).optional(),
     subtitle: z.string().max(220).optional(),
+  })
+  .strict();
+
+/** Home copy that is not a list (Content › Home): hero, Why WAAFA figure, store band, reviews and the closing band. */
+export const HomeContentSchema = z
+  .object({
+    hero: z
+      .object({
+        title: z.string().min(1).max(60),
+        /** Second headline line, set in electric blue (the only accent line on the site). */
+        titleAccent: z.string().min(1).max(60),
+        lead: z.string().min(1).max(220),
+        rotatingLabel: z.string().min(1).max(30),
+        rotating: z.array(z.string().min(1).max(30)).min(1).max(8),
+      })
+      .strict(),
+    why: z
+      .object({
+        figure: z.string().min(1).max(16),
+        figureLabel: z.string().min(1).max(60),
+        body: z.string().min(1).max(320),
+      })
+      .strict(),
+    store: z
+      .object({
+        title: z.string().min(1).max(80),
+        body: z.string().min(1).max(220),
+        perks: z.array(z.string().min(1).max(40)).max(4),
+      })
+      .strict(),
+    reviews: z
+      .object({
+        facebookTitle: z.string().min(1).max(60),
+        facebookBody: z.string().min(1).max(160),
+        feedbackTitle: z.string().min(1).max(60),
+        feedbackBody: z.string().min(1).max(160),
+      })
+      .strict(),
+    cta: z
+      .object({
+        title: z.string().min(1).max(60),
+        body: z.string().min(1).max(220),
+      })
+      .strict(),
   })
   .strict();
 
@@ -398,4 +444,5 @@ export type SearchSettings = z.infer<typeof SearchSettingsSchema>;
 export type TrackingSettings = z.infer<typeof TrackingSettingsSchema>;
 export type HomeSectionKey = z.infer<typeof HomeSectionKeySchema>;
 export type HomeSection = z.infer<typeof HomeSectionSchema>;
+export type HomeContent = z.infer<typeof HomeContentSchema>;
 export type PublicConfig = z.infer<typeof PublicConfigSchema>;

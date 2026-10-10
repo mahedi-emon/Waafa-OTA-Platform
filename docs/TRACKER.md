@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 01:20 Asia/Dhaka · Phase: A · Frontend · Current: #8 · A8 Unified search card and pickers · Progress: 8/24 issues (33%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (HANDOFF expects A8–A10 done on Sat 10; cuts in section 10)
+Updated: 10 Oct 06:15 Asia/Dhaka · Phase: A · Frontend · Current: #7 · A7 Home (then #9 A9 results + flights Manual) · Progress: 10/24 issues (42%) after #7 merges · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (cuts in section 10; owner decision needed on launch scope)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) | 8 | 1 (#8) | 0 | 33% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 10 | 1 (#7) | 0 | 42% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #7 · A7 Home: 13 sections from data, video hero with word reveal — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 03:45 → 10 Oct |
+| Branch · PR · merge | `feat/7-home` · see section 13 · squash |
+| Built | Home from 13 admin-ordered sections (hidden sections and empty data hide themselves): hero with CSS word reveal, rotating destination chip, real video with poster LCP and the search card overlapping the panel; trust strip; offers; group fares as boarding passes with the airline marquee; destination finder with filter chips; featured packages; visa countries; Why WAAFA (owner figure, journey, values bento); Waafas World band (text name, categories, services, best sellers); gallery with Facebook and feedback cards; travel guides; five FAQs; Meet our team (bento desktop, snap carousel phones, initials); closing WhatsApp and office band; Organization + TravelAgency JSON-LD; robots.txt and sitemap.xml |
+| Files and components | `app/[locale]/(site)/page.tsx`, `app/[locale]/(site)/_components/home/*` (HomeSections, HomeSectionShell, SnapRow, HeroSection, TrustSection, OffersSection, OfferCard, GroupFaresSection, DestinationsSection, DestinationFilter, PackagesSection, VisaSection, WhySection, StoreSection, TestimonialsSection, GalleryBlogFaqSection, TeamSection, CtaSection, HomeJsonLd), reusable cards `components/travel/{GroupFareCard,PackageCard,DestinationCard}`, `components/visa/VisaCountryCard`, `components/shop/ProductCard`, `components/content/{SectionHeading,SampleBadge,BlogCard}`, `components/team/TeamCard`, `components/motion/TextRotate`, `HomeContent` contract + fixture, `app/robots.ts`, `app/sitemap.ts` |
+| Screens matched | Home, Home-t, Home-m, Home-mfull, Home-mfull2, Home-lower, Home-help |
+| Admin control | AC-72 – AC-80 |
+| Tests | e2e +5 (admin order, disabled section absent, destination filter, no overflow, axe 390 + 1440, JSON-LD); suite 37 passed · axe pass · Lighthouse mobile `/` 71–74 / 100 / 96 / 100 (budget gap in #39) |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 (no horizontal overflow at any width) |
+| Tools and skills | Serena, Context7, shadcn (Accordion, ToggleGroup), Playwright scripts and MCP, Lighthouse CLI; skills design-taste-frontend, frontend-design, ui-ux-pro-max rules |
+| Decisions | D66 – D70 |
+| Bugs and follow-ups | #39 (perf: LCP bound by JS, fonts and 69 KB HTML on simulated Slow 4G); duplicate "Mixkit · Mixkit" credit fixed; Marquee under reduced motion now wraps (axe scrollable-region) |
 
 ### #8 · A8 Unified search card and pickers — ✅ Done
 | Field | Value |
@@ -308,6 +323,15 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-69 | Preferred airline list | `listAirlines()` → code, name | Flights › Airlines | `GET /api/v1/airlines` | ⬜ |
 | AC-70 | Flight help line (Manual vs Live) and Live hotline | `getPublicConfig()` → modes.flights.mode; `getContactSettings()` → phoneDisplay, whatsappE164 | Settings › Booking modes; Settings › General | `GET /api/v1/config` | ⬜ |
 | AC-71 | Search activity (every submitted search) | `logSearch()` → module, summary, params, device, source | Admin › Search activity (A18) | `POST /api/v1/search-logs`, `GET /api/v1/search-logs` | ⬜ |
+| AC-72 | Hero headline, accent line, lead, rotating destinations | `getHomeContent()` → hero.title, titleAccent, lead, rotatingLabel, rotating[] | Content › Home | `GET /api/v1/content/home` | ⬜ |
+| AC-73 | Home section order, visibility, kicker, heading, lead | `listHomeSections()` → key, enabled, order, kicker, title, subtitle | Content › Home and banners | `GET /api/v1/home-sections` | ⬜ |
+| AC-74 | Home offers | `listBanners("home-offers")` → kicker, title, body, image, link, code, validityText, schedule | Content › Home and banners | `GET /api/v1/banners?placement=home-offers` | ⬜ |
+| AC-75 | Home trust strip | `listTrustItems()` → icon, title, detail, order | Content › Home | `GET /api/v1/content/trust` | ⬜ |
+| AC-76 | Why WAAFA figure and story; values; journey | `getHomeContent()` → why; `listValues()`; `listTimeline()` | Content › Home; Content › About | `GET /api/v1/content/home`, `/values`, `/timeline` | ⬜ |
+| AC-77 | Waafas World band copy and perks; services row | `getHomeContent()` → store; `getMenu("shop-panel")`; `listCategories()`; `listProducts({sort:"popular"})` | Content › Home; Settings › Footer and menus; Waafas World | `GET /api/v1/content/home`, `/menus/shop-panel`, `/shop/*` | ⬜ |
+| AC-78 | Reviews cards (Facebook link, Leave feedback) and testimonials | `getHomeContent()` → reviews; `getSiteSettings()` → reviewsUrl; `listPublicFeedback()` (approved only) | Content › Home; Content › Feedback moderation | `GET /api/v1/feedback?status=approved` | ⬜ |
+| AC-79 | Closing band and office card | `getHomeContent()` → cta; `getContactSettings()`; `getMediaSlot("office")` | Content › Home; Settings › General; Media library | `GET /api/v1/content/home`, `/settings/contact` | ⬜ |
+| AC-80 | Home JSON-LD (Organization, TravelAgency) | `getSiteSettings()`, `getContactSettings()` → names, address, hours, socials | Settings › General | — (rendered from settings) | ⬜ |
 
 ## 5. Components inventory
 
@@ -493,6 +517,11 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D63 | 10 Oct | Calendars start the week on Sunday; days past a 30-night stay are disabled once check-in is set | Matches the Pick-d-range board; a stray pick past the cap never resets check-in | #8 |
 | D64 | 10 Oct | `/api/search/log` accepts same-site requests only, 4 KB at most, 30 per minute per client (in-memory fixed window in Phase A, Redis in Phase B) | CLAUDE.md requires rate limits on submits; logs must not be floodable | #8 |
 | D65 | 10 Oct | Search date formatters and country names stay English (`en-GB`, `Intl.DisplayNames(["en"])`) until Bangla ships in P1 | One locale at launch; the formatters take a locale parameter when `/bn` is added | #8 |
+| D66 | 10 Oct | The site-wide `(site)/loading.tsx` is removed; route loaders go into dynamic segments as they ship (A9+) | It wrapped every page in a Suspense boundary, so the hero poster painted only after the boundary reveal (LCP render delay 1.2–2.6 s) | #7 |
+| D67 | 10 Oct | Below-the-fold reveals use CSS `animation-timeline: view()` (`reveal-on-view`) instead of Motion's Reveal | Zero JS for 13 sections; unsupported browsers and reduced motion show content at once | #7 |
+| D68 | 10 Oct | Home carousels (offers, fares, packages, posts, team) are CSS scroll-snap rows on phones and grids on desktop; Embla stays for galleries that need arrows | No carousel JS on Home (#39 budget); native swipe and keyboard scroll | #7 |
+| D69 | 10 Oct | Non-list Home copy lives in one `HomeContent` record (hero, why, store, reviews, cta); section headings use `HomeSection.kicker/title/subtitle` | Everything a visitor reads is admin-editable without a schema per section | #7 |
+| D70 | 10 Oct | Countries and airlines show code chips, team members without photos show initials on the ribbon | No flags, logos or stock faces until real assets exist | #7 |
 
 ## 9. Bugs and known issues
 
@@ -547,6 +576,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 01:00–06:15 | #34 A1b closed (inner-page competitor Lighthouse); A8 search card built, independent subagent review (15 findings, 14 fixed), merged; perf budget gap logged as #39; A7 Home built (13 sections from data, CSS reveals, snap rows, JSON-LD, robots and sitemap) | #34, #8, #39, #7 | #38, #40 | unit 245 · e2e 37 · axe pass · Lighthouse / 71–74 / 100 / 96 / 100 |
 | 09 Oct 17:30–20:56 | A0 merged (#35) with branch protection; A1b docs pushed; A5 footage sourced by a subagent (7 real clips; power bank skipped, no free real footage); A6 layout shell built and verified at five widths; a usage limit paused work for about 90 minutes | #27, #34, #5, #6 | #35 | e2e 30 · unit all green |
 | 09 Oct 16:30–17:20 | v4 PROMPT 1: audit, tool check (all MCPs and four skills), GitHub planning (labels, milestone F, epics #28–#33, A0 #27, sub-issues, Project fields, squash-only), A0 setup in progress | #27, #5 | — | guards + hook negative tests |
 | 09 Oct 11:27 | A4 data layer and content model: contracts, Sample fixtures, repositories, cached accessors; admin-control matrix seeded (56 rows) | #4 | #26 | unit 168 · e2e 15 |
@@ -556,6 +586,6 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. Finish A0 (#27): CI green, squash-merge, branch protection, memories.
-2. A5 (#5): real footage from Pexels/Coverr/Mixkit (hero sky, Cox's Bazar sea, passport, port, printer), ffmpeg-static transcodes (720p ≤ 1 MB, mobile 720 px wide, AVIF/WebP posters), MEDIA_CREDITS.md, drop the drawn loops.
-3. A1b (#34) docs addendum in parallel (subagent: inner-page Lighthouse), then A6 layout shell and A8/A7 in order.
+1. A9 (#9) results shell + flights Manual mode (2-step form, Turnstile test keys, boarding-pass success, group fares page and rail); hosts the search card in compact form and the search → results morph.
+2. #39 perf budget alongside A9: trim client JS (zod off the layout bundle, lazy NewsletterForm, unused JS), font subsetting, smaller HTML payload; re-measure `/` median of 3.
+3. A10 hotels Manual mode, then A11 packages and A12 visa; owner decision on launch scope (section 10 item 5 and section 11).

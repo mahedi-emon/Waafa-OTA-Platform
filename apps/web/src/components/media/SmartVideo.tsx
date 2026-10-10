@@ -88,6 +88,7 @@ function SmartVideo({
         fill
         sizes={sizes}
         preload={preloadPoster}
+        fetchPriority={preloadPoster ? "high" : undefined}
         className="object-cover"
       />
       {allowed ? (

@@ -19,8 +19,125 @@
     "fares": "Finding fares…"
   },
   "Home": {
-    "title": "Waafa Tours and Travel",
-    "body": "Flights, hotels, tour packages and visas from our Motijheel office in Dhaka. The new website opens on 13 October 2026."
+    "sample": "Sample",
+    "sampleNote": "Sample data until the team adds real records in Admin.",
+    "heroMedia": "Photo",
+    "photoBy": "Photo: {credit}",
+    "offers": {
+      "view": "View",
+      "code": "Code {code}"
+    },
+    "groupFares": {
+      "all": "All group fares",
+      "request": "Request",
+      "seatsLeft": "{count, plural, one {# seat left} other {# seats left}}",
+      "perAdult": "per adult",
+      "from": "From",
+      "direct": "Direct",
+      "stops": "{count, plural, one {# stop} other {# stops}}",
+      "oneWay": "One way",
+      "return": "Return",
+      "indicative": "Indicative fare, confirmed before you pay",
+      "airlinesLabel": "Airlines we book",
+      "airlinesLead": "We book most airlines that fly from Bangladesh, including"
+    },
+    "destinations": {
+      "all": "All destinations",
+      "filterLabel": "Filter destinations",
+      "filters": {
+        "all": "All",
+        "visa": "Easy visa",
+        "short": "Short flight",
+        "beach": "Beach",
+        "city": "City",
+        "mountain": "Mountains",
+        "domestic": "Bangladesh"
+      },
+      "flight": "{time}",
+      "from": "From {price}",
+      "note": "Visa rules change. We confirm the current rules for your passport before you book.",
+      "empty": "No destinations match this filter yet."
+    },
+    "packages": {
+      "all": "All packages",
+      "from": "From",
+      "perPerson": "per person, twin share",
+      "duration": "{days}D/{nights}N",
+      "view": "View",
+      "tags": {
+        "best-seller": "Best seller",
+        "featured": "Featured",
+        "group-departure": "Group departure",
+        "visa-help": "Visa help",
+        "new": "New"
+      }
+    },
+    "visa": {
+      "all": "All countries",
+      "processing": "Processing",
+      "fee": "Our fee from",
+      "documents": "See documents",
+      "note": "Embassies make every visa decision. Our fee is separate from the embassy fee; both are confirmed before you pay."
+    },
+    "why": {
+      "kicker": "Why WAAFA",
+      "journey": "Our journey"
+    },
+    "store": {
+      "open": "Open Waafas World",
+      "bestSellers": "Best sellers this week",
+      "categories": "Shop by category",
+      "services": "Waafa International services",
+      "view": "View",
+      "save": "Save {amount}"
+    },
+    "reviews": {
+      "facebook": "Open Facebook",
+      "feedback": "Leave feedback",
+      "rating": "{rating} out of 5"
+    },
+    "gallery": {
+      "open": "Open the gallery"
+    },
+    "blog": {
+      "kicker": "Travel guides",
+      "title": "Read before you go",
+      "all": "All articles",
+      "minutes": "{count} min read"
+    },
+    "faq": {
+      "kicker": "Questions",
+      "title": "Good to know",
+      "lead": "Short answers to what people ask us most.",
+      "all": "All FAQs"
+    },
+    "team": {
+      "all": "Meet the whole team",
+      "featured": "Featured",
+      "swipe": "Swipe to meet everyone."
+    },
+    "cta": {
+      "kicker": "Talk to a person",
+      "whatsapp": "Message on WhatsApp",
+      "call": "Call {phone}",
+      "directions": "Get directions",
+      "officePhoto": "Office photo to come",
+      "pageName": "Home"
+    },
+    "sectionLabels": {
+      "trust": "Why people book with us"
+    },
+    "defaults": {
+      "offers": "Offers worth a look",
+      "groupFares": "Group fares",
+      "destinations": "Find a trip that fits you",
+      "packages": "Trips planned day by day",
+      "visa": "Visa services",
+      "why": "What we stand for",
+      "testimonials": "What travellers say",
+      "galleryBlogFaq": "Trips, in travellers’ own photos",
+      "team": "The people behind WAAFA"
+    }
   },
   "Layout": {
     "mainNav": "Main",
