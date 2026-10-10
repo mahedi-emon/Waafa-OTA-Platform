@@ -12,7 +12,11 @@ import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getServicePage("printing");
   if (!page) return {};
-  return { title: page.seo.title ?? page.title, description: page.seo.description ?? page.lead };
+  return {
+    title: page.seo.title ?? page.title,
+    description: page.seo.description ?? page.lead,
+    ...(page.seo.noIndex ? { robots: { index: false } } : {}),
+  };
 }
 
 /** /shop/printing-solutions (Printing, Printing-done, Printing-m): service page with its request form. */

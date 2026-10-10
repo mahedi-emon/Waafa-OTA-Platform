@@ -31,6 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: page?.seo.title ?? t("metaTitle"),
     description: page?.seo.description ?? t("metaDescription"),
+    ...(page?.seo.noIndex ? { robots: { index: false } } : {}),
   };
 }
 

@@ -104,4 +104,36 @@ describe("buildFlightLead", () => {
     });
     expect(parsed.payload.search.travellers).toEqual({ adults: 2, childAges: [7], infants: 0 });
   });
+
+  it("sends the travellers from the step when the visitor arrived without a search (#51)", () => {
+    const trip = tripStepSchema.parse({
+      ...tripDefaults(null),
+      from: "DAC",
+      to: "KUL",
+      depart: "2026-11-20",
+      travellers: { adults: 3, childAges: [4, 9], infants: 1 },
+      consent: true,
+    });
+    const lead = LeadCreateInputSchema.parse(
+      buildFlightLead({
+        contact: { name: "Sample Rahim", phoneCountry: "BD", phone: "01712-345678", email: "" },
+        trip,
+        search: null,
+        preferences,
+        page: "/flights",
+      }),
+    );
+    if (lead.payload.module !== "flights") throw new Error("module");
+    expect(lead.payload.search.travellers).toEqual({ adults: 3, childAges: [4, 9], infants: 1 });
+  });
+
+  it("rejects more infants than adults and more than nine travellers", () => {
+    const base = { ...tripDefaults(search), consent: true };
+    const codes = (travellers: { adults: number; childAges: number[]; infants: number }) => {
+      const result = tripStepSchema.safeParse({ ...base, travellers });
+      return result.success ? [] : result.error.issues.map((issue) => issue.message);
+    };
+    expect(codes({ adults: 1, childAges: [], infants: 2 })).toContain("infantsMax");
+    expect(codes({ adults: 5, childAges: [5, 6, 7], infants: 2 })).toContain("travellersMax");
+  });
 });

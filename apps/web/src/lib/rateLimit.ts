@@ -11,6 +11,9 @@ export function createRateLimiter({
   windowMs: number;
   maxKeys?: number;
 }) {
+  // End-to-end runs send many forms from one address; the test server raises limits with RATE_LIMIT_FACTOR.
+  const factor = Math.max(1, Number(process.env.RATE_LIMIT_FACTOR) || 1);
+  const allowed = limit * factor;
   const hits = new Map<string, { count: number; resetAt: number }>();
 
   return function allow(key: string, now: number = Date.now()): boolean {
@@ -24,7 +27,7 @@ export function createRateLimiter({
       return true;
     }
     entry.count += 1;
-    return entry.count <= limit;
+    return entry.count <= allowed;
   };
 }
 

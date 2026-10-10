@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { HomeSection } from "@waafa/shared";
 import { SearchCard } from "@/components/search/SearchCard";
 import { getMediaSlot } from "@/lib/data/content";
-import { getHomeContent, listHomeSections } from "@/lib/data/settings";
+import { getHomeContent, getSiteSettings, listHomeSections } from "@/lib/data/settings";
 import { CtaSection } from "./CtaSection";
 import { DestinationsSection } from "./DestinationsSection";
 import { GalleryBlogFaqSection } from "./GalleryBlogFaqSection";
@@ -22,11 +22,13 @@ import { WhySection } from "./WhySection";
  * its data is empty.
  */
 async function HomeSections() {
-  const [sections, content, heroMedia] = await Promise.all([
+  const [sections, content, heroMedia, site] = await Promise.all([
     listHomeSections(),
     getHomeContent(),
     getMediaSlot("home-hero"),
+    getSiteSettings(),
   ]);
+  const heroShown = sections.some((section) => section.key === "hero");
 
   const render = (section: HomeSection): ReactNode => {
     switch (section.key) {
@@ -68,7 +70,13 @@ async function HomeSections() {
     }
   };
 
-  return <>{sections.map(render)}</>;
+  return (
+    <>
+      {/* The hero carries the page h1; if an admin turns it off, Home still has one heading for its title. */}
+      {heroShown ? null : <h1 className="sr-only">{site.travelBrand}</h1>}
+      {sections.map(render)}
+    </>
+  );
 }
 
 export { HomeSections };

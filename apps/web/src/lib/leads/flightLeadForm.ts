@@ -1,6 +1,7 @@
 import {
   CabinClassSchema,
   FlightSearchSchema,
+  MAX_TRAVELLERS,
   PreferredContactSchema,
   type FlightPreferences,
   type FlightSearch,
@@ -27,6 +28,8 @@ export type ErrorKey =
   | "sameAirport"
   | "departRequired"
   | "returnBeforeDepart"
+  | "travellersMax"
+  | "infantsMax"
   | "consentRequired";
 
 const IATA = /^[A-Z]{3}$/;
@@ -39,6 +42,12 @@ export const tripStepSchema = z
     depart: z.string(),
     return: z.string(),
     cabin: CabinClassSchema,
+    /** Who is travelling: asked again here so a visitor who arrives without a search is not sent as one adult. */
+    travellers: z.object({
+      adults: z.number().int().min(1).max(MAX_TRAVELLERS),
+      childAges: z.array(z.number().int().min(2).max(11)).max(MAX_TRAVELLERS - 1),
+      infants: z.number().int().min(0).max(MAX_TRAVELLERS),
+    }),
     airline: z.string(),
     flex: z.boolean(),
     preferredContact: PreferredContactSchema,
@@ -55,6 +64,9 @@ export const tripStepSchema = z
     if (!ISO_DATE.test(values.depart)) issue("depart", "departRequired");
     if (values.return && !ISO_DATE.test(values.return)) issue("return", "returnBeforeDepart");
     if (!values.consent) issue("consent", "consentRequired");
+    const { adults, childAges, infants } = values.travellers;
+    if (adults + childAges.length + infants > MAX_TRAVELLERS) issue("travellers", "travellersMax");
+    if (infants > adults) issue("travellers", "infantsMax");
     if (values.from && values.from === values.to) {
       ctx.addIssue({ code: "custom", message: "sameAirport", path: ["to"] });
     }
@@ -67,14 +79,23 @@ export type TripStepInput = z.input<typeof tripStepSchema>;
 export type TripStepValues = z.output<typeof tripStepSchema>;
 
 /** Step 2 defaults from the URL search (one-way or round trip; multi-city starts from its first leg). */
-export function tripDefaults(search: FlightSearch | null, fareDate?: string): TripStepInput {
+export function tripDefaults(
+  search: FlightSearch | null,
+  fareDate?: string,
+  prefill?: { from?: string; to?: string; depart?: string },
+): TripStepInput {
   const first = search?.legs[0];
   return {
-    from: first?.from ?? "",
-    to: first?.to ?? "",
-    depart: fareDate ?? first?.date ?? "",
+    from: first?.from ?? prefill?.from ?? "",
+    to: first?.to ?? prefill?.to ?? "",
+    depart: fareDate ?? first?.date ?? prefill?.depart ?? "",
     return: search?.tripType === "round-trip" ? (search.returnDate ?? "") : "",
     cabin: search?.cabin ?? "economy",
+    travellers: {
+      adults: search?.travellers.adults ?? 1,
+      childAges: [...(search?.travellers.childAges ?? [])],
+      infants: search?.travellers.infants ?? 0,
+    },
     airline: search?.preferredAirline ?? "",
     flex: search?.flexibleDates ?? false,
     preferredContact: "call",
@@ -102,7 +123,11 @@ export function buildFlightLead(args: {
     tripType: multi ? "multi-city" : trip.return ? "round-trip" : "one-way",
     legs,
     ...(trip.return && !multi ? { returnDate: trip.return } : {}),
-    travellers: search?.travellers ?? { adults: 1, childAges: [], infants: 0 },
+    travellers: {
+      adults: trip.travellers.adults,
+      childAges: trip.travellers.childAges,
+      infants: trip.travellers.infants,
+    },
     cabin: trip.cabin,
     ...(trip.airline ? { preferredAirline: trip.airline } : {}),
     directOnly: preferences.stops === "direct" || (search?.directOnly ?? false),

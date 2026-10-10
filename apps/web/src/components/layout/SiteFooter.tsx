@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { whatsappLink, type MenuItem, type PaymentMethodBadge } from "@waafa/shared";
-import { LogoLockup } from "@/components/brand/LogoLockup";
 import { FacebookIcon } from "@/components/icons/FacebookIcon";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Link } from "@/i18n/navigation";
@@ -129,7 +128,10 @@ async function SiteFooter() {
       <div className="site-container flex flex-col gap-10 pt-12 pb-24 lg:py-16">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,2.4fr)_minmax(0,1.15fr)] lg:gap-8">
           <div className="flex flex-col gap-4">
-            <LogoLockup />
+            {/* Correction 4: one WAAFA logo per page (the header); the footer names the brand in text. */}
+            <p className="font-display text-[22px] font-extrabold tracking-tight text-navy-900">
+              {site.travelBrand}
+            </p>
             <p className="font-display text-[17px] font-bold tracking-tight text-navy-900">
               {site.footerTagline}
             </p>

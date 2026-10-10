@@ -81,7 +81,7 @@ async function GroupFareCard({ fare }: GroupFareCardProps) {
           <span className="text-[12.5px] text-mist-600">{t("perAdult")}</span>
         </p>
         <Link
-          href={`/flights?fare=${fare.id}`}
+          href={`/flights?groupFare=${fare.id}`}
           className="inline-flex h-11 shrink-0 items-center rounded-full bg-primary px-5 text-[14.5px] font-semibold text-primary-foreground outline-none hover:bg-brand-700 focus-visible:ring-3 focus-visible:ring-ring/40"
         >
           {t("request")}

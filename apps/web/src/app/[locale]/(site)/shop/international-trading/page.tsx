@@ -12,7 +12,11 @@ import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getServicePage("trading");
   if (!page) return {};
-  return { title: page.seo.title ?? page.title, description: page.seo.description ?? page.lead };
+  return {
+    title: page.seo.title ?? page.title,
+    description: page.seo.description ?? page.lead,
+    ...(page.seo.noIndex ? { robots: { index: false } } : {}),
+  };
 }
 
 /** /shop/international-trading (Trading, Trading-done, Trading-m): service page with its request form. */

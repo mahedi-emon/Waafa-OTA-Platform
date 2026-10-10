@@ -6,8 +6,9 @@ import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { cn } from "cn";
-import { CabinClassSchema } from "@waafa/shared";
+import { CabinClassSchema, MAX_TRAVELLERS } from "@waafa/shared";
 import { FormField } from "@/components/forms/FormField";
+import { TravellersFields } from "@/components/forms/TravellersFields";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -202,6 +203,32 @@ function TripStep({
           )}
         </FormField>
       </div>
+
+      <Controller
+        control={form.control}
+        name="travellers"
+        render={({ field }) => (
+          <TravellersFields
+            value={field.value}
+            onChange={field.onChange}
+            max={MAX_TRAVELLERS}
+            error={error("travellers")}
+            labels={{
+              legend: t("trip.travellers"),
+              adults: t("trip.adults"),
+              adultsSub: t("trip.adultsSub"),
+              children: t("trip.children"),
+              childrenSub: t("trip.childrenSub"),
+              infants: t("trip.infants"),
+              infantsSub: t("trip.infantsSub"),
+              childAge: t("trip.childAge", { n: "{n}" }),
+              years: t("trip.years", { age: "{age}" }),
+              decrease: t("trip.fewer", { who: "{who}" }),
+              increase: t("trip.more", { who: "{who}" }),
+            }}
+          />
+        )}
+      />
 
       <Controller
         control={form.control}

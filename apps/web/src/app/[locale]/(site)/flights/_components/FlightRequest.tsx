@@ -36,6 +36,8 @@ export type GroupFareSummary = {
 
 type FlightRequestProps = {
   search: FlightSearch | null;
+  /** Parts of a search a link carried when it was not a full search, e.g. only the destination. */
+  prefill?: { from?: string; to?: string; depart?: string };
   groupFare: GroupFareSummary | null;
   airports: Array<{ iata: string; city: string }>;
   airlines: Array<{ code: string; name: string }>;
@@ -67,7 +69,7 @@ function FlightRequest(props: FlightRequestProps) {
   const today = useDhakaToday();
   const [preferences, setPreferences] = useState<FlightPreferences>(NO_PREFERENCES);
   const [trip, setTrip] = useState<TripStepInput>(() =>
-    tripDefaults(props.search, props.groupFare?.date),
+    tripDefaults(props.search, props.groupFare?.date, props.prefill),
   );
   const prefCount =
     (preferences.stops !== "any" ? 1 : 0) +
