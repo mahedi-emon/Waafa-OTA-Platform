@@ -1,4 +1,7 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-11 01:00 Dhaka — Phase B launch scope 4/4 merged: #54 (PR #58), #55 (PR #59), #56 (PR #62, + bugs #60 #61),
+  #57 (PR #63). Phase C: #64 C1 web on the API, PR #65 open. Next: admin UI (A18–A21) with one generic schema editor.
+- 2026-10-10 21:40 Dhaka — #17 merged (PR #50), #51 review fixes merged (PR #53); Phase B issues #54–#57 opened.
 - 2026-10-10 20:30 Dhaka — #16 merged (PR #49); #17 A17 system states built (branded 404 via [...rest], error boundary,
   global-error, offline notice, maintenance screen, Live placeholder). Phase A 19/24 after #17 (79%).
 - 2026-10-10 19:45 Dhaka — #16 A16 information pages built (About, Contact, FAQs, Blog + post, Gallery + album, Feedback,
