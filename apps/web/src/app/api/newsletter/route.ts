@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { subscribe } from "@/lib/data/leads";
 import { intakeFailure } from "@/lib/http/intakeFailure";
 import { isSameSite, readCappedBody } from "@/lib/http/readCappedBody";
+import { verifyTurnstile } from "@/lib/leads/turnstile";
 import { clientKey, createRateLimiter } from "@/lib/rateLimit";
 
 const MAX_BODY_BYTES = 1_024;
@@ -15,14 +16,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "rate-limited" }, { status: 429 });
   const text = await readCappedBody(request, MAX_BODY_BYTES);
   if (text === null) return NextResponse.json({ error: "too-large" }, { status: 413 });
-  let body: unknown;
+  let body: { turnstileToken?: unknown; email?: unknown; source?: unknown };
   try {
-    body = JSON.parse(text);
+    body = JSON.parse(text) as typeof body;
   } catch {
     return NextResponse.json({ error: "invalid" }, { status: 400 });
   }
+  const token = typeof body.turnstileToken === "string" ? body.turnstileToken : undefined;
+  if (!(await verifyTurnstile(token, ip))) {
+    return NextResponse.json({ error: "challenge" }, { status: 400 });
+  }
   try {
-    const stored = await subscribe(body, { clientIp: ip });
+    const stored = await subscribe({ email: body.email, source: body.source }, { clientIp: ip });
     if (!stored) return NextResponse.json({ error: "invalid" }, { status: 422 });
     return new Response(null, { status: 204 });
   } catch (error) {

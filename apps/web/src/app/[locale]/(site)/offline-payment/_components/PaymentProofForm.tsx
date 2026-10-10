@@ -10,6 +10,7 @@ import { ChipRadioGroup } from "@/components/forms/ChipRadioGroup";
 import { DocumentSlot, type SlotFile } from "@/components/forms/DocumentSlot";
 import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
+import { useTurnstile } from "@/components/forms/useTurnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -52,6 +53,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
   const [failure, setFailure] = useState<"retry" | "rate" | null>(null);
   const [sent, setSent] = useState<string | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const turnstile = useTurnstile();
 
   const message = (key: keyof PaymentProofFormValues) => {
     const code = errors[key]?.message;
@@ -70,11 +72,17 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
     const key = idempotencyKey ?? crypto.randomUUID();
     setIdempotencyKey(key);
     try {
+      const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/payment-proof", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idempotencyKey: key, proof: buildPaymentProof(values, slip) }),
+        body: JSON.stringify({
+          idempotencyKey: key,
+          proof: buildPaymentProof(values, slip),
+          turnstileToken,
+        }),
       });
+      turnstile.reset();
       if (!response.ok) {
         setFailure(response.status === 429 ? "rate" : "retry");
         return;
@@ -116,7 +124,12 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
   const phone = form.register("phone");
 
   return (
-    <form noValidate onSubmit={submit} className="flex flex-col gap-5">
+    <form
+      noValidate
+      onSubmit={submit}
+      onFocusCapture={turnstile.activate}
+      className="flex flex-col gap-5"
+    >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormField
           id="proof-reference"
@@ -288,6 +301,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
       <p aria-live="polite" className="sr-only">
         {submitCount > 0 && Object.keys(errors).length > 0 ? t("proof.errors.summary") : ""}
       </p>
+      {turnstile.field}
       <Button type="submit" size="lg" loading={sending} className="self-start">
         {t("proof.submit")}
       </Button>

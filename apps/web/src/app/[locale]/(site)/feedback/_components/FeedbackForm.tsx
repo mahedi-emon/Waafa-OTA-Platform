@@ -13,6 +13,7 @@ import { DocumentSlot, type SlotFile } from "@/components/forms/DocumentSlot";
 import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
 import { StarRatingInput } from "@/components/forms/StarRatingInput";
+import { useTurnstile } from "@/components/forms/useTurnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,6 +58,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
   const [failure, setFailure] = useState<"retry" | "rate" | null>(null);
   const [sentName, setSentName] = useState<string | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const turnstile = useTurnstile();
 
   const message = (key: keyof FeedbackFormValues) => {
     const code = errors[key]?.message;
@@ -74,11 +76,17 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
         photo && (photo.mimeType === "image/jpeg" || photo.mimeType === "image/png")
           ? { fileName: photo.fileName, mimeType: photo.mimeType, sizeBytes: photo.sizeBytes }
           : null;
+      const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idempotencyKey: key, feedback: buildFeedbackInput(values, image) }),
+        body: JSON.stringify({
+          idempotencyKey: key,
+          feedback: buildFeedbackInput(values, image),
+          turnstileToken,
+        }),
       });
+      turnstile.reset();
       if (!response.ok) {
         setFailure(response.status === 429 ? "rate" : "retry");
         return;
@@ -128,7 +136,12 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
   const phone = form.register("phone");
 
   return (
-    <form noValidate onSubmit={submit} className="flex flex-col gap-5">
+    <form
+      noValidate
+      onSubmit={submit}
+      onFocusCapture={turnstile.activate}
+      className="flex flex-col gap-5"
+    >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormField
           id="fb-name"
@@ -311,6 +324,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
           {failure === "rate" ? t("form.rate") : t("form.failed")}
         </p>
       ) : null}
+      {turnstile.field}
       <Button type="submit" size="lg" loading={sending} className="self-start">
         {t("form.submit")}
       </Button>

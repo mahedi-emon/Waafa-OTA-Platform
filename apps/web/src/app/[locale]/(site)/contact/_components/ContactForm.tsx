@@ -11,6 +11,7 @@ import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { LeadSuccess } from "@/components/leads/LeadSuccess";
+import { useTurnstile } from "@/components/forms/useTurnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,6 +53,7 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
   const [failure, setFailure] = useState<"retry" | "rate" | null>(null);
   const [sent, setSent] = useState<{ name: string; created: LeadCreated } | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const turnstile = useTurnstile();
 
   const message = (key: keyof ContactFormValues) => {
     const code = errors[key]?.message;
@@ -65,14 +67,17 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
     const key = idempotencyKey ?? crypto.randomUUID();
     setIdempotencyKey(key);
     try {
+      const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           idempotencyKey: key,
           lead: buildContactLead(values, window.location.pathname),
+          turnstileToken,
         }),
       });
+      turnstile.reset();
       if (!response.ok) {
         setFailure(response.status === 429 ? "rate" : "retry");
         return;
@@ -134,7 +139,12 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
   const phone = form.register("phone");
 
   return (
-    <form noValidate onSubmit={submit} className="flex flex-col gap-5">
+    <form
+      noValidate
+      onSubmit={submit}
+      onFocusCapture={turnstile.activate}
+      className="flex flex-col gap-5"
+    >
       <p aria-live="polite" className="sr-only">
         {submitCount > 0 && Object.keys(errors).length > 0 ? t("form.errors.summary") : ""}
       </p>
@@ -257,6 +267,7 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
           {failure === "rate" ? t("form.rate") : t("form.failed")}
         </p>
       ) : null}
+      {turnstile.field}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Button type="submit" size="lg" loading={sending}>
           {t("form.submit")}

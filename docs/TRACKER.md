@@ -125,7 +125,8 @@ Serena memory `audit_findings`.
 | Widths checked | — |
 | Tools and skills | Serena; zod 4 `toJSONSchema`; BullMQ, nodemailer |
 | Decisions | D130 – D134 |
-| Bugs and follow-ups | #66 Two refreshes at the same moment (a page and its prefetches near token expiry) were taken for a stolen refresh token and signed staff out | P0 | API auth | Fixed in #66: a token rotated in the last 30 seconds still opens a session; regression test |
+| Bugs and follow-ups | #72 Booking modes could be switched to Live from the generic editor (unlock and Live in one save) | P0 | API settings | Fixed in #72: the API refuses unlocking Live or turning a module Live until Phase E; regression test |
+| #66 Two refreshes at the same moment (a page and its prefetches near token expiry) were taken for a stolen refresh token and signed staff out | P0 | API auth | Fixed in #66: a token rotated in the last 30 seconds still opens a session; regression test |
 | #60 VAT invoice BIN regex (fixed here), #61 checkout stuck after a refusal (fixed here). The local PostgreSQL was stopped by the system for low memory on 11 Oct; API database tests ran in CI |
 
 ### #55 · B2 Staff auth, roles and audit log — ✅ Done
@@ -895,6 +896,8 @@ or accessibility.
 5. Proposed 10 Oct 01:20 (behind by 6 issues, Phase A due 11 Oct): admin builders (itinerary days, visa checklist, menus, home order) ship as ordered lists with move up/down buttons first, drag-and-drop (dnd-kit) after launch; admin catalogue and content screens (A19–A21) share one list + form pattern instead of bespoke layouts; A22 polish runs inside each issue's verify step, leaving A22 for the cross-route beat check only; Pick-d boards' two-month desktop calendar stays, the phone calendar shows a scrolling list of months
 
 ## 11. Blockers and owner actions
+
+The full order of steps, every environment variable and the launch checks are in `docs/DEPLOY.md` (#74). Today's blockers for the 13 Oct launch: Railway project (PostgreSQL + Redis), Vercel import, Resend domain records, Turnstile keys, DNS access and the first Super Admin email.
 
 | Item | What I need from the owner | Exact steps | Needed by |
 | --- | --- | --- | --- |
