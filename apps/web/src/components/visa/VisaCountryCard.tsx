@@ -3,10 +3,14 @@ import { getTranslations } from "next-intl/server";
 import { formatTaka, type VisaCountry } from "@waafa/shared";
 import { Link } from "@/i18n/navigation";
 
-type VisaCountryCardProps = { country: VisaCountry };
+type VisaCountryCardProps = {
+  country: VisaCountry;
+  /** How the file is lodged ("Embassy", "eVisa"), shown as a chip on the visa list. */
+  submissionLabel?: string;
+};
 
 /** Visa country card: code mark, name, visa types, the fastest processing time and our lowest service charge. */
-async function VisaCountryCard({ country }: VisaCountryCardProps) {
+async function VisaCountryCard({ country, submissionLabel }: VisaCountryCardProps) {
   const t = await getTranslations("Home.visa");
   const tSearch = await getTranslations("Search.visaTypes");
   const first = country.types[0];
@@ -21,7 +25,7 @@ async function VisaCountryCard({ country }: VisaCountryCardProps) {
         >
           {country.flagCode}
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h3 className="truncate font-display text-[16px] font-bold text-navy-900">
             <Link
               href={`/visa-services/${country.slug}`}
@@ -34,6 +38,11 @@ async function VisaCountryCard({ country }: VisaCountryCardProps) {
             {country.types.map((type) => tSearch(`${type.type}.label`)).join(" · ")}
           </p>
         </div>
+        {submissionLabel ? (
+          <span className="shrink-0 self-start rounded-full bg-mist-100 px-2.5 py-1 text-[12px] font-semibold text-ink-900">
+            {submissionLabel}
+          </span>
+        ) : null}
       </div>
       <dl className="grid grid-cols-2 gap-2 text-[13px]">
         <div>

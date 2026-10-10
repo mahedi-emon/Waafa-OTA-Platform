@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 12:00 Asia/Dhaka · Phase: A · Frontend · Current: #12 · A12 Visa (after #11 A11 packages merges) · Progress: 13/24 issues (54%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
+Updated: 10 Oct 13:30 Asia/Dhaka · Phase: A · Frontend · Current: #13 · A13 Waafas World store (after #12 A12 visa merges) · Progress: 14/24 issues (58%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 13 | 1 (#12) | 0 | 54% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 14 | 1 (#13) | 0 | 58% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #12 · A12 Visa services (list, country, apply) + Visa Guide — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 12:20 → 10 Oct 13:30 |
+| Branch · PR · merge | `feat/12-visa` · see section 13 · squash |
+| Built | `/visa-services`: GET search, popular links, region chips with counts, country cards (code mark, types, processing, fee from, submission chip), empty state with WhatsApp, how it works, visa questions. `/visa-services/[country]`: a tab per visa type kept in `?type=`, facts, documents checklist with a progress ring, forms, good to know, guide link, questions (FAQPage JSON-LD), sticky fee card (embassy fee, service charge, total) and a phone bar. `/visa-services/[country]/apply`: shared LeadRequestCard (contact first), then trip (type, date, applicants), four document slots (JPG, PNG or PDF up to 5 MB; files stay in the browser, only name, type and size are sent), optional office visit day and window from admin office days, notes, review with fees, consent → VSA reference. `/visa-guide` and `/visa-guide/[slug]`: featured guide and list; article with an On this page list, sanitised rich text, fees, tips, questions and the service link (both ways). Dynamic param pages (package detail, visa country, apply, guide) now await params inside Suspense |
+| Files and components | `app/[locale]/(site)/visa-services/{page.tsx,[country]/page.tsx,[country]/_components/{VisaTypeProvider,useVisaType,VisaTypeTabs,VisaChecklist,VisaFeeCard,VisaFeeBar}.tsx,[country]/apply/{page.tsx,_components/{VisaApplyRequest,VisaFileStep,DocumentSlot}.tsx}}`, `app/[locale]/(site)/visa-guide/{page.tsx,[slug]/page.tsx}`, `components/content/RichText.tsx`, `components/seo/Canonical.tsx`, `components/visa/VisaCountryCard.tsx` (submission chip), `lib/visa/visaFiles.ts`, `lib/leads/visaLeadForm.ts`, `lib/content/sanitizeRichText.ts`, `app/sitemap.ts` |
+| Screens matched | Visa, Visa-none, Visa-m, VisaCountry, VisaCountry-medical, VisaCountry-m, VisaApply, VisaApply-2, -3, -4, -err, -done, VisaApply-m-*, VisaGuide, VisaGuidePost (+ -m) |
+| Admin control | AC-33, AC-34, AC-35, AC-64 used; AC-92 – AC-94 new |
+| Tests | unit +11 (file type and size, extension fallback, application schema, fee maths, visa lead contract without storage keys, sanitiser); e2e +4 (search → country → tab in URL → checklist ring → Apply link, empty state, apply with a rejected then accepted file → VSA reference, guide ↔ service links); suite 54 passed · axe pass · no overflow at 320 / 390 / 768 / 1024 / 1440 · Lighthouse mobile `/visa-services` 77 / 100 / 96 / 100, country 76 / 99 → heading fixed / 96 / 100, apply 70 / 100 / 96 / 69 (noindex by design), `/visa-guide` 85 / 100 / 96 / 100, guide article 82 / 100 / 96 / 100 |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 |
+| Tools and skills | Serena, Context7 (Next.js Cache Components instant navigation, sanitize-html, next-intl metadata), Playwright MCP and scripts, Lighthouse CLI; skills frontend-design, ui-ux-pro-max rules |
+| Decisions | D85 – D91 |
+| Bugs and follow-ups | Fixed in-issue: dev "URL data during prerendering" error on dynamic param pages (also on the merged package detail); package visa link pointed at `/visa`; fee list put a paragraph inside `<dl>` (axe) |
 
 ### #11 · A11 Tour packages, package detail and query, Plan My Trip — ✅ Done
 | Field | Value |
@@ -265,9 +280,9 @@ Each gets the full block when work starts.
 | `/tour-packages` | Packages, Packages-empty, Packages-m, Packages-m-filters | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 73 / 100 / 96 / 100 |
 | `/tour-packages/[slug]` | PackageDetail, -photos, -query, -done, PackageDetail-m-* | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 68 / 100 / 96 / 100 |
 | `/plan-my-trip` | PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-* | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 68 / 100 / 96 / 100 |
-| `/visa-services` | Visa, Visa-none, Visa-m | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/visa-services/[country]` | VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/visa-guide`, `/visa-guide/[country]` | VisaGuide, VisaGuidePost (+ -m) | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/visa-services` | Visa, Visa-none, Visa-m | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 77 / 100 / 96 / 100 |
+| `/visa-services/[country]` (+ `/apply`) | VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 76 / 99 / 96 / 100 · apply 70 / 100 / 96 / 69 (noindex) |
+| `/visa-guide`, `/visa-guide/[country]` | VisaGuide, VisaGuidePost (+ -m) | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 85 and 82 / 100 / 96 / 100 |
 | `/shop` | Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | `/shop/c/[slug]`, brand, collection, deals | ShopList, -printers, -empty, -m, -m-filters, -m-fashion, ShopCats, ShopDeals | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | `/shop/p/[slug]` | ShopProduct, -pb, -hp, -toner, -video, -bulk, -m-* | #13 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
@@ -388,6 +403,9 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-89 | Package leads (package, departure, travellers, room sharing, contact preference, notes) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
 | AC-90 | Plan my trip place chips (In Bangladesh, Abroad) | `getSearchSettings()` → planTripPlaces | Settings › Search | `GET /api/v1/settings/search` | ⬜ |
 | AC-91 | Plan my trip leads (places, month or dates, nights, travellers, trip for, budget band, hotels, interests, flights, visa) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
+| AC-92 | Visa fee card and phone bar (embassy fee, service charge, total per type) | `getVisaCountry()` → types[].embassyFee, embassyFeeNote, serviceCharge | Travel › Visa | `GET /api/v1/visa/countries/{slug}` | ⬜ |
+| AC-93 | Visa office visit days and address on the apply step | `getContactSettings()` → officeHours.days, addressLines | Settings › Contact and hours | `GET /api/v1/settings/contact` | ⬜ |
+| AC-94 | Visa applications (country, type, travel date, applicants, document metadata, visit, notes) | `POST /api/leads` → `createLead()` (Phase C: files to the private bucket, signed and logged links) | Leads and Visa applications (A18) | `POST /api/v1/leads`, `POST /api/v1/visa/files` | ⬜ |
 
 ## 5. Components inventory
 
@@ -592,6 +610,13 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D82 | 10 Oct | Plan my trip place chips come from `SearchSettings.planTripPlaces` (admin) | Nothing visitor-facing is hard-coded | #11 |
 | D83 | 10 Oct | Plan my trip exact dates use native date inputs (like D72) | Fast, accessible phone pickers; the full calendar stays in the search card | #11 |
 | D84 | 10 Oct | The package photo lightbox (Dialog + Embla) loads with next/dynamic on the first tap | Took package detail Lighthouse from 61 to 68; the rest is #39 | #11 |
+| D85 | 10 Oct | Pages with dynamic params await them inside `<Suspense>` with a skeleton at final height | Next 16.4 flags params read outside Suspense ("URL data during prerendering") because navigations cannot be instant; known params still prerender fully | #12 |
+| D86 | 10 Oct | Visa apply uses the shared LeadRequestCard: contact first, then one "Trip and documents" step with trip, documents, visit and review (the board has four steps) | One tested request flow (D75); the review block keeps the board's check-and-send content | #12 |
+| D87 | 10 Oct | In Phase A visa files never leave the browser; only name, type and size go with the lead, and the visa desk collects files after the call | No private bucket before Phase B; documents must never be public (PRD FR-VISA-05) | #12 |
+| D88 | 10 Oct | `sanitize-html` (server-only, allow-list) sanitises admin rich text in RichText | Smallest well-maintained server sanitiser; DOMPurify needs a DOM on the server | #12 |
+| D89 | 10 Oct | The visa type on a country page is client state mirrored to `?type=` with replaceState | Keeps the country page fully static while links from the search card and shares open the right tab | #12 |
+| D90 | 10 Oct | Fully static pages set their canonical with a hoisted `<link rel="canonical">` (Canonical component), not `alternates.canonical` | On a page with no dynamic holes Next treats metadata alternates as runtime data on the `/[locale]` shell and the build fails | #12 |
+| D91 | 10 Oct | Visa checklist ticks live in memory only (no storage); the progress ring is a small SVG stroke animation | A planning aid, nothing to persist; MOTION.md allows small SVG drawing; reduced motion shows the end state | #12 |
 
 ## 9. Bugs and known issues
 
@@ -605,7 +630,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Hotel stay picks past 30 nights reset the check-in | P2 | search card | Fixed in #8 with a regression test |
 | Chip radios in the flights and hotels second steps were off-centre (the hidden radio stayed in the flow) | P2 | `/flights`, `/hotels` | Fixed in #11; e2e covers the steps |
 | Package detail first-load JS about 440 KB, Lighthouse mobile 68 | P1 | `/tour-packages/[slug]`, `/plan-my-trip` | Tracked in #39 |
-| Header links to routes not built yet (`/visa-services`, `/gallery`, `/feedback`) 404 on prefetch | P2 | header | Closes as A12 and A17 ship the routes |
+| Header links to routes not built yet (`/gallery`, `/feedback`) 404 on prefetch | P2 | header | `/visa-services` shipped in #12; the rest close with A17 |
+| Dev error "URL data during prerendering" on package detail and other param pages | P2 | dynamic param pages | Fixed in #12 (D85) |
 
 ## 10. Cut list
 
@@ -649,6 +675,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 12:10–13:30 | A11 merged (#44); A12 visa list, country tabs with checklist ring and fee card, apply with local document checks, Visa Guide with sanitised rich text; Suspense for param pages; canonical fix for static pages | #11, #12 | #44 | unit 166 · e2e 54 · axe pass · Lighthouse 70–85 |
 | 10 Oct 09:45–12:10 | A11 packages list, package detail with booking card and inline query, Plan my trip; chip radio fix in flights and hotels; lazy lightbox | #11 | see #11 block | unit 155 · e2e 50 · axe pass · Lighthouse 68–73 |
 | 10 Oct 08:40–09:45 | A9 merged (#42); A10 hotels Manual on the shared results shell; request flow refactored into LeadRequestCard + ContactStep + Leads strings | #9, #10 | #42 | unit 148 · e2e 45 · axe pass |
 | 10 Oct 06:15–08:40 | A7 Home merged (#41); A9 results shell, Flights Manual two-step request, lead intake API with idempotency and rate limits, boarding-pass success, group fares page and rail | #7, #9 | #41 | unit 144 · e2e 43 · axe pass |
@@ -662,6 +689,6 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. A12 (#12) Visa: list, country page with the checklist and progress ring, apply request (VSA reference), private document handling plan.
-2. A13–A16 (Waafas World store, cart, checkout without online payment, track order), then A17 static pages (branded 404, About, Contact, Gallery, Feedback, policies).
+1. A13 (#13) Waafas World store at `/shop`: catalogue, categories, product page, search and filters (any category; printer and office supplies first).
+2. A14–A16 cart, checkout without online payment (COD cap, shipping zones), track order; then A17 static pages (branded 404, About, Contact, Gallery, Feedback, policies).
 3. #39 perf (client JS on every page, fonts, HTML size); owner decision on launch scope (section 10 item 5).

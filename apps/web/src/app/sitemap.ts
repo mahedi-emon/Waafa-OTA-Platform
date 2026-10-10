@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listPackages } from "@/lib/data/travel";
+import { listVisaCountries, listVisaGuides } from "@/lib/data/visa";
 import { absoluteUrl } from "@/lib/siteUrl";
 
 /**
@@ -7,7 +8,11 @@ import { absoluteUrl } from "@/lib/siteUrl";
  * countries, products, posts) are listed from the data layer when their pages exist (A9–A16).
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { items: packages } = await listPackages({ limit: 100 });
+  const [{ items: packages }, countries, guides] = await Promise.all([
+    listPackages({ limit: 100 }),
+    listVisaCountries(),
+    listVisaGuides(),
+  ]);
   return [
     { url: absoluteUrl("/"), changeFrequency: "daily", priority: 1 },
     { url: absoluteUrl("/flights"), changeFrequency: "weekly", priority: 0.8 },
@@ -23,5 +28,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       })),
     { url: absoluteUrl("/plan-my-trip"), changeFrequency: "monthly", priority: 0.7 },
+    { url: absoluteUrl("/visa-services"), changeFrequency: "weekly", priority: 0.9 },
+    ...countries
+      .filter((country) => !country.seo.noIndex)
+      .map((country) => ({
+        url: absoluteUrl(`/visa-services/${country.slug}`),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      })),
+    { url: absoluteUrl("/visa-guide"), changeFrequency: "weekly", priority: 0.6 },
+    ...guides
+      .filter((guide) => !guide.seo.noIndex)
+      .map((guide) => ({
+        url: absoluteUrl(`/visa-guide/${guide.slug}`),
+        lastModified: guide.updatedAt,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      })),
   ];
 }
