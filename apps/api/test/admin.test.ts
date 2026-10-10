@@ -433,6 +433,31 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
     expect((await call(owner, "PUT", "/settings/nope", { data: {} })).statusCode).toBe(404);
   });
 
+  it("keeps Live booking locked until Phase E, while lock reasons stay editable (#72)", async () => {
+    const modes = (await call(owner, "GET", "/content/bookingModes")).json<{
+      value: Array<Record<string, unknown>>;
+      version: number;
+    }>();
+    const unlocked = modes.value.map((item, index) =>
+      index === 0 ? { ...item, liveLocked: false, mode: "live" } : item,
+    );
+    const refused = await call(owner, "PUT", "/settings/bookingModes", {
+      data: unlocked,
+      version: modes.version,
+    });
+    expect(refused.statusCode).toBe(409);
+    expect(refused.json<{ code: string }>().code).toBe("live-locked");
+    const reasons = modes.value.map((item) => ({
+      ...item,
+      lockReason: "Waiting for a provider contract",
+    }));
+    const saved = await call(owner, "PUT", "/settings/bookingModes", {
+      data: reasons,
+      version: modes.version,
+    });
+    expect(saved.statusCode).toBe(200);
+  });
+
   it("manages staff: add, roles, deactivate, reset, own password, last Super Admin kept", async () => {
     const created = await call(owner, "POST", "/users", {
       name: "Sample New Agent",

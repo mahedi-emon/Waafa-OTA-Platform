@@ -20,6 +20,22 @@ import { assertContentAccess, canEditContent } from "./access";
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 
 /**
+ * Live booking needs a provider, a health check, online payment and a Super Admin with a typed confirmation (FR-GS-03,
+ * FR-GS-04, Phase E). Until then no save may unlock Live or turn a module Live; lock reasons stay editable (#72).
+ */
+function assertLiveStaysLocked(value: unknown): void {
+  const modules = Array.isArray(value)
+    ? (value as Array<{ mode?: string; liveLocked?: boolean }>)
+    : [];
+  if (modules.some((item) => item.mode === "live" || item.liveLocked === false)) {
+    throw problems.conflict(
+      "Live booking stays locked until a provider and online payment are connected",
+      "live-locked",
+    );
+  }
+}
+
+/**
  * Generic content editing over CONTENT_MODEL (D125): every settings key and every collection can be listed, read,
  * created, updated, reordered and deleted, validated with its shared schema, with optimistic versions, the audit log,
  * a fresh public snapshot and a signed revalidation call to the web.
@@ -132,6 +148,7 @@ export class AdminContentService {
     if (CONTENT_MODEL[key].kind !== "singleton")
       throw problems.badRequest(`"${key}" is a list; edit its records`);
     const value = this.validate(key, data);
+    if (key === "bookingModes") assertLiveStaysLocked(value);
     const before = await this.prisma.setting.findUnique({ where: { key } });
     await this.prisma.$transaction(async (tx) => {
       if (before) {
