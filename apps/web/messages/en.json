@@ -1666,5 +1666,156 @@
     "timeline": "Order progress",
     "another": "Track another order",
     "continue": "Continue shopping"
+  },
+  "Services": {
+    "whatsapp": "Talk on WhatsApp",
+    "what": "What we do",
+    "how": "How it works",
+    "contactTitle": "Your contact details",
+    "contactEmailHint": "Work email, so we can send the quote",
+    "attach": {
+      "title": "Attach a file",
+      "sub": "Optional: a spec sheet, photo or price list",
+      "choose": "Choose file",
+      "replace": "Replace file",
+      "remove": "Remove {file}",
+      "added": "Added",
+      "rule": "JPG, PNG or PDF, up to 5 MB",
+      "fileType": "Use a JPG, PNG or PDF.",
+      "fileSize": "The file is over 5 MB.",
+      "fileEmpty": "The file is empty."
+    },
+    "errors": {
+      "companyRequired": "Enter your company name.",
+      "printersRequired": "Choose how many printers you have.",
+      "pagesRequired": "Choose how many pages you print.",
+      "branchesRequired": "Choose how many branches you have.",
+      "locationRequired": "Tell us where your offices are.",
+      "productRequired": "Enter the product or material.",
+      "quantityInvalid": "Enter a quantity above zero.",
+      "unitRequired": "Choose a unit.",
+      "countryRequired": "Enter the country.",
+      "specificationsRequired": "Add a few words about size, grade or packaging.",
+      "timelineRequired": "Choose when you need it."
+    },
+    "printing": {
+      "kicker": "Printing quote",
+      "stepLabel": "Your printing",
+      "stepTitle": "About your printing",
+      "company": "Company",
+      "service": "What do you need?",
+      "services": {
+        "toner-supply": "Toner on a schedule",
+        "printer-repair": "Printer servicing",
+        "new-printers": "New printers",
+        "paper-supplies": "Paper and supplies",
+        "managed-printing": "Managed print"
+      },
+      "printers": "Printers",
+      "printersOptions": {
+        "a": "1 to 5",
+        "b": "6 to 20",
+        "c": "21 to 50",
+        "d": "More than 50"
+      },
+      "pages": "Pages a month",
+      "pagesOptions": {
+        "a": "Under 2,000",
+        "b": "2,000 to 10,000",
+        "c": "10,000 to 50,000",
+        "d": "Over 50,000"
+      },
+      "branches": "Branches",
+      "branchesOptions": {
+        "a": "1",
+        "b": "2 to 5",
+        "c": "6 or more"
+      },
+      "frequency": "How often do you need supplies?",
+      "frequencies": {
+        "one-off": "Just once",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "quarterly": "Every quarter"
+      },
+      "location": "Where are your offices?",
+      "locationPlaceholder": "e.g. Motijheel and Gulshan, Dhaka",
+      "models": "Printer models",
+      "modelsOptional": "(optional)",
+      "modelsPlaceholder": "For example: 6 × HP LaserJet Pro M404, 2 × Canon iR 2206",
+      "notes": "Anything else?",
+      "submit": "Request a quote",
+      "success": {
+        "title": "Request received",
+        "lead": "Thank you. Our printing team will call you within one working day.",
+        "step1Title": "We call you",
+        "step1Body": "A printing adviser asks about your printers and branches.",
+        "step2Title": "We visit and propose a plan",
+        "step2Body": "Usually within a week, at no cost.",
+        "step3Title": "You approve a fixed price",
+        "step3Body": "No surprise charges.",
+        "whatsappMessage": "Hi Waafa, my printing quote reference is {reference}.",
+        "again": "Back to Waafas World"
+      }
+    },
+    "trading": {
+      "kicker": "Request for quotation",
+      "stepLabel": "Your request",
+      "stepTitle": "What do you want to buy or sell?",
+      "company": "Company",
+      "direction": "Request type",
+      "directions": {
+        "import": "Import to Bangladesh",
+        "export": "Export from Bangladesh",
+        "sourcing": "Find a supplier"
+      },
+      "product": "Product or material",
+      "productPlaceholder": "e.g. A4 copy paper, 80 gsm",
+      "quantity": "Quantity",
+      "unit": "Unit",
+      "units": {
+        "cartons": "Cartons",
+        "pieces": "Pieces",
+        "kilograms": "Kilograms",
+        "tonnes": "Tonnes",
+        "containers": "20 ft containers"
+      },
+      "country": "Country",
+      "countryPlaceholder": "e.g. China",
+      "specifications": "Specifications",
+      "specificationsPlaceholder": "Size, grade, packaging, certifications…",
+      "targetPrice": "Target price",
+      "targetPriceHint": "Optional, for example USD 2.10 per ream",
+      "deliveryTerms": "Delivery terms",
+      "deliveryTermsHint": "Optional",
+      "terms": {
+        "exw": "EXW (ex works)",
+        "fob": "FOB (free on board)",
+        "cif": "CIF (cost, insurance, freight)",
+        "ddp": "DDP (delivered duty paid)",
+        "other": "Other"
+      },
+      "timeline": "When do you need it?",
+      "timelines": {
+        "a": "Within a month",
+        "b": "1 to 3 months",
+        "c": "Just exploring"
+      },
+      "notes": "Anything else?",
+      "submit": "Send RFQ",
+      "success": {
+        "title": "Request received",
+        "lead": "Thank you. Our trading team will reply with next steps within one working day.",
+        "step1Title": "We review your request",
+        "step1Body": "We check the product, quantity and where it goes.",
+        "step2Title": "We compare suppliers",
+        "step2Body": "Usually 3 to 5 working days.",
+        "step3Title": "You choose and confirm",
+        "step3Body": "Price, terms and delivery date, before you pay.",
+        "whatsappMessage": "Hi Waafa, my RFQ reference is {reference}.",
+        "again": "Back to Waafas World"
+      }
+    },
+    "questions": "Good to know"
   }
 }

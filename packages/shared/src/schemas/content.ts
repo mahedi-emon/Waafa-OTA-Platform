@@ -377,3 +377,56 @@ export type PublicFeedback = z.infer<typeof PublicFeedbackSchema>;
 export type TeamMember = z.infer<typeof TeamMemberSchema>;
 export type BaggageRule = z.infer<typeof BaggageRuleSchema>;
 export type EmiBank = z.infer<typeof EmiBankSchema>;
+
+export const ServicePageKeySchema = z.enum(["printing", "trading"]);
+
+/**
+ * A Waafa International service page inside Waafas World (Printing Solutions, International Trading): the hero, the
+ * services, the process steps and the questions, all admin-edited. Form field labels and option lists are UI chrome
+ * (next-intl); the lead goes out with the PRN or TRD module.
+ */
+export const ServicePageSchema = z
+  .object({
+    key: ServicePageKeySchema,
+    kicker: z.string().min(1).max(60),
+    title: z.string().min(1).max(80),
+    lead: z.string().min(1).max(260),
+    primaryCta: z.string().min(1).max(30),
+    whatsappMessage: z.string().min(1).max(160),
+    facts: z
+      .array(
+        z.object({ value: z.string().min(1).max(30), label: z.string().min(1).max(40) }).strict(),
+      )
+      .max(4),
+    headerSlot: MediaSlotKeySchema,
+    formSlot: MediaSlotKeySchema,
+    servicesTitle: z.string().min(1).max(40),
+    services: z
+      .array(
+        z.object({ title: z.string().min(1).max(40), body: z.string().min(1).max(160) }).strict(),
+      )
+      .min(1)
+      .max(8),
+    stepsTitle: z.string().min(1).max(80),
+    steps: z
+      .array(
+        z.object({ title: z.string().min(1).max(60), body: z.string().min(1).max(100) }).strict(),
+      )
+      .min(1)
+      .max(6),
+    formTitle: z.string().min(1).max(60),
+    formLead: z.string().min(1).max(160),
+    questions: z
+      .array(
+        z
+          .object({ question: z.string().min(1).max(160), answer: z.string().min(1).max(600) })
+          .strict(),
+      )
+      .max(8),
+    seo: SeoSchema.default({ noIndex: false }),
+    sample: SampleFlagSchema,
+  })
+  .strict();
+
+export type ServicePageKey = z.infer<typeof ServicePageKeySchema>;
+export type ServicePage = z.infer<typeof ServicePageSchema>;

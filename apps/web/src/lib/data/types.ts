@@ -26,6 +26,8 @@ import type {
   GalleryCategory,
   GroupFare,
   HomeContent,
+  ServicePage,
+  ServicePageKey,
   ShopContent,
   HomeSection,
   HotelPlace,
@@ -107,6 +109,8 @@ export type BaggageQuery = { scope?: BaggageRule["scope"]; search?: string };
 
 export interface ContentRepository {
   getPage(slug: string): Promise<Page | null>;
+  /** A Waafa International service page (Printing Solutions, International Trading). */
+  getServicePage(key: ServicePageKey): Promise<ServicePage | null>;
   listBlogCategories(): Promise<BlogCategory[]>;
   /** Newest first; the featured post is included in the list. */
   listBlogPosts(query?: BlogQuery): Promise<ListPage<BlogPost>>;
