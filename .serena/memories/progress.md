@@ -1,4 +1,8 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-10 19:45 Dhaka — #16 A16 information pages built (About, Contact, FAQs, Blog + post, Gallery + album, Feedback,
+  Refund/Privacy/Terms, Baggage, EMI, Offline payment; /api/feedback, /api/payment-proof). Phase A 18/24 after #16 (75%).
+- 2026-10-10 17:40 Dhaka — #14 merged (PR #47), #15 merged (PR #48: printing + trading service pages, PRN/TRD requests).
+  Phase A 17/24 (71%). #16 In progress.
 - 2026-10-10 16:10 Dhaka — #14 A14 cart, checkout, success, track built on `feat/14-cart-checkout` (priceCart shared,
   /api/shop/quote, /api/orders, /shop/cart|checkout|track). Phase A 16/24 after #14 (67%). PR pending.
 - 2026-10-10 15:30 Dhaka — #12 merged (PR #45). #13 A13 Waafas World catalogue built on `feat/13-store` (store bar,

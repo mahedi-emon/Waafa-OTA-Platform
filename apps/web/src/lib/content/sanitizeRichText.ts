@@ -3,7 +3,7 @@ import sanitizeHtml from "sanitize-html";
 
 /*
  * Admin rich text allow-list (CLAUDE.md: RichText is one of the two places that set raw HTML). Headings start at h3
- * because pages own their h1 and section h2s; links keep http, https, mailto and tel only and open safely.
+ * because pages own their h1 and section h2s; simple tables (cost lists, policy schedules) are allowed; links keep http, https, mailto and tel only and open safely.
  */
 const OPTIONS: sanitizeHtml.IOptions = {
   allowedTags: [
@@ -22,8 +22,19 @@ const OPTIONS: sanitizeHtml.IOptions = {
     "h4",
     "blockquote",
     "hr",
+    "table",
+    "caption",
+    "thead",
+    "tbody",
+    "tr",
+    "th",
+    "td",
   ],
-  allowedAttributes: { a: ["href", "target", "rel"] },
+  allowedAttributes: {
+    a: ["href", "target", "rel"],
+    th: ["scope", "colspan", "rowspan"],
+    td: ["colspan", "rowspan"],
+  },
   allowedSchemes: ["http", "https", "mailto", "tel"],
   allowProtocolRelative: false,
   disallowedTagsMode: "discard",

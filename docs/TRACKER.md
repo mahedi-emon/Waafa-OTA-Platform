@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 17:40 Asia/Dhaka · Phase: A · Frontend · Current: #16 · A16 Gallery, Feedback, team, About, Contact, FAQs, Blog, policies (after #15 A15 merges) · Progress: 17/24 issues (71%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
+Updated: 10 Oct 19:45 Asia/Dhaka · Phase: A · Frontend · Current: #17 · A17 System states (after #16 A16 merges) · Progress: 18/24 issues (75%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues; launch-critical order in section 14 (owner accounts needed now, section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 17 | 1 (#16) | 0 | 71% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 18 | 1 (#17) | 0 | 75% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #16 · A16 Information pages: About, Contact, FAQs, Blog, Gallery, Feedback, policies, Baggage, EMI, Offline payment — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 18:10 → 10 Oct 19:45 |
+| Branch · PR · merge | `feat/16-content-pages` · see section 13 · squash |
+| Built | 15 routes: `/about-us` (story, services, routes from Dhaka, journey, values, team grid with initials, visit card when no office photo), `/contact` (four channels, CNT message form, hours, directions), `/faqs` (instant search, topic chips with counts, FAQPage markup, WhatsApp when nothing matches), `/blog` and `/blog/[slug]` (editor's pick, topics, search, contents list, service call to action, related posts, BlogPosting markup), `/gallery` and `/gallery/[slug]` (latest album, kinds, masonry with the shared lightbox, video links out), `/feedback` (approved and consented wall only, honest empty state, form stored as pending), the three policies (In short, On this page, questions card), `/baggage-information` (facts, allowance table with route, class and airline search, cabin-or-checked rules), `/emi` (calculator, steps, banks, rules) and `/offline-payment` (admin accounts, steps, proof form). New intake routes `/api/feedback` and `/api/payment-proof` share one submission handler (same-site, cap, rate limit, Turnstile, idempotency) |
+| Files and components | `components/content/{PageHero,ArticleContents,InfoCard,PolicyPage,RatingStars}`, `components/forms/{StarRatingInput}` (+ DocumentSlot images-only mode), `lib/http/handleSubmission.ts`, `lib/leads/{contactLeadForm,paymentProofForm}.ts`, `lib/content/feedbackForm.ts`, `lib/shop/emi.ts`, route folders above with their `_components`; shared: `PageBlockSchema`, `FeedbackCreateInputSchema`, `PaymentProofInputSchema`, optional feedback rating; fixtures: `pageBlocks`; repositories: listPageBlocks, createFeedback, submitPaymentProof; sanitiser allows simple tables; sitemap lists every indexable route (pages through products, skips empty categories and noindex records) |
+| Screens matched | About, Contact, Contact-sent, Faqs, Faqs-search, Blog, BlogPost, Gallery, Gallery-album, Gallery-photo, Feedback, Feedback-sent, Refund, Privacy, Terms, Baggage, Emi, OfflinePay, OfflinePay-sent (+ -m) |
+| Admin control | AC-45 – AC-54 used; AC-106 – AC-109 new |
+| Tests | unit +19 (contact, feedback and proof forms, EMI maths, table sanitising, page blocks, pending feedback, proofs); e2e +10 (14 routes at 320 and 1440 with no overflow or console errors, axe on all 14 at 390, contact → CNT, feedback pending and not on the wall, proof needs a transaction ID or slip, FAQ search and WhatsApp, baggage filters, EMI monthly amount, album lightbox); suite 77 passed |
+| Widths checked | 320 · 390 · 1440 by script screenshots and tests (768 / 1024 in A22) |
+| Tools and skills | Serena, Playwright test runner and screenshot script (MCP disconnected), subagent reviews (links and SEO, board fidelity); skills frontend-design, ui-ux-pro-max rules |
+| Decisions | D110 – D115 |
+| Bugs and follow-ups | Fixed in-issue: slider thumb had no accessible name (axe), duplicated hint text on upload slots, home gallery tiles linked to `/gallery?album=`. Review findings for earlier issues go to the review-fix issue |
 
 ### #15 · A15 Printing Solutions and International Trading — ✅ Done
 | Field | Value |
@@ -462,6 +477,10 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-103 | Orders and Track order (status, courier, tracking number, payment verified) | `createOrder()`, `findOrder()` → Order | Waafas World › Orders | `POST /api/v1/orders`, `GET /api/v1/orders/track` | ⬜ |
 | AC-104 | Service page copy: hero, facts, services, steps, form heading, questions, SEO | `getServicePage(key)` → ServicePage | Content › Pages › Service pages | `GET /api/v1/content/service-pages/:key` | ⬜ |
 | AC-105 | Service page photos and the trading loop | `getMediaSlot("printing-header" | "printing-quote-side" | "trading-header" | "trading-rfq-side")` | Content › Media library | `GET /api/v1/content/media-slots` | ⬜ |
+| AC-106 | Information page cards (About services and routes, baggage facts and rules, EMI and offline payment steps) | `listPageBlocks(page)` → icon, title, body, link, tone, order | Content › Page blocks | `GET /api/v1/content/page-blocks` | ⬜ |
+| AC-107 | Feedback form (pending until moderated) | `POST /api/feedback` → `createFeedback()` | Content › Feedback moderation | `POST /api/v1/feedback` | ⬜ |
+| AC-108 | Offline payment proofs | `POST /api/payment-proof` → `submitPaymentProof()` | Waafas World › Orders; Leads (payments) | `POST /api/v1/payment-proofs` | ⬜ |
+| AC-109 | Contact page messages (CNT) | `POST /api/leads` (module contact) → `createLead()` | Leads | `POST /api/v1/leads` | ⬜ |
 
 ## 5. Components inventory
 
@@ -691,6 +710,12 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D107 | 10 Oct | Stock is not decremented in Phase A; mini-cart drawer, save for later and cart corporate quote are cut to A22 | Time; stock transactions are Phase B | #14 |
 | D108 | 10 Oct | Service pages are one admin-edited ServicePage record each; form labels and option lists are UI chrome (next-intl); the request card is the shared LeadRequestCard | Copy editable in Admin, same flow as every Manual module | #15 |
 | D109 | 10 Oct | Printing and trading attachments follow the Phase A rule: metadata only (D87) | Uploads arrive with the API | #15 |
+| D110 | 10 Oct | Information page cards are one admin collection (PageBlock: page, group, icon, title, body, link, tone, order) instead of a schema per page | One admin screen covers About, Baggage, EMI and Offline payment | #16 |
+| D111 | 10 Oct | The About route map ships as route chips (IATA + city) from the destinations list; the animated map waits for A22 | Cut list item 4; honest and light | #16 |
+| D112 | 10 Oct | No stand-in office photo: the empty office slot shows a navy visit card (figure, address, hours) | Correction 7, no fake media | #16 |
+| D113 | 10 Oct | Contact and About use a Get directions link instead of a map iframe | No third-party embed on first load (performance, privacy) | #16 |
+| D114 | 10 Oct | Gallery videos show the poster and open on YouTube or Facebook in a new tab | Cut list item 1 (video embeds) | #16 |
+| D115 | 10 Oct | Feedback rating is optional and stored only when given; the wall shows stars per review, never an average | Board "How was it? (optional)"; no made-up averages | #16 |
 
 ## 9. Bugs and known issues
 
@@ -749,6 +774,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 18:00–19:45 | Session review (link/SEO and board-fidelity subagents; two audits stopped by the account rate limit); A16 information pages, feedback and payment-proof intake, page blocks, sitemap rewrite | #16 | see #16 block | unit 207 web + 48 shared + 82 fixtures · e2e 77 passed |
 | 10 Oct 16:20–17:40 | A14 merged (#47); A15 service pages for printing and trading with PRN and TRD requests, shared ConsentField and StepActions | #15 | see #15 block | unit 192 web + 48 shared + 80 fixtures · e2e +3 |
 | 10 Oct 15:40–16:10 | A13 merged (#46); A14 cart with server pricing and coupons, one-page checkout (COD cap, offline payment with proof, VAT invoice, pick-up), boarding-pass order success, track order by number and phone; globalThis store fix | #14 | see #14 block | unit 188 web + 48 shared + 79 fixtures · e2e 64 passed |
 | 10 Oct 13:30–15:30 | A12 merged (#45); A13 Waafas World catalogue: store bar, store home rows, listings with attribute filters, product page with variants, finder, deals, corporate quote, guest cart | #12, #13 | #45 | unit 297 · e2e 60 · axe pass · Lighthouse 67–77 |
@@ -766,6 +792,6 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. A16 (#16) Gallery, Feedback, team and About, Contact, FAQs, Blog, policies, Baggage, EMI, Offline Payment; then A17 system states (branded 404, 500, offline, maintenance).
-2. Admin A18 – A21 (core first: leads, orders, products); A22 QA with the A14 and A15 leftovers (320 / 768 / 1024 screenshots, Lighthouse, mini-cart drawer).
-3. #39 perf; owner decision on launch scope (section 10 item 5); reconnect the Playwright, Context7, shadcn and magic MCP servers.
+1. A17 (#17): branded 404 (catch-all under [locale]), error and global-error pages, offline and maintenance pages, loading patterns, LiveBody placeholder.
+2. Review-fix issue (from the 10 Oct reviews): flights step 2 travellers, hotels rooms and guests, visa list actions, store category row and Track order link, home metadata and h1 fallback, per-country visa descriptions, collection description fallback, service pages noIndex, broken deep links (/tour-packages?q=, /flights?to=…&fare=), empty office-and-stationery links, siteUrl production guard; signature moments (hero flight path, route arc, add-to-cart arc, magnetic buttons).
+3. Launch-critical backend (Phase B lean): API with PostgreSQL for leads, orders, feedback, proofs and content, staff auth, email; then admin A18 – A21 on one list + form pattern; deploy staging 12 Oct, production 13 Oct (needs the owner accounts in section 11).

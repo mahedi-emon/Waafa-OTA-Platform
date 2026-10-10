@@ -72,19 +72,25 @@ function LeadSuccess({
             />
           </div>
         </div>
-        <ol className="flex flex-col gap-4 px-5 py-5 md:px-8">
-          {steps.map((step, index) => (
-            <li key={step.title} className="flex gap-3">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-electric-50 font-display text-[13px] font-bold text-brand-700">
-                {index + 1}
-              </span>
-              <span className="min-w-0">
-                <span className="block text-[15px] font-semibold text-navy-900">{step.title}</span>
-                <span className="block text-[14px] leading-relaxed text-mist-600">{step.body}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
+        {steps.length > 0 ? (
+          <ol className="flex flex-col gap-4 px-5 py-5 md:px-8">
+            {steps.map((step, index) => (
+              <li key={step.title} className="flex gap-3">
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-electric-50 font-display text-[13px] font-bold text-brand-700">
+                  {index + 1}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[15px] font-semibold text-navy-900">
+                    {step.title}
+                  </span>
+                  <span className="block text-[14px] leading-relaxed text-mist-600">
+                    {step.body}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        ) : null}
         <div className="flex flex-col gap-2 border-t border-mist-200 px-5 py-4 sm:flex-row sm:flex-wrap md:px-8">
           {actions}
         </div>

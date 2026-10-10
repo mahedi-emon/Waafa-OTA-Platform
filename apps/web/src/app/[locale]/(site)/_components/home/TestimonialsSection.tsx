@@ -1,6 +1,6 @@
-import { Star } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { HomeSection } from "@waafa/shared";
+import { RatingStars } from "@/components/content/RatingStars";
 import { SectionHeading } from "@/components/content/SectionHeading";
 import { listPublicFeedback } from "@/lib/data/content";
 import { HomeSectionShell } from "./HomeSectionShell";
@@ -36,23 +36,9 @@ async function TestimonialsSection({ section }: { section: HomeSection }) {
             key={item.id}
             className="flex h-full flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-5"
           >
-            <p
-              className="flex gap-0.5"
-              aria-label={t("rating", { rating: item.rating })}
-              role="img"
-            >
-              {Array.from({ length: 5 }, (_, i) => (
-                <Star
-                  key={i}
-                  aria-hidden="true"
-                  className={
-                    i < item.rating
-                      ? "size-4 fill-electric-600 text-electric-600"
-                      : "size-4 text-mist-300"
-                  }
-                />
-              ))}
-            </p>
+            {item.rating ? (
+              <RatingStars rating={item.rating} label={t("rating", { rating: item.rating })} />
+            ) : null}
             <blockquote className="text-[15px] leading-relaxed text-ink-900">
               {item.comment}
             </blockquote>

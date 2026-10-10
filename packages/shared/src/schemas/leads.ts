@@ -386,3 +386,47 @@ export type LeadCreated = z.infer<typeof LeadCreatedSchema>;
 export type FlightPreferences = z.infer<typeof FlightPreferencesSchema>;
 export type LeadActivity = z.infer<typeof LeadActivitySchema>;
 export type Lead = z.infer<typeof LeadSchema>;
+
+const ReferenceSchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .regex(/^[A-Z]{3}-\d{6}-\d{4}$/, "Enter the reference, for example ORD-261008-0042");
+
+/** Offline payment proof (OfflinePay board): matches a transfer to a booking or order reference. */
+export const PaymentProofInputSchema = z
+  .object({
+    reference: ReferenceSchema,
+    name: z.string().trim().min(2).max(80),
+    phone: z.string().regex(/^\+[1-9]\d{6,14}$/, "Enter a valid phone number"),
+    amount: TakaSchema.refine((value) => value > 0, "Enter the amount you paid"),
+    /** An offline account id from the payment settings (bank, bKash, Nagad). */
+    accountId: IdSchema,
+    transactionId: z.string().trim().max(40).optional(),
+    proof: PrivateFileSchema.optional(),
+  })
+  .strict()
+  .refine((value) => Boolean(value.transactionId) || value.proof !== undefined, {
+    message: "Add the transaction ID or the payment slip",
+    path: ["transactionId"],
+  });
+
+/** A received proof, kept for the accounts team (Admin › Payments). */
+export const PaymentProofSchema = z
+  .object({
+    id: IdSchema,
+    reference: ReferenceSchema,
+    name: z.string().min(1).max(80),
+    phone: z.string().regex(/^\+[1-9]\d{6,14}$/),
+    amount: TakaSchema,
+    accountId: IdSchema,
+    transactionId: z.string().max(40).optional(),
+    proof: PrivateFileSchema.optional(),
+    status: z.enum(["received", "matched", "rejected"]),
+    createdAt: IsoDateTimeSchema,
+    sample: SampleFlagSchema,
+  })
+  .strict();
+
+export type PaymentProofInput = z.infer<typeof PaymentProofInputSchema>;
+export type PaymentProof = z.infer<typeof PaymentProofSchema>;

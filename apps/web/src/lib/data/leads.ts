@@ -1,6 +1,8 @@
 import "server-only";
 import {
   LeadCreateInputSchema,
+  PaymentProofInputSchema,
+  type PaymentProof,
   SearchLogInputSchema,
   type LeadCreated,
   type SearchLogInput,
@@ -22,4 +24,9 @@ export async function logSearch(input: unknown): Promise<boolean> {
   const search: SearchLogInput = parsed.data;
   await repositories.leads.logSearch(search, new Date());
   return true;
+}
+
+/** Offline payment proof (OfflinePay board): stored for the accounts team to match. Never cached (a write). */
+export async function submitPaymentProof(input: unknown): Promise<PaymentProof> {
+  return repositories.leads.submitPaymentProof(PaymentProofInputSchema.parse(input), new Date());
 }

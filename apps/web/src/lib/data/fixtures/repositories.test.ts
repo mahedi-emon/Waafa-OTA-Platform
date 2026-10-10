@@ -76,6 +76,33 @@ describe("settings repository", () => {
 });
 
 describe("content repository", () => {
+  it("serves page blocks for one page, grouped and in admin order", async () => {
+    const blocks = await content.listPageBlocks("baggage");
+    expect(blocks.every((block) => block.page === "baggage")).toBe(true);
+    const groups = blocks.map((block) => block.group);
+    expect(groups).toEqual([...groups].sort());
+    const facts = blocks.filter((block) => block.group === "facts");
+    expect(facts.map((block) => block.order)).toEqual([0, 1, 2, 3]);
+  });
+
+  it("stores feedback as pending and never shows it on the public wall", async () => {
+    const repo = createFixtureRepositories().content;
+    const stored = await repo.createFeedback(
+      {
+        name: "Sample Nadia",
+        phone: "+8801712345678",
+        service: "packages",
+        comment: "The guide was helpful and the hotel was clean.",
+        consentToPublish: true,
+      },
+      dhaka("2026-10-10T12:00"),
+    );
+    expect(stored).toMatchObject({ status: "pending", sample: false });
+    expect(stored).not.toHaveProperty("rating");
+    const wall = await repo.listPublicFeedback();
+    expect(wall.some((item) => item.id === stored.id)).toBe(false);
+  });
+
   it("serves page media slots, real footage on the home hero and nothing for an empty slot", async () => {
     const hero = await content.getMediaSlot("home-hero");
     expect(hero?.video?.mp4).toBe("/media/video/hero-sky.mp4");
@@ -408,6 +435,26 @@ describe("shop repository", () => {
 });
 
 describe("leads repository", () => {
+  it("stores a payment proof as received, with the reference upper-cased", async () => {
+    const repo = createFixtureRepositories().leads;
+    const proof = await repo.submitPaymentProof(
+      {
+        reference: "ORD-261008-0042",
+        name: "Sample Rahim",
+        phone: "+8801712345678",
+        amount: 3450,
+        accountId: "acc-bkash",
+        transactionId: "8N7A6B5C4D",
+      },
+      dhaka("2026-10-10T12:00"),
+    );
+    expect(proof).toMatchObject({
+      reference: "ORD-261008-0042",
+      status: "received",
+      createdAt: "2026-10-10T12:00:00+06:00",
+    });
+  });
+
   const contact = { name: "Sample Customer", phone: "+8801000000101" };
   const flight = {
     module: "flights",
