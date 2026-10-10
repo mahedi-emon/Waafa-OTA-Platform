@@ -5,6 +5,7 @@ import type {
   EmiSettingsSchema,
   FooterSettingsSchema,
   HomeContentSchema,
+  ShopContentSchema,
   HomeSectionSchema,
   LeadFormSettingsSchema,
   MaintenanceSettingsSchema,
@@ -576,6 +577,67 @@ export const homeContent: In<typeof HomeContentSchema> = {
     title: "Not sure where to start?",
     body: "Send your dates and budget on WhatsApp. A travel expert replies with options you can compare, with no obligation to book.",
   },
+};
+
+/** Waafas World copy (Content › Store). Sample until the owner approves it. */
+export const shopContent: In<typeof ShopContentSchema> = {
+  tagline: "Waafa International’s online store",
+  bulkStrip: {
+    title: "Buying for your company?",
+    body: "Bulk prices, monthly supply and VAT invoices for offices.",
+    cta: "Get a corporate quote",
+  },
+  finderStrip: {
+    title: "Find by model",
+    body: "Toner and ink that fit your printer.",
+    cta: "Start",
+  },
+  corporate: {
+    kicker: "For companies",
+    title: "Corporate and bulk orders, one invoice",
+    body: "Send your list once. We quote within one working day, deliver on a schedule and bill monthly with VAT invoices. Serving Dhaka’s offices since 2010.",
+    steps: [
+      { title: "Send your list", body: "Products and quantities, or a short note." },
+      { title: "Get a price in a day", body: "A named account manager replies." },
+      { title: "Delivered and billed", body: "On your schedule, with VAT invoices." },
+    ],
+  },
+  services: [
+    {
+      title: "Printing Solutions",
+      sub: "Managed printing for offices",
+      body: "Toner on a schedule, printer servicing and one monthly invoice for every branch.",
+      cta: "Get a quote",
+      href: "/shop/printing-solutions",
+      mediaSlot: "shop-service-printing",
+    },
+    {
+      title: "International Trading",
+      sub: "Export, import and sourcing",
+      body: "Send a request for quotation with the product, quantity and destination.",
+      cta: "Send an RFQ",
+      href: "/shop/international-trading",
+      mediaSlot: "trading-header",
+    },
+  ],
+  trust: [
+    {
+      icon: "badge-check",
+      title: "Genuine products",
+      detail: "From brands and authorised importers. Compatible items are labelled.",
+    },
+    {
+      icon: "shield-check",
+      title: "Warranty on every item",
+      detail: "Brand or seller warranty, shown on each product page.",
+    },
+    {
+      icon: "truck",
+      title: "Delivery across Bangladesh",
+      detail: "Next day in Dhaka, 2 to 4 days elsewhere.",
+    },
+    { icon: "wallet", title: "Cash on delivery", detail: "Or bKash, Nagad and bank transfer." },
+  ],
 };
 
 /** Analytics IDs are entered by the owner in Admin; nothing loads until they exist. */

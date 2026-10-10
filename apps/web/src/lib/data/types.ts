@@ -25,6 +25,7 @@ import type {
   GalleryCategory,
   GroupFare,
   HomeContent,
+  ShopContent,
   HomeSection,
   HotelPlace,
   LeadCreated,
@@ -92,6 +93,8 @@ export interface SettingsRepository {
   getSearchSettings(): Promise<SearchSettings>;
   /** Home copy that is not a list: hero, Why WAAFA figure, store band, reviews and closing band. */
   getHomeContent(): Promise<HomeContent>;
+  /** Waafas World copy: strips, corporate band, service cards and trust row. */
+  getShopContent(): Promise<ShopContent>;
   /** Enabled home sections in admin order (FR-HOME). */
   listHomeSections(): Promise<HomeSection[]>;
 }
@@ -188,6 +191,11 @@ export type ProductQuery = ListWindow & {
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;
+  /**
+   * The category's select attributes (FR-SHOP-02): a product matches when a variant option with the key, or a spec row
+   * with the label, has one of the values.
+   */
+  attributes?: Array<{ key: string; label: string; values: string[] }>;
   sort?: ProductSort;
 };
 
