@@ -63,6 +63,8 @@ Outside production the OpenAPI document is at `http://localhost:4000/api/v1/open
 with the API's WEB_REVALIDATE_URL pointing at http://localhost:3000/api/revalidate). Without them the site runs on the
 Sample fixtures.
 
+**Deploy**: `docs/DEPLOY.md` (Railway API and worker, Vercel web, Resend, Turnstile, domain, launch checks).
+
 ## What is where
 
 | Path | What |

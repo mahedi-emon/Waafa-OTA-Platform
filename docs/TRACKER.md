@@ -896,6 +896,8 @@ or accessibility.
 
 ## 11. Blockers and owner actions
 
+The full order of steps, every environment variable and the launch checks are in `docs/DEPLOY.md` (#74). Today's blockers for the 13 Oct launch: Railway project (PostgreSQL + Redis), Vercel import, Resend domain records, Turnstile keys, DNS access and the first Super Admin email.
+
 | Item | What I need from the owner | Exact steps | Needed by |
 | --- | --- | --- | --- |
 | Vercel (web hosting, preview per PR) | An account and a logged-in CLI | `npm i -g vercel` → `vercel login` → tell me; I run `vercel link` in `apps/web` and connect the GitHub repo | 11 Oct |
