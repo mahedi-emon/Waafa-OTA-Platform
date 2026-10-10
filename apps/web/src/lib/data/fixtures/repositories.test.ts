@@ -294,6 +294,24 @@ describe("shop repository", () => {
     expect((await shop.listProducts({ category: "no-such-category" })).total).toBe(0);
   });
 
+  it("filters by category attributes from variant options or spec rows", async () => {
+    const bySize = await shop.listProducts({
+      category: "fashion-and-lifestyle",
+      attributes: [{ key: "size", label: "Size", values: ["XL"] }],
+    });
+    expect(bySize.items.map((product) => product.id)).toEqual(["prod-tee"]);
+    const compatible = await shop.listProducts({
+      category: "printers-and-supplies",
+      attributes: [{ key: "cartridgeType", label: "Type", values: ["Compatible"] }],
+    });
+    expect(compatible.total).toBeGreaterThan(0);
+    const none = await shop.listProducts({
+      category: "printers-and-supplies",
+      attributes: [{ key: "colour", label: "Colour", values: ["Magenta"] }],
+    });
+    expect(none.total).toBe(0);
+  });
+
   it("applies rule-based and manual collections", async () => {
     expect(
       (await shop.listProducts({ collection: "under-999" })).items.map((product) => product.id),

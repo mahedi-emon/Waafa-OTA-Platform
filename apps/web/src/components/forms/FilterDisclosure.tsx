@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 
 type FilterDisclosureProps = { label: string; count: number; children: ReactNode };
 
-/** Filters: always shown in the desktop rail; behind one button on phones and tablets (Packages-m-filters). */
+/** Filters: always shown in the desktop rail; behind one button on phones and tablets (Packages-m-filters, ShopList-m-filters). */
 function FilterDisclosure({ label, count, children }: FilterDisclosureProps) {
+  const id = useId();
   const [open, setOpen] = useState(false);
   return (
     <div>
@@ -16,7 +17,7 @@ function FilterDisclosure({ label, count, children }: FilterDisclosureProps) {
         type="button"
         variant="secondary"
         aria-expanded={open}
-        aria-controls="package-filters"
+        aria-controls={id}
         onClick={() => setOpen((value) => !value)}
         className="lg:hidden"
       >
@@ -28,7 +29,7 @@ function FilterDisclosure({ label, count, children }: FilterDisclosureProps) {
           </span>
         ) : null}
       </Button>
-      <div id="package-filters" className={cn("mt-4 lg:mt-0 lg:block", open ? "block" : "hidden")}>
+      <div id={id} className={cn("mt-4 lg:mt-0 lg:block", open ? "block" : "hidden")}>
         {children}
       </div>
     </div>

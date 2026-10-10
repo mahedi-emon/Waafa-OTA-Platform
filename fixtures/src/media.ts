@@ -21,4 +21,5 @@ export const mediaSlots: In<typeof MediaSlotSchema>[] = [
   { key: "trading-header", video: video("port"), sample: true },
   { key: "trading-rfq-side", image: photo("trading-alt"), sample: true },
   { key: "shop-service-printing", image: photo("printing"), sample: true },
+  { key: "shop-service-trading", image: photo("trading"), sample: true },
 ];

@@ -47,6 +47,7 @@ import {
   TourPackageSchema,
   SearchSettingsSchema,
   HomeContentSchema,
+  ShopContentSchema,
   TrackingSettingsSchema,
   TrustItemSchema,
   ValueCardSchema,
@@ -88,6 +89,7 @@ import {
   shippingSettings,
   searchSettings,
   homeContent,
+  shopContent,
   siteSettings,
   trackingSettings,
 } from "./settings";
@@ -136,6 +138,7 @@ export const fixtureRegistry = {
   trackingSettings: entry(TrackingSettingsSchema, trackingSettings),
   searchSettings: entry(SearchSettingsSchema, searchSettings),
   homeContent: entry(HomeContentSchema, homeContent),
+  shopContent: entry(ShopContentSchema, shopContent),
   homeSections: entry(z.array(HomeSectionSchema), homeSections),
   // Content
   pages: entry(z.array(PageSchema), pages),

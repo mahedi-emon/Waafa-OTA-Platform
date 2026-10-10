@@ -310,6 +310,9 @@ Every visual deviation from the prototype, with the reason (correction 11: the p
 | Package gallery always shows five tiles | The bento adapts to 1 to 5 photos | Packages with two photos left empty tiles | A11 |
 | Visa apply in four steps (trip and contact, documents, office visit, check and send) | Contact first, then one step holding trip, documents, visit and the check-and-send review | One request flow for every module (D86) | A12 |
 | Upload progress bars on document slots | File name and size with Added; no progress until uploads exist in Phase C | Files stay in the browser in Phase A (D87) | A12 |
+| Store product video inside the gallery (ShopProduct-video) | Muted loop under the description | Lighter gallery; poster is real footage (D99) | A13 |
+| Find by model picks brand and model in one live form | Two GET steps without client JS | Works before hydration (D97) | A13 |
+| Filter sheet with live counts on phones (ShopList-m-filters) | Filter disclosure with a GET form and Show products | Same form on every width, no client bundle (D96) | A13 |
 
 ## Known gaps
 - Logo vectors: the lockup uses the supplied PNG cut-outs until the original SVG/AI arrives (owner question).

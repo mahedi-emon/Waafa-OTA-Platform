@@ -97,6 +97,13 @@ export async function listHomeSections() {
   return repositories.settings.listHomeSections();
 }
 
+export async function getShopContent() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalogue);
+  return repositories.settings.getShopContent();
+}
+
 export async function getHomeContent() {
   "use cache";
   cacheLife("hours");

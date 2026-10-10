@@ -40,6 +40,25 @@ const PRODUCT_SORTS: Record<ProductSort, (a: Product, b: Product) => number> = {
   "price-desc": (a, b) => productFromPrice(b) - productFromPrice(a),
 };
 
+/** A variant option with the key, or a spec row with the label, holds one of the values (case-insensitive). */
+function hasAttribute(
+  product: Product,
+  filter: { key: string; label: string; values: string[] },
+): boolean {
+  if (filter.values.length === 0) return true;
+  const wanted = filter.values.map((value) => value.toLowerCase());
+  const fromVariants = product.variants.some((variant) => {
+    const value = variant.options[filter.key];
+    return value !== undefined && wanted.includes(value.toLowerCase());
+  });
+  const fromSpecs = product.specs.some(
+    (spec) =>
+      spec.label.toLowerCase() === filter.label.toLowerCase() &&
+      wanted.some((value) => spec.value.toLowerCase().includes(value)),
+  );
+  return fromVariants || fromSpecs;
+}
+
 export function createFixtureShopRepository(data: FixtureData): ShopRepository {
   const published = () => data.products.filter((product) => product.status === "published");
 
@@ -120,6 +139,9 @@ export function createFixtureShopRepository(data: FixtureData): ShopRepository {
           (product) => query.maxPrice === undefined || productFromPrice(product) <= query.maxPrice,
         )
         .filter((product) => !query.inStock || isAvailable(product))
+        .filter((product) =>
+          (query.attributes ?? []).every((filter) => hasAttribute(product, filter)),
+        )
         .sort(PRODUCT_SORTS[query.sort ?? "popular"]);
       return paginate(sorted, query, 12);
     },

@@ -21,6 +21,7 @@ export const LeadModuleSchema = z.enum([
   "trading",
   "contact",
   "emi",
+  "bulk",
 ]);
 
 export const LEAD_PREFIX = {
@@ -33,6 +34,7 @@ export const LEAD_PREFIX = {
   trading: "TRD",
   contact: "CNT",
   emi: "EMI",
+  bulk: "QTE",
 } as const satisfies Record<z.infer<typeof LeadModuleSchema>, string>;
 
 /** FR-ADM-LEAD statuses. Booked needs an amount; Cancelled and Lost need a reason. */
@@ -251,6 +253,17 @@ export const EmiLeadPayloadSchema = z
   })
   .strict();
 
+/** Corporate and bulk quote from Waafas World (Shop-bulk, ShopProduct-bulk): QTE reference. */
+export const BulkLeadPayloadSchema = z
+  .object({
+    module: z.literal("bulk"),
+    company: z.string().trim().min(1).max(120),
+    items: z.string().trim().min(3).max(2000),
+    productSlug: z.string().max(120).optional(),
+    attachment: PrivateFileSchema.optional(),
+  })
+  .strict();
+
 export const LeadPayloadSchema = z.discriminatedUnion("module", [
   FlightLeadPayloadSchema,
   HotelLeadPayloadSchema,
@@ -261,6 +274,7 @@ export const LeadPayloadSchema = z.discriminatedUnion("module", [
   TradingLeadPayloadSchema,
   ContactLeadPayloadSchema,
   EmiLeadPayloadSchema,
+  BulkLeadPayloadSchema,
 ]);
 
 export const LeadSourceSchema = z

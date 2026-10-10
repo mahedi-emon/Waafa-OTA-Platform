@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 
-type PackageLightboxProps = {
+type PhotoLightboxProps = {
   images: Image[];
   title: string;
   start: number;
@@ -19,8 +19,8 @@ type PackageLightboxProps = {
   onClose: () => void;
 };
 
-/** Package photos lightbox (PackageDetail-photos): swipe on phones, arrow keys and buttons on desktop. */
-function PackageLightbox({ images, title, start, labels, onClose }: PackageLightboxProps) {
+/** Photo lightbox (PackageDetail-photos, ShopProduct zoom): swipe on phones, arrow keys and buttons on desktop. */
+function PhotoLightbox({ images, title, start, labels, onClose }: PhotoLightboxProps) {
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[min(1100px,calc(100vw-24px))] border-0 bg-midnight-950 p-3 sm:p-5">
@@ -59,4 +59,4 @@ function PackageLightbox({ images, title, start, labels, onClose }: PackageLight
   );
 }
 
-export { PackageLightbox };
+export { PhotoLightbox };

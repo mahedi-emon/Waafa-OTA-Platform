@@ -9,6 +9,7 @@ import {
   SeoSchema,
   TakaSchema,
 } from "./common";
+import { MediaSlotKeySchema } from "./content";
 import { IataSchema } from "./travel";
 
 /** Days of the week as used for office hours (0 = Sunday … 6 = Saturday, like Date#getDay in Asia/Dhaka). */
@@ -361,6 +362,66 @@ export const HomeSectionSchema = z
   })
   .strict();
 
+/** Waafas World copy that is not a list (Content › Store): strips, corporate band, service cards and trust row. */
+export const ShopContentSchema = z
+  .object({
+    tagline: z.string().min(1).max(60),
+    bulkStrip: z
+      .object({
+        title: z.string().min(1).max(60),
+        body: z.string().min(1).max(120),
+        cta: z.string().min(1).max(30),
+      })
+      .strict(),
+    finderStrip: z
+      .object({
+        title: z.string().min(1).max(60),
+        body: z.string().min(1).max(120),
+        cta: z.string().min(1).max(30),
+      })
+      .strict(),
+    corporate: z
+      .object({
+        kicker: z.string().min(1).max(40),
+        title: z.string().min(1).max(80),
+        body: z.string().min(1).max(260),
+        steps: z
+          .array(
+            z
+              .object({ title: z.string().min(1).max(40), body: z.string().min(1).max(80) })
+              .strict(),
+          )
+          .max(4),
+      })
+      .strict(),
+    services: z
+      .array(
+        z
+          .object({
+            title: z.string().min(1).max(40),
+            sub: z.string().min(1).max(60),
+            body: z.string().min(1).max(160),
+            cta: z.string().min(1).max(30),
+            href: z.string().min(1),
+            mediaSlot: MediaSlotKeySchema,
+          })
+          .strict(),
+      )
+      .max(4),
+    trust: z
+      .array(
+        z
+          .object({
+            icon: z.string().min(1),
+            title: z.string().min(1).max(40),
+            detail: z.string().min(1).max(100),
+          })
+          .strict(),
+      )
+      .max(6),
+  })
+  .strict();
+
 /** Home copy that is not a list (Content › Home): hero, Why WAAFA figure, store band, reviews and the closing band. */
 export const HomeContentSchema = z
   .object({
@@ -458,4 +519,5 @@ export type TrackingSettings = z.infer<typeof TrackingSettingsSchema>;
 export type HomeSectionKey = z.infer<typeof HomeSectionKeySchema>;
 export type HomeSection = z.infer<typeof HomeSectionSchema>;
 export type HomeContent = z.infer<typeof HomeContentSchema>;
+export type ShopContent = z.infer<typeof ShopContentSchema>;
 export type PublicConfig = z.infer<typeof PublicConfigSchema>;

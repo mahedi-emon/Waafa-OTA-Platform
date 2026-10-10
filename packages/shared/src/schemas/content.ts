@@ -147,6 +147,7 @@ export const MediaSlotKeySchema = z.enum([
   "trading-header",
   "trading-rfq-side",
   "shop-service-printing",
+  "shop-service-trading",
   "office",
 ]);
 

@@ -114,7 +114,6 @@ async function StoreSection({ section, store }: StoreSectionProps) {
                 key={product.id}
                 product={product}
                 brandName={brandName(product.brandId)}
-                saveLabel={(amount) => t("save", { amount })}
               />
             ))}
           </SnapRow>

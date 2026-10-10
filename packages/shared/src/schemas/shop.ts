@@ -248,8 +248,15 @@ export const StoreRowKeySchema = z.enum([
   "trust",
 ]);
 
+/** One store home row (FR-SHOP-01): admin order and visibility; the heading and lead fall back to the defaults. */
 export const StoreRowSchema = z
-  .object({ key: StoreRowKeySchema, enabled: z.boolean(), order: z.number().int().min(0) })
+  .object({
+    key: StoreRowKeySchema,
+    enabled: z.boolean(),
+    order: z.number().int().min(0),
+    title: z.string().max(60).optional(),
+    subtitle: z.string().max(160).optional(),
+  })
   .strict();
 
 export const CouponSchema = z
