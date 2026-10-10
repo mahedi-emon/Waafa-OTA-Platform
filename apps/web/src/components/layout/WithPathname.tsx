@@ -1,18 +1,8 @@
 "use client";
 
-import { useSyncExternalStore, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { usePathname } from "@/i18n/navigation";
-
-const subscribeNever = () => () => {};
-
-/** false while prerendering and hydrating, true right after hydration (no effect, no extra state). */
-function useHydrated(): boolean {
-  return useSyncExternalStore(
-    subscribeNever,
-    () => true,
-    () => false,
-  );
-}
+import { useHydrated } from "@/lib/useHydrated";
 
 type Render = (pathname: string | null) => ReactNode;
 

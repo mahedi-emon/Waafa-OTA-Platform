@@ -66,5 +66,6 @@ export function useCart() {
     add: (line: CartLine) => write(addLine(read(), line)),
     setQty: (variantId: string, qty: number) => write(setLineQty(read(), variantId, qty)),
     remove: (variantId: string) => write(removeLine(read(), variantId)),
+    clear: () => write([]),
   };
 }

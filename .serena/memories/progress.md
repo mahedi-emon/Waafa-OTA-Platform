@@ -1,4 +1,6 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-10 16:10 Dhaka — #14 A14 cart, checkout, success, track built on `feat/14-cart-checkout` (priceCart shared,
+  /api/shop/quote, /api/orders, /shop/cart|checkout|track). Phase A 16/24 after #14 (67%). PR pending.
 - 2026-10-10 15:30 Dhaka — #12 merged (PR #45). #13 A13 Waafas World catalogue built on `feat/13-store` (store bar,
   home rows, listings, product page, finder, deals, bulk quote, guest cart); PR pending. Phase A 15/24 after #13 (62%).
 - 2026-10-10 13:30 Dhaka — #11 merged (PR #44). #12 A12 visa list/country/apply + Visa Guide built on `feat/12-visa`; PR pending.

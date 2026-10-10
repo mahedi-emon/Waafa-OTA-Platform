@@ -24,7 +24,7 @@ import {
   type VisaFileValues,
 } from "@/lib/leads/visaLeadForm";
 import { addDays, formatFieldDate } from "@/lib/search/isoDate";
-import { DocumentSlot } from "./DocumentSlot";
+import { DocumentSlot } from "@/components/forms/DocumentSlot";
 
 export type VisaTypeOption = {
   type: VisaTypeKey;

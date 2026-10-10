@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 15:30 Asia/Dhaka · Phase: A · Frontend · Current: #14 · A14 Cart and checkout (after #13 A13 store merges) · Progress: 15/24 issues (62%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
+Updated: 10 Oct 16:10 Asia/Dhaka · Phase: A · Frontend · Current: #15 · A15 Printing Solutions and International Trading (after #14 A14 merges) · Progress: 16/24 issues (67%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 15 | 1 (#14) | 0 | 62% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 16 | 1 (#15) | 0 | 67% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #14 · A14 Waafas World cart, checkout, order success and track order — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 15:40 → 10 Oct 16:10 |
+| Branch · PR · merge | `feat/14-cart-checkout` · see section 13 · squash |
+| Built | `/shop/cart`: guest cart priced by the server (current price, deals, stock), free-delivery bar, quantity steppers, coupon with applied / invalid-or-expired / below-minimum states, delivery area switch, minimum order, empty state. `/shop/checkout`: one page with contact, VAT invoice switch (company, BIN), address or office pick-up, payment (cash on delivery up to the admin limit, otherwise an admin-listed bKash, Nagad or bank account with transaction ID and optional proof), summary, idempotent submit, boarding-pass success with ORD number and next steps (bank details for transfers). `/shop/track`: order number plus phone, progress timeline with courier and tracking number, not-found state with WhatsApp. Server pricing is one shared function (`priceCart`), so the browser never sets a price |
+| Files and components | `packages/shared/src/helpers/orderPricing.ts`, shared order schemas (`OrderCreateInputSchema`, invoice, pickup), `app/api/shop/quote`, `app/api/orders`, `lib/data/orders.ts`, `lib/data/source.ts` (globalThis store), `lib/shop/checkoutForm.ts`, `lib/useHydrated.ts`, `components/shop/{CartLineRow,CartSummary,FreeDeliveryBar,EmptyCart,CheckoutSummary,PaymentOptions,OrderDone,OrderTimeline,useQuote,useCartPrefs}`, `components/forms/{RadioCard,DocumentSlot}` (DocumentSlot moved from visa), `shop/{cart,checkout,track}` routes; repository: getProductsByVariantIds, createOrder, findOrder |
+| Screens matched | ShopCart, -empty, -coupon, -m, ShopCheckout, -err, -m, ShopDone, -bank, -m, ShopTrack, -nf, -delivered, -m |
+| Admin control | AC-24, AC-98 used; AC-100 – AC-103 new |
+| Tests | unit +19 (pricing 10, checkout form 7, order repository 1, plus shared); e2e +4 (coupon and zone pricing, quantity and remove; COD order → ORD reference → track by phone → wrong phone not found; COD blocked over the limit and bKash order with transaction ID; delivered sample timeline); suite 64 passed · axe pass on cart, checkout and track · production build green |
+| Widths checked | 390 and 1440 by screenshot; 320 / 768 / 1024 not re-run this session (Playwright MCP was lost when the node processes were stopped), covered by A22 |
+| Tools and skills | Serena, Playwright test runner and MCP, Context7 earlier in the project; skills frontend-design, ui-ux-pro-max rules |
+| Decisions | D102 – D107 |
+| Bugs and follow-ups | Fixed in-issue: in-memory orders were invisible to the track page (route handlers and pages are separate module graphs; store now on globalThis); COD chosen then blocked switches to the first transfer account. Follow-ups: mini-cart drawer and fly-to-cart arc, save for later, "often bought together", corporate quote for the cart (not built, cut to A22); Lighthouse for the three routes; 320 / 768 / 1024 screenshots |
 
 ### #13 · A13 Waafas World catalogue: store home, listings, product, finder, search — ✅ Done
 | Field | Value |
@@ -426,6 +441,10 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-97 | Store strips, corporate band, service cards and trust row | `getShopContent()` → bulkStrip, finderStrip, corporate, services[] (title, sub, body, cta, href, mediaSlot), trust[]; `getMediaSlot()` | Content › Store; Media library | `GET /api/v1/content/shop` | ⬜ |
 | AC-98 | Product page delivery and COD lines | `getShippingSettings()` → zones (name, charge, estimate); `getPaymentSettings()` → codLimit | Settings › Shipping; Settings › Payments | `GET /api/v1/config/public` | ⬜ |
 | AC-99 | Corporate and bulk quotes | `POST /api/leads` → `createLead()` (QTE reference) | Leads (A18) | `POST /api/v1/leads` | ⬜ |
+| AC-100 | Cart and checkout delivery charges, free-delivery threshold, minimum order, office pick-up | `getShippingSettings()` → zones, freeDeliveryThreshold, minimumOrder, officePickup | Settings › Shipping | `GET /api/v1/config/public` | ⬜ |
+| AC-101 | Coupons at the cart | `findCoupon(code)` → Coupon | Waafas World › Coupons | `POST /api/v1/shop/quote` | ⬜ |
+| AC-102 | Payment accounts, cash-on-delivery limit, per-product COD eligibility | `getPaymentSettings()` → offlineAccounts, codLimit; `Product.codEligible` | Settings › Payments; Products | `GET /api/v1/config/public` | ⬜ |
+| AC-103 | Orders and Track order (status, courier, tracking number, payment verified) | `createOrder()`, `findOrder()` → Order | Waafas World › Orders | `POST /api/v1/orders`, `GET /api/v1/orders/track` | ⬜ |
 
 ## 5. Components inventory
 
@@ -647,6 +666,12 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D99 | 10 Oct | Product video plays as a muted loop under the description (SmartVideo with poster and reduced-motion stop), not inside the gallery | Keeps the gallery light; the poster is real footage | #13 |
 | D100 | 10 Oct | Product zoom reuses the photo lightbox (shared `PhotoLightbox`, loaded on first tap); pinch zoom on phones is the browser's | One lightbox for packages and products; no extra library | #13 |
 | D101 | 10 Oct | Fully static store pages (`/shop`, categories, deals) use the Canonical component (D90) | Same build rule as the visa guide list | #13 |
+| D102 | 10 Oct | One shared `priceCart` in packages/shared prices the cart page quote, the checkout and the order intake; the browser sends variant ids and quantities only | Prices never come from the client; Phase B reuses the same function | #14 |
+| D103 | 10 Oct | Free delivery is judged on the subtotal before the coupon; delivery zone comes from the address (division or district, "*" fallback), the cart page area choice is used until an address is typed | A coupon should not remove free delivery; the zone cannot be forged by the client | #14 |
+| D104 | 10 Oct | Checkout is one page; the success state renders in place (no separate route); the cart is cleared after success | Matches the boards; avoids exposing order details by URL | #14 |
+| D105 | 10 Oct | Phase A order store lives on globalThis (source.ts) | Route handlers and pages are separate module graphs in production | #14 |
+| D106 | 10 Oct | Payment proof is metadata only in Phase A (same as visa files, D87); DocumentSlot moved to components/forms | Reuse | #14 |
+| D107 | 10 Oct | Stock is not decremented in Phase A; mini-cart drawer, save for later and cart corporate quote are cut to A22 | Time; stock transactions are Phase B | #14 |
 
 ## 9. Bugs and known issues
 
@@ -705,6 +730,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 15:40–16:10 | A13 merged (#46); A14 cart with server pricing and coupons, one-page checkout (COD cap, offline payment with proof, VAT invoice, pick-up), boarding-pass order success, track order by number and phone; globalThis store fix | #14 | see #14 block | unit 188 web + 48 shared + 79 fixtures · e2e 64 passed |
 | 10 Oct 13:30–15:30 | A12 merged (#45); A13 Waafas World catalogue: store bar, store home rows, listings with attribute filters, product page with variants, finder, deals, corporate quote, guest cart | #12, #13 | #45 | unit 297 · e2e 60 · axe pass · Lighthouse 67–77 |
 | 10 Oct 12:10–13:30 | A11 merged (#44); A12 visa list, country tabs with checklist ring and fee card, apply with local document checks, Visa Guide with sanitised rich text; Suspense for param pages; canonical fix for static pages | #11, #12 | #44 | unit 166 · e2e 54 · axe pass · Lighthouse 70–85 |
 | 10 Oct 09:45–12:10 | A11 packages list, package detail with booking card and inline query, Plan my trip; chip radio fix in flights and hotels; lazy lightbox | #11 | see #11 block | unit 155 · e2e 50 · axe pass · Lighthouse 68–73 |
@@ -720,6 +746,6 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. A14 (#14) cart page and mini-cart drawer with fly-to-cart, coupon, delivery by zone, one-page checkout (COD cap, offline payment with proof), ORD success, track order.
-2. A15 (#15) Printing Solutions and International Trading pages with PRN and TRD forms; then A16 content pages and A17 system states (branded 404).
+1. A15 (#15) Printing Solutions and International Trading pages with PRN and TRD forms; then A16 content pages and A17 system states (branded 404).
+2. A14 leftovers: mini-cart drawer with fly-to-cart, Lighthouse and 320 / 768 / 1024 screenshots for cart, checkout and track.
 3. #39 perf (client JS on every page, fonts, HTML size); owner decision on launch scope (section 10 item 5).

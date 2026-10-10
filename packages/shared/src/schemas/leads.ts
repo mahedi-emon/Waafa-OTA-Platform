@@ -171,7 +171,14 @@ export const PlanTripLeadPayloadSchema = z
 /** Uploaded document reference. Files live in a private bucket; only signed links reach staff (FR-VISA-05). */
 export const PrivateFileSchema = z
   .object({
-    kind: z.enum(["passport-bio", "photo", "bank-statement", "invitation", "other"]),
+    kind: z.enum([
+      "passport-bio",
+      "photo",
+      "bank-statement",
+      "invitation",
+      "payment-proof",
+      "other",
+    ]),
     fileName: z.string().min(1).max(120),
     mimeType: z.enum(["image/jpeg", "image/png", "application/pdf"]),
     sizeBytes: z

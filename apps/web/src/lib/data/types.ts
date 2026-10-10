@@ -13,6 +13,7 @@ import type {
   CompatibleModel,
   ContactSettings,
   Coupon,
+  Order,
   Deal,
   Destination,
   EmiBank,
@@ -222,7 +223,19 @@ export interface ShopRepository {
   findCompatibleProducts(query: { modelId: string } | { partCode: string }): Promise<Product[]>;
   /** A coupon by code, if it exists, is enabled and is valid at `now`. */
   findCoupon(code: string, now: Date): Promise<Coupon | null>;
+  /** Published or not, the products that own these variants (the cart and the order intake price from them). */
+  getProductsByVariantIds(ids: readonly string[]): Promise<Product[]>;
+  /** Stores a priced order, assigns its id and ORD reference, and starts its history at "placed" (FR-SHOP-09). */
+  createOrder(draft: NewOrder, now: Date): Promise<Order>;
+  /** An order by reference, only when the phone number matches (Track order, FR-SHOP-09). */
+  findOrder(reference: string, phone: string): Promise<Order | null>;
 }
+
+/** An order as priced by the server; the repository adds id, reference, status, history and the time. */
+export type NewOrder = Omit<
+  Order,
+  "id" | "reference" | "status" | "history" | "createdAt" | "sample"
+>;
 
 export type SearchLogQuery = ListWindow & { module?: SearchLog["module"] };
 
