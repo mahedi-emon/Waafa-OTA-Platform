@@ -9,6 +9,7 @@ import type {
   FeedbackSchema,
   GalleryAlbumSchema,
   PageSchema,
+  ServicePageSchema,
   TeamMemberSchema,
   TimelineEventSchema,
   TrustItemSchema,
@@ -1342,3 +1343,138 @@ export const baggageRules: In<typeof BaggageRuleSchema>[] = [
  * and the page shows the sample rules with "ask us which cards qualify".
  */
 export const emiBanks: In<typeof EmiBankSchema>[] = [];
+
+/* Service pages inside Waafas World (A15): copy from the Printing and Trading boards, edited in Admin › Pages. */
+export const servicePages: In<typeof ServicePageSchema>[] = [
+  {
+    key: "printing",
+    kicker: "Waafa International · Printing Solutions",
+    title: "Printing that keeps working",
+    lead: "Toner on a schedule, printer servicing and one monthly invoice for every branch. Serving Dhaka’s offices since 2010.",
+    primaryCta: "Request a quote",
+    whatsappMessage: "Hi Waafa, I’d like a quote for printing solutions.",
+    facts: [
+      { value: "Since 2010", label: "serving offices in Dhaka" },
+      { value: "One invoice", label: "for every branch" },
+      { value: "Motijheel", label: "an office you can visit" },
+    ],
+    headerSlot: "printing-header",
+    formSlot: "printing-quote-side",
+    servicesTitle: "Services",
+    services: [
+      {
+        title: "Toner on a schedule",
+        body: "We track your usage and deliver toner before it runs out, at a fixed price.",
+      },
+      {
+        title: "Servicing and repair",
+        body: "On-site checks and repairs for laser printers and copiers.",
+      },
+      { title: "New printers", body: "The right printer for each desk, delivered and set up." },
+      {
+        title: "One monthly invoice",
+        body: "All branches on one bill, with a clear breakdown per printer.",
+      },
+    ],
+    stepsTitle: "From first call to a running plan",
+    steps: [
+      {
+        title: "Tell us about your printers",
+        body: "Models, branches and roughly how many pages you print",
+      },
+      { title: "We visit and propose a plan", body: "Usually within a week, at no cost" },
+      { title: "You approve a fixed monthly price", body: "No surprise charges" },
+      { title: "We keep you supplied", body: "Toner arrives before it runs out" },
+    ],
+    formTitle: "Request a quote",
+    formLead: "We usually reply within one working day, Saturday to Thursday.",
+    questions: [
+      {
+        question: "Do you work with small offices?",
+        answer: "Yes. Many of our clients have five printers or fewer.",
+      },
+      {
+        question: "Can you supply original and compatible toner?",
+        answer: "Yes. Every quote says which one you get, and you can mix both.",
+      },
+      {
+        question: "Do you service printers outside Dhaka?",
+        answer:
+          "Inside Dhaka on site; outside Dhaka by courier or with a local partner. Ask us for your city.",
+      },
+    ],
+    seo: {
+      title: "Printing Solutions · toner, servicing and one monthly invoice",
+      description:
+        "Toner on a schedule, printer servicing and a single monthly invoice for every branch, from Waafa International in Motijheel, Dhaka.",
+      noIndex: false,
+    },
+    sample: true,
+  },
+  {
+    key: "trading",
+    kicker: "Waafa International · International Trading",
+    title: "Sourcing and trade, handled for you",
+    lead: "Export, import and sourcing for Bangladeshi businesses. Tell us what you need to buy or sell; we find suppliers, compare quotes and coordinate shipping.",
+    primaryCta: "Send an RFQ",
+    whatsappMessage: "Hi Waafa, I’d like to send a request for quotation.",
+    facts: [
+      { value: "Waafa International", label: "trading since 2026" },
+      { value: "One contact", label: "from quote to delivery" },
+      { value: "Motijheel", label: "an office you can visit" },
+    ],
+    headerSlot: "trading-header",
+    formSlot: "trading-rfq-side",
+    servicesTitle: "Services",
+    services: [
+      {
+        title: "Find suppliers",
+        body: "We shortlist suppliers abroad and compare their quotes for you.",
+      },
+      {
+        title: "Import to Bangladesh",
+        body: "From order to delivery at your warehouse, with one point of contact.",
+      },
+      {
+        title: "Export from Bangladesh",
+        body: "We connect Bangladeshi products with buyers abroad.",
+      },
+      {
+        title: "Quality checks",
+        body: "Samples and pre-shipment checks before you pay the balance.",
+      },
+    ],
+    stepsTitle: "From first request to delivery",
+    steps: [
+      { title: "Send a request for quotation", body: "Product, quantity and where it goes" },
+      { title: "We compare suppliers", body: "Usually 3 to 5 working days" },
+      { title: "You choose and confirm", body: "Price, terms and delivery date" },
+      { title: "We coordinate shipping", body: "And keep you updated until delivery" },
+    ],
+    formTitle: "Request for quotation",
+    formLead: "We usually reply within one working day, Saturday to Thursday.",
+    questions: [
+      {
+        question: "What can you source?",
+        answer:
+          "Office supplies, paper, printing consumables and general goods. Tell us what you need and we will say honestly if we can help.",
+      },
+      {
+        question: "Is there a minimum order?",
+        answer: "It depends on the product and supplier. We tell you the minimum in the quote.",
+      },
+      {
+        question: "Do you handle customs?",
+        answer:
+          "We coordinate shipping and clearance with our logistics partners and explain each cost before you confirm.",
+      },
+    ],
+    seo: {
+      title: "International Trading · import, export and sourcing",
+      description:
+        "Import, export and supplier sourcing for Bangladeshi businesses: send a request for quotation to Waafa International in Motijheel, Dhaka.",
+      noIndex: false,
+    },
+    sample: true,
+  },
+];

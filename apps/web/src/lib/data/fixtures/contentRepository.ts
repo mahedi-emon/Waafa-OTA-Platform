@@ -44,6 +44,10 @@ export function createFixtureContentRepository(data: FixtureData): ContentReposi
       return [...sameCategory, ...rest].slice(0, limit);
     },
 
+    async getServicePage(key) {
+      return data.servicePages.find((page) => page.key === key) ?? null;
+    },
+
     async listFaqs(query = {}) {
       return data.faqs
         .filter((faq) => !query.category || faq.category === query.category)

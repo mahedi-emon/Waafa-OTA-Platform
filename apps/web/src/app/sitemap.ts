@@ -54,6 +54,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/shop/categories"), changeFrequency: "weekly", priority: 0.6 },
     { url: absoluteUrl("/shop/deals"), changeFrequency: "daily", priority: 0.7 },
     { url: absoluteUrl("/shop/finder"), changeFrequency: "monthly", priority: 0.6 },
+    { url: absoluteUrl("/shop/printing-solutions"), changeFrequency: "monthly", priority: 0.7 },
+    { url: absoluteUrl("/shop/international-trading"), changeFrequency: "monthly", priority: 0.7 },
     ...categories
       .filter((category) => !category.seo.noIndex)
       .map((category) => ({

@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 16:10 Asia/Dhaka · Phase: A · Frontend · Current: #15 · A15 Printing Solutions and International Trading (after #14 A14 merges) · Progress: 16/24 issues (67%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
+Updated: 10 Oct 17:40 Asia/Dhaka · Phase: A · Frontend · Current: #16 · A16 Gallery, Feedback, team, About, Contact, FAQs, Blog, policies (after #15 A15 merges) · Progress: 17/24 issues (71%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 16 | 1 (#15) | 0 | 67% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 17 | 1 (#16) | 0 | 71% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #15 · A15 Printing Solutions and International Trading — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 16:20 → 10 Oct 17:40 |
+| Branch · PR · merge | `feat/15-services` · see section 13 · squash |
+| Built | `/shop/printing-solutions` and `/shop/international-trading`: hero with facts and a photo or real loop, services, how it works, the shared two-step request card (contact first, then the service step) with a side photo on desktop, questions with FAQPage markup. Printing quote: company, service, printers, pages, branches, frequency, location, models, notes, optional file, consent → PRN reference. Trading RFQ: company, request type, product, quantity and unit, country, specifications, target price, delivery terms, timeline, optional file, consent → TRD reference. Both in the sitemap |
+| Files and components | `ServicePageSchema` (shared), fixture `servicePages`, `getServicePage` (repository, cached accessor), `components/services/{ServicePageView,PrintingRequest,TradingRequest,AttachmentField}`, `components/forms/{ConsentField,StepActions}`, `lib/leads/serviceLeadForm.ts`, two route pages |
+| Screens matched | Printing, Printing-done, Printing-m, Trading, Trading-done, Trading-m |
+| Admin control | AC-104, AC-105 new; media slots printing-header, printing-quote-side, trading-header, trading-rfq-side used |
+| Tests | unit +4 (service lead contracts and rules); e2e +3 (printing quote with validation → PRN reference, trading RFQ with validation → TRD reference, both pages at 1440 with no overflow); suite passes · axe pass on both pages and both forms |
+| Widths checked | 390 and 1440 by test (overflow and axe); 320 / 768 / 1024 and Lighthouse left for A22 (Playwright MCP unavailable) |
+| Tools and skills | Serena, Playwright test runner; skills frontend-design, ui-ux-pro-max rules |
+| Decisions | D108 – D109 |
+| Bugs and follow-ups | Printing service enum gained new-printers and paper-supplies. Follow-ups: 320 / 768 / 1024 screenshots, Lighthouse, design review pass (A22) |
 
 ### #14 · A14 Waafas World cart, checkout, order success and track order — ✅ Done
 | Field | Value |
@@ -445,6 +460,8 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-101 | Coupons at the cart | `findCoupon(code)` → Coupon | Waafas World › Coupons | `POST /api/v1/shop/quote` | ⬜ |
 | AC-102 | Payment accounts, cash-on-delivery limit, per-product COD eligibility | `getPaymentSettings()` → offlineAccounts, codLimit; `Product.codEligible` | Settings › Payments; Products | `GET /api/v1/config/public` | ⬜ |
 | AC-103 | Orders and Track order (status, courier, tracking number, payment verified) | `createOrder()`, `findOrder()` → Order | Waafas World › Orders | `POST /api/v1/orders`, `GET /api/v1/orders/track` | ⬜ |
+| AC-104 | Service page copy: hero, facts, services, steps, form heading, questions, SEO | `getServicePage(key)` → ServicePage | Content › Pages › Service pages | `GET /api/v1/content/service-pages/:key` | ⬜ |
+| AC-105 | Service page photos and the trading loop | `getMediaSlot("printing-header" | "printing-quote-side" | "trading-header" | "trading-rfq-side")` | Content › Media library | `GET /api/v1/content/media-slots` | ⬜ |
 
 ## 5. Components inventory
 
@@ -672,6 +689,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D105 | 10 Oct | Phase A order store lives on globalThis (source.ts) | Route handlers and pages are separate module graphs in production | #14 |
 | D106 | 10 Oct | Payment proof is metadata only in Phase A (same as visa files, D87); DocumentSlot moved to components/forms | Reuse | #14 |
 | D107 | 10 Oct | Stock is not decremented in Phase A; mini-cart drawer, save for later and cart corporate quote are cut to A22 | Time; stock transactions are Phase B | #14 |
+| D108 | 10 Oct | Service pages are one admin-edited ServicePage record each; form labels and option lists are UI chrome (next-intl); the request card is the shared LeadRequestCard | Copy editable in Admin, same flow as every Manual module | #15 |
+| D109 | 10 Oct | Printing and trading attachments follow the Phase A rule: metadata only (D87) | Uploads arrive with the API | #15 |
 
 ## 9. Bugs and known issues
 
@@ -730,6 +749,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 16:20–17:40 | A14 merged (#47); A15 service pages for printing and trading with PRN and TRD requests, shared ConsentField and StepActions | #15 | see #15 block | unit 192 web + 48 shared + 80 fixtures · e2e +3 |
 | 10 Oct 15:40–16:10 | A13 merged (#46); A14 cart with server pricing and coupons, one-page checkout (COD cap, offline payment with proof, VAT invoice, pick-up), boarding-pass order success, track order by number and phone; globalThis store fix | #14 | see #14 block | unit 188 web + 48 shared + 79 fixtures · e2e 64 passed |
 | 10 Oct 13:30–15:30 | A12 merged (#45); A13 Waafas World catalogue: store bar, store home rows, listings with attribute filters, product page with variants, finder, deals, corporate quote, guest cart | #12, #13 | #45 | unit 297 · e2e 60 · axe pass · Lighthouse 67–77 |
 | 10 Oct 12:10–13:30 | A11 merged (#44); A12 visa list, country tabs with checklist ring and fee card, apply with local document checks, Visa Guide with sanitised rich text; Suspense for param pages; canonical fix for static pages | #11, #12 | #44 | unit 166 · e2e 54 · axe pass · Lighthouse 70–85 |
@@ -746,6 +766,6 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. A15 (#15) Printing Solutions and International Trading pages with PRN and TRD forms; then A16 content pages and A17 system states (branded 404).
-2. A14 leftovers: mini-cart drawer with fly-to-cart, Lighthouse and 320 / 768 / 1024 screenshots for cart, checkout and track.
-3. #39 perf (client JS on every page, fonts, HTML size); owner decision on launch scope (section 10 item 5).
+1. A16 (#16) Gallery, Feedback, team and About, Contact, FAQs, Blog, policies, Baggage, EMI, Offline Payment; then A17 system states (branded 404, 500, offline, maintenance).
+2. Admin A18 – A21 (core first: leads, orders, products); A22 QA with the A14 and A15 leftovers (320 / 768 / 1024 screenshots, Lighthouse, mini-cart drawer).
+3. #39 perf; owner decision on launch scope (section 10 item 5); reconnect the Playwright, Context7, shadcn and magic MCP servers.

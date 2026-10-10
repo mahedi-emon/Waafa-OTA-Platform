@@ -214,6 +214,8 @@ export const PrintingLeadPayloadSchema = z
       "toner-supply",
       "printer-repair",
       "bulk-printing",
+      "new-printers",
+      "paper-supplies",
       "other",
     ]),
     volume: z.string().trim().min(1).max(80),
