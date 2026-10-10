@@ -359,6 +359,48 @@ describe("shop repository", () => {
     expect(await shop.findCoupon("NOPE", dhaka("2026-10-10T10:00"))).toBeNull();
   });
 
+  it("stores an order with a fresh ORD reference and finds it only with the matching phone", async () => {
+    const repo = createFixtureRepositories().shop;
+    const draft = {
+      items: [
+        {
+          productId: "p",
+          variantId: "v",
+          title: "Item",
+          sku: "S",
+          unitPrice: 100,
+          quantity: 2,
+          lineTotal: 200,
+        },
+      ],
+      subtotal: 200,
+      discount: 0,
+      delivery: 80,
+      total: 280,
+      payment: { method: "cod" as const },
+      paymentVerified: false,
+      address: {
+        name: "Rahim",
+        phone: "+8801712345678",
+        division: "Dhaka",
+        district: "Dhaka",
+        area: "Motijheel",
+        street: "House 4",
+      },
+      pickup: false,
+    };
+    const first = await repo.createOrder(draft, dhaka("2026-10-10T11:00"));
+    const second = await repo.createOrder(draft, dhaka("2026-10-10T11:05"));
+    expect(first.reference).toBe("ORD-261010-0001");
+    expect(second.reference).toBe("ORD-261010-0002");
+    expect(first.status).toBe("placed");
+    expect((await repo.findOrder(first.reference.toLowerCase(), "01712-345678"))?.id).toBe(
+      first.id,
+    );
+    expect(await repo.findOrder(first.reference, "01999-000000")).toBeNull();
+    expect(await repo.findOrder("ORD-000000-0000", "01712-345678")).toBeNull();
+  });
+
   it("returns the category tree parents first", async () => {
     const categories = await shop.listCategories();
     expect(categories.slice(0, 6).every((category) => category.level === 1)).toBe(true);

@@ -317,6 +317,13 @@ export const PaymentChoiceSchema = z.discriminatedUnion("method", [
     .strict(),
 ]);
 
+export const InvoiceDetailsSchema = z
+  .object({
+    companyName: z.string().trim().min(2).max(100),
+    bin: z.string().regex(/^d{9,13}$/, "Enter the BIN, 9 to 13 digits"),
+  })
+  .strict();
+
 /** FR-SHOP-09 statuses. */
 export const OrderStatusSchema = z.enum([
   "placed",
@@ -355,6 +362,10 @@ export const OrderSchema = z
     payment: PaymentChoiceSchema,
     paymentVerified: z.boolean().default(false),
     address: DeliveryAddressSchema,
+    /** Free pick-up from the office instead of a courier (settings: officePickup). */
+    pickup: z.boolean().default(false),
+    /** VAT invoice request for a company (checkout switch). */
+    invoice: InvoiceDetailsSchema.optional(),
     status: OrderStatusSchema,
     history: z
       .array(
@@ -378,6 +389,26 @@ export const OrderSchema = z
     path: ["total"],
   });
 
+/** What the checkout sends: lines and choices only. Prices, totals, zone and the reference come from the server. */
+export const OrderCreateInputSchema = z
+  .object({
+    lines: z
+      .array(z.object({ variantId: IdSchema, quantity: z.number().int().min(1).max(99) }).strict())
+      .min(1)
+      .max(50),
+    couponCode: z.string().trim().max(24).optional(),
+    address: DeliveryAddressSchema,
+    pickup: z.boolean().default(false),
+    invoice: InvoiceDetailsSchema.optional(),
+    payment: PaymentChoiceSchema,
+  })
+  .strict();
+
+/** What the success screen and the track page need back. */
+export const OrderCreatedSchema = z
+  .object({ reference: z.string(), total: TakaSchema, createdAt: IsoDateTimeSchema })
+  .strict();
+
 export type Attribute = z.infer<typeof AttributeSchema>;
 export type AttributeSet = z.infer<typeof AttributeSetSchema>;
 export type Category = z.infer<typeof CategorySchema>;
@@ -400,3 +431,6 @@ export type PaymentChoice = z.infer<typeof PaymentChoiceSchema>;
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
 export type OrderItem = z.infer<typeof OrderItemSchema>;
 export type Order = z.infer<typeof OrderSchema>;
+export type InvoiceDetails = z.infer<typeof InvoiceDetailsSchema>;
+export type OrderCreateInput = z.infer<typeof OrderCreateInputSchema>;
+export type OrderCreated = z.infer<typeof OrderCreatedSchema>;

@@ -38,6 +38,9 @@
   D96 listing GET filters, select attributes only (`a.<key>` params). D97 finder two GET steps. D98 hide empty
   categories on store home. D99 product video under description. D100 shared PhotoLightbox. D101 Canonical on static
   store pages.
+- D102 one shared priceCart (browser sends ids and quantities only). D103 free delivery on pre-coupon subtotal; zone from
+  address. D104 one-page checkout, success in place, cart cleared. D105 Phase A store on globalThis. D106 payment proof
+  metadata only; DocumentSlot in components/forms. D107 stock not decremented in Phase A; mini-cart drawer etc. cut to A22.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
   children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
   (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on

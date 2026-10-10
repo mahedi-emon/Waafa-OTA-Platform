@@ -1,5 +1,13 @@
 import type { FixtureData } from "@waafa/fixtures";
-import type { Category, Collection, Product } from "@waafa/shared";
+import {
+  makeReference,
+  toDhakaDateString,
+  toDhakaIsoString,
+  type Category,
+  type Collection,
+  type Order,
+  type Product,
+} from "@waafa/shared";
 import { byAdminOrder, isScheduledNow, matchesSearch, paginate } from "../query";
 import type { DealWithProduct, ProductSort, ShopRepository } from "../types";
 
@@ -59,7 +67,16 @@ function hasAttribute(
   return fromVariants || fromSpecs;
 }
 
+/** Compares phone numbers by their last ten digits, so +8801712345678 and 01712-345678 match. */
+function samePhone(a: string, b: string): boolean {
+  const tail = (value: string) => value.replace(/\D/g, "").slice(-10);
+  return tail(a).length === 10 && tail(a) === tail(b);
+}
+
 export function createFixtureShopRepository(data: FixtureData): ShopRepository {
+  /** Orders placed since the server started, newest first (Phase A: in memory, reset on restart). */
+  const placed: Order[] = [];
+  const sequences = new Map<string, number>();
   const published = () => data.products.filter((product) => product.status === "published");
 
   const inCollection = (product: Product, collection: Collection): boolean => {
@@ -204,6 +221,40 @@ export function createFixtureShopRepository(data: FixtureData): ShopRepository {
           (coupon) => coupon.code === wanted && coupon.enabled && isScheduledNow(coupon, now),
         ) ?? null
       );
+    },
+
+    async getProductsByVariantIds(ids) {
+      const wanted = new Set(ids);
+      return data.products.filter((product) =>
+        product.variants.some((variant) => wanted.has(variant.id)),
+      );
+    },
+
+    async createOrder(draft, now) {
+      const day = toDhakaDateString(now);
+      const taken = new Set([...placed, ...data.orders].map((item) => item.reference));
+      let sequence = sequences.get(day) ?? 0;
+      do sequence += 1;
+      while (taken.has(makeReference("ORD", now, sequence)));
+      sequences.set(day, sequence);
+      const at = toDhakaIsoString(now);
+      const order: Order = {
+        ...draft,
+        id: `order-live-${placed.length + 1}`,
+        reference: makeReference("ORD", now, sequence),
+        status: "placed",
+        history: [{ status: "placed", at }],
+        createdAt: at,
+        sample: false,
+      };
+      placed.unshift(order);
+      return order;
+    },
+
+    async findOrder(reference, phone) {
+      const wanted = reference.trim().toUpperCase();
+      const order = [...placed, ...data.orders].find((item) => item.reference === wanted);
+      return order && samePhone(order.address.phone, phone) ? order : null;
     },
   };
 }
