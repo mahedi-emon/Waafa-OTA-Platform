@@ -1,6 +1,18 @@
 import { Controller, Get, Module } from "@nestjs/common";
 import { z, type ZodType } from "zod";
 import {
+  ContentOrderInputSchema,
+  ContentWriteInputSchema,
+  FeedbackModerationInputSchema,
+  LeadBulkInputSchema,
+  LeadNoteInputSchema,
+  LeadUpdateInputSchema,
+  OrderUpdateInputSchema,
+  PasswordChangeInputSchema,
+  PasswordSetInputSchema,
+  PaymentProofReviewInputSchema,
+  StaffCreateInputSchema,
+  StaffUpdateInputSchema,
   FeedbackCreateInputSchema,
   LeadCreateInputSchema,
   OrderCreateInputSchema,
@@ -137,7 +149,54 @@ export const ROUTES: RouteDoc[] = [
     body: SubscriberInputSchema,
     responses: { 204: "Subscribed" },
   },
+  ...adminRoutes(),
 ];
+
+/** The admin endpoints (B4), all with a staff Bearer token. */
+function adminRoutes(): RouteDoc[] {
+  const route = (
+    method: RouteDoc["method"],
+    path: string,
+    summary: string,
+    body?: ZodType,
+    responses: Record<string, string> = { 200: "OK" },
+  ): RouteDoc => ({ method, path: `/api/v1/admin${path}`, summary, tag: "admin", auth: "staff", ...(body ? { body } : {}), responses });
+  return [
+    route("get", "/dashboard", "KPIs, leads by module and status, top routes, activity"),
+    route("get", "/leads", "Lead list: view, module, status, assignee, created dates, search, paging"),
+    route("get", "/leads/export.csv", "CSV of the current filter"),
+    route("post", "/leads/bulk", "Bulk assign or status change", LeadBulkInputSchema),
+    route("get", "/leads/{id}", "Lead detail with the timeline"),
+    route("patch", "/leads/{id}", "Status, priority, assignee (Booked needs an amount; Cancelled and Lost a reason)", LeadUpdateInputSchema),
+    route("post", "/leads/{id}/activities", "Note, call, email or WhatsApp entry", LeadNoteInputSchema, { 201: "Lead" }),
+    route("get", "/orders", "Order list"),
+    route("get", "/orders/{id}", "Order detail with history and proofs"),
+    route("patch", "/orders/{id}", "Status with courier and tracking number, payment verified", OrderUpdateInputSchema),
+    route("get", "/feedback", "Feedback by status"),
+    route("patch", "/feedback/{id}", "Approve, reject or return to pending", FeedbackModerationInputSchema),
+    route("get", "/payment-proofs", "Payment proofs by status"),
+    route("patch", "/payment-proofs/{id}", "Verify or reject (verifying marks the order paid)", PaymentProofReviewInputSchema),
+    route("get", "/search-logs", "Search activity with top routes and the search-to-lead rate"),
+    route("get", "/subscribers", "Newsletter list"),
+    route("delete", "/subscribers/{id}", "Remove from the list", undefined, { 204: "Removed" }),
+    route("get", "/notifications", "Email log"),
+    route("get", "/content", "Content areas this person may edit"),
+    route("get", "/content/{key}", "A setting or a list with its records"),
+    route("post", "/content/{key}", "New record (validated with the key's schema)", ContentWriteInputSchema, { 201: "Record", 409: "Exists" }),
+    route("put", "/content/{key}/order", "New list order", ContentOrderInputSchema),
+    route("get", "/content/{key}/{id}", "One record"),
+    route("put", "/content/{key}/{id}", "Save a record (version for optimistic locking)", ContentWriteInputSchema, { 200: "Record", 409: "Stale or exists" }),
+    route("delete", "/content/{key}/{id}", "Delete a record", undefined, { 204: "Deleted" }),
+    route("put", "/settings/{key}", "Save a setting", ContentWriteInputSchema, { 200: "Setting", 409: "Stale" }),
+    route("get", "/users", "Staff (Super Admin)"),
+    route("post", "/users", "Add staff with a first password", StaffCreateInputSchema, { 201: "Staff", 409: "Email in use" }),
+    route("patch", "/users/{id}", "Name, roles, deactivate", StaffUpdateInputSchema),
+    route("post", "/users/{id}/password", "Reset a password (ends their sessions)", PasswordSetInputSchema, { 204: "Reset" }),
+    route("post", "/me/password", "Change my password", PasswordChangeInputSchema, { 204: "Changed" }),
+    route("get", "/staff", "Active staff for pickers"),
+    route("get", "/audit", "Audit log"),
+  ];
+}
 
 const security: Record<Auth, Array<Record<string, string[]>>> = {
   none: [],
