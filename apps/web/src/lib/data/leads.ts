@@ -1,5 +1,10 @@
 import "server-only";
-import { LeadCreateInputSchema, type LeadCreated } from "@waafa/shared";
+import {
+  LeadCreateInputSchema,
+  SearchLogInputSchema,
+  type LeadCreated,
+  type SearchLogInput,
+} from "@waafa/shared";
 import { repositories } from "./source";
 
 /**
@@ -8,4 +13,13 @@ import { repositories } from "./source";
  */
 export async function createLead(input: unknown): Promise<LeadCreated> {
   return repositories.leads.createLead(LeadCreateInputSchema.parse(input), new Date());
+}
+
+/** Records a submitted search (FR-SRCH-10). Returns false for input that fails the shared contract. */
+export async function logSearch(input: unknown): Promise<boolean> {
+  const parsed = SearchLogInputSchema.safeParse(input);
+  if (!parsed.success) return false;
+  const search: SearchLogInput = parsed.data;
+  await repositories.leads.logSearch(search, new Date());
+  return true;
 }

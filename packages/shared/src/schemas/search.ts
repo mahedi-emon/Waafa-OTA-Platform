@@ -177,6 +177,19 @@ export const SearchLogSchema = z
   })
   .strict();
 
+/** What the search card sends when a search is submitted; the server adds the id and the time. */
+export const SearchLogInputSchema = z
+  .object({
+    module: SearchLogSchema.shape.module,
+    summary: z.string().min(1).max(160),
+    params: z
+      .record(z.string().max(40), z.union([z.string().max(600), z.number(), z.boolean()]))
+      .refine((params) => Object.keys(params).length <= 24, { message: "Too many parameters" }),
+    device: SearchLogSchema.shape.device,
+    source: z.string().min(1).max(120),
+  })
+  .strict();
+
 export type Travellers = z.infer<typeof TravellersSchema>;
 export type FlightLeg = z.infer<typeof FlightLegSchema>;
 export type FlightSearch = z.infer<typeof FlightSearchSchema>;
@@ -186,3 +199,4 @@ export type TourSearch = z.infer<typeof TourSearchSchema>;
 export type VisaTypeKey = z.infer<typeof VisaTypeKeySchema>;
 export type VisaSearch = z.infer<typeof VisaSearchSchema>;
 export type SearchLog = z.infer<typeof SearchLogSchema>;
+export type SearchLogInput = z.infer<typeof SearchLogInputSchema>;

@@ -10,6 +10,7 @@ import type {
   MenuSchema,
   NotificationTemplateSchema,
   PaymentSettingsSchema,
+  SearchSettingsSchema,
   ShippingSettingsSchema,
   SiteSettingsSchema,
   TrackingSettingsSchema,
@@ -497,6 +498,13 @@ export const maintenanceSettings: In<typeof MaintenanceSettingsSchema> = {
   enabled: false,
   message:
     "We’re updating the site and will be back shortly. For anything urgent, call or WhatsApp 01823-232241.",
+};
+
+/** Search card: From starts at Dhaka; popular chips match the Home search board. */
+export const searchSettings: In<typeof SearchSettingsSchema> = {
+  defaultOrigin: "DAC",
+  popularFlights: ["CXB", "KUL", "CCU", "BKK", "SIN"],
+  hotelNationalities: ["BD", "IN", "NP", "LK", "PK", "GB", "US"],
 };
 
 /** Analytics IDs are entered by the owner in Admin; nothing loads until they exist. */

@@ -45,6 +45,7 @@ import {
   TeamMemberSchema,
   TimelineEventSchema,
   TourPackageSchema,
+  SearchSettingsSchema,
   TrackingSettingsSchema,
   TrustItemSchema,
   ValueCardSchema,
@@ -84,6 +85,7 @@ import {
   notificationTemplates,
   paymentSettings,
   shippingSettings,
+  searchSettings,
   siteSettings,
   trackingSettings,
 } from "./settings";
@@ -130,6 +132,7 @@ export const fixtureRegistry = {
   notificationTemplates: entry(z.array(NotificationTemplateSchema), notificationTemplates),
   maintenanceSettings: entry(MaintenanceSettingsSchema, maintenanceSettings),
   trackingSettings: entry(TrackingSettingsSchema, trackingSettings),
+  searchSettings: entry(SearchSettingsSchema, searchSettings),
   homeSections: entry(z.array(HomeSectionSchema), homeSections),
   // Content
   pages: entry(z.array(PageSchema), pages),

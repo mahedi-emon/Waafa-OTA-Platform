@@ -9,6 +9,7 @@ import {
   SeoSchema,
   TakaSchema,
 } from "./common";
+import { IataSchema } from "./travel";
 
 /** Days of the week as used for office hours (0 = Sunday … 6 = Saturday, like Date#getDay in Asia/Dhaka). */
 export const WeekdaySchema = z.number().int().min(0).max(6);
@@ -287,6 +288,21 @@ export const MaintenanceSettingsSchema = z
   })
   .strict();
 
+/** Search card defaults and popular picks (Settings › General › Search; FR-SRCH-06, FR-SRCH-07). */
+export const SearchSettingsSchema = z
+  .object({
+    /** The airport the From field starts with. */
+    defaultOrigin: IataSchema,
+    /** Flight destinations offered as "Popular" chips under the card, in this order. */
+    popularFlights: z.array(IataSchema).max(6),
+    /** Guest nationalities offered on the hotel tab (ISO 3166-1 alpha-2), first is the default. */
+    hotelNationalities: z
+      .array(z.string().regex(/^[A-Z]{2}$/))
+      .min(1)
+      .max(40),
+  })
+  .strict();
+
 export const TrackingSettingsSchema = z
   .object({
     ga4Id: z
@@ -378,6 +394,7 @@ export type EmiSettings = z.infer<typeof EmiSettingsSchema>;
 export type LeadFormSettings = z.infer<typeof LeadFormSettingsSchema>;
 export type NotificationTemplate = z.infer<typeof NotificationTemplateSchema>;
 export type MaintenanceSettings = z.infer<typeof MaintenanceSettingsSchema>;
+export type SearchSettings = z.infer<typeof SearchSettingsSchema>;
 export type TrackingSettings = z.infer<typeof TrackingSettingsSchema>;
 export type HomeSectionKey = z.infer<typeof HomeSectionKeySchema>;
 export type HomeSection = z.infer<typeof HomeSectionSchema>;

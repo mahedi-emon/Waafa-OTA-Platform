@@ -392,4 +392,47 @@ describe("leads repository", () => {
     const withoutConsent = { ...submission(flight), consent: false } as unknown as LeadCreateInput;
     await expect(repo.createLead(withoutConsent, new Date())).rejects.toThrow();
   });
+
+  it("logs searches next to the Sample ones, newest first (FR-SRCH-10)", async () => {
+    const repo = createFixtureRepositories().leads;
+    const before = await repo.listSearchLogs();
+    await repo.logSearch(
+      {
+        module: "flights",
+        summary: "DAC → CXB · 12 Dec · 2 travellers",
+        params: { from: "DAC", to: "CXB", depart: "2026-12-12", adults: 2 },
+        device: "phone",
+        source: "home",
+      },
+      new Date("2026-10-10T05:00:00Z"),
+    );
+    const after = await repo.listSearchLogs();
+    expect(after.total).toBe(before.total + 1);
+    expect(after.items[0]).toMatchObject({
+      module: "flights",
+      sample: false,
+      createdAt: "2026-10-10T11:00:00+06:00",
+    });
+    const hotels = await repo.listSearchLogs({ module: "hotels" });
+    expect(hotels.items.every((log) => log.module === "hotels")).toBe(true);
+  });
+
+  it("refuses a search log that breaks the contract", async () => {
+    const repo = createFixtureRepositories().leads;
+    const bad = { module: "flights", summary: "", params: {}, device: "watch", source: "home" };
+    await expect(
+      repo.logSearch(bad as unknown as Parameters<typeof repo.logSearch>[0], new Date()),
+    ).rejects.toThrow();
+  });
+});
+
+describe("search settings", () => {
+  it("starts From at Dhaka and offers known popular airports", async () => {
+    const search = await settings.getSearchSettings();
+    expect(search.defaultOrigin).toBe("DAC");
+    expect(search.popularFlights.length).toBeGreaterThan(0);
+    for (const code of search.popularFlights) {
+      expect(await travel.getAirport(code)).not.toBeNull();
+    }
+  });
 });

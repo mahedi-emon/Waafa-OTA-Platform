@@ -39,6 +39,9 @@ import type {
   Product,
   PublicConfig,
   PublicFeedback,
+  SearchLog,
+  SearchLogInput,
+  SearchSettings,
   ShippingSettings,
   SiteSettings,
   StoreRow,
@@ -84,6 +87,8 @@ export interface SettingsRepository {
   getEmiSettings(): Promise<EmiSettings>;
   getLeadFormSettings(): Promise<LeadFormSettings>;
   getTrackingSettings(): Promise<TrackingSettings>;
+  /** Search card defaults and popular picks. */
+  getSearchSettings(): Promise<SearchSettings>;
   /** Enabled home sections in admin order (FR-HOME). */
   listHomeSections(): Promise<HomeSection[]>;
 }
@@ -208,9 +213,15 @@ export interface ShopRepository {
   findCoupon(code: string, now: Date): Promise<Coupon | null>;
 }
 
+export type SearchLogQuery = ListWindow & { module?: SearchLog["module"] };
+
 export interface LeadsRepository {
   /** Stores a lead and returns its reference (FLT-261008-0042) for the success screen and emails. */
   createLead(input: LeadCreateInput, now: Date): Promise<LeadCreated>;
+  /** Records a submitted search (FR-SRCH-10); callers never wait on it. */
+  logSearch(input: SearchLogInput, now: Date): Promise<void>;
+  /** Search activity for Admin, newest first. */
+  listSearchLogs(query?: SearchLogQuery): Promise<ListPage<SearchLog>>;
 }
 
 export interface Repositories {

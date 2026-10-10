@@ -68,5 +68,250 @@
     "developedBy": "Developed by",
     "socialLabel": "WAAFA on {network}",
     "emailUs": "Email us"
+  },
+  "Search": {
+    "cardLabel": "Search flights, hotels, tours and visas",
+    "tabsLabel": "What do you want to book?",
+    "tabs": {
+      "flight": "Flight",
+      "hotel": "Hotel",
+      "tour": "Tour",
+      "visa": "Visa"
+    },
+    "notes": {
+      "hotel": "Hotels in Bangladesh and abroad, confirmed by our team",
+      "tour": "Group and private tours, planned around your dates",
+      "visa": "For Bangladeshi passport holders"
+    },
+    "trip": {
+      "label": "Trip type",
+      "oneWay": "One way",
+      "roundTrip": "Round trip",
+      "multiCity": "Multi-city"
+    },
+    "fields": {
+      "from": "From",
+      "to": "To",
+      "departure": "Departure",
+      "return": "Return",
+      "travellers": "Travellers",
+      "date": "Date",
+      "where": "Where",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "roomsGuests": "Rooms and guests",
+      "whereTo": "Where to",
+      "when": "When",
+      "visaFor": "Visa for",
+      "visaType": "Visa type",
+      "applicants": "Applicants"
+    },
+    "empty": {
+      "from": "Leaving from",
+      "to": "Going to",
+      "airportSub": "City or airport",
+      "chooseDate": "Choose date",
+      "addReturn": "Add return",
+      "optional": "Optional",
+      "returnDate": "Return date",
+      "checkoutDate": "Check-out date",
+      "place": "City or hotel",
+      "placeSub": "Where you want to stay",
+      "destination": "Anywhere",
+      "destinationSub": "Country, city or place",
+      "country": "Choose a country"
+    },
+    "values": {
+      "travellers": "{count, plural, one {# traveller} other {# travellers}}",
+      "nights": "{count, plural, one {# night} other {# nights}}",
+      "nightsAway": "{count, plural, one {# night away} other {# nights away}}",
+      "roomsGuests": "{rooms, plural, one {# room} other {# rooms}}, {guests, plural, one {# guest} other {# guests}}",
+      "adults": "{count, plural, one {# adult} other {# adults}}",
+      "adultsChildren": "{adults, plural, one {# adult} other {# adults}}, {children, plural, one {# child} other {# children}}",
+      "applicants": "{count, plural, one {# applicant} other {# applicants}}",
+      "studentFare": "student fare",
+      "directOnly": "direct only",
+      "flexDays": "±3 days",
+      "nationality": "Nationality: {country}",
+      "passport": "Passport: Bangladesh",
+      "tourKind": "Private or group tour",
+      "ownPassport": "Each needs their own passport",
+      "flexibleMonth": "I’m flexible",
+      "flexibleMonthSub": "Any time in the next 6 months",
+      "monthSub": "Exact dates agreed with you",
+      "anyMonth": "Any month",
+      "hotelIn": "Hotel in {city}"
+    },
+    "cabins": {
+      "economy": "Economy",
+      "premium-economy": "Premium economy",
+      "business": "Business",
+      "first": "First"
+    },
+    "visaTypes": {
+      "tourist": {
+        "label": "Tourist",
+        "description": "Holidays and sightseeing"
+      },
+      "business": {
+        "label": "Business",
+        "description": "Meetings, trade fairs and sourcing"
+      },
+      "medical": {
+        "label": "Medical",
+        "description": "Treatment, with an attendant if needed"
+      },
+      "student": {
+        "label": "Student",
+        "description": "Study and admission"
+      },
+      "transit": {
+        "label": "Transit",
+        "description": "Changing planes on the way"
+      }
+    },
+    "regions": {
+      "south-asia": "South Asia",
+      "south-east-asia": "South-East Asia",
+      "middle-east": "Middle East",
+      "east-asia": "East Asia",
+      "europe": "Europe and Türkiye",
+      "americas": "North America",
+      "oceania": "Oceania",
+      "africa": "Africa"
+    },
+    "legs": {
+      "flight": "Flight {n}",
+      "remove": "Remove flight {n}",
+      "add": "Add another flight",
+      "max": "Up to 5 flights in one search"
+    },
+    "swap": "Swap From and To",
+    "submit": {
+      "flight": "Search flights",
+      "hotel": "Search hotels",
+      "tour": "Find tours",
+      "visa": "Check requirements"
+    },
+    "popular": "Popular:",
+    "recent": "Recent:",
+    "help": {
+      "flightManual": "A travel expert confirms the fare with you before you pay.",
+      "flightLive": "Live fares from airlines. Need a hand? Call {phone}.",
+      "hotel": "We check rates and availability, then confirm with you.",
+      "tour": "Tell us roughly when; we’ll send a day-by-day plan and price.",
+      "visa": "See the documents you need, then apply with our help.",
+      "noPayment": "No payment now.",
+      "freeToAsk": "Free to ask.",
+      "embassies": "Embassies decide visas."
+    },
+    "pickers": {
+      "from": "Where are you flying from?",
+      "to": "Where are you flying to?",
+      "datesOneWay": "Choose your departure date",
+      "datesRound": "Choose your dates",
+      "datesLeg": "Date for flight {n}",
+      "travellers": "Travellers and cabin class",
+      "place": "Where do you want to stay?",
+      "stay": "Check-in and check-out",
+      "rooms": "Rooms and guests",
+      "destination": "Where would you like to go?",
+      "month": "When do you want to travel?",
+      "party": "Who is travelling?",
+      "country": "Which country is the visa for?",
+      "visaType": "What is the visit for?",
+      "applicants": "How many people are applying?",
+      "close": "Close",
+      "done": "Done",
+      "clear": "Clear search"
+    },
+    "placeholders": {
+      "airport": "City or airport, e.g. Dubai or DXB",
+      "place": "City, area or hotel name",
+      "destination": "Country, city or place",
+      "country": "Country name"
+    },
+    "groups": {
+      "bangladesh": "Bangladesh",
+      "popularAbroad": "Popular from Bangladesh",
+      "inBangladesh": "In Bangladesh",
+      "abroad": "Abroad",
+      "purpose": "Purpose of the visit",
+      "recent": "Recent",
+      "searchFor": "Search tours for “{query}”",
+      "searchForSub": "We’ll show every tour that mentions it"
+    },
+    "noMatch": {
+      "title": "No match for “{query}”",
+      "body": "Check the spelling, or tell our travel expert where you want to go. We book places that aren’t listed too.",
+      "whatsapp": "Ask on WhatsApp",
+      "whatsappMessage": "Hello WAAFA, I want to travel to {query}. Can you help?",
+      "loading": "Searching",
+      "error": "Could not load suggestions. Check your connection and try again."
+    },
+    "calendar": {
+      "previous": "Previous month",
+      "next": "Next month",
+      "chooseReturn": "Choose a return date",
+      "tapReturn": "Tap the day you fly back",
+      "oneWay": "One way",
+      "chooseCheckout": "Choose check-out",
+      "tapCheckin": "Tap the day you arrive",
+      "tapCheckout": "Tap the day you leave"
+    },
+    "counters": {
+      "adults": "Adults",
+      "adultsSub": "12 years and over",
+      "children": "Children",
+      "childrenSub": "2 to 11 years",
+      "hotelChildrenSub": "Under 12",
+      "infants": "Infants",
+      "infantsSub": "Under 2, on an adult’s lap",
+      "rooms": "Rooms",
+      "roomsSub": "Up to 5 in one booking",
+      "applicants": "Applicants",
+      "applicantsSub": "Adults and children",
+      "decrease": "{label}: remove one",
+      "increase": "{label}: add one",
+      "agesFlight": "Children’s ages on the travel date",
+      "agesHotel": "Children’s ages at check-in",
+      "child": "Child {n}",
+      "selectAge": "Select age",
+      "age": "{age, plural, =0 {Under 1} one {# year} other {# years}}",
+      "tourNote": "Travelling as a group of 10 or more? We plan group tours with one price per person.",
+      "visaNote": "Family applying together? Add everyone. Each person needs their own passport and documents."
+    },
+    "options": {
+      "cabin": "Cabin class",
+      "more": "More options",
+      "direct": "Direct flights only",
+      "directSub": "No stops on the way",
+      "flex": "My dates are flexible",
+      "flexSub": "We also check 3 days before and after",
+      "student": "Student fare",
+      "studentSub": "Some airlines give extra baggage with a valid student ID",
+      "airline": "Preferred airline (optional)",
+      "anyAirline": "Any airline",
+      "nationality": "Guest nationality"
+    },
+    "monthNote": "Exact dates are agreed with your travel expert.",
+    "errors": {
+      "fromRequired": "Choose where you are flying from",
+      "toRequired": "Choose where you are flying to",
+      "sameAirport": "From and To can’t be the same airport",
+      "departRequired": "Choose a departure date",
+      "departPast": "Choose a date from today onwards",
+      "returnRequired": "Choose a return date",
+      "returnBeforeDepart": "Return can’t be before departure",
+      "legOrder": "Each flight must be on or after the one before",
+      "tooManyTravellers": "Up to 9 travellers in one booking",
+      "infantsOverAdults": "Each infant needs an adult",
+      "childAgeRequired": "Add each child’s age",
+      "placeRequired": "Choose a city or hotel",
+      "checkinRequired": "Choose a check-in date",
+      "checkoutRequired": "Choose a check-out date",
+      "stayTooLong": "Up to 30 nights in one booking",
+      "countryRequired": "Choose a country"
+    }
   }
 }

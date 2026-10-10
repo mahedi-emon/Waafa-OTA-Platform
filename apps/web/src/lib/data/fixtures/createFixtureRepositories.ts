@@ -15,6 +15,6 @@ export function createFixtureRepositories(data: FixtureData = loadFixtures()): R
     travel: createFixtureTravelRepository(data),
     visa: createFixtureVisaRepository(data),
     shop: createFixtureShopRepository(data),
-    leads: createFixtureLeadsRepository(),
+    leads: createFixtureLeadsRepository(data),
   };
 }
