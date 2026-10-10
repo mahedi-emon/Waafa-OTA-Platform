@@ -142,7 +142,7 @@ async function FlightsResults({
           <ResultsBody
             mode={config.modes.flights.mode}
             manual={
-              <NextIntlClientProvider messages={pickMessages(messages, ["Flights"])}>
+              <NextIntlClientProvider messages={pickMessages(messages, ["Flights", "Leads"])}>
                 <FlightRequest
                   search={search}
                   groupFare={groupFare}

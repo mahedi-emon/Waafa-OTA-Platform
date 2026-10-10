@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import type { Airport, FlightSearch } from "@waafa/shared";
+import type { Airport, FlightSearch, HotelSearch } from "@waafa/shared";
 import { listDestinations } from "@/lib/data/content";
 import { getContactSettings, getPublicConfig, getSearchSettings } from "@/lib/data/settings";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@/lib/data/travel";
 import { listVisaCountries } from "@/lib/data/visa";
 import { pickMessages } from "@/i18n/pickMessages";
-import { flightDraftFromSearch } from "@/lib/search/flightDraft";
+import { flightDraftFromSearch, hotelDraftFromSearch } from "@/lib/search/flightDraft";
 import { SearchCardClient } from "./SearchCardClient";
 import type { SearchCardData } from "./searchCardData";
 
@@ -21,6 +21,8 @@ type SearchCardProps = {
   className?: string;
   /** A flight search from the URL (results pages): the card opens with it filled in. */
   initialFlight?: FlightSearch | null;
+  /** A hotel search from the URL (hotel results): the card opens on the hotel tab with it filled in. */
+  initialHotel?: HotelSearch | null;
 };
 
 async function airportByCode(code: string, pinned: Airport[]): Promise<Airport | null> {
@@ -34,7 +36,12 @@ async function airportByCode(code: string, pinned: Airport[]): Promise<Airport |
  * The unified search card (FR-SRCH-01 to FR-SRCH-10): resolves its admin-managed data on the server and hands
  * it, with only the Search strings, to the interactive client island.
  */
-export async function SearchCard({ source, className, initialFlight }: SearchCardProps) {
+export async function SearchCard({
+  source,
+  className,
+  initialFlight,
+  initialHotel,
+}: SearchCardProps) {
   const [
     settings,
     pinned,
@@ -100,6 +107,15 @@ export async function SearchCard({ source, className, initialFlight }: SearchCar
     initialDraft = flightDraftFromSearch(initialFlight, byCode);
   }
 
+  let hotelDraft = null;
+  if (initialHotel) {
+    const matches = await searchHotelPlaces(initialHotel.placeLabel, 8);
+    hotelDraft = hotelDraftFromSearch(
+      initialHotel,
+      matches.find((p) => p.id === initialHotel.placeId) ?? null,
+    );
+  }
+
   return (
     <NextIntlClientProvider messages={pickMessages(messages, ["Search"])}>
       <SearchCardClient
@@ -107,6 +123,7 @@ export async function SearchCard({ source, className, initialFlight }: SearchCar
         source={source}
         className={className}
         initialFlight={initialDraft}
+        initialHotel={hotelDraft}
       />
     </NextIntlClientProvider>
   );

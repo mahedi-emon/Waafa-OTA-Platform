@@ -1,6 +1,7 @@
 import { LeadCreateInputSchema, type FlightSearch } from "@waafa/shared";
 import { describe, expect, it } from "vitest";
-import { buildFlightLead, contactStepSchema, tripDefaults, tripStepSchema } from "./flightLeadForm";
+import { contactStepSchema } from "./contactForm";
+import { buildFlightLead, tripDefaults, tripStepSchema } from "./flightLeadForm";
 
 const search: FlightSearch = {
   tripType: "round-trip",

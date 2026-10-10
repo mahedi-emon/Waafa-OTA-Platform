@@ -56,6 +56,7 @@ function TripStep({
   onSubmit,
 }: TripStepProps) {
   const t = useTranslations("Flights");
+  const tLeads = useTranslations("Leads");
   const id = useId();
   const form = useForm<TripStepInput, unknown, TripStepValues>({
     resolver: zodResolver(tripStepSchema),
@@ -66,7 +67,10 @@ function TripStep({
   const depart = useWatch({ control: form.control, name: "depart" });
   const error = (key: keyof TripStepInput) => {
     const message = errors[key]?.message;
-    return message ? t(`errors.${message}` as "errors.fromRequired") : undefined;
+    if (!message) return undefined;
+    return t.has(`errors.${message}` as "errors.fromRequired")
+      ? t(`errors.${message}` as "errors.fromRequired")
+      : tLeads(`errors.${message}` as "errors.consentRequired");
   };
   const errorCount = Object.keys(errors).length;
 
@@ -109,7 +113,7 @@ function TripStep({
         <p className="text-[14px] text-mist-600">{t("trip.lead")}</p>
       </div>
       <p aria-live="polite" className="sr-only">
-        {submitCount > 0 && errorCount > 0 ? t("errors.summary", { count: errorCount }) : ""}
+        {submitCount > 0 && errorCount > 0 ? tLeads("errors.summary", { count: errorCount }) : ""}
       </p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -330,14 +334,14 @@ function TripStep({
       <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
         <Button type="button" variant="ghost" onClick={() => onBack(form.getValues())}>
           <ArrowLeft aria-hidden="true" />
-          {t("trip.back")}
+          {tLeads("back")}
         </Button>
         <div className="flex flex-col items-stretch gap-1.5 sm:items-end">
           <Button type="submit" size="lg" loading={sending}>
-            {t("trip.submit")}
+            {tLeads("submit")}
           </Button>
           <p className="text-center text-[13px] font-semibold text-success-600 sm:text-right">
-            {t("trip.noPayment")}
+            {tLeads("noPayment")}
           </p>
         </div>
       </div>
