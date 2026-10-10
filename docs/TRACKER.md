@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 21:07 Asia/Dhaka · Phase: A · Frontend + B · Backend (launch order) · Current: #55 · B2 Staff auth (after #54 B1 merges) · Progress: Phase A 19/24 (79%), Phase B 1/4 · Launch: 13 Oct 2026, 3 days left · Status: Behind; launch-critical order in section 14 (owner accounts needed now, section 11)
+Updated: 10 Oct 21:21 Asia/Dhaka · Phase: A · Frontend + B · Backend (launch order) · Current: #56 · B3 Public intake (after #55 B2 merges) · Progress: Phase A 19/24 (79%), Phase B 2/4 · Launch: 13 Oct 2026, 3 days left · Status: Behind; launch-critical order in section 14 (owner accounts needed now, section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -29,7 +29,7 @@ Serena memory `audit_findings`.
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
 | A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 19 | 0 | 0 | 79% |
-| B · Backend | 12 Oct · epic #29 | 4 (#54 – #57, launch scope) | 1 | 1 (#55) | 0 | 25% |
+| B · Backend | 12 Oct · epic #29 | 4 (#54 – #57, launch scope) | 2 | 1 (#56) | 0 | 50% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #55 · B2 Staff auth, roles and audit log — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 21:15 → 10 Oct 21:21 |
+| Branch · PR · merge | `feat/55-staff-auth` · see section 13 · squash |
+| Built | POST /api/v1/auth/login, /refresh, /logout and GET /auth/me: argon2id passwords, 15-minute HS256 access tokens bound to an open session, rotating 7-day refresh tokens stored only as SHA-256 hashes, reuse detection (an old refresh token closes every session of that person), lockout for 15 minutes after five wrong passwords (audited), one error message for unknown emails and wrong passwords, 5 sign-ins per 15 minutes per address (the web passes the visitor address with the server key). StaffGuard + @Roles (Super Admin passes every check) and the audit service for every admin write |
+| Files and components | `apps/api/src/auth/{auth.controller,auth.service,auth.guard,auth.module,tokens,principal}.ts`, `src/audit/audit.service.ts`, `src/common/rateLimit.ts`, `src/features.ts`, `test/auth.test.ts` |
+| Screens matched | — (admin sign-in screen in A18) |
+| Admin control | — |
+| Tests | API +7 (sign-in and /me, same message for wrong password and unknown email, lockout with audit, refresh rotation and reuse detection, logout, role guard with forged and expired tokens); API suite 15 passed |
+| Widths checked | — |
+| Tools and skills | Serena; jose for JWT, argon2 |
+| Decisions | D129 |
+| Bugs and follow-ups | TOTP two-factor is P1 (Phase D) |
 
 ### #54 · B1 API foundation and database — ✅ Done
 | Field | Value |
@@ -774,6 +789,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D126 | 10 Oct | The API runs TypeScript through tsx (dev and production) and injects dependencies with explicit @Inject tokens | NestJS 12 and the workspace packages ship TypeScript source; tsx (esbuild) has no decorator metadata, explicit tokens make DI independent of it | #54 |
 | D127 | 10 Oct | Local development without Docker uses a private PostgreSQL cluster on port 5433 started from the installed binaries; the owner's own PostgreSQL service is never touched | The machine has 1–2 GB free; Docker Desktop is off; no access to the existing service's password | #54 |
 | D128 | 10 Oct | The seed creates the first Super Admin only from SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD (12+ characters) and never overwrites admin edits | No default password in the repository; the seed is safe on every deploy | #54 |
+| D129 | 10 Oct | The admin is a backend-for-frontend: the web signs staff in through the API server to server and keeps the tokens in its own httpOnly, Secure, SameSite cookies; the API takes Bearer tokens only and never sets cookies | No cross-site cookies between the web and API domains, no CSRF surface on the API | #55 |
 
 ## 9. Bugs and known issues
 
@@ -834,6 +850,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 21:15–21:21 | B1 merged (#58); B2 staff auth, roles and audit log | #55 | see #55 block | API 15 passed |
 | 10 Oct 20:45–21:07 | #51 merged (#53); Phase B launch issues #54 – #57 opened under epic #29; B1 API foundation and database (NestJS 12, Fastify, Prisma 7, seed, Docker, CI PostgreSQL) | #54 | see #54 block | API 8 passed |
 | 10 Oct 20:40–20:42 | A17 merged (#50); review issues opened (#51 fixes, #52 motion, polish list on #22); #51 lead quality, navigation, links and SEO fixes; compliance grep clean | #51 | see #51 block | e2e 87 passed |
 | 10 Oct 19:50–20:02 | A16 merged (#49); A17 branded 404, error boundary, global error, offline notice, maintenance screen, Live placeholder | #17 | see #17 block | e2e 81 passed |
