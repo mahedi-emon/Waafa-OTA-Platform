@@ -321,6 +321,43 @@
   }
 }
 
+/*
+ * Scroll reveal without JavaScript (MOTION.md "Lists and cards"): rises 8 px and fades in as it enters the
+ * viewport, driven by a view timeline. Browsers without view timelines, and reduced motion, show it at once.
+ */
+@utility reveal-on-view {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+/*
+ * Headline word reveal (MOTION.md "Headline word reveal"): each word rises 0.35 em and fades in, 60 ms apart, in
+ * CSS so it never waits for hydration. Set `--i` (word index) on each word. Reduced motion shows the words at once.
+ */
+@utility word-reveal {
+  display: inline-block;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: word-rise 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+}
+
+@keyframes word-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Page container: 1320 px max, gutters 16 / 28 / 40 px (DESIGN.md §4). */
 @utility site-container {
   width: 100%;

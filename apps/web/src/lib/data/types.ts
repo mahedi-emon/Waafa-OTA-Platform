@@ -24,6 +24,7 @@ import type {
   GalleryAlbum,
   GalleryCategory,
   GroupFare,
+  HomeContent,
   HomeSection,
   HotelPlace,
   LeadCreated,
@@ -89,6 +90,8 @@ export interface SettingsRepository {
   getTrackingSettings(): Promise<TrackingSettings>;
   /** Search card defaults and popular picks. */
   getSearchSettings(): Promise<SearchSettings>;
+  /** Home copy that is not a list: hero, Why WAAFA figure, store band, reviews and closing band. */
+  getHomeContent(): Promise<HomeContent>;
   /** Enabled home sections in admin order (FR-HOME). */
   listHomeSections(): Promise<HomeSection[]>;
 }

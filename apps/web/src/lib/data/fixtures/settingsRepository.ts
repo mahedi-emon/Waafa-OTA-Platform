@@ -76,6 +76,9 @@ export function createFixtureSettingsRepository(data: FixtureData): SettingsRepo
       return data.searchSettings;
     },
 
+    async getHomeContent() {
+      return data.homeContent;
+    },
     async listHomeSections() {
       return byAdminOrder(data.homeSections.filter((section) => section.enabled));
     },

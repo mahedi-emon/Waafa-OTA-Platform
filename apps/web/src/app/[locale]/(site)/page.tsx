@@ -1,14 +1,12 @@
-import { useTranslations } from "next-intl";
-import { SearchCard } from "@/components/search/SearchCard";
+import { HomeJsonLd } from "./_components/home/HomeJsonLd";
+import { HomeSections } from "./_components/home/HomeSections";
 
-/** Temporary home: hosts the search card (A8) until the real Home (13 sections from data) replaces it in issue #7. */
+/** Home (A7): the 13 admin-ordered sections from PRD §7, with the search card in the hero. */
 export default function HomePage() {
-  const t = useTranslations("Home");
   return (
-    <main id="main" className="site-container flex min-h-dvh flex-col gap-5 pt-10 pb-28 md:pt-16">
-      <h1 className="max-w-[16ch] type-display text-navy-900">{t("title")}</h1>
-      <p className="max-w-[60ch] type-lead text-mist-600">{t("body")}</p>
-      <SearchCard source="home" className="mt-4" />
+    <main id="main" className="pb-24 md:pb-8">
+      <HomeSections />
+      <HomeJsonLd />
     </main>
   );
 }
