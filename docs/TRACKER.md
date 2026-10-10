@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 21:21 Asia/Dhaka · Phase: A · Frontend + B · Backend (launch order) · Current: #56 · B3 Public intake (after #55 B2 merges) · Progress: Phase A 19/24 (79%), Phase B 2/4 · Launch: 13 Oct 2026, 3 days left · Status: Behind; launch-critical order in section 14 (owner accounts needed now, section 11)
+Updated: 11 Oct 01:40 Asia/Dhaka · Phase: B done · C integration in progress · Current: #18 launch admin (PR #68, CI) · Progress: Phase A 19/24 (79%, admin in review), Phase B 4/4 (100%), Phase C 1 done (#64) · Launch: 13 Oct 2026, 2 days left · Status: on the launch-critical path; deploy blocked on owner accounts (section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -29,8 +29,8 @@ Serena memory `audit_findings`.
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
 | A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 19 | 0 | 0 | 79% |
-| B · Backend | 12 Oct · epic #29 | 4 (#54 – #57, launch scope) | 2 | 1 (#56) | 0 | 50% |
-| C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
+| B · Backend | 12 Oct · epic #29 | 4 (#54 – #57, launch scope) + bugs #60, #61, #66 | 4 | 0 | 0 | 100% |
+| C · Integration & Launch | 13 Oct · epic #30 | #64 C1 web on the API; deploy and Turnstile next | 1 | 0 | 1 (owner accounts) | 33% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
@@ -67,11 +67,26 @@ Serena memory `audit_findings`.
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
 
-### #64 · C1 Web on the API: snapshot source, intake forwarding, revalidation — 🟡 In review
+### #18 · A18 Admin: shell, sign-in, dashboard, leads, search activity (launch admin) — 🟡 In review
 | Field | Value |
 | --- | --- |
-| Opened → closed | 11 Oct 00:40 → (PR open) |
-| Branch · PR · merge | `feat/64-web-api-source` · see section 13 · squash |
+| Opened → closed | 11 Oct 01:00 → (PR #68 open) |
+| Branch · PR · merge | `feat/18-admin-shell` · #68 · squash |
+| Built | `/admin` (noindex, X-Robots-Tag): sign-in with wrong-password and locked states (API lockout), BFF session in httpOnly cookies (access 15 min, rotating refresh, "Keep me signed in"), refreshed in `proxy.ts` a minute before expiry; navy sidebar from the AdminSide board filtered by role, phone sheet, Ctrl K palette (pages and references), account menu; dashboard (KPIs, leads by module and status, top routes, activity); leads (views All, Open, My leads, Unassigned, Overdue; module and status filters; search; table from 768 px and cards on phones with call and WhatsApp; age red past the admin SLA; bulk assign and status; CSV export), lead detail (status, assignee, priority with Booked amount and Cancelled/Lost reason, first response, duplicate links, readable request plus raw JSON, customer card with call, WhatsApp with the reference and email, source, timeline with notes, calls, emails and WhatsApp); orders list and detail (workflow, courier and tracking to ship, payment verified, history, proofs); feedback moderation (approve only with consent); payment proofs (verify marks the order paid); search activity; newsletter; audit log; email log; users and roles (Super Admin); my password; and the generic content editor for every CONTENT_MODEL key (D138): list with search, move up and down, delete; record and settings forms drawn from JSON Schema (groups, repeaters, kinds, enums, switches, Dhaka date-times, image previews, JSON fallback), JSON tab, optimistic versions, API field errors in place, Sample notice |
+| Files and components | `apps/web/src/proxy.ts`, `lib/admin/{adminApi,tokens,sessionActions,leadActions,opsActions,contentActions,navigation,format,flatten,schema,editorStrings,contentGroups,types}.ts`, `components/admin/*` (AdminShell, AdminNav, AdminTopBar, AdminCommand, AdminBrand, AdminPageHeader, AdminPanel, AdminEmpty, AdminPagination, ListFilters, StatusTabs, KpiCard, BarList, LeadStatusBadge, JsonDetails, ActionButton, schema/*), `components/ui/table.tsx`, `app/[locale]/admin/**`, `e2e/api-mode.spec.ts`, CI job "API mode e2e" |
+| Screens matched | AdminLogin, AdminLogin-error, AdminLogin-locked, AdminLogin-m, AdminSide, AdminTop, AdminNav-m, AdminCmd, AdminDash, AdminDash-m, AdminLeads, AdminLeads-bulk, AdminLeads-m, AdminLead, AdminLead-lost, AdminLead-m, AdminSearch; plus AdminOrders, AdminOrders-open, AdminFeedback, AdminUsers and every content board through the generic editor |
+| Admin control | Every Section 4 row has its editor: `/admin/content/:key` (generic) or a dedicated screen |
+| Tests | web unit +29 (session tokens, navigation by role, formatting, request flattening, editor schema helpers incl. a valid empty record for every content collection); API-mode e2e (public intake, staff sign-in, lead workflow, FAQ edit reaching the public site, newsletter) in CI |
+| Widths checked | CI only so far (local database stopped; Playwright MCP disconnected) |
+| Tools and skills | Serena; Next.js 16 bundled docs (proxy, cacheLife, revalidateTag) |
+| Decisions | D137 – D139 |
+| Bugs and follow-ups | #66 concurrent refresh sign-out (fixed, PR #67). Cut to after launch: bespoke editors (package day builder, product card preview, category tree drag, rich text with tiptap, media uploads to R2), customers, reports, bookings and convert to booking, lead board (P1), recharts |
+
+### #64 · C1 Web on the API: snapshot source, intake forwarding, revalidation — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 00:40 → 11 Oct 01:12 |
+| Branch · PR · merge | `feat/64-web-api-source` · #65 · `18feba6` |
 | Built | API mode when `WAAFA_API_URL` and `WAAFA_INTAKE_KEY` are set (D136): every repository read runs the tested fixture implementation on the API snapshot, read once inside `"use cache"` with the `snapshot` tag (the last good snapshot is served for seconds at a time if the API blips); leads, orders (409 refusals mapped to changed, minimum, cod, pickup), order tracking, feedback, payment proofs, search logs and newsletter sign-ups go to `/api/v1/public/*` with the visitor address and the form's idempotency key; the API's own 429 stays a 429. `POST /api/revalidate` checks the HMAC-SHA256 signature in constant time, refuses calls older than five minutes and expires the snapshot and every data tag at once. The newsletter form posts to the new `/api/newsletter` (busy state, failure message from messages) and no longer repeats the same element ids when the blog page and the footer both show it. `apps/web/.env.example` and the README document the switch |
 | Files and components | `apps/web/src/lib/data/api/{apiClient,snapshot,apiRepositories}.ts` (+ tests), `lib/data/{source,leads,orders,content,tags}.ts`, `lib/http/{intakeFailure,signature}.ts` (+ test), `lib/http/handleSubmission.ts`, `app/api/{revalidate,newsletter}/route.ts`, `app/api/{leads,orders,feedback,payment-proof,search/log}/route.ts`, `shop/track/page.tsx`, `components/layout/NewsletterForm.tsx`, `vitest.config.ts` (server-only alias), `apps/web/.env.example`, `.gitignore` |
 | Screens matched | — (no visual change; newsletter busy state) |
@@ -845,6 +860,9 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D134 | 11 Oct | OpenAPI 3.1 is built from a route table and the shared zod contracts (`z.toJSONSchema`) and served outside production only | No extra dependency; the contracts the API validates with are the ones documented | #56 |
 | D135 | 11 Oct | Lead access by role: Travel Sales sees flights, hotels, packages, plan my trip, contact, EMI and bulk; Visa Officer sees visa; Shop Manager sees printing, trading and bulk; Admin and Super Admin see all. Content by area: home and content for Content Editor, travel for Content Editor and Travel Sales, visa for Visa Officer and Content Editor, shop for Shop Manager, settings for Admin (shipping for Shop Manager, payments for Accounts, announcements for Content Editor) | PRD §4 role table; a lead outside a person's modules answers 404, not 403, so references can't be probed | #57 |
 | D136 | 11 Oct | The web switches to the API by environment (`WAAFA_API_URL` + `WAAFA_INTAKE_KEY`): reads run the fixture repositories on the cached API snapshot through a proxy, writes call `/api/v1/public/*` from the existing accessors with the visitor address and idempotency key; revalidation expires every tag | One tested read implementation for both sources; no page or component changes; a save in Admin shows on the next request | #64 |
+| D137 | 11 Oct | Dashboard figures are CSS bar lists, not recharts | Readable at every width, no chart bundle; recharts can come with Reports after launch | #18 |
+| D138 | 11 Oct | Launch admin edits every content key and setting through one generic editor drawn from the shared zod schemas (JSON Schema via zod's toJSONSchema), with a JSON tab; bespoke editors (package builder, product card, category tree, tiptap, media uploads) follow after launch | Thirty-plus content types in one day; one path validated by the same schemas the API uses keeps every public element admin-controlled on day one | #18 |
+| D139 | 11 Oct | Staff sessions: API tokens in httpOnly SameSite=Lax cookies set by server actions; `proxy.ts` refreshes a token with under a minute left before the page renders; admin links are not prefetched; a refresh token rotated in the last 30 seconds still opens a session | The browser never holds a token; pages render with a valid token; prefetch bursts can't sign staff out (#66) | #18, #66 |
 
 ## 9. Bugs and known issues
 
@@ -873,6 +891,7 @@ or accessibility.
 2. Blog extras (related posts, contents list)
 3. Part-code search in Find by model
 4. Proposed now (behind by 3 issues): 21st.dev desktop-only flourishes (tilt, spotlight, magnetic) move to A22 polish; the About route map ships as a static SVG first
+6. Applied 11 Oct (D138): bespoke admin editors (package day builder, product card preview, category tree drag, rich text, media uploads), customers, reports, bookings and convert to booking, lead board, charts move after launch; the generic editor covers every content key on launch day
 5. Proposed 10 Oct 01:20 (behind by 6 issues, Phase A due 11 Oct): admin builders (itinerary days, visa checklist, menus, home order) ship as ordered lists with move up/down buttons first, drag-and-drop (dnd-kit) after launch; admin catalogue and content screens (A19–A21) share one list + form pattern instead of bespoke layouts; A22 polish runs inside each issue's verify step, leaving A22 for the cross-route beat check only; Pick-d boards' two-month desktop calendar stays, the phone calendar shows a scrolling list of months
 
 ## 11. Blockers and owner actions
@@ -907,6 +926,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 11 Oct 00:00–01:40 | B2 merged (#59); B3 public snapshot, intake and notifications (#62, with bug fixes #60 VAT BIN and #61 refused checkout); B4 admin API (#63); C1 web on the API (#65); #66 concurrent refresh fix (#67); launch admin A18 with the generic content editor (PR #68) and an API-mode e2e job in CI. Local PostgreSQL stopped by the system for low memory; API tests ran in CI | #55, #56, #57, #60, #61, #64, #66, #18 | #59, #62, #63, #65, #67, #68 | API 37 passed (CI) · web unit 238 · e2e 41 (fixture) |
 | 10 Oct 21:15–21:21 | B1 merged (#58); B2 staff auth, roles and audit log | #55 | see #55 block | API 15 passed |
 | 10 Oct 20:45–21:07 | #51 merged (#53); Phase B launch issues #54 – #57 opened under epic #29; B1 API foundation and database (NestJS 12, Fastify, Prisma 7, seed, Docker, CI PostgreSQL) | #54 | see #54 block | API 8 passed |
 | 10 Oct 20:40–20:42 | A17 merged (#50); review issues opened (#51 fixes, #52 motion, polish list on #22); #51 lead quality, navigation, links and SEO fixes; compliance grep clean | #51 | see #51 block | e2e 87 passed |
@@ -929,6 +949,11 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Merge #68 when CI is green (fix the API-mode e2e if it fails); close A19 – A21 with what the generic editor covers and a follow-up issue for the bespoke editors (D138).
+2. Turnstile browser widget on every public form (a secret without the widget would refuse every form), then the deploy runbook (Railway API + PostgreSQL + Redis, Vercel web, env list, DNS, Resend) and staging on 12 Oct.
+3. Polish on the way: #52 signature motion, #39 performance, #22 QA at 768 / 1024; admin screenshots and axe at 320 / 390 / 1440 once Playwright MCP is back.
+
+Earlier list (10 Oct):
 1. A17 (#17): branded 404 (catch-all under [locale]), error and global-error pages, offline and maintenance pages, loading patterns, LiveBody placeholder.
 2. Review-fix issue (from the 10 Oct reviews): flights step 2 travellers, hotels rooms and guests, visa list actions, store category row and Track order link, home metadata and h1 fallback, per-country visa descriptions, collection description fallback, service pages noIndex, broken deep links (/tour-packages?q=, /flights?to=…&fare=), empty office-and-stationery links, siteUrl production guard; signature moments (hero flight path, route arc, add-to-cart arc, magnetic buttons).
 3. Launch-critical backend (Phase B lean): API with PostgreSQL for leads, orders, feedback, proofs and content, staff auth, email; then admin A18 – A21 on one list + form pattern; deploy staging 12 Oct, production 13 Oct (needs the owner accounts in section 11).

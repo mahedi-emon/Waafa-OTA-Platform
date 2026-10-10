@@ -49,6 +49,15 @@
 - D120 group fares link with ?groupFare= (fare = fare type). D121 partial flight links prefill (admin default origin).
   D122 RATE_LIMIT_FACTOR only on the Playwright server. D123 footer brand in text (one logo). D124 request steps ask
   travellers / rooms+guests.
+- D125 launch data model: relational tables for transactions; content/settings as JSON documents validated by shared
+  CONTENT_MODEL. D126 API via tsx + explicit @Inject. D127 private local Postgres on 5433. D128 seed admin only from
+  SEED_ADMIN_* (12+ chars). D129 admin is a BFF: web keeps API tokens in its own httpOnly cookies; API Bearer only.
+- D130 web reads all public content from one snapshot GET /api/v1/public/snapshot (ETag). D131 intake server to server
+  (x-intake-key, Idempotency-Key UUID; only successes replayed; refusals release the key). D132 orders lock product
+  documents FOR UPDATE. D133 emails via BullMQ when REDIS_URL, in-process otherwise; staff alerts to STAFF_ALERT_EMAIL.
+  D134 OpenAPI from zod (z.toJSONSchema) outside production. D135 lead/content access by role (404 outside modules).
+  D136 web API mode by env (WAAFA_API_URL + WAAFA_INTAKE_KEY): fixture repos over the cached snapshot via proxy; writes
+  to /api/v1/public; /api/revalidate (HMAC) expires every tag with { expire: 0 }.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
   children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
   (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on
