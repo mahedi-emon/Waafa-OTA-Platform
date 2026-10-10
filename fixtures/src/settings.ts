@@ -522,6 +522,29 @@ export const searchSettings: In<typeof SearchSettingsSchema> = {
   defaultOrigin: "DAC",
   popularFlights: ["CXB", "KUL", "CCU", "BKK", "SIN"],
   hotelNationalities: ["BD", "IN", "NP", "LK", "PK", "GB", "US"],
+  planTripPlaces: {
+    domestic: [
+      "Cox’s Bazar",
+      "Sajek Valley",
+      "Sylhet and Srimangal",
+      "Bandarban",
+      "Sundarbans",
+      "Saint Martin’s Island",
+    ],
+    abroad: [
+      "Maldives",
+      "Nepal",
+      "Bhutan",
+      "Thailand",
+      "Malaysia",
+      "Singapore",
+      "Dubai",
+      "Türkiye",
+      "Bali",
+      "Sri Lanka",
+      "India",
+    ],
+  },
 };
 
 /** Home copy from the Home board (Content › Home). */

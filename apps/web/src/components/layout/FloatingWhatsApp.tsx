@@ -35,7 +35,7 @@ function FloatingWhatsApp({ e164, messageTemplate, label }: FloatingWhatsAppProp
       rel="noopener noreferrer"
       aria-label={label}
       onClick={fillMessage}
-      className="fixed right-4 bottom-[calc(var(--tab-space)+16px)] z-30 grid size-14 place-items-center rounded-full bg-whatsapp-700 text-white shadow-[0_14px_30px_-12px_rgb(14_122_71/0.75)] transition-transform duration-150 ease-out hover:-translate-y-0.5 focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-95 lg:right-7 lg:bottom-7 lg:size-[60px]"
+      className="fixed right-4 bottom-[calc(var(--tab-space)+16px)] z-30 grid size-14 place-items-center rounded-full bg-whatsapp-700 text-white shadow-[0_14px_30px_-12px_rgb(14_122_71/0.75)] transition-transform duration-150 ease-out hover:-translate-y-0.5 focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-95 lg:right-7 lg:bottom-7 lg:size-[60px] [body:has([data-bottom-bar])_&]:bottom-[calc(var(--tab-space)+84px)] lg:[body:has([data-bottom-bar])_&]:bottom-7"
     >
       <WhatsAppIcon className="size-7" />
     </a>

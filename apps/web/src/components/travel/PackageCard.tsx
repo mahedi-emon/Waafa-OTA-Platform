@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { formatTaka, type TourPackage } from "@waafa/shared";
+import { GoldTriangle } from "@/components/brand/GoldTriangle";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Link } from "@/i18n/navigation";
 
@@ -21,7 +22,8 @@ async function PackageCard({
       <div className="relative">
         <SmartImage src={pkg.cover.src} alt={pkg.cover.alt} ratio="4/3" sizes={sizes} zoomOnHover />
         {tag ? (
-          <span className="absolute top-3 left-3 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
+            {tag === "best-seller" ? <GoldTriangle className="size-2.5" /> : null}
             {t(`tags.${tag}`)}
           </span>
         ) : null}

@@ -306,6 +306,13 @@ export const SearchSettingsSchema = z
       .array(z.string().regex(/^[A-Z]{2}$/))
       .min(1)
       .max(40),
+    /** Place chips on Plan my trip (PlanTrip "In Bangladesh" and "Abroad"), in this order. */
+    planTripPlaces: z
+      .object({
+        domestic: z.array(z.string().trim().min(1).max(40)).max(16),
+        abroad: z.array(z.string().trim().min(1).max(40)).max(16),
+      })
+      .strict(),
   })
   .strict();
 

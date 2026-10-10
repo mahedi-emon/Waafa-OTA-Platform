@@ -38,6 +38,8 @@ type LeadRequestCardProps<T> = {
     steps: Array<{ title: string; body: ReactNode }>;
     whatsappMessage: (reference: string) => string;
     againHref: string;
+    /** Defaults to "Search again"; packages say "More packages". */
+    againLabel?: string;
   };
 };
 
@@ -131,7 +133,7 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
               <Button asChild variant="secondary">
                 <Link href={props.success.againHref}>
                   <Search aria-hidden="true" />
-                  {t("success.again")}
+                  {props.success.againLabel ?? t("success.again")}
                 </Link>
               </Button>
               <Button asChild variant="ghost">

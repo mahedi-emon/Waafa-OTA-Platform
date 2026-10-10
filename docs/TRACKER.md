@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 09:45 Asia/Dhaka · Phase: A · Frontend · Current: #10 · A10 Hotels (then #11 A11 packages) · Progress: 12/24 issues (50%) after #10 merges · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
+Updated: 10 Oct 12:00 Asia/Dhaka · Phase: A · Frontend · Current: #12 · A12 Visa (after #11 A11 packages merges) · Progress: 13/24 issues (54%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 6 issues (owner decision on launch scope pending; section 10)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,7 +28,7 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 12 | 1 (#10) | 0 | 50% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 13 | 1 (#12) | 0 | 54% |
 | B · Backend | 12 Oct · epic #29 | opened with PROMPT 3 | 0 | 0 | 0 | 0% |
 | C · Integration & Launch | 13 Oct · epic #30 | opened with PROMPT 4 | 0 | 0 | 0 | 0% |
 | D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #11 · A11 Tour packages, package detail and query, Plan My Trip — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 09:50 → 10 Oct 12:10 |
+| Branch · PR · merge | `feat/11-packages` · see section 13 · squash |
+| Built | `/tour-packages`: keyword search, GET filter form (destination, kind of trip, length, budget, month, sort; a disclosure on phones), count, card grid, Load more, empty state to Plan my trip, plan CTA band. `/tour-packages/[slug]`: adaptive photo bento with a lazy lightbox (Embla), tags, Sample badge, share (system sheet or copy), facts, sticky section nav, highlights, day-by-day timeline with Expand all, included / not included, prices table with an Indicative chip, departures with seats and Any date, hotels, visa card linking the country page, terms and refund link, questions, related trips, TouristTrip JSON-LD; desktop sticky booking card (departure, travellers, room, indicative estimate, Send query, WhatsApp) and a phone booking bar above the tab bar; the inline query (shared LeadRequestCard, PKG reference) prefilled from the booking card. `/plan-my-trip`: how it works, two-step request (places from admin chips or typed, flexible month or exact dates, nights, travellers, trip for, budget band, hotels, interests, flights and visa switches, contact preference) with a CTR reference; help card. Sitemap lists packages and Plan my trip |
+| Files and components | `app/[locale]/(site)/tour-packages/{page.tsx,_components/FilterDisclosure.tsx,[slug]/page.tsx,[slug]/_components/{PackageGallery,PackageLightbox,ShareButton,ItineraryDays,BookingCard,BookingBar,PackageBookingProvider,usePackageBooking,PackageQuery,QueryStep}}`, `app/[locale]/(site)/plan-my-trip/{page.tsx,_components/{PlanTripRequest,PlanStep}.tsx}`, `components/forms/{NumberStepper,ChipRadioGroup,ChoiceChip}.tsx`, `lib/leads/{packageLeadForm,planTripLeadForm}.ts`, `app/sitemap.ts`; shared: PlanTrip payload (budget band, hotel class with resort, trip for, flights, visa), `SearchSettings.planTripPlaces` |
+| Screens matched | Packages, Packages-empty, Packages-m, Packages-m-filters, PackageDetail, PackageDetail-photos, PackageDetail-query, PackageDetail-done, PackageDetail-m-*, PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-* |
+| Admin control | AC-30, AC-31 used; AC-88 – AC-91 new |
+| Tests | unit +7 (package query rules, PKG and CTR lead contracts, estimate maths); e2e +5 (filter → detail, booking bar → query → PKG reference, unknown slug, booking card choices carried into the query + lightbox, plan validation → CTR reference); suite 50 passed · axe pass at 390 and 1440 · no overflow at 320 / 390 / 768 / 1024 / 1440 · Lighthouse mobile `/tour-packages` 73 / 100 / 96 / 100, package detail 68 / 100 / 96 / 100 (61 before the lazy lightbox), `/plan-my-trip` 68 / 100 / 96 / 100 (#39) |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 |
+| Tools and skills | Serena, Playwright MCP and scripts, Lighthouse CLI; skills frontend-design, design-taste-frontend, ui-ux-pro-max rules (chips 44 px, labelled radio groups, focus rings) |
+| Decisions | D78 – D84 |
+| Bugs and follow-ups | Fixed in-issue: chip radios in flights and hotels were off-centre (hidden radio kept 20 px in the flow); #39 (perf, JS 440 KB on package detail); branded 404 page (A17) |
 
 ### #10 · A10 Hotels Manual mode — ✅ Done
 | Field | Value |
@@ -247,9 +262,9 @@ Each gets the full block when work starts.
 | `/flights` Live placeholder | FlightsLive (placeholder only; full Live bodies in Phase E) | #17 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | `/flights/group-fares` | GroupFares, GroupFares-empty, GroupFares-m, GroupFares-m-empty | #9 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | `/hotels` | Hotels, Hotels-2, Hotels-done, Hotels-m-* | #10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/tour-packages` | Packages, Packages-empty, Packages-m, Packages-m-filters | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/tour-packages/[slug]` | PackageDetail, -photos, -query, -done, PackageDetail-m-* | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/plan-my-trip` | PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-* | #11 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/tour-packages` | Packages, Packages-empty, Packages-m, Packages-m-filters | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 73 / 100 / 96 / 100 |
+| `/tour-packages/[slug]` | PackageDetail, -photos, -query, -done, PackageDetail-m-* | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 68 / 100 / 96 / 100 |
+| `/plan-my-trip` | PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-* | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 68 / 100 / 96 / 100 |
 | `/visa-services` | Visa, Visa-none, Visa-m | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | `/visa-services/[country]` | VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
 | `/visa-guide`, `/visa-guide/[country]` | VisaGuide, VisaGuidePost (+ -m) | #12 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
@@ -369,6 +384,10 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-85 | Flight leads (reference, contact, trip, preferences, group fare) | `POST /api/leads` → `createLead()` → LeadCreated | Leads (A18) | `POST /api/v1/leads` | ⬜ |
 | AC-86 | Hotels booking mode | `getPublicConfig()` → modes.hotels.mode | Settings › Booking modes | `GET /api/v1/config/public` | ⬜ |
 | AC-87 | Hotel leads (place, dates, rooms, nationality, budget band, meals, preferences) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
+| AC-88 | Package booking card and bar (from price, prices per sharing, departures with seats, any date) | `getPackage()` → fromPrice, prices, departures, anyDate | Travel › Tour packages | `GET /api/v1/packages/{slug}` | ⬜ |
+| AC-89 | Package leads (package, departure, travellers, room sharing, contact preference, notes) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
+| AC-90 | Plan my trip place chips (In Bangladesh, Abroad) | `getSearchSettings()` → planTripPlaces | Settings › Search | `GET /api/v1/settings/search` | ⬜ |
+| AC-91 | Plan my trip leads (places, month or dates, nights, travellers, trip for, budget band, hotels, interests, flights, visa) | `POST /api/leads` → `createLead()` | Leads (A18) | `POST /api/v1/leads` | ⬜ |
 
 ## 5. Components inventory
 
@@ -566,6 +585,13 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D75 | 10 Oct | Every Manual module uses one `LeadRequestCard` (contact step, steps indicator, failure, idempotent submit, boarding-pass success) with module-specific second steps; shared copy lives in the `Leads` namespace | One tested flow for flights, hotels, packages, visa and the service forms | #10 |
 | D76 | 10 Oct | The Hotels board’s "Hotels we know" list is deferred until a hotel content type and real hotel photos exist | Needs a new admin collection and photos; the request flow is the launch need (cut list) | #10 |
 | D77 | 10 Oct | The hotel form follows the board (budget band and meals); star preference stays in the contract with "any" and is not asked | The board wins on layout; staff can ask stars in the follow-up | #10 |
+| D78 | 10 Oct | An unknown package slug renders the Next not-found page with `noindex` but status 200 | Cache Components streams the layout shell before the page resolves; `dynamicParams = false` would hide packages added in admin until a rebuild; the branded 404 ships in A17 | #11 |
+| D79 | 10 Oct | The package query is an inline section (`#query`) with the shared LeadRequestCard (contact first) instead of the board modal; booking card choices flow into step 2 through `PackageBookingProvider` | One tested request flow (D75); deep-linkable; no dialog focus trap on phones | #11 |
+| D80 | 10 Oct | Plan my trip asks contact first (the board asks it last) and shows the help card in place of the "Your trip so far" summary | Same flow as every Manual module (D75) and the lead is captured even if the visitor stops; the live summary moves to A22 polish | #11 |
+| D81 | 10 Oct | Package filters are a plain GET form with server-side filtering and sort (like D73) | Shareable URLs, works before hydration, no client bundle | #11 |
+| D82 | 10 Oct | Plan my trip place chips come from `SearchSettings.planTripPlaces` (admin) | Nothing visitor-facing is hard-coded | #11 |
+| D83 | 10 Oct | Plan my trip exact dates use native date inputs (like D72) | Fast, accessible phone pickers; the full calendar stays in the search card | #11 |
+| D84 | 10 Oct | The package photo lightbox (Dialog + Embla) loads with next/dynamic on the first tap | Took package detail Lighthouse from 61 to 68; the rest is #39 | #11 |
 
 ## 9. Bugs and known issues
 
@@ -577,6 +603,9 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Visitors who dismissed the announcement may see it collapse right after hydration on their next visit | P2 | announcement bar | Accepted (D50); revisit if field CLS shows it |
 | #39 Home first-load JS 346 KB and simulated LCP 4.1 s over budget (shell alone 308 KB, 84); picker open long tasks 180–430 ms at 4x CPU | P1 | `/`, search pickers | Open, due with A7 |
 | Hotel stay picks past 30 nights reset the check-in | P2 | search card | Fixed in #8 with a regression test |
+| Chip radios in the flights and hotels second steps were off-centre (the hidden radio stayed in the flow) | P2 | `/flights`, `/hotels` | Fixed in #11; e2e covers the steps |
+| Package detail first-load JS about 440 KB, Lighthouse mobile 68 | P1 | `/tour-packages/[slug]`, `/plan-my-trip` | Tracked in #39 |
+| Header links to routes not built yet (`/visa-services`, `/gallery`, `/feedback`) 404 on prefetch | P2 | header | Closes as A12 and A17 ship the routes |
 
 ## 10. Cut list
 
@@ -620,6 +649,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 09:45–12:10 | A11 packages list, package detail with booking card and inline query, Plan my trip; chip radio fix in flights and hotels; lazy lightbox | #11 | see #11 block | unit 155 · e2e 50 · axe pass · Lighthouse 68–73 |
 | 10 Oct 08:40–09:45 | A9 merged (#42); A10 hotels Manual on the shared results shell; request flow refactored into LeadRequestCard + ContactStep + Leads strings | #9, #10 | #42 | unit 148 · e2e 45 · axe pass |
 | 10 Oct 06:15–08:40 | A7 Home merged (#41); A9 results shell, Flights Manual two-step request, lead intake API with idempotency and rate limits, boarding-pass success, group fares page and rail | #7, #9 | #41 | unit 144 · e2e 43 · axe pass |
 | 10 Oct 01:00–06:15 | #34 A1b closed (inner-page competitor Lighthouse); A8 search card built, independent subagent review (15 findings, 14 fixed), merged; perf budget gap logged as #39; A7 Home built (13 sections from data, CSS reveals, snap rows, JSON-LD, robots and sitemap) | #34, #8, #39, #7 | #38, #40 | unit 245 · e2e 37 · axe pass · Lighthouse / 71–74 / 100 / 96 / 100 |
@@ -632,6 +662,6 @@ or accessibility.
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. A10 (#10) Hotels Manual mode on the same results shell and lead API (hotel lead form, rooms and guests from the URL).
-2. A11 (#11) Tour packages list, detail and query + Plan My Trip; A12 (#12) visa list, country page and apply.
-3. #39 perf alongside (client JS, fonts, HTML size); owner decision on launch scope (section 10 item 5).
+1. A12 (#12) Visa: list, country page with the checklist and progress ring, apply request (VSA reference), private document handling plan.
+2. A13–A16 (Waafas World store, cart, checkout without online payment, track order), then A17 static pages (branded 404, About, Contact, Gallery, Feedback, policies).
+3. #39 perf (client JS on every page, fonts, HTML size); owner decision on launch scope (section 10 item 5).
