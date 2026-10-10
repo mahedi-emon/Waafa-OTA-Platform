@@ -2,6 +2,7 @@ import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { formatTaka, type Quote } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 
@@ -98,9 +99,11 @@ function CheckoutSummary({ quote, sending, blocked, loading }: CheckoutSummaryPr
           </dd>
         </div>
       </dl>
-      <Button type="submit" size="lg" className="w-full" loading={sending} disabled={blocked}>
-        {sending ? t("placing") : t("place")}
-      </Button>
+      <Magnetic className="w-full">
+        <Button type="submit" size="lg" className="w-full" loading={sending} disabled={blocked}>
+          {sending ? t("placing") : t("place")}
+        </Button>
+      </Magnetic>
       <p className="flex items-start gap-1.5 text-[12.5px] text-mist-600">
         <Lock aria-hidden="true" className="mt-px size-3.5 shrink-0" />
         {t("secure")}

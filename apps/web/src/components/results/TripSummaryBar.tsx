@@ -10,6 +10,8 @@ type TripSummaryBarProps = {
   /** "Thu, 22 Oct · 1 traveller · Economy". */
   details: string;
   labels: { region: string; edit: string; close: string };
+  /** A small picture of the trip between the summary and Edit (the flight route arc), from 640 px. */
+  visual?: ReactNode;
   /** The search card, shown when the visitor edits the trip (Flights-edit). */
   children: ReactNode;
 };
@@ -18,7 +20,7 @@ type TripSummaryBarProps = {
  * Results summary bar: the trip the visitor searched, with Edit opening the full search card in place (the card
  * keeps the trip filled in). Sticky under the header on desktop.
  */
-function TripSummaryBar({ route, details, labels, children }: TripSummaryBarProps) {
+function TripSummaryBar({ route, details, labels, visual, children }: TripSummaryBarProps) {
   const [editing, setEditing] = useState(false);
 
   return (
@@ -30,6 +32,7 @@ function TripSummaryBar({ route, details, labels, children }: TripSummaryBarProp
           </span>
           <span className="block truncate text-[13.5px] text-mist-600 tabular-nums">{details}</span>
         </p>
+        {visual ? <div className="ml-auto hidden sm:block">{visual}</div> : null}
         <Button
           type="button"
           variant={editing ? "ghost" : "secondary"}

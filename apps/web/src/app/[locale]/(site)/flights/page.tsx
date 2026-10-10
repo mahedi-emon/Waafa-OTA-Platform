@@ -8,6 +8,7 @@ import { GroupFaresRail } from "@/components/results/GroupFaresRail";
 import { HelpCard } from "@/components/results/HelpCard";
 import { LivePlaceholder } from "@/components/results/LivePlaceholder";
 import { ResultsBody } from "@/components/results/ResultsBody";
+import { RouteArc } from "@/components/motion/RouteArc";
 import { TripSummaryBar } from "@/components/results/TripSummaryBar";
 import { SearchCard } from "@/components/search/SearchCard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -150,6 +151,11 @@ async function FlightsResults({
         route={route}
         details={details}
         labels={{ region: t("summary.label"), edit: t("summary.edit"), close: t("summary.close") }}
+        visual={
+          first?.from && first.to ? (
+            <RouteArc label={t("summary.arc", { from: first.from, to: first.to })} />
+          ) : undefined
+        }
       >
         <SearchCard source="flights" initialFlight={search} />
       </TripSummaryBar>

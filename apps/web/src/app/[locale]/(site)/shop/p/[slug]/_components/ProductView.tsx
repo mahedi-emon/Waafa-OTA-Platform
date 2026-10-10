@@ -6,6 +6,7 @@ import { Check, Expand, Minus, Plus, ShoppingCart, Truck, Wallet } from "lucide-
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { cn } from "cn";
+import { flyToCart } from "@/lib/shop/flyToCart";
 import { formatTaka, type Product, type ShippingZone } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";
 import { StockBadge } from "@/components/shop/StockBadge";
@@ -104,8 +105,10 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
         size={compact ? "md" : "lg"}
         variant={compact ? "secondary" : "primary"}
         aria-disabled={!buyable}
-        onClick={() => {
-          if (addToCart()) toast.success(t("card.added"), { description: product.title });
+        onClick={(event) => {
+          if (!addToCart()) return;
+          flyToCart(event.currentTarget);
+          toast.success(t("card.added"), { description: product.title });
         }}
         className={cn(!compact && "sm:flex-1")}
       >

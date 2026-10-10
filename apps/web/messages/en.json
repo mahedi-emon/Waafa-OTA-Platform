@@ -446,7 +446,8 @@
       "travellers": "{count, plural, one {# traveller} other {# travellers}}",
       "oneWay": "One way",
       "roundTrip": "Round trip",
-      "multiCity": "Multi-city"
+      "multiCity": "Multi-city",
+      "arc": "Flight route from {from} to {to}"
     },
     "prefs": {
       "title": "Your preferences",
