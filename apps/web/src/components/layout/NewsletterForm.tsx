@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { cn } from "cn";
+import { useTurnstile } from "@/components/forms/useTurnstile";
 
 type NewsletterFormProps = {
   placeholder: string;
@@ -22,6 +23,7 @@ const EmailSchema = z.email();
 function NewsletterForm({ placeholder, button, labels, source = "footer" }: NewsletterFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const turnstile = useTurnstile();
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,11 +37,13 @@ function NewsletterForm({ placeholder, button, labels, source = "footer" }: News
     setError(null);
     setSending(true);
     try {
+      const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: value, source }),
+        body: JSON.stringify({ email: value, source, turnstileToken }),
       });
+      turnstile.reset();
       if (!response.ok) {
         setError(response.status === 422 ? labels.invalid : labels.failed);
         return;
@@ -54,7 +58,12 @@ function NewsletterForm({ placeholder, button, labels, source = "footer" }: News
   }
 
   return (
-    <form noValidate onSubmit={submit} className="flex flex-col gap-1.5">
+    <form
+      noValidate
+      onSubmit={submit}
+      onFocusCapture={turnstile.activate}
+      className="flex flex-col gap-1.5"
+    >
       <div className="flex gap-2">
         <label htmlFor={`newsletter-email-${source}`} className="sr-only">
           {labels.email}
@@ -82,6 +91,7 @@ function NewsletterForm({ placeholder, button, labels, source = "footer" }: News
           {button}
         </button>
       </div>
+      {turnstile.field}
       <p
         id={`newsletter-error-${source}`}
         role="alert"

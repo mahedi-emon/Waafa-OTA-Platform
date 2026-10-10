@@ -5,6 +5,7 @@ import { CircleAlert, Home, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
 import { whatsappLink, type LeadCreateInput, type LeadCreated } from "@waafa/shared";
+import { useTurnstile } from "@/components/forms/useTurnstile";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -66,6 +67,7 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
   const [created, setCreated] = useState<LeadCreated | null>(null);
   // One key per request: a double tap or a retry reuses it; a new key is made after a success.
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const turnstile = useTurnstile();
 
   const goTo = (next: Phase) => {
     setPhase(next);
@@ -84,11 +86,13 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
     setIdempotencyKey(key);
     try {
       const lead = props.buildLead(contact, values, window.location.pathname);
+      const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idempotencyKey: key, lead }),
+        body: JSON.stringify({ idempotencyKey: key, lead, turnstileToken }),
       });
+      turnstile.reset();
       if (!response.ok) {
         setFailure(response.status === 429 ? "rate" : "retry");
         return;
@@ -194,7 +198,7 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
             );
           })}
         </ol>
-        <div className="px-5 pt-5 pb-6 md:px-7">
+        <div className="px-5 pt-5 pb-6 md:px-7" onFocusCapture={turnstile.activate}>
           {failure ? (
             <div
               role="alert"
@@ -225,6 +229,7 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
           ) : (
             props.renderSecondStep({ sending, goBack: () => goTo("contact"), submit })
           )}
+          {turnstile.field}
         </div>
       </section>
     </div>
