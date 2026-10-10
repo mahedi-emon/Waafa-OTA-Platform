@@ -1,0 +1,280 @@
+// WAAFA launch data model (decision D125). Transactional records have their own tables with indexes on every
+// filter and sort; admin-managed content and settings are validated JSON documents (packages/shared CONTENT_MODEL).
+// Money is whole taka (Int); times are timestamptz.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Staff and sessions ------------------------------------------------------------------------------------------
+
+model StaffUser {
+  id           String         @id @default(cuid())
+  name         String
+  email        String         @unique
+  passwordHash String
+  /// Role keys from packages/shared RoleSchema.
+  roles        String[]
+  status       String         @default("active")
+  failedLogins Int            @default(0)
+  lockedUntil  DateTime?      @db.Timestamptz(3)
+  lastLoginAt  DateTime?      @db.Timestamptz(3)
+  createdAt    DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime       @updatedAt @db.Timestamptz(3)
+  sessions     StaffSession[]
+}
+
+model StaffSession {
+  id          String    @id @default(cuid())
+  userId      String
+  user        StaffUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// SHA-256 of the refresh token; the token itself is never stored.
+  refreshHash String    @unique
+  expiresAt   DateTime  @db.Timestamptz(3)
+  revokedAt   DateTime? @db.Timestamptz(3)
+  userAgent   String?
+  ip          String?
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([userId])
+}
+
+// References and idempotency ----------------------------------------------------------------------------------
+
+model ReferenceSequence {
+  prefix String
+  /// Asia/Dhaka date as YYMMDD.
+  day    String
+  value  Int
+
+  @@id([prefix, day])
+}
+
+model IdempotencyRecord {
+  key       String   @id
+  scope     String
+  status    Int
+  response  Json
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt DateTime @db.Timestamptz(3)
+
+  @@index([expiresAt])
+}
+
+// Leads -------------------------------------------------------------------------------------------------------
+
+model Lead {
+  id              String         @id @default(cuid())
+  reference       String         @unique
+  module          String
+  status          String         @default("new")
+  priority        String         @default("normal")
+  name            String
+  /// E.164, used by the duplicate guard and search.
+  phone           String
+  email           String?
+  contact         Json
+  payload         Json
+  source          Json
+  summary         String
+  travelDate      String?
+  travellers      Int?
+  assigneeId      String?
+  amount          Int?
+  reason          String?
+  duplicateOfId   String?
+  firstResponseAt DateTime?      @db.Timestamptz(3)
+  closedAt        DateTime?      @db.Timestamptz(3)
+  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
+  activities      LeadActivity[]
+
+  @@index([module, status, createdAt])
+  @@index([status, createdAt])
+  @@index([phone, module, createdAt])
+  @@index([assigneeId, status])
+  @@index([createdAt])
+}
+
+model LeadActivity {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type      String
+  body      String
+  actorId   String?
+  actorName String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([leadId, createdAt])
+}
+
+model SearchLog {
+  id              String   @id @default(cuid())
+  module          String
+  summary         String
+  params          Json
+  device          String?
+  source          String?
+  convertedLeadId String?
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([module, createdAt])
+  @@index([createdAt])
+}
+
+// Waafas World orders -----------------------------------------------------------------------------------------
+
+model Order {
+  id              String       @id @default(cuid())
+  reference       String       @unique
+  status          String       @default("placed")
+  /// OrderItem[] price snapshot (packages/shared OrderItemSchema).
+  items           Json
+  subtotal        Int
+  discount        Int
+  delivery        Int
+  total           Int
+  couponCode      String?
+  payment         Json
+  paymentVerified Boolean      @default(false)
+  address         Json
+  name            String
+  phone           String
+  email           String?
+  pickup          Boolean      @default(false)
+  invoice         Json?
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime     @updatedAt @db.Timestamptz(3)
+  history         OrderEvent[]
+
+  @@index([status, createdAt])
+  @@index([phone])
+  @@index([createdAt])
+}
+
+model OrderEvent {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status         String
+  note           String?
+  courier        String?
+  trackingNumber String?
+  actorName      String?
+  at             DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([orderId, at])
+}
+
+// Feedback, payment proofs, newsletter -------------------------------------------------------------------------
+
+model Feedback {
+  id               String    @id @default(cuid())
+  name             String
+  phone            String
+  service          String
+  reference        String?
+  rating           Int?
+  comment          String
+  /// Photo metadata until uploads land; an approved photo becomes an Image.
+  photo            Json?
+  consentToPublish Boolean
+  status           String    @default("pending")
+  moderatedAt      DateTime? @db.Timestamptz(3)
+  moderatedBy      String?
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([status, createdAt])
+}
+
+model PaymentProof {
+  id            String   @id @default(cuid())
+  reference     String
+  name          String
+  phone         String
+  amount        Int
+  accountId     String
+  transactionId String?
+  proof         Json?
+  status        String   @default("received")
+  note          String?
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([reference])
+  @@index([status, createdAt])
+}
+
+model Subscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  source         String?
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  unsubscribedAt DateTime? @db.Timestamptz(3)
+}
+
+// Admin-managed content (validated by packages/shared CONTENT_MODEL) ------------------------------------------------
+
+model ContentDocument {
+  /// A CONTENT_MODEL collection key, e.g. "tourPackages".
+  collection String
+  /// The record's id field (id, slug, key or code).
+  docId      String
+  data       Json
+  /// Admin order, for collections that keep one.
+  position   Int      @default(0)
+  version    Int      @default(1)
+  updatedBy  String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
+
+  @@id([collection, docId])
+  @@index([collection, position])
+}
+
+model Setting {
+  /// A CONTENT_MODEL singleton key, e.g. "contactSettings".
+  key       String   @id
+  value     Json
+  version   Int      @default(1)
+  updatedBy String?
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+}
+
+// Operations ---------------------------------------------------------------------------------------------------
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actorName String
+  action    String
+  entity    String
+  entityId  String
+  before    Json?
+  after     Json?
+  reason    String?
+  at        DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([entity, entityId])
+  @@index([at])
+}
+
+model NotificationLog {
+  id        String    @id @default(cuid())
+  channel   String
+  recipient String
+  template  String
+  subject   String
+  status    String
+  error     String?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  sentAt    DateTime? @db.Timestamptz(3)
+
+  @@index([createdAt])
+}

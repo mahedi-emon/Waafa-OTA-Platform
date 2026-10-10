@@ -88,9 +88,21 @@ jobs:
     if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # The API tests run against a real PostgreSQL (B1).
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: waafa
+          POSTGRES_PASSWORD: waafa
+          POSTGRES_DB: waafa_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U waafa" --health-interval 5s --health-timeout 5s --health-retries 12
     env:
       # Builds include the dev-only /styleguide so e2e can check every component (CI builds are never deployed).
       STYLEGUIDE: "1"
+      API_TEST_DATABASE_URL: postgresql://waafa:waafa@localhost:5432/waafa_test
     steps:
       - uses: actions/checkout@v7
 
