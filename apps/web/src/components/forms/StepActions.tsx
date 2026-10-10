@@ -2,6 +2,7 @@
 
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { Button } from "@/components/ui/button";
 
 type StepActionsProps = {
@@ -19,9 +20,11 @@ function StepActions({ submitLabel, sending, onBack }: StepActionsProps) {
         <ArrowLeft aria-hidden="true" />
         {t("back")}
       </Button>
-      <Button type="submit" size="lg" loading={sending}>
-        {submitLabel}
-      </Button>
+      <Magnetic>
+        <Button type="submit" size="lg" loading={sending} className="w-full sm:w-auto">
+          {submitLabel}
+        </Button>
+      </Magnetic>
     </div>
   );
 }

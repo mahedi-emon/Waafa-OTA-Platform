@@ -3,6 +3,7 @@ import { MapPin } from "lucide-react";
 import type { HomeContent, MediaSlot } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";
 import { SmartVideo } from "@/components/media/SmartVideo";
+import { FlightPath } from "@/components/motion/FlightPath";
 import { TextRotate } from "@/components/motion/TextRotate";
 
 type HeroSectionProps = {
@@ -40,7 +41,8 @@ function HeroSection({ hero, media, search }: HeroSectionProps) {
   const credit = rawCredit ? [...new Set(rawCredit.split(" · "))].join(" · ") : undefined;
 
   return (
-    <section aria-labelledby="home-hero-title" className="site-container pt-6 md:pt-10">
+    <section aria-labelledby="home-hero-title" className="relative site-container pt-6 md:pt-10">
+      <FlightPath />
       <h1 id="home-hero-title" className="max-w-[17ch] type-display text-navy-900">
         {renderWords(hero.title)}
         <span className="block text-electric-600">{renderWords(hero.titleAccent, firstLine)}</span>

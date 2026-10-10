@@ -12,6 +12,7 @@ function CartButton({ label }: CartButtonProps) {
   return (
     <Link
       href="/shop/cart"
+      data-cart-target=""
       className="relative inline-flex size-12 shrink-0 items-center justify-center gap-2 rounded-full border border-mist-200 bg-white text-[14px] font-semibold text-navy-900 outline-none hover:border-mist-300 focus-visible:ring-3 focus-visible:ring-ring/40 sm:w-auto sm:px-4"
     >
       <ShoppingCart aria-hidden="true" className="size-5" />
@@ -20,8 +21,9 @@ function CartButton({ label }: CartButtonProps) {
         <>
           <span className="sr-only"> ({count})</span>
           <span
+            key={count}
             aria-hidden="true"
-            className="absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-full bg-electric-600 px-1 text-[11px] font-bold text-white tabular-nums"
+            className="absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-full bg-electric-600 px-1 text-[11px] font-bold text-white tabular-nums motion-safe:animate-badge-pop"
           >
             {count > 99 ? "99+" : count}
           </span>

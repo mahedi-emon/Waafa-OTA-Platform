@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import type { CartLine } from "@/lib/shop/cart";
+import { flyToCart } from "@/lib/shop/flyToCart";
 import { useCart } from "./useCart";
 
 type AddToCartControlProps = {
@@ -29,7 +30,8 @@ function AddToCartControl({ line, labels, className }: AddToCartControlProps) {
         size="sm"
         aria-label={labels.addLabel}
         className={cn("relative z-10 w-full", className)}
-        onClick={() => {
+        onClick={(event) => {
+          flyToCart(event.currentTarget);
           add({ ...line, qty: 1 });
           toast.success(labels.added, { description: line.title });
         }}
