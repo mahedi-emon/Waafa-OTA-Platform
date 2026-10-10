@@ -5,6 +5,8 @@ export * from "./helpers/officeHours";
 export * from "./helpers/phone";
 export * from "./helpers/reference";
 export * from "./helpers/orderPricing";
+export * from "./helpers/deals";
+export * from "./helpers/leadSummary";
 
 export * from "./schemas/common";
 export * from "./schemas/settings";

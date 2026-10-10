@@ -3,6 +3,7 @@ import type { FastifyRequest } from "fastify";
 import { z } from "zod";
 import { ENV, type Env } from "../config/env";
 import { createRateLimiter } from "../common/rateLimit";
+import { clientIp } from "../common/serverKey";
 import { parseInput, problems } from "../common/problem";
 import { AuthService } from "./auth.service";
 import { Staff, StaffGuard } from "./auth.guard";
@@ -33,17 +34,10 @@ export class AuthController {
     @Inject(ENV) private readonly env: Env,
   ) {}
 
-  /** The visitor address: the web passes it in x-client-ip, trusted only with the server-to-server key. */
-  private clientIp(request: FastifyRequest): string {
-    const forwarded = request.headers["x-client-ip"];
-    const trusted = request.headers["x-intake-key"] === this.env.INTAKE_KEY;
-    return trusted && typeof forwarded === "string" && forwarded ? forwarded : request.ip;
-  }
-
   @Post("login")
   @HttpCode(200)
   async login(@Body() body: unknown, @Req() request: FastifyRequest) {
-    if (!allowLogin(`login:${this.clientIp(request)}`))
+    if (!allowLogin(`login:${clientIp(request, this.env)}`))
       throw problems.tooMany("Too many sign-in attempts. Wait 15 minutes.");
     const input = parseInput(LoginSchema, body);
     return this.auth.login(input.email, input.password, meta(request));

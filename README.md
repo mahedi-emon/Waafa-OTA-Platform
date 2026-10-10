@@ -55,6 +55,8 @@ createdb -h localhost -p 5433 -U waafa waafa && createdb -h localhost -p 5433 -U
 
 The production image is `apps/api/Dockerfile` (built from the repository root); it runs migrations and the
 idempotent seed, then starts the API. The same image runs the job worker with `pnpm --filter @waafa/api worker`.
+Outside production the OpenAPI document is at `http://localhost:4000/api/v1/openapi.json`. The public endpoints
+(`/api/v1/public/*`) answer only the web server, which sends the `x-intake-key` header.
 
 ## What is where
 

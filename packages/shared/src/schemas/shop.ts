@@ -320,7 +320,7 @@ export const PaymentChoiceSchema = z.discriminatedUnion("method", [
 export const InvoiceDetailsSchema = z
   .object({
     companyName: z.string().trim().min(2).max(100),
-    bin: z.string().regex(/^d{9,13}$/, "Enter the BIN, 9 to 13 digits"),
+    bin: z.string().regex(/^\d{9,13}$/, "Enter the BIN, 9 to 13 digits"),
   })
   .strict();
 
@@ -409,6 +409,14 @@ export const OrderCreatedSchema = z
   .object({ reference: z.string(), total: TakaSchema, createdAt: IsoDateTimeSchema })
   .strict();
 
+/** Track order (FR-SHOP-09): the order number and the phone on the order; both must match. */
+export const OrderTrackInputSchema = z
+  .object({
+    reference: z.string().trim().min(6).max(40),
+    phone: z.string().trim().min(6).max(40),
+  })
+  .strict();
+
 export type Attribute = z.infer<typeof AttributeSchema>;
 export type AttributeSet = z.infer<typeof AttributeSetSchema>;
 export type Category = z.infer<typeof CategorySchema>;
@@ -434,3 +442,4 @@ export type Order = z.infer<typeof OrderSchema>;
 export type InvoiceDetails = z.infer<typeof InvoiceDetailsSchema>;
 export type OrderCreateInput = z.infer<typeof OrderCreateInputSchema>;
 export type OrderCreated = z.infer<typeof OrderCreatedSchema>;
+export type OrderTrackInput = z.infer<typeof OrderTrackInputSchema>;

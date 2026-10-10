@@ -202,6 +202,9 @@ function CheckoutForm({
         }),
       });
       if (!response.ok) {
+        // A refusal is final for this attempt: the next press is a new order request (#61). Server errors and
+        // timeouts keep the key, so a retry can never place the order twice.
+        if (response.status < 500 && response.status !== 429) setIdempotencyKey(null);
         const body = (await response.json().catch(() => ({}))) as { error?: string };
         setFailure(
           response.status === 429
