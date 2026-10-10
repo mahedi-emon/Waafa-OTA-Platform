@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Inject, Post, Req, Res, UseGuards } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import {
@@ -120,6 +120,7 @@ export class PublicController {
   }
 
   @Post("orders/track")
+  @HttpCode(200)
   async trackOrder(@Body() body: unknown, @Req() request: FastifyRequest) {
     this.limit(request, "track");
     const input = parseInput(OrderTrackInputSchema, body);
