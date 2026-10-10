@@ -47,7 +47,7 @@ function ObjectField({ schema, path, value, optional, bare = false }: ObjectFiel
           style={{ backgroundImage: `url("${preview.replace(/"/g, "%22")}")` }}
         />
       ) : null}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         {shown.map(([name, child]) => {
           const resolved = resolve(child, root);
           const wide =
@@ -56,7 +56,7 @@ function ObjectField({ schema, path, value, optional, bare = false }: ObjectFiel
             Boolean(resolved.anyOf ?? resolved.oneOf ?? resolved.properties) ||
             (typeof resolved.maxLength === "number" && resolved.maxLength > 200);
           return (
-            <div key={name} className={wide ? "md:col-span-2" : ""}>
+            <div key={name} className={wide ? "min-w-0 md:col-span-2" : "min-w-0"}>
               <SchemaField
                 schema={child}
                 path={[...path, name]}
@@ -87,7 +87,7 @@ function ObjectField({ schema, path, value, optional, bare = false }: ObjectFiel
 
   if (bare) return body;
   return (
-    <fieldset className="rounded-2xl border border-mist-200 bg-mist-25 p-4">
+    <fieldset className="min-w-0 rounded-2xl border border-mist-200 bg-mist-25 p-3 sm:p-4">
       <legend className="flex items-center gap-2 px-1 text-[14px] font-bold text-navy-900">
         {typeof key === "number" ? `${key + 1}` : humanize(String(key ?? ""))}
         {optional ? (
