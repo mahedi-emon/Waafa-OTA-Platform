@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 11 Oct 01:40 Asia/Dhaka · Phase: B done · C integration in progress · Current: #18 launch admin (PR #68, CI) · Progress: Phase A 19/24 (79%, admin in review), Phase B 4/4 (100%), Phase C 1 done (#64) · Launch: 13 Oct 2026, 2 days left · Status: on the launch-critical path; deploy blocked on owner accounts (section 11)
+Updated: 11 Oct 06:00 Asia/Dhaka · Phase: A 23/24 (A22 QA open), B 4/4, C: C1 + C2 done, C3 deploy blocked on owner accounts · Current: #74 deploy (docs/DEPLOY.md) · Launch: 13 Oct 2026, 2 days left · Status: code launch-ready; production needs the owner's Railway, Vercel, Resend, Turnstile and DNS (section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -67,11 +67,29 @@ Serena memory `audit_findings`.
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
 
-### #18 · A18 Admin: shell, sign-in, dashboard, leads, search activity (launch admin) — 🟡 In review
+### #52 · Signature motion moments — ✅ Done
 | Field | Value |
 | --- | --- |
-| Opened → closed | 11 Oct 01:00 → (PR #68 open) |
-| Branch · PR · merge | `feat/18-admin-shell` · #68 · squash |
+| Opened → closed | 10 Oct → 11 Oct 05:50 |
+| Branch · PR · merge | `feat/52-motion-moments` · #77 · `db279a8` |
+| Built | `FlightPath` (Home hero, desktop: server SVG, CSS draw 1.2 s after 300 ms, SMIL dot on the last fifth), `RouteArc` (flight request summary bar from 640 px: arc draws 900 ms, plane glides 1.6 s and rests), `flyToCart` (ghost flies to the visible `data-cart-target`, header cart or tab bar disc, 600 ms; badge pops), `Magnetic` (Search, Send, Place order lean up to 6 px on fine pointers). Boarding-pass success and the visa checklist ring were already in place |
+| Tests | e2e home, flights, store, orders, smoke, services 32 passed |
+| Decisions | D140 |
+| Bugs and follow-ups | Search → results morph after launch (needs React View Transitions) |
+
+### #69 · C2 Turnstile on every public form — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 01:45 → 11 Oct 02:00 |
+| Branch · PR · merge | feat/69-turnstile · #70 · 73e4b62 |
+| Built | useTurnstile + TurnstileWidget: script loads on a form’s first focus, managed widget only when Cloudflare asks, token reset after each submit; leads, contact, feedback, payment proofs, checkout and newsletter send it; /api/newsletter verifies. Off until NEXT_PUBLIC_TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY are set |
+| Tests | e2e content, orders, layout, flights, visa 37 passed (keys off) |
+
+### #18 · A18 Admin: shell, sign-in, dashboard, leads, search activity (launch admin) — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 01:00 → 11 Oct 01:40 |
+| Branch · PR · merge | `feat/18-admin-shell` · #68 · `277a46c` |
 | Built | `/admin` (noindex, X-Robots-Tag): sign-in with wrong-password and locked states (API lockout), BFF session in httpOnly cookies (access 15 min, rotating refresh, "Keep me signed in"), refreshed in `proxy.ts` a minute before expiry; navy sidebar from the AdminSide board filtered by role, phone sheet, Ctrl K palette (pages and references), account menu; dashboard (KPIs, leads by module and status, top routes, activity); leads (views All, Open, My leads, Unassigned, Overdue; module and status filters; search; table from 768 px and cards on phones with call and WhatsApp; age red past the admin SLA; bulk assign and status; CSV export), lead detail (status, assignee, priority with Booked amount and Cancelled/Lost reason, first response, duplicate links, readable request plus raw JSON, customer card with call, WhatsApp with the reference and email, source, timeline with notes, calls, emails and WhatsApp); orders list and detail (workflow, courier and tracking to ship, payment verified, history, proofs); feedback moderation (approve only with consent); payment proofs (verify marks the order paid); search activity; newsletter; audit log; email log; users and roles (Super Admin); my password; and the generic content editor for every CONTENT_MODEL key (D138): list with search, move up and down, delete; record and settings forms drawn from JSON Schema (groups, repeaters, kinds, enums, switches, Dhaka date-times, image previews, JSON fallback), JSON tab, optimistic versions, API field errors in place, Sample notice |
 | Files and components | `apps/web/src/proxy.ts`, `lib/admin/{adminApi,tokens,sessionActions,leadActions,opsActions,contentActions,navigation,format,flatten,schema,editorStrings,contentGroups,types}.ts`, `components/admin/*` (AdminShell, AdminNav, AdminTopBar, AdminCommand, AdminBrand, AdminPageHeader, AdminPanel, AdminEmpty, AdminPagination, ListFilters, StatusTabs, KpiCard, BarList, LeadStatusBadge, JsonDetails, ActionButton, schema/*), `components/ui/table.tsx`, `app/[locale]/admin/**`, `e2e/api-mode.spec.ts`, CI job "API mode e2e" |
 | Screens matched | AdminLogin, AdminLogin-error, AdminLogin-locked, AdminLogin-m, AdminSide, AdminTop, AdminNav-m, AdminCmd, AdminDash, AdminDash-m, AdminLeads, AdminLeads-bulk, AdminLeads-m, AdminLead, AdminLead-lost, AdminLead-m, AdminSearch; plus AdminOrders, AdminOrders-open, AdminFeedback, AdminUsers and every content board through the generic editor |
@@ -865,6 +883,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D137 | 11 Oct | Dashboard figures are CSS bar lists, not recharts | Readable at every width, no chart bundle; recharts can come with Reports after launch | #18 |
 | D138 | 11 Oct | Launch admin edits every content key and setting through one generic editor drawn from the shared zod schemas (JSON Schema via zod's toJSONSchema), with a JSON tab; bespoke editors (package builder, product card, category tree, tiptap, media uploads) follow after launch | Thirty-plus content types in one day; one path validated by the same schemas the API uses keeps every public element admin-controlled on day one | #18 |
 | D139 | 11 Oct | Staff sessions: API tokens in httpOnly SameSite=Lax cookies set by server actions; `proxy.ts` refreshes a token with under a minute left before the page renders; admin links are not prefetched; a refresh token rotated in the last 30 seconds still opens a session | The browser never holds a token; pages render with a valid token; prefetch bursts can't sign staff out (#66) | #18, #66 |
+| D140 | 11 Oct | Flight path on desktop only, route arc from 640 px, search → results morph after launch | On phones the headline fills the width and the summary bar has no room; the morph needs React View Transitions, not worth the risk two days before launch | #52 |
 
 ## 9. Bugs and known issues
 
@@ -930,6 +949,7 @@ The full order of steps, every environment variable and the launch checks are in
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 11 Oct 01:40–06:00 | Launch admin merged (#68), A19–A21 closed with cuts to #71; Turnstile on every form (#70); Live stays locked (#73); deploy runbook (#75); admin QA job at five widths with axe and screenshots (#76, editor fitted to 320 px); signature motion (#77); independent review found 11 defects, all fixed (#79). Home first-load JS measured at 392 KB gzip incl. a 39 KB nomodule polyfill (#39 stays open) | #18–#21, #52, #66, #69, #72, #74, #78 | #68, #70, #73, #75, #76, #77, #79 | API-mode e2e 5 + admin screens 8×5 widths · web unit 238 · shared 52 |
 | 11 Oct 00:00–01:40 | B2 merged (#59); B3 public snapshot, intake and notifications (#62, with bug fixes #60 VAT BIN and #61 refused checkout); B4 admin API (#63); C1 web on the API (#65); #66 concurrent refresh fix (#67); launch admin A18 with the generic content editor (PR #68) and an API-mode e2e job in CI. Local PostgreSQL stopped by the system for low memory; API tests ran in CI | #55, #56, #57, #60, #61, #64, #66, #18 | #59, #62, #63, #65, #67, #68 | API 37 passed (CI) · web unit 238 · e2e 41 (fixture) |
 | 10 Oct 21:15–21:21 | B1 merged (#58); B2 staff auth, roles and audit log | #55 | see #55 block | API 15 passed |
 | 10 Oct 20:45–21:07 | #51 merged (#53); Phase B launch issues #54 – #57 opened under epic #29; B1 API foundation and database (NestJS 12, Fastify, Prisma 7, seed, Docker, CI PostgreSQL) | #54 | see #54 block | API 8 passed |
@@ -953,6 +973,11 @@ The full order of steps, every environment variable and the launch checks are in
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner: Railway (PostgreSQL + Redis), Vercel import, Resend domain records, Turnstile keys, DNS, first Super Admin email; then deploy per `docs/DEPLOY.md` (#74) and run the launch checks.
+2. #39 performance: move zod out of the client search card, defer Motion chunks, re-measure (budget 200 KB).
+3. #22 QA: public routes at 768 and 1024, Lighthouse mobile once deployed; replace Sample content in Admin before announcing.
+
+Earlier (11 Oct 01:40):
 1. Merge #68 when CI is green (fix the API-mode e2e if it fails); close A19 – A21 with what the generic editor covers and a follow-up issue for the bespoke editors (D138).
 2. Turnstile browser widget on every public form (a secret without the widget would refuse every form), then the deploy runbook (Railway API + PostgreSQL + Redis, Vercel web, env list, DNS, Resend) and staging on 12 Oct.
 3. Polish on the way: #52 signature motion, #39 performance, #22 QA at 768 / 1024; admin screenshots and axe at 320 / 390 / 1440 once Playwright MCP is back.
