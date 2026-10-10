@@ -155,6 +155,24 @@ export class AdminInboxService {
             },
           });
         }
+      } else if (proof.status === "verified") {
+        // Taking back a verification: the order is unpaid again unless another proof for it is verified (#78).
+        const order = await tx.order.findUnique({ where: { reference: proof.reference } });
+        const others = await tx.paymentProof.count({
+          where: { reference: proof.reference, status: "verified", id: { not: id } },
+        });
+        if (order?.paymentVerified && others === 0) {
+          await tx.order.update({ where: { id: order.id }, data: { paymentVerified: false } });
+          await tx.orderEvent.create({
+            data: {
+              orderId: order.id,
+              status: order.status,
+              note: "Payment verification withdrawn",
+              actorName: staff.name,
+              at: now,
+            },
+          });
+        }
       }
       await this.audit.record(
         {

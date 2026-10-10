@@ -143,8 +143,9 @@ export class AdminOrdersService {
     }
     const restock = moving && input.status === "cancelled";
     await this.prisma.$transaction(async (tx) => {
-      await tx.order.update({
-        where: { id },
+      // Only from the status read above: two staff cancelling at once restock once (#78).
+      const changed = await tx.order.updateMany({
+        where: { id, status: current },
         data: {
           ...(moving ? { status: input.status } : {}),
           ...(input.paymentVerified !== undefined
@@ -152,6 +153,9 @@ export class AdminOrdersService {
             : {}),
         },
       });
+      if (changed.count === 0) {
+        throw problems.conflict("Someone else changed this order first; reload to see it", "stale");
+      }
       if (
         moving ||
         input.note ||

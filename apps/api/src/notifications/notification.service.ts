@@ -62,7 +62,8 @@ export class NotificationService implements OnModuleDestroy {
   ) {
     this.queue = env.REDIS_URL
       ? new Queue(NOTIFICATION_QUEUE, {
-          connection: { url: env.REDIS_URL, maxRetriesPerRequest: null },
+          // Fail fast when Redis is down instead of holding the command until it returns (#78).
+          connection: { url: env.REDIS_URL, maxRetriesPerRequest: 1, enableOfflineQueue: false },
         })
       : null;
   }
@@ -82,6 +83,7 @@ export class NotificationService implements OnModuleDestroy {
     vars: Record<string, string>,
   ) {
     if (!to) return;
+    let logId: string | null = null;
     try {
       const templates = await this.content.collection("notificationTemplates");
       const template = templates.find(
@@ -102,6 +104,7 @@ export class NotificationService implements OnModuleDestroy {
           status: "queued",
         },
       });
+      logId = log.id;
       const job: EmailJob = { ...mail, logId: log.id };
       if (this.queue) {
         await this.queue.add("email", job, {
@@ -120,6 +123,11 @@ export class NotificationService implements OnModuleDestroy {
       }
     } catch (error) {
       this.logger.warn(`Could not queue ${key}: ${String(error)}`);
+      if (logId) {
+        await this.prisma.notificationLog
+          .update({ where: { id: logId }, data: { status: "failed", error: "queue unavailable" } })
+          .catch(() => undefined);
+      }
     }
   }
 }

@@ -78,6 +78,7 @@ async function ContentKeyView({
       />
       <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
         <RecordList
+          key={data.items.map((item) => item.id).join("|")}
           contentKey={key}
           items={data.items.map((item) => ({
             id: item.id,

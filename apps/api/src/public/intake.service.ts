@@ -112,8 +112,8 @@ export class IntakeService {
       module,
       link: this.adminLink(`/leads/${created.id}`),
     };
-    await this.notifications.notify("lead-received-customer", input.contact.email, vars);
-    await this.notifications.notify("lead-alert-staff", this.notifications.staffAddress, vars);
+    void this.notifications.notify("lead-received-customer", input.contact.email, vars);
+    void this.notifications.notify("lead-alert-staff", this.notifications.staffAddress, vars);
     return { reference: created.reference, createdAt: toDhakaIsoString(now) };
   }
 
@@ -241,8 +241,8 @@ export class IntakeService {
             "transfer"),
       link: this.adminLink(`/orders/${result.id}`),
     };
-    await this.notifications.notify("order-placed-customer", input.address.email, vars);
-    await this.notifications.notify("order-placed-staff", this.notifications.staffAddress, vars);
+    void this.notifications.notify("order-placed-customer", input.address.email, vars);
+    void this.notifications.notify("order-placed-staff", this.notifications.staffAddress, vars);
     return { ok: true, order: result.order };
   }
 
@@ -290,7 +290,7 @@ export class IntakeService {
     input: FeedbackCreateInput,
     now = new Date(),
   ): Promise<{ firstName: string }> {
-    const stored = await this.prisma.feedback.create({
+    await this.prisma.feedback.create({
       data: {
         name: input.name,
         phone: input.phone,
@@ -303,11 +303,11 @@ export class IntakeService {
         createdAt: now,
       },
     });
-    await this.notifications.notify("feedback-received-staff", this.notifications.staffAddress, {
+    void this.notifications.notify("feedback-received-staff", this.notifications.staffAddress, {
       name: input.name,
       service: input.service,
       stars: input.rating ? String(input.rating) : "no",
-      link: this.adminLink(`/feedback/${stored.id}`),
+      link: this.adminLink("/feedback"),
     });
     return { firstName: input.name.split(/\s+/)[0] ?? input.name };
   }
@@ -326,7 +326,7 @@ export class IntakeService {
         createdAt: now,
       },
     });
-    await this.notifications.notify("payment-proof-staff", this.notifications.staffAddress, {
+    void this.notifications.notify("payment-proof-staff", this.notifications.staffAddress, {
       name: input.name,
       reference: input.reference,
       amount: formatTaka(input.amount),
@@ -334,7 +334,7 @@ export class IntakeService {
         payment.offlineAccounts.find((account) => account.id === input.accountId)?.title ??
         input.accountId,
       trx_id: input.transactionId ?? "slip only",
-      link: this.adminLink(`/payments/${stored.id}`),
+      link: this.adminLink("/payments"),
     });
     return { reference: stored.reference, receivedAt: toDhakaIsoString(now) };
   }

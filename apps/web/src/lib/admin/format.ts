@@ -17,6 +17,12 @@ export function ageParts(minutes: number): { unit: "minutes" | "hours" | "days";
   return { unit: "days", value: Math.floor(minutes / (24 * 60)) };
 }
 
+/** A list page number from the URL: a whole number from 1 to 10,000, whatever was typed (#78). */
+export function pageParam(value: string | string[] | undefined): number {
+  const raw = Math.trunc(Number(typeof value === "string" ? value : 1));
+  return Number.isFinite(raw) ? Math.min(10_000, Math.max(1, raw)) : 1;
+}
+
 const DHAKA = "Asia/Dhaka";
 
 /** "11 Oct 2026, 7:18 pm" in Asia/Dhaka, from an ISO time with any offset. */

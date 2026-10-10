@@ -10,7 +10,7 @@ import { StatusTabs } from "@/components/admin/StatusTabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet } from "@/lib/admin/adminApi";
-import { displayPhone, formatDhakaDateTime } from "@/lib/admin/format";
+import { displayPhone, formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import { moderateFeedback } from "@/lib/admin/opsActions";
 import type { FeedbackRow, Paged } from "@/lib/admin/types";
 
@@ -30,7 +30,7 @@ async function Feedback({
 }) {
   const params = await searchParams;
   const status = STATUSES.find((item) => item === one(params.status)) ?? "pending";
-  const page = Math.max(1, Number(one(params.page)) || 1);
+  const page = pageParam(params.page);
   const [list, t, tc] = await Promise.all([
     adminGet<Paged<FeedbackRow>>("/admin/feedback", { status, page, pageSize: 20 }),
     getTranslations("Admin.feedback"),

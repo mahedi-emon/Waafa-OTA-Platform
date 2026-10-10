@@ -56,7 +56,10 @@ function CartView({ storeName, zones, freeDeliveryThreshold, payWith, categories
         setQty(line.variantId, line.quantity);
       }
     }
-  }, [quote, lines, setQty]);
+    // A product that is no longer sold leaves the cart, so the rest can be ordered (#78).
+    const sold = new Set(quote.lines.map((line) => line.variantId));
+    for (const mine of lines) if (!sold.has(mine.variantId)) remove(mine.variantId);
+  }, [quote, lines, setQty, remove]);
 
   if (!hydrated) return <Skeleton className="h-96 rounded-2xl" aria-label={t("summary.loading")} />;
   if (lines.length === 0) return <EmptyCart storeName={storeName} categories={categories} />;

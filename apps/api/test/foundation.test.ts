@@ -107,8 +107,15 @@ describe.skipIf(!dbAvailable)("seed", () => {
       where: { key: "maintenanceSettings" },
       data: { value: { enabled: true, message: "Edited in Admin" } },
     });
+    const removed = await prisma.contentDocument.findFirstOrThrow({
+      where: { collection: "products" },
+    });
+    const where = { collection_docId: { collection: "products", docId: removed.docId } };
+    await prisma.contentDocument.delete({ where });
     const second = await seedDatabase(prisma, loadFixtures(), { admin });
     expect(second).toEqual({ settings: 0, documents: 0, adminCreated: false });
+    // A record deleted in Admin stays deleted on the next deploy (#78).
+    expect(await prisma.contentDocument.findUnique({ where })).toBeNull();
     const kept = await prisma.setting.findUnique({ where: { key: "maintenanceSettings" } });
     expect(kept?.value).toEqual({ enabled: true, message: "Edited in Admin" });
 

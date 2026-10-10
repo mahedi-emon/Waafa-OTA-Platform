@@ -310,6 +310,14 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
     expect(
       (await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).paymentVerified,
     ).toBe(true);
+    // Rejecting it afterwards withdraws the verification (#78).
+    const rejected = await call(accounts, "PATCH", `/payment-proofs/${proof.id}`, {
+      status: "rejected",
+    });
+    expect(rejected.statusCode).toBe(200);
+    expect(
+      (await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).paymentVerified,
+    ).toBe(false);
   });
 
   it("moderates feedback into the public snapshot, never without consent", async () => {

@@ -8,7 +8,7 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import { StatusTabs } from "@/components/admin/StatusTabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
-import { displayPhone, formatDhakaDateTime, taka } from "@/lib/admin/format";
+import { displayPhone, formatDhakaDateTime, taka, pageParam } from "@/lib/admin/format";
 import { reviewProof } from "@/lib/admin/opsActions";
 import type { Paged, ProofRow } from "@/lib/admin/types";
 
@@ -28,7 +28,7 @@ async function Proofs({
 }) {
   const params = await searchParams;
   const status = STATUSES.find((item) => item === one(params.status)) ?? "received";
-  const page = Math.max(1, Number(one(params.page)) || 1);
+  const page = pageParam(params.page);
   const [staff, list, t, tc] = await Promise.all([
     requireStaff(),
     adminGet<Paged<ProofRow>>("/admin/payment-proofs", { status, page, pageSize: 20 }),

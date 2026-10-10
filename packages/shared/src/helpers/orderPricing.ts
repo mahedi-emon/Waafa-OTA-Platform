@@ -212,6 +212,7 @@ export function priceCart(input: PriceCartInput): Quote {
     belowMinimum:
       count > 0 && subtotal < shipping.minimumOrder ? shipping.minimumOrder - subtotal : null,
     cod: { allowed: codReason === null, reason: codReason },
-    ready: count > 0 && lines.every((line) => line.status === "ok"),
+    // A line whose product was removed or unpublished is missing from `lines`: the cart is not ready (#78).
+    ready: count > 0 && lines.length === merged.size && lines.every((line) => line.status === "ok"),
   };
 }

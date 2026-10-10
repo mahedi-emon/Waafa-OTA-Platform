@@ -95,6 +95,17 @@ describe("priceCart", () => {
     expect(quote.ready).toBe(true);
   });
 
+  it("is not ready when a product left the catalogue (#78)", () => {
+    const products = [product("a", 3000, 5)];
+    const lines = [
+      { variantId: "a-v", quantity: 1 },
+      { variantId: "gone-v", quantity: 1 },
+    ];
+    const quote = priceCart({ ...base, products, lines });
+    expect(quote.lines).toHaveLength(1);
+    expect(quote.ready).toBe(false);
+  });
+
   it("makes delivery free from the threshold and for pick-up", () => {
     const products = [product("a", 3000, 5)];
     const lines = [{ variantId: "a-v", quantity: 1 }];
