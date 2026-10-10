@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
-import { formatDhakaDateTime } from "@/lib/admin/format";
+import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import type { NotificationRow, Paged } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,16 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
-const one = (value: string | string[] | undefined) =>
-  typeof value === "string" ? value : undefined;
-
 async function Log({
   searchParams,
 }: {
   searchParams: PageProps<"/[locale]/admin/notifications">["searchParams"];
 }) {
   const params = await searchParams;
-  const page = Math.max(1, Number(one(params.page)) || 1);
+  const page = pageParam(params.page);
   const [list, t, tc] = await Promise.all([
     adminGet<Paged<NotificationRow>>("/admin/notifications", { page, pageSize: 40 }),
     getTranslations("Admin.notifications"),

@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { adminGet } from "@/lib/admin/adminApi";
-import { formatDhakaDateTime } from "@/lib/admin/format";
+import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import type { SearchActivity } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,7 +36,7 @@ async function Activity({
 }) {
   const params = await searchParams;
   const area = MODULES.find((item) => item === one(params.module));
-  const page = Math.max(1, Number(one(params.page)) || 1);
+  const page = pageParam(params.page);
   const [data, t, tc, tm, td] = await Promise.all([
     adminGet<SearchActivity>("/admin/search-logs", { module: area, page, pageSize: 30 }),
     getTranslations("Admin.search"),

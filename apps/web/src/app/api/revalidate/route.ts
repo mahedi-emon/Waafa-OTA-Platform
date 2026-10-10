@@ -35,7 +35,10 @@ export async function POST(request: Request) {
   if (parsed.at && Math.abs(Date.now() - Date.parse(parsed.at)) > MAX_AGE_MS) {
     return NextResponse.json({ error: "expired" }, { status: 400 });
   }
-  const tags = Object.values(CACHE_TAGS);
+  // Orders change stock only ("products"): the snapshot and the catalogue; any other key can show anywhere (#78).
+  const tags: string[] = parsed.keys.every((key) => key === "products")
+    ? [CACHE_TAGS.snapshot, CACHE_TAGS.catalogue]
+    : Object.values(CACHE_TAGS);
   for (const tag of tags) revalidateTag(tag, { expire: 0 });
   return NextResponse.json({ revalidated: tags, keys: parsed.keys });
 }

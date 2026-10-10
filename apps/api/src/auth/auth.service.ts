@@ -63,15 +63,19 @@ export class AuthService {
     }
     const valid = await argon2.verify(user.passwordHash, password).catch(() => false);
     if (!valid) {
-      const failed = user.failedLogins + 1;
-      const lock = failed >= MAX_FAILED_LOGINS;
-      await this.prisma.staffUser.update({
+      // Counted in the database, so parallel guesses still lock the account (#78).
+      const counted = await this.prisma.staffUser.update({
         where: { id: user.id },
-        data: {
-          failedLogins: lock ? 0 : failed,
-          lockedUntil: lock ? new Date(now.getTime() + LOCK_MINUTES * 60_000) : null,
-        },
+        data: { failedLogins: { increment: 1 } },
+        select: { failedLogins: true },
       });
+      const lock = counted.failedLogins >= MAX_FAILED_LOGINS;
+      if (lock) {
+        await this.prisma.staffUser.update({
+          where: { id: user.id },
+          data: { failedLogins: 0, lockedUntil: new Date(now.getTime() + LOCK_MINUTES * 60_000) },
+        });
+      }
       if (lock) {
         await this.audit.record({
           actor: { id: null, name: "system" },

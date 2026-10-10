@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
-import { displayPhone, formatDhakaDateTime, taka } from "@/lib/admin/format";
+import { displayPhone, formatDhakaDateTime, taka, pageParam } from "@/lib/admin/format";
 import type { OrderRow, Paged } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,7 +38,7 @@ async function Orders({
   const params = await searchParams;
   const status = OrderStatusSchema.safeParse(one(params.status)).data;
   const q = one(params.q)?.slice(0, 80);
-  const page = Math.max(1, Number(one(params.page)) || 1);
+  const page = pageParam(params.page);
   const [list, t, tc] = await Promise.all([
     adminGet<Paged<OrderRow>>("/admin/orders", { status, q, page, pageSize: 25 }),
     getTranslations("Admin.orders"),

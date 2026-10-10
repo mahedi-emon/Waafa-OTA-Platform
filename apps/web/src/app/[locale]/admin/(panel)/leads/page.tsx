@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
-import { ageParts } from "@/lib/admin/format";
+import { ageParts, pageParam } from "@/lib/admin/format";
 import type { LeadList, StaffDirectoryEntry } from "@/lib/admin/types";
 import { LeadsTable } from "./_components/LeadsTable";
 
@@ -39,7 +39,7 @@ async function Leads({
     module: LeadModuleSchema.safeParse(one(params.module)).data,
     status: LeadStatusSchema.safeParse(one(params.status)).data,
     q: one(params.q)?.slice(0, 80),
-    page: Math.max(1, Number(one(params.page)) || 1),
+    page: pageParam(params.page),
   };
   const [list, staff, t, tc, tm, ts] = await Promise.all([
     adminGet<LeadList>("/admin/leads", { ...query, pageSize: 25 }),

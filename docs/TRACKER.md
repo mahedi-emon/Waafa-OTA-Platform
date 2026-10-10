@@ -125,7 +125,8 @@ Serena memory `audit_findings`.
 | Widths checked | — |
 | Tools and skills | Serena; zod 4 `toJSONSchema`; BullMQ, nodemailer |
 | Decisions | D130 – D134 |
-| Bugs and follow-ups | #72 Booking modes could be switched to Live from the generic editor (unlock and Live in one save) | P0 | API settings | Fixed in #72: the API refuses unlocking Live or turning a module Live until Phase E; regression test |
+| Bugs and follow-ups | #78 Pre-launch review (independent subagent): the seed re-added deleted Sample records on every API start (P0); a Redis outage hung submissions after the write; login limits bypassable through X-Forwarded-For and parallel guesses; double restock on a double cancel; rejecting a verified proof left the order paid; staff email links to missing pages; a stale snapshot could be cached after a save; record list hid new records; priceCart ready with a dropped line; admin lists crashed on odd page numbers; every order expired every cache | P0–P2 | API, web | Fixed in #78 with regression tests |
+| #72 Booking modes could be switched to Live from the generic editor (unlock and Live in one save) | P0 | API settings | Fixed in #72: the API refuses unlocking Live or turning a module Live until Phase E; regression test |
 | #66 Two refreshes at the same moment (a page and its prefetches near token expiry) were taken for a stolen refresh token and signed staff out | P0 | API auth | Fixed in #66: a token rotated in the last 30 seconds still opens a session; regression test |
 | #60 VAT invoice BIN regex (fixed here), #61 checkout stuck after a refusal (fixed here). The local PostgreSQL was stopped by the system for low memory on 11 Oct; API database tests ran in CI |
 

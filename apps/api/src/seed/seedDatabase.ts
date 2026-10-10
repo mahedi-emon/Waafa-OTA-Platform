@@ -20,6 +20,9 @@ export type SeedResult = { settings: number; documents: number; adminCreated: bo
 
 const json = (value: unknown) => value as Prisma.InputJsonValue;
 
+/** Lists the seed has filled once; it never refills them, so records deleted in Admin stay deleted (#78). */
+export const SEED_MARKER = "_seededLists";
+
 /**
  * Loads content and settings without overwriting admin edits: a setting or a record that already exists is left as
  * it is, so the seed can run on every deploy. Every value is validated with its CONTENT_MODEL schema first.
@@ -31,6 +34,9 @@ export async function seedDatabase(
 ): Promise<SeedResult> {
   let settings = 0;
   let documents = 0;
+  const marker = await prisma.setting.findUnique({ where: { key: SEED_MARKER } });
+  const seeded = new Set(Array.isArray(marker?.value) ? (marker.value as string[]) : []);
+  const before = seeded.size;
 
   for (const key of CONTENT_KEYS) {
     const value = content[key];
@@ -46,6 +52,12 @@ export async function seedDatabase(
       continue;
     }
     if (!Array.isArray(value)) throw new Error(`Seed value for "${key}" must be an array`);
+    if (seeded.has(key)) continue;
+    // A list that already has records (seeded before the marker existed) counts as seeded.
+    if ((await prisma.contentDocument.count({ where: { collection: key } })) > 0) {
+      seeded.add(key);
+      continue;
+    }
     const rows = value.map((record, position) => {
       const parsed = entry.schema.parse(record);
       return {
@@ -56,9 +68,17 @@ export async function seedDatabase(
         updatedBy: "seed",
       };
     });
+    seeded.add(key);
     if (rows.length === 0) continue;
     const created = await prisma.contentDocument.createMany({ data: rows, skipDuplicates: true });
     documents += created.count;
+  }
+  if (seeded.size !== before) {
+    await prisma.setting.upsert({
+      where: { key: SEED_MARKER },
+      update: { value: json([...seeded]) },
+      create: { key: SEED_MARKER, value: json([...seeded]), updatedBy: "seed" },
+    });
   }
 
   let adminCreated = false;

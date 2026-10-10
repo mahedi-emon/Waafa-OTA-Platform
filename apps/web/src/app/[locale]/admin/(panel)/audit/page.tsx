@@ -5,7 +5,7 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet } from "@/lib/admin/adminApi";
-import { formatDhakaDateTime } from "@/lib/admin/format";
+import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import type { AuditRow, Paged } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,7 +22,7 @@ async function Audit({
   searchParams: PageProps<"/[locale]/admin/audit">["searchParams"];
 }) {
   const params = await searchParams;
-  const page = Math.max(1, Number(one(params.page)) || 1);
+  const page = pageParam(params.page);
   const entity = one(params.entity)?.slice(0, 40);
   const [list, t, tc] = await Promise.all([
     adminGet<Paged<AuditRow>>("/admin/audit", { entity, page, pageSize: 40 }),

@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { adminGet } from "@/lib/admin/adminApi";
-import { formatDhakaDateTime } from "@/lib/admin/format";
+import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import { removeSubscriber } from "@/lib/admin/opsActions";
 import type { Paged, SubscriberRow } from "@/lib/admin/types";
 
@@ -24,16 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
-const one = (value: string | string[] | undefined) =>
-  typeof value === "string" ? value : undefined;
-
 async function Subscribers({
   searchParams,
 }: {
   searchParams: PageProps<"/[locale]/admin/subscribers">["searchParams"];
 }) {
   const params = await searchParams;
-  const page = Math.max(1, Number(one(params.page)) || 1);
+  const page = pageParam(params.page);
   const [list, t, tc] = await Promise.all([
     adminGet<Paged<SubscriberRow>>("/admin/subscribers", { page, pageSize: 50 }),
     getTranslations("Admin.subscribers"),

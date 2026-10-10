@@ -51,7 +51,8 @@ export async function createApp(
         ? incoming
         : randomUUID();
     },
-    trustProxy: true,
+    // One proxy hop (Railway's edge); X-Forwarded-For entries before it are the caller's own (#78).
+    trustProxy: (_address: string, hop: number) => hop === 0,
     bodyLimit: 1_048_576,
   });
   const app = await NestFactory.create<NestFastifyApplication>(

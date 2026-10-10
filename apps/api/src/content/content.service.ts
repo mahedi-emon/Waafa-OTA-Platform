@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import {
   CONTENT_KEYS,
   CONTENT_MODEL,
+  isContentKey,
   type CollectionKey,
   type ContentRecord,
   type ContentValue,
@@ -31,16 +32,20 @@ export type Snapshot = { etag: string; body: Record<string, unknown> };
 @Injectable()
 export class ContentService {
   private cached: Snapshot | null = null;
+  /** Bumped on every write: a rebuild that started before a write must not be cached after it (#78). */
+  private generation = 0;
 
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   /** Drop the cached snapshot after a write. */
   invalidate(): void {
     this.cached = null;
+    this.generation += 1;
   }
 
   async snapshot(): Promise<Snapshot> {
     if (this.cached) return this.cached;
+    const generation = this.generation;
     const [settings, documents, feedback] = await Promise.all([
       this.prisma.setting.findMany(),
       this.prisma.contentDocument.findMany({
@@ -56,7 +61,8 @@ export class ContentService {
     for (const key of CONTENT_KEYS) {
       if (CONTENT_MODEL[key].kind === "collection") body[key] = [];
     }
-    for (const setting of settings) body[setting.key] = setting.value;
+    for (const setting of settings)
+      if (isContentKey(setting.key)) body[setting.key] = setting.value;
     for (const document of documents) {
       const list = body[document.collection];
       if (Array.isArray(list)) list.push(document.data);
@@ -76,8 +82,9 @@ export class ContentService {
     }));
     for (const key of PRIVATE_KEYS) body[key] = [];
     const etag = `"${createHash("sha1").update(JSON.stringify(body)).digest("hex")}"`;
-    this.cached = { etag, body };
-    return this.cached;
+    const snapshot = { etag, body };
+    if (generation === this.generation) this.cached = snapshot;
+    return snapshot;
   }
 
   async collection<K extends CollectionKey>(key: K): Promise<Array<ContentRecord<K>>> {
