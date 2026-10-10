@@ -13,10 +13,17 @@
 - D32 gallery/feedback/team sample rules. D33 package categories[]/months[]; airline strip featuredOrder.
 - D34 /shop/printing-solutions, /shop/international-trading. D35 Phase A createLead stores nothing.
 - D36 v4 adopted: #1–#22 = A1–A22, A0 #27, epics #28–#33, A1b #34; A17 = system states + LiveBody placeholder only.
-- D37 drawn prototype loops never ship; real footage; route map becomes live SVG. D38 dangerouslySetInnerHTML only in
-  components/content/RichText.tsx + components/seo/JsonLd.tsx. D39 hex guard on apps/web/src; brandColors.ts.
-- D40 magic MCP uses TWENTY_FIRST_API_KEY; CLI `${API_KEY_21ST:-$TWENTY_FIRST_API_KEY}`. D41 husky sets local
-  core.hooksPath; CI HUSKY=0. D42 job-level path filters. D43 Project dates/estimates. D44 no Phase F words (guards).
-- D45 credits file docs/design/MEDIA_CREDITS.md.
+- D37 drawn prototype loops never ship; real footage. D38 dangerouslySetInnerHTML only RichText + JsonLd.
+- D39 hex guard on apps/web/src; brandColors.ts. D40 21st key env names. D41 husky local hooksPath; CI HUSKY=0.
+- D42 job-level path filters. D43 Project dates/estimates. D44 no Phase F words (guards). D45 MEDIA_CREDITS.md.
+- D46–D55 (A6/A5): login hidden until accounts; navs read pathname after hydration; config cache hours; no root-params;
+  announcement dismissal localStorage; tagline from 1280; Radix focus proxy excluded from axe; RSC prefetch 404s allowed
+  until A22; six real clips; media slots.
+- D56 inner-page competitor Lighthouse = 1 run on package listings.
+- D57 search tabs/trip pill = CSS transform (no layoutId/domMax). D58 country code chip, no flags. D59 card one row from
+  xl (1280). D60 Back restore via sessionStorage snapshot (+ Activity). D61 pickers/popover/vaul/submit logic lazy.
+  D62 no tour budget field (board). D63 week starts Sunday; >30-night days disabled.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
-  children of stopped servers; shadcn MCP needs registries ["@shadcn"].
+  children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
+  (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on
+  hover (add before:hidden); PowerShell Move-Item treats [locale] as wildcard (use bash mv / -LiteralPath).

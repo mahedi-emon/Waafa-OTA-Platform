@@ -67,6 +67,21 @@ Serena memory `audit_findings`.
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
 
+### #8 · A8 Unified search card and pickers — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 09 Oct 21:10 → 10 Oct |
+| Branch · PR · merge | `feat/8-search-card` · see section 13 · squash |
+| Built | Glass search card with Flight / Hotel / Tour / Visa tabs (sliding pill), trip type, From ⇄ To swap, multi-city up to 5 flights; phone pickers as vaul sheets (full screen for lists and calendars), desktop pickers as Radix popovers, both loaded on demand; airport, place, destination, country and visa-type lists (cmdk, typed text in bold, WhatsApp empty state); calendar ranges (2 months desktop, 6 stacked on phones, 30-night cap); travellers, rooms, tour party and applicants steppers with rolling numbers and child ages; month picker; shared-schema validation with errors under fields, a shake and an announcement; nuqs URLs for /flights, /hotels, /tour-packages, /visa-services/[country]; search log by sendBeacon (204, never blocks); recent searches (localStorage) and Back restore (sessionStorage) |
+| Files and components | `apps/web/src/components/search/*` (SearchCard, SearchCardClient, SearchCardContext, SearchTabList, TripTypeToggle, SearchField, SwapButton, SearchSubmit, FlightPanel, MultiCityPanel, HotelPanel, TourPanel, VisaPanel, QuickPicks, HelpLine, PickerAnchor, PickerPopover, PickerSheet, PickerSheetBody, PickerBody, OptionList, OptionIcon, NoMatch, CountryCode, AirportPicker, PlacePicker, DestinationPicker, CountryPicker, VisaTypePicker, DatesPicker, RangeBox, MonthPicker, TravellersPicker, RoomsPicker, PartyPicker, CounterRow, ChildAges, PickerFooter, hooks), `components/fx/BorderBeam.tsx`, `components/motion/RollingNumber.tsx`, `lib/search/*`, `app/api/search/{airports,places,log}/route.ts`, `SearchSettings` contract + fixture |
+| Screens matched | SearchCard, Pick-m-from, Pick-m-to, Pick-m-dates, Pick-m-range, Pick-m-pax, Pick-m-multi, Pick-m-hcity, Pick-m-rooms, Pick-m-tmonth, Pick-m-vcountry, Pick-m-vtype, Pick-d-from, Pick-d-to, Pick-d-dates, Pick-d-range, Pick-d-pax, Pick-d-rooms, Pick-d-tmonth, Pick-d-vcountry |
+| Admin control | AC-32, AC-65 – AC-71 |
+| Tests | unit +58 (search state, URL round trips, submit, recent, draft snapshot, highlight, rate limiter) · e2e 11 (phone sheets, desktop popovers, every tab's URL, validation, keyboard, multi-city, 320 px overflow, axe) · axe pass · Lighthouse mobile `/` 74–83 / 99 / 96 / 92 (shell alone 84; budget gap tracked in #39) |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 |
+| Tools and skills | Serena, Context7 (nuqs, Next.js Activity, react-day-picker v10), shadcn primitives, Playwright MCP, Lighthouse CLI, CDP CPU profile, an independent review subagent; skills design-taste-frontend, frontend-design (direction), ui-ux-pro-max rules |
+| Decisions | D57 – D65 |
+| Bugs and follow-ups | #39 (perf budget and picker long tasks); hotel stay over 30 nights reset check-in (fixed, regression test); independent review: 15 findings, 14 fixed (phone calendar reach, selected-day contrast, restore once per document, log route byte cap + same-origin + rate limit, stepper focus at limits, popover toggle, 44 px targets, double submit, one-night stays, Dhaka today in calendars and at midnight, same-site recent links, row alignment, repeated announcements); locale-aware formatters move to P1 Bangla (D65) |
+
 ### #34 · A1b v4 addendum: signature moments, beat list, persisted design system, inner-page benchmark — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -286,11 +301,25 @@ confirmed in Phase B) → verified against the live API (Phase C). Accessors liv
 | AC-62 | Floating WhatsApp prefilled message | `getContactSettings()` → whatsappMessage (`{page}` placeholder) | Settings › General | `GET /api/v1/settings/contact` | ⬜ |
 | AC-63 | Header Log in (hidden until accounts ship) | `getSiteSettings()` → accountsLive | Settings › General | `GET /api/v1/settings/site` | ⬜ |
 | AC-64 | Page-level photos and videos (home hero, flights, group fares, visa, printing, trading headers and form side images) | `getMediaSlot(key)` → image or video (mp4, webm, phone files, poster, credit) | Content › Media library | `GET /api/v1/media/slots/{key}` | ⬜ |
+| AC-65 | Search card From default, Popular flight chips | `getSearchSettings()` → defaultOrigin, popularFlights[] | Settings › General › Search | `GET /api/v1/settings/search` | ⬜ |
+| AC-66 | Hotel nationality list | `getSearchSettings()` → hotelNationalities[] (names from Intl) | Settings › General › Search | `GET /api/v1/settings/search` | ⬜ |
+| AC-67 | Tour tab destinations and Popular chips | `listDestinations()` → slug, name, subtitle, iata, tags (domestic), order | Content › Destinations | `GET /api/v1/destinations` | ⬜ |
+| AC-68 | Visa tab countries, regions, types, Popular chips | `listVisaCountries()` → slug, name, flagCode, region, popular, types[].type | Visa › Countries | `GET /api/v1/visa/countries` | ⬜ |
+| AC-69 | Preferred airline list | `listAirlines()` → code, name | Flights › Airlines | `GET /api/v1/airlines` | ⬜ |
+| AC-70 | Flight help line (Manual vs Live) and Live hotline | `getPublicConfig()` → modes.flights.mode; `getContactSettings()` → phoneDisplay, whatsappE164 | Settings › Booking modes; Settings › General | `GET /api/v1/config` | ⬜ |
+| AC-71 | Search activity (every submitted search) | `logSearch()` → module, summary, params, device, source | Admin › Search activity (A18) | `POST /api/v1/search-logs`, `GET /api/v1/search-logs` | ⬜ |
 
 ## 5. Components inventory
 
 | Component | Path | Source (shadcn · 21st.dev id · custom) | Used on |
 | --- | --- | --- | --- |
+| SearchCard, SearchCardClient | `apps/web/src/components/search/` | custom (shadcn Tabs, Radio group, Button) | `/` (A7 hero), results bars (A9, A10) |
+| Picker popover and sheet | `components/search/PickerPopover.tsx`, `PickerSheet.tsx` | shadcn Popover, Drawer (vaul), loaded with next/dynamic | search card |
+| OptionList | `components/search/OptionList.tsx` | shadcn Command (cmdk) | airport, place, destination, country, visa-type pickers |
+| DatesPicker | `components/search/DatesPicker.tsx` | shadcn Calendar (react-day-picker v10, custom modifiers) | search card |
+| CounterRow, ChildAges | `components/search/` | shadcn Button, Select | travellers, rooms, party, applicants |
+| BorderBeam | `components/fx/BorderBeam.tsx` | 21st.dev Border Beam (18473) rebuilt as a CSS conic layer | search card (desktop) |
+| RollingNumber | `components/motion/RollingNumber.tsx` | custom (Motion AnimatePresence) | steppers |
 | MotionProvider | `apps/web/src/components/motion/MotionProvider.tsx` | custom (LazyMotion strict + MotionConfig reducedMotion="user") | root layout |
 | reducedMotion helpers | `apps/web/src/components/motion/reducedMotion.ts` | custom (`REDUCED_FADE`, `useRiseVariants`, `useSafeTransition`) | MotionKit |
 | PageTransition · Reveal · Stagger · StaggerItem · CountUp · Marquee · Parallax · PressScale · DrawCheck | `apps/web/src/components/motion/` | custom on Motion (MotionKit) | site-wide |
@@ -455,6 +484,15 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D54 | 09 Oct | Six real clips ship (hero sky, Maldives, Cappadocia, port, passport, headphones); the printing header uses the Unsplash printer photo and the sample power bank has no video | The only free printer clip was too dark for the brand; no free real power bank footage exists; never a drawn stand-in | #5 |
 | D55 | 09 Oct | Media slots (`MediaSlotKey`) hold page-level photos and videos; the `office` slot stays empty until Waafa sends real office photos; `about-routes` dropped (the route map is a live SVG) | Every page image is admin-replaceable without a stand-in | #5 |
 | D56 | 10 Oct | Inner-page competitor Lighthouse uses one run per site on the package listing (time-boxed); GoZayaan's `/tour` redirect to its home Tour tab is recorded as is | Three runs per site would cost about 25 minutes at a point where the build is behind; the scores are far from Waafa's targets, so run-to-run noise cannot change any decision | #34 |
+| D57 | 10 Oct | Search tabs and trip type use a CSS-transform sliding pill (spring curve), not Motion `layoutId` | Same look without loading `domMax` on the home page; MOTION.md's layoutId is kept for the search → results morph (A9) | #8 |
+| D58 | 10 Oct | Countries show a two-letter code chip instead of flag images | No emoji, no third-party flag art; readable at 28 px and admin data already has `flagCode` | #8 |
+| D59 | 10 Oct | The card is one row from 1280 px (xl); 768–1279 px uses two rows | At 1024 px six fields and the button truncated dates and airport names | #8 |
+| D60 | 10 Oct | Back restores the submitted card from sessionStorage when the page was a full load; Cache Components' Activity keeps it otherwise | Results routes (A9–A12) are not built yet, so Back currently reloads; the snapshot is zod-validated and tab-scoped | #8 |
+| D61 | 10 Oct | Pickers, Radix Popover/Popper and vaul load on demand (first touch or focus warms them); submit logic loads on first submit | Keeps ~40 KB of picker code out of the first load (budget work continues in #39) | #8 |
+| D62 | 10 Oct | The tour tab has no budget field; budget filtering lives on /tour-packages (A11) | The SearchCard board shows Where to / When / Travellers only; the board wins on layout | #8 |
+| D63 | 10 Oct | Calendars start the week on Sunday; days past a 30-night stay are disabled once check-in is set | Matches the Pick-d-range board; a stray pick past the cap never resets check-in | #8 |
+| D64 | 10 Oct | `/api/search/log` accepts same-site requests only, 4 KB at most, 30 per minute per client (in-memory fixed window in Phase A, Redis in Phase B) | CLAUDE.md requires rate limits on submits; logs must not be floodable | #8 |
+| D65 | 10 Oct | Search date formatters and country names stay English (`en-GB`, `Intl.DisplayNames(["en"])`) until Bangla ships in P1 | One locale at launch; the formatters take a locale parameter when `/bn` is added | #8 |
 
 ## 9. Bugs and known issues
 
@@ -464,6 +502,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Boards disagree on two shop numbers: COD cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample); free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms | P2 | fixtures (shop settings) | Owner question |
 | Phase A references restart at 0001 whenever the dev server restarts (no storage before the API) | P2 | lead intake | By design until Phase C |
 | Visitors who dismissed the announcement may see it collapse right after hydration on their next visit | P2 | announcement bar | Accepted (D50); revisit if field CLS shows it |
+| #39 Home first-load JS 346 KB and simulated LCP 4.1 s over budget (shell alone 308 KB, 84); picker open long tasks 180–430 ms at 4x CPU | P1 | `/`, search pickers | Open, due with A7 |
+| Hotel stay picks past 30 nights reset the check-in | P2 | search card | Fixed in #8 with a regression test |
 
 ## 10. Cut list
 

@@ -96,3 +96,10 @@ export async function listHomeSections() {
   cacheTag(CACHE_TAGS.home);
   return repositories.settings.listHomeSections();
 }
+
+export async function getSearchSettings() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.settings);
+  return repositories.settings.getSearchSettings();
+}
