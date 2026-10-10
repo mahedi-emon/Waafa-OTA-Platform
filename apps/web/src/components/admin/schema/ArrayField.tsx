@@ -50,7 +50,7 @@ function ArrayField({ schema, path, value, optional }: ArrayFieldProps) {
   const add = () => change(path, [...items, defaultFor(itemSchema, root)]);
 
   return (
-    <fieldset className="flex flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-4">
+    <fieldset className="flex min-w-0 flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-3 sm:p-4">
       <legend className="px-1 text-[14px] font-bold text-navy-900">
         {label}
         {optional ? (
@@ -67,12 +67,14 @@ function ArrayField({ schema, path, value, optional }: ArrayFieldProps) {
       {items.length === 0 ? (
         <p className="text-[13.5px] text-mist-600">{strings.emptyList}</p>
       ) : null}
-      <ol className="flex flex-col gap-3">
+      <ol className="flex min-w-0 flex-col gap-3">
         {items.map((item, index) => (
           <li
             key={index}
             className={
-              simple ? "flex items-end gap-2" : "rounded-xl border border-mist-200 bg-mist-25 p-3"
+              simple
+                ? "flex min-w-0 items-end gap-2"
+                : "min-w-0 rounded-xl border border-mist-200 bg-mist-25 p-2.5 sm:p-3"
             }
           >
             {simple ? null : (
@@ -113,7 +115,7 @@ function ArrayField({ schema, path, value, optional }: ArrayFieldProps) {
                 </div>
               </div>
             )}
-            <div className={simple ? "min-w-0 flex-1" : ""}>
+            <div className={simple ? "min-w-0 flex-1" : "min-w-0"}>
               <SchemaField
                 schema={itemSchema}
                 path={[...path, index]}

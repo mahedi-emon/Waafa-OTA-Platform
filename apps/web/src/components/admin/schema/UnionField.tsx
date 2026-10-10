@@ -59,7 +59,7 @@ function UnionField({ options, nullable, path, value, optional }: UnionFieldProp
   const id = `field-${pathKey(path).replace(/[^\w-]/g, "-")}-kind`;
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-4">
+    <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-3 sm:p-4">
       <FieldShell
         id={id}
         label={`${humanize(String(path.at(-1) ?? ""))} · ${strings.variant}`}
