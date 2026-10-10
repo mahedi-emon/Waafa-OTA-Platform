@@ -247,6 +247,9 @@ export default async function VisaServicesPage({
             </li>
           ))}
         </ol>
+        <Button asChild variant="white" className="self-start">
+          <a href="#visa-search">{t("list.start")}</a>
+        </Button>
       </section>
 
       {faqs.length > 0 ? (

@@ -46,6 +46,9 @@
   link, no map iframe. D114 gallery videos open externally. D115 optional feedback rating, never an average.
 - D116 global-error fixed English. D117 offline = notice (no SW). D118 404 without site search box. D119 maintenance
   replaces the public site in the (site) layout; admin/API unaffected.
+- D120 group fares link with ?groupFare= (fare = fare type). D121 partial flight links prefill (admin default origin).
+  D122 RATE_LIMIT_FACTOR only on the Playwright server. D123 footer brand in text (one logo). D124 request steps ask
+  travellers / rooms+guests.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
   children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
   (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on

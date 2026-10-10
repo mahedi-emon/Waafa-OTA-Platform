@@ -1,4 +1,4 @@
-import { Gauge, LayoutGrid, Printer } from "lucide-react";
+import { Gauge, LayoutGrid, Printer, Truck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getShopContent, getSiteSettings } from "@/lib/data/settings";
@@ -39,6 +39,19 @@ async function ShopBar() {
     })),
   ];
   const finderOn = categories.some((category) => category.compatibility);
+  // Top-level categories that hold a product (directly or below), in admin order: the category row.
+  const parentOf = new Map(categories.map((category) => [category.id, category.parentId]));
+  const stocked = new Set<string>();
+  for (const product of products.items) {
+    let id: string | null | undefined = product.categoryId;
+    while (id) {
+      stocked.add(id);
+      id = parentOf.get(id);
+    }
+  }
+  const topCategories = categories.filter(
+    (category) => category.level === 1 && stocked.has(category.id),
+  );
 
   return (
     <div className="border-b border-mist-200 bg-white">
@@ -76,6 +89,7 @@ async function ShopBar() {
             { href: "/shop/categories", label: t("allCategories"), icon: LayoutGrid },
             { href: "/shop/deals", label: t("deals"), icon: Gauge },
             ...(finderOn ? [{ href: "/shop/finder", label: t("finder"), icon: Printer }] : []),
+            { href: "/shop/track", label: t("track"), icon: Truck },
           ].map((item) => (
             <Link
               key={item.href}
@@ -91,6 +105,32 @@ async function ShopBar() {
           </div>
         </nav>
       </div>
+      {topCategories.length > 0 || content.services.length > 0 ? (
+        <nav aria-label={t("categoriesNav")} className="border-t border-mist-100">
+          <ul className="site-container flex [scrollbar-width:none] gap-1 overflow-x-auto py-1.5">
+            {topCategories.map((category) => (
+              <li key={category.id} className="shrink-0">
+                <Link
+                  href={`/shop/c/${category.slug}`}
+                  className="inline-flex min-h-11 items-center rounded-full px-3 text-[14px] font-medium text-ink-900 outline-none hover:bg-mist-100 focus-visible:ring-3 focus-visible:ring-ring/40"
+                >
+                  {category.name}
+                </Link>
+              </li>
+            ))}
+            {content.services.map((service) => (
+              <li key={service.href} className="shrink-0">
+                <Link
+                  href={service.href}
+                  className="inline-flex min-h-11 items-center rounded-full px-3 text-[14px] font-semibold text-brand-700 outline-none hover:bg-electric-50 focus-visible:ring-3 focus-visible:ring-ring/40"
+                >
+                  {service.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : null}
     </div>
   );
 }

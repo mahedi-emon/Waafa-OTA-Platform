@@ -115,7 +115,7 @@ test.describe("flights at 1440", () => {
       .getByRole("link", { name: /^Request/ })
       .first()
       .click();
-    await page.waitForURL("**/flights?fare=*");
+    await page.waitForURL("**/flights?groupFare=*");
     await expect(page.getByText("Group fare", { exact: true })).toBeVisible();
     await fillContact(page);
     await expect(page.getByLabel("Departure", { exact: true })).toHaveAttribute("readonly", "");

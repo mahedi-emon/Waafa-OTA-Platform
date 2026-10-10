@@ -514,7 +514,18 @@
       "notes": "Anything we should know? (optional)",
       "notesHint": "For example: travelling with a baby, need extra baggage, or a wheelchair at the airport.",
       "sending": "Sending",
-      "stepOf": "Step 2 of 2"
+      "stepOf": "Step 2 of 2",
+      "travellers": "Who is travelling?",
+      "adults": "Adults",
+      "adultsSub": "12 years and over",
+      "children": "Children",
+      "childrenSub": "2 to 11 years",
+      "infants": "Infants",
+      "infantsSub": "Under 2, on a lap",
+      "childAge": "Age of child {n}",
+      "years": "{age} years",
+      "fewer": "One fewer: {who}",
+      "more": "One more: {who}"
     },
     "success": {
       "title": "Request sent",
@@ -532,7 +543,9 @@
       "toRequired": "Choose where you are flying to",
       "sameAirport": "From and To can’t be the same airport",
       "departRequired": "Choose a departure date",
-      "returnBeforeDepart": "Return can’t be before departure"
+      "returnBeforeDepart": "Return can’t be before departure",
+      "travellersMax": "Up to 9 travellers per request. For bigger groups, ask for a group fare.",
+      "infantsMax": "Each infant travels on an adult’s lap, so infants can’t outnumber adults."
     },
     "help": {
       "title": "Rather talk to someone?",
@@ -690,7 +703,32 @@
       "whatsapp": "WhatsApp",
       "email": "Email",
       "notes": "Anything we should know? (optional)",
-      "notesHint": "For example: a late check-in, a cot for a baby, or connecting rooms."
+      "notesHint": "For example: a late check-in, a cot for a baby, or connecting rooms.",
+      "guests": "Rooms and guests",
+      "rooms": "Rooms",
+      "adults": "Adults",
+      "adultsSub": "18 years and over",
+      "children": "Children",
+      "childrenSub": "Under 18",
+      "childAge": "Age of child {n}",
+      "years": "{age} years",
+      "underOne": "Under 1",
+      "fewer": "One fewer: {who}",
+      "more": "One more: {who}",
+      "stars": "Hotel class",
+      "starOptions": {
+        "3": "3 star",
+        "4": "4 star",
+        "5": "5 star",
+        "any": "Any"
+      },
+      "bestTime": "Best time to call",
+      "bestTimes": {
+        "any": "Any time in office hours",
+        "morning": "10 am to 12 pm",
+        "midday": "12 pm to 3 pm",
+        "afternoon": "3 pm to 6 pm"
+      }
     },
     "success": {
       "title": "Request sent",
@@ -708,7 +746,9 @@
       "checkinRequired": "Choose a check-in date",
       "checkoutRequired": "Choose a check-out date",
       "checkoutAfterCheckin": "Check-out must be after check-in",
-      "stayTooLong": "Up to 30 nights in one booking"
+      "stayTooLong": "Up to 30 nights in one booking",
+      "adultPerRoom": "Each room needs at least one adult.",
+      "tooManyGuests": "Up to 6 adults and 4 children per room. Add a room for more guests."
     }
   },
   "Packages": {
@@ -1090,7 +1130,8 @@
       "payLater": "Pay when we submit your file, not before.",
       "barLine": "{type} visa, per applicant",
       "barTotal": "{total} total",
-      "feeLabel": "Fees"
+      "feeLabel": "Fees",
+      "metaDescription": "{country} visa from Bangladesh: documents, processing time and fees, with the file checked by Waafa’s visa desk before it reaches the embassy."
     },
     "apply": {
       "metaTitle": "Apply for your {country} visa",
@@ -1217,7 +1258,9 @@
       "cartCount": "Cart, {count, plural, =0 {empty} one {# item} other {# items}}",
       "finder": "Find by model",
       "deals": "Deals",
-      "allCategories": "All categories"
+      "allCategories": "All categories",
+      "track": "Track order",
+      "categoriesNav": "Shop by category"
     },
     "home": {
       "sample": "Sample",
@@ -1325,7 +1368,8 @@
       "endsIn": "Ends in",
       "any": "Any",
       "anyBrand": "Any brand",
-      "categoryMeta": "{category} at Waafas World. Prices include VAT, with cash on delivery across Bangladesh."
+      "categoryMeta": "{category} at Waafas World. Prices include VAT, with cash on delivery across Bangladesh.",
+      "collectionMeta": "{name} at Waafas World: prices include VAT, with cash on delivery across Bangladesh."
     },
     "countdown": {
       "days": "days",

@@ -12,7 +12,12 @@ import { TripSummaryBar } from "@/components/results/TripSummaryBar";
 import { SearchCard } from "@/components/search/SearchCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessages } from "@/i18n/pickMessages";
-import { getContactSettings, getLeadFormSettings, getPublicConfig } from "@/lib/data/settings";
+import {
+  getContactSettings,
+  getLeadFormSettings,
+  getPublicConfig,
+  getSearchSettings,
+} from "@/lib/data/settings";
 import {
   getGroupFare,
   listAirlines,
@@ -54,13 +59,24 @@ async function FlightsResults({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const fareId = typeof params.fare === "string" ? params.fare : undefined;
+  const fareId = typeof params.groupFare === "string" ? params.groupFare : undefined;
+  // A link may carry only part of a search (a banner's ?to=KUL): prefill what it has, from Dhaka by default.
+  const raw = (key: string) => {
+    const value = params[key];
+    return typeof value === "string" ? value.trim() : "";
+  };
+  const partial = {
+    from: /^[A-Za-z]{3}$/.test(raw("from")) ? raw("from").toUpperCase() : undefined,
+    to: /^[A-Za-z]{3}$/.test(raw("to")) ? raw("to").toUpperCase() : undefined,
+    depart: /^\d{4}-\d{2}-\d{2}$/.test(raw("depart")) ? raw("depart") : undefined,
+  };
   const [
     parsed,
     fare,
     config,
     contact,
     leadForm,
+    searchSettings,
     pinned,
     airlines,
     featured,
@@ -73,6 +89,7 @@ async function FlightsResults({
     getPublicConfig(),
     getContactSettings(),
     getLeadFormSettings(),
+    getSearchSettings(),
     listPinnedAirports(),
     listAirlines(),
     listFeaturedAirlines(),
@@ -144,6 +161,15 @@ async function FlightsResults({
               <NextIntlClientProvider messages={pickMessages(messages, ["Flights", "Leads"])}>
                 <FlightRequest
                   search={search}
+                  prefill={
+                    search
+                      ? undefined
+                      : {
+                          ...partial,
+                          from:
+                            partial.from ?? (partial.to ? searchSettings.defaultOrigin : undefined),
+                        }
+                  }
                   groupFare={groupFare}
                   airports={airportOptions}
                   airlines={airlines.map(({ code, name }) => ({ code, name }))}

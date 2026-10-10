@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 10 Oct 20:02 Asia/Dhaka · Phase: A · Frontend · Current: review-fix issue, then lean Phase B and admin · Progress: 19/24 issues (79%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 5 issues; launch-critical order in section 14 (owner accounts needed now, section 11)
+Updated: 10 Oct 20:42 Asia/Dhaka · Phase: A · Frontend · Current: review-fix issue, then lean Phase B and admin · Progress: 19/24 issues (79%) · Launch: 13 Oct 2026, 3 days left · Status: Behind by 5 issues; launch-critical order in section 14 (owner accounts needed now, section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -66,6 +66,21 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (Next 16 Cache Components, Partial Prefetching, next/script), Playwright MCP (prototype boards side by side), shadcn NavigationMenu, Sheet, Drawer, Popover, Accordion; ui-ux-pro-max pre-delivery checklist, design-taste-frontend, frontend-design, design-superpowers design-review (self-review: no P0 or P1) |
 | Decisions | D46–D53 |
 | Bugs and follow-ups | Fixed in-issue: nav overflow at 1024 (tagline from 1280), panel width and centring, footer logo images shrinking, status chip overflow at 1024, nav re-mount losing focus after hydration |
+
+### #51 · Review findings for A6 – A16 (lead quality, navigation, links, SEO) — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct 20:40 → 10 Oct 20:42 |
+| Branch · PR · merge | `fix/51-review-findings` · see section 13 · squash |
+| Built | Flight step 2 asks who travels (adults, children with ages, infants within adults, nine at most) so a visitor without a search is no longer sent as one adult; hotel step 2 asks for rooms, adults and children with ages, hotel class and the best time to call; store bar gets a category row (top categories that hold products, Printing Solutions, International Trading) and Track order; visa list "Start an application"; the footer names the brand in text (one logo per page); Home metadata from the admin SEO fields with its own canonical and an h1 fallback; unique visa country descriptions; collection description fallback; service pages and About honour noIndex; production builds fail without NEXT_PUBLIC_SITE_URL; group fares use `?groupFare=` (the search card keeps `fare` for the fare type) and partial links (`/flights?to=KUL`) prefill To and the admin default origin; banner and footer links no longer land on an empty category or an ignored parameter |
+| Files and components | `components/forms/{TravellersFields,RoomsGuestsFields}.tsx`, `lib/leads/{flightLeadForm,hotelLeadForm}.ts`, flights `TripStep`, `FlightRequest` and page, hotels `StayStep`, `components/shop/ShopBar.tsx`, `components/layout/SiteFooter.tsx`, `components/travel/GroupFareCard.tsx`, home page and `HomeSections`, visa list and country pages, collection page, service pages, `lib/siteUrl.ts`, `lib/rateLimit.ts`, fixtures links; e2e `errors.ts` now fails on any 404 |
+| Screens matched | Flights-2, Hotels-2, ShopBar, Visa, Footer |
+| Admin control | AC-04 (search default origin) used for partial links; SEO rows use `siteSettings.defaultSeo` |
+| Tests | unit +4 (travellers from the step, infant and nine-traveller rules, rooms and guests distribution, adult per room); e2e +6 (destination-only link, hotel guests and class, store category row and Track order, one logo, visa start, Home title and canonical); suite 87 passed in parallel |
+| Widths checked | 390 · 1440 (tests) |
+| Tools and skills | Serena, subagent reviews (links and SEO, board fidelity), Playwright test runner; skills ui-ux-pro-max rules |
+| Decisions | D120 – D124 |
+| Bugs and follow-ups | Not fixed by choice: "See all" on best sellers and new arrivals still opens the noindex search page (it shows the right list; indexing it adds nothing). Board polish list moved to #22; motion moments to #52 |
 
 ### #17 · A17 System states: 404, 500, offline, maintenance, Live placeholder — ✅ Done
 | Field | Value |
@@ -735,6 +750,11 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D117 | 10 Oct | Offline is a notice on the current page, not a separate page | No service worker yet; the visitor keeps the page and what they typed | #17 |
 | D118 | 10 Oct | The 404 omits the board's site-wide search box and shows Home plus five popular pages | There is no site-wide search route yet; a box that searches only one module would mislead | #17 |
 | D119 | 10 Oct | Maintenance mode replaces the public site in the site layout (noindex); admin and API stay reachable | Staff keep working while the public site is closed | #17 |
+| D120 | 10 Oct | Group fares link with `?groupFare=<id>`; `fare` stays the search card's fare type | `fare=student` from a banner was read as a group-fare id | #51 |
+| D121 | 10 Oct | A partial flight link (only `to`, `from` or `depart`) prefills those fields; a missing origin uses the admin default origin | Banner and group-fare links carry only the destination | #51 |
+| D122 | 10 Oct | `RATE_LIMIT_FACTOR` raises the per-client limits for the Playwright test server only | Parallel e2e runs send many forms from one address; production keeps the real limits | #51 |
+| D123 | 10 Oct | The footer names the brand in text instead of repeating the logo | Correction 4: one WAAFA logo per page, in the header | #51 |
+| D124 | 10 Oct | Request steps ask for travellers (flights) and rooms and guests (hotels) even when a search prefilled them | Leads without a search were sent as one adult or two adults in one room | #51 |
 
 ## 9. Bugs and known issues
 
@@ -745,6 +765,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Phase A references restart at 0001 whenever the dev server restarts (no storage before the API) | P2 | lead intake | By design until Phase C |
 | Visitors who dismissed the announcement may see it collapse right after hydration on their next visit | P2 | announcement bar | Accepted (D50); revisit if field CLS shows it |
 | #39 Home first-load JS 346 KB and simulated LCP 4.1 s over budget (shell alone 308 KB, 84); picker open long tasks 180–430 ms at 4x CPU | P1 | `/`, search pickers | Open, due with A7 |
+| #51 Lead steps lost travellers and rooms without a search; broken deep links; footer second logo; SEO gaps | P1 | flights, hotels, store bar, footer, SEO | Fixed in #51 |
+| #52 Signature motion moments missing (flight path, results morph, route arc, add-to-cart arc, magnetic buttons) | P1 | home, flights, store | Open |
 | Hotel stay picks past 30 nights reset the check-in | P2 | search card | Fixed in #8 with a regression test |
 | Chip radios in the flights and hotels second steps were off-centre (the hidden radio stayed in the flow) | P2 | `/flights`, `/hotels` | Fixed in #11; e2e covers the steps |
 | Package detail first-load JS about 440 KB, Lighthouse mobile 68 | P1 | `/tour-packages/[slug]`, `/plan-my-trip` | Tracked in #39 |
@@ -793,6 +815,7 @@ or accessibility.
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 10 Oct 20:40–20:42 | A17 merged (#50); review issues opened (#51 fixes, #52 motion, polish list on #22); #51 lead quality, navigation, links and SEO fixes; compliance grep clean | #51 | see #51 block | e2e 87 passed |
 | 10 Oct 19:50–20:02 | A16 merged (#49); A17 branded 404, error boundary, global error, offline notice, maintenance screen, Live placeholder | #17 | see #17 block | e2e 81 passed |
 | 10 Oct 18:00–19:45 | Session review (link/SEO and board-fidelity subagents; two audits stopped by the account rate limit); A16 information pages, feedback and payment-proof intake, page blocks, sitemap rewrite | #16 | see #16 block | unit 207 web + 48 shared + 82 fixtures · e2e 77 passed |
 | 10 Oct 16:20–17:40 | A14 merged (#47); A15 service pages for printing and trading with PRN and TRD requests, shared ConsentField and StepActions | #15 | see #15 block | unit 192 web + 48 shared + 80 fixtures · e2e +3 |

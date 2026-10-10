@@ -85,4 +85,42 @@ describe("buildHotelLead", () => {
     if (lead.payload.module !== "hotels") throw new Error("module");
     expect(lead.payload.search).toMatchObject({ placeId: "typed", placeLabel: "Sylhet" });
   });
+
+  it("sends the rooms, guests, class and best time from the step (#51)", () => {
+    const stay = stayStepSchema.parse({
+      ...stayDefaults(null),
+      place: "Sylhet",
+      checkin: "2026-11-14",
+      checkout: "2026-11-16",
+      guests: { rooms: 2, adults: 3, childAges: [6] },
+      stars: "4",
+      bestTime: "morning",
+      consent: true,
+    });
+    const lead = LeadCreateInputSchema.parse(
+      buildHotelLead({
+        contact: { name: "Sample Karim", phoneCountry: "BD", phone: "01812-345678", email: "" },
+        stay,
+        search: null,
+        preferences: { seaView: false, freeCancellation: false },
+        page: "/hotels",
+      }),
+    );
+    if (lead.payload.module !== "hotels") throw new Error("module");
+    expect(lead.payload.search.rooms).toEqual([
+      { adults: 2, childAges: [] },
+      { adults: 1, childAges: [6] },
+    ]);
+    expect(lead.payload.starPreference).toBe("4");
+    expect(lead.contact.bestTime).toBe("morning");
+  });
+
+  it("needs an adult in every room", () => {
+    const result = stayStepSchema.safeParse({
+      ...stayDefaults(search),
+      guests: { rooms: 3, adults: 2, childAges: [] },
+      consent: true,
+    });
+    expect(result.error?.issues.map((issue) => issue.message)).toContain("adultPerRoom");
+  });
 });

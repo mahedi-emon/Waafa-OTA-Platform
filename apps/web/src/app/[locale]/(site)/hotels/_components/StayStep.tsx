@@ -6,8 +6,10 @@ import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { cn } from "cn";
-import { HotelBudgetBandSchema, HotelMealsSchema } from "@waafa/shared";
+import { HotelBudgetBandSchema, HotelMealsSchema, MAX_HOTEL_ROOMS } from "@waafa/shared";
+import { ChipRadioGroup } from "@/components/forms/ChipRadioGroup";
 import { FormField } from "@/components/forms/FormField";
+import { RoomsGuestsFields } from "@/components/forms/RoomsGuestsFields";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -20,7 +22,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { stayStepSchema, type StayStepInput, type StayStepValues } from "@/lib/leads/hotelLeadForm";
+import {
+  ADULTS_PER_ROOM,
+  CHILDREN_PER_ROOM,
+  stayStepSchema,
+  type StayStepInput,
+  type StayStepValues,
+} from "@/lib/leads/hotelLeadForm";
 
 type StayStepProps = {
   defaultValues: StayStepInput;
@@ -62,7 +70,7 @@ function StayStep({
   const errorCount = Object.keys(errors).length;
 
   const choice = (
-    name: "nationality" | "budgetBand" | "meals",
+    name: "nationality" | "budgetBand" | "meals" | "bestTime",
     label: string,
     options: Array<{ value: string; label: string }>,
   ) => (
@@ -158,6 +166,55 @@ function StayStep({
         )}
       </div>
 
+      <Controller
+        control={form.control}
+        name="guests"
+        render={({ field }) => (
+          <RoomsGuestsFields
+            value={field.value}
+            onChange={field.onChange}
+            maxRooms={MAX_HOTEL_ROOMS}
+            maxAdultsPerRoom={ADULTS_PER_ROOM}
+            maxChildrenPerRoom={CHILDREN_PER_ROOM}
+            error={error("guests")}
+            labels={{
+              legend: t("stay.guests"),
+              rooms: t("stay.rooms"),
+              adults: t("stay.adults"),
+              adultsSub: t("stay.adultsSub"),
+              children: t("stay.children"),
+              childrenSub: t("stay.childrenSub"),
+              childAge: t("stay.childAge", { n: "{n}" }),
+              years: t("stay.years", { age: "{age}" }),
+              underOne: t("stay.underOne"),
+              decrease: t("stay.fewer", { who: "{who}" }),
+              increase: t("stay.more", { who: "{who}" }),
+            }}
+          />
+        )}
+      />
+
+      <div className="flex flex-col gap-2">
+        <p id={`${id}-stars`} className="text-[14px] font-semibold text-ink-900">
+          {t("stay.stars")}
+        </p>
+        <Controller
+          control={form.control}
+          name="stars"
+          render={({ field }) => (
+            <ChipRadioGroup
+              labelledBy={`${id}-stars`}
+              value={field.value}
+              onChange={field.onChange}
+              options={(["any", "3", "4", "5"] as const).map((value) => ({
+                value,
+                label: t(`stay.starOptions.${value}`),
+              }))}
+            />
+          )}
+        />
+      </div>
+
       <fieldset>
         <legend id={`${id}-contact`} className="mb-2 text-[14px] font-semibold text-ink-900">
           {t("stay.contactBy")}
@@ -200,6 +257,15 @@ function StayStep({
           )}
         />
       </fieldset>
+
+      {choice(
+        "bestTime",
+        t("stay.bestTime"),
+        (["any", "morning", "midday", "afternoon"] as const).map((value) => ({
+          value,
+          label: t(`stay.bestTimes.${value}`),
+        })),
+      )}
 
       <FormField id="stay-notes" label={t("stay.notes")} hint={t("stay.notesHint")}>
         {(describedBy) => (

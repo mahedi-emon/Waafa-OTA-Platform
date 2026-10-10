@@ -17,11 +17,11 @@ export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/shop/collection/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const collection = await getCollection(slug);
+  const [collection, t] = await Promise.all([getCollection(slug), getTranslations("Shop.list")]);
   if (!collection) return {};
   return {
     title: collection.name,
-    ...(collection.description ? { description: collection.description } : {}),
+    description: collection.description ?? t("collectionMeta", { name: collection.name }),
     alternates: { canonical: `/shop/collection/${collection.slug}` },
   };
 }

@@ -17,6 +17,8 @@ export default defineConfig({
   // Runs against the production build (`pnpm build` first), the way visitors get it.
   webServer: {
     command: `pnpm exec next start --port ${PORT}`,
+    // Many tests submit forms from one address; raise the per-client limits for the test server only.
+    env: { RATE_LIMIT_FACTOR: "50" },
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCI,
     timeout: 120_000,

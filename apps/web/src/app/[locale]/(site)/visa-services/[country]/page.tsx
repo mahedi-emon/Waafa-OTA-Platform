@@ -35,7 +35,7 @@ export async function generateMetadata({
   const [country, t] = await Promise.all([getVisaCountry(slug), getTranslations("Visa.country")]);
   if (!country) return {};
   const title = country.seo.title ?? t("title", { country: country.name });
-  const description = country.seo.description ?? t("lead");
+  const description = country.seo.description ?? t("metaDescription", { country: country.name });
   return {
     title,
     description,

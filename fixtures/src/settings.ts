@@ -220,7 +220,7 @@ export const menus: In<typeof MenuSchema>[] = [
     items: [
       { id: "fs-all", label: "Shop all products", href: "/shop" },
       { id: "fs-printers", label: "Printers & Supplies", href: "/shop/c/printers-and-supplies" },
-      { id: "fs-office", label: "Office & Stationery", href: "/shop/c/office-and-stationery" },
+      { id: "fs-office", label: "Office essentials", href: "/shop/collection/office-essentials" },
       {
         id: "fs-electronics",
         label: "Electronics & Gadgets",
