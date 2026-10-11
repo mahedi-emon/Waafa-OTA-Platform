@@ -25,7 +25,7 @@ const ROUTES: Array<{ name: string; path: string }> = [
   { name: "VisaGuidePost", path: "/visa-guide/thailand" },
   { name: "Shop", path: "/shop" },
   { name: "ShopCats", path: "/shop/categories" },
-  { name: "ShopList", path: "/shop/c/office-and-stationery" },
+  { name: "ShopList", path: "/shop/c/electronics-and-gadgets" },
   { name: "ShopProduct", path: "/shop/p/better-day-ce505a-cf280a-black-toner" },
   { name: "ShopDeals", path: "/shop/deals" },
   { name: "ShopFinder", path: "/shop/finder" },
