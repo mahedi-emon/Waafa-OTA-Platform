@@ -2427,6 +2427,7 @@
       "payments": "Payments and delivery",
       "notifications": "Notifications",
       "users": "Users and roles",
+      "integrations": "Integrations",
       "general": "General",
       "subscribers": "Newsletter",
       "audit": "Audit log"
@@ -2895,6 +2896,43 @@
         "coupons": "Coupons"
       },
       "lastSavedAt": "Last saved {time}"
+    },
+    "integrations": {
+      "metaTitle": "Integrations",
+      "title": "Integrations",
+      "lead": "Connect flight, hotel and payment APIs. Secrets are encrypted on the server and never shown again.",
+      "liveNote": "Connecting an API does not switch on live booking. Flights, hotels and packages stay in Manual mode until Live is unlocked in Booking modes.",
+      "noKey": "The server has no encryption key, so API secrets can’t be saved yet. Set PROVIDER_SECRET_KEY on the server and restart the API.",
+      "kinds": {
+        "flight": "Flights",
+        "hotel": "Hotels",
+        "payment": "Payments"
+      },
+      "environment": "Environment",
+      "sandbox": "Sandbox",
+      "production": "Production",
+      "notConnected": "Not connected",
+      "connected": "Connected",
+      "off": "Saved, off",
+      "enabled": "Use this connection",
+      "enabledHint": "Only enabled connections are offered to the booking engine.",
+      "secretSaved": "Saved, ends in {last4}. Leave empty to keep it.",
+      "secretSavedShort": "Saved. Leave empty to keep it.",
+      "optional": "optional",
+      "connect": "Connect",
+      "manage": "Manage",
+      "close": "Close",
+      "test": "Test connection",
+      "testing": "Testing…",
+      "remove": "Remove",
+      "removeConfirm": "Remove the {name} {environment} connection? Its saved secrets are deleted.",
+      "savedToast": "{name} saved",
+      "removedToast": "{name} removed",
+      "healthOk": "Last test passed",
+      "healthFail": "Last test failed",
+      "neverTested": "Not tested yet",
+      "note": "Internal note",
+      "updated": "Updated {time} by {name}"
     }
   }
 }

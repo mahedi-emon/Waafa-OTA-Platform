@@ -280,3 +280,25 @@ model NotificationLog {
 
   @@index([createdAt])
 }
+
+// External API connections ------------------------------------------------------------------------------------
+
+/// One connection per provider and environment (FR-GS-06 to 08, #82). `secrets` holds AES-256-GCM sealed values
+/// ("v1.<iv>.<tag>.<ciphertext>") keyed by catalog field; they never leave the API.
+model ProviderCredential {
+  id            String    @id @default(cuid())
+  provider      String
+  environment   String
+  enabled       Boolean   @default(false)
+  settings      Json
+  secrets       Json
+  note          String?
+  healthOk      Boolean?
+  healthMessage String?
+  healthAt      DateTime? @db.Timestamptz(3)
+  updatedBy     String?
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@unique([provider, environment])
+}
