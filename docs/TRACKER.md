@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 11 Oct 06:00 Asia/Dhaka · Phase: A 23/24 (A22 QA open), B 4/4, C: C1 + C2 done, C3 deploy blocked on owner accounts · Current: #74 deploy (docs/DEPLOY.md) · Launch: 13 Oct 2026, 2 days left · Status: code launch-ready; production needs the owner's Railway, Vercel, Resend, Turnstile and DNS (section 11)
+Updated: 11 Oct 14:00 Asia/Dhaka · Phase: A 24/24 (A22 QA closes with #87 and #88), B 5/5 (B5 provider adapters), C: C1 + C2 done, C3 code merged (VPS + nginx), go-live waits for the owner's VPS access, DNS and email sender · Current: #22 design parity and motion · Launch: 13 Oct 2026, 2 days left · Status: on track for code; deploy needs the owner (section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -36,6 +36,53 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #89 · Bug: product page photo collapsed to zero width — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 12:40 → 11 Oct 13:20 |
+| Branch · PR · merge | `fix/89-product-photo` · #90 · squash |
+| Built | The zoom button around the main product photo had no width, so every product page showed an empty gallery; it is now a full-width block |
+| Tests | e2e store.spec.ts: the photo is visible and larger than 200 × 200 px |
+| Tools and skills | Serena, CI screenshots review (PIL tiles), gh |
+
+### #85 · Admin panel at /secure-admin-control, /admin is a 404 — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 10:00 → 11 Oct 11:30 |
+| Branch · PR · merge | `fix/85-admin-path` · #86 · `d41e678` |
+| Built | Owner request: admin routes moved from the guessable /admin to /secure-admin-control (folder, links, redirects, session proxy, API email links through the shared `ADMIN_BASE_PATH`); /admin falls through to the ordinary 404; robots.txt names no admin path |
+| Tests | unit path matchers; e2e /admin 404 and robots; API email link; VPS smoke behind nginx |
+| Decisions | D143 |
+
+### #82 · B5 Provider adapters and external API connections (FR-GS-06 to 08) — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 08:45 → 11 Oct 10:05 |
+| Branch · PR · merge | `feat/82-provider-adapters` · #83 · squash |
+| Built | `FlightProvider`, `HotelProvider`, `PaymentProvider` interfaces; Manual providers; contract-tested stubs for Sabre, Amadeus, Travelport, FlyHub, BDFare, another flight API, Hotelbeds, another hotel API, SSLCommerz, bKash, Nagad; registry search (parallel, time limit, schema check, de-duplicate, price sort); `ProviderCredential` table with AES-256-GCM sealed secrets (`PROVIDER_SECRET_KEY`); Admin › Settings › Integrations (Super Admin): connect, sandbox or production, enable, test reachability, remove, all audited without secret values. Live stays locked |
+| Tests | shared 8 · API unit 31 · API database suite · API-mode e2e (connect Sabre, secret masked) · admin screens at five widths with axe |
+| Admin control | AC-110 |
+| Decisions | D142 |
+
+### #74 · C3 Deploy: Docker Compose on the owner's VPS with nginx — 🟡 In progress (code merged, waits for the owner)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 04:30 → open |
+| Branch · PR · merge | `feat/74-vps-docker` · #81 · squash |
+| Built | `deploy/compose.yml` for one 2 vCPU / 4 GB VPS: PostgreSQL 16, Redis 7, API, worker, Next.js standalone web, nginx (reverse proxy, Let's Encrypt via certbot, POST rate limit, www → apex) and certbot; only nginx is public. `deploy/deploy.sh` starts the API before the web build; `deploy/backup.sh` keeps 14 daily dumps; `deploy/.env.example`; `docs/DEPLOY.md` rewritten |
+| Tests | CI "VPS deploy smoke (Docker Compose)" runs the whole stack and checks nine routes through nginx plus the /admin 404 |
+| Decisions | D141 |
+| Bugs and follow-ups | Needs the owner's SSH access, DNS A records, email sender and ACME email (section 11) |
+
+### #39 · Performance: first-load JS — ✅ Done (target continues in #91)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 10 Oct → 11 Oct 13:40 |
+| Branch · PR · merge | `perf/39-first-load-js` · #84 · `8dd16a9` |
+| Built | zod out of every public first load (footer newsletter: tested email pattern; search card: zod-free `@waafa/shared/constants`, plain recent-search checks); `e2e/budget.spec.ts` measures six routes in CI with per-route ceilings. Home 353 → 318 KB gzip |
+| Decisions | D144, D145 |
+| Bugs and follow-ups | #91 (200 KB target, picker long tasks), Phase D |
 
 ### #27 · A0 Project setup: rules, tracker, guards, hooks and CI — ✅ Done
 | Field | Value |
@@ -624,6 +671,8 @@ Phase B (D130): the web reads every public row from one cached snapshot, `GET /a
 | AC-107 | Feedback form (pending until moderated) | `POST /api/feedback` → `createFeedback()` | Content › Feedback moderation | `POST /api/v1/public/feedback` | ⬜ |
 | AC-108 | Offline payment proofs | `POST /api/payment-proof` → `submitPaymentProof()` | Waafas World › Orders; Leads (payments) | `POST /api/v1/public/payment-proofs` | ⬜ |
 | AC-109 | Contact page messages (CNT) | `POST /api/leads` (module contact) → `createLead()` | Leads | `POST /api/v1/public/leads` | ⬜ |
+| AC-110 | External API connections (flight, hotel, payment providers) | `ProviderCredential` (settings, sealed secrets, enabled, health) | Settings › Integrations (Super Admin) | `GET/POST/DELETE /api/v1/admin/providers` | ⬜ |
+| AC-111 | Tour packages banner photo | `mediaSlots[packages-header]` | Content › Media library | `GET /api/v1/public/snapshot` | ⬜ |
 
 ## 5. Components inventory
 
@@ -884,11 +933,19 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D138 | 11 Oct | Launch admin edits every content key and setting through one generic editor drawn from the shared zod schemas (JSON Schema via zod's toJSONSchema), with a JSON tab; bespoke editors (package builder, product card, category tree, tiptap, media uploads) follow after launch | Thirty-plus content types in one day; one path validated by the same schemas the API uses keeps every public element admin-controlled on day one | #18 |
 | D139 | 11 Oct | Staff sessions: API tokens in httpOnly SameSite=Lax cookies set by server actions; `proxy.ts` refreshes a token with under a minute left before the page renders; admin links are not prefetched; a refresh token rotated in the last 30 seconds still opens a session | The browser never holds a token; pages render with a valid token; prefetch bursts can't sign staff out (#66) | #18, #66 |
 | D140 | 11 Oct | Flight path on desktop only, route arc from 640 px, search → results morph after launch | On phones the headline fills the width and the summary bar has no room; the morph needs React View Transitions, not worth the risk two days before launch | #52 |
+| D141 | 11 Oct | Production runs on the owner's VPS (2 vCPU, 4 GB, Docker) with Docker Compose and nginx (Let's Encrypt via certbot) instead of Railway and Vercel; only nginx is public, the API also listens on 127.0.0.1:4000 for the web build | Owner decision; one server, no monthly platform fees; the web build prerenders from the API snapshot, so deploy.sh starts the API first | #74 |
+| D142 | 11 Oct | External APIs plug in through provider adapters; connections live in `ProviderCredential` with AES-256-GCM sealed secrets keyed by `PROVIDER_SECRET_KEY`; stubs answer health checks but refuse every booking call until a certified adapter replaces them | PRD FR-GS-06 to 08 (P0) were missing; the owner wants to connect suppliers without a rebuild, and nothing may fake live availability | #82 |
+| D143 | 11 Oct | Admin lives at /secure-admin-control; /admin is the ordinary 404 and robots.txt names no admin path | Owner request (no guessable admin URL); noindex headers stay | #85 |
+| D144 | 11 Oct | Client code imports option lists and limits from the zod-free `@waafa/shared/constants` (and helpers by subpath); Motion's DOM features stay synchronous | zod cost ~30 KB on every first load; loading Motion features after hydration left AnimatePresence duplicates in e2e | #39 |
+| D145 | 11 Oct | Before launch the first-load budget is enforced as per-route ceilings (e2e/budget.spec.ts), not the 200 KB target | Reaching 200 KB needs picker and form-step splits that are too risky two days before launch; continues in #91 | #39 |
+| D146 | 11 Oct | Listing banners (Packages, Visa) are an inset rounded photo panel (`BannerHero`) like the Home hero, not the boards' full-bleed band; Ken Burns starts after 1.2 s on desktop only | One consistent hero language; the photo is the LCP element, so it paints still | #22 |
+| D147 | 11 Oct | Card spotlight, 3D tilt, hover-to-play package clips and the WhatsApp shimmer are built in-house (`CardFx`, `HoverVideo`) following the HANDOFF 21st.dev references | The 21st.dev install path is unavailable this session (MCP disconnected); our versions write one transform and one CSS variable per frame, mouse only, reduced-motion aware | #22 |
 
 ## 9. Bugs and known issues
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #89 Product page photo had zero width (zoom button without width) | P0 | /shop/p/* | Fixed in #90 with an e2e size check |
 | Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 (PR pending) |
 | Boards disagree on two shop numbers: COD cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample); free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms | P2 | fixtures (shop settings) | Owner question |
 | Phase A references restart at 0001 whenever the dev server restarts (no storage before the API) | P2 | lead intake | By design until Phase C |
@@ -917,7 +974,7 @@ or accessibility.
 
 ## 11. Blockers and owner actions
 
-The full order of steps, every environment variable and the launch checks are in `docs/DEPLOY.md` (#74). Today's blockers for the 13 Oct launch: Railway project (PostgreSQL + Redis), Vercel import, Resend domain records, Turnstile keys, DNS access and the first Super Admin email.
+Hosting is the owner's VPS with Docker (D141); the steps, settings and launch checks are in `docs/DEPLOY.md` (#74). To go live on 13 Oct: SSH access to the VPS (sudo + docker group), the domain's A records (apex and www) on the VPS IP, an email sender (Resend with the domain verified, or SMTP), an email for Let's Encrypt notices, the first Super Admin email, and optionally Turnstile keys. Rows below for Vercel, Railway and managed databases are replaced by the VPS.
 
 | Item | What I need from the owner | Exact steps | Needed by |
 | --- | --- | --- | --- |
@@ -949,6 +1006,7 @@ The full order of steps, every environment variable and the launch checks are in
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 11 Oct 08:30–14:00 | Owner asked for VPS + nginx, external API connections, a hidden admin URL and a full board review. Shipped: VPS Docker stack with nginx and Let's Encrypt (#81), provider adapters + Integrations (#83), zod out of the first load + budget check (#84), admin at /secure-admin-control (#86), product photo bug (#89 → #90); public screens at five widths with screenshots (#87) and board parity + motion (#88: listing banners, filter chips, home hero, request cards, card spotlight/tilt, hover clips) in CI. #39 closed, rest in #91 | #22, #39, #74, #82, #85, #89, #91 | #81, #83, #84, #86, #87, #88, #90 | CI: VPS smoke, API-mode e2e, budget, public screens 32 routes × 5 widths |
 | 11 Oct 01:40–06:00 | Launch admin merged (#68), A19–A21 closed with cuts to #71; Turnstile on every form (#70); Live stays locked (#73); deploy runbook (#75); admin QA job at five widths with axe and screenshots (#76, editor fitted to 320 px); signature motion (#77); independent review found 11 defects, all fixed (#79). Home first-load JS measured at 392 KB gzip incl. a 39 KB nomodule polyfill (#39 stays open) | #18–#21, #52, #66, #69, #72, #74, #78 | #68, #70, #73, #75, #76, #77, #79 | API-mode e2e 5 + admin screens 8×5 widths · web unit 238 · shared 52 |
 | 11 Oct 00:00–01:40 | B2 merged (#59); B3 public snapshot, intake and notifications (#62, with bug fixes #60 VAT BIN and #61 refused checkout); B4 admin API (#63); C1 web on the API (#65); #66 concurrent refresh fix (#67); launch admin A18 with the generic content editor (PR #68) and an API-mode e2e job in CI. Local PostgreSQL stopped by the system for low memory; API tests ran in CI | #55, #56, #57, #60, #61, #64, #66, #18 | #59, #62, #63, #65, #67, #68 | API 37 passed (CI) · web unit 238 · e2e 41 (fixture) |
 | 10 Oct 21:15–21:21 | B1 merged (#58); B2 staff auth, roles and audit log | #55 | see #55 block | API 15 passed |
@@ -973,6 +1031,11 @@ The full order of steps, every environment variable and the launch checks are in
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Merge #87 and #88 when green; download the `public-screens` artifact again and compare with `docs/design/thumbs`; close #22.
+2. Owner: VPS SSH access, DNS A records, email sender, ACME email, Super Admin email → `sh deploy/deploy.sh` (#74) → launch checks; replace Sample content in Admin.
+3. After launch: #91 (200 KB first load), #71 (bespoke admin editors, media uploads), Phase D.
+
+Earlier (11 Oct 06:00):
 1. Owner: Railway (PostgreSQL + Redis), Vercel import, Resend domain records, Turnstile keys, DNS, first Super Admin email; then deploy per `docs/DEPLOY.md` (#74) and run the launch checks.
 2. #39 performance: move zod out of the client search card, defer Motion chunks, re-measure (budget 200 KB).
 3. #22 QA: public routes at 768 and 1024, Lighthouse mobile once deployed; replace Sample content in Admin before announcing.

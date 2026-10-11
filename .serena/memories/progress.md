@@ -1,4 +1,11 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-11 14:00 Dhaka — Merged: #81 VPS Docker + nginx (#74 waits for owner SSH/DNS/email), #83 provider adapters +
+  Integrations (#82), #84 zod out of first load (#39 closed → #91 Phase D), #86 admin at /secure-admin-control (#85),
+  #90 product photo bug (#89). Open: #87 public screens at 5 widths (screenshots artifact), #88 board parity + motion
+  (BannerHero, chips, home hero, request cards, CardFx spotlight/tilt, HoverVideo, shimmer). Phase A 24/24 once #22
+  closes with #87/#88.
+- 2026-10-11 06:00 Dhaka — Launch admin (#68), Turnstile (#70), Live locked (#73), runbook (#75), admin QA (#76),
+  signature motion (#77), review fixes (#79).
 - 2026-10-11 01:00 Dhaka — Phase B launch scope 4/4 merged: #54 (PR #58), #55 (PR #59), #56 (PR #62, + bugs #60 #61),
   #57 (PR #63). Phase C: #64 C1 web on the API, PR #65 open. Next: admin UI (A18–A21) with one generic schema editor.
 - 2026-10-10 21:40 Dhaka — #17 merged (PR #50), #51 review fixes merged (PR #53); Phase B issues #54–#57 opened.
