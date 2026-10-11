@@ -123,7 +123,7 @@ async function SiteFooter() {
   );
 
   return (
-    <footer className="mt-auto bg-mist-50">
+    <footer className="mt-auto bg-mist-50 defer-render">
       <div aria-hidden="true" className="h-1 bg-(image:--ribbon)" />
       <div className="site-container flex flex-col gap-10 pt-12 pb-24 lg:py-16">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,2.4fr)_minmax(0,1.15fr)] lg:gap-8">

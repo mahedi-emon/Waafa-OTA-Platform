@@ -1,13 +1,29 @@
 "use client";
 
-import { useReducedMotion, type Transition, type Variants } from "motion/react";
+import { useSyncExternalStore } from "react";
+import type { Transition, Variants } from "motion/react";
 
 /** Under prefers-reduced-motion, movement becomes this short fade (CLAUDE.md rule). */
 export const REDUCED_FADE: Transition = { duration: 0.15, ease: "linear" };
 
-/** True when the user asked the OS for reduced motion. False during SSR. */
+const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeToReducedMotion(onChange: () => void): () => void {
+  const query = window.matchMedia(REDUCED_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+/**
+ * True when the user asked the OS for reduced motion. False during SSR. Reads the media query directly, so public
+ * components that only need this flag do not pull the animation library into the first load (issue 91).
+ */
 export function usePrefersReducedMotion(): boolean {
-  return useReducedMotion() ?? false;
+  return useSyncExternalStore(
+    subscribeToReducedMotion,
+    () => window.matchMedia(REDUCED_QUERY).matches,
+    () => false,
+  );
 }
 
 /**

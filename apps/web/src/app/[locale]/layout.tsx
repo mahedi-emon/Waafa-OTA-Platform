@@ -4,8 +4,6 @@ import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { THEME_COLOR } from "@/components/brand/brandColors";
-import { MotionProvider } from "@/components/motion/MotionProvider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
 import { getSiteSettings, getTrackingSettings } from "@/lib/data/settings";
 import { defaultShareImage } from "@/lib/seo/withSocial";
@@ -116,12 +114,12 @@ export default async function RootLayout({ children }: LayoutProps<"/[locale]">)
         <noscript>
           <style>{"[data-reveal]{opacity:1!important;transform:none!important}"}</style>
         </noscript>
-        {/* Messages stay on the server; client leaves get strings as props or a scoped provider. */}
-        <NextIntlClientProvider messages={null}>
-          <MotionProvider>
-            <TooltipProvider>{children}</TooltipProvider>
-          </MotionProvider>
-        </NextIntlClientProvider>
+        {/*
+         * Messages stay on the server; client leaves get strings as props or a scoped provider. Motion's LazyMotion
+         * and the tooltip provider wrap only the screens that use them (issue 91: no animation library in the
+         * public first load).
+         */}
+        <NextIntlClientProvider messages={null}>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

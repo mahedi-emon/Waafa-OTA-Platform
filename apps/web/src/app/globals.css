@@ -420,6 +420,87 @@
   }
 }
 
+/*
+ * Page enter on client-side navigations (MOTION.md "Page"): fade + 8 px rise in 420 ms; a 150 ms fade under reduced
+ * motion. Pure CSS so no animation library ships with every page (issue 91).
+ */
+@keyframes page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility page-enter {
+  animation: fade-in 150ms linear both;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: page-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/*
+ * Slot swap for rotating words and rolling numbers (TextRotate, RollingNumber): the new value rises in from
+ * --slot-from, the old one leaves towards --slot-to. Reduced motion fades the new value and hides the old one.
+ */
+@keyframes slot-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--slot-from, 100%));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slot-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--slot-to, -100%));
+  }
+}
+
+@utility slot-in {
+  animation: fade-in 150ms linear both;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: slot-in var(--slot-duration, 400ms) cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@utility slot-out {
+  display: none;
+  @media (prefers-reduced-motion: no-preference) {
+    display: inline;
+    animation: slot-out var(--slot-duration, 400ms) cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/*
+ * Below-the-fold blocks skip style, layout and paint until they near the viewport (issue 91). They stay in the
+ * accessibility tree and in find-in-page; `auto` remembers each block's real height once it has rendered.
+ */
+@utility defer-render {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
 /* Page container: 1320 px max, gutters 16 / 28 / 40 px (DESIGN.md §4). */
 @utility site-container {
   width: 100%;

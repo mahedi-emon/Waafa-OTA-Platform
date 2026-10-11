@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { MaintenanceScreen } from "@/components/feedback/MaintenanceScreen";
@@ -5,13 +6,13 @@ import { OfflineNotice } from "@/components/feedback/OfflineNotice";
 import { Analytics } from "@/components/analytics/Analytics";
 import { SupportContactProvider } from "@/components/feedback/SupportContact";
 import { MenuIcon } from "@/components/icons/MenuIcon";
+import { LazyToaster } from "@/components/feedback/LazyToaster";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { MoreSheetBody } from "@/components/layout/MoreSheetBody";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { TabBar } from "@/components/layout/TabBar";
-import { Toaster } from "@/components/ui/sonner";
 import { pickMessages } from "@/i18n/pickMessages";
 import { getContactSettings, getMenu, getPublicConfig } from "@/lib/data/settings";
 
@@ -59,7 +60,10 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
           <div className="flex flex-1 flex-col">{children}</div>
         </NextIntlClientProvider>
       </SupportContactProvider>
-      <SiteFooter />
+      {/* Its own hydration unit, after the page content (issue 91). */}
+      <Suspense fallback={null}>
+        <SiteFooter />
+      </Suspense>
       {tabs.length === 5 ? (
         <TabBar
           items={tabs}
@@ -92,7 +96,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
           call: tErrors("call"),
         }}
       />
-      <Toaster />
+      <LazyToaster />
       <Analytics />
     </div>
   );

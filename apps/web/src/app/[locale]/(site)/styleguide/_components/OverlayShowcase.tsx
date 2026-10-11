@@ -61,7 +61,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const airports = [
   { code: "DAC", city: "Dhaka", name: "Hazrat Shahjalal International" },
@@ -186,14 +186,16 @@ function OverlayShowcase() {
         </PopoverContent>
       </Popover>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="What does indicative mean?">
-            <InfoIcon />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Our team confirms the final fare before you pay.</TooltipContent>
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="What does indicative mean?">
+              <InfoIcon />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Our team confirms the final fare before you pay.</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

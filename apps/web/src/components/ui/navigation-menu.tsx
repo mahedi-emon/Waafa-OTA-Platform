@@ -1,8 +1,8 @@
 import * as React from "react";
-import { cva } from "class-variance-authority";
 import { cn } from "cn";
 import { NavigationMenu as NavigationMenuPrimitive } from "radix-ui";
 import { ChevronDownIcon } from "lucide-react";
+import { navigationMenuTriggerStyle } from "./navigationMenuTriggerStyle";
 
 /*
  * shadcn NavigationMenu restyled for the WAAFA header (Header, Home-shopmenu, Home-moremenu boards): pill items,
@@ -60,13 +60,6 @@ function NavigationMenuItem({
     />
   );
 }
-
-const navigationMenuTriggerStyle = cva([
-  "group/navigation-menu-trigger relative inline-flex h-10 w-max cursor-pointer items-center justify-center gap-1 rounded-full px-2.5 text-[14.5px] font-medium whitespace-nowrap text-ink-900/80 outline-none xl:px-3 xl:text-[15px]",
-  "transition-colors duration-150 hover:bg-mist-50 hover:text-navy-900 focus-visible:ring-3 focus-visible:ring-ring/40",
-  "data-open:bg-mist-100 data-open:text-navy-900 data-active:font-semibold data-active:text-navy-900",
-  "disabled:pointer-events-none disabled:opacity-50",
-]);
 
 function NavigationMenuTrigger({
   className,

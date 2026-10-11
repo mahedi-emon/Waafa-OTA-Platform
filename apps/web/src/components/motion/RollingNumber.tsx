@@ -1,36 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence } from "motion/react";
-import * as m from "motion/react-m";
+import { useState, type CSSProperties } from "react";
 import { cn } from "cn";
 
 type RollingNumberProps = { value: number; className?: string };
+type Shown = { value: number; previous: number | null; direction: number };
 
 /**
  * A stepper value that rolls: the old number leaves and the new one enters, 8 px up when it grows and down when
- * it shrinks, 220 ms (MOTION.md "Traveller stepper"). Under reduced motion MotionConfig drops the movement.
+ * it shrinks, 220 ms (MOTION.md "Traveller stepper"). CSS only (issue 91); under reduced motion the new number
+ * fades in and the old one is hidden at once.
  */
 function RollingNumber({ value, className }: RollingNumberProps) {
-  const [shown, setShown] = useState({ value, direction: 1 });
-  if (shown.value !== value) setShown({ value, direction: value > shown.value ? 1 : -1 });
-  const direction = shown.direction;
+  const [shown, setShown] = useState<Shown>({ value, previous: null, direction: 1 });
+  if (shown.value !== value) {
+    setShown({ value, previous: shown.value, direction: value > shown.value ? 1 : -1 });
+  }
+  const slotStyle = {
+    "--slot-from": `${shown.direction * 8}px`,
+    "--slot-to": `${shown.direction * -8}px`,
+    "--slot-duration": "220ms",
+  } as CSSProperties;
 
   return (
-    <span className={cn("relative inline-grid overflow-hidden tabular-nums", className)}>
-      <AnimatePresence initial={false} custom={direction}>
-        <m.span
-          key={value}
-          custom={direction}
-          className="[grid-area:1/1]"
-          initial={{ y: direction * 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: direction * -8, opacity: 0 }}
-          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+    <span
+      className={cn("relative inline-grid overflow-hidden tabular-nums", className)}
+      style={slotStyle}
+    >
+      {shown.previous !== null ? (
+        <span
+          key={`out-${shown.previous}-${shown.value}`}
+          aria-hidden="true"
+          className="slot-out [grid-area:1/1]"
+          onAnimationEnd={() => setShown((current) => ({ ...current, previous: null }))}
         >
-          {value}
-        </m.span>
-      </AnimatePresence>
+          {shown.previous}
+        </span>
+      ) : null}
+      <span
+        key={`in-${shown.value}`}
+        className={cn("[grid-area:1/1]", shown.previous !== null && "slot-in")}
+      >
+        {shown.value}
+      </span>
     </span>
   );
 }

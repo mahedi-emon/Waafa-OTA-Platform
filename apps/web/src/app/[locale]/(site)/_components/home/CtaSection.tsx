@@ -20,7 +20,7 @@ async function CtaSection({ cta }: CtaSectionProps) {
   ]);
 
   return (
-    <section aria-labelledby="home-cta" className="py-11 md:py-16 xl:py-[88px]">
+    <section aria-labelledby="home-cta" className="py-11 defer-render md:py-16 xl:py-[88px]">
       <div className="site-container reveal-on-view">
         <div className="grid grid-cols-1 overflow-hidden rounded-[28px] bg-midnight-950 text-white lg:grid-cols-[1.15fr_1fr]">
           <div className="flex flex-col gap-4 p-6 md:p-10">
