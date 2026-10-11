@@ -128,7 +128,9 @@ test("a Super Admin connects an external API, turns it on and reveals the secret
   expect(await page.content()).not.toContain("e2e-client-secret-4321");
 
   // Active with Sandbox credentials and a 5% markup.
-  await card.getByRole("switch", { name: "Active" }).click();
+  // Turn it on (a rerun on a used database may find it on already).
+  const active = card.getByRole("switch", { name: "Active" });
+  if (!(await active.isChecked())) await active.click();
   await card.getByRole("radio", { name: "Percentage" }).click();
   await card.getByLabel("Value").fill("5");
   await card.getByRole("button", { name: "Save settings" }).click();
