@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CABIN_CLASSES } from "../constants";
 import {
   IdSchema,
   ImageSchema,
@@ -36,7 +37,7 @@ export const AirlineSchema = z
   })
   .strict();
 
-export const CabinClassSchema = z.enum(["economy", "premium-economy", "business", "first"]);
+export const CabinClassSchema = z.enum(CABIN_CLASSES);
 
 /** Admin-managed group and special fares (FR-FLT-07). Always labelled indicative; hidden after expiry. */
 export const GroupFareSchema = z

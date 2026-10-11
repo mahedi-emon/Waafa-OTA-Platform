@@ -1,6 +1,7 @@
 import { Headset, Mail, MapPin, Phone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { whatsappLink, type ContactSettings } from "@waafa/shared";
+import type { ContactSettings } from "@waafa/shared";
+import { whatsappLink } from "@waafa/shared/helpers/phone";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { ContactRow } from "./ContactRow";
 import { OfficeStatusChip } from "./OfficeStatusChip";

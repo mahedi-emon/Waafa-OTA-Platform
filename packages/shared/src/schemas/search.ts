@@ -1,16 +1,14 @@
 import { z } from "zod";
 import { IsoDateSchema, IsoDateTimeSchema, SlugSchema, TakaSchema } from "./common";
+import {
+  MAX_HOTEL_NIGHTS,
+  MAX_HOTEL_ROOMS,
+  MAX_MULTI_CITY_LEGS,
+  MAX_TRAVELLERS,
+  VISA_TYPE_KEYS,
+  daysBetween,
+} from "../constants";
 import { CabinClassSchema, IataSchema } from "./travel";
-
-export const MAX_TRAVELLERS = 9;
-export const MAX_MULTI_CITY_LEGS = 5;
-export const MAX_HOTEL_NIGHTS = 30;
-export const MAX_HOTEL_ROOMS = 5;
-
-/** Days between two ISO dates (b - a), in whole days. */
-export function daysBetween(a: string, b: string): number {
-  return Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86_400_000);
-}
 
 export const TravellersSchema = z
   .object({
@@ -149,7 +147,7 @@ export const TourSearchSchema = z
   })
   .strict();
 
-export const VisaTypeKeySchema = z.enum(["tourist", "business", "student", "medical", "transit"]);
+export const VisaTypeKeySchema = z.enum(VISA_TYPE_KEYS);
 
 export const VisaSearchSchema = z
   .object({

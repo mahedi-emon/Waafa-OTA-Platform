@@ -1,17 +1,14 @@
+import type { Airport, HotelPlace, VisaTypeKey } from "@waafa/shared";
 import {
   MAX_HOTEL_NIGHTS,
   MAX_HOTEL_ROOMS,
   MAX_MULTI_CITY_LEGS,
   MAX_TRAVELLERS,
   daysBetween,
-  type Airport,
-  type HotelPlace,
-  type VisaTypeKey,
-} from "@waafa/shared";
-import type { CabinClass, FareType, TripType } from "./flightParams";
+} from "@waafa/shared/constants";
+import type { CabinClass, FareType, TripType } from "./flightOptions";
 import { addDays } from "./isoDate";
-import { MAX_TOUR_ADULTS, MAX_TOUR_CHILDREN } from "./tourParams";
-import { MAX_VISA_APPLICANTS } from "./visaParams";
+import { MAX_TOUR_ADULTS, MAX_TOUR_CHILDREN, MAX_VISA_APPLICANTS } from "./limits";
 
 /*
  * The search card's state machine (FR-SRCH-01 to FR-SRCH-08), kept free of React so every rule is

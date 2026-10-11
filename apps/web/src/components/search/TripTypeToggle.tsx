@@ -4,7 +4,7 @@ import { useId } from "react";
 import { useTranslations } from "next-intl";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { TRIP_TYPES, type TripType } from "@/lib/search/flightParams";
+import { TRIP_TYPES, type TripType } from "@/lib/search/flightOptions";
 import { useSearchCard } from "./SearchCardContext";
 
 const LABEL_KEY: Record<TripType, "oneWay" | "roundTrip" | "multiCity"> = {

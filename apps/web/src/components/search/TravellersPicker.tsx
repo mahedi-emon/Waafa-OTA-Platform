@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { CABIN_CLASSES, type CabinClass } from "@/lib/search/flightParams";
+import { CABIN_CLASSES, type CabinClass } from "@/lib/search/flightOptions";
 import { travellerTotal } from "@/lib/search/searchState";
 import { ChildAges } from "./ChildAges";
 import { CounterRow } from "./CounterRow";

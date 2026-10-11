@@ -11,7 +11,9 @@ import { clamp } from "./tourParams";
 
 /* The visa tab opens the country page with the visa type and party size (FR-SRCH-05). */
 
-export const MAX_VISA_APPLICANTS = 10;
+import { MAX_VISA_APPLICANTS } from "./limits";
+
+export { MAX_VISA_APPLICANTS };
 export const VISA_TYPES = VisaTypeKeySchema.options;
 
 export const visaSearchParams = {

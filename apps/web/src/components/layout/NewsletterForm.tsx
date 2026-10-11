@@ -2,9 +2,9 @@
 
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 import { cn } from "cn";
 import { useTurnstile } from "@/components/forms/useTurnstile";
+import { looksLikeEmail } from "@/lib/forms/looksLikeEmail";
 
 type NewsletterFormProps = {
   placeholder: string;
@@ -13,8 +13,6 @@ type NewsletterFormProps = {
   /** Where the form sits, stored with the address (footer, blog). */
   source?: string;
 };
-
-const EmailSchema = z.email();
 
 /**
  * Newsletter signup (FR-FTR-05): validates in the browser, then posts to /api/newsletter, which stores the address
@@ -30,7 +28,7 @@ function NewsletterForm({ placeholder, button, labels, source = "footer" }: News
     if (sending) return;
     const form = event.currentTarget;
     const value = String(new FormData(form).get("email") ?? "").trim();
-    if (!EmailSchema.safeParse(value).success) {
+    if (!looksLikeEmail(value)) {
       setError(labels.invalid);
       return;
     }

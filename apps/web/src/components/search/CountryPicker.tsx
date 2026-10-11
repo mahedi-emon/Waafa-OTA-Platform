@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { VisaRegionSchema, type VisaRegion } from "@waafa/shared";
+import type { VisaRegion } from "@waafa/shared";
+import { VISA_REGIONS } from "@waafa/shared/constants";
 import { matchesQuery } from "@/lib/search/highlight";
 import { CountryCode } from "./CountryCode";
 import { NoMatch } from "./NoMatch";
@@ -19,7 +20,7 @@ function CountryPicker({ title }: CountryPickerProps) {
   const q = query.trim();
   const matches = data.visaCountries.filter((country) => !q || matchesQuery(country.name, q));
 
-  const groups = VisaRegionSchema.options.map((region: VisaRegion) => ({
+  const groups = VISA_REGIONS.map((region: VisaRegion) => ({
     key: region,
     label: t(`regions.${region}`),
     options: matches

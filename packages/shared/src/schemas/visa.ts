@@ -12,18 +12,10 @@ import {
 } from "./common";
 import { PageSectionSchema } from "./content";
 import { PrivateFileSchema } from "./leads";
+import { VISA_REGIONS } from "../constants";
 import { VisaTypeKeySchema } from "./search";
 
-export const VisaRegionSchema = z.enum([
-  "south-asia",
-  "south-east-asia",
-  "middle-east",
-  "east-asia",
-  "europe",
-  "americas",
-  "oceania",
-  "africa",
-]);
+export const VisaRegionSchema = z.enum(VISA_REGIONS);
 
 export const VisaChecklistItemSchema = z
   .object({
