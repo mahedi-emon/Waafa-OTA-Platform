@@ -13,10 +13,11 @@ import {
   getSiteSettings,
 } from "@/lib/data/settings";
 import { CheckoutForm } from "./_components/CheckoutForm";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Checkout");
-  return { title: t("metaTitle"), robots: { index: false, follow: false } };
+  return withSocial({ title: t("metaTitle"), robots: { index: false, follow: false } });
 }
 
 /** /shop/checkout (ShopCheckout, -err, -m): one page for contact, delivery, payment and the order summary. */

@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { getVisaCountry, getVisaGuide, listVisaGuides } from "@/lib/data/visa";
 import { absoluteUrl } from "@/lib/siteUrl";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
   const guides = await listVisaGuides();
@@ -34,7 +35,7 @@ export async function generateMetadata({
   if (!guide) return {};
   const title = guide.seo.title ?? guide.title;
   const description = guide.seo.description ?? guide.summary;
-  return {
+  return withSocial({
     title,
     description,
     alternates: { canonical: `/visa-guide/${guide.slug}` },
@@ -45,7 +46,7 @@ export async function generateMetadata({
       images: [{ url: guide.cover.src, alt: guide.cover.alt }],
     },
     ...(guide.seo.noIndex ? { robots: { index: false } } : {}),
-  };
+  });
 }
 
 /**

@@ -21,14 +21,15 @@ import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { loadHotelSearch, parseHotelValues } from "@/lib/search/hotelParams";
 import { formatFieldDate } from "@/lib/search/isoDate";
 import { HotelRequest } from "./_components/HotelRequest";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Hotels");
-  return {
+  return withSocial({
     title: t("metaTitle"),
     description: t("metaDescription"),
     alternates: { canonical: "/hotels" },
-  };
+  });
 }
 
 async function HotelResults({

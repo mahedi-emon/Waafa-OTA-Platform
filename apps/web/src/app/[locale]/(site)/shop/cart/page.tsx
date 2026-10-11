@@ -7,10 +7,11 @@ import { pickMessages } from "@/i18n/pickMessages";
 import { getPaymentSettings, getShippingSettings, getSiteSettings } from "@/lib/data/settings";
 import { listCategories } from "@/lib/data/shop";
 import { CartView } from "./_components/CartView";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Cart");
-  return { title: t("metaTitle"), robots: { index: false, follow: true } };
+  return withSocial({ title: t("metaTitle"), robots: { index: false, follow: true } });
 }
 
 /** /shop/cart (ShopCart, -empty, -coupon, -m): the guest cart, priced by the server, with coupon and delivery area. */

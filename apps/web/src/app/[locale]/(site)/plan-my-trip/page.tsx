@@ -9,14 +9,15 @@ import { pickMessages } from "@/i18n/pickMessages";
 import { getContactSettings, getLeadFormSettings, getSearchSettings } from "@/lib/data/settings";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { PlanTripRequest } from "./_components/PlanTripRequest";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("PlanTrip");
-  return {
+  return withSocial({
     title: t("metaTitle"),
     description: t("metaDescription"),
     alternates: { canonical: "/plan-my-trip" },
-  };
+  });
 }
 
 async function PlanTripCard({

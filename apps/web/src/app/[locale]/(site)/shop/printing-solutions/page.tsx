@@ -8,15 +8,16 @@ import { pickMessages } from "@/i18n/pickMessages";
 import { getServicePage } from "@/lib/data/content";
 import { getContactSettings, getLeadFormSettings } from "@/lib/data/settings";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getServicePage("printing");
   if (!page) return {};
-  return {
+  return withSocial({
     title: page.seo.title ?? page.title,
     description: page.seo.description ?? page.lead,
     ...(page.seo.noIndex ? { robots: { index: false } } : {}),
-  };
+  });
 }
 
 /** /shop/printing-solutions (Printing, Printing-done, Printing-m): service page with its request form. */

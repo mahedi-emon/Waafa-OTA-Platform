@@ -9,6 +9,7 @@ import { ProductListing } from "@/components/shop/ProductListing";
 import { Link } from "@/i18n/navigation";
 import { getShopContent, getSiteSettings } from "@/lib/data/settings";
 import { getAttributeSet, getCategory, listCategories } from "@/lib/data/shop";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
   const categories = await listCategories();
@@ -21,7 +22,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const [category, t] = await Promise.all([getCategory(slug), getTranslations("Shop.list")]);
   if (!category) return {};
-  return {
+  return withSocial({
     title: category.seo.title ?? category.name,
     description:
       category.seo.description ??
@@ -29,7 +30,7 @@ export async function generateMetadata({
       t("categoryMeta", { category: category.name }),
     alternates: { canonical: `/shop/c/${category.slug}` },
     ...(category.seo.noIndex ? { robots: { index: false } } : {}),
-  };
+  });
 }
 
 async function CategoryContent({ params, searchParams }: PageProps<"/[locale]/shop/c/[slug]">) {

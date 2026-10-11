@@ -11,6 +11,7 @@ import { getContactSettings, getLeadFormSettings } from "@/lib/data/settings";
 import { getVisaCountry, listVisaCountries } from "@/lib/data/visa";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { VisaApplyRequest } from "./_components/VisaApplyRequest";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
   const countries = await listVisaCountries();
@@ -23,12 +24,12 @@ export async function generateMetadata({
   const { country: slug } = await params;
   const [country, t] = await Promise.all([getVisaCountry(slug), getTranslations("Visa.apply")]);
   if (!country) return {};
-  return {
+  return withSocial({
     title: t("metaTitle", { country: country.name }),
     description: t("lead"),
     alternates: { canonical: `/visa-services/${country.slug}/apply` },
     robots: { index: false },
-  };
+  });
 }
 
 /** /visa-services/[country]/apply (VisaApply boards): contact first, then trip, documents, visit and review. */

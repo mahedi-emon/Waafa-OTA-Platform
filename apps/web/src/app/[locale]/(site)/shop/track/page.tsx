@@ -17,10 +17,11 @@ import { Link } from "@/i18n/navigation";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { trackOrder } from "@/lib/data/orders";
 import { clientKey } from "@/lib/rateLimit";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Track");
-  return { title: t("metaTitle"), robots: { index: false, follow: false } };
+  return withSocial({ title: t("metaTitle"), robots: { index: false, follow: false } });
 }
 
 const first = (value: string | string[] | undefined) =>

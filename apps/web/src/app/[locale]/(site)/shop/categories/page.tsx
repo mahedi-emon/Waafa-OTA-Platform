@@ -6,10 +6,11 @@ import { ListingHeader } from "@/components/shop/ListingHeader";
 import { Link } from "@/i18n/navigation";
 import { getSiteSettings } from "@/lib/data/settings";
 import { listCategories } from "@/lib/data/shop";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Shop.list");
-  return { title: t("categoriesTitle"), description: t("categoriesLead") };
+  return withSocial({ title: t("categoriesTitle"), description: t("categoriesLead") });
 }
 
 /** /shop/categories (ShopCats, ShopCats-m, ShopCats-m-printers): top-level categories with their children. */

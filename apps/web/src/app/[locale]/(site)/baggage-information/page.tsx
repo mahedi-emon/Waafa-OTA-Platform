@@ -13,10 +13,11 @@ import { Link } from "@/i18n/navigation";
 import { listBaggageRules, listPageBlocks } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";
 import { BaggageTable } from "./_components/BaggageTable";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Baggage");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 /**

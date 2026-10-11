@@ -17,14 +17,16 @@ import { getMediaSlot } from "@/lib/data/content";
 import { listPackages } from "@/lib/data/travel";
 import type { PackageSort } from "@/lib/data/types";
 import { formatMonth } from "@/lib/search/isoDate";
+import { withSocial } from "@/lib/seo/withSocial";
+import { ItemListJsonLd } from "@/components/seo/ItemListJsonLd";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Packages");
-  return {
+  return withSocial({
     title: t("metaTitle"),
     description: t("metaDescription"),
     alternates: { canonical: "/tour-packages" },
-  };
+  });
 }
 
 const LENGTHS = {
@@ -126,6 +128,14 @@ async function PackageResults({ searchParams }: { searchParams: Promise<Params> 
 
   return (
     <div className="flex flex-col gap-6">
+      <ItemListJsonLd
+        name={t("list.title")}
+        items={page.items.map((pkg) => ({
+          name: pkg.title,
+          path: `/tour-packages/${pkg.slug}`,
+          image: pkg.cover.src,
+        }))}
+      />
       <nav
         aria-label={t("list.kindsLabel")}
         className="-mx-4 [scrollbar-width:none] overflow-x-auto px-4"

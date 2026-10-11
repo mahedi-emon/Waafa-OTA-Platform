@@ -27,10 +27,11 @@ import {
 import { brandNames, pricedProducts } from "@/lib/shop/catalogue";
 import { withDeals } from "@/lib/shop/deals";
 import { CampaignCarousel } from "./_components/CampaignCarousel";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Shop");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 const GRID = "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5";
