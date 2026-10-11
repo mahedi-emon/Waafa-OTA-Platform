@@ -43,5 +43,20 @@ export async function getEditorStrings() {
     conflict: tc("conflict"),
     forbidden: tc("forbidden"),
     unsaved: t("unsaved"),
+    richText: {
+      toolbar: t("richText.toolbar"),
+      paragraph: t("richText.paragraph"),
+      heading3: t("richText.heading3"),
+      bold: t("richText.bold"),
+      italic: t("richText.italic"),
+      bulletList: t("richText.bulletList"),
+      orderedList: t("richText.orderedList"),
+      quote: t("richText.quote"),
+      link: t("richText.link"),
+      unlink: t("richText.unlink"),
+      linkPrompt: t("richText.linkPrompt"),
+      undo: t("richText.undo"),
+      redo: t("richText.redo"),
+    },
   };
 }

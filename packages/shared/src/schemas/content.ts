@@ -17,7 +17,8 @@ import {
  * Rich text from the admin editor, already sanitised server-side with an allow-list (NFR-SEC).
  * Rendered with the one allowed dangerouslySetInnerHTML (CLAUDE.md component rules).
  */
-export const RichTextSchema = z.string().max(100_000);
+/** HTML from the admin's rich text editor (issue 116); `format: "html"` tells the generic editor to use it. */
+export const RichTextSchema = z.string().max(100_000).meta({ format: "html" });
 
 /** One headed part of a page; its id is the anchor used by the "On this page" contents list. */
 export const PageSectionSchema = z
