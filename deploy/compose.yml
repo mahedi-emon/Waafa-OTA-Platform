@@ -1,7 +1,7 @@
 # WAAFA production stack for one VPS (2 vCPU, 4 GB RAM): docs/DEPLOY.md. Run from the repository root:
 #   cp deploy/.env.example deploy/.env   (fill it in; never commit it)
 #   sh deploy/deploy.sh
-# Only Caddy is public (80 and 443, automatic HTTPS). PostgreSQL, Redis, the API and the worker stay on the private
+# Only nginx is public (80 and 443, HTTPS from Let's Encrypt through the certbot service). PostgreSQL, Redis, the API and the worker stay on the private
 # network; the API also listens on 127.0.0.1:4000 so the web build can read the content snapshot.
 name: waafa
 
@@ -115,21 +115,37 @@ services:
       api: { condition: service_healthy }
     mem_limit: 768m
 
-  caddy:
-    image: caddy:2
+  nginx:
+    build:
+      context: ./nginx
+    image: waafa-nginx:latest
     restart: unless-stopped
-    ports: ["80:80", "443:443", "443:443/udp"]
+    ports: ["80:80", "443:443"]
     environment:
-      SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS}
+      SITE_DOMAIN: ${SITE_DOMAIN:?set SITE_DOMAIN}
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - letsencrypt:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
     depends_on: [web]
-    mem_limit: 160m
+    mem_limit: 96m
+
+  # Renews the certificate twice a day when it is due; nginx reloads every 6 hours to pick it up.
+  certbot:
+    image: certbot/certbot:latest
+    restart: unless-stopped
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done",
+      ]
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    mem_limit: 128m
 
 volumes:
   pgdata:
   redisdata:
-  caddy_data:
-  caddy_config:
+  letsencrypt:
+  certbot_www:

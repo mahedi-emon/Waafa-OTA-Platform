@@ -264,7 +264,7 @@ jobs:
           path: apps/web/playwright-report
           retention-days: 7
 
-  # The VPS stack exactly as deploy/deploy.sh runs it: images built, PostgreSQL, Redis, API, worker, web, Caddy (C3).
+  # The VPS stack exactly as deploy/deploy.sh runs it: images built, PostgreSQL, Redis, API, worker, web, nginx (C3).
   vps:
     name: VPS deploy smoke (Docker Compose)
     needs: changes
@@ -278,7 +278,8 @@ jobs:
         run: |
           cat > deploy/.env <<'ENV'
           SITE_URL=http://localhost
-          SITE_ADDRESS=:80
+          SITE_DOMAIN=localhost
+          ACME_EMAIL=
           POSTGRES_PASSWORD=ciPostgresPassword0123456789abcdef
           JWT_SECRET=ci-jwt-secret-0123456789-0123456789-abcdef
           REVALIDATE_SECRET=ci-revalidate-secret-0123456789-abc
@@ -293,7 +294,7 @@ jobs:
       - name: Deploy
         run: sh deploy/deploy.sh
 
-      - name: Site answers through Caddy
+      - name: Site answers through nginx
         run: |
           for attempt in $(seq 1 30); do
             if curl -sf http://localhost/robots.txt > /dev/null; then break; fi

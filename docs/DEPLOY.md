@@ -4,8 +4,9 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 
 | Service | Image | Public | Memory cap |
 | --- | --- | --- | --- |
-| `caddy` | `caddy:2` | 80 and 443, automatic HTTPS | 160 MB |
-| `web` | `apps/web/Dockerfile` (Next.js standalone) | through Caddy only | 768 MB |
+| `nginx` | `deploy/nginx` (nginx 1.27): reverse proxy, HTTPS, www → apex, rate limit on form posts | 80 and 443 | 96 MB |
+| `certbot` | `certbot/certbot`: gets and renews the Let's Encrypt certificate | no | 128 MB |
+| `web` | `apps/web/Dockerfile` (Next.js standalone) | through nginx only | 768 MB |
 | `api` | `apps/api/Dockerfile` (runs migrations and the idempotent seed, then starts) | no (127.0.0.1:4000 for the web build) | 640 MB |
 | `worker` | same image as the API, command `tsx src/worker.ts` | no | 384 MB |
 | `postgres` | `postgres:16`, volume `pgdata` | no | 640 MB |
@@ -17,7 +18,8 @@ domain's DNS.
 ## 0. Owner checklist
 
 1. VPS: SSH access for the developer (a user with `sudo` and in the `docker` group), Ubuntu 22.04/24.04 or Debian 12.
-2. Domain: A records for the apex and `www` pointing at the VPS IP (and AAAA if the VPS has IPv6).
+2. Domain: A records for the apex and `www` pointing at the VPS IP (and AAAA if the VPS has IPv6), plus an email
+   for Let's Encrypt certificate notices (`ACME_EMAIL`).
 3. Email: a Resend account with the domain verified (SPF, DKIM, DMARC records at the DNS host), or SMTP details.
 4. Turnstile (optional): a Cloudflare Turnstile site for the domain (managed widget): site key and secret.
 5. The first Super Admin's email and a strong password (12+ characters); change it after the first sign-in.
@@ -30,7 +32,7 @@ sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapf
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 # Firewall: SSH, HTTP, HTTPS only.
-sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw allow 443/udp && sudo ufw enable
+sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw enable
 
 # Docker Engine with the Compose plugin (skip if `docker compose version` already works).
 curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker "$USER"   # then log out and in
@@ -40,7 +42,7 @@ sudo mkdir -p /opt/waafa && sudo chown "$USER" /opt/waafa
 git clone https://github.com/mahedi-emon/Waafa-OTA-Platform.git /opt/waafa
 ```
 
-Docker publishes ports past `ufw`; the compose file only publishes 80/443 (Caddy) and `127.0.0.1:4000` (local only),
+Docker publishes ports past `ufw`; the compose file only publishes 80/443 (nginx) and `127.0.0.1:4000` (local only),
 so nothing else is reachable from outside.
 
 ## 2. Settings
@@ -64,11 +66,11 @@ cd /opt/waafa && git pull && sh deploy/deploy.sh
 
 The script builds the API image, starts PostgreSQL, Redis and the API (migrations and seed run on start), waits until
 `/ready` answers, builds the web against the API (the build prerenders pages from the content snapshot), then starts
-the worker, the web and Caddy. The first run takes 10 to 15 minutes; later runs reuse the dependency layers.
+the worker, the web, nginx and certbot; with `ACME_EMAIL` set it then gets the Let's Encrypt certificate
+and switches nginx to HTTPS (DNS must already point at the server). The first run takes 10 to 15 minutes; later runs reuse the dependency layers.
 
 Check: `docker compose -f deploy/compose.yml ps` shows every service running (`api` healthy), and
-`curl -s http://127.0.0.1:4000/ready` answers `{"status":"ready","database":"up"}`. Caddy fetches the HTTPS
-certificates on the first visit once DNS points at the server.
+`curl -s http://127.0.0.1:4000/ready` answers `{"status":"ready","database":"up"}`. `https://<domain>` answers with a valid certificate; certbot renews it when due and nginx reloads every 6 hours.
 
 Every later release is the same command. Admin edits live in PostgreSQL, so a redeploy never overwrites them.
 
@@ -104,7 +106,7 @@ VPS provider's snapshot backups as well). Restore:
 | Task | Command (from `/opt/waafa`) |
 | --- | --- |
 | Status | `docker compose -f deploy/compose.yml ps` |
-| Logs | `docker compose -f deploy/compose.yml logs -f --tail 100 api` (or `web`, `worker`, `caddy`) |
+| Logs | `docker compose -f deploy/compose.yml logs -f --tail 100 api` (or `web`, `worker`, `nginx`, `certbot`) |
 | Memory | `docker stats --no-stream` |
 | Restart one service | `docker compose -f deploy/compose.yml restart web` |
 | Database shell | `docker compose -f deploy/compose.yml exec postgres psql -U waafa waafa` |
