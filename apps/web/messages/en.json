@@ -2583,7 +2583,8 @@
       "whatsapp": "WhatsApp",
       "ageMinutes": "{minutes} min",
       "ageHours": "{hours} h",
-      "ageDays": "{days} d"
+      "ageDays": "{days} d",
+      "board": "Board"
     },
     "lead": {
       "createdFrom": "Created {time} · {channel}",
@@ -2962,6 +2963,28 @@
       "neverTested": "Not tested yet",
       "note": "Internal note",
       "updated": "Updated {time} by {name}"
+    },
+    "leadBoard": {
+      "metaTitle": "Lead board",
+      "title": "Lead board",
+      "lead": "Open requests by stage. Move a card with its arrows; booking, cancelling or losing a lead happens on the lead itself.",
+      "listView": "List view",
+      "filter": "Service",
+      "allServices": "All services",
+      "moveTo": "Move between stages",
+      "moveBack": "Move back to {stage}",
+      "moveForward": "Move to {stage}",
+      "moved": "{reference} moved to {stage}",
+      "open": "Open to book",
+      "bookHint": "Booking needs the amount, so it happens on the lead.",
+      "overdue": "Overdue",
+      "unassigned": "Unassigned",
+      "failed": "That didn’t move. Try again.",
+      "empty": "Nothing here.",
+      "more": "{count} more in the list",
+      "ageMinutes": "{count} min",
+      "ageHours": "{count} h",
+      "ageDays": "{count, plural, one {# day} other {# days}}"
     }
   },
   "Consent": {

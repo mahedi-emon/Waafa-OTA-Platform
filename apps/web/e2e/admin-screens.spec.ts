@@ -15,6 +15,7 @@ const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 const SCREENS = [
   { name: "dashboard", path: "/secure-admin-control" },
   { name: "leads", path: "/secure-admin-control/leads" },
+  { name: "lead-board", path: "/secure-admin-control/leads/board" },
   { name: "orders", path: "/secure-admin-control/orders" },
   { name: "feedback", path: "/secure-admin-control/feedback" },
   { name: "content", path: "/secure-admin-control/content" },
