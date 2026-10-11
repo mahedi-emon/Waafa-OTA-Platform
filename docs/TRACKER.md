@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 11 Oct 15:30 Asia/Dhaka · Phase: A ✅ 24/24 (A22 closed), B 5/5, C: C1 + C2 done, C3 code merged (VPS + nginx), go-live waits for the owner's VPS access, DNS and email sender · Current: #74 deploy · Launch: 13 Oct 2026, 2 days left · Status: code complete for launch; production needs the owner (section 11)
+Updated: 11 Oct 17:30 Asia/Dhaka · Phase: A ✅ 24/24, B ✅ 5/5, C: code complete (VPS + nginx kit merged; the owner deploys by hand) · Current: SEO and design polish · Launch: 13 Oct 2026, 2 days left · Status: code launch-ready; production waits for the owner's manual deploy (section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -36,6 +36,26 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #99 · SEO: flight route landing pages — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 15:50 → 11 Oct 17:15 |
+| Branch · PR · merge | `feat/99-flight-routes` · #100 · squash |
+| Built | `flightRoutes` collection (Admin › Travel › Flight routes) and `/flights/[route]` pages: photo banner with the route arc, indicative from-fare, prefilled request, flight time, airlines, best time, the route's group fares, tips, visa link, FAQPage, popular routes (ItemList); Popular routes on /flights; sitemap images; absolute image URLs in all structured data |
+| Tests | e2e routes.spec.ts (390 and 1440, axe, prefill, not found), seo.spec, public screens |
+| Admin control | AC-113 |
+| Decisions | D149 |
+
+### #96 · SEO: share previews, admin defaults, richer structured data — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 15:00 → 11 Oct 16:40 |
+| Branch · PR · merge | `feat/96-seo` · #97 · `ee62a1d` |
+| Built | `withSocial` on all 40 public generateMetadata (own og:title, description, url, image with admin fallback, Twitter large card); layout uses Settings › General default SEO, googleBot large image previews, Search Console and Bing verification fields; Home WebSite + fuller TravelAgency; ItemList on package, visa and blog listings; sitemap images |
+| Tests | e2e seo.spec.ts (11 routes) |
+| Admin control | AC-112 |
+| Decisions | D148 |
 
 ### #22 · A22 Frontend QA and polish against the boards and the benchmark — ✅ Done
 | Field | Value |
@@ -688,6 +708,8 @@ Phase B (D130): the web reads every public row from one cached snapshot, `GET /a
 | AC-109 | Contact page messages (CNT) | `POST /api/leads` (module contact) → `createLead()` | Leads | `POST /api/v1/public/leads` | ⬜ |
 | AC-110 | External API connections (flight, hotel, payment providers) | `ProviderCredential` (settings, sealed secrets, enabled, health) | Settings › Integrations (Super Admin) | `GET/POST/DELETE /api/v1/admin/providers` | ⬜ |
 | AC-111 | Tour packages banner photo | `mediaSlots[packages-header]` | Content › Media library | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-112 | Search Console and Bing site verification | `siteSettings.googleSiteVerification`, `bingSiteVerification` | Settings › General | `GET /api/v1/public/snapshot` | ⬜ |
+| AC-113 | Flight route landing pages (/flights/[route]) and Popular routes on /flights | `flightRoutes` collection | Content › Flight routes | `GET /api/v1/public/snapshot` | ⬜ |
 
 ## 5. Components inventory
 
@@ -955,6 +977,9 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D145 | 11 Oct | Before launch the first-load budget is enforced as per-route ceilings (e2e/budget.spec.ts), not the 200 KB target | Reaching 200 KB needs picker and form-step splits that are too risky two days before launch; continues in #91 | #39 |
 | D146 | 11 Oct | Listing banners (Packages, Visa) are an inset rounded photo panel (`BannerHero`) like the Home hero, not the boards' full-bleed band; Ken Burns starts after 1.2 s on desktop only | One consistent hero language; the photo is the LCP element, so it paints still | #22 |
 | D147 | 11 Oct | Card spotlight, 3D tilt, hover-to-play package clips and the WhatsApp shimmer are built in-house (`CardFx`, `HoverVideo`) following the HANDOFF 21st.dev references | The 21st.dev install path is unavailable this session (MCP disconnected); our versions write one transform and one CSS variable per frame, mouse only, reduced-motion aware | #22 |
+| D148 | 11 Oct | Every public page passes its metadata through `withSocial` | Next merges metadata shallowly: without it most pages shared the site-wide og:title and no image on Facebook and WhatsApp | #96 |
+| D149 | 11 Oct | Flight route landing pages are a content collection (`flightRoutes`) edited in the generic admin editor, with facts written as typical values and fares labelled indicative | Route pages are how OTAs earn search traffic; no live prices or availability before Phase E | #99 |
+| D150 | 11 Oct | The owner deploys by hand: `deploy/init-env.sh` writes the settings with fresh secrets, `deploy/check.sh` verifies the server, `docs/DEPLOY.md` opens with a quick start | Owner request; fewer manual steps, no secrets typed by hand | #74 |
 
 ## 9. Bugs and known issues
 
@@ -1021,6 +1046,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 11 Oct 15:00–17:30 | Owner: deploy by hand, best SEO, better design. SEO pass merged (#97: share previews on 40 pages, admin defaults, verification fields, WebSite/TravelAgency, ItemList, sitemap images), flight route landing pages (#100), deploy kit (#98: init-env.sh, check.sh, quick start) | #74, #96, #99 | #97, #98, #100 | e2e seo + routes · public screens 33 routes |
 | 11 Oct 14:00–15:30 | Board review with new screenshots: parity and motion merged (#88), product photo fix (#90), public screens job (#87), Lighthouse CI (#93). A22 closed: Phase A complete. Lighthouse mobile: A11y/BP/SEO 100 everywhere, Performance 45 (home) to 87 (visa) | #22, #89 | #87, #88, #90, #93 | public screens 32×5 · Lighthouse 5 routes |
 | 11 Oct 08:30–14:00 | Owner asked for VPS + nginx, external API connections, a hidden admin URL and a full board review. Shipped: VPS Docker stack with nginx and Let's Encrypt (#81), provider adapters + Integrations (#83), zod out of the first load + budget check (#84), admin at /secure-admin-control (#86), product photo bug (#89 → #90); public screens at five widths with screenshots (#87) and board parity + motion (#88: listing banners, filter chips, home hero, request cards, card spotlight/tilt, hover clips) in CI. #39 closed, rest in #91 | #22, #39, #74, #82, #85, #89, #91 | #81, #83, #84, #86, #87, #88, #90 | CI: VPS smoke, API-mode e2e, budget, public screens 32 routes × 5 widths |
 | 11 Oct 01:40–06:00 | Launch admin merged (#68), A19–A21 closed with cuts to #71; Turnstile on every form (#70); Live stays locked (#73); deploy runbook (#75); admin QA job at five widths with axe and screenshots (#76, editor fitted to 320 px); signature motion (#77); independent review found 11 defects, all fixed (#79). Home first-load JS measured at 392 KB gzip incl. a 39 KB nomodule polyfill (#39 stays open) | #18–#21, #52, #66, #69, #72, #74, #78 | #68, #70, #73, #75, #76, #77, #79 | API-mode e2e 5 + admin screens 8×5 widths · web unit 238 · shared 52 |
@@ -1047,6 +1073,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner (manual deploy): VPS → `sh deploy/init-env.sh <domain> <email>` → fill the email sender and first admin → `sh deploy/check.sh` → `sh deploy/deploy.sh` (docs/DEPLOY.md quick start).
+2. After go-live: add the Search Console code in Admin › Settings › General, submit /sitemap.xml, check shares in the Facebook Sharing Debugger; a travel expert reviews the six Sample flight routes and adds more.
+3. After launch: #91 performance, #71 admin editors, Bangla (P1).
+
+Earlier (11 Oct 15:30):
 1. Owner: VPS SSH access, DNS A records, email sender (Resend or SMTP), ACME email, first Super Admin email → `sh deploy/deploy.sh` (#74) → launch checks; replace Sample content in Admin.
 2. Before announcing: Lighthouse on the live domain (real network) and an admin walk-through with the owner's staff.
 3. After launch: #91 performance (home TBT, 200 KB), #71 bespoke admin editors and media uploads, Phase D.

@@ -143,7 +143,11 @@ async function FlightRouteContent({
             </div>
           }
         />
-        {route.sample ? <SampleBadge label={t("sample")} /> : null}
+        {route.sample ? (
+          <div className="self-start">
+            <SampleBadge label={t("sample")} />
+          </div>
+        ) : null}
       </div>
 
       <section aria-label={route.title} className="grid grid-cols-1 gap-3 sm:grid-cols-3">
