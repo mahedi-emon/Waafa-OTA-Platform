@@ -66,6 +66,15 @@ export async function createApp(
     origin: env.WEB_ORIGINS.length > 0 ? env.WEB_ORIGINS : false,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   });
+  // Photo uploads arrive as the raw body (Admin › Media library, #109), with their own size limit.
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .addContentTypeParser(
+      /^image\/(jpeg|png|webp|avif)$/,
+      { parseAs: "buffer", bodyLimit: 12 * 1024 * 1024 + 1024 },
+      (_request, body, done) => done(null, body),
+    );
   app
     .getHttpAdapter()
     .getInstance()

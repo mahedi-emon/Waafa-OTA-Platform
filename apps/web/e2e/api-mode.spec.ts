@@ -117,3 +117,34 @@ test("a Super Admin connects an external API; the secret is never shown again", 
   expect(await page.content()).not.toContain("e2e-client-secret-4321");
   expect(errors).toEqual([]);
 });
+
+test("an editor uploads a photo to the media library and the site serves it (issue 109)", async ({
+  page,
+  request,
+}) => {
+  test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  const errors = collectErrors(page);
+  await signIn(page);
+  await page.goto("/secure-admin-control/media");
+  await expect(page.getByRole("heading", { level: 1, name: "Media library" })).toBeVisible();
+  // A 4 x 4 PNG made in the test: the API re-encodes it to WebP.
+  const png = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAD0lEQVQImWNgCL6OQMRxANcTEqEIh1beAAAAAElFTkSuQmCC",
+    "base64",
+  );
+  await page
+    .getByLabel("Photo")
+    .setInputFiles({ name: "e2e.png", mimeType: "image/png", buffer: png });
+  await page.getByLabel("Alt text").first().fill("E2E test swatch in brand blue");
+  await page.getByRole("button", { name: "Upload" }).click();
+  await expect(page.getByText("Photo uploaded")).toBeVisible();
+  const address = page
+    .locator("code", { hasText: /^\/uploads\/\d{4}\/\d{2}\/[a-z0-9]+\.webp$/ })
+    .first();
+  await expect(address).toBeVisible();
+  const url = (await address.textContent()) ?? "";
+  const served = await request.get(url);
+  expect(served.status()).toBe(200);
+  expect(served.headers()["content-type"]).toBe("image/webp");
+  expect(errors).toEqual([]);
+});
