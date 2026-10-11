@@ -291,6 +291,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Settings generator (deploy/init-env.sh)
+        run: |
+          sh deploy/init-env.sh example.com ops@example.com
+          grep -Eq '^JWT_SECRET=[A-Za-z0-9]{48}$' deploy/.env
+          grep -Eq '^SITE_URL=https://example.com$' deploy/.env
+          [ "$(stat -c %a deploy/.env)" = "600" ]
+          ! sh deploy/init-env.sh example.com ops@example.com
+          rm deploy/.env
+
       - name: Test settings
         run: |
           cat > deploy/.env <<'ENV'
