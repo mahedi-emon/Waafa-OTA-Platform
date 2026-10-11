@@ -1,8 +1,14 @@
 import type { ReactNode } from "react";
+import { getTranslations } from "next-intl/server";
 import type { HomeSection } from "@waafa/shared";
 import { SearchCard } from "@/components/search/SearchCard";
 import { getMediaSlot } from "@/lib/data/content";
-import { getHomeContent, getSiteSettings, listHomeSections } from "@/lib/data/settings";
+import {
+  getContactSettings,
+  getHomeContent,
+  getSiteSettings,
+  listHomeSections,
+} from "@/lib/data/settings";
 import { CtaSection } from "./CtaSection";
 import { DestinationsSection } from "./DestinationsSection";
 import { GalleryBlogFaqSection } from "./GalleryBlogFaqSection";
@@ -22,11 +28,13 @@ import { WhySection } from "./WhySection";
  * its data is empty.
  */
 async function HomeSections() {
-  const [sections, content, heroMedia, site] = await Promise.all([
+  const [sections, content, heroMedia, site, contact, tLayout] = await Promise.all([
     listHomeSections(),
     getHomeContent(),
     getMediaSlot("home-hero"),
     getSiteSettings(),
+    getContactSettings(),
+    getTranslations("Layout"),
   ]);
   const heroShown = sections.some((section) => section.key === "hero");
 
@@ -38,6 +46,13 @@ async function HomeSections() {
             key={section.key}
             hero={content.hero}
             media={heroMedia}
+            eyebrow={site.travelBrand}
+            contact={{
+              hours: contact.officeHours,
+              phoneDisplay: contact.phoneDisplay,
+              phoneE164: contact.phoneE164,
+              pendingLabel: tLayout("checkingHours"),
+            }}
             search={<SearchCard source="home" />}
           />
         );

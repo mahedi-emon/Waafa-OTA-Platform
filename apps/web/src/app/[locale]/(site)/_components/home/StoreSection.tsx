@@ -61,7 +61,9 @@ async function StoreSection({ section, store }: StoreSectionProps) {
         <div className="flex flex-col gap-5">
           {top.length > 0 ? (
             <div>
-              <h3 className="mb-3 text-[13.5px] font-semibold text-mist-700">{t("categories")}</h3>
+              <h3 className="mb-3 font-sans text-[13.5px] font-semibold tracking-normal text-mist-700">
+                {t("categories")}
+              </h3>
               <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {top.map((category) => (
                   <li key={category.id}>
@@ -81,7 +83,9 @@ async function StoreSection({ section, store }: StoreSectionProps) {
             </div>
           ) : null}
           <div>
-            <h3 className="mb-3 text-[13.5px] font-semibold text-mist-700">{t("services")}</h3>
+            <h3 className="mb-3 font-sans text-[13.5px] font-semibold tracking-normal text-mist-700">
+              {t("services")}
+            </h3>
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {services.map((service) => (
                 <li key={service.id}>

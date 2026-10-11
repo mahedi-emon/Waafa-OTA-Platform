@@ -381,6 +381,34 @@
   }
 }
 
+/*
+ * Slow Ken Burns on banner photos (MOTION.md "Hero"): desktop only, starting after the first paint so the LCP image
+ * renders still, alternating forever on the compositor. Reduced motion keeps the photo still.
+ */
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.07) translate3d(-1.5%, -1%, 0);
+  }
+}
+
+@utility ken-burns {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
+    animation: ken-burns 22s ease-in-out 1.2s infinite alternate both;
+  }
+}
+
+/* Card spotlight (components/fx/CardFx): a soft electric glow centred on the pointer (--spot-x / --spot-y). */
+@utility spotlight-layer {
+  background: radial-gradient(
+    300px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in oklab, var(--color-electric-600) 11%, transparent),
+    transparent 70%
+  );
+}
+
 @keyframes word-rise {
   from {
     opacity: 0;

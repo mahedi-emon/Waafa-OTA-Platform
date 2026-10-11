@@ -138,6 +138,7 @@ export const MediaSlotKeySchema = z.enum([
   "flights-header",
   "flights-success",
   "group-fares-header",
+  "packages-header",
   "visa-services-header",
   "visa-apply-side",
   "visa-guide-header",

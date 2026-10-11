@@ -121,7 +121,6 @@
       "whatsapp": "Message on WhatsApp",
       "call": "Call {phone}",
       "directions": "Get directions",
-      "officePhoto": "Office photo to come",
       "pageName": "Home"
     },
     "sectionLabels": {
@@ -587,7 +586,9 @@
       "emptyBody": "New fixed-date seats are added every week. Tell us your route and date and we’ll check fares for you.",
       "emptyAction": "Ask an expert for a fare",
       "clear": "Clear filters",
-      "about": "About group fares. Seats are limited and the airline sets the rules: names usually can’t be changed after ticketing, and most of these fares can’t be refunded. We explain the rules for your fare before you pay."
+      "about": "About group fares. Seats are limited and the airline sets the rules: names usually can’t be changed after ticketing, and most of these fares can’t be refunded. We explain the rules for your fare before you pay.",
+      "all": "All",
+      "allMonths": "All months"
     },
     "cabins": {
       "economy": "Economy",
@@ -646,7 +647,8 @@
     },
     "noPayment": "No payment now",
     "back": "Back",
-    "submit": "Send to a travel expert"
+    "submit": "Send to a travel expert",
+    "priceConfirmed": "Price confirmed before you pay"
   },
   "Hotels": {
     "metaTitle": "Hotels in Bangladesh and abroad, rates checked by a person",
@@ -815,7 +817,10 @@
         "two": "Who’s going and budget",
         "three": "Your plan on WhatsApp"
       },
-      "planAction": "Plan my trip"
+      "planAction": "Plan my trip",
+      "allTrips": "All trips",
+      "kindsLabel": "Kinds of trip",
+      "sortLabel": "Sort"
     },
     "detail": {
       "sample": "Sample package",

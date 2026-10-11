@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { GroupFareCard } from "@/components/travel/GroupFareCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "cn";
 import { Link } from "@/i18n/navigation";
 import { listGroupFares } from "@/lib/data/travel";
 import { formatMonth } from "@/lib/search/isoDate";
@@ -31,8 +32,60 @@ function sortFares(fares: GroupFare[], sort: Sort): GroupFare[] {
   return copy.sort((a, b) => a.departDate.localeCompare(b.departDate));
 }
 
-const selectClass =
-  "h-12 w-full rounded-xl border border-mist-300 bg-white px-3 text-[15px] text-ink-900 outline-none focus-visible:border-electric-600 focus-visible:ring-3 focus-visible:ring-ring/20";
+/** "/flights/group-fares?…" for a filter set, leaving out empty and default values. */
+function faresHref(values: { to?: string; month?: string; sort?: Sort }): string {
+  const params = new URLSearchParams();
+  if (values.to) params.set("to", values.to);
+  if (values.month) params.set("month", values.month);
+  if (values.sort && values.sort !== "date") params.set("sort", values.sort);
+  const search = params.toString();
+  return search ? `/flights/group-fares?${search}` : "/flights/group-fares";
+}
+
+type Chip = { key: string; label: string; count?: number; href: string; current: boolean };
+
+/** One labelled row of filter chips (GroupFares board): a tap applies the filter, the current chip is navy. */
+function ChipRow({ label, items }: { label: string; items: Chip[] }) {
+  return (
+    <nav
+      aria-label={label}
+      className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
+    >
+      <span className="w-20 shrink-0 text-[12px] font-bold tracking-[0.12em] text-mist-600 uppercase">
+        {label}
+      </span>
+      <ul className="-mx-4 flex min-w-0 [scrollbar-width:none] gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+        {items.map((item) => (
+          <li key={item.key}>
+            <Link
+              href={item.href}
+              scroll={false}
+              aria-current={item.current ? "true" : undefined}
+              className={cn(
+                "inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 text-[14px] font-semibold whitespace-nowrap transition-colors duration-150 outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
+                item.current
+                  ? "border-navy-900 bg-navy-900 text-white"
+                  : "border-mist-200 bg-white text-ink-900 hover:border-mist-300 hover:bg-mist-50",
+              )}
+            >
+              {item.label}
+              {item.count !== undefined ? (
+                <span
+                  className={cn(
+                    "text-[12px] tabular-nums",
+                    item.current ? "text-white/70" : "text-mist-500",
+                  )}
+                >
+                  {item.count}
+                </span>
+              ) : null}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
 
 async function GroupFareList({
   searchParams,
@@ -58,47 +111,54 @@ async function GroupFareList({
 
   return (
     <div className="flex flex-col gap-6">
-      <form
-        method="get"
-        className="grid grid-cols-1 gap-3 rounded-2xl border border-mist-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end"
-      >
-        <label className="flex flex-col gap-1.5 text-[14px] font-semibold text-ink-900">
-          {t("to")}
-          <select name="to" defaultValue={to ?? ""} className={selectClass}>
-            <option value="">{t("anyDestination")}</option>
-            {destinations.map(([iata, city]) => (
-              <option key={iata} value={iata}>
-                {city} ({iata})
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1.5 text-[14px] font-semibold text-ink-900">
-          {t("month")}
-          <select name="month" defaultValue={month ?? ""} className={selectClass}>
-            <option value="">{t("anyMonth")}</option>
-            {months.map((value) => (
-              <option key={value} value={value}>
-                {formatMonth(value)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1.5 text-[14px] font-semibold text-ink-900">
-          {t("sort")}
-          <select name="sort" defaultValue={sort} className={selectClass}>
-            <option value="date">{t("sortDate")}</option>
-            <option value="price">{t("sortPrice")}</option>
-            <option value="seats">{t("sortSeats")}</option>
-          </select>
-        </label>
-        <button
-          type="submit"
-          className="h-12 cursor-pointer rounded-full bg-primary px-6 text-[15px] font-semibold text-primary-foreground outline-none hover:bg-brand-700 focus-visible:ring-3 focus-visible:ring-ring/40 sm:col-span-2 lg:col-span-1"
-        >
-          {t("apply")}
-        </button>
-      </form>
+      <div className="flex flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-4">
+        <ChipRow
+          label={t("to")}
+          items={[
+            {
+              key: "all",
+              label: t("all"),
+              count: all.length,
+              href: faresHref({ month, sort }),
+              current: !to,
+            },
+            ...destinations.map(([iata, city]) => ({
+              key: iata,
+              label: city,
+              count: all.filter((fare) => fare.to.iata === iata).length,
+              href: faresHref({ to: iata, month, sort }),
+              current: to === iata,
+            })),
+          ]}
+        />
+        <ChipRow
+          label={t("month")}
+          items={[
+            { key: "all", label: t("allMonths"), href: faresHref({ to, sort }), current: !month },
+            ...months.map((value) => ({
+              key: value,
+              label: formatMonth(value),
+              href: faresHref({ to, month: value, sort }),
+              current: month === value,
+            })),
+          ]}
+        />
+        <ChipRow
+          label={t("sort")}
+          items={(
+            [
+              ["date", t("sortDate")],
+              ["price", t("sortPrice")],
+              ["seats", t("sortSeats")],
+            ] as const
+          ).map(([value, label]) => ({
+            key: value,
+            label,
+            href: faresHref({ to, month, sort: value }),
+            current: sort === value,
+          }))}
+        />
+      </div>
 
       <div aria-live="polite" className="flex flex-wrap items-center gap-2">
         <h2 className="text-[15px] font-semibold text-mist-700">
@@ -144,7 +204,7 @@ async function GroupFareList({
   );
 }
 
-/** /flights/group-fares (GroupFares, GroupFares-empty, -m): fixed-date seats, filtered with a plain GET form. */
+/** /flights/group-fares (GroupFares, GroupFares-empty, -m): fixed-date seats, filtered by chips in the URL (one tap each). */
 export default async function GroupFaresPage({
   searchParams,
 }: PageProps<"/[locale]/flights/group-fares">) {
@@ -163,25 +223,34 @@ export default async function GroupFaresPage({
       <Breadcrumbs
         items={[{ label: tFlights("breadcrumb"), href: "/flights" }, { label: t("breadcrumb") }]}
       />
-      <header className="flex flex-col gap-3">
-        <h1 className="max-w-[24ch] type-h1 text-navy-900">{t("title")}</h1>
-        <p className="max-w-[68ch] type-lead text-mist-600">{t("lead")}</p>
-      </header>
-      <section aria-label={t("howTitle")}>
-        <ol className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {steps.map(([title, body], index) => (
-            <li key={title} className="flex gap-3 rounded-2xl bg-mist-50 p-4">
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-navy-900 font-display text-[14px] font-bold text-white">
-                {index + 1}
-              </span>
-              <span>
-                <span className="block text-[15px] font-semibold text-navy-900">{title}</span>
-                <span className="block text-[13.5px] text-mist-600">{body}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center lg:gap-10">
+        <header className="flex flex-col gap-3">
+          <p className="flex items-center gap-2 text-[13px] font-bold tracking-[0.14em] text-brand-700 uppercase">
+            <span aria-hidden="true" className="h-px w-6 bg-brand-700" />
+            {t("breadcrumb")}
+          </p>
+          <h1 className="max-w-[24ch] type-h1 text-navy-900">{t("title")}</h1>
+          <p className="max-w-[60ch] type-lead text-mist-600">{t("lead")}</p>
+        </header>
+        <section
+          aria-label={t("howTitle")}
+          className="rounded-2xl border border-mist-200 bg-white p-4 shadow-md"
+        >
+          <ol className="flex flex-col divide-y divide-mist-100">
+            {steps.map(([title, body], index) => (
+              <li key={title} className="flex gap-3 py-3 first:pt-0 last:pb-0">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-navy-900 font-display text-[14px] font-bold text-white">
+                  {index + 1}
+                </span>
+                <span>
+                  <span className="block text-[15px] font-semibold text-navy-900">{title}</span>
+                  <span className="block text-[13.5px] text-mist-600">{body}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
       <Suspense fallback={<Skeleton className="h-[520px] rounded-2xl" />}>
         <GroupFareList searchParams={searchParams} />
       </Suspense>
