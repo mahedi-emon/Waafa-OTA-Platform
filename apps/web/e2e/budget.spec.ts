@@ -30,8 +30,7 @@ for (const route of ROUTES) {
       type: "first-load-js",
       description: `${route}: ${kb} KB gzip (target ${TARGET_KB} KB)`,
     });
-    process.stdout.write(`first-load JS ${route}: ${kb} KB gzip (target ${TARGET_KB} KB)
-`);
+    process.stdout.write(`first-load JS ${route}: ${kb} KB gzip (target ${TARGET_KB} KB)\n`);
     expect(kb, `${route} first-load JS (KB gzip)`).toBeLessThanOrEqual(CEILING_KB);
   });
 }
