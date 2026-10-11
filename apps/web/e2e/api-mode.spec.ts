@@ -92,3 +92,28 @@ test("a newsletter sign-up reaches the Admin list", async ({ page }) => {
   await page.goto("/admin/subscribers");
   await expect(page.getByText(email)).toBeVisible();
 });
+
+test("a Super Admin connects an external API; the secret is never shown again", async ({
+  page,
+}) => {
+  test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  const errors = collectErrors(page);
+  await signIn(page);
+  await page.goto("/admin/integrations");
+  await expect(page.getByRole("heading", { level: 1, name: "Integrations" })).toBeVisible();
+  const card = page
+    .getByRole("article")
+    .filter({ has: page.getByRole("heading", { name: "Sabre" }) });
+  await card.getByRole("button", { name: "Connect" }).click();
+  await card.getByLabel("API base URL").fill("https://example.com");
+  await card.getByLabel("Client ID").fill("e2e-client");
+  await card.getByLabel("Client secret").fill("e2e-client-secret-4321");
+  await card.getByLabel("PCC (pseudo city code)").fill("E2E1");
+  await card.getByRole("switch", { name: "Use this connection" }).click();
+  await card.getByRole("button", { name: "Save" }).click();
+  await expect(card.getByText("Sandbox: Connected")).toBeVisible();
+  await expect(card.getByText("Saved, ends in 4321. Leave empty to keep it.")).toBeVisible();
+  await expect(card.getByLabel("Client secret")).toHaveValue("");
+  expect(await page.content()).not.toContain("e2e-client-secret-4321");
+  expect(errors).toEqual([]);
+});

@@ -21,6 +21,7 @@ const SCREENS = [
   { name: "content-faqs", path: "/admin/content/faqs" },
   { name: "settings-contact", path: "/admin/content/contactSettings" },
   { name: "users", path: "/admin/users" },
+  { name: "integrations", path: "/admin/integrations" },
 ] as const;
 
 test.skip(!apiMode || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");

@@ -37,6 +37,10 @@ export const EnvSchema = z
     STAFF_ALERT_EMAIL: optional,
     SEED_ADMIN_EMAIL: optional,
     SEED_ADMIN_PASSWORD: optional,
+    /** Encrypts external API secrets at rest (#82). Without it, provider secrets cannot be saved. */
+    PROVIDER_SECRET_KEY: optional.refine((value) => value === undefined || value.length >= 32, {
+      message: "PROVIDER_SECRET_KEY must be at least 32 characters",
+    }),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== "production") return;

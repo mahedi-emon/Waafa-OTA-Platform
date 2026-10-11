@@ -27,6 +27,7 @@ export type AdminIconName =
   | "payments"
   | "notifications"
   | "users"
+  | "integrations"
   | "general"
   | "newsletter"
   | "audit";
@@ -235,6 +236,13 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         roles: MANAGERS,
       },
       { key: "users", label: "users", href: "/admin/users", icon: "users", roles: ["super-admin"] },
+      {
+        key: "integrations",
+        label: "integrations",
+        href: "/admin/integrations",
+        icon: "integrations",
+        roles: ["super-admin"],
+      },
       {
         key: "general",
         label: "general",
