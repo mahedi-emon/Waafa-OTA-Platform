@@ -17,7 +17,7 @@ let reference = "";
 
 async function signIn(page: Page) {
   await page.goto("/secure-admin-control");
-  await expect(page).toHaveURL(/\/admin\/sign-in/);
+  await expect(page).toHaveURL(/\/secure-admin-control\/sign-in/);
   await page.getByLabel("Work email").fill(ADMIN_EMAIL);
   await page.getByLabel("Password").fill(ADMIN_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
