@@ -15,6 +15,37 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 Outside the server: an email sender (Resend, or any SMTP server), Cloudflare Turnstile (optional at launch) and the
 domain's DNS.
 
+## Quick start (manual deploy, about 30 minutes)
+
+Run these on the VPS as a user with `sudo`. Replace `waafasworld.com` and the email with your own.
+
+```bash
+# 1. Once per server: swap, firewall, Docker (details in step 1 below)
+sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw enable
+curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker "$USER"   # log out and in once
+
+# 2. The code
+sudo mkdir -p /opt/waafa && sudo chown "$USER" /opt/waafa
+git clone https://github.com/mahedi-emon/Waafa-OTA-Platform.git /opt/waafa && cd /opt/waafa
+
+# 3. Settings: creates deploy/.env with new random secrets, then add the email sender and the first admin
+sh deploy/init-env.sh waafasworld.com you@example.com
+nano deploy/.env        # RESEND_API_KEY or SMTP_URL, STAFF_ALERT_EMAIL, SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD
+
+# 4. Check everything (Docker, memory, ports, settings, DNS), then deploy
+sh deploy/check.sh
+sh deploy/deploy.sh
+
+# 5. Daily backups
+(crontab -l 2>/dev/null; echo "15 3 * * * cd /opt/waafa && sh deploy/backup.sh >> deploy/backups/backup.log 2>&1") | crontab -
+```
+
+Then open `https://waafasworld.com/secure-admin-control`, sign in with the first Super Admin, change the password,
+remove `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` from `deploy/.env`, and follow the launch checks in step 5.
+Every later release: `cd /opt/waafa && git pull && sh deploy/deploy.sh`.
+
 ## 0. Owner checklist
 
 1. VPS: SSH access for the developer (a user with `sudo` and in the `docker` group), Ubuntu 22.04/24.04 or Debian 12.
@@ -49,7 +80,9 @@ so nothing else is reachable from outside.
 
 ```bash
 cd /opt/waafa
-cp deploy/.env.example deploy/.env && chmod 600 deploy/.env && nano deploy/.env
+sh deploy/init-env.sh <domain> <email for Let's Encrypt>   # or: cp deploy/.env.example deploy/.env
+nano deploy/.env
+sh deploy/check.sh
 ```
 
 Fill in every value (the comments in the file explain each one). Secrets: generate each with
