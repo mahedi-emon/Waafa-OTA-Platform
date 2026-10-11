@@ -49,6 +49,21 @@ export async function listGroupFares(filters: { to?: string; month?: string } = 
   return repositories.travel.listGroupFares({ ...filters, now: new Date() });
 }
 
+/** Flight route landing pages (#99). */
+export async function listFlightRoutes() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.flightRoutes);
+  return repositories.travel.listFlightRoutes();
+}
+
+export async function getFlightRoute(slug: string) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.flightRoutes);
+  return repositories.travel.getFlightRoute(slug);
+}
+
 export async function getGroupFare(id: string) {
   "use cache";
   cacheLife("minutes");

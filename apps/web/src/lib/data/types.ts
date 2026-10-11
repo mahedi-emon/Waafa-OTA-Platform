@@ -65,6 +65,7 @@ import type {
   VisaCountry,
   VisaGuide,
   VisaRegion,
+  FlightRoute,
 } from "@waafa/shared";
 
 /*
@@ -184,6 +185,9 @@ export interface TravelRepository {
   getPackage(slug: string): Promise<TourPackage | null>;
   listRelatedPackages(slug: string): Promise<TourPackage[]>;
   searchHotelPlaces(query: string, limit?: number): Promise<HotelPlace[]>;
+  /** Published flight route pages in admin order (#99). */
+  listFlightRoutes(): Promise<FlightRoute[]>;
+  getFlightRoute(slug: string): Promise<FlightRoute | null>;
 }
 
 export type VisaQuery = { region?: VisaRegion; search?: string; popular?: boolean };

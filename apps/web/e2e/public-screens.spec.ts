@@ -14,6 +14,7 @@ const ROUTES: Array<{ name: string; path: string }> = [
   { name: "Home", path: "/" },
   { name: "Flights", path: "/flights" },
   { name: "GroupFares", path: "/flights/group-fares" },
+  { name: "FlightRoute", path: "/flights/dhaka-to-dubai" },
   { name: "Hotels", path: "/hotels" },
   { name: "Packages", path: "/tour-packages" },
   { name: "PackageDetail", path: "/tour-packages/maldives-island-stay" },

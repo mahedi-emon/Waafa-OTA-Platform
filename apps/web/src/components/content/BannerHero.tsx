@@ -11,6 +11,8 @@ type BannerHeroProps = {
   lead?: string;
   /** The page's admin-managed header photo (a video slot shows its poster); without one, the ribbon gradient. */
   media?: MediaSlot | null;
+  /** A record's own photo (a flight route, a country), used instead of a media slot. */
+  photo?: MediaSlot["image"];
   /** Right column on desktop, under the lead on phones: usually the page's search form. */
   aside?: ReactNode;
   /** A row under the heading and the aside (popular links, chips). */
@@ -23,8 +25,18 @@ type BannerHeroProps = {
  * under a navy gradient, a cyan kicker, the white h1 and lead, and the search on the right. The photo is the LCP
  * element, so it renders still and only starts its slow Ken Burns drift (desktop, motion allowed) after 1.2 s.
  */
-function BannerHero({ id, kicker, title, lead, media, aside, footer, className }: BannerHeroProps) {
-  const image = media?.image ?? media?.video?.poster;
+function BannerHero({
+  id,
+  kicker,
+  title,
+  lead,
+  media,
+  photo,
+  aside,
+  footer,
+  className,
+}: BannerHeroProps) {
+  const image = photo ?? media?.image ?? media?.video?.poster;
   return (
     <section
       aria-labelledby={id}

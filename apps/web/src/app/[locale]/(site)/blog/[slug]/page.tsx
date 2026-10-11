@@ -91,7 +91,7 @@ async function BlogPostContent({ params }: Pick<PageProps<"/[locale]/blog/[slug]
           "@type": "BlogPosting",
           headline: post.title,
           description: post.excerpt,
-          image: [post.cover.src],
+          image: [absoluteUrl(post.cover.src)],
           datePublished: post.publishedAt,
           author: { "@type": "Person", name: post.author },
           publisher: { "@type": "Organization", name: site.travelBrand },

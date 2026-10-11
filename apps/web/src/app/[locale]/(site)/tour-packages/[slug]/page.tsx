@@ -146,7 +146,7 @@ async function PackagePageContent({
           name: pkg.title,
           description: pkg.summary,
           url: absoluteUrl(`/tour-packages/${pkg.slug}`),
-          image: images.map((image) => image.src),
+          image: images.map((image) => absoluteUrl(image.src)),
           touristType: pkg.categories,
           itinerary: {
             "@type": "ItemList",

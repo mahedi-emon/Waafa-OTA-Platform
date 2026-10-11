@@ -77,6 +77,17 @@ export function createFixtureTravelRepository(data: FixtureData): TravelReposito
         );
     },
 
+    async listFlightRoutes() {
+      return data.flightRoutes
+        .filter((route) => route.status === "published")
+        .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+    },
+
+    async getFlightRoute(slug) {
+      const route = data.flightRoutes.find((candidate) => candidate.slug === slug);
+      return route && route.status === "published" ? route : null;
+    },
+
     async getGroupFare(id, now) {
       const fare = data.groupFares.find((candidate) => candidate.id === id);
       return fare && isOnOffer(fare.expiresAt, now) ? fare : null;

@@ -25,6 +25,7 @@ import {
   FooterSettingsSchema,
   GalleryAlbumSchema,
   GroupFareSchema,
+  FlightRouteSchema,
   HomeSectionSchema,
   HotelPlaceSchema,
   LeadFormSettingsSchema,
@@ -110,7 +111,7 @@ import {
   products,
   storeRows,
 } from "./shop";
-import { airlines, airports, groupFares, hotelPlaces, tourPackages } from "./travel";
+import { airlines, airports, flightRoutes, groupFares, hotelPlaces, tourPackages } from "./travel";
 import { visaApplications, visaCountries, visaGuides } from "./visa";
 
 /**
@@ -168,6 +169,7 @@ export const fixtureRegistry = {
   airports: entry(z.array(AirportSchema), airports),
   airlines: entry(z.array(AirlineSchema), airlines),
   groupFares: entry(z.array(GroupFareSchema), groupFares),
+  flightRoutes: entry(z.array(FlightRouteSchema), flightRoutes),
   tourPackages: entry(z.array(TourPackageSchema), tourPackages),
   hotelPlaces: entry(z.array(HotelPlaceSchema), hotelPlaces),
   // Visa
