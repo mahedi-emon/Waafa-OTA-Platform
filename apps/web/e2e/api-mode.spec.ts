@@ -141,9 +141,9 @@ test("an editor uploads a photo to the media library and the site serves it (iss
     "base64",
   );
   await page
-    .getByLabel("Photo")
+    .getByLabel("Photo", { exact: true })
     .setInputFiles({ name: "e2e.png", mimeType: "image/png", buffer: png });
-  await page.getByLabel("Alt text").first().fill("E2E test swatch in brand blue");
+  await page.getByLabel("Alt text", { exact: true }).first().fill("E2E test swatch in brand blue");
   await page.getByRole("button", { name: "Upload" }).click();
   await expect(page.getByText("Photo uploaded")).toBeVisible();
   const address = page
