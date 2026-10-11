@@ -2963,5 +2963,12 @@
       "note": "Internal note",
       "updated": "Updated {time} by {name}"
     }
+  },
+  "Consent": {
+    "region": "Cookie consent",
+    "text": "We use cookies to count visits and improve the site. Nothing is tracked until you agree.",
+    "accept": "Accept",
+    "decline": "No thanks",
+    "privacy": "Privacy policy"
   }
 }

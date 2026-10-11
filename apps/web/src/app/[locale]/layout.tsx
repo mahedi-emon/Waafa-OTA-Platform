@@ -7,7 +7,7 @@ import { THEME_COLOR } from "@/components/brand/brandColors";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
-import { getSiteSettings } from "@/lib/data/settings";
+import { getSiteSettings, getTrackingSettings } from "@/lib/data/settings";
 import { defaultShareImage } from "@/lib/seo/withSocial";
 import { SITE_URL } from "@/lib/siteUrl";
 import "../globals.css";
@@ -44,15 +44,18 @@ export function generateStaticParams() {
  * Settings › General.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const [t, site, image] = await Promise.all([
+  const [t, site, image, tracking] = await Promise.all([
     getTranslations("Metadata"),
     getSiteSettings(),
     defaultShareImage(),
+    getTrackingSettings(),
   ]);
+  // Search Console: General's field, else the token in Settings › Tracking.
+  const google = site.googleSiteVerification ?? tracking.searchConsoleToken;
   const title = site.defaultSeo.title ?? t("title");
   const description = site.defaultSeo.description ?? t("description");
   const verification: Metadata["verification"] = {
-    ...(site.googleSiteVerification ? { google: site.googleSiteVerification } : {}),
+    ...(google ? { google } : {}),
     ...(site.bingSiteVerification ? { other: { "msvalidate.01": site.bingSiteVerification } } : {}),
   };
   return {
