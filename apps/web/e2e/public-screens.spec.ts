@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { collectErrors } from "./errors";
 
 /*
@@ -22,7 +22,7 @@ const ROUTES: Array<{ name: string; path: string }> = [
   { name: "VisaCountry", path: "/visa-services/thailand" },
   { name: "VisaApply", path: "/visa-services/thailand/apply" },
   { name: "VisaGuide", path: "/visa-guide" },
-  { name: "VisaGuidePost", path: "/visa-guide/malaysia-evisa-step-by-step" },
+  { name: "VisaGuidePost", path: "/visa-guide/thailand" },
   { name: "Shop", path: "/shop" },
   { name: "ShopCats", path: "/shop/categories" },
   { name: "ShopList", path: "/shop/c/office-and-stationery" },
@@ -45,6 +45,31 @@ const ROUTES: Array<{ name: string; path: string }> = [
   { name: "Error", path: "/no-such-page" },
 ];
 
+/** Scrolls the whole page so lazy images and sections load, waits for every image, then returns to the top. */
+async function loadEverything(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const step = Math.max(400, Math.floor(window.innerHeight * 0.8));
+    for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+      window.scrollTo(0, y);
+      await new Promise((resolve) => setTimeout(resolve, 60));
+    }
+    await Promise.all(
+      Array.from(document.images)
+        .filter((image) => !image.complete)
+        .map(
+          (image) =>
+            new Promise((resolve) => {
+              image.addEventListener("load", resolve, { once: true });
+              image.addEventListener("error", resolve, { once: true });
+              setTimeout(resolve, 5000);
+            }),
+        ),
+    );
+    window.scrollTo(0, 0);
+  });
+  await page.waitForLoadState("networkidle");
+}
+
 test.skip(!process.env.PUBLIC_SHOTS, "Runs in the CI screenshots step (PUBLIC_SHOTS=1)");
 test.use({ reducedMotion: "reduce" });
 
@@ -60,6 +85,7 @@ for (const route of ROUTES) {
       );
       expect(overflow, `${route.path} has no horizontal scroll at ${width}`).toBeLessThanOrEqual(0);
       if (SHOT_WIDTHS.has(width)) {
+        await loadEverything(page);
         await page.screenshot({
           path: `test-results/public-shots/${route.name}${width === 390 ? "-m" : ""}.png`,
           fullPage: true,
