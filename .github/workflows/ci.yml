@@ -48,6 +48,8 @@ jobs:
               - "commitlint.config.mjs"
               - "lint-staged.config.mjs"
               - ".github/workflows/ci.yml"
+              - "deploy/**"
+              - ".dockerignore"
 
   # The owner is the only author: no co-author trailer or AI attribution in commits, PR title or body.
   attribution:
@@ -262,6 +264,54 @@ jobs:
           name: playwright-report-api-mode
           path: apps/web/playwright-report
           retention-days: 7
+
+  # The VPS stack exactly as deploy/deploy.sh runs it: images built, PostgreSQL, Redis, API, worker, web, nginx (C3).
+  vps:
+    name: VPS deploy smoke (Docker Compose)
+    needs: changes
+    if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Test settings
+        run: |
+          cat > deploy/.env <<'ENV'
+          SITE_URL=http://localhost
+          SITE_DOMAIN=localhost
+          ACME_EMAIL=
+          POSTGRES_PASSWORD=ciPostgresPassword0123456789abcdef
+          JWT_SECRET=ci-jwt-secret-0123456789-0123456789-abcdef
+          REVALIDATE_SECRET=ci-revalidate-secret-0123456789-abc
+          INTAKE_KEY=ci-intake-key-0123456789-abcdef
+          SMTP_URL=smtp://127.0.0.1:2525
+          MAIL_FROM=Waafa <no-reply@example.com>
+          STAFF_ALERT_EMAIL=desk@example.com
+          SEED_ADMIN_EMAIL=owner@example.com
+          SEED_ADMIN_PASSWORD=ci-owner-password-123
+          ENV
+
+      - name: Deploy
+        run: sh deploy/deploy.sh
+
+      - name: Site answers through nginx
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -sf http://localhost/robots.txt > /dev/null; then break; fi
+            sleep 2
+          done
+          for path in / /flights /tour-packages /visa-services /shop /contact /faqs /admin/sign-in /sitemap.xml; do
+            status=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost$path")
+            echo "$path $status"
+            [ "$status" = "200" ] || exit 1
+          done
+          curl -s http://localhost/ | grep -q "Waafa"
+          docker compose -f deploy/compose.yml ps
+
+      - name: Logs
+        if: failure()
+        run: docker compose -f deploy/compose.yml logs --tail 150
 
   lighthouse:
     name: Lighthouse CI (mobile)

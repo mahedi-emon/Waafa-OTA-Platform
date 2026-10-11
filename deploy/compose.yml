@@ -1,0 +1,151 @@
+# WAAFA production stack for one VPS (2 vCPU, 4 GB RAM): docs/DEPLOY.md. Run from the repository root:
+#   cp deploy/.env.example deploy/.env   (fill it in; never commit it)
+#   sh deploy/deploy.sh
+# Only nginx is public (80 and 443, HTTPS from Let's Encrypt through the certbot service). PostgreSQL, Redis, the API and the worker stay on the private
+# network; the API also listens on 127.0.0.1:4000 so the web build can read the content snapshot.
+name: waafa
+
+x-api-env: &api-env
+  NODE_ENV: production
+  PORT: "4000"
+  DATABASE_URL: postgresql://waafa:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}@postgres:5432/waafa
+  REDIS_URL: redis://redis:6379
+  JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+  REVALIDATE_SECRET: ${REVALIDATE_SECRET:?set REVALIDATE_SECRET}
+  INTAKE_KEY: ${INTAKE_KEY:?set INTAKE_KEY}
+  WEB_ORIGINS: ${SITE_URL:?set SITE_URL}
+  WEB_REVALIDATE_URL: http://web:3000/api/revalidate
+  RESEND_API_KEY: ${RESEND_API_KEY:-}
+  SMTP_URL: ${SMTP_URL:-}
+  MAIL_FROM: ${MAIL_FROM:?set MAIL_FROM}
+  STAFF_ALERT_EMAIL: ${STAFF_ALERT_EMAIL:-}
+  SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+  SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+  PROVIDER_SECRET_KEY: ${PROVIDER_SECRET_KEY:-}
+  NODE_OPTIONS: --max-old-space-size=384
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: waafa
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
+      POSTGRES_DB: waafa
+    # Sized for a 4 GB machine shared with the rest of the stack.
+    command: >-
+      postgres -c shared_buffers=256MB -c effective_cache_size=768MB -c work_mem=8MB
+      -c maintenance_work_mem=64MB -c max_connections=60
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U waafa -d waafa"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    mem_limit: 640m
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    # BullMQ needs noeviction; appendonly keeps queued emails across restarts.
+    command: redis-server --appendonly yes --maxmemory 96mb --maxmemory-policy noeviction
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 160m
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: waafa-api:latest
+    restart: unless-stopped
+    environment: *api-env
+    ports: ["127.0.0.1:4000:4000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:4000/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      start_period: 90s
+      retries: 6
+    mem_limit: 640m
+
+  worker:
+    image: waafa-api:latest
+    restart: unless-stopped
+    command: ["node_modules/.bin/tsx", "src/worker.ts"]
+    environment:
+      <<: *api-env
+      NODE_OPTIONS: --max-old-space-size=256
+    depends_on:
+      api: { condition: service_healthy }
+    mem_limit: 384m
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+      # The build reads the API snapshot through the host's 127.0.0.1:4000 (deploy.sh starts the API first).
+      network: host
+      args:
+        NEXT_PUBLIC_SITE_URL: ${SITE_URL:?set SITE_URL}
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+        WAAFA_API_URL: http://127.0.0.1:4000
+        WAAFA_INTAKE_KEY: ${INTAKE_KEY:?set INTAKE_KEY}
+    image: waafa-web:latest
+    restart: unless-stopped
+    environment:
+      WAAFA_API_URL: http://api:4000
+      WAAFA_INTAKE_KEY: ${INTAKE_KEY:?set INTAKE_KEY}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:?set REVALIDATE_SECRET}
+      NEXT_PUBLIC_SITE_URL: ${SITE_URL:?set SITE_URL}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      NODE_OPTIONS: --max-old-space-size=512
+    depends_on:
+      api: { condition: service_healthy }
+    mem_limit: 768m
+
+  nginx:
+    build:
+      context: ./nginx
+    image: waafa-nginx:latest
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?set SITE_DOMAIN}
+    volumes:
+      - letsencrypt:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+    depends_on: [web]
+    mem_limit: 96m
+
+  # Renews the certificate twice a day when it is due; nginx reloads every 6 hours to pick it up.
+  certbot:
+    image: certbot/certbot:latest
+    restart: unless-stopped
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done",
+      ]
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    mem_limit: 128m
+
+volumes:
+  pgdata:
+  redisdata:
+  letsencrypt:
+  certbot_www:

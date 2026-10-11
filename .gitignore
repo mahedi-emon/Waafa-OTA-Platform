@@ -29,3 +29,6 @@ __pycache__/
 .claude/settings.local.json
 .serena/cache/
 .serena/project.local.yml
+
+# Production backups on the VPS (deploy/backup.sh)
+deploy/backups/
