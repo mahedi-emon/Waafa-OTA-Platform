@@ -2925,7 +2925,22 @@
         "coupons": "Coupons",
         "flightRoutes": "Flight routes"
       },
-      "lastSavedAt": "Last saved {time}"
+      "lastSavedAt": "Last saved {time}",
+      "richText": {
+        "toolbar": "Text formatting",
+        "paragraph": "Paragraph",
+        "heading3": "Heading",
+        "bold": "Bold",
+        "italic": "Italic",
+        "bulletList": "Bulleted list",
+        "orderedList": "Numbered list",
+        "quote": "Quote",
+        "link": "Add or edit link",
+        "unlink": "Remove link",
+        "linkPrompt": "Link address (https://…, mailto: or a site path like /contact)",
+        "undo": "Undo",
+        "redo": "Redo"
+      }
     },
     "integrations": {
       "metaTitle": "Integrations",

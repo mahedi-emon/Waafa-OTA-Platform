@@ -1,9 +1,11 @@
 "use client";
 
+import type { RichTextStrings } from "./RichTextEditor";
 import { createContext, useContext } from "react";
 import type { JsonSchema, Path } from "@/lib/admin/schema";
 
 export type SchemaEditorStrings = {
+  richText: RichTextStrings;
   addItem: string;
   removeItem: string;
   itemUp: string;

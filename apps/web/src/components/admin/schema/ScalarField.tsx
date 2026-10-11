@@ -1,12 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { humanize } from "@/lib/admin/format";
 import {
   fromLocalInput,
   isLongText,
+  isRichText,
   pathKey,
   toLocalInput,
   typeOf,
@@ -23,6 +26,12 @@ type ScalarFieldProps = {
   optional: boolean;
   nullable: boolean;
 };
+
+// The editor (tiptap) loads only when a rich text field is on screen (issue 116).
+const RichTextEditor = dynamic(() => import("./RichTextEditor").then((mod) => mod.RichTextEditor), {
+  ssr: false,
+  loading: () => <Skeleton className="h-60 rounded-xl" />,
+});
 
 const fieldId = (path: Path) => `field-${pathKey(path).replace(/[^\w-]/g, "-") || "root"}`;
 
@@ -154,6 +163,20 @@ function ScalarField({ schema, path, value, optional, nullable }: ScalarFieldPro
     typeof value === "string" ? value : value === undefined || value === null ? "" : String(value);
   const onText = (next: string) =>
     change(path, next === "" && optional ? undefined : next === "" && nullable ? null : next);
+
+  if (isRichText(schema)) {
+    return shell(
+      <RichTextEditor
+        id={id}
+        label={label}
+        value={text}
+        onChange={onText}
+        {...(describedBy ? { describedBy } : {})}
+        invalid={Boolean(error)}
+        strings={strings.richText}
+      />,
+    );
+  }
 
   if (isLongText(schema, key)) {
     return shell(
