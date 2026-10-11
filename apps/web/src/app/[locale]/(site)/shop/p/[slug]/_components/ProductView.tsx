@@ -142,7 +142,7 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
               type="button"
               onClick={() => setZoom(photo)}
               aria-label={`${t("product.zoom")}: ${shown.alt}`}
-              className="group relative cursor-zoom-in overflow-hidden rounded-[20px] bg-mist-50 outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
+              className="group relative block w-full cursor-zoom-in overflow-hidden rounded-[20px] bg-mist-50 outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
             >
               <SmartImage
                 key={shown.src}
