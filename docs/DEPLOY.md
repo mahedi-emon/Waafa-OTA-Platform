@@ -1,117 +1,128 @@
 # WAAFA deploy runbook (launch 13 Oct 2026)
 
-Two services and four managed pieces. Do the steps in order: the web build reads the API, so the API goes first.
+Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `deploy/compose.yml`.
 
-| Piece | Where | Notes |
-| --- | --- | --- |
-| API + job worker | Railway, from `apps/api/Dockerfile` | One image: the API runs migrations and the idempotent seed, then starts; the worker overrides the start command |
-| PostgreSQL 16 | Railway PostgreSQL | Daily backups on |
-| Redis 7 | Railway Redis | Email queue (BullMQ) |
-| Web | Vercel, project root `apps/web` | Next.js 16 |
-| Email | Resend with the domain verified | Customer and staff emails |
-| Turnstile | Cloudflare | Site key on the web, secret on the web |
-| Domain | DNS for waafasworld.com (to confirm) | `www` and the apex to Vercel, `api.` to Railway |
+| Service | Image | Public | Memory cap |
+| --- | --- | --- | --- |
+| `nginx` | `deploy/nginx` (nginx 1.27): reverse proxy, HTTPS, www → apex, rate limit on form posts | 80 and 443 | 96 MB |
+| `certbot` | `certbot/certbot`: gets and renews the Let's Encrypt certificate | no | 128 MB |
+| `web` | `apps/web/Dockerfile` (Next.js standalone) | through nginx only | 768 MB |
+| `api` | `apps/api/Dockerfile` (runs migrations and the idempotent seed, then starts) | no (127.0.0.1:4000 for the web build) | 640 MB |
+| `worker` | same image as the API, command `tsx src/worker.ts` | no | 384 MB |
+| `postgres` | `postgres:16`, volume `pgdata` | no | 640 MB |
+| `redis` | `redis:7`, append-only, `noeviction` (BullMQ) | no | 160 MB |
 
-## 0. Secrets (generate once, keep in a password manager)
+Outside the server: an email sender (Resend, or any SMTP server), Cloudflare Turnstile (optional at launch) and the
+domain's DNS.
 
-Run three times and keep each output for one variable: `JWT_SECRET`, `REVALIDATE_SECRET`, `INTAKE_KEY`.
+## 0. Owner checklist
+
+1. VPS: SSH access for the developer (a user with `sudo` and in the `docker` group), Ubuntu 22.04/24.04 or Debian 12.
+2. Domain: A records for the apex and `www` pointing at the VPS IP (and AAAA if the VPS has IPv6), plus an email
+   for Let's Encrypt certificate notices (`ACME_EMAIL`).
+3. Email: a Resend account with the domain verified (SPF, DKIM, DMARC records at the DNS host), or SMTP details.
+4. Turnstile (optional): a Cloudflare Turnstile site for the domain (managed widget): site key and secret.
+5. The first Super Admin's email and a strong password (12+ characters); change it after the first sign-in.
+
+## 1. Prepare the server (once)
 
 ```bash
-node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+# Swap: the web build needs about 2 GB on top of the running stack.
+sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+# Firewall: SSH, HTTP, HTTPS only.
+sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw enable
+
+# Docker Engine with the Compose plugin (skip if `docker compose version` already works).
+curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker "$USER"   # then log out and in
+
+# The code.
+sudo mkdir -p /opt/waafa && sudo chown "$USER" /opt/waafa
+git clone https://github.com/mahedi-emon/Waafa-OTA-Platform.git /opt/waafa
 ```
 
-Never put them in chat, the repository or a screenshot. Each environment gets its own values.
+Docker publishes ports past `ufw`; the compose file only publishes 80/443 (nginx) and `127.0.0.1:4000` (local only),
+so nothing else is reachable from outside.
 
-## 1. Owner accounts (needs the owner)
+## 2. Settings
 
-1. Railway: create a project, add PostgreSQL and Redis. Invite the developer or share a project token.
-2. Vercel: create a team or use the personal account; import `mahedi-emon/Waafa-OTA-Platform`.
-3. Resend: add the domain, add the SPF, DKIM and DMARC records it shows at the DNS host, wait for "Verified".
-4. Cloudflare Turnstile: add a site for the domain (managed widget), copy the site key and the secret.
-5. DNS: access to the domain's DNS (or add the records from steps 3 and 6 yourself).
-6. A Super Admin email and a strong password (12+ characters) for the first sign-in; change it after launch.
+```bash
+cd /opt/waafa
+cp deploy/.env.example deploy/.env && chmod 600 deploy/.env && nano deploy/.env
+```
 
-## 2. API on Railway
+Fill in every value (the comments in the file explain each one). Secrets: generate each with
+`openssl rand -base64 48 | tr -d '/+=' | cut -c1-48`, a different value for `POSTGRES_PASSWORD`, `JWT_SECRET`,
+`REVALIDATE_SECRET`, `INTAKE_KEY` and `PROVIDER_SECRET_KEY` (encrypts the flight, hotel and payment API secrets saved in
+Admin › Integrations; keep it fixed once secrets are saved). Keep a copy in a password manager; never put them in chat, the repository or a
+screenshot.
 
-New service → Deploy from GitHub → this repository → Settings:
+## 3. Deploy
 
-- Builder: Dockerfile, path `apps/api/Dockerfile` (build context: repository root)
-- Healthcheck path: `/ready`
-- Public domain: `api.<domain>` (custom domain) or the Railway domain for the first test
+```bash
+cd /opt/waafa && git pull && sh deploy/deploy.sh
+```
 
-Variables (Railway → service → Variables):
+The script builds the API image, starts PostgreSQL, Redis and the API (migrations and seed run on start), waits until
+`/ready` answers, builds the web against the API (the build prerenders pages from the content snapshot), then starts
+the worker, the web, nginx and certbot; with `ACME_EMAIL` set it then gets the Let's Encrypt certificate
+and switches nginx to HTTPS (DNS must already point at the server). The first run takes 10 to 15 minutes; later runs reuse the dependency layers.
 
-| Variable | Value |
-| --- | --- |
-| `NODE_ENV` | `production` |
-| `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` (Railway reference) |
-| `REDIS_URL` | `${{Redis.REDIS_URL}}` |
-| `JWT_SECRET` | from step 0 |
-| `REVALIDATE_SECRET` | from step 0 (the web uses the same value) |
-| `INTAKE_KEY` | from step 0 (the web uses the same value as `WAAFA_INTAKE_KEY`) |
-| `WEB_ORIGINS` | `https://<domain>,https://www.<domain>` |
-| `WEB_REVALIDATE_URL` | `https://<domain>/api/revalidate` (add after step 4) |
-| `RESEND_API_KEY` | from Resend |
-| `MAIL_FROM` | `Waafa <no-reply@<domain>>` |
-| `STAFF_ALERT_EMAIL` | the inbox that receives new leads and orders |
-| `SEED_ADMIN_EMAIL` | the first Super Admin's email |
-| `SEED_ADMIN_PASSWORD` | the first Super Admin's password (12+ characters; remove the variable after the first deploy) |
+Check: `docker compose -f deploy/compose.yml ps` shows every service running (`api` healthy), and
+`curl -s http://127.0.0.1:4000/ready` answers `{"status":"ready","database":"up"}`. `https://<domain>` answers with a valid certificate; certbot renews it when due and nginx reloads every 6 hours.
 
-Deploy. Check `https://<api>/ready` answers `{"status":"ready","database":"up"}`. The first start loads the Sample
-content and creates the Super Admin; later deploys never overwrite admin edits.
+Every later release is the same command. Admin edits live in PostgreSQL, so a redeploy never overwrites them.
 
-Worker: in the same project, New service → same repository and Dockerfile → Settings → Start command
-`pnpm --filter @waafa/api worker`, same variables (Railway: "Shared variables" or copy). It sends the queued emails.
+## 4. Backups
 
-## 3. Web on Vercel
+```bash
+crontab -e
+# add:
+15 3 * * * cd /opt/waafa && sh deploy/backup.sh >> deploy/backups/backup.log 2>&1
+```
 
-Project settings:
-
-- Root directory: `apps/web` (Vercel installs the whole pnpm workspace)
-- Framework: Next.js; Node 22
-- Build command: `cd ../.. && pnpm turbo run build --filter=@waafa/web`
-
-Environment variables (Production):
-
-| Variable | Value |
-| --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `https://<domain>` |
-| `WAAFA_API_URL` | `https://api.<domain>` (no trailing slash) |
-| `WAAFA_INTAKE_KEY` | the API's `INTAKE_KEY` |
-| `REVALIDATE_SECRET` | the API's `REVALIDATE_SECRET` |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile site key |
-| `TURNSTILE_SECRET_KEY` | Turnstile secret (set both or neither) |
-
-Deploy. The build prerenders pages from the API snapshot, so the API must be up.
-
-## 4. Connect the two
-
-1. On Railway set `WEB_REVALIDATE_URL=https://<domain>/api/revalidate` and redeploy the API.
-2. Domain: add `<domain>` and `www.<domain>` in Vercel → Domains, add the records it shows; add `api.<domain>` in
-   Railway → Networking → Custom domain and its CNAME.
+Daily dump at 03:15 server time, the last 14 kept in `deploy/backups/`. Copy them off the server weekly (or use the
+VPS provider's snapshot backups as well). Restore:
+`gunzip -c deploy/backups/<file>.sql.gz | docker compose -f deploy/compose.yml exec -T postgres psql -U waafa waafa`.
 
 ## 5. Launch checks (in this order)
 
-1. `https://<domain>` loads; `https://<domain>/robots.txt` and `/sitemap.xml` show the real domain.
-2. Admin: `https://<domain>/secure-admin-control` (`/admin` is a 404 on purpose) → sign in with the seed Super Admin → My account → change the password.
+1. `https://<domain>` loads over HTTPS; `/robots.txt` and `/sitemap.xml` show the real domain.
+2. Admin: `https://<domain>/secure-admin-control` (`/admin` is a 404 on purpose) → sign in with the seed Super Admin
+   → My account → change the password. Then remove `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` from `deploy/.env`.
 3. Users and roles: add each staff member with their role.
 4. Send a flight request from the site → it appears in Admin › Leads within seconds → the staff alert email arrives
-   → the customer email arrives (if an email was given).
+   → the customer email arrives (if an email was given). Admin › Notifications shows each email's status.
 5. Place a cash-on-delivery order → Admin › Orders → confirm → the order email arrives.
 6. Admin › Content › FAQs: change an answer → reload `/faqs` → the new answer shows.
 7. Feedback form → Admin › Feedback → approve → the wall shows it.
-8. Turnstile: the forms submit normally (the widget appears only if Cloudflare asks).
+8. Turnstile (if set): the forms submit normally (the widget appears only if Cloudflare asks).
 9. Replace every Sample record (contact numbers, office hours, payment accounts, packages, products, prices) in Admin
    › Content before announcing the site; Admin › Content › Maintenance mode can hold the public site meanwhile.
 
-## 6. Rollback
+## 6. Operations
 
-- Web: Vercel → Deployments → the previous deployment → Promote to production.
-- API: Railway → Deployments → the previous deployment → Redeploy. Migrations only add tables and columns, so the
-  previous API keeps working on the newer database.
-- Content: every admin save is in Admin › Audit log with its before and after values.
+| Task | Command (from `/opt/waafa`) |
+| --- | --- |
+| Status | `docker compose -f deploy/compose.yml ps` |
+| Logs | `docker compose -f deploy/compose.yml logs -f --tail 100 api` (or `web`, `worker`, `nginx`, `certbot`) |
+| Memory | `docker stats --no-stream` |
+| Restart one service | `docker compose -f deploy/compose.yml restart web` |
+| Database shell | `docker compose -f deploy/compose.yml exec postgres psql -U waafa waafa` |
+
+## 7. Rollback
+
+```bash
+cd /opt/waafa && git log --oneline -5        # pick the last good commit
+git checkout <commit> && sh deploy/deploy.sh  # back on main later: git checkout main && git pull
+```
+
+Migrations only add tables and columns, so the previous API keeps working on the newer database. Content: every admin
+save is in Admin › Audit log with its before and after values.
 
 ## Local development
 
 See the README: the site runs on the Sample fixtures without any variables; set `WAAFA_API_URL` and
-`WAAFA_INTAKE_KEY` (and `REVALIDATE_SECRET`) in `apps/web/.env.local` to run it on a local API.
+`WAAFA_INTAKE_KEY` (and `REVALIDATE_SECRET`) in `apps/web/.env.local` to run it on a local API. The root
+`docker-compose.yml` starts PostgreSQL, Redis and Mailpit for local API work only.

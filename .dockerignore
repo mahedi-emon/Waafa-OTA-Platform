@@ -1,0 +1,22 @@
+# Keep the build context small and free of secrets: images install their own dependencies on Linux.
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/coverage
+**/test-results
+**/playwright-report
+**/*.tsbuildinfo
+**/.env*
+!**/.env.example
+.git
+.github
+.claude
+.serena
+.playwright-mcp
+.lighthouseci
+docs
+deploy/backups
+apps/api/src/generated
+*.png
+!apps/web/public/**/*.png
