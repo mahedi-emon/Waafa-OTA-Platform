@@ -9,10 +9,7 @@ type HomeSectionShellProps = {
   children: ReactNode;
 };
 
-/**
- * One home section: 44 / 64 / 88 px rhythm (DESIGN.md §4), site container, CSS scroll reveal (no JS). Sections skip
- * style, layout and paint until they near the viewport (`defer-render`, issue 91).
- */
+/** One home section: 44 / 64 / 88 px rhythm (DESIGN.md §4), site container, CSS scroll reveal (no JS). */
 function HomeSectionShell({
   labelledBy,
   tone = "white",
@@ -22,11 +19,7 @@ function HomeSectionShell({
   return (
     <section
       aria-labelledby={labelledBy}
-      className={cn(
-        "py-11 defer-render md:py-16 xl:py-[88px]",
-        tone === "mist" && "bg-mist-50",
-        className,
-      )}
+      className={cn("py-11 md:py-16 xl:py-[88px]", tone === "mist" && "bg-mist-50", className)}
     >
       <div className="site-container flex reveal-on-view flex-col gap-8 md:gap-10">{children}</div>
     </section>

@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { MaintenanceScreen } from "@/components/feedback/MaintenanceScreen";
@@ -60,10 +59,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
           <div className="flex flex-1 flex-col">{children}</div>
         </NextIntlClientProvider>
       </SupportContactProvider>
-      {/* Its own hydration unit, after the page content (issue 91). */}
-      <Suspense fallback={null}>
-        <SiteFooter />
-      </Suspense>
+      <SiteFooter />
       {tabs.length === 5 ? (
         <TabBar
           items={tabs}

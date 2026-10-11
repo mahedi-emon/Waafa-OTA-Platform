@@ -492,15 +492,6 @@
   }
 }
 
-/*
- * Below-the-fold blocks skip style, layout and paint until they near the viewport (issue 91). They stay in the
- * accessibility tree and in find-in-page; `auto` remembers each block's real height once it has rendered.
- */
-@utility defer-render {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 720px;
-}
-
 /* Page container: 1320 px max, gutters 16 / 28 / 40 px (DESIGN.md §4). */
 @utility site-container {
   width: 100%;

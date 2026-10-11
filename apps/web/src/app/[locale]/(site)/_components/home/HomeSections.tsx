@@ -1,4 +1,4 @@
-import { Suspense, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import type { HomeSection } from "@waafa/shared";
 import { SearchCard } from "@/components/search/SearchCard";
@@ -89,17 +89,7 @@ async function HomeSections() {
     <>
       {/* The hero carries the page h1; if an admin turns it off, Home still has one heading for its title. */}
       {heroShown ? null : <h1 className="sr-only">{site.travelBrand}</h1>}
-      {sections.map((section) =>
-        section.key === "hero" ? (
-          render(section)
-        ) : (
-          // Each section below the hero hydrates as its own unit, so the browser can paint and respond between
-          // them instead of one long hydration task (issue 91).
-          <Suspense key={section.key} fallback={null}>
-            {render(section)}
-          </Suspense>
-        ),
-      )}
+      {sections.map(render)}
     </>
   );
 }
