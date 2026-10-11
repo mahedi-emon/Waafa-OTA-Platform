@@ -3,13 +3,15 @@
 # The same image runs the API (default command) and the job worker (command: pnpm --filter @waafa/api worker).
 FROM node:22-slim AS app
 # COREPACK_HOME outside root's home so the non-root user runs the same pnpm without downloading it again.
-ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=1 COREPACK_HOME=/corepack COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=1 HUSKY=0 COREPACK_HOME=/corepack COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Install with the lockfile first so dependency layers cache between deploys.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# The root prepare script; it skips the git hooks when HUSKY=0.
+COPY .husky/install.mjs .husky/
 COPY apps/api/package.json apps/api/
 COPY packages/shared/package.json packages/shared/
 COPY packages/config/package.json packages/config/

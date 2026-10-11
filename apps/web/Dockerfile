@@ -5,11 +5,13 @@
 # The build prerenders pages from the API snapshot, so the API must answer at WAAFA_API_URL during the build
 # (deploy/deploy.sh starts it first). The runtime image holds only the standalone server, no build arguments.
 FROM node:22-slim AS build
-ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=1 NEXT_TELEMETRY_DISABLED=1
+ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=1 HUSKY=0 NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# The root prepare script; it skips the git hooks when HUSKY=0.
+COPY .husky/install.mjs .husky/
 COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
 COPY packages/config/package.json packages/config/
