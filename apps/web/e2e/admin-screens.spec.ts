@@ -22,6 +22,8 @@ const SCREENS = [
   { name: "settings-contact", path: "/secure-admin-control/content/contactSettings" },
   { name: "users", path: "/secure-admin-control/users" },
   { name: "integrations", path: "/secure-admin-control/integrations" },
+  { name: "reports", path: "/secure-admin-control/reports" },
+  { name: "customers", path: "/secure-admin-control/customers" },
   { name: "media", path: "/secure-admin-control/media" },
 ] as const;
 
