@@ -10,13 +10,28 @@ import { PrismaClient } from "../generated/prisma/client";
  */
 export const TRANSACTION_OPTIONS = { maxWait: 5_000, timeout: 15_000 } as const;
 
-/** Runs the queries the first requests need, so a customer never pays for the cold start (issue 119). */
+/**
+ * Runs the queries the first requests need, so a customer never pays for the cold start (issue 119). Bounded by
+ * `limitMs`: a database host that never answers must not keep the API from starting.
+ */
 export async function warmUp(
   client: Pick<PrismaClient, "$queryRaw" | "lead" | "order">,
+  limitMs = 10_000,
 ): Promise<void> {
-  await client.$queryRaw`SELECT 1`;
-  await client.lead.findFirst({ select: { id: true } });
-  await client.order.findFirst({ select: { id: true } });
+  let timer: NodeJS.Timeout | undefined;
+  const limit = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => reject(new Error(`Warm-up took longer than ${limitMs} ms`)), limitMs);
+  });
+  const queries = (async () => {
+    await client.$queryRaw`SELECT 1`;
+    await client.lead.findFirst({ select: { id: true } });
+    await client.order.findFirst({ select: { id: true } });
+  })();
+  try {
+    await Promise.race([queries, limit]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /** One Prisma client per process, on the pg driver adapter (Prisma 7). */

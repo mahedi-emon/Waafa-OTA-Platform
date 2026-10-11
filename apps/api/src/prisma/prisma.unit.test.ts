@@ -20,4 +20,14 @@ describe("cold start (issue 119)", () => {
     await warmUp(client as never);
     expect(calls).toEqual(["select 1", "lead", "order"]);
   });
+
+  it("gives up after its time limit when the database never answers", async () => {
+    const never = () => new Promise<never>(() => undefined);
+    const client = {
+      $queryRaw: vi.fn(never),
+      lead: { findFirst: vi.fn(never) },
+      order: { findFirst: vi.fn(never) },
+    };
+    await expect(warmUp(client as never, 20)).rejects.toThrow(/longer than 20 ms/);
+  });
 });
