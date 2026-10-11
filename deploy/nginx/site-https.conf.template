@@ -56,10 +56,8 @@ server {
 
     client_max_body_size 2m;
 
+    # CSP, nosniff, referrer and permissions policies come from the web app (next.config.ts, #102); nginx adds HSTS.
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
 
     location / {
         limit_req zone=waafa_posts burst=20 nodelay;

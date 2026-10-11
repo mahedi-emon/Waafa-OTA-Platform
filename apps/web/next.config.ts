@@ -1,6 +1,7 @@
 import path from "node:path";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { securityHeaders } from "./src/lib/security/securityHeaders";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -16,6 +17,18 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@waafa/shared", "@waafa/fixtures"],
   images: {
     formats: ["image/avif", "image/webp"],
+  },
+  // CSP and hardening headers on every route (issue 102); https upgrades follow NEXT_PUBLIC_SITE_URL.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: securityHeaders({
+          development: process.env.NODE_ENV === "development",
+          https: (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://"),
+        }),
+      },
+    ];
   },
   ...(standalone
     ? {

@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { MaintenanceScreen } from "@/components/feedback/MaintenanceScreen";
 import { OfflineNotice } from "@/components/feedback/OfflineNotice";
+import { Analytics } from "@/components/analytics/Analytics";
 import { SupportContactProvider } from "@/components/feedback/SupportContact";
 import { MenuIcon } from "@/components/icons/MenuIcon";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
@@ -92,6 +93,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
         }}
       />
       <Toaster />
+      <Analytics />
     </div>
   );
 }

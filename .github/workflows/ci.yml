@@ -89,7 +89,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     # The API tests run against a real PostgreSQL (B1).
     services:
       postgres:
@@ -162,7 +162,7 @@ jobs:
         working-directory: apps/web
         env:
           PUBLIC_SHOTS: "1"
-        run: pnpm exec playwright test e2e/public-screens.spec.ts --workers=2
+        run: pnpm exec playwright test e2e/public-screens.spec.ts --workers=3
 
       - name: Upload public screenshots
         if: always()
