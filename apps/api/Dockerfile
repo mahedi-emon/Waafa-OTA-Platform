@@ -1,8 +1,9 @@
-# WAAFA API image (B1). Build from the repository root:
+# WAAFA API image (B1, C3). Build from the repository root:
 #   docker build -f apps/api/Dockerfile -t waafa-api .
 # The same image runs the API (default command) and the job worker (command: pnpm --filter @waafa/api worker).
 FROM node:22-slim AS app
-ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=1
+# COREPACK_HOME outside root's home so the non-root user runs the same pnpm without downloading it again.
+ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=1 COREPACK_HOME=/corepack COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
@@ -19,7 +20,7 @@ COPY packages/shared packages/shared
 COPY packages/config packages/config
 COPY fixtures fixtures
 COPY apps/api apps/api
-RUN pnpm --filter @waafa/api generate
+RUN pnpm --filter @waafa/api generate && chmod -R a+rX /corepack
 
 ENV NODE_ENV=production PORT=4000
 EXPOSE 4000
