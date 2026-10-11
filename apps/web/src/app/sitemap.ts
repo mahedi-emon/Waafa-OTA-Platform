@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import type { Product } from "@waafa/shared";
 import { getPage, getServicePage, listBlogPosts, listGalleryAlbums } from "@/lib/data/content";
 import { listBrands, listCategories, listCollections, listProducts } from "@/lib/data/shop";
-import { listPackages } from "@/lib/data/travel";
+import { listFlightRoutes, listPackages } from "@/lib/data/travel";
 import { listVisaCountries, listVisaGuides } from "@/lib/data/visa";
 import { absoluteUrl } from "@/lib/siteUrl";
 
@@ -36,6 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     albums,
     printing,
     trading,
+    routes,
     ...policies
   ] = await Promise.all([
     listPackages({ limit: 100 }),
@@ -49,6 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     listGalleryAlbums(),
     getServicePage("printing"),
     getServicePage("trading"),
+    listFlightRoutes(),
     getPage("about-us"),
     getPage("refund-policy"),
     getPage("privacy-policy"),
@@ -80,6 +82,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("/", 1, "daily"),
     page("/flights", 0.8, "weekly"),
     page("/flights/group-fares", 0.8, "daily"),
+    ...routes
+      .filter((route) => !route.seo.noIndex)
+      .map((route) => ({
+        ...page(`/flights/${route.slug}`, 0.8, "weekly"),
+        images: [absoluteUrl(route.image.src)],
+      })),
     page("/hotels", 0.7, "weekly"),
     page("/tour-packages", 0.9, "daily"),
     ...packages

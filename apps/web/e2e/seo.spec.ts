@@ -7,6 +7,7 @@ import { expect, test, type Page } from "@playwright/test";
 const ROUTES = [
   "/",
   "/flights",
+  "/flights/dhaka-to-dubai",
   "/tour-packages",
   "/tour-packages/maldives-island-stay",
   "/visa-services",

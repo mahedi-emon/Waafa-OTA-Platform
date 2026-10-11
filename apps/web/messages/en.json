@@ -595,6 +595,28 @@
       "premium-economy": "Premium economy",
       "business": "Business",
       "first": "First"
+    },
+    "routePage": {
+      "breadcrumb": "Routes",
+      "kicker": "Flights from {city}",
+      "flightTime": "Flight time",
+      "airlines": "Airlines on this route",
+      "fromFare": "Fares from",
+      "perAdult": "per adult · indicative",
+      "bestTime": "Best time to go",
+      "request": "Get fares for this route",
+      "requestLead": "Tell us your dates. A travel expert compares the airlines and sends you the best options before you pay anything.",
+      "tips": "Good to know",
+      "faqs": "Questions about this route",
+      "groupFares": "Group fares on this route",
+      "groupFaresLead": "Fixed-date seats we hold with airlines. Prices are per adult and indicative until we confirm.",
+      "visa": "Visa for {country}",
+      "visaLead": "Documents, processing time and fees, checked by our visa desk.",
+      "visaAction": "See the visa page",
+      "packages": "Holidays in {city}",
+      "popular": "Popular routes from Dhaka",
+      "sample": "Sample route",
+      "indicative": "Fares are indicative and confirmed by a travel expert before you pay."
     }
   },
   "Leads": {
@@ -2407,6 +2429,7 @@
       "leads": "Leads",
       "searchActivity": "Search activity",
       "groupFares": "Group fares",
+      "flightRoutes": "Flight routes",
       "travel": "Travel",
       "packages": "Tour packages",
       "visaLeads": "Visa applications",
@@ -2898,7 +2921,8 @@
         "collections": "Collections",
         "deals": "Deals",
         "storeRows": "Store home rows",
-        "coupons": "Coupons"
+        "coupons": "Coupons",
+        "flightRoutes": "Flight routes"
       },
       "lastSavedAt": "Last saved {time}"
     },

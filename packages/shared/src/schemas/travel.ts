@@ -230,6 +230,56 @@ export const SegmentSchema = z
   })
   .strict();
 
+/**
+ * A flight route landing page (/flights/dhaka-to-dubai), managed in Admin › Content › Flight routes. Built for
+ * search: the facts a traveller looks up (flight time, airlines, best time, tips, questions), the indicative
+ * "from" fare and the fixed-date group fares on the route. Never a live price or availability.
+ */
+export const FlightRouteSchema = z
+  .object({
+    slug: SlugSchema,
+    from: IataSchema,
+    to: IataSchema,
+    /** The page heading, e.g. "Dhaka to Dubai flights". */
+    title: z.string().min(1).max(80),
+    intro: z.string().min(1).max(320),
+    image: ImageSchema,
+    /** e.g. "About 5 hours non-stop". */
+    flightTime: z.string().min(1).max(40),
+    /** Airlines that usually fly the route (codes from the airline list). */
+    airlineCodes: z.array(AirlineCodeSchema).max(12).default([]),
+    /** Indicative lowest fare per adult, labelled indicative and confirmed by an expert. */
+    fromPrice: TakaSchema.optional(),
+    bestTime: z.string().min(1).max(160).optional(),
+    tips: z
+      .array(
+        z.object({ title: z.string().min(1).max(60), body: z.string().min(1).max(280) }).strict(),
+      )
+      .max(6)
+      .default([]),
+    faqs: z
+      .array(
+        z
+          .object({ question: z.string().min(1).max(140), answer: z.string().min(1).max(600) })
+          .strict(),
+      )
+      .max(10)
+      .default([]),
+    /** Links the destination's visa page when there is one. */
+    visaCountrySlug: SlugSchema.optional(),
+    /** Listed under "Popular routes" on the flights page and in the footer of other routes. */
+    popular: z.boolean().default(false),
+    order: z.number().int().min(0).default(0),
+    status: PublishStatusSchema,
+    seo: SeoSchema.default({ noIndex: false }),
+    sample: SampleFlagSchema,
+  })
+  .strict()
+  .refine((route) => route.from !== route.to, {
+    message: "From and to must be different airports",
+    path: ["to"],
+  });
+
 export const FareBreakdownSchema = z
   .object({
     passengerType: z.enum(["adult", "child", "infant"]),
@@ -362,6 +412,7 @@ export type Segment = z.infer<typeof SegmentSchema>;
 export type FareBreakdown = z.infer<typeof FareBreakdownSchema>;
 export type FareRule = z.infer<typeof FareRuleSchema>;
 export type FlightOffer = z.infer<typeof FlightOfferSchema>;
+export type FlightRoute = z.infer<typeof FlightRouteSchema>;
 export type CancellationPolicy = z.infer<typeof CancellationPolicySchema>;
 export type RatePlan = z.infer<typeof RatePlanSchema>;
 export type HotelOffer = z.infer<typeof HotelOfferSchema>;

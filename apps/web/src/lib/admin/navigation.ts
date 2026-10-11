@@ -88,6 +88,13 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         icon: "fares",
         roles: TRAVEL,
       },
+      {
+        key: "flightRoutes",
+        label: "flightRoutes",
+        href: "/secure-admin-control/content/flightRoutes",
+        icon: "fares",
+        roles: TRAVEL,
+      },
     ],
   },
   {

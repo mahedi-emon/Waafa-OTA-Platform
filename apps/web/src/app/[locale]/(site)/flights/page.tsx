@@ -30,6 +30,7 @@ import { formatFieldDate } from "@/lib/search/isoDate";
 import { isPhoneCountry, dialCode } from "@/lib/leads/phone";
 import { FlightRequest, type GroupFareSummary } from "./_components/FlightRequest";
 import { withSocial } from "@/lib/seo/withSocial";
+import { PopularRoutes } from "@/components/travel/PopularRoutes";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Flights");
@@ -224,6 +225,7 @@ export default async function FlightsPage({ searchParams }: PageProps<"/[locale]
       <Suspense fallback={<FlightsSkeleton />}>
         <FlightsResults searchParams={searchParams} />
       </Suspense>
+      <PopularRoutes />
     </main>
   );
 }

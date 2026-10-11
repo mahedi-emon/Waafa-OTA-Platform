@@ -22,6 +22,7 @@ export const CACHE_TAGS = {
   baggage: "baggage",
   airports: "airports",
   groupFares: "group-fares",
+  flightRoutes: "flight-routes",
   packages: "packages",
   visa: "visa",
   catalogue: "catalogue",

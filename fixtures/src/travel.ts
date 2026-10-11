@@ -4,6 +4,7 @@ import type {
   GroupFareSchema,
   HotelPlaceSchema,
   TourPackageSchema,
+  FlightRouteSchema,
 } from "@waafa/shared";
 import { photo, video } from "./images";
 import type { In } from "./input";
@@ -1245,4 +1246,227 @@ export const hotelPlaces: In<typeof HotelPlaceSchema>[] = [
   { id: "city-male", kind: "city", name: "Malé", city: "Malé", country: "Maldives" },
   { id: "city-istanbul", kind: "city", name: "Istanbul", city: "Istanbul", country: "Türkiye" },
   { id: "city-kolkata", kind: "city", name: "Kolkata", city: "Kolkata", country: "India" },
+];
+
+/**
+ * Flight route landing pages (#99, SEO). Sample text a travel expert should review: flight times are typical
+ * non-stop times, airlines are the ones that usually fly the route, and the "from" fares match the Sample group
+ * fares (indicative, confirmed before payment).
+ */
+export const flightRoutes: In<typeof FlightRouteSchema>[] = [
+  {
+    slug: "dhaka-to-dubai",
+    from: "DAC",
+    to: "DXB",
+    title: "Dhaka to Dubai flights",
+    intro:
+      "Non-stop and one-stop flights from Hazrat Shahjalal International to Dubai, compared by a travel expert who checks the baggage, change rules and visa papers before you pay.",
+    image: photo("dubai"),
+    flightTime: "About 5 hours non-stop",
+    airlineCodes: ["EK", "FZ", "BG", "BS"],
+    fromPrice: 58500,
+    bestTime:
+      "November to March, when the days are warm and dry; summer is very hot but fares are often lower.",
+    tips: [
+      {
+        title: "Visa before you fly",
+        body: "Bangladeshi passport holders need a UAE visa before boarding. We prepare the file and check every page first.",
+      },
+      {
+        title: "Baggage",
+        body: "Most fares on this route include 20 to 30 kg checked baggage; we confirm the exact allowance on your ticket.",
+      },
+      {
+        title: "At the airport",
+        body: "Reach Dhaka airport three hours before an international departure and keep a printed copy of your visa.",
+      },
+    ],
+    faqs: [
+      {
+        question: "How long is the flight from Dhaka to Dubai?",
+        answer: "About 5 hours non-stop. One-stop flights take longer depending on the connection.",
+      },
+      {
+        question: "Do I need a visa for Dubai with a Bangladeshi passport?",
+        answer:
+          "Yes. A UAE visa is needed before you fly. Our visa desk prepares the application and tells you the current fee and processing time.",
+      },
+      {
+        question: "Is the price on this page final?",
+        answer:
+          "No. Fares shown are indicative. A travel expert confirms the price and the rules with you before you pay.",
+      },
+    ],
+    visaCountrySlug: "united-arab-emirates",
+    popular: true,
+    order: 0,
+    status: "published",
+    sample: true,
+  },
+  {
+    slug: "dhaka-to-kuala-lumpur",
+    from: "DAC",
+    to: "KUL",
+    title: "Dhaka to Kuala Lumpur flights",
+    intro:
+      "Flights to Kuala Lumpur for holidays, students and business trips, with fares compared across airlines and the visa file prepared by our desk.",
+    image: photo("kualalumpur"),
+    flightTime: "About 4 hours non-stop",
+    airlineCodes: ["MH", "BS", "BG"],
+    fromPrice: 29800,
+    bestTime: "December to February and June to August are the driest months; it is warm all year.",
+    tips: [
+      {
+        title: "Student fares",
+        body: "Students can get extra baggage on some airlines with a valid student ID. Ask for a student fare in the request.",
+      },
+      {
+        title: "eVisa or sticker",
+        body: "Malaysia offers an eVisa for many travellers; we tell you which applies to your trip.",
+      },
+    ],
+    faqs: [
+      {
+        question: "How long is the flight from Dhaka to Kuala Lumpur?",
+        answer: "About 4 hours non-stop.",
+      },
+      {
+        question: "Can you book a student fare?",
+        answer:
+          "Yes, when the airline offers one. Send the request and mention that you are a student.",
+      },
+    ],
+    visaCountrySlug: "malaysia",
+    popular: true,
+    order: 1,
+    status: "published",
+    sample: true,
+  },
+  {
+    slug: "dhaka-to-bangkok",
+    from: "DAC",
+    to: "BKK",
+    title: "Dhaka to Bangkok flights",
+    intro:
+      "A short hop to Bangkok for shopping, medical visits and beach holidays, with the Thai visa file and hotels arranged in the same request if you want.",
+    image: photo("thailand"),
+    flightTime: "About 2.5 hours non-stop",
+    airlineCodes: ["TG", "BS", "BG"],
+    bestTime: "November to February, the cool and dry season.",
+    tips: [
+      {
+        title: "Medical trips",
+        body: "For hospital appointments, send the appointment letter with your request; the medical visa needs it.",
+      },
+      {
+        title: "Combine with Phuket",
+        body: "Our Bangkok and Phuket package adds the island with flights and hotels in one plan.",
+      },
+    ],
+    faqs: [
+      {
+        question: "How long is the flight from Dhaka to Bangkok?",
+        answer: "About 2.5 hours non-stop.",
+      },
+      {
+        question: "Do Bangladeshis need a visa for Thailand?",
+        answer:
+          "Yes. We prepare tourist, business and medical visa files and check every page before submission.",
+      },
+    ],
+    visaCountrySlug: "thailand",
+    popular: true,
+    order: 2,
+    status: "published",
+    sample: true,
+  },
+  {
+    slug: "dhaka-to-singapore",
+    from: "DAC",
+    to: "SIN",
+    title: "Dhaka to Singapore flights",
+    intro:
+      "Flights to Singapore for business, study and family visits, compared by a travel expert with the baggage and change rules spelled out.",
+    image: photo("singapore"),
+    flightTime: "About 4 hours non-stop",
+    airlineCodes: ["SQ", "BS", "BG"],
+    fromPrice: 41200,
+    bestTime: "February to April is usually the driest; it is warm and humid all year.",
+    tips: [
+      {
+        title: "Visa first",
+        body: "Singapore visas go through the embassy's appointed agents; start two to three weeks before you fly.",
+      },
+    ],
+    faqs: [
+      {
+        question: "How long is the flight from Dhaka to Singapore?",
+        answer: "About 4 hours non-stop.",
+      },
+    ],
+    visaCountrySlug: "singapore",
+    popular: true,
+    order: 3,
+    status: "published",
+    sample: true,
+  },
+  {
+    slug: "dhaka-to-kolkata",
+    from: "DAC",
+    to: "CCU",
+    title: "Dhaka to Kolkata flights",
+    intro:
+      "The quickest way to Kolkata: about an hour in the air, with several departures a day. We compare the fares and prepare the Indian visa file.",
+    image: photo("hero-wing"),
+    flightTime: "About 1 hour non-stop",
+    airlineCodes: ["BS", "BG", "6E"],
+    fromPrice: 9900,
+    bestTime: "October to March, before the summer heat.",
+    tips: [
+      {
+        title: "Indian visa",
+        body: "An Indian visa is needed before you fly; book the visa centre appointment early in busy months.",
+      },
+    ],
+    faqs: [
+      {
+        question: "How long is the flight from Dhaka to Kolkata?",
+        answer: "About 1 hour non-stop.",
+      },
+      {
+        question: "Can you arrange the Indian visa too?",
+        answer: "Yes. Our visa desk prepares the file and books the appointment.",
+      },
+    ],
+    visaCountrySlug: "india",
+    popular: true,
+    order: 4,
+    status: "published",
+    sample: true,
+  },
+  {
+    slug: "dhaka-to-coxs-bazar",
+    from: "DAC",
+    to: "CXB",
+    title: "Dhaka to Cox’s Bazar flights",
+    intro:
+      "Fly to the longest sea beach in about an hour instead of a long road trip, with hotels and a beach package in the same request if you like.",
+    image: photo("coxsbazar"),
+    flightTime: "About 1 hour non-stop",
+    airlineCodes: ["BS", "BG", "VQ", "2A"],
+    bestTime: "November to March, the dry season with calm seas.",
+    tips: [
+      {
+        title: "Holiday weekends",
+        body: "Fares rise quickly before long weekends and Eid; send the request early.",
+      },
+    ],
+    faqs: [
+      { question: "How long is the flight from Dhaka to Cox’s Bazar?", answer: "About 1 hour." },
+    ],
+    popular: true,
+    order: 5,
+    status: "published",
+    sample: true,
+  },
 ];
