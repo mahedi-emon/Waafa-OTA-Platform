@@ -3,7 +3,9 @@ import { ENV, type Env } from "./config/env";
 import { IdempotencyService } from "./common/idempotency.service";
 import { IntakeKeyGuard } from "./common/serverKey";
 import { ContentService } from "./content/content.service";
+import { IntegrationMailer } from "./notifications/integrationMailer";
 import { createMailer, type Mailer } from "./notifications/mailer";
+import { PrismaService } from "./prisma/prisma.service";
 import { MAILER, NotificationService } from "./notifications/notification.service";
 import { RevalidateService } from "./revalidate/revalidate.service";
 
@@ -20,7 +22,13 @@ export class ServicesModule {
     const providers = [
       options.mailer
         ? { provide: MAILER, useValue: options.mailer }
-        : { provide: MAILER, useFactory: (env: Env) => createMailer(env), inject: [ENV] },
+        : {
+            provide: MAILER,
+            // The email provider turned on in Admin › Integrations wins over the environment mailer (#107).
+            useFactory: (env: Env, prisma: PrismaService) =>
+              new IntegrationMailer(prisma, env.PROVIDER_SECRET_KEY, createMailer(env)),
+            inject: [ENV, PrismaService],
+          },
       ContentService,
       NotificationService,
       RevalidateService,

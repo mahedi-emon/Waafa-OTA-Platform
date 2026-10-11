@@ -1,9 +1,16 @@
-import { PROVIDER_CATALOG, PROVIDER_IDS, type FlightOffer, type FlightSearch } from "@waafa/shared";
+import {
+  PROVIDER_CATALOG,
+  PROVIDER_IDS,
+  providerDefinition,
+  type FlightOffer,
+  type FlightSearch,
+} from "@waafa/shared";
 import { describe, expect, it } from "vitest";
 import { ProviderUnavailableError, type FlightProvider, type ProviderContext } from "./adapters";
 import {
   adapterFor,
   checkConnection,
+  checkSmtp,
   isPublicHost,
   manualFlightProvider,
   manualHotelProvider,
@@ -81,7 +88,10 @@ describe("catalog adapters (contract)", () => {
           ? ["search", "revalidate", "fareRules", "book", "issueTicket", "cancel", "retrieve"]
           : kind === "hotel"
             ? ["search", "hotelDetail", "rates", "book", "cancel", "retrieve"]
-            : ["initiate", "verifyCallback", "refund", "query"];
+            : kind === "payment"
+              ? ["initiate", "verifyCallback", "refund", "query"]
+              : [];
+      expect(typeof adapter.healthCheck).toBe("function");
       for (const method of methods) {
         const call = (
           adapter as unknown as Record<string, (...args: unknown[]) => Promise<unknown>>
@@ -119,6 +129,30 @@ describe("catalog adapters (contract)", () => {
       Promise.reject(new Error("ECONNREFUSED")),
     );
     expect(down).toEqual({ ok: false, message: "api.cert.example.com did not answer" });
+  });
+
+  it("custom providers get their kind's stub", () => {
+    const definition = providerDefinition("custom-hotel-agoda-b2b", "Agoda B2B");
+    expect(definition && adapterFor(definition).kind).toBe("hotel");
+    expect(() => adapterFor("custom-nothing" as never)).toThrow();
+  });
+
+  it("SMTP health check: open port, private host, no answer", async () => {
+    const smtp = PROVIDER_CATALOG.smtp;
+    const context: ProviderContext = {
+      environment: "production",
+      settings: { host: "smtp.example.com", port: "587", username: "u", from: "a@example.com" },
+      secrets: { password: "p" },
+    };
+    expect((await checkSmtp(smtp, context, () => Promise.resolve())).ok).toBe(true);
+    const internal = await checkSmtp(
+      smtp,
+      { ...context, settings: { ...context.settings, host: "192.168.0.2" } },
+      () => Promise.resolve(),
+    );
+    expect(internal.ok).toBe(false);
+    const down = await checkSmtp(smtp, context, () => Promise.reject(new Error("ECONNREFUSED")));
+    expect(down).toEqual({ ok: false, message: "smtp.example.com:587 did not answer" });
   });
 
   it("Manual providers: no live offers, booking becomes a lead", async () => {

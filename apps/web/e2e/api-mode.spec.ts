@@ -93,7 +93,7 @@ test("a newsletter sign-up reaches the Admin list", async ({ page }) => {
   await expect(page.getByText(email)).toBeVisible();
 });
 
-test("a Super Admin connects an external API; the secret is never shown again", async ({
+test("a Super Admin connects an external API, turns it on and reveals the secret on request", async ({
   page,
 }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
@@ -101,19 +101,40 @@ test("a Super Admin connects an external API; the secret is never shown again", 
   await signIn(page);
   await page.goto("/secure-admin-control/integrations");
   await expect(page.getByRole("heading", { level: 1, name: "Integrations" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Flight APIs" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
   const card = page
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: "Sabre" }) });
   await card.getByRole("button", { name: "Connect" }).click();
   await card.getByLabel("API base URL").fill("https://example.com");
   await card.getByLabel("Client ID").fill("e2e-client");
-  await card.getByLabel("Client secret").fill("e2e-client-secret-4321");
+  await card.getByLabel("Client secret", { exact: true }).fill("e2e-client-secret-4321");
   await card.getByLabel("PCC (pseudo city code)").fill("E2E1");
-  await card.getByRole("switch", { name: "Use this connection" }).click();
-  await card.getByRole("button", { name: "Save" }).click();
-  await expect(card.getByText("Sandbox: Connected")).toBeVisible();
+  await card.getByRole("button", { name: "Save", exact: true }).click();
   await expect(card.getByText("Saved, ends in 4321. Leave empty to keep it.")).toBeVisible();
-  await expect(card.getByLabel("Client secret")).toHaveValue("");
+  await expect(card.getByLabel("Client secret", { exact: true })).toHaveValue("");
   expect(await page.content()).not.toContain("e2e-client-secret-4321");
+
+  // Active with Sandbox credentials and a 5% markup.
+  await card.getByRole("switch", { name: "Active" }).click();
+  await card.getByRole("radio", { name: "Percentage" }).click();
+  await card.getByLabel("Value").fill("5");
+  await card.getByRole("button", { name: "Save settings" }).click();
+  await expect(card.getByText("Active", { exact: true }).first()).toBeVisible();
+  await expect(card.getByRole("switch", { name: "Active" })).toBeChecked();
+
+  // The saved secret is shown only on request (and logged by the API).
+  await card.getByRole("button", { name: "Reveal saved value" }).click();
+  await expect(card.getByText("e2e-client-secret-4321")).toBeVisible();
+
+  // A custom SMS provider in the Communication tab.
+  await page.getByRole("tab", { name: "SMS and email" }).click();
+  const panel = page.getByRole("tabpanel", { name: "SMS and email" });
+  await panel.getByLabel("Provider name").fill("E2E SMS Gateway");
+  await panel.getByRole("button", { name: "Add provider" }).click();
+  await expect(panel.getByRole("heading", { name: /E2E SMS Gateway/ })).toBeVisible();
   expect(errors).toEqual([]);
 });

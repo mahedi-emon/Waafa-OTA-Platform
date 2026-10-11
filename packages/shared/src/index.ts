@@ -8,6 +8,7 @@ export * from "./helpers/reference";
 export * from "./helpers/orderPricing";
 export * from "./helpers/deals";
 export * from "./helpers/leadSummary";
+export * from "./helpers/markup";
 
 export * from "./constants";
 export * from "./schemas/common";

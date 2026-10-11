@@ -289,7 +289,6 @@ model ProviderCredential {
   id            String    @id @default(cuid())
   provider      String
   environment   String
-  enabled       Boolean   @default(false)
   settings      Json
   secrets       Json
   note          String?
@@ -301,4 +300,24 @@ model ProviderCredential {
   updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
 
   @@unique([provider, environment])
+}
+
+/// One row per provider (#107): which credential set is used (Sandbox or Live), whether the provider is on, and the
+/// markup on its prices. Catalog providers get a row on first save; custom providers ("custom-<kind>-<slug>") are
+/// added by the Super Admin. Turning a provider on never switches a public module to Live (Golden Switch).
+model IntegrationSetting {
+  id          String   @id @default(cuid())
+  provider    String   @unique
+  kind        String
+  name        String
+  custom      Boolean  @default(false)
+  isActive    Boolean  @default(false)
+  isLive      Boolean  @default(false)
+  markupType  String   @default("none")
+  markupValue Decimal  @default(0) @db.Decimal(12, 2)
+  updatedBy   String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([kind, isActive])
 }
