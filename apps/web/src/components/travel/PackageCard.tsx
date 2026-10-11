@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { formatTaka, type TourPackage } from "@waafa/shared";
 import { GoldTriangle } from "@/components/brand/GoldTriangle";
+import { HoverVideo } from "@/components/media/HoverVideo";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Link } from "@/i18n/navigation";
 import { CardFx } from "@/components/fx/CardFx";
@@ -9,7 +10,8 @@ type PackageCardProps = { pkg: TourPackage; sizes?: string };
 
 /**
  * Tour package card (DESIGN.md "Cards"): cover, places, title, what is included, nights and "from ৳ per person,
- * twin share". The whole card is one link; desktop hover zooms the photo gently.
+ * twin share". The whole card is one link; desktop hover zooms the photo gently, plays the package clip when
+ * there is one, and the card leans and glows towards the pointer.
  */
 async function PackageCard({
   pkg,
@@ -29,6 +31,7 @@ async function PackageCard({
             sizes={sizes}
             zoomOnHover
           />
+          {pkg.video ? <HoverVideo sources={{ mp4: pkg.video.mp4, webm: pkg.video.webm }} /> : null}
           {tag ? (
             <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
               {tag === "best-seller" ? <GoldTriangle className="size-2.5" /> : null}
