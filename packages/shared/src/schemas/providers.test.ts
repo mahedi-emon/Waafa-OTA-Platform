@@ -1,17 +1,25 @@
 import { describe, expect, it } from "vitest";
 import {
+  CustomProviderInputSchema,
+  IntegrationSettingInputSchema,
   PROVIDER_CATALOG,
   PROVIDER_IDS,
   ProviderConnectionInputSchema,
+  ProviderKeySchema,
+  customProviderKey,
+  customProviderKind,
+  providerDefinition,
   validateProviderConnection,
 } from "./providers";
 
 describe("provider catalog", () => {
-  it("has one definition per id, each with a base URL and at least one secret", () => {
+  it("has one definition per id, each with an address and at least one secret", () => {
     for (const id of PROVIDER_IDS) {
       const definition = PROVIDER_CATALOG[id];
       expect(definition.id).toBe(id);
-      expect(definition.fields.some((field) => field.key === "baseUrl")).toBe(true);
+      // HTTP APIs have a base URL; SMTP has a host and port instead.
+      const address = id === "smtp" ? "host" : "baseUrl";
+      expect(definition.fields.some((field) => field.key === address)).toBe(true);
       expect(definition.fields.some((field) => field.secret)).toBe(true);
       const keys = definition.fields.map((field) => field.key);
       expect(new Set(keys).size).toBe(keys.length);
@@ -25,6 +33,79 @@ describe("provider catalog", () => {
     expect(["sslcommerz", "bkash", "nagad"].every((id) => PROVIDER_IDS.includes(id as never))).toBe(
       true,
     );
+  });
+
+  it("covers SMS and email (#107)", () => {
+    const kinds = PROVIDER_IDS.map((id) => PROVIDER_CATALOG[id].kind);
+    expect(kinds.filter((kind) => kind === "sms").length).toBeGreaterThanOrEqual(2);
+    expect(kinds.filter((kind) => kind === "email")).toHaveLength(2);
+  });
+});
+
+describe("custom providers (#107)", () => {
+  it("builds keys from the kind and name", () => {
+    expect(customProviderKey("flight", "Galileo BD!")).toBe("custom-flight-galileo-bd");
+    expect(customProviderKey("sms", "  ")).toBe("custom-sms-provider");
+    expect(customProviderKey("hotel", "x".repeat(80))).toHaveLength("custom-hotel-".length + 40);
+  });
+
+  it("accepts catalog ids and custom keys, nothing else", () => {
+    expect(ProviderKeySchema.safeParse("amadeus").success).toBe(true);
+    expect(ProviderKeySchema.safeParse("custom-payment-upay").success).toBe(true);
+    expect(ProviderKeySchema.safeParse("custom-hajj-x").success).toBe(false);
+    expect(ProviderKeySchema.safeParse("../etc").success).toBe(false);
+    expect(customProviderKind("custom-email-zoho")).toBe("email");
+  });
+
+  it("gives custom providers generic fields with their saved name", () => {
+    const definition = providerDefinition("custom-flight-galileo-bd", "Galileo BD");
+    expect(definition?.name).toBe("Galileo BD");
+    expect(definition?.kind).toBe("flight");
+    expect(definition?.fields.map((field) => field.key)).toContain("apiKey");
+    expect(providerDefinition("nope")).toBeNull();
+  });
+
+  it("checks extra headers are JSON with text values", () => {
+    const base = { baseUrl: "https://api.example.com" };
+    const secrets = { apiKey: "k" };
+    expect(
+      validateProviderConnection("custom-flight-x1", {
+        settings: { ...base, extraHeaders: '{"X-Agency":"WAAFA"}' },
+        secrets,
+      }),
+    ).toEqual([]);
+    expect(
+      validateProviderConnection("custom-flight-x1", {
+        settings: { ...base, extraHeaders: "[1]" },
+        secrets,
+      }).map((problem) => problem.path),
+    ).toEqual(["settings.extraHeaders"]);
+  });
+
+  it("needs a numeric SMTP port", () => {
+    const problems = validateProviderConnection("smtp", {
+      settings: { host: "smtp.example.com", port: "abc", username: "u", from: "a@b.co" },
+      secrets: { password: "p" },
+    });
+    expect(problems).toEqual([{ path: "settings.port", message: "Port must be a number" }]);
+  });
+
+  it("parses settings and custom provider input", () => {
+    expect(
+      IntegrationSettingInputSchema.safeParse({
+        isActive: true,
+        isLive: false,
+        markupType: "percentage",
+        markupValue: 120,
+      }).success,
+    ).toBe(false);
+    expect(IntegrationSettingInputSchema.parse({ isActive: false, isLive: true })).toEqual({
+      isActive: false,
+      isLive: true,
+      markupType: "none",
+      markupValue: 0,
+    });
+    expect(CustomProviderInputSchema.safeParse({ kind: "sms", name: "A" }).success).toBe(false);
   });
 });
 
@@ -78,7 +159,7 @@ describe("validateProviderConnection", () => {
   });
 
   it("parses the input with secrets optional", () => {
-    const parsed = ProviderConnectionInputSchema.parse({ enabled: true, settings: { a: " b " } });
-    expect(parsed).toEqual({ enabled: true, settings: { a: "b" }, secrets: {} });
+    const parsed = ProviderConnectionInputSchema.parse({ settings: { a: " b " } });
+    expect(parsed).toEqual({ settings: { a: "b" }, secrets: {} });
   });
 });

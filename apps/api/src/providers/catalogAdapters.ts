@@ -1,14 +1,16 @@
+import { Socket } from "node:net";
 import {
-  PROVIDER_CATALOG,
+  providerDefinition,
   validateProviderConnection,
   type ProviderDefinition,
-  type ProviderId,
+  type ProviderKey,
 } from "@waafa/shared";
 import {
   ProviderUnavailableError,
   type FlightProvider,
   type HealthResult,
   type HotelProvider,
+  type MessagingProvider,
   type PaymentProvider,
   type ProviderAdapter,
   type ProviderContext,
@@ -42,13 +44,59 @@ export function isPublicHost(hostname: string): boolean {
 
 export type Fetcher = (url: string, init: RequestInit) => Promise<{ status: number }>;
 
+/** Opens a TCP connection and closes it: is something listening on host:port (SMTP)? */
+export type PortProbe = (host: string, port: number, timeoutMs: number) => Promise<void>;
+
+export const probePort: PortProbe = (host, port, timeoutMs) =>
+  new Promise<void>((resolve, reject) => {
+    const socket = new Socket();
+    const done = (error?: Error) => {
+      socket.destroy();
+      if (error) reject(error);
+      else resolve();
+    };
+    socket.setTimeout(timeoutMs, () =>
+      done(Object.assign(new Error("timed out"), { name: "TimeoutError" })),
+    );
+    socket.once("error", (error) => done(error));
+    socket.connect(port, host, () => done());
+  });
+
+/** SMTP: fields complete, a public host, and the port accepts a connection within five seconds. */
+export async function checkSmtp(
+  definition: ProviderDefinition,
+  context: ProviderContext,
+  probe: PortProbe = probePort,
+): Promise<HealthResult> {
+  const missing = validateProviderConnection(definition, {
+    settings: { ...context.settings },
+    secrets: { ...context.secrets },
+  });
+  if (missing.length > 0) return { ok: false, message: missing[0]?.message ?? "Incomplete" };
+  const host = context.settings.host ?? "";
+  const port = Number(context.settings.port);
+  if (!isPublicHost(host))
+    return { ok: false, message: "The SMTP host must be a public internet host" };
+  try {
+    await probe(host, port, 5_000);
+    return {
+      ok: true,
+      message: `Saved and reachable (${host}:${port}). Email uses it while it is active.`,
+    };
+  } catch (error) {
+    const reason =
+      error instanceof Error && error.name === "TimeoutError" ? "timed out" : "did not answer";
+    return { ok: false, message: `${host}:${port} ${reason}` };
+  }
+}
+
 /** Saved fields complete, the host public, and the host answers within five seconds (any HTTP status counts). */
 export async function checkConnection(
   definition: ProviderDefinition,
   context: ProviderContext,
   fetcher: Fetcher = fetch,
 ): Promise<HealthResult> {
-  const missing = validateProviderConnection(definition.id, {
+  const missing = validateProviderConnection(definition, {
     settings: { ...context.settings },
     secrets: { ...context.secrets },
   });
@@ -119,6 +167,21 @@ export function stubHotelProvider(
   };
 }
 
+export function messagingProvider(
+  definition: ProviderDefinition,
+  fetcher?: Fetcher,
+  probe?: PortProbe,
+): MessagingProvider {
+  return {
+    id: definition.id,
+    kind: definition.kind === "email" ? "email" : "sms",
+    healthCheck: (context) =>
+      definition.id === "smtp"
+        ? checkSmtp(definition, context, probe)
+        : checkConnection(definition, context, fetcher),
+  };
+}
+
 export function stubPaymentProvider(
   definition: ProviderDefinition,
   fetcher?: Fetcher,
@@ -135,9 +198,17 @@ export function stubPaymentProvider(
   };
 }
 
-/** The adapter for a catalog provider; a certified adapter replaces its stub here in Phase E. */
-export function adapterFor(id: ProviderId, fetcher?: Fetcher): ProviderAdapter {
-  const definition = PROVIDER_CATALOG[id];
+/**
+ * The adapter for a catalog or custom provider; a certified adapter replaces its stub here in Phase E. Pass the
+ * definition for a custom provider (its name lives in its setting).
+ */
+export function adapterFor(
+  provider: ProviderKey | ProviderDefinition,
+  fetcher?: Fetcher,
+  probe?: PortProbe,
+): ProviderAdapter {
+  const definition = typeof provider === "string" ? providerDefinition(provider) : provider;
+  if (!definition) throw new Error(`Unknown provider ${String(provider)}`);
   switch (definition.kind) {
     case "flight":
       return stubFlightProvider(definition, fetcher);
@@ -145,6 +216,9 @@ export function adapterFor(id: ProviderId, fetcher?: Fetcher): ProviderAdapter {
       return stubHotelProvider(definition, fetcher);
     case "payment":
       return stubPaymentProvider(definition, fetcher);
+    case "sms":
+    case "email":
+      return messagingProvider(definition, fetcher, probe);
   }
 }
 

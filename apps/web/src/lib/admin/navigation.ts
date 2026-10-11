@@ -3,6 +3,8 @@ import type { Role } from "@waafa/shared";
 /** Icon names the admin navigation uses (mapped to lucide icons in AdminNavIcon). */
 export type AdminIconName =
   | "dashboard"
+  | "reports"
+  | "customers"
   | "leads"
   | "search"
   | "fares"
@@ -61,6 +63,20 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         href: "/secure-admin-control",
         icon: "dashboard",
         roles: [],
+      },
+      {
+        key: "reports",
+        label: "reports",
+        href: "/secure-admin-control/reports",
+        icon: "reports",
+        roles: ["admin", "accounts", "shop-manager", "travel-sales", "visa-officer"],
+      },
+      {
+        key: "customers",
+        label: "customers",
+        href: "/secure-admin-control/customers",
+        icon: "customers",
+        roles: ["admin", "accounts", "shop-manager", "travel-sales", "visa-officer"],
       },
     ],
   },
