@@ -94,6 +94,15 @@ test.describe("store at 1440", () => {
     expect(errors).toEqual([]);
   });
 
+  test("shows the product photo at full width (#89)", async ({ page }) => {
+    await page.goto("/shop/p/better-day-ce505a-cf280a-black-toner");
+    const photo = page.getByRole("button", { name: /^Open photo/ }).locator("img");
+    await expect(photo).toBeVisible();
+    const box = await photo.boundingBox();
+    expect(box?.width ?? 0).toBeGreaterThan(200);
+    expect(box?.height ?? 0).toBeGreaterThan(200);
+  });
+
   test("sends a corporate quote with a QTE reference", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/shop/p/better-day-ce505a-cf280a-black-toner");
