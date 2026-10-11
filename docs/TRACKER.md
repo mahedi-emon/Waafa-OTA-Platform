@@ -49,7 +49,7 @@ Serena memory `audit_findings`.
 | Field | Value |
 | --- | --- |
 | When | 12 Oct 00:00–01:15 |
-| Results | deploy.sh from main twice (after #110 and after #117); all public routes 200, /admin 404, `/uploads/*` served by nginx from the API (WebP, immutable cache) and optimised by next/image; API-mode e2e 9/9 against nginx (lead, staff flow, FAQ edit, newsletter, integrations on with markup and reveal, media upload, rich text policy edit); admin walk-through of Integrations, Media library, Reports, Customers, Lead board and the rich text editor at 390 and 1440: axe clean, no horizontal scroll, no console errors; CSV download; nightly backup now archives the photos (restore tested by listing); found and fixed #119 |
+| Results | deploy.sh from main twice (after #110 and after #117); all public routes 200, /admin 404, `/uploads/*` served by nginx from the API (WebP, immutable cache) and optimised by next/image; API-mode e2e 8/8 against nginx (lead, staff flow, FAQ edit, newsletter, integrations on with markup and reveal, media upload, rich text policy edit); admin walk-through of Integrations, Media library, Reports, Customers, Lead board and the rich text editor at 390 and 1440: axe clean, no horizontal scroll, no console errors; CSV download; nightly backup now archives the photos (archive contents listed; the photo restore command was not run); found and fixed #119 |
 
 ### #116 · Rich text editor (part of #71) — ✅ Done (with #117)
 | Field | Value |
