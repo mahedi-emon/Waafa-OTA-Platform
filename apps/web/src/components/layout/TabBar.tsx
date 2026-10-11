@@ -1,21 +1,21 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { X } from "lucide-react";
 import { cn } from "cn";
 import markImage from "@/assets/brand/waafa-mark.png";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerTitle,
-} from "@/components/ui/drawer";
 import { Link } from "@/i18n/navigation";
 import { CurrentMarker } from "./CurrentMarker";
 import { isActivePath } from "./isActivePath";
+import { useLazyOverlay } from "./useLazyOverlay";
 import { WithPathname } from "./WithPathname";
+
+const TabBarMoreSheet = dynamic(
+  () => import("./TabBarMoreSheet").then((mod) => mod.TabBarMoreSheet),
+  { ssr: false },
+);
+const loadMoreSheet = () => import("./TabBarMoreSheet");
 
 type TabItem = {
   id: string;
@@ -46,10 +46,13 @@ const TAB_CLASS =
  * Phone bottom tab bar (TabBar board, correction 3): Home, Packages, Waafas World on a raised W disc, Visa, More.
  * The store label always reads "Waafas World" and may wrap to two lines at 320 px, never cut. One indicator slides
  * under the current tab (CSS transform); More opens a bottom sheet with drag-to-close above the bar. The tabs never
- * re-mount after hydration: only the indicator and the current-page markers read the pathname.
+ * re-mount after hydration: only the indicator and the current-page markers read the pathname. The sheet's code loads
+ * when the browser is idle or on the first tap (issue 91).
  */
 function TabBar({ items, moreSheet, labels }: TabBarProps) {
-  const [moreOpen, setMoreOpen] = useState(false);
+  const more = useLazyOverlay(loadMoreSheet);
+  const moreOpen = more.open;
+  const setMoreOpen = more.setOpen;
   const moreIndex = items.findIndex((item) => item.panel === "more");
 
   function indicator(pathname: string | null) {
@@ -135,30 +138,19 @@ function TabBar({ items, moreSheet, labels }: TabBarProps) {
         </div>
       </nav>
 
-      <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
-        <DrawerContent className="rounded-t-[28px] border-0 bg-white data-[vaul-drawer-direction=bottom]:bottom-(--tab-space) lg:hidden">
-          <div className="flex items-center justify-between px-5 pt-2">
-            <DrawerTitle className="font-display text-[20px] font-bold text-navy-900">
-              {labels.moreTitle}
-            </DrawerTitle>
-            <DrawerClose
-              aria-label={labels.close}
-              className="grid size-11 cursor-pointer place-items-center rounded-full text-navy-900 outline-none hover:bg-mist-50 focus-visible:ring-3 focus-visible:ring-ring/40"
-            >
-              <X aria-hidden="true" className="size-6" />
-            </DrawerClose>
-          </div>
-          <DrawerDescription className="sr-only">{labels.moreDescription}</DrawerDescription>
-          <div
-            className="overflow-y-auto px-4 pt-3 pb-[calc(16px+env(safe-area-inset-bottom))]"
-            onClickCapture={(event) => {
-              if ((event.target as HTMLElement).closest("a[href^='/']")) setMoreOpen(false);
-            }}
-          >
-            {moreSheet}
-          </div>
-        </DrawerContent>
-      </Drawer>
+      {more.mounted ? (
+        <TabBarMoreSheet
+          open={moreOpen}
+          onOpenChange={setMoreOpen}
+          labels={{
+            title: labels.moreTitle,
+            description: labels.moreDescription,
+            close: labels.close,
+          }}
+        >
+          {moreSheet}
+        </TabBarMoreSheet>
+      ) : null}
     </>
   );
 }

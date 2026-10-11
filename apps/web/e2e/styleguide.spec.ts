@@ -57,11 +57,13 @@ test("dialogs open from the keyboard and close with Escape", async ({ page }) =>
 
 test("the accordion toggles with Enter and reports its state", async ({ page }) => {
   await openStyleguide(page);
-  const question = page.getByRole("button", { name: "How do I pay?" });
-  await expect(question).toHaveAttribute("aria-expanded", "false");
+  // Native <details> (issue 91): the summary is the toggle and the open state lives on the details element.
+  const question = page.locator("summary", { hasText: "How do I pay?" });
+  const item = page.locator("details", { has: question });
+  await expect(item).not.toHaveAttribute("open", /.*/);
   await question.focus();
   await page.keyboard.press("Enter");
-  await expect(question).toHaveAttribute("aria-expanded", "true");
+  await expect(item).toHaveAttribute("open", "");
   await expect(page.getByText("Bank transfer, bKash, Nagad or at our office")).toBeVisible();
 });
 

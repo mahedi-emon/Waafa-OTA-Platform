@@ -64,7 +64,9 @@ function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps
         </div>
         <div className="flex flex-col gap-3 lg:pb-2">
           <p className="max-w-[54ch] type-lead text-mist-600">{hero.lead}</p>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {/* Phones stack the chip and the phone number, so the live status (computed after hydration, longer when
+              closed) never wraps the row and shifts the hero (issue 91, CLS). */}
+          <div className="flex flex-col items-start gap-y-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3">
             <OfficeStatusChip hours={contact.hours} pendingLabel={contact.pendingLabel} />
             <a
               href={`tel:${contact.phoneE164}`}

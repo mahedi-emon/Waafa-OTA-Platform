@@ -4,7 +4,8 @@ import { LogoLockup } from "@/components/brand/LogoLockup";
 import { getContactSettings, getMenu, getSiteSettings } from "@/lib/data/settings";
 import { listCategories } from "@/lib/data/shop";
 import { Link } from "@/i18n/navigation";
-import { DesktopNav } from "./DesktopNav";
+import { DesktopNavStatic } from "./DesktopNavStatic";
+import { DesktopNavSwitch } from "./DesktopNavSwitch";
 import { HelpMenu } from "./HelpMenu";
 import { HelpPanel } from "./HelpPanel";
 import { MobileMenu } from "./MobileMenu";
@@ -43,11 +44,19 @@ async function SiteHeader() {
       <div className="relative site-container flex h-full items-center gap-3">
         <LogoLockup taglineFrom="xl" className="mr-auto lg:mr-0" />
 
-        <DesktopNav
+        <DesktopNavSwitch
           items={navItems}
           label={t("mainNav")}
           currentLabel={t("current")}
           className="mx-auto hidden lg:flex"
+          fallback={
+            <DesktopNavStatic
+              items={navItems}
+              label={t("mainNav")}
+              currentLabel={t("current")}
+              className="mx-auto hidden lg:flex"
+            />
+          }
           shopPanel={
             <ShopMegaPanel
               storeName={site.storeName}
