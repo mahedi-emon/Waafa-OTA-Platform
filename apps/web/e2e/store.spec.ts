@@ -37,8 +37,8 @@ test.describe("store at 390", () => {
     const errors = collectErrors(page);
     await page.goto("/shop/c/t-shirts");
     await page.getByRole("button", { name: /Filters/ }).click();
+    // A select applies at once (no Show button needed with JavaScript).
     await page.getByLabel("Size").selectOption("XXL");
-    await page.getByRole("button", { name: "Show products" }).click();
     await expect(page).toHaveURL(/a\.size=XXL/);
     await expect(page.getByRole("heading", { name: "1 product" })).toBeVisible();
     await page.getByRole("link", { name: "Classic Cotton Crew T-shirt" }).click();
