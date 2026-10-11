@@ -1,18 +1,21 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import { Headset } from "lucide-react";
 import { cn } from "cn";
 import type { OpeningHours } from "@waafa/shared";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useLazyOverlay } from "./useLazyOverlay";
 import { useOfficeStatus } from "./useOfficeStatus";
+
+const HelpPopover = dynamic(() => import("./HelpPopover").then((mod) => mod.HelpPopover), {
+  ssr: false,
+});
+const HelpSheet = dynamic(() => import("./HelpSheet").then((mod) => mod.HelpSheet), {
+  ssr: false,
+});
+const loadHelpPopover = () => import("./HelpPopover");
+const loadHelpSheet = () => import("./HelpSheet");
 
 type HelpMenuProps = {
   /** The server-rendered HelpPanel. */
@@ -44,37 +47,61 @@ const triggerClass =
 /**
  * "Need help?" (Home-help, Home-m-help): a popover under the header on desktop, a bottom sheet with drag-to-close on
  * phones and tablets. Both show the same server-rendered panel; only one exists in the accessibility tree at a time.
+ * The popover and sheet code loads when the browser is idle or on the first press (issue 91).
  */
 function HelpMenu({ panel, hours, labels }: HelpMenuProps) {
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const desktopRef = useRef<HTMLButtonElement>(null);
+  const phoneRef = useRef<HTMLButtonElement>(null);
+  const popover = useLazyOverlay(loadHelpPopover);
+  const sheet = useLazyOverlay(loadHelpSheet);
 
   return (
     <>
-      <Popover>
-        <PopoverTrigger aria-label={labels.button} className={cn(triggerClass, "hidden lg:grid")}>
-          <HelpTriggerFace hours={hours} />
-        </PopoverTrigger>
-        <PopoverContent
-          align="end"
-          sideOffset={12}
-          className="w-[360px] rounded-[20px] border-0 bg-white p-3 shadow-xl ring-1 ring-mist-200"
+      <button
+        ref={desktopRef}
+        type="button"
+        aria-label={labels.button}
+        aria-haspopup="dialog"
+        aria-expanded={popover.open}
+        data-state={popover.open ? "open" : "closed"}
+        onClick={() => popover.setOpen(!popover.open)}
+        className={cn(triggerClass, "hidden lg:grid")}
+      >
+        <HelpTriggerFace hours={hours} />
+      </button>
+      {popover.mounted ? (
+        <HelpPopover
+          open={popover.open}
+          onOpenChange={popover.setOpen}
+          anchorRef={desktopRef}
+          label={labels.title}
         >
           {panel}
-        </PopoverContent>
-      </Popover>
+        </HelpPopover>
+      ) : null}
 
-      <Drawer open={sheetOpen} onOpenChange={setSheetOpen}>
-        <DrawerTrigger aria-label={labels.button} className={cn(triggerClass, "lg:hidden")}>
-          <HelpTriggerFace hours={hours} />
-        </DrawerTrigger>
-        <DrawerContent className="rounded-t-[28px] border-0 bg-white">
-          <DrawerTitle className="sr-only">{labels.title}</DrawerTitle>
-          <DrawerDescription className="sr-only">{labels.description}</DrawerDescription>
-          <div className="overflow-y-auto px-4 pt-3 pb-[calc(16px+env(safe-area-inset-bottom))]">
-            {panel}
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <button
+        ref={phoneRef}
+        type="button"
+        aria-label={labels.button}
+        aria-haspopup="dialog"
+        aria-expanded={sheet.open}
+        data-state={sheet.open ? "open" : "closed"}
+        onClick={() => sheet.setOpen(true)}
+        className={cn(triggerClass, "lg:hidden")}
+      >
+        <HelpTriggerFace hours={hours} />
+      </button>
+      {sheet.mounted ? (
+        <HelpSheet
+          open={sheet.open}
+          onOpenChange={sheet.setOpen}
+          returnFocusRef={phoneRef}
+          labels={{ title: labels.title, description: labels.description }}
+        >
+          {panel}
+        </HelpSheet>
+      ) : null}
     </>
   );
 }

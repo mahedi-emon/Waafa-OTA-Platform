@@ -225,6 +225,13 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         roles: CONTENT,
       },
       {
+        key: "mediaLibrary",
+        label: "mediaLibrary",
+        href: "/secure-admin-control/media",
+        icon: "media",
+        roles: ["admin", "content-editor", "shop-manager", "travel-sales"],
+      },
+      {
         key: "media",
         label: "media",
         href: "/secure-admin-control/content/mediaSlots",

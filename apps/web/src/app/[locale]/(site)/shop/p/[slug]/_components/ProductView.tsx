@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Check, Expand, Minus, Plus, ShoppingCart, Truck, Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { cn } from "cn";
 import { flyToCart } from "@/lib/shop/flyToCart";
 import { formatTaka, type Product, type ShippingZone } from "@waafa/shared";
@@ -108,7 +108,7 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
         onClick={(event) => {
           if (!addToCart()) return;
           flyToCart(event.currentTarget);
-          toast.success(t("card.added"), { description: product.title });
+          notify("success", t("card.added"), { description: product.title });
         }}
         className={cn(!compact && "sm:flex-1")}
       >

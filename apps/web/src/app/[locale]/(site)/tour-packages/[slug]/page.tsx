@@ -280,7 +280,8 @@ async function PackagePageContent({
                   headingId="itinerary-title"
                   title={t("detail.itinerary")}
                   labels={{
-                    day: String(t.raw("detail.day")),
+                    // "Day {n}" with the placeholder kept; ItineraryDays fills in each day number.
+                    day: t("detail.day", { n: "{n}" }),
                     expandAll: t("detail.expandAll"),
                     collapseAll: t("detail.collapseAll"),
                   }}

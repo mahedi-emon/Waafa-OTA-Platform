@@ -22,6 +22,7 @@ x-api-env: &api-env
   SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
   SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
   PROVIDER_SECRET_KEY: ${PROVIDER_SECRET_KEY:-}
+  MEDIA_DIR: /data/media
   NODE_OPTIONS: --max-old-space-size=384
 
 services:
@@ -65,6 +66,8 @@ services:
     restart: unless-stopped
     environment: *api-env
     ports: ["127.0.0.1:4000:4000"]
+    # Uploaded photos (Admin › Media library, #109); backed up by deploy/backup.sh.
+    volumes: [mediadata:/data/media]
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -147,5 +150,6 @@ services:
 volumes:
   pgdata:
   redisdata:
+  mediadata:
   letsencrypt:
   certbot_www:
