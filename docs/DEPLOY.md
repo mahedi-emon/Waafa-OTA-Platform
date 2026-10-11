@@ -149,6 +149,7 @@ nginx serves them at `/uploads/` straight from the API with a one-year cache; ad
 | Memory | `docker stats --no-stream` |
 | Restart one service | `docker compose -f deploy/compose.yml restart web` |
 | Database shell | `docker compose -f deploy/compose.yml exec postgres psql -U waafa waafa` |
+| Clear the nginx cache (a photo under /media/ replaced in place; it refills on demand) | `docker compose -f deploy/compose.yml exec nginx sh -c 'rm -rf /var/cache/nginx/waafa/*'` |
 
 ## 7. Rollback
 
