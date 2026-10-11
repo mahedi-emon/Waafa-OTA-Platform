@@ -1,14 +1,15 @@
 # Session handoff (update at every session end)
-Updated 2026-10-11 05:45 Dhaka.
-Merged today: #59 B2 auth, #62 B3 intake (+bugs #60 #61), #63 B4 admin API, #65 C1 web on the API, #67 refresh grace
-(#66), #68 launch admin A18 (A19–A21 closed with cuts to #71), #70 Turnstile (#69), #73 Live stays locked (#72),
-#75 deploy runbook (docs/DEPLOY.md, #74 open: needs owner accounts), #76 admin QA job (screens 320–1440 + axe),
-#77 signature motion (#52). OPEN: PR #79 = fixes from the independent review (#78: seed marker, Redis fail-fast,
-trustProxy one hop + atomic login count, order cancel race, proof reject, snapshot generation, priceCart missing
-line, page clamp, revalidate products-only). CI job "API mode e2e" runs API+Postgres+web end to end (green).
-Next three steps: 1) merge #79 when green; 2) owner accounts → deploy per docs/DEPLOY.md (#74), staging checks;
-3) polish: #39 perf (home JS), #22 QA (768/1024 public screenshots), search→results morph (cut, D140 to log).
-Local Postgres (5433) is stopped (system low memory); restart only with the owner's OK. MCP playwright/context7/
-shadcn/magic disconnected. Gotchas: Bash tool collapses `\\` in heredocs/node -e (use Edit tool for regex/backslash);
-fieldsets need min-w-0; `gh pr merge --delete-branch` wants a clean tree; regenerate route types with
-`npx next typegen` after switching branches (stale .next/types breaks tsc).
+Updated 2026-10-11 14:00 Dhaka.
+Owner asks (11 Oct): VPS + nginx (done, #81), external API connect (done, #83 Integrations), admin URL not /admin
+(done, /secure-admin-control #86), finish Phase A + check every board + better design/motion than competitors.
+OPEN PRs: #87 (public screens 32 routes x 5 widths, artifact `public-screens`), #88 (board parity + motion:
+BannerHero on Packages/Visa, filter chips + instant radios via components/forms/FilterForm, Group fares chips, home hero
+eyebrow/office chip/phone, values bento balance, CTA office ribbon, request card header chips, store filters instant,
+CardFx spotlight/tilt on package/visa/offer/destination cards, HoverVideo on package cards, WhatsApp shimmer),
+docs PR for TRACKER (D141–D147). #74 open: owner SSH, DNS, email sender, ACME email, Super Admin email.
+Resume: 1) merge #87, #88, docs PR when green (fix e2e if packages/store filter tests fail); 2) gh run download -n
+public-screens, tile with scratchpad crop.py (python -I + PIL path), compare with docs/design/thumbs, fix gaps, close #22
+(Phase A done); 3) owner deploy per docs/DEPLOY.md.
+Gotchas: Bash collapses `\\`; python glob treats [locale] as a class (use explicit paths); python writes CRLF unless
+newline=""; full-page shots need a scroll for lazy images; `gh pr merge --delete-branch` wants a clean tree (stash -u).
+Local Postgres stopped (low memory); restart only with the owner's OK.
