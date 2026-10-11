@@ -178,3 +178,27 @@ test("an editor uploads a photo to the media library and the site serves it (iss
   expect(served.headers()["content-type"]).toBe("image/webp");
   expect(errors).toEqual([]);
 });
+
+test("a policy body edited in the rich text editor shows on the site (issue 116)", async ({
+  page,
+}) => {
+  test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  const errors = collectErrors(page);
+  const line = `Refund requests are answered within two working days. Checked ${Date.now()}.`;
+  await signIn(page);
+  await page.goto("/secure-admin-control/content/pages/refund-policy");
+  await expect(page.getByRole("toolbar", { name: "Text formatting" }).first()).toBeVisible();
+  const body = page.locator('[role="textbox"][aria-multiline="true"]').first();
+  await body.click();
+  await page.keyboard.press("ControlOrMeta+a");
+  await page.keyboard.type(line);
+  await page.keyboard.press("ControlOrMeta+a");
+  await page.getByRole("button", { name: "Bold" }).first().click();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByText("Saved").first()).toBeVisible();
+  await expect(async () => {
+    await page.goto("/refund-policy");
+    await expect(page.locator("strong", { hasText: line })).toBeVisible();
+  }).toPass({ timeout: 30_000 });
+  expect(errors).toEqual([]);
+});

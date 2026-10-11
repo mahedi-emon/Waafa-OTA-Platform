@@ -185,6 +185,11 @@ export function summaryOf(value: unknown): string {
 const LONG_TEXT_KEYS =
   /^(body|description|answer|content|html|text|bio|about|lead|notes?|summary|intro|excerpt|message|instructions|terms|policy|details)$/i;
 
+/** Rich text (HTML) fields get the rich text editor (issue 116). */
+export function isRichText(schema: JsonSchema): boolean {
+  return schema.format === "html";
+}
+
 /** Long texts get a textarea: a known long field or a long maximum length. */
 export function isLongText(schema: JsonSchema, key: string | number | undefined): boolean {
   if (typeof schema.maxLength === "number") return schema.maxLength > 200;

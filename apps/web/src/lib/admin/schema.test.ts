@@ -7,6 +7,7 @@ import {
   fromLocalInput,
   getAt,
   isLongText,
+  isRichText,
   isNullable,
   resolve,
   setAt,
@@ -68,5 +69,16 @@ describe("content editor schema helpers (D138)", () => {
   it("edits times in Asia/Dhaka", () => {
     expect(toLocalInput("2026-10-11T13:18:00.000Z")).toBe("2026-10-11T19:18");
     expect(fromLocalInput("2026-10-11T19:18")).toBe("2026-10-11T19:18:00+06:00");
+  });
+});
+
+describe("rich text fields (issue 116)", () => {
+  it("marks HTML bodies for the rich text editor and nothing else", () => {
+    const page = toSchema(CONTENT_MODEL.pages.schema);
+    const text = JSON.stringify(page);
+    expect(text).toContain('"format":"html"');
+    expect(isRichText({ type: "string", format: "html" })).toBe(true);
+    expect(isRichText({ type: "string", maxLength: 100_000 })).toBe(false);
+    expect(isRichText({ type: "string", format: "uri" })).toBe(false);
   });
 });
