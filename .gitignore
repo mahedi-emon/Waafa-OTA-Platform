@@ -32,3 +32,4 @@ __pycache__/
 
 # Production backups on the VPS (deploy/backup.sh)
 deploy/backups/
+apps/web/lhci-report/
