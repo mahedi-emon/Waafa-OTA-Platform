@@ -34,7 +34,7 @@ async function send(path: string, options: RequestOptions = {}): Promise<Respons
   const api = apiConfig();
   if (!api) throw new Error("The admin needs WAAFA_API_URL and WAAFA_INTAKE_KEY");
   const token = (await cookies()).get(ACCESS_COOKIE)?.value;
-  if (!token) redirect("/admin/sign-in");
+  if (!token) redirect("/secure-admin-control/sign-in");
   const url = new URL(`${api.baseUrl}/api/v1${path}`);
   for (const [key, value] of Object.entries(options.query ?? {})) {
     if (value !== undefined && value !== "") url.searchParams.set(key, String(value));
@@ -69,7 +69,7 @@ async function problemOf(response: Response): Promise<AdminProblem> {
  */
 export async function adminGet<T>(path: string, query?: RequestOptions["query"]): Promise<T> {
   const response = await send(path, { query });
-  if (response.status === 401) redirect("/admin/sign-in");
+  if (response.status === 401) redirect("/secure-admin-control/sign-in");
   if (!response.ok) {
     const problem = await problemOf(response);
     throw new Error(problem.status === 403 ? "forbidden" : `${problem.status} ${problem.title}`);
@@ -84,7 +84,7 @@ export async function adminWrite<T>(
   body?: unknown,
 ): Promise<AdminResult<T>> {
   const response = await send(path, { method, body });
-  if (response.status === 401) redirect("/admin/sign-in");
+  if (response.status === 401) redirect("/secure-admin-control/sign-in");
   if (!response.ok) return { ok: false, problem: await problemOf(response) };
   const data = response.status === 204 ? (null as T) : ((await response.json()) as T);
   return { ok: true, data };
@@ -111,7 +111,7 @@ export const getStaffSession = cache(async (): Promise<StaffSession | null> => {
 /** The signed-in staff member, or the sign-in page. */
 export async function requireStaff(): Promise<StaffSession> {
   const staff = await getStaffSession();
-  if (!staff) redirect("/admin/sign-in");
+  if (!staff) redirect("/secure-admin-control/sign-in");
   return staff;
 }
 

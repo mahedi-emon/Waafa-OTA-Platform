@@ -54,23 +54,37 @@ const SHOP: Role[] = ["admin", "shop-manager"];
 export const ADMIN_NAV: AdminNavGroup[] = [
   {
     label: "overview",
-    items: [{ key: "dashboard", label: "dashboard", href: "/admin", icon: "dashboard", roles: [] }],
+    items: [
+      {
+        key: "dashboard",
+        label: "dashboard",
+        href: "/secure-admin-control",
+        icon: "dashboard",
+        roles: [],
+      },
+    ],
   },
   {
     label: "sales",
     items: [
-      { key: "leads", label: "leads", href: "/admin/leads", icon: "leads", roles: SALES },
+      {
+        key: "leads",
+        label: "leads",
+        href: "/secure-admin-control/leads",
+        icon: "leads",
+        roles: SALES,
+      },
       {
         key: "search",
         label: "searchActivity",
-        href: "/admin/search",
+        href: "/secure-admin-control/search",
         icon: "search",
         roles: ["admin", "travel-sales"],
       },
       {
         key: "groupFares",
         label: "groupFares",
-        href: "/admin/content/groupFares",
+        href: "/secure-admin-control/content/groupFares",
         icon: "fares",
         roles: TRAVEL,
       },
@@ -82,21 +96,21 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       {
         key: "packages",
         label: "packages",
-        href: "/admin/content/tourPackages",
+        href: "/secure-admin-control/content/tourPackages",
         icon: "packages",
         roles: TRAVEL,
       },
       {
         key: "visaLeads",
         label: "visaLeads",
-        href: "/admin/leads?module=visa",
+        href: "/secure-admin-control/leads?module=visa",
         icon: "passport",
         roles: ["admin", "visa-officer"],
       },
       {
         key: "visaCountries",
         label: "visaCountries",
-        href: "/admin/content/visaCountries",
+        href: "/secure-admin-control/content/visaCountries",
         icon: "visa",
         roles: ["admin", "visa-officer", "content-editor"],
       },
@@ -108,42 +122,42 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       {
         key: "orders",
         label: "orders",
-        href: "/admin/orders",
+        href: "/secure-admin-control/orders",
         icon: "orders",
         roles: ["admin", "shop-manager", "accounts"],
       },
       {
         key: "proofs",
         label: "paymentProofs",
-        href: "/admin/payments",
+        href: "/secure-admin-control/payments",
         icon: "proofs",
         roles: ["admin", "accounts", "shop-manager"],
       },
       {
         key: "products",
         label: "products",
-        href: "/admin/content/products",
+        href: "/secure-admin-control/content/products",
         icon: "products",
         roles: SHOP,
       },
       {
         key: "categories",
         label: "categories",
-        href: "/admin/content/categories",
+        href: "/secure-admin-control/content/categories",
         icon: "categories",
         roles: SHOP,
       },
       {
         key: "collections",
         label: "collections",
-        href: "/admin/content/collections",
+        href: "/secure-admin-control/content/collections",
         icon: "collections",
         roles: SHOP,
       },
       {
         key: "coupons",
         label: "coupons",
-        href: "/admin/content/coupons",
+        href: "/secure-admin-control/content/coupons",
         icon: "coupons",
         roles: SHOP,
       },
@@ -155,50 +169,56 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       {
         key: "home",
         label: "home",
-        href: "/admin/content?group=home",
+        href: "/secure-admin-control/content?group=home",
         icon: "home",
         roles: CONTENT,
       },
-      { key: "team", label: "team", href: "/admin/content/team", icon: "team", roles: CONTENT },
+      {
+        key: "team",
+        label: "team",
+        href: "/secure-admin-control/content/team",
+        icon: "team",
+        roles: CONTENT,
+      },
       {
         key: "gallery",
         label: "gallery",
-        href: "/admin/content/galleryAlbums",
+        href: "/secure-admin-control/content/galleryAlbums",
         icon: "gallery",
         roles: CONTENT,
       },
       {
         key: "feedback",
         label: "feedback",
-        href: "/admin/feedback",
+        href: "/secure-admin-control/feedback",
         icon: "feedback",
         roles: CONTENT,
       },
       {
         key: "pages",
         label: "pages",
-        href: "/admin/content?group=content",
+        href: "/secure-admin-control/content?group=content",
         icon: "pages",
         roles: CONTENT,
       },
       {
         key: "media",
         label: "media",
-        href: "/admin/content/mediaSlots",
+        href: "/secure-admin-control/content/mediaSlots",
         icon: "media",
         roles: CONTENT,
       },
       {
         key: "subscribers",
         label: "subscribers",
-        href: "/admin/subscribers",
+        href: "/secure-admin-control/subscribers",
         icon: "newsletter",
         roles: CONTENT,
       },
       {
         key: "allContent",
         label: "allContent",
-        href: "/admin/content",
+        href: "/secure-admin-control/content",
         icon: "content",
         roles: [],
       },
@@ -210,47 +230,59 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       {
         key: "modes",
         label: "modes",
-        href: "/admin/content/bookingModes",
+        href: "/secure-admin-control/content/bookingModes",
         icon: "modes",
         roles: MANAGERS,
       },
       {
         key: "footer",
         label: "footer",
-        href: "/admin/content/footerSettings",
+        href: "/secure-admin-control/content/footerSettings",
         icon: "footer",
         roles: MANAGERS,
       },
       {
         key: "payments",
         label: "payments",
-        href: "/admin/content?group=payments",
+        href: "/secure-admin-control/content?group=payments",
         icon: "payments",
         roles: ["admin", "shop-manager", "accounts"],
       },
       {
         key: "notifications",
         label: "notifications",
-        href: "/admin/notifications",
+        href: "/secure-admin-control/notifications",
         icon: "notifications",
         roles: MANAGERS,
       },
-      { key: "users", label: "users", href: "/admin/users", icon: "users", roles: ["super-admin"] },
+      {
+        key: "users",
+        label: "users",
+        href: "/secure-admin-control/users",
+        icon: "users",
+        roles: ["super-admin"],
+      },
       {
         key: "integrations",
         label: "integrations",
-        href: "/admin/integrations",
+        href: "/secure-admin-control/integrations",
         icon: "integrations",
         roles: ["super-admin"],
       },
       {
         key: "general",
         label: "general",
-        href: "/admin/content?group=settings",
+        href: "/secure-admin-control/content?group=settings",
         icon: "general",
         roles: MANAGERS,
       },
-      { key: "audit", label: "audit", href: "/admin/audit", icon: "audit", roles: MANAGERS },
+      {
+        key: "audit",
+        label: "audit",
+        href: "/secure-admin-control/audit",
+        icon: "audit",
+        roles: MANAGERS,
+      },
     ],
   },
 ];
@@ -274,14 +306,15 @@ export function activeKey(
   search: string,
   groups: AdminNavGroup[],
 ): string | null {
-  const path = pathname.replace(/^\/[a-z]{2}(?=\/admin)/, "");
+  const path = pathname.replace(/^\/[a-z]{2}(?=\/secure-admin-control)/, "");
   const here = `${path}${search}`;
   let best: { key: string; length: number } | null = null;
   for (const item of groups.flatMap((group) => group.items)) {
     const [itemPath = "", itemQuery] = item.href.split("?");
     const matches = itemQuery
       ? here.startsWith(item.href)
-      : path === itemPath || (itemPath !== "/admin" && path.startsWith(`${itemPath}/`));
+      : path === itemPath ||
+        (itemPath !== "/secure-admin-control" && path.startsWith(`${itemPath}/`));
     if (matches && (!best || item.href.length > best.length))
       best = { key: item.key, length: item.href.length };
   }

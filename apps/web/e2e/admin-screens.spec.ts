@@ -13,15 +13,15 @@ const WIDTHS = [320, 390, 768, 1024, 1440] as const;
 const AXE_WIDTHS = new Set<number>([390, 1440]);
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 const SCREENS = [
-  { name: "dashboard", path: "/admin" },
-  { name: "leads", path: "/admin/leads" },
-  { name: "orders", path: "/admin/orders" },
-  { name: "feedback", path: "/admin/feedback" },
-  { name: "content", path: "/admin/content" },
-  { name: "content-faqs", path: "/admin/content/faqs" },
-  { name: "settings-contact", path: "/admin/content/contactSettings" },
-  { name: "users", path: "/admin/users" },
-  { name: "integrations", path: "/admin/integrations" },
+  { name: "dashboard", path: "/secure-admin-control" },
+  { name: "leads", path: "/secure-admin-control/leads" },
+  { name: "orders", path: "/secure-admin-control/orders" },
+  { name: "feedback", path: "/secure-admin-control/feedback" },
+  { name: "content", path: "/secure-admin-control/content" },
+  { name: "content-faqs", path: "/secure-admin-control/content/faqs" },
+  { name: "settings-contact", path: "/secure-admin-control/content/contactSettings" },
+  { name: "users", path: "/secure-admin-control/users" },
+  { name: "integrations", path: "/secure-admin-control/integrations" },
 ] as const;
 
 test.skip(!apiMode || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");
@@ -30,7 +30,7 @@ test.describe.configure({ mode: "serial" });
 test("the sign-in page holds every width and passes axe", async ({ page }) => {
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/admin/sign-in");
+    await page.goto("/secure-admin-control/sign-in");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - window.innerWidth,
@@ -51,7 +51,7 @@ test("signed-in admin screens hold every width, stay error-free and pass axe", a
   test.setTimeout(240_000);
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/admin/sign-in");
+  await page.goto("/secure-admin-control/sign-in");
   await page.getByLabel("Work email").fill(ADMIN_EMAIL);
   await page.getByLabel("Password").fill(ADMIN_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();

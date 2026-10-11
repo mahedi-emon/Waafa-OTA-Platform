@@ -93,7 +93,7 @@ Deploy. The build prerenders pages from the API snapshot, so the API must be up.
 ## 5. Launch checks (in this order)
 
 1. `https://<domain>` loads; `https://<domain>/robots.txt` and `/sitemap.xml` show the real domain.
-2. Admin: `https://<domain>/admin` → sign in with the seed Super Admin → My account → change the password.
+2. Admin: `https://<domain>/secure-admin-control` (`/admin` is a 404 on purpose) → sign in with the seed Super Admin → My account → change the password.
 3. Users and roles: add each staff member with their role.
 4. Send a flight request from the site → it appears in Admin › Leads within seconds → the staff alert email arrives
    → the customer email arrives (if an email was given).
