@@ -306,15 +306,17 @@ export function providerDefinition(key: string, customName?: string): ProviderDe
 }
 
 /** "Galileo BD!" → "custom-flight-galileo-bd". */
-export function customProviderKey(kind: ProviderKind, name: string): string {
+export function customProviderKey(kind: ProviderKind, name: string, attempt = 1): string {
+  // The slug may hold 40 characters including a "-2" style suffix for a repeated name (issue 121).
+  const suffix = attempt > 1 ? `-${attempt}` : "";
   const slug = name
     .toLowerCase()
     .normalize("NFKD")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 40)
+    .slice(0, 40 - suffix.length)
     .replace(/-+$/g, "");
-  return `custom-${kind}-${slug || "provider"}`;
+  return `custom-${kind}-${slug || "provider"}${suffix}`;
 }
 
 // Provider settings: Active, Sandbox or Live, markup (#107) ------------------------------------------------------
