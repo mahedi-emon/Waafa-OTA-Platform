@@ -15,7 +15,15 @@ test.skip(!apiMode, "API mode only (WAAFA_API_URL)");
 
 let reference = "";
 
+/**
+ * Each sign-in comes from its own test address: the API allows 5 sign-ins per address in 15 minutes (PRD NFR-SEC),
+ * and this file signs in more often than that. Production nginx overwrites X-Forwarded-For, so this only works here.
+ */
+let signIns = 0;
+
 async function signIn(page: Page) {
+  signIns += 1;
+  await page.setExtraHTTPHeaders({ "x-forwarded-for": `198.51.100.${signIns}` });
   await page.goto("/secure-admin-control");
   await expect(page).toHaveURL(/\/secure-admin-control\/sign-in/);
   await page.getByLabel("Work email").fill(ADMIN_EMAIL);
