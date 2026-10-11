@@ -3,16 +3,7 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { securityHeaders } from "./src/lib/security/securityHeaders";
 
-/**
- * Messages are precompiled at build time (issue 91): the browser gets ready-to-format messages, so the ICU parser
- * and locale resolution stay out of the client bundles.
- */
-const withNextIntl = createNextIntlPlugin({
-  requestConfig: "./src/i18n/request.ts",
-  experimental: {
-    messages: { path: "./messages", format: "json", locales: "infer", precompile: true },
-  },
-});
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /** The Docker image (deploy/compose.yml) builds a standalone server; local and CI builds keep `next start`. */
 const standalone = process.env.NEXT_OUTPUT === "standalone";
