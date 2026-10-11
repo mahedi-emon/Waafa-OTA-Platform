@@ -14,19 +14,24 @@ describe("admin session tokens (D129)", () => {
   });
 
   it("matches admin paths with or without the locale prefix", () => {
-    expect(isAdminPath("/admin")).toBe(true);
-    expect(isAdminPath("/en/admin/leads/abc")).toBe(true);
-    expect(isAdminPath("/administration")).toBe(false);
-    expect(isSignInPath("/admin/sign-in")).toBe(true);
-    expect(isSignInPath("/admin/sign-in/extra")).toBe(false);
+    expect(isAdminPath("/secure-admin-control")).toBe(true);
+    expect(isAdminPath("/en/secure-admin-control/leads/abc")).toBe(true);
+    expect(isAdminPath("/secure-admin-controller")).toBe(false);
+    // #85: the old guessable path is not an admin path any more.
+    expect(isAdminPath("/admin")).toBe(false);
+    expect(isAdminPath("/en/admin/leads")).toBe(false);
+    expect(isSignInPath("/secure-admin-control/sign-in")).toBe(true);
+    expect(isSignInPath("/secure-admin-control/sign-in/extra")).toBe(false);
   });
 
   it("only sends people back to admin pages after signing in", () => {
-    expect(safeNext("/admin/leads?view=mine")).toBe("/admin/leads?view=mine");
-    expect(safeNext("https://evil.example/admin")).toBe("/admin");
-    expect(safeNext("//evil.example/admin")).toBe("/admin");
-    expect(safeNext("/admin/sign-in")).toBe("/admin");
-    expect(safeNext(undefined)).toBe("/admin");
+    expect(safeNext("/secure-admin-control/leads?view=mine")).toBe(
+      "/secure-admin-control/leads?view=mine",
+    );
+    expect(safeNext("https://evil.example/admin")).toBe("/secure-admin-control");
+    expect(safeNext("//evil.example/admin")).toBe("/secure-admin-control");
+    expect(safeNext("/secure-admin-control/sign-in")).toBe("/secure-admin-control");
+    expect(safeNext(undefined)).toBe("/secure-admin-control");
   });
 
   it("keeps the refresh cookie past the browser session only when asked", () => {

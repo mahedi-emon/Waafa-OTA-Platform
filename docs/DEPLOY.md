@@ -89,8 +89,8 @@ VPS provider's snapshot backups as well). Restore:
 ## 5. Launch checks (in this order)
 
 1. `https://<domain>` loads over HTTPS; `/robots.txt` and `/sitemap.xml` show the real domain.
-2. Admin: `https://<domain>/admin` → sign in with the seed Super Admin → My account → change the password. Then remove
-   `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` from `deploy/.env`.
+2. Admin: `https://<domain>/secure-admin-control` (`/admin` is a 404 on purpose) → sign in with the seed Super Admin
+   → My account → change the password. Then remove `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` from `deploy/.env`.
 3. Users and roles: add each staff member with their role.
 4. Send a flight request from the site → it appears in Admin › Leads within seconds → the staff alert email arrives
    → the customer email arrives (if an email was given). Admin › Notifications shows each email's status.

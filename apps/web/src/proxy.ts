@@ -51,7 +51,7 @@ export default async function proxy(request: NextRequest) {
   if (secondsLeft(access) < 60) {
     fresh = refresh ? await refreshSession(refresh) : null;
     if (!fresh) {
-      const signIn = new URL("/admin/sign-in", request.url);
+      const signIn = new URL("/secure-admin-control/sign-in", request.url);
       signIn.searchParams.set("next", `${pathname}${search}`);
       const response = NextResponse.redirect(signIn);
       response.cookies.delete(ACCESS_COOKIE);

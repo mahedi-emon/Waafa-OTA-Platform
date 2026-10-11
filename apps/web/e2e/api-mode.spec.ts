@@ -16,8 +16,8 @@ test.skip(!apiMode, "API mode only (WAAFA_API_URL)");
 let reference = "";
 
 async function signIn(page: Page) {
-  await page.goto("/admin");
-  await expect(page).toHaveURL(/\/admin\/sign-in/);
+  await page.goto("/secure-admin-control");
+  await expect(page).toHaveURL(/\/secure-admin-control\/sign-in/);
   await page.getByLabel("Work email").fill(ADMIN_EMAIL);
   await page.getByLabel("Password").fill(ADMIN_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
@@ -49,7 +49,7 @@ test("staff sign in, find the lead and move it to Quoted", async ({ page }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
   const errors = collectErrors(page);
   await signIn(page);
-  await page.goto(`/admin/leads?q=${reference}`);
+  await page.goto(`/secure-admin-control/leads?q=${reference}`);
   await page.getByRole("link", { name: reference }).first().click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText(reference);
   await page.locator("#lead-status").selectOption("quoted");
@@ -67,7 +67,7 @@ test("an FAQ saved in Admin shows on the public site", async ({ page }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
   const answer = `Yes, every price includes VAT. Checked ${Date.now()}.`;
   await signIn(page);
-  await page.goto("/admin/content/faqs");
+  await page.goto("/secure-admin-control/content/faqs");
   await page.locator("main ul li a").first().click();
   await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
   await page.locator("#field-answer").fill(answer);
@@ -89,7 +89,7 @@ test("a newsletter sign-up reaches the Admin list", async ({ page }) => {
   await page.getByRole("button", { name: "Subscribe" }).click();
   await expect(page.getByText(/Fare drops and visa news will reach you/)).toBeVisible();
   await signIn(page);
-  await page.goto("/admin/subscribers");
+  await page.goto("/secure-admin-control/subscribers");
   await expect(page.getByText(email)).toBeVisible();
 });
 
@@ -99,7 +99,7 @@ test("a Super Admin connects an external API; the secret is never shown again", 
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
   const errors = collectErrors(page);
   await signIn(page);
-  await page.goto("/admin/integrations");
+  await page.goto("/secure-admin-control/integrations");
   await expect(page.getByRole("heading", { level: 1, name: "Integrations" })).toBeVisible();
   const card = page
     .getByRole("article")

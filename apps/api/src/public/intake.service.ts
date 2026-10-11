@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
+  ADMIN_BASE_PATH,
   LEAD_PREFIX,
   formatTaka,
   isScheduledNow,
@@ -57,7 +58,7 @@ export class IntakeService {
 
   private adminLink(path: string): string {
     const origin = this.env.WEB_ORIGINS[0] ?? "";
-    return `${origin}/admin${path}`;
+    return `${origin}${ADMIN_BASE_PATH}${path}`;
   }
 
   async createLead(input: LeadCreateInput, now = new Date()): Promise<LeadCreated> {

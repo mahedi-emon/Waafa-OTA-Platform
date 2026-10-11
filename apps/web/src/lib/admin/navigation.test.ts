@@ -19,10 +19,10 @@ describe("admin navigation by role", () => {
 
   it("marks the most specific item active", () => {
     const groups = navFor(["super-admin"]);
-    expect(activeKey("/admin", "", groups)).toBe("dashboard");
-    expect(activeKey("/admin/leads/abc", "", groups)).toBe("leads");
-    expect(activeKey("/admin/leads", "?module=visa", groups)).toBe("visaLeads");
-    expect(activeKey("/en/admin/content/products/x", "", groups)).toBe("products");
-    expect(activeKey("/admin/content/faqs", "", groups)).toBe("allContent");
+    expect(activeKey("/secure-admin-control", "", groups)).toBe("dashboard");
+    expect(activeKey("/secure-admin-control/leads/abc", "", groups)).toBe("leads");
+    expect(activeKey("/secure-admin-control/leads", "?module=visa", groups)).toBe("visaLeads");
+    expect(activeKey("/en/secure-admin-control/content/products/x", "", groups)).toBe("products");
+    expect(activeKey("/secure-admin-control/content/faqs", "", groups)).toBe("allContent");
   });
 });

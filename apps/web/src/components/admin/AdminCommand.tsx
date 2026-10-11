@@ -92,8 +92,8 @@ function AdminCommand({ groups, labels, strings }: AdminCommandProps) {
                 onSelect={() =>
                   go(
                     reference.startsWith("ORD-")
-                      ? `/admin/orders?q=${encodeURIComponent(reference)}`
-                      : `/admin/leads?q=${encodeURIComponent(reference)}`,
+                      ? `/secure-admin-control/orders?q=${encodeURIComponent(reference)}`
+                      : `/secure-admin-control/leads?q=${encodeURIComponent(reference)}`,
                   )
                 }
               >
