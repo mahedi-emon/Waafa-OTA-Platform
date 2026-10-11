@@ -160,14 +160,14 @@ function RichTextEditor({
       >
         <Tool
           label={strings.paragraph}
-          active={state?.paragraph}
+          active={state?.paragraph ?? false}
           onClick={() => editor?.chain().focus().setParagraph().run()}
         >
           <Pilcrow aria-hidden="true" />
         </Tool>
         <Tool
           label={strings.heading3}
-          active={state?.h3}
+          active={state?.h3 ?? false}
           onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
         >
           <Heading3 aria-hidden="true" />
@@ -175,40 +175,40 @@ function RichTextEditor({
         <span aria-hidden="true" className="mx-1 my-1.5 w-px bg-mist-200" />
         <Tool
           label={strings.bold}
-          active={state?.bold}
+          active={state?.bold ?? false}
           onClick={() => editor?.chain().focus().toggleBold().run()}
         >
           <Bold aria-hidden="true" />
         </Tool>
         <Tool
           label={strings.italic}
-          active={state?.italic}
+          active={state?.italic ?? false}
           onClick={() => editor?.chain().focus().toggleItalic().run()}
         >
           <Italic aria-hidden="true" />
         </Tool>
         <Tool
           label={strings.bulletList}
-          active={state?.bullet}
+          active={state?.bullet ?? false}
           onClick={() => editor?.chain().focus().toggleBulletList().run()}
         >
           <List aria-hidden="true" />
         </Tool>
         <Tool
           label={strings.orderedList}
-          active={state?.ordered}
+          active={state?.ordered ?? false}
           onClick={() => editor?.chain().focus().toggleOrderedList().run()}
         >
           <ListOrdered aria-hidden="true" />
         </Tool>
         <Tool
           label={strings.quote}
-          active={state?.quote}
+          active={state?.quote ?? false}
           onClick={() => editor?.chain().focus().toggleBlockquote().run()}
         >
           <Quote aria-hidden="true" />
         </Tool>
-        <Tool label={strings.link} active={state?.link} onClick={setLink}>
+        <Tool label={strings.link} active={state?.link ?? false} onClick={setLink}>
           <Link2 aria-hidden="true" />
         </Tool>
         <Tool
