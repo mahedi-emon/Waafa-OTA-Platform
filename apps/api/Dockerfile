@@ -1,6 +1,6 @@
 # WAAFA API image (B1, C3). Build from the repository root:
 #   docker build -f apps/api/Dockerfile -t waafa-api .
-# The same image runs the API (default command) and the job worker (command: pnpm --filter @waafa/api worker).
+# The same image runs the API (default command) and the job worker (command: node_modules/.bin/tsx src/worker.ts).
 FROM node:22-slim AS app
 # COREPACK_HOME outside root's home so the non-root user runs the same pnpm without downloading it again.
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=1 HUSKY=0 COREPACK_HOME=/corepack COREPACK_ENABLE_DOWNLOAD_PROMPT=0
@@ -27,5 +27,7 @@ RUN pnpm --filter @waafa/api generate && chmod -R a+rX /corepack
 ENV NODE_ENV=production PORT=4000
 EXPOSE 4000
 USER node
-# Migrations and the idempotent seed run before the API starts (NFR-OPS: migrations in the deploy pipeline).
-CMD ["sh", "-c", "pnpm --filter @waafa/api migrate && pnpm --filter @waafa/api seed && pnpm --filter @waafa/api start"]
+WORKDIR /app/apps/api
+# Migrations and the idempotent seed run before the API starts (NFR-OPS: migrations in the deploy pipeline). The
+# binaries run directly: `pnpm run` would first re-check node_modules, which the non-root user cannot write.
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node_modules/.bin/tsx prisma/seed.ts && exec node_modules/.bin/tsx src/main.ts"]

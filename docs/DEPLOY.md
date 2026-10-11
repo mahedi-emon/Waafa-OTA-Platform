@@ -7,7 +7,7 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 | `caddy` | `caddy:2` | 80 and 443, automatic HTTPS | 160 MB |
 | `web` | `apps/web/Dockerfile` (Next.js standalone) | through Caddy only | 768 MB |
 | `api` | `apps/api/Dockerfile` (runs migrations and the idempotent seed, then starts) | no (127.0.0.1:4000 for the web build) | 640 MB |
-| `worker` | same image as the API, `pnpm --filter @waafa/api worker` | no | 384 MB |
+| `worker` | same image as the API, command `tsx src/worker.ts` | no | 384 MB |
 | `postgres` | `postgres:16`, volume `pgdata` | no | 640 MB |
 | `redis` | `redis:7`, append-only, `noeviction` (BullMQ) | no | 160 MB |
 
@@ -52,7 +52,8 @@ cp deploy/.env.example deploy/.env && chmod 600 deploy/.env && nano deploy/.env
 
 Fill in every value (the comments in the file explain each one). Secrets: generate each with
 `openssl rand -base64 48 | tr -d '/+=' | cut -c1-48`, a different value for `POSTGRES_PASSWORD`, `JWT_SECRET`,
-`REVALIDATE_SECRET` and `INTAKE_KEY`. Keep a copy in a password manager; never put them in chat, the repository or a
+`REVALIDATE_SECRET`, `INTAKE_KEY` and `PROVIDER_SECRET_KEY` (encrypts the flight, hotel and payment API secrets saved in
+Admin › Integrations; keep it fixed once secrets are saved). Keep a copy in a password manager; never put them in chat, the repository or a
 screenshot.
 
 ## 3. Deploy

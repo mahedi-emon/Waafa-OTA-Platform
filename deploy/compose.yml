@@ -21,6 +21,7 @@ x-api-env: &api-env
   STAFF_ALERT_EMAIL: ${STAFF_ALERT_EMAIL:-}
   SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
   SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+  PROVIDER_SECRET_KEY: ${PROVIDER_SECRET_KEY:-}
   NODE_OPTIONS: --max-old-space-size=384
 
 services:
@@ -82,7 +83,7 @@ services:
   worker:
     image: waafa-api:latest
     restart: unless-stopped
-    command: ["pnpm", "--filter", "@waafa/api", "worker"]
+    command: ["node_modules/.bin/tsx", "src/worker.ts"]
     environment:
       <<: *api-env
       NODE_OPTIONS: --max-old-space-size=256
