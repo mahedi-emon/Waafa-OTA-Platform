@@ -5,10 +5,11 @@ import { ListingHeader } from "@/components/shop/ListingHeader";
 import { ListingSkeleton } from "@/components/shop/ListingSkeleton";
 import { ProductListing } from "@/components/shop/ProductListing";
 import { getSiteSettings } from "@/lib/data/settings";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Shop.list");
-  return { title: t("searchEmptyTitle"), robots: { index: false } };
+  return withSocial({ title: t("searchEmptyTitle"), robots: { index: false } });
 }
 
 async function SearchContent({

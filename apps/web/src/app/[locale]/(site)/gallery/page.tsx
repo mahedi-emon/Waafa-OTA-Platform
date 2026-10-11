@@ -21,10 +21,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { listGalleryAlbums } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Gallery");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 async function GalleryContent({

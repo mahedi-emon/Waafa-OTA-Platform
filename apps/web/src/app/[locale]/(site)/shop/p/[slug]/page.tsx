@@ -28,6 +28,7 @@ import { brandNames, pricedProduct, pricedProducts } from "@/lib/shop/catalogue"
 import { stockBadge } from "@/lib/shop/variants";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { ProductView } from "./_components/ProductView";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
   const { items } = await listProducts({ limit: 200 });
@@ -42,7 +43,7 @@ export async function generateMetadata({
   if (!product) return {};
   const title = product.seo.title ?? product.title;
   const description = product.seo.description ?? product.description[0];
-  return {
+  return withSocial({
     title,
     ...(description ? { description: description.slice(0, 170) } : {}),
     alternates: { canonical: `/shop/p/${product.slug}` },
@@ -51,7 +52,7 @@ export async function generateMetadata({
       images: product.images.slice(0, 1).map((image) => ({ url: image.src, alt: image.alt })),
     },
     ...(product.seo.noIndex ? { robots: { index: false } } : {}),
-  };
+  });
 }
 
 const AVAILABILITY = {

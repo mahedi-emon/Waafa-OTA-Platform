@@ -29,14 +29,15 @@ import { loadFlightSearch, parseFlightValues } from "@/lib/search/flightParams";
 import { formatFieldDate } from "@/lib/search/isoDate";
 import { isPhoneCountry, dialCode } from "@/lib/leads/phone";
 import { FlightRequest, type GroupFareSummary } from "./_components/FlightRequest";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Flights");
-  return {
+  return withSocial({
     title: t("metaTitle"),
     description: t("metaDescription"),
     alternates: { canonical: "/flights" },
-  };
+  });
 }
 
 /** A group fare as the search it stands for, so the request is prefilled from the fare. */

@@ -9,10 +9,11 @@ import { Canonical } from "@/components/seo/Canonical";
 import { listEmiBanks, listPageBlocks } from "@/lib/data/content";
 import { getContactSettings, getEmiSettings } from "@/lib/data/settings";
 import { EmiCalculator } from "./_components/EmiCalculator";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Emi");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 /**

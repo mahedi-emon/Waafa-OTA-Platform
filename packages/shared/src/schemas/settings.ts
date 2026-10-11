@@ -76,6 +76,10 @@ export const SiteSettingsSchema = z
     /** Customer accounts (P1). Off at launch: the header shows no Log in until accounts ship. */
     accountsLive: z.boolean().default(false),
     defaultSeo: SeoSchema,
+    /** Google Search Console "HTML tag" verification code (the content value only). */
+    googleSiteVerification: z.string().trim().max(100).optional(),
+    /** Bing Webmaster Tools msvalidate.01 code (the content value only). */
+    bingSiteVerification: z.string().trim().max(100).optional(),
     /** Facebook reviews link used until approved feedback exists (FR-HOME 10). */
     reviewsUrl: z.url().optional(),
   })

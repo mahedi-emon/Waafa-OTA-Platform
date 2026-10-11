@@ -25,14 +25,15 @@ import {
   listValues,
 } from "@/lib/data/content";
 import { getContactSettings, getHomeContent } from "@/lib/data/settings";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, t] = await Promise.all([getPage("about-us"), getTranslations("About")]);
-  return {
+  return withSocial({
     title: page?.seo.title ?? t("metaTitle"),
     description: page?.seo.description ?? t("metaDescription"),
     ...(page?.seo.noIndex ? { robots: { index: false } } : {}),
-  };
+  });
 }
 
 /**

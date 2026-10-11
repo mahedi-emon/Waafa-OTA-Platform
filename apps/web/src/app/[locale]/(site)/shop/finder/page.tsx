@@ -13,10 +13,15 @@ import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { findCompatibleProducts, listCompatibleModels, listDeals } from "@/lib/data/shop";
 import { brandNames } from "@/lib/shop/catalogue";
 import { withDeals } from "@/lib/shop/deals";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Shop.finder");
-  return { title: t("title"), description: t("lead"), alternates: { canonical: "/shop/finder" } };
+  return withSocial({
+    title: t("title"),
+    description: t("lead"),
+    alternates: { canonical: "/shop/finder" },
+  });
 }
 
 const selectClass =

@@ -19,10 +19,11 @@ import { listPublicFeedback } from "@/lib/data/content";
 import { getLeadFormSettings, getSiteSettings } from "@/lib/data/settings";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { FeedbackForm } from "./_components/FeedbackForm";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Feedback");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 const firstName = (name: string) => name.split(/\s+/)[0] ?? name;

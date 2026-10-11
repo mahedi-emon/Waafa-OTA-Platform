@@ -7,6 +7,7 @@ import { ListingSkeleton } from "@/components/shop/ListingSkeleton";
 import { ProductListing } from "@/components/shop/ProductListing";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getCollection, listCollections } from "@/lib/data/shop";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
   const collections = await listCollections();
@@ -19,11 +20,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const [collection, t] = await Promise.all([getCollection(slug), getTranslations("Shop.list")]);
   if (!collection) return {};
-  return {
+  return withSocial({
     title: collection.name,
     description: collection.description ?? t("collectionMeta", { name: collection.name }),
     alternates: { canonical: `/shop/collection/${collection.slug}` },
-  };
+  });
 }
 
 async function CollectionContent({

@@ -9,13 +9,14 @@ import { SmartImage } from "@/components/media/SmartImage";
 import { Canonical } from "@/components/seo/Canonical";
 import { Link } from "@/i18n/navigation";
 import { listVisaGuides } from "@/lib/data/visa";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Visa.guide");
-  return {
+  return withSocial({
     title: t("metaTitle"),
     description: t("metaDescription"),
-  };
+  });
 }
 
 /** /visa-guide (VisaGuide, VisaGuide-m boards): the most-read guide first, then every guide. */

@@ -23,14 +23,16 @@ import { cn } from "cn";
 import { getMediaSlot, listFaqs } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";
 import { listVisaCountries } from "@/lib/data/visa";
+import { withSocial } from "@/lib/seo/withSocial";
+import { ItemListJsonLd } from "@/components/seo/ItemListJsonLd";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Visa");
-  return {
+  return withSocial({
     title: t("metaTitle"),
     description: t("metaDescription"),
     alternates: { canonical: "/visa-services" },
-  };
+  });
 }
 
 type Params = Record<string, string | string[] | undefined>;
@@ -103,6 +105,13 @@ async function VisaResults({ searchParams }: { searchParams: Promise<Params> }) 
         </h2>
         {countries.some((country) => country.sample) ? <SampleBadge label={t("sample")} /> : null}
       </div>
+      <ItemListJsonLd
+        name={t("list.title")}
+        items={countries.map((country) => ({
+          name: country.name,
+          path: `/visa-services/${country.slug}`,
+        }))}
+      />
       {countries.length > 0 ? (
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {countries.map((country) => (

@@ -20,7 +20,8 @@ async function allProducts(): Promise<Product[]> {
 
 /**
  * sitemap.xml (FR-SEO): every indexable public route. Noindex records, empty categories and pages that do not exist
- * stay out; data-driven routes (packages, visa countries, products, posts, albums) are listed from the data layer.
+ * stay out; data-driven routes (packages, visa countries, products, posts, albums) are listed from the data layer,
+ * with their photos as image entries (#96).
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [
@@ -86,6 +87,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .map((pkg) => ({
         url: absoluteUrl(`/tour-packages/${pkg.slug}`),
         lastModified: pkg.publishedAt,
+        images: [absoluteUrl(pkg.cover.src)],
         changeFrequency: "weekly" as const,
         priority: 0.8,
       })),
@@ -122,13 +124,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...collections.map((collection) => page(`/shop/collection/${collection.slug}`, 0.5, "weekly")),
     ...products
       .filter((product) => !product.seo.noIndex)
-      .map((product) => page(`/shop/p/${product.slug}`, 0.8, "daily")),
+      .map((product) => ({
+        ...page(`/shop/p/${product.slug}`, 0.8, "daily"),
+        images: product.images.slice(0, 3).map((image) => absoluteUrl(image.src)),
+      })),
     page("/blog", 0.6, "weekly"),
     ...posts
       .filter((post) => !post.seo.noIndex)
       .map((post) => ({
         url: absoluteUrl(`/blog/${post.slug}`),
         lastModified: post.publishedAt,
+        images: [absoluteUrl(post.cover.src)],
         changeFrequency: "monthly" as const,
         priority: 0.5,
       })),
@@ -136,6 +142,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...albums.map((album) => ({
       url: absoluteUrl(`/gallery/${album.slug}`),
       lastModified: album.publishedAt,
+      images: [absoluteUrl(album.cover.src)],
       changeFrequency: "monthly" as const,
       priority: 0.4,
     })),

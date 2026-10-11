@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { getGalleryAlbum, listGalleryAlbums } from "@/lib/data/content";
 import { AlbumGrid } from "./_components/AlbumGrid";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
   const albums = await listGalleryAlbums();
@@ -23,12 +24,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const [album, t] = await Promise.all([getGalleryAlbum(slug), getTranslations("Gallery")]);
   if (!album) return {};
-  return {
+  return withSocial({
     title: `${album.title} · ${t("metaTitle")}`,
     description: `${album.title}: ${t("items", { count: album.items.length })}. ${t("lead")}`,
     alternates: { canonical: `/gallery/${album.slug}` },
     openGraph: { images: [{ url: album.cover.src, alt: album.cover.alt }] },
-  };
+  });
 }
 
 async function AlbumContent({ params }: Pick<PageProps<"/[locale]/gallery/[slug]">, "params">) {

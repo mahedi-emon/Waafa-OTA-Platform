@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { listFaqs } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";
 import { FaqBrowser } from "./_components/FaqBrowser";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Faqs");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 /** /faqs (Faqs, Faqs-search, Faqs-m): every admin FAQ with search and topics, FAQPage markup, and a way to ask. */

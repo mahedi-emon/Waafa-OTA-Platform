@@ -3,17 +3,18 @@ import { Canonical } from "@/components/seo/Canonical";
 import { getSiteSettings } from "@/lib/data/settings";
 import { HomeJsonLd } from "./_components/home/HomeJsonLd";
 import { HomeSections } from "./_components/home/HomeSections";
+import { withSocial } from "@/lib/seo/withSocial";
 
 /** Home title and description from Admin › Settings › General › SEO (siteSettings.defaultSeo). */
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getSiteSettings();
   const title = site.defaultSeo.title ?? site.travelBrand;
   const description = site.defaultSeo.description;
-  return {
+  return withSocial({
     title: { absolute: title },
     ...(description ? { description } : {}),
     openGraph: { type: "website", title, ...(description ? { description } : {}) },
-  };
+  });
 }
 
 /** Home (A7): the 13 admin-ordered sections from PRD §7, with the search card in the hero. */

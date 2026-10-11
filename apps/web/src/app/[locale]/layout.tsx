@@ -7,6 +7,8 @@ import { THEME_COLOR } from "@/components/brand/brandColors";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
+import { getSiteSettings } from "@/lib/data/settings";
+import { defaultShareImage } from "@/lib/seo/withSocial";
 import { SITE_URL } from "@/lib/siteUrl";
 import "../globals.css";
 
@@ -36,12 +38,54 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+/**
+ * Site-wide defaults (#96): title template, the admin default SEO title and description, a share preview for pages
+ * without their own, large image previews for Google, and the Search Console and Bing verification codes from
+ * Settings › General.
+ */
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Metadata");
+  const [t, site, image] = await Promise.all([
+    getTranslations("Metadata"),
+    getSiteSettings(),
+    defaultShareImage(),
+  ]);
+  const title = site.defaultSeo.title ?? t("title");
+  const description = site.defaultSeo.description ?? t("description");
+  const verification: Metadata["verification"] = {
+    ...(site.googleSiteVerification ? { google: site.googleSiteVerification } : {}),
+    ...(site.bingSiteVerification ? { other: { "msvalidate.01": site.bingSiteVerification } } : {}),
+  };
   return {
     metadataBase: new URL(SITE_URL),
-    title: { default: t("title"), template: t("titleTemplate") },
-    description: t("description"),
+    title: { default: title, template: t("titleTemplate") },
+    description,
+    applicationName: site.travelBrand,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+    openGraph: {
+      siteName: site.travelBrand,
+      locale: "en_BD",
+      type: "website",
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
+    ...(Object.keys(verification).length > 0 ? { verification } : {}),
   };
 }
 

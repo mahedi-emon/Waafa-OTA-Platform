@@ -15,10 +15,11 @@ import { listPageBlocks } from "@/lib/data/content";
 import { getContactSettings, getLeadFormSettings, getPaymentSettings } from "@/lib/data/settings";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { PaymentProofForm } from "./_components/PaymentProofForm";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("OfflinePay");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 const KIND_ICONS = {

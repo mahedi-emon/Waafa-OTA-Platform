@@ -13,7 +13,8 @@ function resolveSiteUrl(): string {
 
 export const SITE_URL = resolveSiteUrl();
 
-/** "/visa-services" → "https://…/visa-services". */
+/** "/visa-services" → "https://…/visa-services"; an address that is already absolute (R2 media) stays as it is. */
 export function absoluteUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) return path;
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }

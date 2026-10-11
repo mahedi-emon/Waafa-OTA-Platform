@@ -17,10 +17,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { listBlogCategories, listBlogPosts } from "@/lib/data/content";
 import { getFooterSettings } from "@/lib/data/settings";
+import { withSocial } from "@/lib/seo/withSocial";
+import { ItemListJsonLd } from "@/components/seo/ItemListJsonLd";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Blog");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 const PAGE = 9;
@@ -170,6 +172,14 @@ async function BlogContent({ searchParams }: Pick<PageProps<"/[locale]/blog">, "
         <p aria-live="polite" className="text-[13.5px] text-mist-600">
           {t("results", { count: filtered.total })}
         </p>
+        <ItemListJsonLd
+          name={t("title")}
+          items={[...(featured ? [featured] : []), ...posts].map((post) => ({
+            name: post.title,
+            path: `/blog/${post.slug}`,
+            image: post.cover.src,
+          }))}
+        />
         {posts.length > 0 ? (
           <ul className="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (

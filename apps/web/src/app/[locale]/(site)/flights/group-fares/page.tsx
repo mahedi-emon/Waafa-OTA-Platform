@@ -12,14 +12,15 @@ import { cn } from "cn";
 import { Link } from "@/i18n/navigation";
 import { listGroupFares } from "@/lib/data/travel";
 import { formatMonth } from "@/lib/search/isoDate";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Flights.groupPage");
-  return {
+  return withSocial({
     title: t("metaTitle"),
     description: t("metaDescription"),
     alternates: { canonical: "/flights/group-fares" },
-  };
+  });
 }
 
 const SORTS = ["date", "price", "seats"] as const;

@@ -16,10 +16,11 @@ import { getContactSettings, getLeadFormSettings, getSiteSettings } from "@/lib/
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { ContactForm } from "./_components/ContactForm";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Contact");
-  return { title: t("metaTitle"), description: t("metaDescription") };
+  return withSocial({ title: t("metaTitle"), description: t("metaDescription") });
 }
 
 /**

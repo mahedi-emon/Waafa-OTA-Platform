@@ -22,6 +22,7 @@ import { VisaFeeBar } from "./_components/VisaFeeBar";
 import { VisaFeeCard, type VisaFee } from "./_components/VisaFeeCard";
 import { VisaTypeProvider } from "./_components/VisaTypeProvider";
 import { VisaTypeTabs } from "./_components/VisaTypeTabs";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
   const countries = await listVisaCountries();
@@ -36,12 +37,12 @@ export async function generateMetadata({
   if (!country) return {};
   const title = country.seo.title ?? t("title", { country: country.name });
   const description = country.seo.description ?? t("metaDescription", { country: country.name });
-  return {
+  return withSocial({
     title,
     description,
     alternates: { canonical: `/visa-services/${country.slug}` },
     ...(country.seo.noIndex ? { robots: { index: false } } : {}),
-  };
+  });
 }
 
 const h2 = "font-display text-[22px] font-bold text-navy-900";

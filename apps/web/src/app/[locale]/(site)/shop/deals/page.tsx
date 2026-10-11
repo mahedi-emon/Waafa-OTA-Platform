@@ -12,10 +12,11 @@ import { getSiteSettings } from "@/lib/data/settings";
 import { listDeals } from "@/lib/data/shop";
 import { brandNames } from "@/lib/shop/catalogue";
 import { withDeals } from "@/lib/shop/deals";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Shop.list");
-  return { title: t("dealsTitle"), description: t("dealsLead") };
+  return withSocial({ title: t("dealsTitle"), description: t("dealsLead") });
 }
 
 /** /shop/deals (ShopDeals, ShopDeals-m): running deals, ending soonest first, each with its own timer. */

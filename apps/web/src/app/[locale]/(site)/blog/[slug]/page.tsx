@@ -22,6 +22,7 @@ import {
 } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
 import { absoluteUrl } from "@/lib/siteUrl";
+import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
   const posts = await listBlogPosts({ limit: 100 });
@@ -36,7 +37,7 @@ export async function generateMetadata({
   if (!post) return {};
   const title = post.seo.title ?? post.title;
   const description = post.seo.description ?? post.excerpt;
-  return {
+  return withSocial({
     title,
     description,
     alternates: { canonical: `/blog/${post.slug}` },
@@ -47,7 +48,7 @@ export async function generateMetadata({
       images: [{ url: post.cover.src, alt: post.cover.alt }],
     },
     ...(post.seo.noIndex ? { robots: { index: false } } : {}),
-  };
+  });
 }
 
 const CTA_HREF = {
