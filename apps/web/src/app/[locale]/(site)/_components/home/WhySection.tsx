@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { cn } from "cn";
 import type { HomeContent, HomeSection } from "@waafa/shared";
 import { MenuIcon } from "@/components/icons/MenuIcon";
 import { listTimeline, listValues } from "@/lib/data/content";
@@ -37,7 +38,9 @@ async function WhySection({ section, why }: WhySectionProps) {
           <p className="max-w-[56ch] type-lead text-mist-700">{why.body}</p>
           {timeline.length > 0 ? (
             <div>
-              <h3 className="mb-3 text-[13.5px] font-semibold text-mist-700">{t("journey")}</h3>
+              <h3 className="mb-3 font-sans text-[13.5px] font-semibold tracking-normal text-mist-700">
+                {t("journey")}
+              </h3>
               <ol className="relative flex flex-col gap-4 border-l-2 border-mist-200 pl-5">
                 {timeline.map((event) => (
                   <li key={event.id} className="relative">
@@ -60,11 +63,15 @@ async function WhySection({ section, why }: WhySectionProps) {
             {values.map((value, index) => (
               <li
                 key={value.id}
-                className={
+                className={cn(
                   index === 0
                     ? "mb-2 flex flex-col gap-2 rounded-2xl bg-navy-900 p-5 text-white sm:col-span-2 sm:mb-0"
-                    : "grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 border-b border-mist-200 py-4 last:border-b-0 sm:flex sm:flex-col sm:gap-2 sm:rounded-2xl sm:border sm:bg-white sm:p-5 sm:last:border-b"
-                }
+                    : "grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 border-b border-mist-200 py-4 last:border-b-0 sm:flex sm:flex-col sm:gap-2 sm:rounded-2xl sm:border sm:bg-white sm:p-5 sm:last:border-b",
+                  // An odd last card spans the row so the bento never ends with a gap (desktop).
+                  index > 0 && index === values.length - 1 && (values.length - 1) % 2 === 1
+                    ? "sm:col-span-2"
+                    : undefined,
+                )}
               >
                 <span
                   className={

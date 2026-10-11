@@ -107,7 +107,7 @@ function AdminTopBar({ groups, labels, staff, brand, brandSub, strings }: AdminT
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/admin/account" prefetch={false}>
+            <Link href="/secure-admin-control/account" prefetch={false}>
               <KeyRound aria-hidden="true" />
               {strings.account}
             </Link>

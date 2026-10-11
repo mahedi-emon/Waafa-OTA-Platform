@@ -138,7 +138,7 @@ describe.skipIf(!dbAvailable)("public intake (B3)", () => {
     ]);
     const alert = mailer.sent.find((mail) => mail.to === STAFF);
     expect(alert?.subject).toContain(created.reference);
-    expect(alert?.text).toContain("http://localhost:3000/admin/leads/");
+    expect(alert?.text).toContain("http://localhost:3000/secure-admin-control/leads/");
   });
 
   it("needs an Idempotency-Key and rejects unknown fields with a problem listing them", async () => {

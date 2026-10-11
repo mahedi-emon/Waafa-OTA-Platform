@@ -28,9 +28,12 @@ test.describe("packages at 390", () => {
     const errors = collectErrors(page);
     await page.goto("/tour-packages");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await page.getByRole("link", { name: /^Honeymoon/ }).click();
+    await expect(page).toHaveURL(/category=honeymoon/);
     await page.getByRole("button", { name: /Filters/ }).click();
-    await page.getByLabel("Kind of trip").selectOption("honeymoon");
-    await page.getByRole("button", { name: "Show packages" }).click();
+    // A radio applies at once (no Show button needed with JavaScript).
+    await page.getByRole("radio", { name: "Up to 3 nights" }).check();
+    await expect(page).toHaveURL(/length=short/);
     await expect(page).toHaveURL(/category=honeymoon/);
     await expect(page.getByRole("heading", { name: /\d+ packages?/ })).toBeVisible();
     await axe(page);

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { animate, useInView } from "motion/react";
 import { cn } from "cn";
-import { formatGrouped } from "@waafa/shared";
+import { formatGrouped } from "@waafa/shared/format/money";
 import { usePrefersReducedMotion } from "./reducedMotion";
 import { DURATION, EASE } from "./tokens";
 

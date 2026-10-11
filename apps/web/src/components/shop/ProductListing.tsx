@@ -4,6 +4,7 @@ import { formatTaka, whatsappLink, type Attribute } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { FilterDisclosure } from "@/components/forms/FilterDisclosure";
+import { FilterForm } from "@/components/forms/FilterForm";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -121,9 +122,8 @@ async function ProductListing({
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[256px_minmax(0,1fr)] lg:gap-8">
       <aside aria-label={t("list.filters")}>
         <FilterDisclosure label={t("list.filters")} count={active}>
-          <form
-            method="get"
-            action={path}
+          <FilterForm
+            aria-label={t("list.filters")}
             className="flex flex-col gap-4 rounded-2xl border border-mist-200 bg-white p-4"
           >
             {Object.entries(keep).map(([name, value]) => (
@@ -142,16 +142,26 @@ async function ProductListing({
                 </select>
               </label>
             ) : null}
-            <label className={labelClass}>
-              {t("list.price")}
-              <select name="price" defaultValue={band} className={selectClass}>
-                {(Object.keys(PRICE_BANDS) as PriceBand[]).map((value) => (
-                  <option key={value} value={value}>
-                    {priceLabel(value)}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <fieldset className="flex min-w-0 flex-col">
+              <legend className="mb-1 text-[14px] font-semibold text-ink-900">
+                {t("list.price")}
+              </legend>
+              {(Object.keys(PRICE_BANDS) as PriceBand[]).map((value) => (
+                <label
+                  key={value}
+                  className="text-ink-700 flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 text-[14.5px] transition-colors duration-150 hover:bg-mist-50 has-checked:font-semibold has-checked:text-navy-900"
+                >
+                  <input
+                    type="radio"
+                    name="price"
+                    value={value}
+                    defaultChecked={value === band}
+                    className="size-4 shrink-0 accent-electric-600"
+                  />
+                  {priceLabel(value)}
+                </label>
+              ))}
+            </fieldset>
             {attributes.map((attribute) => (
               <label key={attribute.key} className={labelClass}>
                 {attribute.label}
@@ -203,7 +213,7 @@ async function ProductListing({
                 {t("list.clear")}
               </Link>
             ) : null}
-          </form>
+          </FilterForm>
         </FilterDisclosure>
       </aside>
 

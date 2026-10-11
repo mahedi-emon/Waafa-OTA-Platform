@@ -1,7 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { getOfficeStatus, type OfficeStatus, type OpeningHours } from "@waafa/shared";
+import type { OpeningHours } from "@waafa/shared";
+import { getOfficeStatus, type OfficeStatus } from "@waafa/shared/helpers/officeHours";
 
 /** Re-renders every minute so "Open now" flips at opening and closing time without a reload. */
 function subscribeToMinutes(onTick: () => void): () => void {

@@ -62,13 +62,13 @@ export function secondsLeft(token: string | undefined, now = Date.now()): number
   }
 }
 
-/** /admin and /en/admin and everything under them. */
+/** /secure-admin-control and /en/secure-admin-control and everything under them (#85: never the guessable /admin). */
 export function isAdminPath(pathname: string): boolean {
-  return /^\/(?:[a-z]{2}\/)?admin(?:\/|$)/.test(pathname);
+  return /^\/(?:[a-z]{2}\/)?secure-admin-control(?:\/|$)/.test(pathname);
 }
 
 export function isSignInPath(pathname: string): boolean {
-  return /^\/(?:[a-z]{2}\/)?admin\/sign-in\/?$/.test(pathname);
+  return /^\/(?:[a-z]{2}\/)?secure-admin-control\/sign-in\/?$/.test(pathname);
 }
 
 /** Only same-site admin paths may be a post-sign-in destination (no open redirects). */
@@ -78,5 +78,5 @@ export function safeNext(value: unknown): string {
     !value.startsWith("//") &&
     !isSignInPath(value)
     ? value
-    : "/admin";
+    : "/secure-admin-control";
 }

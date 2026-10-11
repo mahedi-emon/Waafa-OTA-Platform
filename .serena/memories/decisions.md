@@ -58,6 +58,11 @@
   D134 OpenAPI from zod (z.toJSONSchema) outside production. D135 lead/content access by role (404 outside modules).
   D136 web API mode by env (WAAFA_API_URL + WAAFA_INTAKE_KEY): fixture repos over the cached snapshot via proxy; writes
   to /api/v1/public; /api/revalidate (HMAC) expires every tag with { expire: 0 }.
+- D141 prod = owner VPS (2 vCPU/4 GB) Docker Compose + nginx/certbot (deploy/), only nginx public. D142 provider
+  adapters + ProviderCredential (AES-256-GCM, PROVIDER_SECRET_KEY); stubs refuse booking calls; Integrations = Super
+  Admin. D143 admin at /secure-admin-control (ADMIN_BASE_PATH), /admin 404. D144 client imports from
+  @waafa/shared/constants (zod-free); Motion features stay sync. D145 per-route first-load ceilings (e2e/budget.spec.ts),
+  200 KB in #91. D146 BannerHero inset panel, Ken Burns after 1.2 s desktop. D147 CardFx/HoverVideo in-house.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
   children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
   (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on

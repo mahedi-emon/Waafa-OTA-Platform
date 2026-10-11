@@ -2,7 +2,8 @@
 
 import { Briefcase, GraduationCap, Map, Plane, Stethoscope, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { VisaTypeKeySchema, type VisaTypeKey } from "@waafa/shared";
+import type { VisaTypeKey } from "@waafa/shared";
+import { VISA_TYPE_KEYS } from "@waafa/shared/constants";
 import { OptionIcon } from "./OptionIcon";
 import { OptionList } from "./OptionList";
 import { useSearchCard } from "./SearchCardContext";
@@ -21,9 +22,7 @@ const ICONS: Record<VisaTypeKey, LucideIcon> = {
 function VisaTypePicker({ title }: VisaTypePickerProps) {
   const t = useTranslations("Search");
   const { state, dispatch } = useSearchCard();
-  const types = state.visa.country?.types.length
-    ? state.visa.country.types
-    : VisaTypeKeySchema.options;
+  const types = state.visa.country?.types.length ? state.visa.country.types : VISA_TYPE_KEYS;
 
   return (
     <OptionList

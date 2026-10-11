@@ -12,6 +12,7 @@ export const mediaSlots: In<typeof MediaSlotSchema>[] = [
   { key: "flights-header", image: photo("flights"), sample: true },
   { key: "flights-success", image: photo("hero-wing-alt"), sample: true },
   { key: "group-fares-header", image: photo("hero-wing"), sample: true },
+  { key: "packages-header", image: photo("maldives-alt"), sample: true },
   { key: "visa-services-header", video: video("passport"), sample: true },
   { key: "visa-apply-side", image: photo("visa"), sample: true },
   { key: "visa-guide-header", image: photo("visa-alt"), sample: true },

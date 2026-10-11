@@ -10,7 +10,7 @@ type CtaSectionProps = { cta: HomeContent["cta"] };
 
 /**
  * Closing band (FR-HOME 13): talk to a person on WhatsApp or by phone, and the office card with hours and
- * directions. The office photo slot stays a labelled placeholder until Waafa's own photo is uploaded.
+ * directions. Until Waafa's own office photo is uploaded, the ribbon with the city stands in (no placeholder text).
  */
 async function CtaSection({ cta }: CtaSectionProps) {
   const [contact, office, t] = await Promise.all([
@@ -37,9 +37,16 @@ async function CtaSection({ cta }: CtaSectionProps) {
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-whatsapp-700 px-6 text-[15px] font-semibold text-white outline-none hover:bg-whatsapp-500 focus-visible:ring-3 focus-visible:ring-cyan-400/60"
+                className="relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-full bg-whatsapp-700 px-6 text-[15px] font-semibold text-white outline-none hover:bg-whatsapp-500 focus-visible:ring-3 focus-visible:ring-cyan-400/60"
               >
-                <WhatsAppIcon className="size-5" />
+                {/* Shimmer (HANDOFF: shimmer button on WhatsApp): desktop, once every few seconds, off under reduced motion. */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 hidden overflow-hidden rounded-[inherit] motion-reduce:hidden! pointer-fine:lg:block"
+                >
+                  <span className="absolute inset-y-0 left-0 w-1/3 animate-sheen bg-linear-to-r from-transparent via-white/30 to-transparent" />
+                </span>
+                <WhatsAppIcon className="relative size-5" />
                 {t("whatsapp")}
               </a>
               <a
@@ -61,8 +68,16 @@ async function CtaSection({ cta }: CtaSectionProps) {
                 frameClassName="rounded-2xl"
               />
             ) : (
-              <div className="grid aspect-[16/9] place-items-center rounded-2xl border border-dashed border-white/25 text-[13px] text-white/70">
-                {t("officePhoto")}
+              // Until Waafa's own office photo is uploaded: the ribbon with the city, never a placeholder label.
+              <div
+                aria-hidden="true"
+                className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-(image:--ribbon)"
+              >
+                <span className="absolute inset-0 bg-linear-to-t from-midnight-950/70 via-midnight-950/10 to-transparent" />
+                <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-[13.5px] font-semibold text-navy-900 shadow-sm">
+                  <MapPin className="size-4 text-electric-600" />
+                  {contact.city}
+                </span>
               </div>
             )}
             <address className="flex items-start gap-2.5 text-[14.5px] leading-relaxed text-white/90 not-italic">

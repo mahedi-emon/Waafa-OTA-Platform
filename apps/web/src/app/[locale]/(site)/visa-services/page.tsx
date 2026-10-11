@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Search } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { VisaRegionSchema, whatsappLink, type VisaRegion } from "@waafa/shared";
+import { BannerHero } from "@/components/content/BannerHero";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { SectionHeading } from "@/components/content/SectionHeading";
 import { EmptyState } from "@/components/feedback/EmptyState";
@@ -19,7 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { VisaCountryCard } from "@/components/visa/VisaCountryCard";
 import { Link } from "@/i18n/navigation";
 import { cn } from "cn";
-import { listFaqs } from "@/lib/data/content";
+import { getMediaSlot, listFaqs } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";
 import { listVisaCountries } from "@/lib/data/visa";
 
@@ -59,46 +60,9 @@ async function VisaResults({ searchParams }: { searchParams: Promise<Params> }) 
   const regions = VisaRegionSchema.options.filter((value) =>
     all.some((country) => country.region === value),
   );
-  const popular = all.filter((country) => country.popular);
 
   return (
     <div className="flex flex-col gap-5">
-      <form method="get" role="search" className="flex max-w-xl gap-2">
-        {region ? <input type="hidden" name="region" value={region} /> : null}
-        <label className="sr-only" htmlFor="visa-search">
-          {t("list.search")}
-        </label>
-        <div className="relative flex-1">
-          <Search
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-mist-500"
-          />
-          <input
-            id="visa-search"
-            name="q"
-            type="search"
-            defaultValue={query}
-            placeholder={t("list.searchPlaceholder")}
-            autoComplete="off"
-            className="h-12 w-full rounded-full border border-mist-300 bg-white pr-4 pl-11 text-base text-ink-900 outline-none focus-visible:border-electric-600 focus-visible:ring-3 focus-visible:ring-ring/20"
-          />
-        </div>
-        <Button type="submit">{t("list.searchButton")}</Button>
-      </form>
-      {popular.length > 0 ? (
-        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-mist-600">
-          {t("list.popular")}
-          {popular.map((country) => (
-            <Link
-              key={country.slug}
-              href={`/visa-services/${country.slug}`}
-              className="inline-flex min-h-11 items-center font-semibold text-brand-700 underline-offset-4 hover:underline"
-            >
-              {country.name}
-            </Link>
-          ))}
-        </p>
-      ) : null}
       <nav aria-label={t("list.regionsLabel")}>
         <ul className="flex flex-wrap gap-2">
           {[undefined, ...regions].map((value) => {
@@ -185,7 +149,13 @@ async function VisaResults({ searchParams }: { searchParams: Promise<Params> }) 
 export default async function VisaServicesPage({
   searchParams,
 }: PageProps<"/[locale]/visa-services">) {
-  const [faqs, t] = await Promise.all([listFaqs({ category: "visa" }), getTranslations("Visa")]);
+  const [faqs, countries, media, t] = await Promise.all([
+    listFaqs({ category: "visa" }),
+    listVisaCountries(),
+    getMediaSlot("visa-services-header"),
+    getTranslations("Visa"),
+  ]);
+  const popular = countries.filter((country) => country.popular);
   const steps = (["one", "two", "three", "four"] as const).map((key) => ({
     title: t(`list.steps.${key}Title`),
     body: t(`list.steps.${key}Body`),
@@ -195,17 +165,56 @@ export default async function VisaServicesPage({
     <main id="main" className="site-container flex flex-col gap-12 pt-4 pb-28 md:pt-6">
       <div className="flex flex-col gap-6">
         <Breadcrumbs items={[{ label: t("breadcrumb") }]} />
-        <header className="flex max-w-3xl flex-col gap-3">
-          <p className="text-[13px] font-bold tracking-[0.14em] text-brand-700 uppercase">
-            {t("list.kicker")}
-          </p>
-          <h1 className="font-display text-[32px] leading-[1.08] font-extrabold tracking-tight text-balance text-navy-900 md:text-[46px]">
-            {t("list.title")}
-          </h1>
-          <p className="text-[16px] leading-relaxed text-mist-700 md:text-[18px]">
-            {t("list.lead")}
-          </p>
-        </header>
+        <BannerHero
+          id="visa-title"
+          kicker={t("list.kicker")}
+          title={t("list.title")}
+          lead={t("list.lead")}
+          media={media}
+          aside={
+            <form method="get" role="search" className="flex w-full gap-2 lg:ml-auto lg:max-w-md">
+              <label className="sr-only" htmlFor="visa-search">
+                {t("list.search")}
+              </label>
+              <div className="relative min-w-0 flex-1">
+                <Search
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-mist-500"
+                />
+                <input
+                  id="visa-search"
+                  name="q"
+                  type="search"
+                  placeholder={t("list.searchPlaceholder")}
+                  autoComplete="off"
+                  className="h-12 w-full rounded-full border border-white/20 bg-white pr-4 pl-11 text-base text-ink-900 outline-none focus-visible:ring-3 focus-visible:ring-cyan-400/60"
+                />
+              </div>
+              <button
+                type="submit"
+                className="inline-flex h-12 shrink-0 cursor-pointer items-center rounded-full bg-primary px-5 text-[15px] font-semibold text-primary-foreground outline-none hover:bg-brand-700 focus-visible:ring-3 focus-visible:ring-cyan-400/60"
+              >
+                {t("list.searchButton")}
+              </button>
+            </form>
+          }
+          footer={
+            popular.length > 0 ? (
+              <p className="flex flex-wrap items-center gap-2 text-[14px] text-white/75">
+                {t("list.popular")}
+                {popular.map((country) => (
+                  <Link
+                    key={country.slug}
+                    href={`/visa-services/${country.slug}`}
+                    className="inline-flex min-h-10 items-center rounded-full bg-white/10 px-3.5 font-semibold text-white ring-1 ring-white/20 transition-colors duration-150 outline-none hover:bg-white/20 focus-visible:ring-3 focus-visible:ring-cyan-400/60"
+                  >
+                    {country.name}
+                  </Link>
+                ))}
+              </p>
+            ) : null
+          }
+        />
         <Suspense
           fallback={
             <div className="flex flex-col gap-4" aria-hidden="true">

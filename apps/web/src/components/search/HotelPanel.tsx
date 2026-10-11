@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { daysBetween } from "@waafa/shared";
+import { daysBetween } from "@waafa/shared/constants";
 import { formatFieldDate, formatWeekday } from "@/lib/search/isoDate";
 import { PickerAnchor } from "./PickerAnchor";
 import { anchorFieldId, useSearchCard } from "./SearchCardContext";

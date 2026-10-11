@@ -1,6 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
-import { MapPin } from "lucide-react";
-import type { HomeContent, MediaSlot } from "@waafa/shared";
+import { MapPin, Phone } from "lucide-react";
+import type { HomeContent, MediaSlot, OpeningHours } from "@waafa/shared";
+import { GoldTriangle } from "@/components/brand/GoldTriangle";
+import { OfficeStatusChip } from "@/components/layout/OfficeStatusChip";
 import { SmartImage } from "@/components/media/SmartImage";
 import { SmartVideo } from "@/components/media/SmartVideo";
 import { FlightPath } from "@/components/motion/FlightPath";
@@ -9,6 +11,10 @@ import { TextRotate } from "@/components/motion/TextRotate";
 type HeroSectionProps = {
   hero: HomeContent["hero"];
   media: MediaSlot | null;
+  /** The travel brand from Settings › General, set as the eyebrow over the headline (Home board). */
+  eyebrow: string;
+  /** Office hours and the phone from Settings › Contact: the live Open now chip and a call link. */
+  contact: { hours: OpeningHours; phoneDisplay: string; phoneE164: string; pendingLabel: string };
   /** The search card, overlapping the lower edge of the media panel. */
   search: ReactNode;
 };
@@ -34,7 +40,7 @@ function renderWords(text: string, offset = 0) {
  * rounded media panel whose poster is the LCP image, a rotating destination chip, and the search card overlapping
  * the panel's lower edge.
  */
-function HeroSection({ hero, media, search }: HeroSectionProps) {
+function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps) {
   const firstLine = hero.title.split(" ").length;
   // "Mixkit · Mixkit" (no named author) reads as "Mixkit".
   const rawCredit = media?.video?.credit ?? media?.image?.credit;
@@ -43,11 +49,33 @@ function HeroSection({ hero, media, search }: HeroSectionProps) {
   return (
     <section aria-labelledby="home-hero-title" className="relative site-container pt-6 md:pt-10">
       <FlightPath />
-      <h1 id="home-hero-title" className="max-w-[17ch] type-display text-navy-900">
-        {renderWords(hero.title)}
-        <span className="block text-electric-600">{renderWords(hero.titleAccent, firstLine)}</span>
-      </h1>
-      <p className="mt-4 max-w-[54ch] type-lead text-mist-600">{hero.lead}</p>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-end lg:gap-12">
+        <div>
+          <p className="mb-3 flex items-center gap-2 text-[12.5px] font-bold tracking-[0.16em] text-brand-700 uppercase">
+            <GoldTriangle />
+            {eyebrow}
+          </p>
+          <h1 id="home-hero-title" className="max-w-[17ch] type-display text-navy-900">
+            {renderWords(hero.title)}
+            <span className="block text-electric-600">
+              {renderWords(hero.titleAccent, firstLine)}
+            </span>
+          </h1>
+        </div>
+        <div className="flex flex-col gap-3 lg:pb-2">
+          <p className="max-w-[54ch] type-lead text-mist-600">{hero.lead}</p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <OfficeStatusChip hours={contact.hours} pendingLabel={contact.pendingLabel} />
+            <a
+              href={`tel:${contact.phoneE164}`}
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-1 text-[14.5px] font-semibold text-navy-900 tabular-nums outline-none hover:text-brand-700 focus-visible:ring-3 focus-visible:ring-ring/40"
+            >
+              <Phone aria-hidden="true" className="size-4 text-electric-600" />
+              {contact.phoneDisplay}
+            </a>
+          </div>
+        </div>
+      </div>
 
       <div className="relative mt-6 md:mt-8">
         <div className="relative overflow-hidden rounded-[28px] bg-mist-100">

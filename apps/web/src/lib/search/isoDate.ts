@@ -1,4 +1,4 @@
-import { toDhakaDateString } from "@waafa/shared";
+import { toDhakaDateString } from "@waafa/shared/helpers/reference";
 
 /*
  * Calendar dates in search are plain "YYYY-MM-DD" strings: a departure on 22 Oct is the same day for every

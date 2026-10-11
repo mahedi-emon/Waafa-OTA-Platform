@@ -1,6 +1,6 @@
 # @waafa/web
 
-The public site, Waafas World (`/shop`) and the admin (`/admin`) in one Next.js App Router app.
+The public site, Waafas World (`/shop`) and the admin (`/secure-admin-control`; `/admin` is a 404) in one Next.js App Router app.
 Rules live in the repo-root `CLAUDE.md`; design in `docs/design/DESIGN.md` and `docs/design/MOTION.md`.
 
 ## Commands (run from the repo root)
@@ -17,7 +17,7 @@ Rules live in the repo-root `CLAUDE.md`; design in `docs/design/DESIGN.md` and `
 | Path | What |
 | --- | --- |
 | `src/app/[locale]/layout.tsx` | The only root layout: fonts, `<html lang>`, providers, skip link |
-| `src/app/[locale]/(site)/` | Public pages; `src/app/[locale]/admin/` holds the admin (English URLs have no prefix) |
+| `src/app/[locale]/(site)/` | Public pages; `src/app/[locale]/secure-admin-control/` holds the admin (English URLs have no prefix) |
 | `src/app/globals.css` | Tailwind v4 tokens and the shadcn theme: the only stylesheet |
 | `src/i18n/` | next-intl routing (`en` now, `bn` ready), request config, locale-aware `Link` |
 | `src/proxy.ts` | Locale resolution for page requests (Next.js 16 proxy) |

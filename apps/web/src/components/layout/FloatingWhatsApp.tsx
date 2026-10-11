@@ -1,7 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
-import { whatsappLink } from "@waafa/shared";
+import { whatsappLink } from "@waafa/shared/helpers/phone";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 type FloatingWhatsAppProps = {

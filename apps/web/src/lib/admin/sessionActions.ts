@@ -88,5 +88,5 @@ export async function signOut(): Promise<void> {
   store.delete(ACCESS_COOKIE);
   store.delete(REFRESH_COOKIE);
   store.delete(REMEMBER_COOKIE);
-  redirect("/admin/sign-in");
+  redirect("/secure-admin-control/sign-in");
 }

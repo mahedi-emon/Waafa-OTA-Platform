@@ -9,8 +9,9 @@ import { parseAsSlug, parseAsTravelMonth } from "./parsers";
 
 /* The tour tab opens /tour-packages filtered by destination, month and party size (FR-SRCH-04). */
 
-export const MAX_TOUR_ADULTS = 30;
-export const MAX_TOUR_CHILDREN = 10;
+import { MAX_TOUR_ADULTS, MAX_TOUR_CHILDREN } from "./limits";
+
+export { MAX_TOUR_ADULTS, MAX_TOUR_CHILDREN };
 
 export const tourSearchParams = {
   /** A destination slug picked from the list. */

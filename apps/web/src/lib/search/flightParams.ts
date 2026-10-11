@@ -1,4 +1,4 @@
-import { CabinClassSchema, FlightSearchSchema, type FlightSearch } from "@waafa/shared";
+import { FlightSearchSchema, type FlightSearch } from "@waafa/shared";
 import {
   createLoader,
   createSerializer,
@@ -16,13 +16,10 @@ import { parseAsAirlineCode, parseAsIata, parseAsIsoDateString, parseAsLeg } fro
  * reads /flights?from=DAC&to=DXB&depart=2026-10-22.
  */
 
-export const TRIP_TYPES = ["one-way", "round-trip", "multi-city"] as const;
-export const CABIN_CLASSES = CabinClassSchema.options;
-export const FARE_TYPES = ["regular", "student"] as const;
+import { CABIN_CLASSES, FARE_TYPES, TRIP_TYPES } from "./flightOptions";
 
-export type TripType = (typeof TRIP_TYPES)[number];
-export type CabinClass = (typeof CABIN_CLASSES)[number];
-export type FareType = (typeof FARE_TYPES)[number];
+export { CABIN_CLASSES, FARE_TYPES, TRIP_TYPES };
+export type { CabinClass, FareType, TripType } from "./flightOptions";
 
 export const flightSearchParams = {
   trip: parseAsStringLiteral(TRIP_TYPES).withDefault("one-way"),

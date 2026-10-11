@@ -37,8 +37,8 @@ test.describe("store at 390", () => {
     const errors = collectErrors(page);
     await page.goto("/shop/c/t-shirts");
     await page.getByRole("button", { name: /Filters/ }).click();
+    // A select applies at once (no Show button needed with JavaScript).
     await page.getByLabel("Size").selectOption("XXL");
-    await page.getByRole("button", { name: "Show products" }).click();
     await expect(page).toHaveURL(/a\.size=XXL/);
     await expect(page.getByRole("heading", { name: "1 product" })).toBeVisible();
     await page.getByRole("link", { name: "Classic Cotton Crew T-shirt" }).click();
@@ -92,6 +92,15 @@ test.describe("store at 1440", () => {
     await expect(page.getByRole("heading", { name: /“80A”/ })).toBeVisible();
     await axe(page);
     expect(errors).toEqual([]);
+  });
+
+  test("shows the product photo at full width (#89)", async ({ page }) => {
+    await page.goto("/shop/p/better-day-ce505a-cf280a-black-toner");
+    const photo = page.getByRole("button", { name: /^Open photo/ }).locator("img");
+    await expect(photo).toBeVisible();
+    const box = await photo.boundingBox();
+    expect(box?.width ?? 0).toBeGreaterThan(200);
+    expect(box?.height ?? 0).toBeGreaterThan(200);
   });
 
   test("sends a corporate quote with a QTE reference", async ({ page }) => {
