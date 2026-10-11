@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Download } from "lucide-react";
+import { Columns3, Download } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LeadModuleSchema, LeadStatusSchema } from "@waafa/shared";
 import { cn } from "cn";
@@ -80,12 +80,20 @@ async function Leads({
         title={t("title")}
         lead={t("lead", { sla: list.slaMinutes })}
         actions={
-          <Button asChild variant="secondary" size="sm">
-            <a href={`/secure-admin-control/leads/export${exportQuery ? `?${exportQuery}` : ""}`}>
-              <Download aria-hidden="true" className="size-4" />
-              {t("export")}
-            </a>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="secondary" size="sm">
+              <Link href="/secure-admin-control/leads/board">
+                <Columns3 aria-hidden="true" className="size-4" />
+                {t("board")}
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" size="sm">
+              <a href={`/secure-admin-control/leads/export${exportQuery ? `?${exportQuery}` : ""}`}>
+                <Download aria-hidden="true" className="size-4" />
+                {t("export")}
+              </a>
+            </Button>
+          </div>
         }
       />
       <nav aria-label={t("title")} className="-mx-1 mb-4 flex gap-1 overflow-x-auto px-1 pb-1">

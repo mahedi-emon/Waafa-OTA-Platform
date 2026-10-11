@@ -10,10 +10,13 @@ import {
   AdminUsersController,
 } from "./admin.controllers";
 import { AdminContentService } from "./content-admin.service";
+import { AdminCustomersService } from "./customers.service";
 import { AdminDashboardService } from "./dashboard.service";
 import { AdminInboxService } from "./inbox.service";
 import { AdminLeadsService } from "./leads.service";
 import { AdminOrdersService } from "./orders.service";
+import { AdminCustomersController, AdminReportsController } from "./reports.controller";
+import { AdminReportsService } from "./reports.service";
 import { AdminUsersService } from "./users.service";
 
 /** The admin API (B4): staff only, by role; needs AuthModule and ServicesModule. */
@@ -27,6 +30,8 @@ import { AdminUsersService } from "./users.service";
     AdminContentController,
     AdminUsersController,
     AdminDashboardController,
+    AdminReportsController,
+    AdminCustomersController,
   ],
   providers: [
     AdminLeadsService,
@@ -35,6 +40,8 @@ import { AdminUsersService } from "./users.service";
     AdminContentService,
     AdminUsersService,
     AdminDashboardService,
+    AdminReportsService,
+    AdminCustomersService,
   ],
 })
 export class AdminModule {}

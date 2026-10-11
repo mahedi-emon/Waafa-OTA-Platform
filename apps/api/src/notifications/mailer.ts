@@ -4,7 +4,7 @@ import type { Env } from "../config/env";
 export type Mail = { to: string; subject: string; text: string };
 
 export interface Mailer {
-  readonly kind: "resend" | "smtp" | "memory";
+  readonly kind: "resend" | "smtp" | "memory" | "integration";
   send(mail: Mail): Promise<void>;
 }
 

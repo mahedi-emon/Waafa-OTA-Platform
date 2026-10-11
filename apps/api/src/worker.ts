@@ -2,6 +2,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Worker } from "bullmq";
 import { loadEnv } from "./config/env";
 import { PrismaClient } from "./generated/prisma/client";
+import { IntegrationMailer } from "./notifications/integrationMailer";
 import { createMailer } from "./notifications/mailer";
 import {
   NOTIFICATION_QUEUE,
@@ -19,7 +20,9 @@ async function main() {
   const prisma = new PrismaClient({
     adapter: new PrismaPg({ connectionString: env.DATABASE_URL }),
   });
-  const mailer = createMailer(env);
+  // The email provider turned on in Admin › Integrations wins; the environment mailer is the fallback (#107).
+  const fallback = createMailer(env);
+  const mailer = new IntegrationMailer(prisma, env.PROVIDER_SECRET_KEY, fallback);
   const worker = new Worker<EmailJob>(
     NOTIFICATION_QUEUE,
     async (job) => deliverEmail(prisma, mailer, job.data),
@@ -33,7 +36,9 @@ async function main() {
   };
   process.on("SIGTERM", () => void stop());
   process.on("SIGINT", () => void stop());
-  console.warn(`Worker listening on "${NOTIFICATION_QUEUE}" with ${mailer.kind} mail`);
+  console.warn(
+    `Worker listening on "${NOTIFICATION_QUEUE}" with Admin integrations, else ${fallback.kind} mail`,
+  );
 }
 
 main().catch((error: unknown) => {

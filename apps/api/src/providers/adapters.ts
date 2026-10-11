@@ -6,7 +6,7 @@ import type {
   HotelOffer,
   HotelSearch,
   ProviderEnvironment,
-  ProviderId,
+  ProviderKey,
   RatePlan,
   Ticket,
 } from "@waafa/shared";
@@ -41,7 +41,7 @@ export type Traveller = {
 export type BookingContact = { name: string; phone: string; email?: string };
 
 export interface FlightProvider {
-  readonly id: ProviderId | "manual-flight";
+  readonly id: ProviderKey | "manual-flight";
   readonly kind: "flight";
   healthCheck(context: ProviderContext): Promise<HealthResult>;
   search(query: FlightSearch, context: ProviderContext): Promise<FlightOffer[]>;
@@ -60,7 +60,7 @@ export interface FlightProvider {
 }
 
 export interface HotelProvider {
-  readonly id: ProviderId | "manual-hotel";
+  readonly id: ProviderKey | "manual-hotel";
   readonly kind: "hotel";
   healthCheck(context: ProviderContext): Promise<HealthResult>;
   search(query: HotelSearch, context: ProviderContext): Promise<HotelOffer[]>;
@@ -89,7 +89,7 @@ export type PaymentStatus = {
 };
 
 export interface PaymentProvider {
-  readonly id: ProviderId;
+  readonly id: ProviderKey;
   readonly kind: "payment";
   healthCheck(context: ProviderContext): Promise<HealthResult>;
   initiate(
@@ -112,7 +112,17 @@ export interface PaymentProvider {
   query(reference: string, context: ProviderContext): Promise<PaymentStatus>;
 }
 
-export type ProviderAdapter = FlightProvider | HotelProvider | PaymentProvider;
+/**
+ * SMS and email providers (#107): the connection is stored and checked today; email delivery reads the active email
+ * provider (notifications/integrationMailer), SMS sending arrives with the SMS phase (Phase D).
+ */
+export interface MessagingProvider {
+  readonly id: ProviderKey;
+  readonly kind: "sms" | "email";
+  healthCheck(context: ProviderContext): Promise<HealthResult>;
+}
+
+export type ProviderAdapter = FlightProvider | HotelProvider | PaymentProvider | MessagingProvider;
 
 /** Thrown by an adapter that cannot do a call yet (stub before certification, Manual mode). */
 export class ProviderUnavailableError extends Error {
