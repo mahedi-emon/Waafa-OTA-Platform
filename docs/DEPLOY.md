@@ -119,6 +119,12 @@ Daily dump at 03:15 server time, the last 14 kept in `deploy/backups/`. Copy the
 VPS provider's snapshot backups as well). Restore:
 `gunzip -c deploy/backups/<file>.sql.gz | docker compose -f deploy/compose.yml exec -T postgres psql -U waafa waafa`.
 
+Uploaded photos (Admin › Media library, #109) live on the `mediadata` volume and are archived by the same script as
+`waafa-<stamp>.media.tar.gz` (last 14 kept). Restore:
+`docker compose -f deploy/compose.yml exec -T api tar -xzf - -C /data/media < deploy/backups/<file>.media.tar.gz`.
+nginx serves them at `/uploads/` straight from the API with a one-year cache; admin uploads up to 12 MB are allowed on
+`/secure-admin-control/media/upload` only (every other request keeps the 2 MB limit).
+
 ## 5. Launch checks (in this order)
 
 1. `https://<domain>` loads over HTTPS; `/robots.txt` and `/sitemap.xml` show the real domain.

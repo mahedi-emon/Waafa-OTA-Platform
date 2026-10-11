@@ -13,8 +13,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Link, useRouter } from "@/i18n/navigation";
 import { CurrentMarker } from "./CurrentMarker";
-
-type DesktopNavItem = { id: string; label: string; href?: string; panel?: "shop" | "more" };
+import { CURRENT_BAR, CURRENT_TEXT, type DesktopNavItem } from "./desktopNavStyles";
 
 type DesktopNavProps = {
   items: DesktopNavItem[];
@@ -27,14 +26,11 @@ type DesktopNavProps = {
   className?: string;
 };
 
-/** The current section gets navy, semibold text and a 2 px electric bar under the label (Header board). */
-const CURRENT_TEXT = "has-[[data-current]]:font-semibold has-[[data-current]]:text-navy-900";
-const CURRENT_BAR = "inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-electric-600";
-
 /**
  * Desktop header navigation (≥ 1024 px): seven items from the header menu. "Waafas World" and "More" open panels on
  * hover or keyboard; a pointer click on "Waafas World" still opens the store (PRD §6). Panels span the header
- * container (items are `static`), so the mega panel can be wider than the nav.
+ * container (items are `static`), so the mega panel can be wider than the nav. Loaded on desktop screens only, by
+ * DesktopNavSwitch (issue 91).
  */
 function DesktopNav({
   items,

@@ -1,11 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import localFont from "next/font/local";
+import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { THEME_COLOR } from "@/components/brand/brandColors";
-import { MotionProvider } from "@/components/motion/MotionProvider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
 import { getSiteSettings, getTrackingSettings } from "@/lib/data/settings";
 import { defaultShareImage } from "@/lib/seo/withSocial";
@@ -106,6 +105,15 @@ export default async function RootLayout({ children }: LayoutProps<"/[locale]">)
   return (
     <html lang={locale} className={`${display.variable} ${sans.variable} ${taka.variable}`}>
       <body className="min-h-dvh">
+        {/*
+         * Form validation (zod) without its eval probe: the CSP has no 'unsafe-eval', and the caught probe still
+         * shows up as a CSP issue in Lighthouse Best Practices (issue 91).
+         */}
+        <Script id="zod-jitless" strategy="beforeInteractive">
+          {
+            "globalThis.__zod_globalConfig=Object.assign(globalThis.__zod_globalConfig||{},{jitless:true});"
+          }
+        </Script>
         <a
           href="#main"
           className="sr-only rounded-md bg-primary px-4 py-3 font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
@@ -116,12 +124,12 @@ export default async function RootLayout({ children }: LayoutProps<"/[locale]">)
         <noscript>
           <style>{"[data-reveal]{opacity:1!important;transform:none!important}"}</style>
         </noscript>
-        {/* Messages stay on the server; client leaves get strings as props or a scoped provider. */}
-        <NextIntlClientProvider messages={null}>
-          <MotionProvider>
-            <TooltipProvider>{children}</TooltipProvider>
-          </MotionProvider>
-        </NextIntlClientProvider>
+        {/*
+         * Messages stay on the server; client leaves get strings as props or a scoped provider. Motion's LazyMotion
+         * and the tooltip provider wrap only the screens that use them (issue 91: no animation library in the
+         * public first load).
+         */}
+        <NextIntlClientProvider messages={null}>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

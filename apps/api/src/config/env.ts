@@ -38,6 +38,8 @@ export const EnvSchema = z
     SEED_ADMIN_EMAIL: optional,
     SEED_ADMIN_PASSWORD: optional,
     /** Encrypts external API secrets at rest (#82). Without it, provider secrets cannot be saved. */
+    /** Where uploaded photos are written (#109): the `mediadata` volume in Docker. */
+    MEDIA_DIR: z.string().min(1).default("./.media"),
     PROVIDER_SECRET_KEY: optional.refine((value) => value === undefined || value.length >= 32, {
       message: "PROVIDER_SECRET_KEY must be at least 32 characters",
     }),

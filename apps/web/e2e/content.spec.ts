@@ -119,7 +119,10 @@ test.describe("forms and filters at 390", () => {
     await page.goto("/faqs");
     const search = page.getByRole("searchbox", { name: "Search the FAQs" });
     await search.fill("baggage");
-    await expect(page.getByRole("button", { name: "How much baggage can I take?" })).toBeVisible();
+    // Questions are native <details> summaries (issue 91).
+    await expect(
+      page.locator("summary", { hasText: "How much baggage can I take?" }),
+    ).toBeVisible();
     await search.fill("zzzz nothing");
     await expect(page.getByRole("heading", { name: /No answer for/ })).toBeVisible();
     await expect(page.getByRole("link", { name: "Ask on WhatsApp" })).toHaveAttribute(

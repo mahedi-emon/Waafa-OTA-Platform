@@ -8,6 +8,7 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { whenToasterReady } from "@/components/feedback/notify";
 import { formatTaka } from "@waafa/shared";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { ErrorState } from "@/components/feedback/ErrorState";
@@ -58,10 +59,12 @@ function FeedbackShowcase() {
             variant="secondary"
             size="sm"
             onClick={() =>
-              toast.success("Added to cart", {
-                description: "HP 83A toner",
-                action: { label: "View cart", onClick: () => undefined },
-              })
+              void whenToasterReady().then(() =>
+                toast.success("Added to cart", {
+                  description: "HP 83A toner",
+                  action: { label: "View cart", onClick: () => undefined },
+                }),
+              )
             }
           >
             Success toast
@@ -70,11 +73,13 @@ function FeedbackShowcase() {
             variant="secondary"
             size="sm"
             onClick={() =>
-              toast.error("Couldn’t send your request", {
-                description: "Your details are kept. Check the connection and try again.",
-                duration: Number.POSITIVE_INFINITY,
-                action: { label: "Try again", onClick: () => undefined },
-              })
+              void whenToasterReady().then(() =>
+                toast.error("Couldn’t send your request", {
+                  description: "Your details are kept. Check the connection and try again.",
+                  duration: Number.POSITIVE_INFINITY,
+                  action: { label: "Try again", onClick: () => undefined },
+                }),
+              )
             }
           >
             Error toast
@@ -83,9 +88,11 @@ function FeedbackShowcase() {
             variant="secondary"
             size="sm"
             onClick={() =>
-              toast.info("Price updated", {
-                description: `The airline changed the fare to ${formatTaka(58900)}. Your expert will confirm.`,
-              })
+              void whenToasterReady().then(() =>
+                toast.info("Price updated", {
+                  description: `The airline changed the fare to ${formatTaka(58900)}. Your expert will confirm.`,
+                }),
+              )
             }
           >
             Info toast
@@ -93,7 +100,11 @@ function FeedbackShowcase() {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => toast.warning("You’re offline. We’ll send this when you’re back.")}
+            onClick={() =>
+              void whenToasterReady().then(() =>
+                toast.warning("You’re offline. We’ll send this when you’re back."),
+              )
+            }
           >
             Warning toast
           </Button>

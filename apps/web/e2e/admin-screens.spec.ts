@@ -22,6 +22,7 @@ const SCREENS = [
   { name: "settings-contact", path: "/secure-admin-control/content/contactSettings" },
   { name: "users", path: "/secure-admin-control/users" },
   { name: "integrations", path: "/secure-admin-control/integrations" },
+  { name: "media", path: "/secure-admin-control/media" },
 ] as const;
 
 test.skip(!apiMode || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");
@@ -51,6 +52,8 @@ test("signed-in admin screens hold every width, stay error-free and pass axe", a
   test.setTimeout(240_000);
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 1440, height: 900 });
+  // Its own test address, so the per-address sign-in limit is not shared with api-mode.spec.ts.
+  await page.setExtraHTTPHeaders({ "x-forwarded-for": "198.51.100.200" });
   await page.goto("/secure-admin-control/sign-in");
   await page.getByLabel("Work email").fill(ADMIN_EMAIL);
   await page.getByLabel("Password").fill(ADMIN_PASSWORD);

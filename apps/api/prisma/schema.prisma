@@ -321,3 +321,23 @@ model IntegrationSetting {
 
   @@index([kind, isActive])
 }
+
+// Media library -------------------------------------------------------------------------------------------------
+
+/// An uploaded photo (#109): re-encoded to WebP (max 2560 px, metadata removed) and stored on the media volume at
+/// `path` ("2026/10/<id>.webp"); served at /uploads/<path>. Alt text is required.
+model MediaAsset {
+  id           String   @id @default(cuid())
+  path         String   @unique
+  alt          String
+  width        Int
+  height       Int
+  bytes        Int
+  mime         String
+  originalName String?
+  uploadedBy   String?
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([createdAt])
+}

@@ -98,6 +98,37 @@ export async function adminDownload(
   return send(path, { query });
 }
 
+/**
+ * Sends a photo to the media library as the raw body (issue 109): the API checks the bytes, re-encodes and stores it.
+ */
+export async function adminUpload<T>(
+  path: string,
+  body: ArrayBuffer,
+  contentType: string,
+  query: Record<string, string>,
+): Promise<AdminResult<T>> {
+  const api = apiConfig();
+  if (!api) throw new Error("The admin needs WAAFA_API_URL and WAAFA_INTAKE_KEY");
+  const token = (await cookies()).get(ACCESS_COOKIE)?.value;
+  if (!token) redirect("/secure-admin-control/sign-in");
+  const url = new URL(`${api.baseUrl}/api/v1${path}`);
+  for (const [key, value] of Object.entries(query)) url.searchParams.set(key, value);
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${token}`,
+      accept: "application/json",
+      "content-type": contentType,
+    },
+    body,
+    cache: "no-store",
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (response.status === 401) redirect("/secure-admin-control/sign-in");
+  if (!response.ok) return { ok: false, problem: await problemOf(response) };
+  return { ok: true, data: (await response.json()) as T };
+}
+
 /** Who is signed in, once per request; null without a valid session. */
 export const getStaffSession = cache(async (): Promise<StaffSession | null> => {
   if (!adminAvailable()) return null;

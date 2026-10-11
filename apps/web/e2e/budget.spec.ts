@@ -6,14 +6,17 @@ import { expect, test } from "@playwright/test";
  * browsers and never requested here. The ceilings guard against regressions; the target stays 200 KB.
  */
 const TARGET_KB = 200;
-/** Measured 11 Oct after #39 plus a small margin: a regression fails CI; lower these as the bundles shrink. */
+/**
+ * Measured in CI on 11 Oct after issue 91 (home 215, flights 338, packages 189, visa 186, shop 315, contact 298 KB)
+ * plus a small margin: a regression fails CI; lower these as the bundles shrink.
+ */
 const CEILING_KB: Record<string, number> = {
-  "/": 350,
-  "/flights": 430,
-  "/tour-packages": 320,
-  "/visa-services": 320,
-  "/shop": 415,
-  "/contact": 400,
+  "/": 235,
+  "/flights": 355,
+  "/tour-packages": 205,
+  "/visa-services": 205,
+  "/shop": 335,
+  "/contact": 315,
 };
 const ROUTES = Object.keys(CEILING_KB);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { cn } from "cn";
 import { useTurnstile } from "@/components/forms/useTurnstile";
 import { looksLikeEmail } from "@/lib/forms/looksLikeEmail";
@@ -47,7 +47,7 @@ function NewsletterForm({ placeholder, button, labels, source = "footer" }: News
         return;
       }
       form.reset();
-      toast.success(labels.subscribed);
+      notify("success", labels.subscribed);
     } catch {
       setError(labels.failed);
     } finally {

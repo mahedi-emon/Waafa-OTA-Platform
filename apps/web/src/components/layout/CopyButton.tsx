@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Copy } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { cn } from "cn";
 
 type CopyButtonProps = {
@@ -29,9 +29,9 @@ function CopyButton({ value, label, copiedLabel, failedLabel, className }: CopyB
     try {
       await navigator.clipboard.writeText(value);
       setCopied(true);
-      toast.success(copiedLabel);
+      notify("success", copiedLabel);
     } catch {
-      toast.error(failedLabel);
+      notify("error", failedLabel);
     }
   }
 

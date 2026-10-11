@@ -1,7 +1,7 @@
 "use client";
 
 import { Minus, Plus, ShoppingCart } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import type { CartLine } from "@/lib/shop/cart";
@@ -33,7 +33,7 @@ function AddToCartControl({ line, labels, className }: AddToCartControlProps) {
         onClick={(event) => {
           flyToCart(event.currentTarget);
           add({ ...line, qty: 1 });
-          toast.success(labels.added, { description: line.title });
+          notify("success", labels.added, { description: line.title });
         }}
       >
         <ShoppingCart aria-hidden="true" />
