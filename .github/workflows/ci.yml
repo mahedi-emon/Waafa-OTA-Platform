@@ -352,7 +352,22 @@ jobs:
         if: steps.lh.outputs.ready == 'true'
         run: pnpm --filter @waafa/web... build
 
+      # Mobile (Lighthouse default), one run per route; budgets warn for now and the scores land in the summary (#22).
       - name: Lighthouse CI
         if: steps.lh.outputs.ready == 'true'
         working-directory: apps/web
-        run: pnpm exec lhci autorun
+        run: npx --yes @lhci/cli@0.14.0 autorun
+
+      - name: Lighthouse scores
+        if: always() && steps.lh.outputs.ready == 'true'
+        working-directory: apps/web
+        run: node ../../scripts/lighthouse-summary.mjs lhci-report
+
+      - name: Upload Lighthouse reports
+        if: always() && steps.lh.outputs.ready == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse
+          path: apps/web/lhci-report
+          retention-days: 7
+          if-no-files-found: ignore
