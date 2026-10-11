@@ -30,6 +30,9 @@ __pycache__/
 .serena/cache/
 .serena/project.local.yml
 
+# Uploaded photos in development (MEDIA_DIR, #109)
+.media/
+
 # Production backups on the VPS (deploy/backup.sh)
 deploy/backups/
 apps/web/lhci-report/

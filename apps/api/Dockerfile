@@ -25,6 +25,8 @@ COPY apps/api apps/api
 RUN pnpm --filter @waafa/api generate && chmod -R a+rX /corepack
 
 ENV NODE_ENV=production PORT=4000
+# The media volume (#109) takes this folder's owner on first mount, so the API can write uploads.
+RUN mkdir -p /data/media && chown node:node /data/media
 EXPOSE 4000
 USER node
 WORKDIR /app/apps/api

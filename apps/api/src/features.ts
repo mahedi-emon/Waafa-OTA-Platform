@@ -4,6 +4,7 @@ import { AuthModule } from "./auth/auth.module";
 import { OpenApiModule } from "./docs/openapi";
 import type { Mailer } from "./notifications/mailer";
 import type { Fetcher } from "./providers/catalogAdapters";
+import { MediaModule } from "./media/media.module";
 import { ProvidersModule } from "./providers/providers.module";
 import { PublicModule } from "./public/public.module";
 import { ServicesModule } from "./services.module";
@@ -18,6 +19,7 @@ export function featureModules(
     { module: PublicModule },
     { module: AdminModule },
     ProvidersModule.register({ fetcher: options.fetcher }),
+    { module: MediaModule },
     ...(env.NODE_ENV === "production" ? [] : [{ module: OpenApiModule }]),
   ];
 }
