@@ -3,6 +3,7 @@ import { Worker } from "bullmq";
 import { loadEnv } from "./config/env";
 import { PrismaClient } from "./generated/prisma/client";
 import { IntegrationMailer } from "./notifications/integrationMailer";
+import { TRANSACTION_OPTIONS, warmUp } from "./prisma/prisma.service";
 import { createMailer } from "./notifications/mailer";
 import {
   NOTIFICATION_QUEUE,
@@ -19,10 +20,12 @@ async function main() {
   if (!env.REDIS_URL) throw new Error("The worker needs REDIS_URL");
   const prisma = new PrismaClient({
     adapter: new PrismaPg({ connectionString: env.DATABASE_URL }),
+    transactionOptions: TRANSACTION_OPTIONS,
   });
   // The email provider turned on in Admin › Integrations wins; the environment mailer is the fallback (#107).
   const fallback = createMailer(env);
   const mailer = new IntegrationMailer(prisma, env.PROVIDER_SECRET_KEY, fallback);
+  await warmUp(prisma).catch(() => undefined);
   const worker = new Worker<EmailJob>(
     NOTIFICATION_QUEUE,
     async (job) => deliverEmail(prisma, mailer, job.data),
