@@ -1,13 +1,14 @@
 # Session handoff (update at every session end)
-Updated 2026-10-11 15:45 Dhaka.
-Phase A ✅ (epic #28 closed), Phase B ✅ (epic #29 closed). All PRs merged; main = docs #94.
-Today: VPS Docker + nginx (#81), provider adapters + Admin › Settings › Integrations (#83), zod out of first load
-(#84, #39 closed → #91), admin at /secure-admin-control (#86), product photo fix (#90), CI public screens 32 routes x
-5 widths (#87), board parity + motion (#88), Lighthouse CI on 5 routes (#93): A11y/BP/SEO 100, Perf 45 home .. 87 visa.
-Open: #74 deploy (owner: VPS SSH sudo+docker, DNS A records apex+www, Resend or SMTP, ACME email, Super Admin email,
-optional Turnstile; then clone to /opt/waafa, fill deploy/.env incl. PROVIDER_SECRET_KEY, sh deploy/deploy.sh, launch
-checks in docs/DEPLOY.md). #91 perf (home TBT 1.4 s in CI, 200 KB), #71 admin editors (Phase D).
-Next three steps: 1) deploy with the owner's access (#74); 2) Lighthouse on the live domain + replace Sample content;
-3) #91 (split search pickers and form steps, lazy cart drawer).
-Gotchas: Bash collapses `\\`; python glob treats [locale] as a class; python writes CRLF unless newline="";
-`gh run list --workflow CI` for artifacts; Local Postgres stopped (low memory) — restart only with the owner's OK.
+Updated 2026-10-11 17:30 Dhaka.
+Phase A ✅, Phase B ✅ (launch scope). Owner deploys BY HAND later: docs/DEPLOY.md quick start →
+deploy/init-env.sh <domain> <email> (secrets generated) → fill RESEND_API_KEY|SMTP_URL, STAFF_ALERT_EMAIL,
+SEED_ADMIN_EMAIL/PASSWORD → deploy/check.sh → deploy/deploy.sh. #74 stays open until it is live.
+Today (late): #97 SEO (withSocial on all public pages, admin default SEO + Search Console/Bing fields, WebSite +
+TravelAgency, ItemList, sitemap images), #98 deploy kit, #100 flight route landing pages (/flights/[route],
+flightRoutes collection, Popular routes on /flights). Lighthouse (CI): A11y/BP/SEO 100; Perf home 45 (#91).
+Phase B prompt items not built (post-launch): R2 uploads + media library (#71), CSV/Excel reports, compatibility CSV
+import, pg_trgm search, k6 load scripts, @fastify/compress/etag (API is private behind the web cache).
+Next: 1) owner manual deploy; 2) after go-live: Search Console code, submit sitemap, Facebook debugger, expert review of
+Sample routes; 3) #91 perf (home TBT), more route pages, Bangla P1.
+Gotchas: stale apps/web/tsconfig.tsbuildinfo hides new message keys (delete it); commitlint header ≤ 100 chars;
+Bash collapses `\\`; python glob treats [locale] as a class; Local Postgres stopped (low memory).
