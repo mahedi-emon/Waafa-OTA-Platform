@@ -91,6 +91,11 @@ Fill in every value (the comments in the file explain each one). Secrets: genera
 Admin › Integrations; keep it fixed once secrets are saved). Keep a copy in a password manager; never put them in chat, the repository or a
 screenshot.
 
+Email after launch (#107): the API still needs `RESEND_API_KEY` or `SMTP_URL` in `deploy/.env` to start. Once an email
+provider (Resend or SMTP) is saved and turned on in Admin › Settings › Integrations › SMS and email, the API and the
+worker send through it (checked every minute) and the `.env` mailer becomes the fallback. Flight, hotel, payment and SMS
+providers are managed in the same screen; turning a flight or hotel API on never switches booking to Live.
+
 ## 3. Deploy
 
 ```bash

@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 12 Oct 01:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
+Updated: 12 Oct 01:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -37,11 +37,20 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #116 · Rich text editor (part of #71) — ✅ Done (with #117)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 12 Oct 00:10 → 12 Oct |
+| Branch · PR | `feat/116-rich-text-editor` · #117 |
+| Built | tiptap editor (admin-only, loaded when a rich text field is on screen) for every `RichTextSchema` field (About, Blog, Visa Guide and policy bodies): paragraph, heading (h3, as the site renders), bold, italic, lists, quote, safe links (https, mailto, tel, site paths), undo/redo, labelled toolbar; `format: html` on the shared schema; server sanitising unchanged |
+| Tests | unit (field detection) · e2e edit a refund policy line in API mode |
+| Decisions | D158 |
+
 ### #113 · Lead board (part of #71) — ✅ Done (with #114)
 | Field | Value |
 | --- | --- |
 | Opened → closed | 12 Oct 00:20 → 12 Oct |
-| Branch · PR | `feat/113-lead-board` · #114 |
+| Branch · PR · merge | `feat/113-lead-board` · #114 · `d270fa0` |
 | Built | Admin › Leads › Board: open leads in five stage columns (New, Pending, In progress, Quoted, Booked) by service, cards with reference, customer, service, summary, age, owner and overdue mark; labelled arrow buttons move a card one stage (Booked opens the lead for the amount); focusable sideways scroll |
 | Tests | admin screens job (five widths, axe) |
 | Tools and skills | Serena (symbols, memories), gh |
@@ -50,7 +59,7 @@ Serena memory `audit_findings`.
 | Field | Value |
 | --- | --- |
 | Opened → closed | 11 Oct 23:55 → 12 Oct |
-| Branch · PR | `feat/111-reports-customers` · #112 |
+| Branch · PR · merge | `feat/111-reports-customers` · #112 · `c42c28c` |
 | Built | Admin › Reports: date range in Dhaka days, leads, booked rate, median first reply, orders sold, revenue, average order, sign-ups, per-day CSS bars with a screen-reader table, breakdowns, best sellers, feedback; CSV for leads, orders, feedback and sign-ups (BOM, formula-safe). Admin › Customers: one row per phone across leads and orders with search and a profile; role scoped |
 | Tests | unit 5 (median, Dhaka days, best sellers, CSV, merge) · API 5 (CI PostgreSQL) · admin screens |
 | Admin control | read-only views |
@@ -70,7 +79,7 @@ Serena memory `audit_findings`.
 | Field | Value |
 | --- | --- |
 | Opened → closed | 11 Oct 22:20 → 12 Oct |
-| Branch · PR | `feat/107-integrations-manager` · #108 |
+| Branch · PR · merge | `feat/107-integrations-manager` · #108 · `0571db8` |
 | Built | Owner request: `IntegrationSetting` per provider (Active, Sandbox / Live credentials, markup none / percentage / fixed for flights and hotels); SMS (SSL Wireless, BulkSMSBD, Twilio) and email (Resend, SMTP) in the catalog; custom providers per category with generic fields (base URL, client ID, auth header, extra headers, key, secret); audited secret reveal (no-store); `getIntegrationConfig` and `resolveCategory` with the manual fallback for flights and hotels; public `GET /public/integrations/status` without names or keys; email goes through the active Resend or SMTP provider, else the environment mailer. Admin tabs: Flight APIs, Hotel APIs, Payment gateways, SMS and email |
 | Tests | shared 20 (catalog, custom keys, settings, markup) · API unit 36 · API 15 (CI PostgreSQL) · e2e connect, turn on with markup, reveal, add custom SMS |
 | Admin control | AC-110 updated, AC-114 |
@@ -1057,6 +1066,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D155 | 12 Oct | One setting row per provider (Active, Sandbox or Live, markup) next to per-environment sealed credentials; custom providers use generic fields; secrets revealed only on an audited Super Admin request | Owner asked for UI-managed APIs; keeps secrets server-side, keeps the manual fallback and the Golden Switch | #107 |
 | D156 | 12 Oct | Media uploads on the VPS volume, re-encoded by sharp in the API (added as a dependency), served at /uploads/ by nginx | No R2 account yet; strips GPS from owners' photos; next/image still optimises them | #109 |
 | D157 | 12 Oct | Customers keyed by phone across leads and orders until accounts land (Phase D) | No customer table yet; the phone is the stable identifier in every request and order | #111 |
+| D158 | 12 Oct | tiptap for rich text bodies, one heading level (h3), output still sanitised on the server | Owner edits policies and posts without HTML; the sanitiser already maps headings to h3 | #116 |
 
 ## 9. Bugs and known issues
 
@@ -1123,7 +1133,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
-| 12 Oct 00:00–01:30 | Owner: finish #91, Phase A/B leftovers, an API manager, run and test everything. Merged #106 (performance) and #110 (media library); #108 (integrations manager), #112 (reports, customers) and #114 (lead board) green in CI; local stack rebuilt from main | #91, #107, #109, #111, #113 | #106, #108, #110, #112, #114 | CI: unit, API (PostgreSQL), API-mode e2e, admin screens, public screens, Lighthouse |
+| 12 Oct 00:00–01:30 | Owner: finish #91, Phase A/B leftovers, an API manager, run and test everything. Merged #106 (performance) and #110 (media library); #108 (integrations manager), #112 (reports, customers) and #114 (lead board) green in CI; local stack rebuilt from main | #91, #107, #109, #111, #113, #116 | #106, #108, #110, #112, #114, #117 | CI: unit, API (PostgreSQL), API-mode e2e, admin screens, public screens, Lighthouse |
 | 11 Oct 18:00–19:30 | Launch prep with Docker Desktop: local production rehearsal (all green, backup/restore tested), CSP + security headers + analytics after consent (#103), SECURITY.md, C2 matrix verified (113 rows) | #74, #102 | #101, #103 | API-mode e2e 6/6 on the local stack · security e2e |
 | 11 Oct 15:00–17:30 | Owner: deploy by hand, best SEO, better design. SEO pass merged (#97: share previews on 40 pages, admin defaults, verification fields, WebSite/TravelAgency, ItemList, sitemap images), flight route landing pages (#100), deploy kit (#98: init-env.sh, check.sh, quick start) | #74, #96, #99 | #97, #98, #100 | e2e seo + routes · public screens 33 routes |
 | 11 Oct 14:00–15:30 | Board review with new screenshots: parity and motion merged (#88), product photo fix (#90), public screens job (#87), Lighthouse CI (#93). A22 closed: Phase A complete. Lighthouse mobile: A11y/BP/SEO 100 everywhere, Performance 45 (home) to 87 (visa) | #22, #89 | #87, #88, #90, #93 | public screens 32×5 · Lighthouse 5 routes |
@@ -1154,7 +1164,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 ## 14. Next steps
 1. Owner go-live (manual): VPS → docs/DEPLOY.md quick start (`init-env.sh`, fill email sender and first admin, `check.sh`, `deploy.sh`), DNS A records first.
 2. Right after: sign in at /secure-admin-control, change the password, upload real photos in Media library and paste their addresses into the image fields, replace Sample content, Search Console and analytics IDs in Settings › Tracking, Turnstile keys, uptime monitor; email provider can now be set in Settings › Integrations (SMS and email tab).
-3. After launch (#71 rest): itinerary day builder with drag, product variants grid, category tree drag, rich text editor, TOTP sign-in, bookings and convert to booking (Phase D/E); a media picker inside the content editor.
+3. After launch (#71 rest): itinerary day builder with drag, product variants grid, category tree drag, TOTP sign-in, bookings and convert to booking (Phase D/E), a media picker inside the content editor.
 
 Earlier (11 Oct 19:30):
 1. Owner go-live (manual): VPS → docs/DEPLOY.md quick start (`init-env.sh`, fill email sender and first admin, `check.sh`, `deploy.sh`), DNS A records first.
