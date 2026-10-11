@@ -108,7 +108,8 @@ test("a Super Admin connects an external API, turns it on and reveals the secret
   const card = page
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: "Sabre" }) });
-  await card.getByRole("button", { name: "Connect" }).click();
+  // "Manage" when a retry finds the connection already saved.
+  await card.getByRole("button", { name: /^(Connect|Manage)$/ }).click();
   await card.getByLabel("API base URL").fill("https://example.com");
   await card.getByLabel("Client ID").fill("e2e-client");
   await card.getByLabel("Client secret", { exact: true }).fill("e2e-client-secret-4321");
