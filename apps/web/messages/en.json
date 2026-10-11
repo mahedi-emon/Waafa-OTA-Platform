@@ -2458,7 +2458,8 @@
       "integrations": "Integrations",
       "general": "General",
       "subscribers": "Newsletter",
-      "audit": "Audit log"
+      "audit": "Audit log",
+      "mediaLibrary": "Media library"
     },
     "common": {
       "save": "Save",
@@ -2985,6 +2986,33 @@
       "ageMinutes": "{count} min",
       "ageHours": "{count} h",
       "ageDays": "{count, plural, one {# day} other {# days}}"
+    },
+    "mediaLibrary": {
+      "metaTitle": "Media library",
+      "title": "Media library",
+      "lead": "Upload real photos once and use them anywhere: copy a photo's address into any image field. Every photo is resized, converted to WebP and stripped of camera and location data.",
+      "slots": "Media slots",
+      "uploadTitle": "Upload a photo",
+      "uploadHint": "JPEG, PNG, WebP or AVIF up to 12 MB. Real photos only, with the right to use them.",
+      "file": "Photo",
+      "alt": "Alt text",
+      "altHint": "What the photo shows, for people who can't see it, e.g. “Sunset over Cox’s Bazar beach”.",
+      "upload": "Upload",
+      "uploaded": "Photo uploaded",
+      "tooLarge": "This photo is larger than 12 MB.",
+      "wrongType": "Choose a JPEG, PNG, WebP or AVIF photo.",
+      "altRequired": "Describe the photo in a few words.",
+      "search": "Search by alt text or file name",
+      "searchButton": "Search",
+      "emptyTitle": "No photos yet",
+      "emptyBody": "Upload the first photo above.",
+      "saveAlt": "Save",
+      "altSaved": "Alt text saved",
+      "copy": "Copy address",
+      "copied": "Address copied",
+      "remove": "Delete",
+      "removeConfirm": "Delete this photo? Pages that use it show their placeholder until you choose another.",
+      "removed": "Photo deleted"
     }
   },
   "Consent": {

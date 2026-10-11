@@ -35,6 +35,7 @@ async function Integrations() {
     return <AdminPageHeader title={tf("title")} lead={tf("body")} />;
   }
   const data = await adminGet<ProvidersList>("/admin/providers");
+  // Placeholders stay in the strings; the card fills them in (messages are precompiled, issue 91).
   const strings: ProviderCardStrings = {
     environment: t("environment"),
     sandbox: t("sandbox"),
@@ -44,7 +45,7 @@ async function Integrations() {
     off: t("off"),
     enabled: t("enabled"),
     enabledHint: t("enabledHint"),
-    secretSaved: t.raw("secretSaved") as string,
+    secretSaved: t("secretSaved", { last4: "{last4}" }),
     secretSavedShort: t("secretSavedShort"),
     optional: t("optional"),
     connect: t("connect"),
@@ -52,14 +53,14 @@ async function Integrations() {
     close: t("close"),
     test: t("test"),
     remove: t("remove"),
-    removeConfirm: t.raw("removeConfirm") as string,
-    savedToast: t.raw("savedToast") as string,
-    removedToast: t.raw("removedToast") as string,
+    removeConfirm: t("removeConfirm", { name: "{name}", environment: "{environment}" }),
+    savedToast: t("savedToast", { name: "{name}" }),
+    removedToast: t("removedToast", { name: "{name}" }),
     healthOk: t("healthOk"),
     healthFail: t("healthFail"),
     neverTested: t("neverTested"),
     note: t("note"),
-    updated: t.raw("updated") as string,
+    updated: t("updated", { time: "{time}", name: "{name}" }),
     save: tc("save"),
     failed: tc("failed"),
   };

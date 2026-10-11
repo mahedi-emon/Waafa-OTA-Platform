@@ -15,7 +15,15 @@ test.skip(!apiMode, "API mode only (WAAFA_API_URL)");
 
 let reference = "";
 
+/**
+ * Each sign-in comes from its own test address: the API allows 5 sign-ins per address in 15 minutes (PRD NFR-SEC),
+ * and this file signs in more often than that. Production nginx overwrites X-Forwarded-For, so this only works here.
+ */
+let signIns = 0;
+
 async function signIn(page: Page) {
+  signIns += 1;
+  await page.setExtraHTTPHeaders({ "x-forwarded-for": `198.51.100.${signIns}` });
   await page.goto("/secure-admin-control");
   await expect(page).toHaveURL(/\/secure-admin-control\/sign-in/);
   await page.getByLabel("Work email").fill(ADMIN_EMAIL);
@@ -115,5 +123,36 @@ test("a Super Admin connects an external API; the secret is never shown again", 
   await expect(card.getByText("Saved, ends in 4321. Leave empty to keep it.")).toBeVisible();
   await expect(card.getByLabel("Client secret")).toHaveValue("");
   expect(await page.content()).not.toContain("e2e-client-secret-4321");
+  expect(errors).toEqual([]);
+});
+
+test("an editor uploads a photo to the media library and the site serves it (issue 109)", async ({
+  page,
+  request,
+}) => {
+  test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  const errors = collectErrors(page);
+  await signIn(page);
+  await page.goto("/secure-admin-control/media");
+  await expect(page.getByRole("heading", { level: 1, name: "Media library" })).toBeVisible();
+  // A 4 x 4 PNG made in the test: the API re-encodes it to WebP.
+  const png = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAD0lEQVQImWNgCL6OQMRxANcTEqEIh1beAAAAAElFTkSuQmCC",
+    "base64",
+  );
+  await page
+    .getByLabel("Photo", { exact: true })
+    .setInputFiles({ name: "e2e.png", mimeType: "image/png", buffer: png });
+  await page.getByLabel("Alt text", { exact: true }).first().fill("E2E test swatch in brand blue");
+  await page.getByRole("button", { name: "Upload" }).click();
+  await expect(page.getByText("Photo uploaded")).toBeVisible();
+  const address = page
+    .locator("code", { hasText: /^\/uploads\/\d{4}\/\d{2}\/[a-z0-9]+\.webp$/ })
+    .first();
+  await expect(address).toBeVisible();
+  const url = (await address.textContent()) ?? "";
+  const served = await request.get(url);
+  expect(served.status()).toBe(200);
+  expect(served.headers()["content-type"]).toBe("image/webp");
   expect(errors).toEqual([]);
 });

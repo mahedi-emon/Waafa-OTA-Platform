@@ -63,46 +63,43 @@ export function localDateToIso(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
-const shortDay = new Intl.DateTimeFormat("en-GB", { weekday: "short", timeZone: "UTC" });
-const longDay = new Intl.DateTimeFormat("en-GB", { weekday: "long", timeZone: "UTC" });
-const dayMonth = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  timeZone: "UTC",
-});
-const monthYear = new Intl.DateTimeFormat("en-GB", {
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
-const shortMonthYear = new Intl.DateTimeFormat("en-GB", {
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
+/**
+ * Formatters are created on first use: building an Intl.DateTimeFormat is slow on phones, and doing five of them
+ * while the page's scripts load showed up as a long task (issue 91).
+ */
+function lazyFormatter(options: Intl.DateTimeFormatOptions): () => Intl.DateTimeFormat {
+  let formatter: Intl.DateTimeFormat | undefined;
+  return () => (formatter ??= new Intl.DateTimeFormat("en-GB", { ...options, timeZone: "UTC" }));
+}
+
+const shortDay = lazyFormatter({ weekday: "short" });
+const longDay = lazyFormatter({ weekday: "long" });
+const dayMonth = lazyFormatter({ day: "numeric", month: "short" });
+const monthYear = lazyFormatter({ month: "long", year: "numeric" });
+const shortMonthYear = lazyFormatter({ month: "short", year: "numeric" });
 
 /** "Thu, 22 Oct", the value line of a date field. */
 export function formatFieldDate(iso: string): string {
   const date = utc(iso);
-  return `${shortDay.format(date)}, ${dayMonth.format(date)}`;
+  return `${shortDay().format(date)}, ${dayMonth().format(date)}`;
 }
 
 /** "Thursday", the line under a date field. */
 export function formatWeekday(iso: string): string {
-  return longDay.format(utc(iso));
+  return longDay().format(utc(iso));
 }
 
 /** "22 Oct", for summaries and chips. */
 export function formatShortDate(iso: string): string {
-  return dayMonth.format(utc(iso));
+  return dayMonth().format(utc(iso));
 }
 
 /** "December 2026" for a "2026-12" travel month. */
 export function formatMonth(month: string): string {
-  return monthYear.format(utc(`${month}-01`));
+  return monthYear().format(utc(`${month}-01`));
 }
 
 /** "Dec 2026" for a "2026-12" travel month. */
 export function formatShortMonth(month: string): string {
-  return shortMonthYear.format(utc(`${month}-01`));
+  return shortMonthYear().format(utc(`${month}-01`));
 }

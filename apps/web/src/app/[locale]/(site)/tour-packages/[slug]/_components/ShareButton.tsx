@@ -1,7 +1,7 @@
 "use client";
 
 import { Share2 } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { Button } from "@/components/ui/button";
 
 type ShareButtonProps = {
@@ -23,9 +23,9 @@ function ShareButton({ title, labels }: ShareButtonProps) {
     }
     try {
       await navigator.clipboard.writeText(url);
-      toast.success(labels.copied);
+      notify("success", labels.copied);
     } catch {
-      toast.error(labels.failed);
+      notify("error", labels.failed);
     }
   }
 
