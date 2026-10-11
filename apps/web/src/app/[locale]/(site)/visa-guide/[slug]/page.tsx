@@ -76,7 +76,7 @@ async function VisaGuidePostPageContent({
           "@type": "Article",
           headline: guide.title,
           description: guide.summary,
-          image: [guide.cover.src],
+          image: [absoluteUrl(guide.cover.src)],
           dateModified: guide.updatedAt,
           author: { "@type": "Organization", name: t("byline") },
           mainEntityOfPage: absoluteUrl(`/visa-guide/${guide.slug}`),
