@@ -1,15 +1,13 @@
 # Session handoff (update at every session end)
-Updated 2026-10-11 14:00 Dhaka.
-Owner asks (11 Oct): VPS + nginx (done, #81), external API connect (done, #83 Integrations), admin URL not /admin
-(done, /secure-admin-control #86), finish Phase A + check every board + better design/motion than competitors.
-OPEN PRs: #87 (public screens 32 routes x 5 widths, artifact `public-screens`), #88 (board parity + motion:
-BannerHero on Packages/Visa, filter chips + instant radios via components/forms/FilterForm, Group fares chips, home hero
-eyebrow/office chip/phone, values bento balance, CTA office ribbon, request card header chips, store filters instant,
-CardFx spotlight/tilt on package/visa/offer/destination cards, HoverVideo on package cards, WhatsApp shimmer),
-docs PR for TRACKER (D141–D147). #74 open: owner SSH, DNS, email sender, ACME email, Super Admin email.
-Resume: 1) merge #87, #88, docs PR when green (fix e2e if packages/store filter tests fail); 2) gh run download -n
-public-screens, tile with scratchpad crop.py (python -I + PIL path), compare with docs/design/thumbs, fix gaps, close #22
-(Phase A done); 3) owner deploy per docs/DEPLOY.md.
-Gotchas: Bash collapses `\\`; python glob treats [locale] as a class (use explicit paths); python writes CRLF unless
-newline=""; full-page shots need a scroll for lazy images; `gh pr merge --delete-branch` wants a clean tree (stash -u).
-Local Postgres stopped (low memory); restart only with the owner's OK.
+Updated 2026-10-11 15:45 Dhaka.
+Phase A ✅ (epic #28 closed), Phase B ✅ (epic #29 closed). All PRs merged; main = docs #94.
+Today: VPS Docker + nginx (#81), provider adapters + Admin › Settings › Integrations (#83), zod out of first load
+(#84, #39 closed → #91), admin at /secure-admin-control (#86), product photo fix (#90), CI public screens 32 routes x
+5 widths (#87), board parity + motion (#88), Lighthouse CI on 5 routes (#93): A11y/BP/SEO 100, Perf 45 home .. 87 visa.
+Open: #74 deploy (owner: VPS SSH sudo+docker, DNS A records apex+www, Resend or SMTP, ACME email, Super Admin email,
+optional Turnstile; then clone to /opt/waafa, fill deploy/.env incl. PROVIDER_SECRET_KEY, sh deploy/deploy.sh, launch
+checks in docs/DEPLOY.md). #91 perf (home TBT 1.4 s in CI, 200 KB), #71 admin editors (Phase D).
+Next three steps: 1) deploy with the owner's access (#74); 2) Lighthouse on the live domain + replace Sample content;
+3) #91 (split search pickers and form steps, lazy cart drawer).
+Gotchas: Bash collapses `\\`; python glob treats [locale] as a class; python writes CRLF unless newline="";
+`gh run list --workflow CI` for artifacts; Local Postgres stopped (low memory) — restart only with the owner's OK.
