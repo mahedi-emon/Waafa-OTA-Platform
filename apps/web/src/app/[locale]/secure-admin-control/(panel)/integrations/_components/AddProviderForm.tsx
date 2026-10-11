@@ -80,7 +80,7 @@ function AddProviderForm({ kinds, strings }: AddProviderFormProps) {
                 const match = kinds.find((item) => item.kind === next);
                 if (match) setKind(match.kind);
               }}
-              className="w-fit"
+              className="max-w-full"
             >
               {kinds.map((item) => (
                 <ToggleGroupItem key={item.kind} value={item.kind}>

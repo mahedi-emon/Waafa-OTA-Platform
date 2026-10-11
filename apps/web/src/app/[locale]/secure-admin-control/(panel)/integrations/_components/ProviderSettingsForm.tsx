@@ -106,13 +106,13 @@ function ProviderSettingsForm({ setting, strings }: ProviderSettingsFormProps) {
           <div className="flex flex-wrap items-center gap-3">
             <ToggleGroup
               type="single"
-              variant="segment"
+              variant="chip"
               value={markupType}
               onValueChange={(next) => {
                 if (next === "none" || next === "percentage" || next === "fixed")
                   setMarkupType(next);
               }}
-              className="w-fit"
+              className="max-w-full"
             >
               <ToggleGroupItem value="none">{strings.markupNone}</ToggleGroupItem>
               <ToggleGroupItem value="percentage">{strings.markupPercentage}</ToggleGroupItem>

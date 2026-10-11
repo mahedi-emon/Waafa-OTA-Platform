@@ -125,7 +125,7 @@ function CredentialsForm({
           variant="segment"
           value={environment}
           onValueChange={switchEnvironment}
-          className="w-fit"
+          className="max-w-full"
           aria-label={strings.environment}
         >
           <ToggleGroupItem value="sandbox">{strings.sandbox}</ToggleGroupItem>
