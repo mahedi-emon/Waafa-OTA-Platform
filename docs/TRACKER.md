@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 11 Oct 14:00 Asia/Dhaka · Phase: A 24/24 (A22 QA closes with #87 and #88), B 5/5 (B5 provider adapters), C: C1 + C2 done, C3 code merged (VPS + nginx), go-live waits for the owner's VPS access, DNS and email sender · Current: #22 design parity and motion · Launch: 13 Oct 2026, 2 days left · Status: on track for code; deploy needs the owner (section 11)
+Updated: 11 Oct 15:30 Asia/Dhaka · Phase: A ✅ 24/24 (A22 closed), B 5/5, C: C1 + C2 done, C3 code merged (VPS + nginx), go-live waits for the owner's VPS access, DNS and email sender · Current: #74 deploy · Launch: 13 Oct 2026, 2 days left · Status: code complete for launch; production needs the owner (section 11)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -28,14 +28,27 @@ Serena memory `audit_findings`.
 
 | Phase | Milestone | Issues | Done | In progress | Blocked | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + bug #39 | 19 | 0 | 0 | 79% |
-| B · Backend | 12 Oct · epic #29 | 4 (#54 – #57, launch scope) + bugs #60, #61, #66 | 4 | 0 | 0 | 100% |
-| C · Integration & Launch | 13 Oct · epic #30 | #64 C1 web on the API; deploy and Turnstile next | 1 | 0 | 1 (owner accounts) | 33% |
-| D · P1 completion | 13 Nov · epic #31 | opened with PROMPT 5 | 0 | 0 | 0 | 0% |
+| A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + #39, #52, #89 | 24 | 0 | 0 | ✅ 100% |
+| B · Backend | 12 Oct · epic #29 | 5 (#54 – #57, #82 providers) + bugs #60, #61, #66, #72, #78 | 5 | 0 | 0 | ✅ 100% |
+| C · Integration & Launch | 13 Oct · epic #30 | #64 C1 web on the API, #69 Turnstile, #85 admin path, #74 VPS deploy | 3 | 0 | 1 (#74: owner VPS access, DNS, email) | 75% |
+| D · P1 completion | 13 Nov · epic #31 | #71 admin editors, #91 performance (more with PROMPT 5) | 0 | 0 | 0 | 0% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #22 · A22 Frontend QA and polish against the boards and the benchmark — ✅ Done
+| Field | Value |
+| --- | --- |
+| Opened → closed | 09 Oct → 11 Oct 15:30 |
+| Branch · PR · merge | `test/22-public-screens` #87 · `feat/22-board-parity` #88 · `test/22-lighthouse` #93 · docs #92 |
+| Built | CI checks all 32 public routes at five widths with screenshots; the review against `docs/design/thumbs` fixed the gaps: photo banners on Packages and Visa, chips and instant filters (packages, group fares, store), the Home hero head (eyebrow, live Open now chip, phone), balanced bento, request card headers, the office card, the product photo bug (#89); motion from the HANDOFF effects list: card spotlight and tilt, hover-to-play package clips, WhatsApp shimmer, Ken Burns on banners; Lighthouse CI on five routes |
+| Screens matched | Home, Home-m, Packages, Packages-m, Visa, Visa-m, GroupFares, Flights, Hotels, ShopProduct, About, Contact, Gallery, Feedback, Error and the rest of screens.csv's public boards |
+| Tests | e2e public screens 32 × 5 widths · e2e flows (packages chip + instant radio, store instant select, product photo size) · Lighthouse mobile: Accessibility, Best practices and SEO 100 on all five routes; Performance 45–87 |
+| Widths checked | 320 · 390 · 768 · 1024 · 1440 (CI) |
+| Tools and skills | Serena, gh, CI Playwright screenshots, PIL tiling for review, Lighthouse CI; design review against the board thumbnails (Playwright MCP, context7, shadcn and magic MCPs were disconnected this session) |
+| Decisions | D146, D147 |
+| Bugs and follow-ups | #89 (fixed), #91 (performance to 90 and 200 KB), #71 (bespoke admin editors) |
 
 ### #89 · Bug: product page photo collapsed to zero width — ✅ Done
 | Field | Value |
@@ -518,20 +531,22 @@ Each gets the full block when work starts.
 
 ## 3. Route ↔ screen matrix
 
+Since 11 Oct the CI step "Public screens at five widths" (#87) opens all 32 public routes at 320, 390, 768, 1024 and 1440 px (no horizontal scroll, no console errors) and uploads screenshots for the board review; the Lighthouse job (#93) measures five routes on every change.
+
 | Route | Screens | Issue | 320 | 390 | 768 | 1024 | 1440 | Tests | Lighthouse mobile |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `/` | Home, Home-t, Home-m, Home-help, Home-mfull, Home-mfull2, Home-lower, Home-m-drawer, Home-m-more, Home-shopmenu, Home-moremenu | #7 (#6, #8) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/flights` | Flights, Flights-2, Flights-done, Flights-err, Flights-edit, FlightsFare, Flights-m-*, Pick-* | #9 (#8) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
+| `/` | Home, Home-t, Home-m, Home-help, Home-mfull, Home-mfull2, Home-lower, Home-m-drawer, Home-m-more, Home-shopmenu, Home-moremenu | #7 (#6, #8) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 45 / 100 / 100 / 100 · LCP 5.9 s (CI, 11 Oct) |
+| `/flights` | Flights, Flights-2, Flights-done, Flights-err, Flights-edit, FlightsFare, Flights-m-*, Pick-* | #9 (#8) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 78 / 100 / 100 / 100 · LCP 4.4 s (CI, 11 Oct) |
 | `/flights` Live placeholder | FlightsLive (placeholder only; full Live bodies in Phase E) | #17 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/flights/group-fares` | GroupFares, GroupFares-empty, GroupFares-m, GroupFares-m-empty | #9 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/hotels` | Hotels, Hotels-2, Hotels-done, Hotels-m-* | #10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | — |
-| `/tour-packages` | Packages, Packages-empty, Packages-m, Packages-m-filters | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 73 / 100 / 96 / 100 |
+| `/flights/group-fares` | GroupFares, GroupFares-empty, GroupFares-m, GroupFares-m-empty | #9 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
+| `/hotels` | Hotels, Hotels-2, Hotels-done, Hotels-m-* | #10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
+| `/tour-packages` | Packages, Packages-empty, Packages-m, Packages-m-filters | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 71 / 100 / 100 / 100 · LCP 5.6 s (CI, 11 Oct) |
 | `/tour-packages/[slug]` | PackageDetail, -photos, -query, -done, PackageDetail-m-* | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 68 / 100 / 96 / 100 |
 | `/plan-my-trip` | PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-* | #11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 68 / 100 / 96 / 100 |
-| `/visa-services` | Visa, Visa-none, Visa-m | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 77 / 100 / 96 / 100 |
+| `/visa-services` | Visa, Visa-none, Visa-m | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 87 / 100 / 100 / 100 · LCP 3.9 s (CI, 11 Oct) |
 | `/visa-services/[country]` (+ `/apply`) | VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 76 / 99 / 96 / 100 · apply 70 / 100 / 96 / 69 (noindex) |
 | `/visa-guide`, `/visa-guide/[country]` | VisaGuide, VisaGuidePost (+ -m) | #12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 85 and 82 / 100 / 96 / 100 |
-| `/shop` | Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 67 / 100 / 96 / 100 |
+| `/shop` | Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 77 / 100 / 100 / 100 · LCP 4.6 s (CI, 11 Oct) |
 | `/shop/c/[slug]`, brand, collection, deals, categories | ShopList, -printers, -empty, -m, -m-filters, -m-fashion, ShopCats, ShopDeals | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 75 / 100 / 96 / 92 → fixed |
 | `/shop/p/[slug]` | ShopProduct, -pb, -hp, -toner, -video, -bulk, -m-* | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 75 / 99 → fixed / 96 / 100 |
 | `/shop/finder`, `/shop/search` | ShopFinder, -part, -none, ShopSearch | #13 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 77 / 100 / 96 / 100 |
@@ -786,8 +801,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 | Page | GoZayaan | ShareTrip | Akij Air | Obokash | Waafa | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Home | 26 / 76 / 50 / 92 · 24.4 s | 1 / 72 / 73 / 100 · 29.2 s | 27 / 79 / 69 / 92 · 25.4 s | 35 / 88 / 54 / 92 · 12.5 s | target ≥ 90 / ≥ 95 / ≥ 95 / 100 · ≤ 2.5 s | measured in A22 |
-| Package listing (1 run, 10 Oct) | 35 / 73 / 50 / 92 · 5.6 s | 1 / 72 / 73 / 100 · 26.5 s | 27 / 93 / 73 / 100 · 23.4 s | 34 / 85 / 54 / 100 · 16.2 s | target ≥ 90 / ≥ 95 / ≥ 95 / 100 · ≤ 2.5 s | GoZayaan `/tour` redirects to its home Tour tab; measured for Waafa in A11 and A22 |
+| Home | 26 / 76 / 50 / 92 · 24.4 s | 1 / 72 / 73 / 100 · 29.2 s | 27 / 79 / 69 / 92 · 25.4 s | 35 / 88 / 54 / 92 · 12.5 s | **45 / 100 / 100 / 100 · 5.9 s** (CI runner, 1 run, 11 Oct) | Ahead of all four on every axis; below our own 90 / 2.5 s target (#91) |
+| Package listing (1 run, 10 Oct) | 35 / 73 / 50 / 92 · 5.6 s | 1 / 72 / 73 / 100 · 26.5 s | 27 / 93 / 73 / 100 · 23.4 s | 34 / 85 / 54 / 100 · 16.2 s | **71 / 100 / 100 / 100 · 5.6 s** (CI, 11 Oct) | GoZayaan `/tour` redirects to its home Tour tab; measured for Waafa in A11 and A22 |
 
 ## 8. Decisions
 
@@ -1006,6 +1021,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 11 Oct 14:00–15:30 | Board review with new screenshots: parity and motion merged (#88), product photo fix (#90), public screens job (#87), Lighthouse CI (#93). A22 closed: Phase A complete. Lighthouse mobile: A11y/BP/SEO 100 everywhere, Performance 45 (home) to 87 (visa) | #22, #89 | #87, #88, #90, #93 | public screens 32×5 · Lighthouse 5 routes |
 | 11 Oct 08:30–14:00 | Owner asked for VPS + nginx, external API connections, a hidden admin URL and a full board review. Shipped: VPS Docker stack with nginx and Let's Encrypt (#81), provider adapters + Integrations (#83), zod out of the first load + budget check (#84), admin at /secure-admin-control (#86), product photo bug (#89 → #90); public screens at five widths with screenshots (#87) and board parity + motion (#88: listing banners, filter chips, home hero, request cards, card spotlight/tilt, hover clips) in CI. #39 closed, rest in #91 | #22, #39, #74, #82, #85, #89, #91 | #81, #83, #84, #86, #87, #88, #90 | CI: VPS smoke, API-mode e2e, budget, public screens 32 routes × 5 widths |
 | 11 Oct 01:40–06:00 | Launch admin merged (#68), A19–A21 closed with cuts to #71; Turnstile on every form (#70); Live stays locked (#73); deploy runbook (#75); admin QA job at five widths with axe and screenshots (#76, editor fitted to 320 px); signature motion (#77); independent review found 11 defects, all fixed (#79). Home first-load JS measured at 392 KB gzip incl. a 39 KB nomodule polyfill (#39 stays open) | #18–#21, #52, #66, #69, #72, #74, #78 | #68, #70, #73, #75, #76, #77, #79 | API-mode e2e 5 + admin screens 8×5 widths · web unit 238 · shared 52 |
 | 11 Oct 00:00–01:40 | B2 merged (#59); B3 public snapshot, intake and notifications (#62, with bug fixes #60 VAT BIN and #61 refused checkout); B4 admin API (#63); C1 web on the API (#65); #66 concurrent refresh fix (#67); launch admin A18 with the generic content editor (PR #68) and an API-mode e2e job in CI. Local PostgreSQL stopped by the system for low memory; API tests ran in CI | #55, #56, #57, #60, #61, #64, #66, #18 | #59, #62, #63, #65, #67, #68 | API 37 passed (CI) · web unit 238 · e2e 41 (fixture) |
@@ -1031,6 +1047,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner: VPS SSH access, DNS A records, email sender (Resend or SMTP), ACME email, first Super Admin email → `sh deploy/deploy.sh` (#74) → launch checks; replace Sample content in Admin.
+2. Before announcing: Lighthouse on the live domain (real network) and an admin walk-through with the owner's staff.
+3. After launch: #91 performance (home TBT, 200 KB), #71 bespoke admin editors and media uploads, Phase D.
+
+Earlier (11 Oct 14:00):
 1. Merge #87 and #88 when green; download the `public-screens` artifact again and compare with `docs/design/thumbs`; close #22.
 2. Owner: VPS SSH access, DNS A records, email sender, ACME email, Super Admin email → `sh deploy/deploy.sh` (#74) → launch checks; replace Sample content in Admin.
 3. After launch: #91 (200 KB first load), #71 (bespoke admin editors, media uploads), Phase D.
