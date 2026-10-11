@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 11 Oct 19:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ⚠️ (#91) C7 ✅ code + local rehearsal, C8 owner go-live · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
+Updated: 12 Oct 01:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -36,6 +36,55 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #113 · Lead board (part of #71) — ✅ Done (with #114)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 12 Oct 00:20 → 12 Oct |
+| Branch · PR | `feat/113-lead-board` · #114 |
+| Built | Admin › Leads › Board: open leads in five stage columns (New, Pending, In progress, Quoted, Booked) by service, cards with reference, customer, service, summary, age, owner and overdue mark; labelled arrow buttons move a card one stage (Booked opens the lead for the amount); focusable sideways scroll |
+| Tests | admin screens job (five widths, axe) |
+| Tools and skills | Serena (symbols, memories), gh |
+
+### #111 · Reports with CSV and customers (part of #71) — ✅ Done (with #112)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 23:55 → 12 Oct |
+| Branch · PR | `feat/111-reports-customers` · #112 |
+| Built | Admin › Reports: date range in Dhaka days, leads, booked rate, median first reply, orders sold, revenue, average order, sign-ups, per-day CSS bars with a screen-reader table, breakdowns, best sellers, feedback; CSV for leads, orders, feedback and sign-ups (BOM, formula-safe). Admin › Customers: one row per phone across leads and orders with search and a profile; role scoped |
+| Tests | unit 5 (median, Dhaka days, best sellers, CSV, merge) · API 5 (CI PostgreSQL) · admin screens |
+| Admin control | read-only views |
+| Decisions | D157 |
+
+### #109 · Media library (part of #71) — ✅ Done (with #110)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 23:20 → 12 Oct 00:50 |
+| Branch · PR · merge | `feat/109-media-library` · #110 · `2fe00a7` |
+| Built | Admin › Media library: upload JPEG, PNG, WebP or AVIF up to 12 MB with required alt text, copy the `/uploads/...` address, rename, delete (audited); API re-encodes with sharp (auto-rotate, max 2560 px, WebP, no EXIF or GPS); `mediadata` volume; nginx serves `/uploads/` from the API (immutable cache) and allows 13 MB on the upload route only; the web route covers development and next/image; nightly photo archive in `backup.sh` |
+| Tests | unit 4 · API 4 (CI PostgreSQL) · e2e upload in API mode · admin screens |
+| Admin control | AC-115 |
+| Decisions | D156 |
+
+### #107 · Integrations manager — ✅ Done (with #108)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 22:20 → 12 Oct |
+| Branch · PR | `feat/107-integrations-manager` · #108 |
+| Built | Owner request: `IntegrationSetting` per provider (Active, Sandbox / Live credentials, markup none / percentage / fixed for flights and hotels); SMS (SSL Wireless, BulkSMSBD, Twilio) and email (Resend, SMTP) in the catalog; custom providers per category with generic fields (base URL, client ID, auth header, extra headers, key, secret); audited secret reveal (no-store); `getIntegrationConfig` and `resolveCategory` with the manual fallback for flights and hotels; public `GET /public/integrations/status` without names or keys; email goes through the active Resend or SMTP provider, else the environment mailer. Admin tabs: Flight APIs, Hotel APIs, Payment gateways, SMS and email |
+| Tests | shared 20 (catalog, custom keys, settings, markup) · API unit 36 · API 15 (CI PostgreSQL) · e2e connect, turn on with markup, reveal, add custom SMS |
+| Admin control | AC-110 updated, AC-114 |
+| Decisions | D155 |
+
+### #91 · Performance: first-load JS and hydration — ✅ Done (with #106)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct (after #39) → 12 Oct 00:40 |
+| Branch · PR · merge | `fix/91-first-load-perf` · #106 · `fbd4af8` |
+| Built | Motion, toasts, header and tab-bar sheets, the help popover and the desktop mega menu out of the first load (first use, idle or desktop only); native `<details>` accordions; lazy Intl formatters; zod jitless before hydration (no CSP issue); hero layout shift fixed. Tried and dropped: next-intl message precompile (placeholder labels broke), content-visibility on sections (axe false positives), per-section Suspense (no gain, broke section order) |
+| Results (CI) | first-load JS / 318 → 215 KB, /tour-packages 189, /visa-services 186, /flights 338, /shop 315, /contact 298; Lighthouse mobile / 45 → 64, visa 91, shop 83, packages 79, flights 67; A11y, BP, SEO 100; CLS 0 |
+| Tests | budget ceilings lowered; accordion e2e on details; full CI |
+| Decisions | D154 |
 
 ### #102 · C4/C5 Security headers with CSP, analytics after consent — ✅ Done (with #103)
 | Field | Value |
@@ -725,10 +774,12 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-107 | Feedback form (pending until moderated) | `POST /api/feedback` → `createFeedback()` | Content › Feedback moderation | `POST /api/v1/public/feedback` | ✅ 11 Oct · e2e |
 | AC-108 | Offline payment proofs | `POST /api/payment-proof` → `submitPaymentProof()` | Waafas World › Orders; Leads (payments) | `POST /api/v1/public/payment-proofs` | ✅ 11 Oct · e2e |
 | AC-109 | Contact page messages (CNT) | `POST /api/leads` (module contact) → `createLead()` | Leads | `POST /api/v1/public/leads` | ✅ 11 Oct · e2e |
-| AC-110 | External API connections (flight, hotel, payment providers) | `ProviderCredential` (settings, sealed secrets, enabled, health) | Settings › Integrations (Super Admin) | `GET/POST/DELETE /api/v1/admin/providers` | ✅ 11 Oct · e2e |
+| AC-110 | External API connections (flight, hotel, payment providers) | `ProviderCredential` (settings, sealed secrets, health per environment) | Settings › Integrations (Super Admin) | `GET/POST/DELETE /api/v1/admin/providers` | ✅ 11 Oct · e2e |
 | AC-111 | Tour packages banner photo | `mediaSlots[packages-header]` | Content › Media library | `GET /api/v1/public/snapshot` | ✅ 11 Oct · snapshot |
 | AC-112 | Search Console and Bing site verification | `siteSettings.googleSiteVerification`, `bingSiteVerification` | Settings › General | `GET /api/v1/public/snapshot` | ✅ 11 Oct · snapshot |
 | AC-113 | Flight route landing pages (/flights/[route]) and Popular routes on /flights | `flightRoutes` collection | Content › Flight routes | `GET /api/v1/public/snapshot` | ✅ 11 Oct · snapshot |
+| AC-114 | External API provider switches and markup (Active, Sandbox / Live, markup; custom providers; SMS and email) | `IntegrationSetting` + `ProviderCredential` | Settings › Integrations (Super Admin) | `GET/POST/DELETE /api/v1/admin/providers*` | ✅ 12 Oct · e2e |
+| AC-115 | Every photo on the site can come from the media library (`/uploads/...` address in any image field) | `MediaAsset` + media volume | Content › Media library | `POST/GET/PATCH/DELETE /api/v1/admin/media`, `GET /uploads/*` | ✅ 12 Oct · e2e |
 
 ## 5. Components inventory
 
@@ -1002,6 +1053,10 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D151 | 11 Oct | CSP without nonces: scripts allow 'self', inline Next payloads, Turnstile and the consented analytics hosts; everything else is locked (object-src none, frame-ancestors none, base-uri and form-action self) | A nonce makes every page dynamic and drops static shells and Cache Components | #102 |
 | D152 | 11 Oct | Ship with the three `pnpm audit` highs open (mysql2 and deepmerge-ts inside the Prisma CLI, braces in lint tooling) | None is reachable at runtime; no lockfile churn the night before launch; Dependabot will update them | #102 |
 | D153 | 11 Oct | Rehearse the deploy on the owner's PC with Docker Desktop before the VPS | Same compose file and scripts; proves migrations, seed, web build against the API, nginx, emails and backups | #74 |
+| D154 | 12 Oct | Cut first-load JS by loading overlays, toasts and the desktop menu on use, CSS for page and word motion, native details for accordions; keep runtime message formatting | Home 318 → 215 KB, CLS 0; precompiled messages broke placeholder labels and content-visibility upset axe, so both were dropped | #91 |
+| D155 | 12 Oct | One setting row per provider (Active, Sandbox or Live, markup) next to per-environment sealed credentials; custom providers use generic fields; secrets revealed only on an audited Super Admin request | Owner asked for UI-managed APIs; keeps secrets server-side, keeps the manual fallback and the Golden Switch | #107 |
+| D156 | 12 Oct | Media uploads on the VPS volume, re-encoded by sharp in the API (added as a dependency), served at /uploads/ by nginx | No R2 account yet; strips GPS from owners' photos; next/image still optimises them | #109 |
+| D157 | 12 Oct | Customers keyed by phone across leads and orders until accounts land (Phase D) | No customer table yet; the phone is the stable identifier in every request and order | #111 |
 
 ## 9. Bugs and known issues
 
@@ -1012,7 +1067,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Boards disagree on two shop numbers: COD cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample); free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms | P2 | fixtures (shop settings) | Owner question |
 | Phase A references restart at 0001 whenever the dev server restarts (no storage before the API) | P2 | lead intake | By design until Phase C |
 | Visitors who dismissed the announcement may see it collapse right after hydration on their next visit | P2 | announcement bar | Accepted (D50); revisit if field CLS shows it |
-| #39 Home first-load JS 346 KB and simulated LCP 4.1 s over budget (shell alone 308 KB, 84); picker open long tasks 180–430 ms at 4x CPU | P1 | `/`, search pickers | Open, due with A7 |
+| #39 / #91 Home first-load JS over budget | P1 | `/`, search pickers | Improved in #106: home 215 KB, packages and visa under 200 KB; home and flights stay above 200 KB (React plus the search card) |
 | #51 Lead steps lost travellers and rooms without a search; broken deep links; footer second logo; SEO gaps | P1 | flights, hotels, store bar, footer, SEO | Fixed in #51 |
 | #60 VAT invoice BIN accepted only the letter d (regex lost its backslash), so every VAT-invoice order failed | P0 | checkout, shared contract | Fixed in #56 with a regression test |
 | #61 After a refused order the checkout kept the idempotency key and the web cached the refusal, so fixing the cart did not help for 10 minutes | P0 | checkout | Fixed in #56 with a regression test |
@@ -1068,6 +1123,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 12 Oct 00:00–01:30 | Owner: finish #91, Phase A/B leftovers, an API manager, run and test everything. Merged #106 (performance) and #110 (media library); #108 (integrations manager), #112 (reports, customers) and #114 (lead board) green in CI; local stack rebuilt from main | #91, #107, #109, #111, #113 | #106, #108, #110, #112, #114 | CI: unit, API (PostgreSQL), API-mode e2e, admin screens, public screens, Lighthouse |
 | 11 Oct 18:00–19:30 | Launch prep with Docker Desktop: local production rehearsal (all green, backup/restore tested), CSP + security headers + analytics after consent (#103), SECURITY.md, C2 matrix verified (113 rows) | #74, #102 | #101, #103 | API-mode e2e 6/6 on the local stack · security e2e |
 | 11 Oct 15:00–17:30 | Owner: deploy by hand, best SEO, better design. SEO pass merged (#97: share previews on 40 pages, admin defaults, verification fields, WebSite/TravelAgency, ItemList, sitemap images), flight route landing pages (#100), deploy kit (#98: init-env.sh, check.sh, quick start) | #74, #96, #99 | #97, #98, #100 | e2e seo + routes · public screens 33 routes |
 | 11 Oct 14:00–15:30 | Board review with new screenshots: parity and motion merged (#88), product photo fix (#90), public screens job (#87), Lighthouse CI (#93). A22 closed: Phase A complete. Lighthouse mobile: A11y/BP/SEO 100 everywhere, Performance 45 (home) to 87 (visa) | #22, #89 | #87, #88, #90, #93 | public screens 32×5 · Lighthouse 5 routes |
@@ -1096,6 +1152,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner go-live (manual): VPS → docs/DEPLOY.md quick start (`init-env.sh`, fill email sender and first admin, `check.sh`, `deploy.sh`), DNS A records first.
+2. Right after: sign in at /secure-admin-control, change the password, upload real photos in Media library and paste their addresses into the image fields, replace Sample content, Search Console and analytics IDs in Settings › Tracking, Turnstile keys, uptime monitor; email provider can now be set in Settings › Integrations (SMS and email tab).
+3. After launch (#71 rest): itinerary day builder with drag, product variants grid, category tree drag, rich text editor, TOTP sign-in, bookings and convert to booking (Phase D/E); a media picker inside the content editor.
+
+Earlier (11 Oct 19:30):
 1. Owner go-live (manual): VPS → docs/DEPLOY.md quick start (`init-env.sh`, fill email sender and first admin, `check.sh`, `deploy.sh`), DNS A records first.
 2. Right after: sign in at /secure-admin-control, change the password, replace Sample content, add Search Console and analytics IDs in Settings › Tracking, uptime monitor, Turnstile keys.
 3. First 48 hours: watch `docker compose logs`, Admin › Notifications and Leads; then #91 (performance), #71 (admin editors).
