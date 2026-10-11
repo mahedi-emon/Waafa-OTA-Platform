@@ -87,8 +87,14 @@ async function LeadBoard({
           </Button>
         ))}
       </nav>
-      <div className="-mx-4 overflow-x-auto px-4 pb-2 md:mx-0 md:px-0">
-        <ol className="grid min-w-[1100px] grid-cols-5 gap-3" aria-label={t("title")}>
+      {/* Scrolls sideways on narrow screens; focusable so keyboard users can scroll it too. */}
+      <div
+        role="region"
+        aria-label={t("title")}
+        tabIndex={0}
+        className="-mx-4 overflow-x-auto px-4 pb-2 outline-none focus-visible:ring-3 focus-visible:ring-ring/40 md:mx-0 md:px-0"
+      >
+        <ol className="grid min-w-[1100px] grid-cols-5 gap-3">
           {STAGES.map((stage, index) => {
             const column = columns[index];
             return (
