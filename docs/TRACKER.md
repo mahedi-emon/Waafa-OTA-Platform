@@ -37,6 +37,20 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #119 · Bug: first lead after an API restart failed on the 5 s transaction timeout — ✅ Fixed (with #120)
+| Field | Value |
+| --- | --- |
+| Found | 12 Oct 01:00 in the local production rehearsal: the first contact lead after an API restart took 14 s and returned 500 (Prisma interactive transaction expired while the query compiler and connections warmed up); reports page logged a Date.now() prerender error |
+| Branch · PR | `fix/119-cold-start-transactions` · #120 |
+| Fix | 15 s transaction timeout (maxWait 5 s) in the API and worker, warm-up queries at start-up; reports page calls connection() before reading the clock; integrations e2e safe to rerun |
+| Tests | unit regression (options, warm-up order); local stack rerun |
+
+### Local production rehearsal 2 (final main) — ✅ Done
+| Field | Value |
+| --- | --- |
+| When | 12 Oct 00:00–01:15 |
+| Results | deploy.sh from main twice (after #110 and after #117); all public routes 200, /admin 404, `/uploads/*` served by nginx from the API (WebP, immutable cache) and optimised by next/image; API-mode e2e 9/9 against nginx (lead, staff flow, FAQ edit, newsletter, integrations on with markup and reveal, media upload, rich text policy edit); admin walk-through of Integrations, Media library, Reports, Customers, Lead board and the rich text editor at 390 and 1440: axe clean, no horizontal scroll, no console errors; CSV download; nightly backup now archives the photos (restore tested by listing); found and fixed #119 |
+
 ### #116 · Rich text editor (part of #71) — ✅ Done (with #117)
 | Field | Value |
 | --- | --- |
@@ -1072,6 +1086,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #119 First lead after an API restart failed (5 s transaction timeout on a cold start); reports prerender log | P1 | API intake, admin reports | Fixed in #120 with a regression test |
 | #89 Product page photo had zero width (zoom button without width) | P0 | /shop/p/* | Fixed in #90 with an e2e size check |
 | Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 (PR pending) |
 | Boards disagree on two shop numbers: COD cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample); free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms | P2 | fixtures (shop settings) | Owner question |
@@ -1133,7 +1148,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
-| 12 Oct 00:00–01:30 | Owner: finish #91, Phase A/B leftovers, an API manager, run and test everything. Merged #106 (performance) and #110 (media library); #108 (integrations manager), #112 (reports, customers) and #114 (lead board) green in CI; local stack rebuilt from main | #91, #107, #109, #111, #113, #116 | #106, #108, #110, #112, #114, #117 | CI: unit, API (PostgreSQL), API-mode e2e, admin screens, public screens, Lighthouse |
+| 12 Oct 00:00–01:30 | Owner: finish #91, Phase A/B leftovers, an API manager, run and test everything. Merged #106 (performance) and #110 (media library); #108 (integrations manager), #112 (reports, customers) and #114 (lead board) green in CI; local stack rebuilt from main | #91, #107, #109, #111, #113, #116, #119 | #106, #108, #110, #112, #114, #117, #120 | CI: unit, API (PostgreSQL), API-mode e2e, admin screens, public screens, Lighthouse |
 | 11 Oct 18:00–19:30 | Launch prep with Docker Desktop: local production rehearsal (all green, backup/restore tested), CSP + security headers + analytics after consent (#103), SECURITY.md, C2 matrix verified (113 rows) | #74, #102 | #101, #103 | API-mode e2e 6/6 on the local stack · security e2e |
 | 11 Oct 15:00–17:30 | Owner: deploy by hand, best SEO, better design. SEO pass merged (#97: share previews on 40 pages, admin defaults, verification fields, WebSite/TravelAgency, ItemList, sitemap images), flight route landing pages (#100), deploy kit (#98: init-env.sh, check.sh, quick start) | #74, #96, #99 | #97, #98, #100 | e2e seo + routes · public screens 33 routes |
 | 11 Oct 14:00–15:30 | Board review with new screenshots: parity and motion merged (#88), product photo fix (#90), public screens job (#87), Lighthouse CI (#93). A22 closed: Phase A complete. Lighthouse mobile: A11y/BP/SEO 100 everywhere, Performance 45 (home) to 87 (visa) | #22, #89 | #87, #88, #90, #93 | public screens 32×5 · Lighthouse 5 routes |
