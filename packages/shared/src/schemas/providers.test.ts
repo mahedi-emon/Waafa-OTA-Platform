@@ -47,6 +47,13 @@ describe("custom providers (#107)", () => {
     expect(customProviderKey("flight", "Galileo BD!")).toBe("custom-flight-galileo-bd");
     expect(customProviderKey("sms", "  ")).toBe("custom-sms-provider");
     expect(customProviderKey("hotel", "x".repeat(80))).toHaveLength("custom-hotel-".length + 40);
+    // Repeated long names keep a valid key (issue 121).
+    const second = customProviderKey("flight", "Long supplier name for testing keys".repeat(3), 2);
+    expect(second.endsWith("-2")).toBe(true);
+    expect(ProviderKeySchema.safeParse(second).success).toBe(true);
+    expect(ProviderKeySchema.safeParse(customProviderKey("sms", "a".repeat(60), 12)).success).toBe(
+      true,
+    );
   });
 
   it("accepts catalog ids and custom keys, nothing else", () => {

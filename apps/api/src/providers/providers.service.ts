@@ -112,15 +112,15 @@ export class ProvidersService {
     staff: StaffPrincipal,
     input: CustomProviderInput,
   ): Promise<IntegrationSettingView> {
-    const base = customProviderKey(input.kind, input.name);
-    let key = base;
+    let key = customProviderKey(input.kind, input.name);
     for (
       let attempt = 2;
       await this.prisma.integrationSetting.findUnique({ where: { provider: key } });
       attempt++
     ) {
-      key = `${base.slice(0, 60)}-${attempt}`;
       if (attempt > 50) throw problems.conflict("Choose another name for this provider");
+      // The suffix replaces the end of the slug, so the key always matches ProviderKeySchema (issue 121).
+      key = customProviderKey(input.kind, input.name, attempt);
     }
     const row = await this.prisma.$transaction(async (tx) => {
       const created = await tx.integrationSetting.create({
