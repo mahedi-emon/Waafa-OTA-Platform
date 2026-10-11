@@ -157,6 +157,22 @@ jobs:
       - name: E2E smoke tests (390 and 1440 px, axe)
         run: pnpm e2e
 
+      # A22 QA (#22): every public route at five widths; screenshots at 390 and 1440 for the design review.
+      - name: Public screens at five widths
+        working-directory: apps/web
+        env:
+          PUBLIC_SHOTS: "1"
+        run: pnpm exec playwright test e2e/public-screens.spec.ts --workers=2
+
+      - name: Upload public screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: public-screens
+          path: apps/web/test-results/public-shots
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v7

@@ -155,6 +155,7 @@ function ChoiceShowcase() {
           <Label id="sg-budget-label">Budget per person</Label>
           <Slider
             aria-labelledby="sg-budget-label"
+            thumbLabels={["Lowest budget", "Highest budget"]}
             min={5000}
             max={200000}
             step={1000}
