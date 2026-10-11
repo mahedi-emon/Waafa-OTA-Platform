@@ -1,4 +1,6 @@
 import {
+  ChartColumn,
+  Contact,
   Bell,
   FileText,
   FolderTree,
@@ -34,6 +36,8 @@ import type { AdminIconName } from "@/lib/admin/navigation";
 
 const ICONS: Record<AdminIconName, LucideIcon> = {
   dashboard: LayoutDashboard,
+  reports: ChartColumn,
+  customers: Contact,
   leads: Inbox,
   search: ChartLine,
   fares: PlaneTakeoff,
