@@ -2,7 +2,7 @@
 
 import { SearchX } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { whatsappLink } from "@waafa/shared";
+import { whatsappLink } from "@waafa/shared/helpers/phone";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { useSearchCard } from "./SearchCardContext";

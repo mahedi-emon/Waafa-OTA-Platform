@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
-import { MAX_HOTEL_NIGHTS, daysBetween } from "@waafa/shared";
+import { MAX_HOTEL_NIGHTS, daysBetween } from "@waafa/shared/constants";
 import { Calendar } from "@/components/ui/calendar";
 import {
   addDays,

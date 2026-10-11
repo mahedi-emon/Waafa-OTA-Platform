@@ -2,7 +2,7 @@
 
 import { Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { MAX_MULTI_CITY_LEGS } from "@waafa/shared";
+import { MAX_MULTI_CITY_LEGS } from "@waafa/shared/constants";
 import { Button } from "@/components/ui/button";
 import { formatFieldDate, formatWeekday } from "@/lib/search/isoDate";
 import { travellerTotal } from "@/lib/search/searchState";

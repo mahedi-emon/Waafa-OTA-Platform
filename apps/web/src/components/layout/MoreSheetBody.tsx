@@ -1,6 +1,7 @@
 import { Phone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { whatsappLink, type ContactSettings, type MenuItem } from "@waafa/shared";
+import type { ContactSettings, MenuItem } from "@waafa/shared";
+import { whatsappLink } from "@waafa/shared/helpers/phone";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { MoreGrid } from "./MoreGrid";
 
