@@ -37,9 +37,16 @@ async function CtaSection({ cta }: CtaSectionProps) {
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-whatsapp-700 px-6 text-[15px] font-semibold text-white outline-none hover:bg-whatsapp-500 focus-visible:ring-3 focus-visible:ring-cyan-400/60"
+                className="relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-full bg-whatsapp-700 px-6 text-[15px] font-semibold text-white outline-none hover:bg-whatsapp-500 focus-visible:ring-3 focus-visible:ring-cyan-400/60"
               >
-                <WhatsAppIcon className="size-5" />
+                {/* Shimmer (HANDOFF: shimmer button on WhatsApp): desktop, once every few seconds, off under reduced motion. */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 hidden overflow-hidden rounded-[inherit] motion-reduce:hidden! pointer-fine:lg:block"
+                >
+                  <span className="absolute inset-y-0 left-0 w-1/3 animate-sheen bg-linear-to-r from-transparent via-white/30 to-transparent" />
+                </span>
+                <WhatsAppIcon className="relative size-5" />
                 {t("whatsapp")}
               </a>
               <a

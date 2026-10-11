@@ -400,6 +400,15 @@
   }
 }
 
+/* Card spotlight (components/fx/CardFx): a soft electric glow centred on the pointer (--spot-x / --spot-y). */
+@utility spotlight-layer {
+  background: radial-gradient(
+    300px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in oklab, var(--color-electric-600) 11%, transparent),
+    transparent 70%
+  );
+}
+
 @keyframes word-rise {
   from {
     opacity: 0;
