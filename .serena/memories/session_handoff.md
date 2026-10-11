@@ -1,14 +1,14 @@
 # Session handoff (update at every session end)
-Updated 2026-10-11 17:30 Dhaka.
-Phase A ✅, Phase B ✅ (launch scope). Owner deploys BY HAND later: docs/DEPLOY.md quick start →
-deploy/init-env.sh <domain> <email> (secrets generated) → fill RESEND_API_KEY|SMTP_URL, STAFF_ALERT_EMAIL,
-SEED_ADMIN_EMAIL/PASSWORD → deploy/check.sh → deploy/deploy.sh. #74 stays open until it is live.
-Today (late): #97 SEO (withSocial on all public pages, admin default SEO + Search Console/Bing fields, WebSite +
-TravelAgency, ItemList, sitemap images), #98 deploy kit, #100 flight route landing pages (/flights/[route],
-flightRoutes collection, Popular routes on /flights). Lighthouse (CI): A11y/BP/SEO 100; Perf home 45 (#91).
-Phase B prompt items not built (post-launch): R2 uploads + media library (#71), CSV/Excel reports, compatibility CSV
-import, pg_trgm search, k6 load scripts, @fastify/compress/etag (API is private behind the web cache).
-Next: 1) owner manual deploy; 2) after go-live: Search Console code, submit sitemap, Facebook debugger, expert review of
-Sample routes; 3) #91 perf (home TBT), more route pages, Bangla P1.
-Gotchas: stale apps/web/tsconfig.tsbuildinfo hides new message keys (delete it); commitlint header ≤ 100 chars;
-Bash collapses `\\`; python glob treats [locale] as a class; Local Postgres stopped (low memory).
+Updated 2026-10-11 20:30 Dhaka.
+LAUNCH-READY. Phase A ✅, B ✅, C: everything code-side done; #74 open until the owner runs the VPS deploy by hand
+(docs/DEPLOY.md quick start: init-env.sh → fill email sender + first admin → check.sh → deploy.sh).
+Today (evening): local production rehearsal on Docker Desktop (deploy/.env local, gitignored; stack still running at
+http://localhost, Mailpit at :8025, admin owner@example.com / password in deploy/.env): routes 200, /admin 404, API-mode
+e2e 6/6, email via worker, backup+restore identical. #103 CSP + headers + analytics after consent (Settings › Tracking),
+docs/SECURITY.md (OWASP map, audit: no runtime-exploitable finding, D152). #104 TRACKER: C2 audit 112 rows verified.
+Verify CI job timeout 45 min (public screens 33 routes, 3 workers).
+Next: 1) owner go-live on the VPS; 2) after go-live: password change, replace Sample content, Search Console + analytics
+IDs in Settings › Tracking, Turnstile keys, uptime monitor; 3) #91 perf, #71 admin editors, Bangla P1.
+To stop the local stack: docker compose -f deploy/compose.yml down (add -v to wipe data); docker rm -f waafa-mailpit.
+Gotchas: "#102"-style issue refs in code comments trip the hex guard (write "issue 102"); stale tsbuildinfo hides new
+message keys; commitlint header ≤ 100 chars; Bash collapses `\\`.
