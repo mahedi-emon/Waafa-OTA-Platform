@@ -12,6 +12,21 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 | `postgres` | `postgres:16`, volume `pgdata` | no | 640 MB |
 | `redis` | `redis:7`, append-only, `noeviction` (BullMQ) | no | 160 MB |
 
+### Server to buy
+
+| | Minimum (launch) | Recommended (room to grow) |
+| --- | --- | --- |
+| CPU | 2 vCPU, x86_64 (Intel or AMD) | 4 vCPU, x86_64 |
+| Memory | 4 GB (+ 4 GB swap file) | 8 GB |
+| Disk | 60 GB NVMe SSD | 100 GB NVMe SSD |
+| Traffic | 2 TB a month | 4 TB a month |
+| System | Ubuntu 24.04 LTS | Ubuntu 24.04 LTS |
+| Region | Singapore (or Mumbai): the shortest round trip to Dhaka | same |
+
+The containers are capped at about 2.8 GB together (table above), PostgreSQL included. The images are built on GitHub
+for x86_64 only: an ARM server (Ampere, Graviton, Hetzner CAX) would need `--build`. Turn on the provider's weekly
+snapshot backups as a second copy.
+
 Outside the server: an email sender (Resend, or any SMTP server), Cloudflare Turnstile (optional at launch) and the
 domain's DNS.
 
@@ -58,7 +73,7 @@ Every later release: `cd /opt/waafa && git pull && sh deploy/deploy.sh`.
 ## 1. Prepare the server (once)
 
 ```bash
-# Swap: the web build needs about 2 GB on top of the running stack.
+# Swap: a safety margin for the running stack (and about 2 GB more if the web is ever built here with --build).
 sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
@@ -102,10 +117,30 @@ providers are managed in the same screen; turning a flight or hotel API on never
 cd /opt/waafa && git pull && sh deploy/deploy.sh
 ```
 
-The script builds the API image, starts PostgreSQL, Redis and the API (migrations and seed run on start), waits until
-`/ready` answers, builds the web against the API (the build prerenders pages from the content snapshot), then starts
-the worker, the web, nginx and certbot; with `ACME_EMAIL` set it then gets the Let's Encrypt certificate
-and switches nginx to HTTPS (DNS must already point at the server). The first run takes 10 to 15 minutes; later runs reuse the dependency layers.
+Images come from Docker Hub (issue 130): every push to `main` runs the GitHub Actions workflow **Docker images**
+(`.github/workflows/docker.yml`). It builds the API, web and nginx images, starts them in the runner behind nginx,
+checks the main routes, checks that no secret is inside any image, then pushes `emon6107/waafa-ota-platform:api-<sha>`,
+`:web-<sha>`, `:nginx-<sha>` and the `-latest` tags. With `IMAGE_REPO` set in `deploy/.env` (the default from
+`init-env.sh`), the script on the server:
+
+1. pulls the three images (`IMAGE_TAG`, default `latest`) and checks the web image was built for this `SITE_URL` and
+   for the same Turnstile site key as the server's secret;
+2. starts PostgreSQL, Redis and the API (migrations and the idempotent seed run on start) and waits until `/ready`
+   answers;
+3. starts the worker, the web, nginx and certbot, and clears the nginx cache;
+4. once the web is healthy, sends a signed revalidation (`deploy/revalidate.mjs` inside the API container), so the
+   pages prerendered at build time render again from this server's database;
+5. with `ACME_EMAIL` set, gets the Let's Encrypt certificate and switches nginx to HTTPS (DNS must already point at the
+   server).
+
+A deploy takes 2 to 4 minutes (the first pull about 1 GB). `sh deploy/deploy.sh --build` (or an empty `IMAGE_REPO`)
+builds the images on the server instead, as before: it needs about 2 GB more memory and 10 to 15 minutes.
+
+GitHub settings the workflow uses: secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` (set); repository variables
+`SITE_URL` (default `https://waafasworld.com`) and `TURNSTILE_SITE_KEY` (empty until Turnstile is set up). The site
+address and the Turnstile site key are built into the web pages, so after changing either variable run the workflow
+again (Actions › Docker images › Run workflow) before deploying. The images are public and hold no secret: every
+secret reaches the containers from `deploy/.env` at start.
 
 Check: `docker compose -f deploy/compose.yml ps` shows every service running (`api` healthy), and
 `curl -s http://127.0.0.1:4000/ready` answers `{"status":"ready","database":"up"}`. `https://<domain>` answers with a valid certificate; certbot renews it when due and nginx reloads every 6 hours.
@@ -158,10 +193,15 @@ nginx serves them at `/uploads/` straight from the API with a one-year cache; ad
 
 ## 7. Rollback
 
+Images are tagged with the commit's 7-character sha (Docker Hub › Tags, or `git log --oneline -5`):
+
 ```bash
-cd /opt/waafa && git log --oneline -5        # pick the last good commit
-git checkout <commit> && sh deploy/deploy.sh  # back on main later: git checkout main && git pull
+cd /opt/waafa
+sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=<sha>/' deploy/.env && sh deploy/deploy.sh   # back to the newest: IMAGE_TAG=latest
 ```
+
+Built on the server instead: `git checkout <commit> && sh deploy/deploy.sh --build` (back on main later:
+`git checkout main && git pull`).
 
 Migrations only add tables and columns, so the previous API keeps working on the newer database. Content: every admin
 save is in Admin › Audit log with its before and after values.

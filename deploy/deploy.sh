@@ -1,47 +1,102 @@
 #!/bin/sh
-# Builds and starts the WAAFA stack on the VPS (docs/DEPLOY.md). Run from the repository root after `git pull`:
-#   sh deploy/deploy.sh
-# Order matters: the web build prerenders pages from the API, so PostgreSQL, Redis and the API start first. On the
-# first run with ACME_EMAIL set, it gets the Let's Encrypt certificate and switches nginx to HTTPS.
+# Starts the WAAFA stack on the VPS (docs/DEPLOY.md). Run from the repository root after `git pull`:
+#   sh deploy/deploy.sh            pulls the images GitHub Actions pushed to Docker Hub (IMAGE_REPO in deploy/.env)
+#   sh deploy/deploy.sh --build    builds the images on this machine instead (the default when IMAGE_REPO is empty)
+# Order matters: PostgreSQL, Redis and the API start first (a local web build prerenders pages from the API). After
+# the web starts, a signed call refreshes its caches from the live database. On the first run with ACME_EMAIL set,
+# it gets the Let's Encrypt certificate and switches nginx to HTTPS.
 set -eu
 
 COMPOSE="docker compose -f deploy/compose.yml"
 
 if [ ! -f deploy/.env ]; then
-  echo "deploy/.env is missing: copy deploy/.env.example and fill it in." >&2
+  echo "deploy/.env is missing: run sh deploy/init-env.sh <domain> <email> and fill it in." >&2
   exit 1
 fi
 setting() { sed -n "s/^$1=//p" deploy/.env | tr -d '\r' | head -n 1; }
 DOMAIN=$(setting SITE_DOMAIN)
 EMAIL=$(setting ACME_EMAIL)
+REPO=$(setting IMAGE_REPO)
+TAG=$(setting IMAGE_TAG)
+TAG=${TAG:-latest}
 
-echo "1/5 API image"
-$COMPOSE build api
+MODE=pull
+if [ "${1:-}" = "--build" ] || [ -z "$REPO" ]; then MODE=build; fi
 
-echo "2/5 Database, Redis, API (migrations and seed run on start)"
-$COMPOSE up -d postgres redis api
-attempt=0
-until [ "$(docker inspect -f '{{.State.Health.Status}}' "$($COMPOSE ps -q api)")" = "healthy" ]; do
-  attempt=$((attempt + 1))
-  if [ "$attempt" -gt 60 ]; then
-    echo "The API did not become ready; last log lines:" >&2
-    $COMPOSE logs --tail 80 api >&2
+# Waits until a service's health check passes; prints its last log lines and stops the deploy otherwise.
+wait_healthy() {
+  attempt=0
+  until [ "$(docker inspect -f '{{.State.Health.Status}}' "$($COMPOSE ps -q "$1")" 2>/dev/null)" = "healthy" ]; do
+    attempt=$((attempt + 1))
+    if [ "$attempt" -gt 60 ]; then
+      echo "$1 did not become ready; last log lines:" >&2
+      $COMPOSE logs --tail 80 "$1" >&2
+      exit 1
+    fi
+    sleep 3
+  done
+  echo "$1 ready"
+}
+
+# A pulled web image is built for one address and one Turnstile site key (both public, stored as image labels).
+check_web_image() {
+  image="$REPO:web-$TAG"
+  label() { docker image inspect -f "{{ index .Config.Labels \"$1\" }}" "$image" 2>/dev/null | sed 's/<no value>//'; }
+  built_url=$(label org.waafa.site-url)
+  built_key=$(label org.waafa.turnstile-site-key)
+  site_url=$(setting SITE_URL)
+  if [ "$built_url" != "$site_url" ]; then
+    if [ "$DOMAIN" = "localhost" ]; then
+      echo "Note: the web image was built for $built_url; canonical links point there (fine for a local run)."
+    else
+      echo "The web image was built for '$built_url' but SITE_URL is '$site_url'. Set the GitHub variable SITE_URL" >&2
+      echo "and run the Docker images workflow again, or fix SITE_URL in deploy/.env." >&2
+      exit 1
+    fi
+  fi
+  if [ -n "$(setting TURNSTILE_SECRET_KEY)" ] && [ -z "$built_key" ]; then
+    echo "TURNSTILE_SECRET_KEY is set but the web image has no Turnstile site key, so every form would be refused." >&2
+    echo "Set the GitHub variable TURNSTILE_SITE_KEY and run the Docker images workflow, or empty the secret." >&2
     exit 1
   fi
-  sleep 3
-done
-echo "API ready"
+  if [ -n "$built_key" ] && [ -z "$(setting TURNSTILE_SECRET_KEY)" ]; then
+    echo "Note: the web image shows Turnstile; set TURNSTILE_SECRET_KEY in deploy/.env so the server checks it."
+  fi
+}
 
-echo "3/5 Web image (reads the API snapshot through 127.0.0.1:4000)"
-# The classic builder accepts the host network for this one build without extra BuildKit entitlements.
-COMPOSE_BAKE=false $COMPOSE build web
+if [ "$MODE" = pull ]; then
+  echo "1/5 Images from Docker Hub ($REPO, tag $TAG)"
+  $COMPOSE pull api web nginx
+  check_web_image
 
-echo "4/5 Worker, web, nginx and certbot"
-$COMPOSE build nginx
-$COMPOSE up -d worker web nginx certbot
+  echo "2/5 Database, Redis, API (migrations and seed run on start)"
+  $COMPOSE up -d --no-build postgres redis api
+  wait_healthy api
+else
+  echo "1/5 API image (built here)"
+  $COMPOSE build api
+
+  echo "2/5 Database, Redis, API (migrations and seed run on start)"
+  $COMPOSE up -d --no-build postgres redis api
+  wait_healthy api
+
+  echo "   Web and nginx images (the web build reads the API snapshot through 127.0.0.1:4000)"
+  # The classic builder accepts the host network for this one build without extra BuildKit entitlements.
+  COMPOSE_BAKE=false $COMPOSE build web
+  $COMPOSE build nginx
+fi
+
+echo "3/5 Worker, web, nginx and certbot"
+$COMPOSE up -d --no-build worker web nginx certbot
 # Optimised images and /media/ files have no content hash in their URLs: drop the cached copies so a photo replaced in
 # this deploy shows at once (issue 126). nginx treats a missing cache file as a miss and refills it on demand.
 $COMPOSE exec -T nginx sh -c 'rm -rf /var/cache/nginx/waafa/*' || echo "nginx cache not cleared (nginx not running yet)"
+
+echo "4/5 Fresh content"
+wait_healthy web
+# Pages were prerendered when the image was built; expire every cache tag so they render from this server's database.
+$COMPOSE exec -T api node --input-type=module < deploy/revalidate.mjs ||
+  echo "Web caches not refreshed: pages show the build's content until the next admin save." >&2
 
 echo "5/5 HTTPS certificate"
 if [ -n "$EMAIL" ] && [ "$DOMAIN" != "localhost" ]; then
@@ -60,4 +115,4 @@ fi
 # Old image layers fill a small disk quickly.
 docker image prune -f > /dev/null
 $COMPOSE ps
-echo "Done. Check the site, then Admin > Audit log after the first sign-in."
+echo "Done ($MODE mode). Check the site, then Admin > Audit log after the first sign-in."

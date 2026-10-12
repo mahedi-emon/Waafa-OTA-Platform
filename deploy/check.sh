@@ -18,10 +18,19 @@ if docker version > /dev/null 2>&1; then ok "Docker is running"; else fix "Docke
 if docker compose version > /dev/null 2>&1; then ok "Docker Compose plugin present"; else fix "Docker Compose plugin missing (install docker-compose-plugin)"; fi
 if docker ps > /dev/null 2>&1; then ok "This user can run Docker"; else fix "Add this user to the docker group: sudo usermod -aG docker \$USER, then log out and in"; fi
 
-# Memory: the web build needs about 2 GB on top of the running stack.
+# Memory: the running stack needs about 3 GB; building the web here (no IMAGE_REPO) needs about 2 GB more.
 mem=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo 2>/dev/null || echo 0)
 swap=$(awk '/SwapTotal/ {print int($2/1024)}' /proc/meminfo 2>/dev/null || echo 0)
-if [ "$((mem + swap))" -ge 5500 ]; then ok "Memory ${mem} MB + swap ${swap} MB"; else fix "Memory ${mem} MB + swap ${swap} MB: add a 4 GB swap file (docs/DEPLOY.md step 1)"; fi
+if [ -n "$(setting IMAGE_REPO)" ]; then need=3500; else need=5500; fi
+if [ "$((mem + swap))" -ge "$need" ]; then ok "Memory ${mem} MB + swap ${swap} MB"; else fix "Memory ${mem} MB + swap ${swap} MB (needs ${need} MB): add a 4 GB swap file (docs/DEPLOY.md step 1)"; fi
+if [ -n "$(setting IMAGE_REPO)" ]; then
+  tag=$(setting IMAGE_TAG)
+  ok "Images come from Docker Hub: $(setting IMAGE_REPO), tag ${tag:-latest}"
+  case "$(uname -m)" in
+    x86_64 | amd64) ok "CPU architecture $(uname -m) matches the images" ;;
+    *) fix "This server is $(uname -m); the images are built for x86_64 (amd64). Use an Intel/AMD server or --build" ;;
+  esac
+fi
 
 # Disk: images and the database need room.
 free_gb=$(df -Pk . | awk 'NR==2 {print int($4/1048576)}')

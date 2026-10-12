@@ -1,6 +1,8 @@
 # WAAFA production stack for one VPS (2 vCPU, 4 GB RAM): docs/DEPLOY.md. Run from the repository root:
-#   cp deploy/.env.example deploy/.env   (fill it in; never commit it)
+#   sh deploy/init-env.sh <domain> <email>   (then fill it in; never commit deploy/.env)
 #   sh deploy/deploy.sh
+# Images (issue 130): with IMAGE_REPO set (e.g. emon6107/waafa-ota-platform) deploy.sh pulls the api-, web- and
+# nginx- tags that GitHub Actions built (.github/workflows/docker.yml); without it, the images are built here.
 # Only nginx is public (80 and 443, HTTPS from Let's Encrypt through the certbot service). PostgreSQL, Redis, the API and the worker stay on the private
 # network; the API also listens on 127.0.0.1:4000 so the web build can read the content snapshot.
 name: waafa
@@ -63,7 +65,7 @@ services:
     build:
       context: ..
       dockerfile: apps/api/Dockerfile
-    image: waafa-api:latest
+    image: ${IMAGE_REPO:-waafa}:api-${IMAGE_TAG:-latest}
     restart: unless-stopped
     environment: *api-env
     ports: ["127.0.0.1:4000:4000"]
@@ -85,7 +87,7 @@ services:
     mem_limit: 640m
 
   worker:
-    image: waafa-api:latest
+    image: ${IMAGE_REPO:-waafa}:api-${IMAGE_TAG:-latest}
     restart: unless-stopped
     command: ["node_modules/.bin/tsx", "src/worker.ts"]
     environment:
@@ -106,7 +108,7 @@ services:
         NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
         WAAFA_API_URL: http://127.0.0.1:4000
         WAAFA_INTAKE_KEY: ${INTAKE_KEY:?set INTAKE_KEY}
-    image: waafa-web:latest
+    image: ${IMAGE_REPO:-waafa}:web-${IMAGE_TAG:-latest}
     restart: unless-stopped
     environment:
       WAAFA_API_URL: http://api:4000
@@ -122,7 +124,7 @@ services:
   nginx:
     build:
       context: ./nginx
-    image: waafa-nginx:latest
+    image: ${IMAGE_REPO:-waafa}:nginx-${IMAGE_TAG:-latest}
     restart: unless-stopped
     ports: ["80:80", "443:443"]
     environment:
