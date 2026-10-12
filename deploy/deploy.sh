@@ -39,6 +39,9 @@ COMPOSE_BAKE=false $COMPOSE build web
 echo "4/5 Worker, web, nginx and certbot"
 $COMPOSE build nginx
 $COMPOSE up -d worker web nginx certbot
+# Optimised images and /media/ files have no content hash in their URLs: drop the cached copies so a photo replaced in
+# this deploy shows at once (issue 126). nginx treats a missing cache file as a miss and refills it on demand.
+$COMPOSE exec -T nginx sh -c 'rm -rf /var/cache/nginx/waafa/*' || echo "nginx cache not cleared (nginx not running yet)"
 
 echo "5/5 HTTPS certificate"
 if [ -n "$EMAIL" ] && [ "$DOMAIN" != "localhost" ]; then

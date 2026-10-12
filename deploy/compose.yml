@@ -37,6 +37,7 @@ services:
     command: >-
       postgres -c shared_buffers=256MB -c effective_cache_size=768MB -c work_mem=8MB
       -c maintenance_work_mem=64MB -c max_connections=60
+      -c random_page_cost=1.1 -c effective_io_concurrency=200
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U waafa -d waafa"]
@@ -129,6 +130,8 @@ services:
     volumes:
       - letsencrypt:/etc/letsencrypt:ro
       - certbot_www:/var/www/certbot:ro
+      # Cached build files and images (issue 126); safe to delete, it refills on demand.
+      - nginxcache:/var/cache/nginx
     depends_on: [web]
     mem_limit: 96m
 
@@ -151,5 +154,6 @@ volumes:
   pgdata:
   redisdata:
   mediadata:
+  nginxcache:
   letsencrypt:
   certbot_www:

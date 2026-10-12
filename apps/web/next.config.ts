@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   reactStrictMode: true,
   poweredByHeader: false,
+  // The Docker image runs behind nginx, which compresses (deploy/nginx, issue 126); elsewhere Next does it.
+  compress: !standalone,
   // Workspace packages ship TypeScript source; Next compiles them with the app.
   transpilePackages: ["@waafa/shared", "@waafa/fixtures"],
   images: {
