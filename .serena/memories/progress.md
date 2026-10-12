@@ -1,4 +1,8 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-13 04:30 Dhaka — #156 airline logos (PR #159), #157 hero fare card + chip flags (PR #161), #158 VPS
+  bootstrap + runbook + web cap 1 GB (PR #160). Launch-ready; owner deploys 14 Oct.
+- 2026-10-13 01:15 Dhaka — Owner batch: #146 Log in words + store copy (PR #150), #149 Resend + Google env keys
+  (PR #151), #147 country flags (PR #152), #148 larger hero + flight path in the media sky (PR #153, with #154 e2e fix).
 - 2026-10-12 21:30 Dhaka — Google sign-in tested end to end locally; bugs #138/#140/#142 fixed (PRs #139/#141/#143).
 - 2026-10-12 18:30 Dhaka — #134 Google sign-in for customers (PR #135), off until keys + Accounts live.
 - 2026-10-12 15:00 Dhaka — #130 Docker Hub images (PR #131: workflow builds/checks/pushes, server pulls), #128

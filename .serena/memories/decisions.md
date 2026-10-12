@@ -27,7 +27,17 @@
   image labels checked by deploy.sh). D162 dependabot merges keep dependabot[bot] as author.
 - D163 (#134) Google sign-in behind Integrations › Sign-in + Accounts live; API exchanges the code (secret stays in
   the API), opaque 30-day sessions hashed; My account by verified email; safeNext allows printable ASCII paths only.
-- Header (#142): desktop Log in is icon-only at every width (words in the phone menu); nav trigger px-1.5, xl:px-2;
+- D164 (#147) real country flags: flag-icons 7.2.3 MIT SVGs in public/media/flags, CountryFlag (cva xs–lg, alt "",
+  two-letter fallback); destinations/group fares take the country from the airport record.
+- D165 (#146, supersedes #142) Log in shows words from 1280 px (icon 1024–1279), header tagline from 1440 px
+  (LogoLockup taglineFrom="wide"); Accounts live default true in fixtures (new installs only; schema default false).
+- D166 (#149) Google keys: Admin Integrations record wins; GOOGLE_CLIENT_ID/SECRET env fallback only when no record.
+- D167 (#148) hero media clamp(480px,58vh,620px) from lg, 16:10 sm; FlightPath = dashed route + plane inside the sky.
+- D168 (#156) airline logos: bundled square marks by IATA code (scripts/fetch-airline-logos.mjs), Airline.logo from
+  Admin wins, code fallback; "We book", never partners. D169 (#157) hero: next group fare card over the route's
+  departure dot (bottom calc(34.9%-12px)), flags in TextRotate marks, RibbonLine, masked static glows; glass only on
+  the search card. D170 (#158) web mem cap 1g; deploy/bootstrap-server.sh for fresh Ubuntu.
+- Header (#142, words now per D165): nav trigger px-1.5, xl:px-2;
   account Log out/Delete are POST route handlers with same-origin check (no server-action redirects into streaming pages).
 - Structured data (#125): shared @ids from lib/seo/schemaIds.ts; CollectionPageJsonLd; data must mirror visible content
   (store ItemList follows the Best sellers row); never ratings/reviews.
