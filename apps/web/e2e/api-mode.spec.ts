@@ -275,6 +275,9 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
     }
   }
   await expect(page.getByRole("link", { name: "Log in", exact: true })).toBeVisible();
+  // At 1440 px the words show on one line (issue 140: they wrapped to "Log / in").
+  const label = page.getByRole("link", { name: "Log in", exact: true }).locator("span");
+  expect((await label.boundingBox())?.height ?? 0).toBeLessThan(30);
 
   // My account without a session asks to log in.
   await page.goto("/account");
