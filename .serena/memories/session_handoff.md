@@ -1,22 +1,23 @@
 # Session handoff (update at every session end)
-Updated 2026-10-12 10:30 Dhaka.
-LAUNCH-READY (go-live 13 Oct). Owner deploys by hand (#74 stays open until then, docs/DEPLOY.md quick start).
-Today: PR #127 (#126 nginx gzip + cache for /_next/static, /_next/image, /media; deploy.sh clears the cache), PR #129
-(#125 structured data: schemaIds.ts, CollectionPageJsonLd, /shop OnlineStore + best sellers ItemList that follows the
-row, About AboutPage + Organization, Gallery ImageGallery, Visa Guide CollectionPage, visa country Service + Offer),
-docs PR #118 (#115). Each has a COMMENT code review from the owner's account with inline comments, findings fixed and
-answered. Merge order once CI is green: #127, #129, then update #118 from main and merge it; close #126, #125, #115.
-Dependabot #128 (patch bumps, CI green): approve + merge was blocked by the local auto-mode permission check; owner
-merges it or allows the command.
-OWNER RULE (12 Oct): before every merge, real code review of the PR diff posted with `gh api .../pulls/N/reviews`
-(event COMMENT, inline comments) from the owner's account; never Copilot; no AI wording. Own PRs cannot be APPROVED.
-Integrations (owner asked again 12 Oct): already complete in #108 — IntegrationSetting (isActive, isLive, markupType,
-markupValue) + ProviderCredential (AES-256-GCM sealed secrets per environment), admin tabs Flight | Hotel | Payment |
-Communication, reveal button, Sandbox/Live and Active switches, custom providers with extra headers,
-ProvidersService.getIntegrationConfig + resolveCategory (manual fallback when no active provider).
-Local Docker stack is DOWN (stopped for memory); restart with `sh deploy/deploy.sh` (MSYS_NO_PATHCONV=1 on Windows).
-Next: 1) merge #127/#129/#118 after green CI; 2) owner go-live on the VPS; 3) after go-live: Search Console + Rich
-Results test, Sample content, Tracking IDs, Turnstile, uptime; then #71 rest and Bangla (P1).
-Gotchas: seo.spec share-preview test needs test.slow() on this PC; testing-library is not installed (use
-react-dom/server in unit tests); Git Bash mangles `rev:path` (MSYS_NO_PATHCONV=1); never t.raw; "#123" in web code
-trips the hex guard; write scripts with Write (heredocs with quotes break).
+Updated 2026-10-12 15:00 Dhaka.
+LAUNCH-READY (go-live 13 Oct, waafasworld.com). Merged today: #127 (#126 nginx gzip + cache), #129 (#125 structured
+data), #118 (#115 docs), #128 (dependabot, approved from the owner's account; commit author dependabot[bot], D162),
+#131 (#130 Docker Hub images). Open: #74 (owner's VPS deploy), #71 (later), epics #30-#33.
+DEPLOY FLOW (D161): push to main → workflow "Docker images" builds api/web/nginx (deploy.sh --build in the runner,
+throwaway secrets), smoke + secret scan, pushes emon6107/waafa-ota-platform:{api,web,nginx}-<sha7> and -latest.
+Server: git clone repo to /opt/waafa, copy deploy/.env (IMAGE_REPO set) → sh deploy/check.sh → sh deploy/deploy.sh
+(docker pull, label guard for SITE_URL/Turnstile key, up, nginx cache clear, signed revalidation, certbot).
+Rollback: IMAGE_TAG=<sha7>. GitHub: secrets DOCKERHUB_USERNAME/TOKEN; variables SITE_URL (default
+https://waafasworld.com), TURNSTILE_SITE_KEY (re-run workflow after changing).
+Production settings: deploy/.env.production on the owner's PC (gitignored; admin + ACME + staff email =
+the owner's git email; generated secrets). Still needed from the owner: RESEND_API_KEY or SMTP_URL (API refuses to
+start without one), DNS A records (apex + www), the VPS (x86_64, 2 vCPU/4 GB min, 4/8 recommended, Singapore).
+Local stack: deploy/.env (localhost) now has IMAGE_REPO → `sh deploy/deploy.sh` pulls the Docker Hub images; Mailpit
+container waafa-mailpit (axllent/mailpit:v1.27) on :8025/:1025. Stop: docker compose -f deploy/compose.yml down.
+OWNER RULE: real code review on every PR, posted from the owner's account (gh api .../pulls/N/reviews, COMMENT +
+inline comments; bot PRs APPROVE), fix + reply, then merge; never Copilot; no AI wording. Reviews do count
+(contributionsCollection.totalPullRequestReviewContributions).
+Next: 1) owner buys the VPS + DNS + Resend → deploy; 2) after go-live: Search Console, Rich Results test, Sample
+content, Tracking IDs, Turnstile (GitHub variable + re-run + secret), uptime; 3) #71 rest, Bangla P1.
+Gotchas: compose pull only warns for buildable services (use docker pull); Git Bash mangles rev:path
+(MSYS_NO_PATHCONV=1); seo.spec needs test.slow() on this PC; no testing-library (react-dom/server in unit tests).
