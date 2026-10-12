@@ -2,7 +2,7 @@
   "Metadata": {
     "title": "Waafa Tours and Travel",
     "titleTemplate": "%s | Waafa",
-    "description": "Flights, hotels, tour packages and visas from Motijheel, Dhaka, plus Waafas World, Waafa International’s online store."
+    "description": "Flights, hotels, tour packages and visas from Motijheel, Dhaka, plus Waafas World by Waafa International."
   },
   "Common": {
     "skipToContent": "Skip to content"
@@ -160,6 +160,7 @@
     "topCategories": "Top categories",
     "services": "Waafa International services",
     "shopAll": "Shop all products",
+    "storeBy": "by {company}",
     "tabBar": "Main sections",
     "whatsappChat": "Chat on WhatsApp",
     "dismiss": "Dismiss announcement",
@@ -1276,7 +1277,7 @@
   "Shop": {
     "name": "Waafas World",
     "metaTitle": "Waafas World: printer supplies, office products and more",
-    "metaDescription": "Waafa International’s online store. Genuine and compatible printer supplies, office products and everyday items, cash on delivery across Bangladesh.",
+    "metaDescription": "Waafas World by Waafa International. Genuine and compatible printer supplies, office products and everyday items, cash on delivery across Bangladesh.",
     "bar": {
       "label": "Waafas World",
       "search": "Search products, brands and categories",

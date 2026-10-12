@@ -5,11 +5,19 @@ import { Link } from "@/i18n/navigation";
 import markImage from "@/assets/brand/waafa-mark.png";
 import wordmarkImage from "@/assets/brand/waafa-wordmark.png";
 
+/** Literal classes per breakpoint so Tailwind sees them. */
+const TAGLINE_FROM = {
+  md: "md:block",
+  lg: "lg:block",
+  xl: "xl:block",
+  wide: "min-[1440px]:block",
+} as const;
+
 type LogoLockupProps = {
   /** Show the three-line tagline from 768 px (header and footer). Off in drawers and tight spots. */
   tagline?: boolean;
-  /** Breakpoint from which the tagline shows: md (footer) or xl (header, where the nav needs the room below 1280 px). */
-  taglineFrom?: "md" | "lg" | "xl";
+  /** Breakpoint from which the tagline shows: md (footer) or wide (1440 px, header: the nav and Log in need the room). */
+  taglineFrom?: keyof typeof TAGLINE_FROM;
   /** Render as a link to Home (default) or as a plain image group. */
   asLink?: boolean;
   className?: string;
@@ -51,16 +59,13 @@ function LogoLockup({
         <>
           <span
             aria-hidden="true"
-            className={cn(
-              "mx-0.5 hidden h-8 w-px bg-mist-300",
-              taglineFrom === "xl" ? "xl:block" : taglineFrom === "lg" ? "lg:block" : "md:block",
-            )}
+            className={cn("mx-0.5 hidden h-8 w-px bg-mist-300", TAGLINE_FROM[taglineFrom])}
           />
           <span
             aria-hidden="true"
             className={cn(
               "hidden text-[8.8px] leading-[1.34] font-semibold tracking-[0.1em] whitespace-nowrap text-mist-600 uppercase xl:text-[9.6px]",
-              taglineFrom === "xl" ? "xl:block" : taglineFrom === "lg" ? "lg:block" : "md:block",
+              TAGLINE_FROM[taglineFrom],
             )}
           >
             {t("taglineLine1")}
