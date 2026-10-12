@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { CountryCode } from "./CountryCode";
+import { CountryFlag } from "@/components/media/CountryFlag";
 import { PickerAnchor } from "./PickerAnchor";
 import { anchorFieldId, useSearchCard } from "./SearchCardContext";
 import { SearchField } from "./SearchField";
@@ -27,7 +27,7 @@ function VisaPanel({ pending }: VisaPanelProps) {
             value={visa.country ? visa.country.name : t("empty.country")}
             sub={t("values.passport")}
             empty={!visa.country}
-            leading={visa.country ? <CountryCode code={visa.country.flagCode} /> : undefined}
+            leading={visa.country ? <CountryFlag code={visa.country.flagCode} /> : undefined}
             active={active("country")}
             onOpen={() => dispatch({ type: "open", key: "country" })}
           />

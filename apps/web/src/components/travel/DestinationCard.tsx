@@ -1,19 +1,23 @@
 import { Clock3, Stamp } from "lucide-react";
 import type { Destination } from "@waafa/shared";
+import { CountryFlag } from "@/components/media/CountryFlag";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Link } from "@/i18n/navigation";
 import { CardFx } from "@/components/fx/CardFx";
 
 type DestinationCardProps = {
   destination: Destination;
+  /** The country of the destination airport, for the flag in the corner. */
+  countryCode?: string | null;
   /** "3 h 30 m flight" and "From ৳38,500", already formatted by the caller. */
   labels: { flight: string; price: string };
   sizes?: string;
 };
 
-/** Destination tile (DESIGN.md "Cards"): real photo with a bottom gradient, flight time, visa note and price from. */
+/** Destination tile (DESIGN.md "Cards"): real photo with a bottom gradient, the country flag, flight time, visa note and price from. */
 function DestinationCard({
   destination,
+  countryCode,
   labels,
   sizes = "(min-width: 1280px) 200px, (min-width: 768px) 33vw, 50vw",
 }: DestinationCardProps) {
@@ -31,6 +35,13 @@ function DestinationCard({
           aria-hidden="true"
           className="absolute inset-0 bg-linear-to-t from-midnight-950/85 via-midnight-950/25 to-transparent"
         />
+        {countryCode ? (
+          <CountryFlag
+            code={countryCode}
+            size="md"
+            className="absolute top-3 left-3 ring-2 ring-white/80 md:top-3.5 md:left-3.5"
+          />
+        ) : null}
         <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3.5 text-white md:p-4">
           <h3 className="font-display text-[18px] leading-tight font-bold">
             <Link
