@@ -19,7 +19,9 @@ export function isSameOrigin(request: Request): boolean {
   // nginx passes the visitor's Host through unchanged.
   const host = request.headers.get("host");
   const origin = request.headers.get("origin");
-  if (origin && origin !== "null") {
+  // Sandboxed or privacy-stripped frames send the literal "null": never a post from this site's own pages.
+  if (origin === "null") return false;
+  if (origin) {
     try {
       return Boolean(host) && new URL(origin).host === host;
     } catch {

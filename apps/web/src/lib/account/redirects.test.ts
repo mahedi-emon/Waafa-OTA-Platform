@@ -32,6 +32,7 @@ describe("account form posts (issue 138)", () => {
       false,
     );
     expect(isSameOrigin(post({ host: "waafasworld.com", origin: "not a url" }))).toBe(false);
+    expect(isSameOrigin(post({ host: "waafasworld.com", origin: "null" }))).toBe(false);
   });
 
   it("lets a post without browser headers through (the session cookie is still needed)", () => {
