@@ -50,12 +50,25 @@ export class CustomersService {
     @Inject(ENV) private readonly env: Env,
   ) {}
 
+  /**
+   * Admin › Integrations › Sign-in wins. Without a saved Google record, the server's GOOGLE_CLIENT_ID and
+   * GOOGLE_CLIENT_SECRET are used, so a fresh production server signs in from the first start (#149). A record that
+   * is turned off stays off: the environment never overrides an admin's choice.
+   */
   private async googleCredentials(): Promise<{ clientId: string; clientSecret: string } | null> {
     const config = await this.providers.getIntegrationConfig("auth", "google");
-    if (config.status !== "ready") return null;
-    const clientId = config.settings.clientId?.trim();
-    const clientSecret = config.secrets.clientSecret?.trim();
-    return clientId && clientSecret ? { clientId, clientSecret } : null;
+    if (config.status === "ready") {
+      const clientId = config.settings.clientId?.trim();
+      const clientSecret = config.secrets.clientSecret?.trim();
+      return clientId && clientSecret ? { clientId, clientSecret } : null;
+    }
+    const clientId = this.env.GOOGLE_CLIENT_ID?.trim();
+    const clientSecret = this.env.GOOGLE_CLIENT_SECRET?.trim();
+    if (!clientId || !clientSecret) return null;
+    const saved = await this.prisma.integrationSetting.findUnique({
+      where: { provider: "google" },
+    });
+    return saved ? null : { clientId, clientSecret };
   }
 
   /** Whether the Google button shows, and the public client ID it redirects with. */

@@ -35,6 +35,9 @@ export const EnvSchema = z
     SMTP_URL: optional,
     MAIL_FROM: z.string().default("Waafa <no-reply@waafasworld.com>"),
     STAFF_ALERT_EMAIL: optional,
+    /** Google sign-in when Admin › Integrations › Sign-in has no Google record yet (#149). Set both or neither. */
+    GOOGLE_CLIENT_ID: optional,
+    GOOGLE_CLIENT_SECRET: optional,
     SEED_ADMIN_EMAIL: optional,
     SEED_ADMIN_PASSWORD: optional,
     /** Encrypts external API secrets at rest (#82). Without it, provider secrets cannot be saved. */
@@ -54,6 +57,11 @@ export const EnvSchema = z
       Boolean(env.RESEND_API_KEY || env.SMTP_URL),
       "RESEND_API_KEY",
       "Production needs RESEND_API_KEY or SMTP_URL",
+    );
+    need(
+      Boolean(env.GOOGLE_CLIENT_ID) === Boolean(env.GOOGLE_CLIENT_SECRET),
+      "GOOGLE_CLIENT_ID",
+      "Set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET, or neither",
     );
     need(env.WEB_ORIGINS.length > 0, "WEB_ORIGINS", "Production needs the web origin");
     need(!/change-me|dev-only/.test(env.JWT_SECRET), "JWT_SECRET", "Set a real JWT_SECRET");
