@@ -1,5 +1,9 @@
 # Session handoff (update at every session end)
-Updated 2026-10-12 15:00 Dhaka.
+Updated 2026-10-12 18:30 Dhaka.
+GOOGLE SIGN-IN (#134, PR #135, D163): built and merged, OFF until two switches: Admin › Integrations › Sign-in
+(Google client ID + secret, Active) and Content › Site settings › Accounts live. Owner steps: docs/DEPLOY.md 5b.
+API: Customer/CustomerSession, public/auth/google(+config), public/account(+sign-out, delete); web: /login,
+/account, /api/auth/google/start|callback (state + PKCE cookie), session cookie waafa_customer.
 LAUNCH-READY (go-live 13 Oct, waafasworld.com). Merged today: #127 (#126 nginx gzip + cache), #129 (#125 structured
 data), #118 (#115 docs), #128 (dependabot, approved from the owner's account; commit author dependabot[bot], D162),
 #131 (#130 Docker Hub images). Open: #74 (owner's VPS deploy), #71 (later), epics #30-#33.
