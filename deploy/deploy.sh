@@ -66,7 +66,11 @@ check_web_image() {
 
 if [ "$MODE" = pull ]; then
   echo "1/5 Images from Docker Hub ($REPO, tag $TAG)"
-  $COMPOSE pull api web nginx
+  # docker pull, not `compose pull`: compose only warns when a buildable service fails to pull and would carry on
+  # with an old local image; here a failed pull stops the deploy.
+  for service in api web nginx; do
+    docker pull "$REPO:$service-$TAG"
+  done
   check_web_image
 
   echo "2/5 Database, Redis, API (migrations and seed run on start)"
