@@ -321,6 +321,7 @@ Every visual deviation from the prototype, with the reason (correction 11: the p
 | 404 search box "Search trips, visas or products" | Home plus five popular pages | No site-wide search route yet | D118 |
 | Two-letter country marks ("TH", "EU") in pickers and visa cards | Real country flags (self-hosted SVG, 4:3, empty alt beside the name) on visa cards and pages, the visa, destination and airport pickers, destination tiles and group fares | Owner request 12 Oct; flags are national symbols, not illustrations, so correction 7 does not apply. The two-letter mark stays as the fallback | D164 |
 | Home hero media 21:8 with the flight path drawn over the headline area | Media panel 4:3 / 16:10 / clamp(480px, 58vh, 620px) from 1024 px with soft top and bottom shade; the flight path (dashed route + plane) lives inside the panel sky | Owner request 12 Oct: bigger, more cinematic hero; the old line crossed the lead and the Open now chip | D167 |
+| Airline code in a navy chip (airline strip, group fares, route pages) | Square airline logo (bundled by IATA code, or the logo uploaded in Admin), code chip as fallback | Owner request 13 Oct; logos identify the airlines we book, labelled "We book", never "partners" | D168 |
 
 ## Known gaps
 - Logo vectors: the lockup uses the supplied PNG cut-outs until the original SVG/AI arrives (owner question).

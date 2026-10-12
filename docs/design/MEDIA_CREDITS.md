@@ -72,3 +72,7 @@ instead); a power bank clip (no free real footage found; the sample power bank h
 ## Country flags (MIT)
 
 `apps/web/public/media/flags/*.svg`: 256 ISO 3166-1 flags plus `eu` (Schengen) from [flag-icons 7.2.3](https://github.com/lipis/flag-icons) by Panayiotis Lipiridis, MIT licence (`LICENSE.txt` beside the files), 4:3, optimised with SVGO. Rendered by `components/media/CountryFlag.tsx` (issue 147).
+
+## Airline logos (trademarks of the airlines)
+
+`apps/web/public/media/airlines/<IATA>.png`: square logo marks (192 × 192) for 89 airlines that fly from Bangladesh and the region, downloaded by `node scripts/fetch-airline-logos.mjs` from the logo service at pics.avs.io (issue 156). Each logo belongs to its airline and is shown only to identify the airlines we book, never as a partnership claim. Admin › Travel › Airlines › Logo replaces any of them; airlines without a logo show their code. Not bundled: 2A Air Astra (the service returns another company's mark) and KB.

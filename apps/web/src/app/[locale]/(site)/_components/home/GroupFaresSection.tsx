@@ -3,6 +3,7 @@ import type { HomeSection } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { SectionHeading } from "@/components/content/SectionHeading";
 import { Marquee } from "@/components/motion/Marquee";
+import { AirlineLogo } from "@/components/travel/AirlineLogo";
 import { GroupFareCard } from "@/components/travel/GroupFareCard";
 import { listFeaturedAirlines, listGroupFares } from "@/lib/data/travel";
 import { HomeSectionShell } from "./HomeSectionShell";
@@ -46,11 +47,9 @@ async function GroupFaresSection({ section }: { section: HomeSection }) {
             {airlines.map((airline) => (
               <span
                 key={airline.code}
-                className="mx-2 inline-flex h-11 items-center gap-2 rounded-full border border-mist-200 bg-white px-4 text-[14px] font-medium whitespace-nowrap text-ink-900"
+                className="mx-2 inline-flex h-12 items-center gap-2.5 rounded-full border border-mist-200 bg-white py-1.5 pr-4 pl-1.5 text-[14px] font-medium whitespace-nowrap text-ink-900 shadow-xs"
               >
-                <span className="font-display text-[12px] font-extrabold tracking-wider text-brand-700">
-                  {airline.code}
-                </span>
+                <AirlineLogo airline={airline} size="md" className="rounded-full" />
                 {airline.name}
               </span>
             ))}
