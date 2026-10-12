@@ -1,4 +1,4 @@
-# WAAFA deploy runbook (launch 13 Oct 2026)
+# WAAFA deploy runbook (go-live 14 Oct 2026)
 
 Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `deploy/compose.yml`.
 
@@ -6,7 +6,7 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 | --- | --- | --- | --- |
 | `nginx` | `deploy/nginx` (nginx 1.27): reverse proxy, HTTPS, www → apex, rate limit on form posts | 80 and 443 | 96 MB |
 | `certbot` | `certbot/certbot`: gets and renews the Let's Encrypt certificate | no | 128 MB |
-| `web` | `apps/web/Dockerfile` (Next.js standalone) | through nginx only | 768 MB |
+| `web` | `apps/web/Dockerfile` (Next.js standalone) | through nginx only | 1 GB |
 | `api` | `apps/api/Dockerfile` (runs migrations and the idempotent seed, then starts) | no (127.0.0.1:4000 for the web build) | 640 MB |
 | `worker` | same image as the API, command `tsx src/worker.ts` | no | 384 MB |
 | `postgres` | `postgres:16`, volume `pgdata` | no | 640 MB |
@@ -32,34 +32,59 @@ domain's DNS.
 
 ## Quick start (manual deploy, about 30 minutes)
 
-Run these on the VPS as a user with `sudo`. Replace `waafasworld.com` and the email with your own.
+The production settings file is ready on the owner's PC: `deploy/.env.production` (secrets, Resend and Google keys;
+never committed). Replace `SERVER_IP` with the VPS address and `deploy` with your sudo user (or use `root`).
+
+**0. DNS (do this first, it can take a few minutes):** at the domain registrar add two A records, `waafasworld.com` →
+`SERVER_IP` and `www.waafasworld.com` → `SERVER_IP` (remove any old A or AAAA records for both).
 
 ```bash
-# 1. Once per server: swap, firewall, Docker (details in step 1 below)
-sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw enable
-curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker "$USER"   # log out and in once
+# 1. From your PC: log in to the server
+ssh deploy@SERVER_IP
 
-# 2. The code
-sudo mkdir -p /opt/waafa && sudo chown "$USER" /opt/waafa
-git clone https://github.com/mahedi-emon/Waafa-OTA-Platform.git /opt/waafa && cd /opt/waafa
+# 2. On the server, once: updates, Asia/Dhaka time, 4 GB swap, firewall (22, 80, 443), Docker with log rotation,
+#    frees ports 80/443 from a host nginx or Apache, creates /opt/waafa
+curl -fsSL https://raw.githubusercontent.com/mahedi-emon/Waafa-OTA-Platform/main/deploy/bootstrap-server.sh | sudo sh -s -- "$USER"
+exit                       # log out and in again so docker works without sudo
+ssh deploy@SERVER_IP
 
-# 3. Settings: creates deploy/.env with new random secrets, then add the email sender and the first admin
-sh deploy/init-env.sh waafasworld.com you@example.com
-nano deploy/.env        # RESEND_API_KEY or SMTP_URL, STAFF_ALERT_EMAIL, SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD
+# 3. The code
+git clone https://github.com/mahedi-emon/Waafa-OTA-Platform.git /opt/waafa
+cd /opt/waafa
 
-# 4. Check everything (Docker, memory, ports, settings, DNS), then deploy
+# 4. From your PC (a second terminal, in the project folder): copy the prepared settings
+scp deploy/.env.production deploy@SERVER_IP:/opt/waafa/deploy/.env
+
+# 5. Back on the server: lock the file, check everything (Docker, memory, ports, settings, DNS), then deploy.
+#    deploy.sh pulls the images from Docker Hub, starts PostgreSQL, Redis, API, worker, web and nginx, runs the
+#    migrations and the seed, refreshes the caches and gets the Let's Encrypt certificate for both names.
+chmod 600 deploy/.env
 sh deploy/check.sh
 sh deploy/deploy.sh
 
-# 5. Daily backups
+# 6. Daily backups at 03:15 (database and uploaded photos, 14 days kept)
 (crontab -l 2>/dev/null; echo "15 3 * * * cd /opt/waafa && sh deploy/backup.sh >> deploy/backups/backup.log 2>&1") | crontab -
 ```
 
-Then open `https://waafasworld.com/secure-admin-control`, sign in with the first Super Admin, change the password,
-remove `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` from `deploy/.env`, and follow the launch checks in step 5.
-Every later release: `cd /opt/waafa && git pull && sh deploy/deploy.sh`.
+Without the prepared file (a new server for someone else): `sh deploy/init-env.sh waafasworld.com you@example.com`
+creates `deploy/.env` with new random secrets; then fill `RESEND_API_KEY`, `STAFF_ALERT_EMAIL`, `SEED_ADMIN_EMAIL`,
+`SEED_ADMIN_PASSWORD` and, for Google sign-in, `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+
+nginx runs inside Docker (the `nginx` service: HTTPS, www → apex redirect, gzip, caching, security headers), so the
+server needs no nginx of its own. Useful commands on the server:
+
+```bash
+cd /opt/waafa
+docker compose -f deploy/compose.yml ps                 # every service and its health
+docker compose -f deploy/compose.yml logs -f --tail=100 api web nginx
+sh deploy/deploy.sh                                      # every release (pulls the newest images)
+IMAGE_TAG=<7-character sha> sh deploy/deploy.sh          # roll back to an earlier release (step 7)
+free -h && docker stats --no-stream                      # memory
+```
+
+Then open `https://waafasworld.com/secure-admin-control`, sign in with the first Super Admin (`SEED_ADMIN_EMAIL` and
+`SEED_ADMIN_PASSWORD` from the settings file), change the password, remove both lines from `deploy/.env`, and follow
+the launch checks in step 5. Every later release: `cd /opt/waafa && git pull && sh deploy/deploy.sh`.
 
 ## 0. Owner checklist
 
