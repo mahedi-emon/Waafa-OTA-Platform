@@ -16,6 +16,7 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Canonical } from "@/components/seo/Canonical";
+import { CollectionPageJsonLd } from "@/components/seo/CollectionPageJsonLd";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
@@ -50,6 +51,18 @@ async function GalleryContent({
   return (
     <main id="main" className="site-container flex flex-col gap-10 pt-4 pb-28 md:pt-6">
       <Canonical path="/gallery" />
+      {/* The canonical page is the full gallery, so its data lists every album, not a category filter. */}
+      <CollectionPageJsonLd
+        type="ImageGallery"
+        path="/gallery"
+        name={t("title")}
+        description={t("metaDescription")}
+        items={all.map((album) => ({
+          name: album.title,
+          path: `/gallery/${album.slug}`,
+          image: album.cover.src,
+        }))}
+      />
       <div className="flex flex-col gap-6">
         <Breadcrumbs items={[{ label: t("kicker") }]} />
         <PageHero
