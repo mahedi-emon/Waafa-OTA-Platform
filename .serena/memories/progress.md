@@ -1,4 +1,6 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-12 15:00 Dhaka — #130 Docker Hub images (PR #131: workflow builds/checks/pushes, server pulls), #128
+  merged after an approving review; production env for waafasworld.com prepared locally; local run from Docker Hub.
 - 2026-10-12 10:30 Dhaka — Launch-day prep: #126 nginx gzip + proxy cache (PR #127, review: 2 findings fixed), #125
   structured data for /shop, About, Gallery, Visa Guide, visa country Service + Offer (PR #129, review: 1 finding
   fixed), docs #118 reviewed. Integrations request = already shipped in #108 (verified). Dependabot #128: approve/merge

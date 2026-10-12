@@ -1182,6 +1182,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 12 Oct 13:30–15:30 | Owner: open issue/PR, reviews on his profile (checked: 12 review contributions counted), run the project, Docker Hub images, server size, production env. #128 approved from the owner's account and merged; #130 Docker Hub pipeline (PR #131, review: 1 finding fixed); production settings for waafasworld.com created locally (gitignored); local stack runs from the pushed images | #128, #130, #132 | #128, #131 | Docker images workflow (build, smoke, secret scan, push) · CI all green |
 | 12 Oct 08:00–10:30 | Owner: close the open issues, integrations settings (already shipped in #108: verified schema, endpoints, admin tabs, reveal, Sandbox/Live, Active, markup, getIntegrationConfig with manual fallback), deploy-ready, best SEO, server optimisation, every PR reviewed from the owner's account. Reviewed and fixed #127 (2 findings), built and reviewed #129 (1 finding fixed), approved review for dependabot #128 blocked by the local permission check (owner merges it) | #115, #125, #126 | #127, #128, #129 | web unit 261 · e2e seo 5/5 on a production build · CI |
 | 12 Oct 00:00–01:30 | Owner: finish #91, Phase A/B leftovers, an API manager, run and test everything. Merged #106 (performance) and #110 (media library); #108 (integrations manager), #112 (reports, customers) and #114 (lead board) green in CI; local stack rebuilt from main | #91, #107, #109, #111, #113, #116, #119 | #106, #108, #110, #112, #114, #117, #120 | CI: unit, API (PostgreSQL), API-mode e2e, admin screens, public screens, Lighthouse |
 | 11 Oct 18:00–19:30 | Launch prep with Docker Desktop: local production rehearsal (all green, backup/restore tested), CSP + security headers + analytics after consent (#103), SECURITY.md, C2 matrix verified (113 rows) | #74, #102 | #101, #103 | API-mode e2e 6/6 on the local stack · security e2e |
@@ -1212,6 +1213,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner (13 Oct): buy the VPS (x86_64, 2 vCPU / 4 GB minimum, 4 vCPU / 8 GB recommended, Ubuntu 24.04, Singapore), point waafasworld.com and www at it, create a Resend account (verify the domain) and put RESEND_API_KEY in the production settings; then DEPLOY.md quick start with the prepared `deploy/.env.production` copied to `/opt/waafa/deploy/.env`.
+2. Right after: change the admin password, remove SEED_ADMIN_* from the server env, Search Console + sitemap, Rich Results test, replace Sample content, Tracking IDs, uptime monitor; Turnstile = GitHub variable TURNSTILE_SITE_KEY + re-run Docker images + server secret.
+3. After launch: #71 rest, Bangla (P1).
+
+Earlier (12 Oct 10:30):
 1. Owner go-live (manual, 13 Oct): VPS → docs/DEPLOY.md quick start; `deploy.sh` now also clears the nginx cache on every release.
 2. Right after: Search Console → submit /sitemap.xml and run the Rich Results test on /, /shop, /about-us, /visa-services/thailand, /tour-packages; replace Sample content; IDs in Settings › Tracking; Turnstile keys; uptime monitor.
 3. After launch: #71 rest (itinerary drag builder, variants grid, category tree drag, TOTP, media picker), Bangla (P1).

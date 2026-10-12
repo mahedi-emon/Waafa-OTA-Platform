@@ -22,6 +22,9 @@
 - D159 (12 Oct) every PR: COMMENT code review with inline comments from the owner's account before merge; never
   Copilot; bot PRs may be approved. D160 (#126) nginx gzip + proxy cache (/_next/static 30 d, /_next/image 7 d per
   format, /media 1 d), Next compression off in the Docker image only, deploy.sh clears the cache.
+- D161 (#130) GitHub Actions builds api/web/nginx images → public Docker Hub emon6107/waafa-ota-platform
+  ({service}-<sha7>, {service}-latest); VPS pulls; SITE_URL + Turnstile site key are build-time (GitHub variables,
+  image labels checked by deploy.sh). D162 dependabot merges keep dependabot[bot] as author.
 - Structured data (#125): shared @ids from lib/seo/schemaIds.ts; CollectionPageJsonLd; data must mirror visible content
   (store ItemList follows the Best sellers row); never ratings/reviews.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; PowerShell Move-Item
