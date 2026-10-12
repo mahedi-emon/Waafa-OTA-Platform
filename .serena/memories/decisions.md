@@ -27,6 +27,8 @@
   image labels checked by deploy.sh). D162 dependabot merges keep dependabot[bot] as author.
 - D163 (#134) Google sign-in behind Integrations › Sign-in + Accounts live; API exchanges the code (secret stays in
   the API), opaque 30-day sessions hashed; My account by verified email; safeNext allows printable ASCII paths only.
+- Header (#142): desktop Log in is icon-only at every width (words in the phone menu); nav trigger px-1.5, xl:px-2;
+  account Log out/Delete are POST route handlers with same-origin check (no server-action redirects into streaming pages).
 - Structured data (#125): shared @ids from lib/seo/schemaIds.ts; CollectionPageJsonLd; data must mirror visible content
   (store ItemList follows the Best sellers row); never ratings/reviews.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; PowerShell Move-Item

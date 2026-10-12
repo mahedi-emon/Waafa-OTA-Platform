@@ -1,5 +1,11 @@
 # Session handoff (update at every session end)
-Updated 2026-10-12 18:30 Dhaka.
+Updated 2026-10-12 21:30 Dhaka.
+LOCAL TEST of Google sign-in done on the Docker stack (images 3838572): 4/4 at 320–1920 px. Fixed on the way: #138
+(delete → React 412: Log out/Delete are now POST route handlers /api/account/{sign-out,delete} with 303 relative
+redirects; header 1024), #140 (1280 + label wrap), #142 (desktop Log in icon-only always; nav px-1.5 / xl:px-2; static
+nav renders More). Lesson: CI Linux fonts render the nav ~14 px wider than Windows; e2e checks header grid at 1024–1920.
+Local DB: Google connected with a FAKE client (local-test-…) and Accounts live ON, so /login shows the button; Google
+answers "invalid client" until real keys. Production DB starts clean (both switches off).
 GOOGLE SIGN-IN (#134, PR #135, D163): built and merged, OFF until two switches: Admin › Integrations › Sign-in
 (Google client ID + secret, Active) and Content › Site settings › Accounts live. Owner steps: docs/DEPLOY.md 5b.
 API: Customer/CustomerSession, public/auth/google(+config), public/account(+sign-out, delete); web: /login,

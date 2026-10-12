@@ -1,4 +1,5 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-12 21:30 Dhaka — Google sign-in tested end to end locally; bugs #138/#140/#142 fixed (PRs #139/#141/#143).
 - 2026-10-12 18:30 Dhaka — #134 Google sign-in for customers (PR #135), off until keys + Accounts live.
 - 2026-10-12 15:00 Dhaka — #130 Docker Hub images (PR #131: workflow builds/checks/pushes, server pulls), #128
   merged after an approving review; production env for waafasworld.com prepared locally; local run from Docker Hub.
