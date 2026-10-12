@@ -92,11 +92,11 @@ async function SiteHeader() {
           {site.accountsLive ? (
             <Link
               href="/login"
-              // Icon only from 1024 px (the full label made the header overflow, issue 138); the words from 1280 px.
-              className="hidden size-11 items-center justify-center gap-2 rounded-full bg-navy-900 text-[15px] font-semibold text-white transition-colors duration-150 hover:bg-royal-800 focus-visible:ring-3 focus-visible:ring-ring/40 lg:inline-flex xl:w-auto xl:px-5"
+              // Icon only from 1024 px; the words from 1360 px (the label overflowed at 1024 px and, by 8 px, at 1280 px: issues 138 and 140).
+              className="hidden size-11 items-center justify-center gap-2 rounded-full bg-navy-900 text-[15px] font-semibold text-white transition-colors duration-150 hover:bg-royal-800 focus-visible:ring-3 focus-visible:ring-ring/40 min-[1360px]:w-auto min-[1360px]:px-5 lg:inline-flex"
             >
               <User aria-hidden="true" className="size-[18px]" />
-              <span className="sr-only xl:not-sr-only">{t("logIn")}</span>
+              <span className="sr-only min-[1360px]:not-sr-only">{t("logIn")}</span>
             </Link>
           ) : null}
           <MobileMenu
