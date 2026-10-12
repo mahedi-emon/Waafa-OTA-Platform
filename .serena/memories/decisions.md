@@ -18,7 +18,12 @@
   per-environment sealed credentials; custom providers "custom-<kind>-<slug>" with generic fields; audited reveal;
   getIntegrationConfig / resolveCategory (manual fallback); email via active Resend/SMTP else env mailer.
 - D156 (#109) media uploads on VPS volume, sharp in the API (WebP, 2560 px, no EXIF), /uploads via nginx → API.
-- D157 (#111) customers keyed by phone across leads and orders until accounts (Phase D).
+- D157 (#111) customers keyed by phone across leads and orders until accounts (Phase D). D158 (#116) tiptap rich text.
+- D159 (12 Oct) every PR: COMMENT code review with inline comments from the owner's account before merge; never
+  Copilot; bot PRs may be approved. D160 (#126) nginx gzip + proxy cache (/_next/static 30 d, /_next/image 7 d per
+  format, /media 1 d), Next compression off in the Docker image only, deploy.sh clears the cache.
+- Structured data (#125): shared @ids from lib/seo/schemaIds.ts; CollectionPageJsonLd; data must mirror visible content
+  (store ItemList follows the Best sellers row); never ratings/reviews.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; PowerShell Move-Item
   treats [locale] as wildcard; Radix SelectValue empty on SSR; never use t.raw (placeholders via t(key,{x:"{x}"}));
   getByLabel is substring (use exact); e2e sign-ins need their own x-forwarded-for (5 per 15 min per address);

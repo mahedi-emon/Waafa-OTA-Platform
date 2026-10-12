@@ -1,4 +1,8 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-12 10:30 Dhaka — Launch-day prep: #126 nginx gzip + proxy cache (PR #127, review: 2 findings fixed), #125
+  structured data for /shop, About, Gallery, Visa Guide, visa country Service + Offer (PR #129, review: 1 finding
+  fixed), docs #118 reviewed. Integrations request = already shipped in #108 (verified). Dependabot #128: approve/merge
+  blocked by the local permission check; owner merges it.
 - 2026-10-12 01:30 Dhaka — Night batch for the owner ("finish #91, Phase A/B leftovers, API manager, run + test"):
   merged #106 (#91 perf: home JS 318→215 KB, Lighthouse home 45→64, visa 91, CLS 0) and #110 (#109 media library);
   #108 (#107 integrations manager), #112 (#111 reports + customers), #114 (#113 lead board) in CI / merging; docs #115.

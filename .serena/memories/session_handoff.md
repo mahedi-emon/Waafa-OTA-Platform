@@ -1,18 +1,22 @@
 # Session handoff (update at every session end)
-Updated 2026-10-12 01:45 Dhaka.
-LAUNCH-READY. Owner deploys by hand (#74, docs/DEPLOY.md quick start). Night batch merged to main: #106 (#91 perf:
-home JS 318→215 KB, Lighthouse home 45→64, visa 91, CLS 0), #110 (#109 media library), #108 (#107 integrations
-manager), #112 (#111 reports + CSV + customers), #114 (#113 lead board), #117 (#116 rich text editor). #120 (#119
-cold-start transaction bug: 15 s transaction timeout, bounded warm-up, reports at request time) and docs #118 (#115)
-merge after review + green CI.
-OWNER RULE (12 Oct): before every merge, do a real code review of the PR diff and post it with
-`gh api .../pulls/N/reviews` (event COMMENT, inline comments) from the owner's account; never Copilot; no AI wording.
-Fix findings, reply on the thread, then merge. Own PRs cannot be APPROVED (GitHub rule).
-Local Docker stack at http://localhost runs final main (before #120); rehearsal 2: API-mode e2e 8/8 through nginx,
-admin walk-through clean, backups include photos (Windows: MSYS_NO_PATHCONV=1).
-Next: 1) merge #120 and #118, close #119/#115; 2) rebuild local stack (sh deploy/deploy.sh) and confirm the first lead
-after an API restart succeeds; 3) owner go-live. #71 still open: itinerary drag builder, variants grid, category tree
-drag, TOTP, bookings, media picker in the content editor.
-Gotchas: never t.raw; getByLabel substring (use exact); e2e sign-ins use x-forwarded-for per test (nginx overwrites
-it, so local runs need an API restart every 5 sign-ins); "#123" in web code trips the hex guard; write scripts with
-Write (heredocs with quotes break).
+Updated 2026-10-12 10:30 Dhaka.
+LAUNCH-READY (go-live 13 Oct). Owner deploys by hand (#74 stays open until then, docs/DEPLOY.md quick start).
+Today: PR #127 (#126 nginx gzip + cache for /_next/static, /_next/image, /media; deploy.sh clears the cache), PR #129
+(#125 structured data: schemaIds.ts, CollectionPageJsonLd, /shop OnlineStore + best sellers ItemList that follows the
+row, About AboutPage + Organization, Gallery ImageGallery, Visa Guide CollectionPage, visa country Service + Offer),
+docs PR #118 (#115). Each has a COMMENT code review from the owner's account with inline comments, findings fixed and
+answered. Merge order once CI is green: #127, #129, then update #118 from main and merge it; close #126, #125, #115.
+Dependabot #128 (patch bumps, CI green): approve + merge was blocked by the local auto-mode permission check; owner
+merges it or allows the command.
+OWNER RULE (12 Oct): before every merge, real code review of the PR diff posted with `gh api .../pulls/N/reviews`
+(event COMMENT, inline comments) from the owner's account; never Copilot; no AI wording. Own PRs cannot be APPROVED.
+Integrations (owner asked again 12 Oct): already complete in #108 — IntegrationSetting (isActive, isLive, markupType,
+markupValue) + ProviderCredential (AES-256-GCM sealed secrets per environment), admin tabs Flight | Hotel | Payment |
+Communication, reveal button, Sandbox/Live and Active switches, custom providers with extra headers,
+ProvidersService.getIntegrationConfig + resolveCategory (manual fallback when no active provider).
+Local Docker stack is DOWN (stopped for memory); restart with `sh deploy/deploy.sh` (MSYS_NO_PATHCONV=1 on Windows).
+Next: 1) merge #127/#129/#118 after green CI; 2) owner go-live on the VPS; 3) after go-live: Search Console + Rich
+Results test, Sample content, Tracking IDs, Turnstile, uptime; then #71 rest and Bangla (P1).
+Gotchas: seo.spec share-preview test needs test.slow() on this PC; testing-library is not installed (use
+react-dom/server in unit tests); Git Bash mangles `rev:path` (MSYS_NO_PATHCONV=1); never t.raw; "#123" in web code
+trips the hex guard; write scripts with Write (heredocs with quotes break).
