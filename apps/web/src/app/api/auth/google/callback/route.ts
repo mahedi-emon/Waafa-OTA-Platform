@@ -1,6 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 import { signInWithGoogle } from "@/lib/account/accountApi";
 import {
   GOOGLE_CALLBACK_PATH,
@@ -8,6 +7,7 @@ import {
   SESSION_COOKIE,
   decodePending,
 } from "@/lib/account/googleOAuth";
+import { seeOther } from "@/lib/account/redirects";
 import { clientKey } from "@/lib/rateLimit";
 import { absoluteUrl } from "@/lib/siteUrl";
 
@@ -27,8 +27,7 @@ export async function GET(request: Request) {
   const pending = decodePending(store.get(OAUTH_COOKIE)?.value);
 
   const finish = (path: string) => {
-    const response = NextResponse.redirect(absoluteUrl(path), 303);
-    response.headers.set("cache-control", "no-store");
+    const response = seeOther(path);
     response.cookies.set(OAUTH_COOKIE, "", { path: GOOGLE_CALLBACK_PATH, maxAge: 0 });
     return response;
   };

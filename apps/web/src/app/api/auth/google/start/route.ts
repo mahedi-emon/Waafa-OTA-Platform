@@ -10,6 +10,7 @@ import {
   newState,
   safeNext,
 } from "@/lib/account/googleOAuth";
+import { seeOther } from "@/lib/account/redirects";
 import { getSiteSettings } from "@/lib/data/settings";
 import { absoluteUrl } from "@/lib/siteUrl";
 
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
   const next = safeNext(new URL(request.url).searchParams.get("next") ?? undefined);
   const [site, config] = await Promise.all([getSiteSettings(), googleSignInConfig()]);
   if (!site.accountsLive || !config.enabled || !config.clientId) {
-    return NextResponse.redirect(absoluteUrl("/login?error=off"), 303);
+    return seeOther("/login?error=off");
   }
   const { verifier, challenge } = newPkce();
   const state = newState();

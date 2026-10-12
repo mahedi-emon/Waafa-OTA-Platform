@@ -23,7 +23,8 @@ test.describe("customer accounts while off", () => {
     });
     expect(response.status()).toBe(303);
     const location = response.headers()["location"] ?? "";
-    expect(location).toMatch(/\/login\?error=off$/);
+    // Relative, so a local run stays on its own address (issue 138).
+    expect(location).toBe("/login?error=off");
     expect(location).not.toContain("accounts.google.com");
     expect(response.headers()["set-cookie"] ?? "").not.toContain("waafa_oauth");
   });
@@ -33,7 +34,45 @@ test.describe("customer accounts while off", () => {
       maxRedirects: 0,
     });
     expect(response.status()).toBe(303);
-    expect(response.headers()["location"] ?? "").toMatch(/\/login\?error=expired$/);
+    expect(response.headers()["location"]).toBe("/login?error=expired");
     expect(response.headers()["set-cookie"] ?? "").not.toContain("waafa_customer=");
+  });
+});
+
+test.describe("account form posts (issue 138)", () => {
+  test("log out and delete refuse another site and answer with relative 303s", async ({
+    request,
+    baseURL,
+  }) => {
+    const evil = await request.post("/api/account/sign-out", {
+      headers: { origin: "https://evil.example.com" },
+      maxRedirects: 0,
+    });
+    expect(evil.status()).toBe(403);
+
+    const out = await request.post("/api/account/sign-out", {
+      headers: { origin: baseURL ?? "" },
+      maxRedirects: 0,
+    });
+    expect(out.status()).toBe(303);
+    expect(out.headers()["location"]).toBe("/");
+    expect(out.headers()["set-cookie"] ?? "").toMatch(/waafa_customer=;/);
+
+    const unticked = await request.post("/api/account/delete", {
+      headers: { origin: baseURL ?? "" },
+      form: {},
+      maxRedirects: 0,
+    });
+    expect(unticked.status()).toBe(303);
+    expect(unticked.headers()["location"]).toBe("/account?error=confirm");
+
+    // Ticked but without a session: nothing is deleted.
+    const noSession = await request.post("/api/account/delete", {
+      headers: { origin: baseURL ?? "" },
+      form: { confirm: "yes" },
+      maxRedirects: 0,
+    });
+    expect(noSession.status()).toBe(303);
+    expect(noSession.headers()["location"]).toBe("/account?error=delete");
   });
 });

@@ -37,6 +37,14 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #138 · Bug: header overflow at 1024 px with accounts on; delete account ended on the error page — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Found | 12 Oct 19:00, local end-to-end check of Google sign-in on the Docker stack (Docker Hub images), Accounts live on: horizontal scroll 39 px at 1024 px on every page; Delete account → "Something went wrong" (React #412) although the account was deleted |
+| Branch · PR | `fix/138-account-header-and-delete` · see the issue |
+| Fix | Header Log in icon-only from 1024 px, words from 1280 px; Log out and Delete are plain form posts to `/api/account/sign-out` and `/api/account/delete` (same-origin check, 303 to a relative path, cookie cleared) instead of server actions; every sign-in redirect is relative except Google's redirect URI |
+| Tests | unit (seeOther, isSameOrigin) · fixture e2e (cross-site post 403, relative 303s, confirmation, no session) · API-mode e2e (no horizontal scroll at 1024, 1280, 1440 on / and /login with accounts on) · local rerun of the whole flow |
+
 ### #134 · Customer sign-in with Google (FR-ACC part), off until the owner adds the keys — ✅ Done (with #135)
 | Field | Value |
 | --- | --- |
@@ -1135,6 +1143,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #138 With Accounts live on, the desktop Log in button pushed the header 40 px past a 1024 px screen; deleting an account ended on the error page (server action redirect into the streaming /login, React error 412); sign-in redirects sent local runs to the production domain | P1 | header, /account, sign-in routes | Fixed in the #138 PR with unit, fixture e2e and API-mode e2e regression tests and a local run on the Docker stack |
 | #119 First lead after an API restart failed (5 s transaction timeout on a cold start); reports prerender log | P1 | API intake, admin reports | Fixed in #120 with a regression test |
 | #89 Product page photo had zero width (zoom button without width) | P0 | /shop/p/* | Fixed in #90 with an e2e size check |
 | Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 (PR pending) |
