@@ -53,6 +53,7 @@ else
     if [ -n "$(setting "$name")" ]; then ok "$name set"; else fix "$name is empty in deploy/.env"; fi
   done
   if [ -n "$(setting RESEND_API_KEY)" ] || [ -n "$(setting SMTP_URL)" ]; then ok "Email sender set"; else fix "Set RESEND_API_KEY or SMTP_URL in deploy/.env"; fi
+  if [ -n "$(setting GOOGLE_CLIENT_ID)" ] && [ -n "$(setting GOOGLE_CLIENT_SECRET)" ]; then ok "Google sign-in keys set"; elif [ -z "$(setting GOOGLE_CLIENT_ID)$(setting GOOGLE_CLIENT_SECRET)" ]; then ok "Google sign-in keys not set (Admin › Integrations › Sign-in can add them)"; else fix "Set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET, or neither"; fi
   site_key=$(setting TURNSTILE_SITE_KEY)
   site_secret=$(setting TURNSTILE_SECRET_KEY)
   if { [ -n "$site_key" ] && [ -z "$site_secret" ]; } || { [ -z "$site_key" ] && [ -n "$site_secret" ]; }; then

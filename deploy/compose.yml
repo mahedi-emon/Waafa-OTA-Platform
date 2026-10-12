@@ -121,7 +121,8 @@ services:
       NODE_OPTIONS: --max-old-space-size=512
     depends_on:
       api: { condition: service_healthy }
-    mem_limit: 768m
+    # 1 GB: the Next.js server sat at about 750 MB after a browse of every page (issue 158); the heap stays at 512 MB.
+    mem_limit: 1g
 
   nginx:
     build:
