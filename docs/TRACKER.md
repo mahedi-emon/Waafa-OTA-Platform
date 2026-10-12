@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 12 Oct 01:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
+Updated: 12 Oct 10:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -36,6 +36,26 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #125 · SEO: structured data for the store home, About, Gallery, Visa Guide index and visa services — ✅ Done (with #129)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 12 Oct 08:00 → 12 Oct |
+| Branch · PR | `feat/125-structured-data` · #129 |
+| Built | Stable `@id`s for website, company, agency and store (`lib/seo/schemaIds.ts`, Home uses them); `CollectionPageJsonLd` (CollectionPage or ImageGallery with its ItemList as main entity); /shop OnlineStore + best sellers ItemList (same query as the row); /about-us AboutPage + Organization with both brands, address, socials; /gallery ImageGallery of every album; /visa-guide CollectionPage of the guides; /visa-services/[country] Service with the agency as provider, Bangladesh as area and one indicative Offer per visa type (fee card total, BDT, VAT included; pending embassy fee says so). Admin data only; no ratings or reviews |
+| Tests | unit CollectionPageJsonLd (order, absolute URLs, no empty list) · e2e seo.spec structured data on the five routes, no aggregateRating/review |
+| Admin rows | No new fields: names, descriptions, photos, prices and contact details come from the existing Store, Page, Gallery, Visa Guide, Visa and Settings screens |
+| Review | Code review posted on the PR from the owner's account before merge |
+| Tools and skills | Serena (symbol reads and edits), ui-ux-pro-max SEO rules, Playwright e2e |
+
+### #126 · Server optimisation for the 2-core VPS — ✅ Done (with #127)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 11 Oct 19:30 → 12 Oct |
+| Branch · PR | `perf/126-server-optimisation` · #127 |
+| Built | gzip in nginx (text types; Next compression off in the standalone image only); nginx proxy cache for `/_next/static` (30 days), `/_next/image` (7 days, one entry per AVIF/WebP/original) and `/media/` (1 day); PostgreSQL `random_page_cost=1.1`, `effective_io_concurrency=200`; review fixes: deploy.sh clears the cache after `up -d` (image URLs have no content hash), cache key zone 8 MB in the 96 MB nginx container |
+| Tests | CI VPS deploy smoke (Docker Compose, nginx -t, routes through nginx), Lint/build/e2e smoke, API-mode e2e |
+| Review | Code review on #127 from the owner's account: 2 findings (stale optimised photos after a deploy; key zone size), both fixed in the PR |
 
 ### #119 · Bug: first lead after an API restart failed on the 5 s transaction timeout — ✅ Fixed (with #120)
 | Field | Value |
@@ -1081,6 +1101,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D156 | 12 Oct | Media uploads on the VPS volume, re-encoded by sharp in the API (added as a dependency), served at /uploads/ by nginx | No R2 account yet; strips GPS from owners' photos; next/image still optimises them | #109 |
 | D157 | 12 Oct | Customers keyed by phone across leads and orders until accounts land (Phase D) | No customer table yet; the phone is the stable identifier in every request and order | #111 |
 | D158 | 12 Oct | tiptap for rich text bodies, one heading level (h3), output still sanitised on the server | Owner edits policies and posts without HTML; the sanitiser already maps headings to h3 | #116 |
+| D159 | 12 Oct | Every PR gets a code review before merge, posted from the owner's GitHub account (COMMENT review with inline comments, findings fixed and answered on the thread); never Copilot | Owner rule: reviews count on the owner's profile; GitHub does not let an author approve their own PR, so own PRs get COMMENT reviews and bot PRs can be approved | #126 |
+| D160 | 12 Oct | nginx compresses (gzip) and caches `/_next/static` (30 d), `/_next/image` (7 d, per image format) and `/media/` (1 d); Next compression off in the Docker image only; deploy.sh clears the cache | Node on a 2-core VPS spends its CPU on rendering; image URLs carry no content hash, so a deploy must drop cached copies | #126 |
 
 ## 9. Bugs and known issues
 
@@ -1148,6 +1170,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 12 Oct 08:00–10:30 | Owner: close the open issues, integrations settings (already shipped in #108: verified schema, endpoints, admin tabs, reveal, Sandbox/Live, Active, markup, getIntegrationConfig with manual fallback), deploy-ready, best SEO, server optimisation, every PR reviewed from the owner's account. Reviewed and fixed #127 (2 findings), built and reviewed #129 (1 finding fixed), approved review for dependabot #128 blocked by the local permission check (owner merges it) | #115, #125, #126 | #127, #128, #129 | web unit 261 · e2e seo 5/5 on a production build · CI |
 | 12 Oct 00:00–01:30 | Owner: finish #91, Phase A/B leftovers, an API manager, run and test everything. Merged #106 (performance) and #110 (media library); #108 (integrations manager), #112 (reports, customers) and #114 (lead board) green in CI; local stack rebuilt from main | #91, #107, #109, #111, #113, #116, #119 | #106, #108, #110, #112, #114, #117, #120 | CI: unit, API (PostgreSQL), API-mode e2e, admin screens, public screens, Lighthouse |
 | 11 Oct 18:00–19:30 | Launch prep with Docker Desktop: local production rehearsal (all green, backup/restore tested), CSP + security headers + analytics after consent (#103), SECURITY.md, C2 matrix verified (113 rows) | #74, #102 | #101, #103 | API-mode e2e 6/6 on the local stack · security e2e |
 | 11 Oct 15:00–17:30 | Owner: deploy by hand, best SEO, better design. SEO pass merged (#97: share previews on 40 pages, admin defaults, verification fields, WebSite/TravelAgency, ItemList, sitemap images), flight route landing pages (#100), deploy kit (#98: init-env.sh, check.sh, quick start) | #74, #96, #99 | #97, #98, #100 | e2e seo + routes · public screens 33 routes |
@@ -1177,6 +1200,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner go-live (manual, 13 Oct): VPS → docs/DEPLOY.md quick start; `deploy.sh` now also clears the nginx cache on every release.
+2. Right after: Search Console → submit /sitemap.xml and run the Rich Results test on /, /shop, /about-us, /visa-services/thailand, /tour-packages; replace Sample content; IDs in Settings › Tracking; Turnstile keys; uptime monitor.
+3. After launch: #71 rest (itinerary drag builder, variants grid, category tree drag, TOTP, media picker), Bangla (P1).
+
+Earlier (12 Oct 01:30):
 1. Owner go-live (manual): VPS → docs/DEPLOY.md quick start (`init-env.sh`, fill email sender and first admin, `check.sh`, `deploy.sh`), DNS A records first.
 2. Right after: sign in at /secure-admin-control, change the password, upload real photos in Media library and paste their addresses into the image fields, replace Sample content, Search Console and analytics IDs in Settings › Tracking, Turnstile keys, uptime monitor; email provider can now be set in Settings › Integrations (SMS and email tab).
 3. After launch (#71 rest): itinerary day builder with drag, product variants grid, category tree drag, TOTP sign-in, bookings and convert to booking (Phase D/E), a media picker inside the content editor.
