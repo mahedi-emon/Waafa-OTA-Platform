@@ -68,3 +68,7 @@ Real camera footage, muted, 6–10 s, 1280×720 H.264 MP4 + VP9 WebM (≤ 1 MB e
 Not shipped: the prototype's drawn motion graphics (route map, passport, product animations) and its rendered scenery
 loops (Decision D37); a dark Coverr printer clip (the Printing Solutions header uses the Unsplash printer photo
 instead); a power bank clip (no free real footage found; the sample power bank has photos only).
+
+## Country flags (MIT)
+
+`apps/web/public/media/flags/*.svg`: 256 ISO 3166-1 flags plus `eu` (Schengen) from [flag-icons 7.2.3](https://github.com/lipis/flag-icons) by Panayiotis Lipiridis, MIT licence (`LICENSE.txt` beside the files), 4:3, optimised with SVGO. Rendered by `components/media/CountryFlag.tsx` (issue 147).

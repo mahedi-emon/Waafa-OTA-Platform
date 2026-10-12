@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { formatTaka, type VisaCountry } from "@waafa/shared";
 import { Link } from "@/i18n/navigation";
 import { CardFx } from "@/components/fx/CardFx";
+import { CountryFlag } from "@/components/media/CountryFlag";
 
 type VisaCountryCardProps = {
   country: VisaCountry;
@@ -10,7 +11,7 @@ type VisaCountryCardProps = {
   submissionLabel?: string;
 };
 
-/** Visa country card: code mark, name, visa types, the fastest processing time and our lowest service charge. */
+/** Visa country card: flag, name, visa types, the fastest processing time and our lowest service charge. */
 async function VisaCountryCard({ country, submissionLabel }: VisaCountryCardProps) {
   const t = await getTranslations("Home.visa");
   const tSearch = await getTranslations("Search.visaTypes");
@@ -21,12 +22,7 @@ async function VisaCountryCard({ country, submissionLabel }: VisaCountryCardProp
     <CardFx className="rounded-2xl">
       <article className="group relative flex h-full flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-4 transition-colors duration-150 hover:border-electric-200">
         <div className="flex items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="grid h-8 w-10 shrink-0 place-items-center rounded-md bg-navy-900 font-display text-[12px] font-extrabold tracking-wider text-white"
-          >
-            {country.flagCode}
-          </span>
+          <CountryFlag code={country.flagCode} size="lg" />
           <div className="min-w-0 flex-1">
             <h3 className="truncate font-display text-[16px] font-bold text-navy-900">
               <Link

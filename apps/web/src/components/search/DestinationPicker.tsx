@@ -5,7 +5,7 @@ import { MapPin, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { matchesQuery } from "@/lib/search/highlight";
 import type { DestinationOption } from "@/lib/search/searchState";
-import { CountryCode } from "./CountryCode";
+import { CountryFlag } from "@/components/media/CountryFlag";
 import { OptionIcon } from "./OptionIcon";
 import { OptionList, type PickerOption } from "./OptionList";
 import { useSearchCard } from "./SearchCardContext";
@@ -28,7 +28,7 @@ function DestinationPicker({ title }: DestinationPickerProps) {
     label: destination.name,
     sub: destination.subtitle,
     mark: destination.countryCode ? (
-      <CountryCode code={destination.countryCode} />
+      <CountryFlag code={destination.countryCode} />
     ) : (
       <OptionIcon>
         <MapPin />

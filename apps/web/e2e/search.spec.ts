@@ -20,7 +20,7 @@ function dhakaDate(days: number): string {
 }
 
 async function pickDay(page: Page, iso: string) {
-  await page.locator(`td[data-day="${iso}"] button`).click();
+  await page.locator(`td[data-day="${iso}"]:not([data-outside]) button`).click();
 }
 
 async function expectNoAxeViolations(page: Page) {
@@ -106,7 +106,9 @@ test.describe("phone (390)", () => {
     await pickDay(page, late);
     await dates.getByRole("button", { name: "Done" }).click();
     await page.locator("#search-depart").click();
-    await expect(page.locator(`td[data-day="${late}"] button`)).toBeInViewport();
+    await expect(
+      page.locator(`td[data-day="${late}"]:not([data-outside]) button`),
+    ).toBeInViewport();
     await pickDay(page, early);
     await dates.getByRole("button", { name: "Done" }).click();
     const [, , day] = early.split("-");
@@ -189,7 +191,9 @@ test.describe("desktop (1440)", () => {
     await expect(stay).toBeVisible();
     const checkin = dhakaDate(5);
     await pickDay(page, checkin);
-    await expect(page.locator(`td[data-day="${dhakaDate(36)}"] button`)).toBeDisabled();
+    await expect(
+      page.locator(`td[data-day="${dhakaDate(36)}"]:not([data-outside]) button`),
+    ).toBeDisabled();
     await pickDay(page, dhakaDate(8));
     await stay.getByRole("button", { name: "Done" }).click();
     await page.getByRole("button", { name: "Search hotels" }).click();
