@@ -106,7 +106,7 @@ Fill in every value (the comments in the file explain each one). Secrets: genera
 Admin › Integrations; keep it fixed once secrets are saved). Keep a copy in a password manager; never put them in chat, the repository or a
 screenshot.
 
-Email after launch (#107): the API still needs `RESEND_API_KEY` or `SMTP_URL` in `deploy/.env` to start. Once an email
+Email (#107, #149): Resend sends the mail; the domain `waafasworld.com` is verified there (SPF, DKIM). The API needs `RESEND_API_KEY` or `SMTP_URL` in `deploy/.env` to start. Once an email
 provider (Resend or SMTP) is saved and turned on in Admin › Settings › Integrations › SMS and email, the API and the
 worker send through it (checked every minute) and the `.env` mailer becomes the fallback. Flight, hotel, payment and SMS
 providers are managed in the same screen; turning a flight or hotel API on never switches booking to Live.
@@ -180,21 +180,26 @@ nginx serves them at `/uploads/` straight from the API with a one-year cache; ad
 9. Replace every Sample record (contact numbers, office hours, payment accounts, packages, products, prices) in Admin
    › Content before announcing the site; Admin › Content › Maintenance mode can hold the public site meanwhile.
 
-## 5b. Google sign-in (optional, issue 134)
+## 5b. Google sign-in (issues 134 and 149)
 
-Customers can sign in with Google to see their requests and orders. It stays off until both switches are on.
+Customers sign in with Google to see their requests and orders. Settings › Accounts live is on by default (issue
+146), so the header shows Log in; until Google keys are set, /login says sign-in opens soon.
 
-1. Google Cloud console → APIs & Services → OAuth consent screen: External, app name WAAFA, a support email, the
-   domain `waafasworld.com`, scopes `openid`, `email` and `profile` only; publish the app.
-2. Credentials → Create credentials → OAuth client ID → Web application. Authorised JavaScript origin
-   `https://waafasworld.com`; authorised redirect URI `https://waafasworld.com/api/auth/google/callback` (Admin ›
-   Settings › Integrations › Sign-in shows the exact address).
-3. Admin › Settings › Integrations › Sign-in → Google sign-in → Connect: paste the client ID and client secret, Save,
-   Test connection, then switch Active on (the Sandbox or Live switch picks which saved pair is used).
-4. Admin › Content › Site settings → Accounts live → Save. The Log in link appears in the header and the phone menu.
+1. Google Cloud console → Google Auth Platform → Branding: app name WAAFA, support email, home page
+   `https://waafasworld.com`, authorised domain `waafasworld.com`. Data access: scopes `openid`, `email`,
+   `profile` only. Audience: **Publish app** (while it says Testing, only the listed test users can sign in).
+2. Clients → the web client: authorised JavaScript origins `https://waafasworld.com` (and `http://localhost` for the
+   local stack); authorised redirect URIs `https://waafasworld.com/api/auth/google/callback` (and
+   `http://localhost/api/auth/google/callback`). Admin › Settings › Integrations › Sign-in shows the exact address.
+3. Keys, either way:
+   - Server: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `deploy/.env`, then `sh deploy/deploy.sh`. Used while
+     Admin has no Google record.
+   - Admin › Settings › Integrations › Sign-in → Google sign-in → Connect: paste both, Save, Test connection, switch
+     Active on. A saved record always wins over the server keys; switching it off turns Google off.
+4. Admin › Content › Site settings → Accounts live hides or shows Log in for everyone.
 
-Turning either switch off hides sign-in again; signed-in customers keep their session until it expires (30 days) or
-they log out. Deleting an account never deletes the customer's requests or orders.
+Signed-in customers keep their session until it expires (30 days) or they log out. Deleting an account never deletes
+the customer's requests or orders.
 
 ## 6. Operations
 

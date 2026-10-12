@@ -36,7 +36,11 @@ class ResendMailer implements Mailer {
       }),
       signal: AbortSignal.timeout(10_000),
     });
-    if (!response.ok) throw new Error(`Resend answered ${response.status}`);
+    if (!response.ok) {
+      // Resend explains refusals (unverified domain, bad sender, quota) in the body; keep it short for the logs.
+      const detail = (await response.text().catch(() => "")).slice(0, 300);
+      throw new Error(`Resend answered ${response.status}${detail ? `: ${detail}` : ""}`);
+    }
   }
 }
 
