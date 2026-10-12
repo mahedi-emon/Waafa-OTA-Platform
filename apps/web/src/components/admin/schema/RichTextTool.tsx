@@ -5,6 +5,7 @@ import { cn } from "cn";
 
 type ToolProps = {
   label: string;
+  /** Set for formatting toggles only; action buttons (undo, redo, remove link) leave it out. */
   active?: boolean;
   disabled?: boolean;
   onClick: () => void;
@@ -12,7 +13,7 @@ type ToolProps = {
 };
 
 /** One toolbar button of the rich text editor (issue 116): keeps the text selection when pressed. */
-function RichTextTool({ label, active = false, disabled = false, onClick, children }: ToolProps) {
+function RichTextTool({ label, active, disabled = false, onClick, children }: ToolProps) {
   return (
     <button
       type="button"

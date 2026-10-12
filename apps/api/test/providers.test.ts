@@ -238,6 +238,21 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
     const again = await call(owner, "POST", "", { kind: "flight", name: "Galileo BD" });
     expect(again.json()).toMatchObject({ provider: "custom-flight-galileo-bd-2" });
     expect((await call(owner, "POST", "", { kind: "hajj", name: "X" })).statusCode).toBe(422);
+    // Issue 121: a repeated long name still gets a key the API accepts.
+    const longName = "Very long consolidator name used twice in tests";
+    await call(owner, "POST", "", { kind: "sms", name: longName });
+    const repeated = (await call(owner, "POST", "", { kind: "sms", name: longName })).json<{
+      provider: string;
+    }>();
+    expect(repeated.provider.endsWith("-2")).toBe(true);
+    expect(
+      (
+        await call(owner, "POST", `/${repeated.provider}/setting`, {
+          isActive: false,
+          isLive: false,
+        })
+      ).statusCode,
+    ).toBe(200);
     const connection = {
       settings: {
         baseUrl: "https://api.galileo.example.com",

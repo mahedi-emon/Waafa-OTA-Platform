@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { Download } from "lucide-react";
 import { formatTaka } from "@waafa/shared";
@@ -55,6 +56,8 @@ async function Reports({
   searchParams: PageProps<"/[locale]/secure-admin-control/reports">["searchParams"];
 }) {
   const params = await searchParams;
+  // The default range reads today's date: render at request time, never while prerendering (issue 119).
+  await connection();
   const fallback = defaultRange();
   const from =
     typeof params.from === "string" && DAY.test(params.from) ? params.from : fallback.from;
