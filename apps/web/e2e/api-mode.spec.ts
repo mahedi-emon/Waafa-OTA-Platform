@@ -242,12 +242,13 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
     await expect(page.getByText("Saved").first()).toBeVisible();
   };
   await setAccountsLive(true);
+  // The settings save reaches the site through the batched revalidation (about two seconds); poll without the
+  // browser so the 404s before it lands are not counted as page errors.
   await expect(async () => {
-    await page.goto("/login");
-    await expect(page.getByRole("link", { name: "Continue with Google" })).toBeVisible({
-      timeout: 2_000,
-    });
+    expect((await request.get("/login")).status()).toBe(200);
   }).toPass({ timeout: 30_000 });
+  await page.goto("/login");
+  await expect(page.getByRole("link", { name: "Continue with Google" })).toBeVisible();
 
   // The start route sends the visitor to Google with PKCE and the site's own callback.
   const start = await request.get("/api/auth/google/start?next=/visa-services", {
@@ -266,7 +267,10 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   await page.goto("/account");
   await expect(page).toHaveURL(/\/login\?next=/);
 
-  // Back to the launch state for the other tests.
+  // Back to the launch state for the other tests, and wait until the site has it.
   await setAccountsLive(false);
+  await expect(async () => {
+    expect((await request.get("/login")).status()).toBe(404);
+  }).toPass({ timeout: 30_000 });
   expect(errors).toEqual([]);
 });
