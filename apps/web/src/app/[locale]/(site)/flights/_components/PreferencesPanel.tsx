@@ -4,15 +4,16 @@ import { useId } from "react";
 import { Moon, Sun, Sunrise, Sunset, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
-import type { FlightPreferences } from "@waafa/shared";
+import type { Airline, FlightPreferences } from "@waafa/shared";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { AirlineLogo } from "@/components/travel/AirlineLogo";
 
 type PreferencesPanelProps = {
   value: FlightPreferences;
   onChange: (next: FlightPreferences) => void;
-  airlines: Array<{ code: string; name: string }>;
+  airlines: Array<Pick<Airline, "code" | "name" | "logo">>;
 };
 
 const TIMES: Array<{ key: FlightPreferences["times"][number]; icon: LucideIcon }> = [
@@ -102,7 +103,11 @@ function PreferencesPanel({ value, onChange, airlines }: PreferencesPanelProps) 
                     checked={value.airlines.includes(airline.code)}
                     onCheckedChange={() => set({ airlines: toggle(value.airlines, airline.code) })}
                   />
-                  <label htmlFor={checkboxId} className="cursor-pointer text-[14.5px] text-ink-900">
+                  <label
+                    htmlFor={checkboxId}
+                    className="flex cursor-pointer items-center gap-2 text-[14.5px] text-ink-900"
+                  >
+                    <AirlineLogo airline={airline} size="sm" />
                     {airline.name}
                   </label>
                 </li>

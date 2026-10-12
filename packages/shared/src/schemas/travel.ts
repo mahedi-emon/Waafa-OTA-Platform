@@ -34,6 +34,11 @@ export const AirlineSchema = z
     name: z.string().min(1),
     /** Position in the Home airline strip; airlines without it are not shown there. */
     featuredOrder: z.number().int().min(0).optional(),
+    /**
+     * Logo uploaded in Admin (Media library address). Leave empty: the site shows the bundled logo for the code, or the
+     * code itself when there is none (issue 156).
+     */
+    logo: ImageSchema.optional(),
   })
   .strict();
 

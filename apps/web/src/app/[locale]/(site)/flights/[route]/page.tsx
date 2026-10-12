@@ -10,6 +10,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { RouteArc } from "@/components/motion/RouteArc";
 import { ItemListJsonLd } from "@/components/seo/ItemListJsonLd";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { AirlineLogo } from "@/components/travel/AirlineLogo";
 import { GroupFareCard } from "@/components/travel/GroupFareCard";
 import {
   Accordion,
@@ -166,11 +167,9 @@ async function FlightRouteContent({
               {routeAirlines.map((airline) => (
                 <li
                   key={airline.code}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-mist-100 px-3 py-1 text-[13.5px] font-semibold text-navy-900"
+                  className="inline-flex items-center gap-2 rounded-full bg-mist-100 py-1 pr-3 pl-1 text-[13.5px] font-semibold text-navy-900"
                 >
-                  <span className="text-[11px] font-bold tracking-[0.08em] text-brand-700">
-                    {airline.code}
-                  </span>
+                  <AirlineLogo airline={airline} size="sm" className="rounded-full" />
                   {airline.name}
                 </li>
               ))}

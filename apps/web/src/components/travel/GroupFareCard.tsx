@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { formatDate, formatDayMonth, formatTaka, type GroupFare } from "@waafa/shared";
 import { CountryFlag } from "@/components/media/CountryFlag";
 import { Link } from "@/i18n/navigation";
-import { getAirport } from "@/lib/data/travel";
+import { getAirport, listAirlines } from "@/lib/data/travel";
+import { AirlineLogo } from "./AirlineLogo";
 
 type GroupFareCardProps = { fare: GroupFare };
 
@@ -12,11 +13,14 @@ type GroupFareCardProps = { fare: GroupFare };
  * price and Request. Fares are indicative and confirmed before payment (PRD compliance).
  */
 async function GroupFareCard({ fare }: GroupFareCardProps) {
-  const [t, from, to] = await Promise.all([
+  const [t, from, to, airlines] = await Promise.all([
     getTranslations("Home.groupFares"),
     getAirport(fare.from.iata),
     getAirport(fare.to.iata),
+    listAirlines(),
   ]);
+  // The fare keeps a copy of the airline; the current record carries a logo uploaded in Admin since.
+  const airline = airlines.find((item) => item.code === fare.airline.code) ?? fare.airline;
   const dates = fare.returnDate
     ? `${formatDayMonth(fare.departDate)} – ${formatDayMonth(fare.returnDate)}`
     : formatDate(fare.departDate);
@@ -24,9 +28,7 @@ async function GroupFareCard({ fare }: GroupFareCardProps) {
   return (
     <article className="group/fare relative flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-xs transition-shadow duration-200 hover:shadow-md">
       <div className="flex items-center gap-3 px-4 pt-4">
-        <span className="grid h-8 min-w-10 place-items-center rounded-md bg-navy-900 px-1.5 font-display text-[12px] font-extrabold tracking-wider text-white">
-          {fare.airline.code}
-        </span>
+        <AirlineLogo airline={airline} size="lg" />
         <div className="min-w-0">
           <p className="truncate text-[14px] font-semibold text-ink-900">{fare.airline.name}</p>
           <p className="truncate text-[12.5px] text-mist-600">
