@@ -1,13 +1,18 @@
 import type { CSSProperties, ReactNode } from "react";
 import { MapPin, Phone } from "lucide-react";
-import type { HomeContent, MediaSlot, OpeningHours } from "@waafa/shared";
+import type { Destination, HomeContent, MediaSlot, OpeningHours } from "@waafa/shared";
 import { cn } from "cn";
 import { GoldTriangle } from "@/components/brand/GoldTriangle";
+import { RibbonLine } from "@/components/brand/RibbonLine";
 import { OfficeStatusChip } from "@/components/layout/OfficeStatusChip";
+import { CountryFlag } from "@/components/media/CountryFlag";
 import { SmartImage } from "@/components/media/SmartImage";
 import { SmartVideo } from "@/components/media/SmartVideo";
 import { FlightPath } from "@/components/motion/FlightPath";
 import { TextRotate } from "@/components/motion/TextRotate";
+import { listDestinations } from "@/lib/data/content";
+import { getAirport, listAirlines, listGroupFares, searchAirports } from "@/lib/data/travel";
+import { HeroFareCard } from "./HeroFareCard";
 
 type HeroSectionProps = {
   hero: HomeContent["hero"];
@@ -28,6 +33,18 @@ const MEDIA_SIZES = "(min-width: 1320px) 1240px, calc(100vw - 32px)";
  */
 const FRAME = "aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:h-[clamp(480px,58vh,620px)]";
 
+/**
+ * The country of a rotating place name ("Kathmandu" → NP): the Home destination with that name and its airport, else
+ * an airport in a city of that name. Null when nothing matches, so the chip shows the word alone.
+ */
+async function countryOf(place: string, destinations: Destination[]): Promise<string | null> {
+  const name = place.trim().toLowerCase();
+  const destination = destinations.find((item) => item.name.trim().toLowerCase() === name);
+  if (destination) return (await getAirport(destination.iata))?.countryCode ?? null;
+  const [airport] = await searchAirports(place, 1);
+  return airport && airport.city.trim().toLowerCase() === name ? airport.countryCode : null;
+}
+
 /** Splits a headline line into words for the CSS word reveal (`--i` staggers them). */
 function renderWords(text: string, offset = 0) {
   return text.split(" ").map((word, index) => (
@@ -43,18 +60,41 @@ function renderWords(text: string, offset = 0) {
 }
 
 /**
- * Home hero (Home, Home-m boards; DESIGN.md "Home hero"): headline on white with a word-by-word CSS reveal, an inset
- * rounded media panel whose poster is the LCP image, a rotating destination chip, and the search card overlapping
- * the panel's lower edge.
+ * Home hero (Home, Home-m boards; DESIGN.md "Home hero"): headline on white with a word-by-word CSS reveal and a ribbon
+ * line, an inset rounded media panel whose poster is the LCP image, a rotating destination chip with each country's
+ * flag, the next group fare as a card on the media (from 1024 px), and the search card overlapping the lower edge.
  */
-function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps) {
+async function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps) {
+  // Everything below comes from Admin: destinations and airports give the chip its flags, Travel › Group fares the
+  // card on the media (the next departure that is still open).
+  const [destinations, fares, airlines] = await Promise.all([
+    listDestinations(),
+    listGroupFares(),
+    listAirlines(),
+  ]);
+  const flags = await Promise.all(hero.rotating.map((place) => countryOf(place, destinations)));
+  const fare = [...fares].sort((a, b) => a.departDate.localeCompare(b.departDate))[0];
+  const [fareFrom, fareTo] = fare
+    ? await Promise.all([getAirport(fare.from.iata), getAirport(fare.to.iata)])
+    : [null, null];
+  const fareAirline = fare
+    ? (airlines.find((airline) => airline.code === fare.airline.code) ?? fare.airline)
+    : null;
   const firstLine = hero.title.split(" ").length;
   // "Mixkit · Mixkit" (no named author) reads as "Mixkit".
   const rawCredit = media?.video?.credit ?? media?.image?.credit;
   const credit = rawCredit ? [...new Set(rawCredit.split(" · "))].join(" · ") : undefined;
 
   return (
-    <section aria-labelledby="home-hero-title" className="relative site-container pt-6 md:pt-10">
+    <section
+      aria-labelledby="home-hero-title"
+      className="relative isolate site-container pt-6 md:pt-10"
+    >
+      {/* Soft daylight behind the headline: two static radial glows in the brand blues, no blur filter. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 -top-24 -z-10 h-[560px] bg-[radial-gradient(52%_60%_at_82%_12%,var(--color-electric-100),transparent_72%),radial-gradient(40%_50%_at_14%_4%,var(--color-electric-50),transparent_70%)] [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]"
+      />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-end lg:gap-12">
         <div>
           <p className="mb-3 flex items-center gap-2 text-[12.5px] font-bold tracking-[0.16em] text-brand-700 uppercase">
@@ -67,6 +107,7 @@ function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps
               {renderWords(hero.titleAccent, firstLine)}
             </span>
           </h1>
+          <RibbonLine className="mt-4 w-20 md:mt-5 md:w-28" />
         </div>
         <div className="flex flex-col gap-3 lg:pb-2">
           <p className="max-w-[54ch] type-lead text-mist-600">{hero.lead}</p>
@@ -117,8 +158,21 @@ function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps
           <p className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[13.5px] font-semibold text-navy-900 shadow-sm md:top-6 md:left-6">
             <MapPin aria-hidden="true" className="size-4 text-electric-600" />
             <span className="text-mist-600">{hero.rotatingLabel}</span>
-            <TextRotate words={hero.rotating} />
+            <TextRotate
+              words={hero.rotating}
+              marks={flags.map((code, index) =>
+                code ? <CountryFlag key={hero.rotating[index]} code={code} size="xs" /> : null,
+              )}
+            />
           </p>
+          {fare && fareAirline ? (
+            <HeroFareCard
+              fare={fare}
+              airline={fareAirline}
+              fromCountry={fareFrom?.countryCode ?? null}
+              toCountry={fareTo?.countryCode ?? null}
+            />
+          ) : null}
           {credit ? (
             <p className="absolute top-4 right-4 hidden rounded-full bg-midnight-950/55 px-2 py-0.5 text-[11px] text-white/90 sm:block md:top-6 md:right-6">
               {credit}
