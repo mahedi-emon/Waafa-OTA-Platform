@@ -25,6 +25,8 @@
 - D161 (#130) GitHub Actions builds api/web/nginx images → public Docker Hub emon6107/waafa-ota-platform
   ({service}-<sha7>, {service}-latest); VPS pulls; SITE_URL + Turnstile site key are build-time (GitHub variables,
   image labels checked by deploy.sh). D162 dependabot merges keep dependabot[bot] as author.
+- D163 (#134) Google sign-in behind Integrations › Sign-in + Accounts live; API exchanges the code (secret stays in
+  the API), opaque 30-day sessions hashed; My account by verified email; safeNext allows printable ASCII paths only.
 - Structured data (#125): shared @ids from lib/seo/schemaIds.ts; CollectionPageJsonLd; data must mirror visible content
   (store ItemList follows the Best sellers row); never ratings/reviews.
 - Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; PowerShell Move-Item

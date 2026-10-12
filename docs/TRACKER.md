@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 12 Oct 14:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
+Updated: 12 Oct 18:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, off until keys (#134) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -37,11 +37,12 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #134 · Customer sign-in with Google (FR-ACC part), off until the owner adds the keys — 🟡 In review
+### #134 · Customer sign-in with Google (FR-ACC part), off until the owner adds the keys — ✅ Done (with #135)
 | Field | Value |
 | --- | --- |
-| Opened → closed | 12 Oct 16:00 → |
-| Branch · PR | `feat/134-google-sign-in` · see the issue |
+| Opened → closed | 12 Oct 16:00 → 12 Oct 18:30 |
+| Branch · PR | `feat/134-google-sign-in` · #135 |
+| Review | Code review on #135 from the owner’s account: 1 finding (whitespace or backslash in the return path could become a protocol-relative redirect) fixed with tests; API-mode e2e timing fixed (wait for the settings to reach the site) |
 | Built | Shared: provider kind `auth`, catalog `google` (client ID, sealed client secret), customer schemas (PKCE verifier, sign-in input, session, account view). API: `Customer` + `CustomerSession` (migration 20261012120000), `googleOAuth.ts` (code exchange at Google with the client secret; ID token claims: issuer, audience, expiry, verified email), `CustomersService` (redirect must be the site's callback, upsert by Google ID then email, 30-day opaque sessions stored as SHA-256, account by verified email, sign-out, delete without touching requests or orders), `public/auth/google/config`, `public/auth/google`, `public/account`, `account/sign-out`, `account/delete` with rate limits; Google health check (client ID shape and Google discovery). Web: Integrations › Sign-in tab with the redirect URI to paste into Google; `/api/auth/google/start` (state + PKCE S256 in a 10-minute httpOnly cookie scoped to the callback) and `/callback` (timing-safe state check, session cookie httpOnly, Lax, Secure); `/login` (Google button or a guest note, errors), `/account` (initials, requests, orders, log out, delete with confirmation); Log in on the phone menu; robots disallow /account; everything 404s while Settings › Accounts live is off |
 | Tests | shared 77 · API 126 (unit: claims, exchange; DB: off until connected, redirect check, refused or unverified, sign-in, account by email, sign-out, delete) · web unit 273 (PKCE, authorize URL, safe next, pending cookie) · e2e fixture (hidden while off, start and callback refuse) · API-mode e2e (admin connects Google, Accounts live, button, redirect with PKCE, /account asks to log in) |
 | Not in this issue | Phone OTP (needs the SMS gateway) and email + password stay in FR-ACC (#31); the Google profile photo is not loaded (initials) |
@@ -1196,6 +1197,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 12 Oct 16:00–18:30 | Owner asked whether Google login exists: it was FR-ACC (Phase 1B), not built. Built it switched off: Integrations › Sign-in (Google client), API customers + sessions + code exchange, /login, /account, phone menu Log in (#134, PR #135; review: 1 finding fixed). New Docker Hub images built from main | #134, #136 | #135 | shared 77 · API 126 · web 273 · e2e fixture + API mode · CI green |
 | 12 Oct 13:30–15:30 | Owner: open issue/PR, reviews on his profile (checked: 12 review contributions counted), run the project, Docker Hub images, server size, production env. #128 approved from the owner's account and merged; #130 Docker Hub pipeline (PR #131, review: 1 finding fixed); production settings for waafasworld.com created locally (gitignored); local stack runs from the pushed images | #128, #130, #132 | #128, #131 | Docker images workflow (build, smoke, secret scan, push) · CI all green |
 | 12 Oct 08:00–10:30 | Owner: close the open issues, integrations settings (already shipped in #108: verified schema, endpoints, admin tabs, reveal, Sandbox/Live, Active, markup, getIntegrationConfig with manual fallback), deploy-ready, best SEO, server optimisation, every PR reviewed from the owner's account. Reviewed and fixed #127 (2 findings), built and reviewed #129 (1 finding fixed), approved review for dependabot #128 blocked by the local permission check (owner merges it) | #115, #125, #126 | #127, #128, #129 | web unit 261 · e2e seo 5/5 on a production build · CI |
 | 12 Oct 00:00–01:30 | Owner: finish #91, Phase A/B leftovers, an API manager, run and test everything. Merged #106 (performance) and #110 (media library); #108 (integrations manager), #112 (reports, customers) and #114 (lead board) green in CI; local stack rebuilt from main | #91, #107, #109, #111, #113, #116, #119 | #106, #108, #110, #112, #114, #117, #120 | CI: unit, API (PostgreSQL), API-mode e2e, admin screens, public screens, Lighthouse |
@@ -1227,6 +1229,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+0. Google sign-in (optional, any time after go-live): docs/DEPLOY.md 5b (Google Cloud OAuth client, redirect URI, Integrations › Sign-in, Accounts live).
 1. Owner (13 Oct): buy the VPS (x86_64, 2 vCPU / 4 GB minimum, 4 vCPU / 8 GB recommended, Ubuntu 24.04, Singapore), point waafasworld.com and www at it, create a Resend account (verify the domain) and put RESEND_API_KEY in the production settings; then DEPLOY.md quick start with the prepared `deploy/.env.production` copied to `/opt/waafa/deploy/.env`.
 2. Right after: change the admin password, remove SEED_ADMIN_* from the server env, Search Console + sitemap, Rich Results test, replace Sample content, Tracking IDs, uptime monitor; Turnstile = GitHub variable TURNSTILE_SITE_KEY + re-run Docker images + server secret.
 3. After launch: #71 rest, Bangla (P1).
