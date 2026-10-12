@@ -1,4 +1,4 @@
-import { ChevronRight, Mail, Phone } from "lucide-react";
+import { ChevronRight, Mail, Phone, User } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ContactSettings, MenuItem } from "@waafa/shared";
 import { whatsappLink } from "@waafa/shared/helpers/phone";
@@ -12,14 +12,25 @@ type MobileMenuBodyProps = {
   links: MenuItem[];
   more: MenuItem[];
   contact: ContactSettings;
+  /** Settings › Accounts live (issue 134): a Log in row above the links. */
+  accountsLive?: boolean;
 };
 
 /** Drawer body (Home-m-drawer board): every main link, the More grid and the contact block. */
-async function MobileMenuBody({ links, more, contact }: MobileMenuBodyProps) {
+async function MobileMenuBody({ links, more, contact, accountsLive = false }: MobileMenuBodyProps) {
   const t = await getTranslations("Layout");
 
   return (
     <div className="flex flex-col gap-6 px-4 pt-2 pb-[calc(24px+env(safe-area-inset-bottom))]">
+      {accountsLive ? (
+        <Link
+          href="/login"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-navy-900 text-[15px] font-semibold text-white outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
+        >
+          <User aria-hidden="true" className="size-[18px]" />
+          {t("logIn")}
+        </Link>
+      ) : null}
       <ul className="divide-y divide-mist-200">
         {links
           .filter((item) => item.visible && item.href)

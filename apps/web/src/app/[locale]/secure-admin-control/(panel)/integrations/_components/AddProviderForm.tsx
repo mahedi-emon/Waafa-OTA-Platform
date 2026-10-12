@@ -12,9 +12,12 @@ import { useRouter } from "@/i18n/navigation";
 import { addCustomProvider } from "@/lib/admin/providerActions";
 import { fill } from "./integrationStrings";
 
+/** Sign-in providers take no custom entries (issue 134). */
+type SupplierKind = Exclude<ProviderKind, "auth">;
+
 type AddProviderFormProps = {
   /** The categories this tab adds to; more than one shows a category choice (SMS or email). */
-  kinds: Array<{ kind: ProviderKind; label: string }>;
+  kinds: Array<{ kind: SupplierKind; label: string }>;
   strings: {
     title: string;
     hint: string;
@@ -33,7 +36,7 @@ function AddProviderForm({ kinds, strings }: AddProviderFormProps) {
   const id = useId();
   const router = useRouter();
   const [name, setName] = useState("");
-  const [kind, setKind] = useState<ProviderKind>(kinds[0]?.kind ?? "flight");
+  const [kind, setKind] = useState<SupplierKind>(kinds[0]?.kind ?? "flight");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 

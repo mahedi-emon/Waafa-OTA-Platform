@@ -204,3 +204,69 @@ test("a policy body edited in the rich text editor shows on the site (issue 116)
   }).toPass({ timeout: 30_000 });
   expect(errors).toEqual([]);
 });
+
+test("a Super Admin connects Google sign-in and the Log in page offers it (issue 134)", async ({
+  page,
+  request,
+}) => {
+  test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  const errors = collectErrors(page);
+  await signIn(page);
+
+  // Admin › Integrations › Sign-in: Google's client ID and secret, then Active.
+  await page.goto("/secure-admin-control/integrations");
+  await page.getByRole("tab", { name: "Sign-in" }).click();
+  const panel = page.getByRole("tabpanel", { name: "Sign-in" });
+  await expect(panel.getByText(/\/api\/auth\/google\/callback/)).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Add provider" })).toHaveCount(0);
+  const card = panel
+    .getByRole("article")
+    .filter({ has: page.getByRole("heading", { name: "Google sign-in" }) });
+  await card.getByRole("button", { name: /^(Connect|Manage)$/ }).click();
+  await card.getByLabel("Client ID").fill("e2e-123.apps.googleusercontent.com");
+  await card.getByLabel("Client secret", { exact: true }).fill("e2e-google-secret-5678");
+  await card.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(card.getByText("Saved, ends in 5678. Leave empty to keep it.")).toBeVisible();
+  const active = card.getByRole("switch", { name: "Active" });
+  if (!(await active.isChecked())) await active.click();
+  await card.getByRole("button", { name: "Save settings" }).click();
+  await expect(card.getByRole("switch", { name: "Active" })).toBeChecked();
+
+  // Settings › Site › Accounts live shows the Log in link and page.
+  const setAccountsLive = async (on: boolean) => {
+    await page.goto("/secure-admin-control/content/siteSettings");
+    const live = page.locator("#field-accountsLive");
+    await expect(live).toBeVisible();
+    if ((await live.isChecked()) !== on) await live.click();
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.getByText("Saved").first()).toBeVisible();
+  };
+  await setAccountsLive(true);
+  await expect(async () => {
+    await page.goto("/login");
+    await expect(page.getByRole("link", { name: "Continue with Google" })).toBeVisible({
+      timeout: 2_000,
+    });
+  }).toPass({ timeout: 30_000 });
+
+  // The start route sends the visitor to Google with PKCE and the site's own callback.
+  const start = await request.get("/api/auth/google/start?next=/visa-services", {
+    maxRedirects: 0,
+  });
+  expect(start.status()).toBe(303);
+  const google = new URL(start.headers()["location"] ?? "");
+  expect(google.origin).toBe("https://accounts.google.com");
+  expect(google.searchParams.get("client_id")).toBe("e2e-123.apps.googleusercontent.com");
+  expect(google.searchParams.get("code_challenge_method")).toBe("S256");
+  expect(google.searchParams.get("redirect_uri")).toMatch(/\/api\/auth\/google\/callback$/);
+  expect(start.headers()["set-cookie"] ?? "").toContain("waafa_oauth=");
+  expect(google.toString()).not.toContain("e2e-google-secret");
+
+  // My account without a session asks to log in.
+  await page.goto("/account");
+  await expect(page).toHaveURL(/\/login\?next=/);
+
+  // Back to the launch state for the other tests.
+  await setAccountsLive(false);
+  expect(errors).toEqual([]);
+});

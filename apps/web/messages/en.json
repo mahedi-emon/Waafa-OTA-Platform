@@ -2076,6 +2076,89 @@
       }
     }
   },
+  "Account": {
+    "login": {
+      "metaTitle": "Log in",
+      "kicker": "My account",
+      "title": "Log in to WAAFA",
+      "lead": "See every request and order you have sent us in one place. Booking, visas and Waafas World all work without an account too.",
+      "google": "Continue with Google",
+      "notReady": "Sign-in opens soon. Until then, every booking, visa request and order works as a guest, and we keep you posted by phone and email.",
+      "guest": "Continue as a guest",
+      "privacy": "We only read your name and email address from Google. We never post anything or see your password.",
+      "benefitsTitle": "With an account",
+      "benefit1": "Your flight, holiday and visa requests with their status",
+      "benefit2": "Your Waafas World orders and their progress",
+      "benefit3": "One tap to sign in again on this phone",
+      "deleted": "Your account is deleted. Your past requests and orders stay with our team so we can still help with them.",
+      "errors": {
+        "off": "Sign-in is not available right now. You can still book as a guest.",
+        "cancelled": "Sign-in was cancelled. Try again whenever you are ready.",
+        "expired": "That sign-in took too long. Please try again.",
+        "refused": "Google could not confirm your sign-in. Please try again.",
+        "busy": "Too many tries from this connection. Wait a minute and try again.",
+        "unavailable": "We could not reach the sign-in service. Please try again in a moment."
+      }
+    },
+    "account": {
+      "metaTitle": "My account",
+      "kicker": "My account",
+      "greeting": "Hello, {name}",
+      "signedInWith": "Signed in with Google as {email}",
+      "signOut": "Log out",
+      "requestsTitle": "Your requests",
+      "requestsLead": "Flights, hotels, holidays, visas and quotes you sent with {email}.",
+      "requestsEmpty": "No requests with this email yet. When you send one, it shows here with its status.",
+      "ordersTitle": "Your Waafas World orders",
+      "ordersEmpty": "No orders with this email yet.",
+      "reference": "Reference",
+      "sent": "Sent {date}",
+      "placed": "Placed {date}",
+      "total": "Total {total}",
+      "explore": "Find a trip",
+      "shop": "Visit Waafas World",
+      "phoneNote": "Requests sent with only a phone number do not show here. Call or WhatsApp us with the reference and we will help.",
+      "deleteTitle": "Delete account",
+      "deleteBody": "This removes your account and signs you out everywhere. Your requests and orders stay with our team so we can finish them.",
+      "deleteConfirm": "I understand, delete my account",
+      "deleteButton": "Delete account",
+      "errors": {
+        "confirm": "Tick the box to confirm, then press Delete account.",
+        "delete": "We could not delete the account. Please try again."
+      },
+      "modules": {
+        "flights": "Flight",
+        "hotels": "Hotel",
+        "packages": "Holiday package",
+        "plan-trip": "Custom trip",
+        "visa": "Visa",
+        "printing": "Printing",
+        "trading": "Trading",
+        "contact": "Message",
+        "emi": "EMI",
+        "bulk": "Bulk quote"
+      },
+      "requestStatus": {
+        "new": "Received",
+        "pending": "Waiting for you",
+        "in-progress": "In progress",
+        "quoted": "Quote sent",
+        "booked": "Booked",
+        "cancelled": "Cancelled",
+        "lost": "Closed",
+        "spam": "Closed"
+      },
+      "orderStatus": {
+        "placed": "Order placed",
+        "confirmed": "Confirmed",
+        "processing": "Being packed",
+        "shipped": "Out for delivery",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled",
+        "returned": "Returned"
+      }
+    }
+  },
   "Gallery": {
     "metaTitle": "Gallery",
     "metaDescription": "Trips in travellers’ own photos: albums from Waafa tours, shared with each traveller’s permission.",
@@ -2959,8 +3042,10 @@
         "hotel": "Hotels",
         "payment": "Payments",
         "sms": "SMS",
-        "email": "Email"
+        "email": "Email",
+        "auth": "Customer sign-in"
       },
+      "signInNote": "Google sign-in: in Google Cloud › APIs & Services › Credentials, create an OAuth client ID (Web application), add {callback} as an authorised redirect URI, then paste the client ID and secret under Production and switch Live and Active on. The Log in link shows once Settings › Site › Accounts live is on.",
       "environment": "Environment",
       "sandbox": "Sandbox",
       "production": "Production",
@@ -2988,7 +3073,8 @@
         "flight": "Flight APIs",
         "hotel": "Hotel APIs",
         "payment": "Payment gateways",
-        "communication": "SMS and email"
+        "communication": "SMS and email",
+        "signin": "Sign-in"
       },
       "inUse": "in use",
       "custom": "Custom",

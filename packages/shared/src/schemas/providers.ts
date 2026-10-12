@@ -9,7 +9,8 @@ import { IsoDateTimeSchema } from "./common";
  * keeps Live locked until Phase E).
  */
 
-export const ProviderKindSchema = z.enum(["flight", "hotel", "payment", "sms", "email"]);
+/** "auth": customer sign-in providers (Google, issue 134); no custom ones, the sign-in flow is built per provider. */
+export const ProviderKindSchema = z.enum(["flight", "hotel", "payment", "sms", "email", "auth"]);
 export const ProviderEnvironmentSchema = z.enum(["sandbox", "production"]);
 
 export const PROVIDER_IDS = [
@@ -27,6 +28,7 @@ export const PROVIDER_IDS = [
   "twilio",
   "resend",
   "smtp",
+  "google",
 ] as const;
 export const ProviderIdSchema = z.enum(PROVIDER_IDS);
 
@@ -264,6 +266,21 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
       text("from", "From address", true, "e.g. WAAFA <info@yourdomain.com>"),
     ],
   },
+  google: {
+    id: "google",
+    name: "Google sign-in",
+    kind: "auth",
+    summary: "Customers sign in with their Google account (My account: requests and orders)",
+    fields: [
+      text(
+        "clientId",
+        "Client ID",
+        true,
+        "Google Cloud › APIs & Services › Credentials › OAuth client ID (Web application); ends in .apps.googleusercontent.com",
+      ),
+      secret("clientSecret", "Client secret"),
+    ],
+  },
 };
 
 /**
@@ -344,7 +361,8 @@ export const IntegrationSettingInputSchema = z
 
 export const CustomProviderInputSchema = z
   .object({
-    kind: ProviderKindSchema,
+    // Sign-in providers are built one by one; only supplier kinds take custom entries.
+    kind: ProviderKindSchema.exclude(["auth"]),
     name: z.string().trim().min(2, "Enter the supplier's name").max(60),
   })
   .strict();
@@ -379,6 +397,7 @@ export const IntegrationStatusSchema = z
     payment: z.object({ ready: z.boolean() }).strict(),
     sms: z.object({ ready: z.boolean() }).strict(),
     email: z.object({ ready: z.boolean() }).strict(),
+    auth: z.object({ google: z.boolean() }).strict(),
   })
   .strict();
 export type IntegrationStatus = z.infer<typeof IntegrationStatusSchema>;

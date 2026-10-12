@@ -17,8 +17,8 @@ describe("provider catalog", () => {
     for (const id of PROVIDER_IDS) {
       const definition = PROVIDER_CATALOG[id];
       expect(definition.id).toBe(id);
-      // HTTP APIs have a base URL; SMTP has a host and port instead.
-      const address = id === "smtp" ? "host" : "baseUrl";
+      // HTTP APIs have a base URL; SMTP has a host and port; Google sign-in a client ID (Google's hosts are fixed).
+      const address = id === "smtp" ? "host" : id === "google" ? "clientId" : "baseUrl";
       expect(definition.fields.some((field) => field.key === address)).toBe(true);
       expect(definition.fields.some((field) => field.secret)).toBe(true);
       const keys = definition.fields.map((field) => field.key);
@@ -168,5 +168,23 @@ describe("validateProviderConnection", () => {
   it("parses the input with secrets optional", () => {
     const parsed = ProviderConnectionInputSchema.parse({ settings: { a: " b " } });
     expect(parsed).toEqual({ settings: { a: "b" }, secrets: {} });
+  });
+});
+
+describe("Google sign-in (issue 134)", () => {
+  it("is a sign-in provider with a public client ID and a secret client secret", () => {
+    const google = PROVIDER_CATALOG.google;
+    expect(google.kind).toBe("auth");
+    expect(google.fields.find((field) => field.key === "clientId")?.secret).toBe(false);
+    expect(google.fields.find((field) => field.key === "clientSecret")?.secret).toBe(true);
+  });
+
+  it("cannot be added as a custom provider kind", () => {
+    expect(CustomProviderInputSchema.safeParse({ kind: "auth", name: "Facebook" }).success).toBe(
+      false,
+    );
+    expect(CustomProviderInputSchema.safeParse({ kind: "flight", name: "Galileo" }).success).toBe(
+      true,
+    );
   });
 });

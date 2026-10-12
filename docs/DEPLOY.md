@@ -180,6 +180,22 @@ nginx serves them at `/uploads/` straight from the API with a one-year cache; ad
 9. Replace every Sample record (contact numbers, office hours, payment accounts, packages, products, prices) in Admin
    › Content before announcing the site; Admin › Content › Maintenance mode can hold the public site meanwhile.
 
+## 5b. Google sign-in (optional, issue 134)
+
+Customers can sign in with Google to see their requests and orders. It stays off until both switches are on.
+
+1. Google Cloud console → APIs & Services → OAuth consent screen: External, app name WAAFA, a support email, the
+   domain `waafasworld.com`, scopes `openid`, `email` and `profile` only; publish the app.
+2. Credentials → Create credentials → OAuth client ID → Web application. Authorised JavaScript origin
+   `https://waafasworld.com`; authorised redirect URI `https://waafasworld.com/api/auth/google/callback` (Admin ›
+   Settings › Integrations › Sign-in shows the exact address).
+3. Admin › Settings › Integrations › Sign-in → Google sign-in → Connect: paste the client ID and client secret, Save,
+   Test connection, then switch Active on (the Sandbox or Live switch picks which saved pair is used).
+4. Admin › Content › Site settings → Accounts live → Save. The Log in link appears in the header and the phone menu.
+
+Turning either switch off hides sign-in again; signed-in customers keep their session until it expires (30 days) or
+they log out. Deleting an account never deletes the customer's requests or orders.
+
 ## 6. Operations
 
 | Task | Command (from `/opt/waafa`) |
