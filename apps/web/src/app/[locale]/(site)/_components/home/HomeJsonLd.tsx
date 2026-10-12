@@ -1,5 +1,6 @@
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
+import { schemaId } from "@/lib/seo/schemaIds";
 import { defaultShareImage } from "@/lib/seo/withSocial";
 import { absoluteUrl } from "@/lib/siteUrl";
 
@@ -41,16 +42,16 @@ async function HomeJsonLd() {
         "@graph": [
           {
             "@type": "WebSite",
-            "@id": `${url}#website`,
+            "@id": schemaId("website"),
             url,
             name: site.travelBrand,
             alternateName: ["WAAFA", site.storeName],
             inLanguage: "en-BD",
-            publisher: { "@id": `${url}#organization` },
+            publisher: { "@id": schemaId("organization") },
           },
           {
             "@type": "Organization",
-            "@id": `${url}#organization`,
+            "@id": schemaId("organization"),
             name: site.companyName,
             url,
             logo: absoluteUrl("/icon.png"),
@@ -58,7 +59,7 @@ async function HomeJsonLd() {
           },
           {
             "@type": ["TravelAgency", "LocalBusiness"],
-            "@id": `${url}#agency`,
+            "@id": schemaId("agency"),
             name: site.travelBrand,
             url,
             telephone: contact.phoneE164,
@@ -71,7 +72,7 @@ async function HomeJsonLd() {
             areaServed: { "@type": "Country", name: "Bangladesh" },
             address,
             openingHoursSpecification: hours,
-            parentOrganization: { "@id": `${url}#organization` },
+            parentOrganization: { "@id": schemaId("organization") },
           },
         ],
       }}

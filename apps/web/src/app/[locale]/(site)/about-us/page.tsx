@@ -12,6 +12,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OfficeStatusChip } from "@/components/layout/OfficeStatusChip";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Canonical } from "@/components/seo/Canonical";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { TeamCard } from "@/components/team/TeamCard";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -24,8 +25,10 @@ import {
   listTimeline,
   listValues,
 } from "@/lib/data/content";
-import { getContactSettings, getHomeContent } from "@/lib/data/settings";
+import { getContactSettings, getHomeContent, getSiteSettings } from "@/lib/data/settings";
+import { schemaId } from "@/lib/seo/schemaIds";
 import { withSocial } from "@/lib/seo/withSocial";
+import { absoluteUrl } from "@/lib/siteUrl";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, t] = await Promise.all([getPage("about-us"), getTranslations("About")]);
@@ -42,28 +45,82 @@ export async function generateMetadata(): Promise<Metadata> {
  * timeline, values, team and contact settings.
  */
 export default async function AboutPage() {
-  const [page, blocks, destinations, timeline, values, team, contact, home, office, t, tLayout] =
-    await Promise.all([
-      getPage("about-us"),
-      listPageBlocks("about"),
-      listDestinations(),
-      listTimeline(),
-      listValues(),
-      listTeam("about"),
-      getContactSettings(),
-      getHomeContent(),
-      getMediaSlot("office"),
-      getTranslations("About"),
-      getTranslations("Layout"),
-    ]);
+  const [
+    page,
+    blocks,
+    destinations,
+    timeline,
+    values,
+    team,
+    contact,
+    home,
+    office,
+    site,
+    t,
+    tLayout,
+  ] = await Promise.all([
+    getPage("about-us"),
+    listPageBlocks("about"),
+    listDestinations(),
+    listTimeline(),
+    listValues(),
+    listTeam("about"),
+    getContactSettings(),
+    getHomeContent(),
+    getMediaSlot("office"),
+    getSiteSettings(),
+    getTranslations("About"),
+    getTranslations("Layout"),
+  ]);
   if (!page) notFound();
   const services = blocks.filter((block) => block.group === "services");
   const routes = blocks.find((block) => block.group === "routes");
   const officeImage = office?.image ?? office?.video?.poster;
+  const pageUrl = absoluteUrl("/about-us");
+  // AboutPage about the company, with the company's own details and both brands (issue 125); admin data only.
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "AboutPage",
+        "@id": `${pageUrl}#page`,
+        url: pageUrl,
+        name: page.title,
+        description: page.seo.description ?? t("metaDescription"),
+        inLanguage: "en-BD",
+        isPartOf: { "@id": schemaId("website") },
+        about: { "@id": schemaId("organization") },
+        mainEntity: { "@id": schemaId("organization") },
+        ...(officeImage ? { primaryImageOfPage: absoluteUrl(officeImage.src) } : {}),
+      },
+      {
+        "@type": "Organization",
+        "@id": schemaId("organization"),
+        name: site.companyName,
+        url: absoluteUrl("/"),
+        logo: absoluteUrl("/icon.png"),
+        email: contact.email,
+        telephone: contact.phoneE164,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: contact.addressLines.join(", "),
+          addressLocality: contact.city,
+          addressCountry: contact.country,
+        },
+        brand: [
+          { "@type": "Brand", name: site.travelBrand },
+          { "@type": "Brand", name: site.storeName },
+        ],
+        subOrganization: { "@id": schemaId("agency") },
+        sameAs: contact.socials.map((social) => social.url),
+      },
+    ],
+  };
 
   return (
     <main id="main" className="site-container flex flex-col gap-16 pt-4 pb-28 md:gap-20 md:pt-6">
       <Canonical path="/about-us" />
+      <JsonLd data={structuredData} />
       <div className="flex flex-col gap-6">
         <Breadcrumbs items={[{ label: t("kicker") }]} />
         <section className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">

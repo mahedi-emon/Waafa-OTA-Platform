@@ -12,6 +12,9 @@ import { DealCountdown } from "@/components/shop/DealCountdown";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { RecentlyViewed } from "@/components/shop/RecentlyViewed";
 import { Canonical } from "@/components/seo/Canonical";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { schemaId } from "@/lib/seo/schemaIds";
+import { absoluteUrl } from "@/lib/siteUrl";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getMediaSlot, listBanners } from "@/lib/data/content";
@@ -48,14 +51,53 @@ function heading(row: StoreRow, fallbackTitle: string, fallbackLead?: string) {
  * arrivals, recently viewed, services, the corporate band and the trust row.
  */
 export default async function ShopPage() {
-  const [rows, t, site, content, contact, names] = await Promise.all([
+  const [rows, t, site, content, contact, names, popular] = await Promise.all([
     listStoreRows(),
     getTranslations("Shop"),
     getSiteSettings(),
     getShopContent(),
     getContactSettings(),
     brandNames(),
+    // Same query as the best sellers row, so the structured data names what the page shows.
+    pricedProducts({ sort: "popular", limit: ROW }),
   ]);
+  const storeUrl = absoluteUrl("/shop");
+  // OnlineStore for Waafas World and its best sellers as an ItemList (issue 125). No ratings: none are collected.
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "OnlineStore",
+        "@id": schemaId("store"),
+        name: site.storeName,
+        url: storeUrl,
+        description: t("metaDescription"),
+        logo: absoluteUrl("/icon.png"),
+        telephone: contact.phoneE164,
+        email: contact.email,
+        currenciesAccepted: "BDT",
+        areaServed: { "@type": "Country", name: contact.country },
+        parentOrganization: { "@id": schemaId("organization") },
+      },
+      ...(popular.items.length > 0
+        ? [
+            {
+              "@type": "ItemList",
+              "@id": `${storeUrl}#best-sellers`,
+              name: t("home.bestSellers"),
+              numberOfItems: popular.items.length,
+              itemListElement: popular.items.map((product, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                url: absoluteUrl(`/shop/p/${product.slug}`),
+                name: product.title,
+                ...(product.images[0] ? { image: absoluteUrl(product.images[0].src) } : {}),
+              })),
+            },
+          ]
+        : []),
+    ],
+  };
   const card = (product: Product) => (
     <li key={product.id}>
       <ProductCard product={product} brandName={names.get(product.brandId) ?? ""} />
@@ -257,7 +299,7 @@ export default async function ShopPage() {
       );
     },
     bestSellers: async (row) => {
-      const products = await pricedProducts({ sort: "popular", limit: ROW });
+      const products = popular;
       if (products.items.length === 0) return null;
       const { title, subtitle } = heading(row, t("home.bestSellers"), t("home.bestSellersLead"));
       return (
@@ -444,6 +486,7 @@ export default async function ShopPage() {
   return (
     <main id="main" className="site-container flex flex-col gap-12 pt-5 pb-28 md:pt-6">
       <Canonical path="/shop" />
+      <JsonLd data={structuredData} />
       <h1 className="sr-only">{site.storeName}</h1>
       {sections.map((section, index) =>
         section ? <div key={rows[index]?.key}>{section}</div> : null,
