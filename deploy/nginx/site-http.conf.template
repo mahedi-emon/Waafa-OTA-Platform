@@ -31,7 +31,7 @@ gzip_types text/plain text/css text/xml application/javascript application/json 
 
 # Hashed build files, optimised images and the public media are cached here (issue 126), so repeat requests never
 # reach Node. 600 MB on disk at most; entries unused for 14 days are dropped.
-proxy_cache_path /var/cache/nginx/waafa levels=1:2 keys_zone=waafa_static:32m max_size=600m inactive=14d
+proxy_cache_path /var/cache/nginx/waafa levels=1:2 keys_zone=waafa_static:8m max_size=600m inactive=14d
     use_temp_path=off;
 
 # next/image answers AVIF, WebP or the original depending on the browser's Accept header: one cache entry per format.
