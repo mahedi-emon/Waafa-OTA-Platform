@@ -263,8 +263,8 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   expect(start.headers()["set-cookie"] ?? "").toContain("waafa_oauth=");
   expect(google.toString()).not.toContain("e2e-google-secret");
 
-  // With the Log in button in the header, no width scrolls sideways (issue 138: 1024 px did).
-  for (const width of [1024, 1280, 1440]) {
+  // With the Log in button in the header, no width scrolls sideways (issue 138: 1024 px did; issue 140: 1280 px by 8 px).
+  for (const width of [1024, 1280, 1300, 1360, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     for (const path of ["/", "/login"]) {
       await page.goto(path);
@@ -275,6 +275,9 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
     }
   }
   await expect(page.getByRole("link", { name: "Log in", exact: true })).toBeVisible();
+  // At 1440 px the words show on one line (issue 140: they wrapped to "Log / in").
+  const label = page.getByRole("link", { name: "Log in", exact: true }).locator("span");
+  expect((await label.boundingBox())?.height ?? 0).toBeLessThan(30);
 
   // My account without a session asks to log in.
   await page.goto("/account");
