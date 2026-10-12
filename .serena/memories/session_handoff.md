@@ -1,33 +1,22 @@
 # Session handoff (update at every session end)
-Updated 2026-10-12 21:30 Dhaka.
-LOCAL TEST of Google sign-in done on the Docker stack (images 3838572): 4/4 at 320–1920 px. Fixed on the way: #138
-(delete → React 412: Log out/Delete are now POST route handlers /api/account/{sign-out,delete} with 303 relative
-redirects; header 1024), #140 (1280 + label wrap), #142 (desktop Log in icon-only always; nav px-1.5 / xl:px-2; static
-nav renders More). Lesson: CI Linux fonts render the nav ~14 px wider than Windows; e2e checks header grid at 1024–1920.
-Local DB: Google connected with a FAKE client (local-test-…) and Accounts live ON, so /login shows the button; Google
-answers "invalid client" until real keys. Production DB starts clean (both switches off).
-GOOGLE SIGN-IN (#134, PR #135, D163): built and merged, OFF until two switches: Admin › Integrations › Sign-in
-(Google client ID + secret, Active) and Content › Site settings › Accounts live. Owner steps: docs/DEPLOY.md 5b.
-API: Customer/CustomerSession, public/auth/google(+config), public/account(+sign-out, delete); web: /login,
-/account, /api/auth/google/start|callback (state + PKCE cookie), session cookie waafa_customer.
-LAUNCH-READY (go-live 13 Oct, waafasworld.com). Merged today: #127 (#126 nginx gzip + cache), #129 (#125 structured
-data), #118 (#115 docs), #128 (dependabot, approved from the owner's account; commit author dependabot[bot], D162),
-#131 (#130 Docker Hub images). Open: #74 (owner's VPS deploy), #71 (later), epics #30-#33.
-DEPLOY FLOW (D161): push to main → workflow "Docker images" builds api/web/nginx (deploy.sh --build in the runner,
-throwaway secrets), smoke + secret scan, pushes emon6107/waafa-ota-platform:{api,web,nginx}-<sha7> and -latest.
-Server: git clone repo to /opt/waafa, copy deploy/.env (IMAGE_REPO set) → sh deploy/check.sh → sh deploy/deploy.sh
-(docker pull, label guard for SITE_URL/Turnstile key, up, nginx cache clear, signed revalidation, certbot).
-Rollback: IMAGE_TAG=<sha7>. GitHub: secrets DOCKERHUB_USERNAME/TOKEN; variables SITE_URL (default
-https://waafasworld.com), TURNSTILE_SITE_KEY (re-run workflow after changing).
-Production settings: deploy/.env.production on the owner's PC (gitignored; admin + ACME + staff email =
-the owner's git email; generated secrets). Still needed from the owner: RESEND_API_KEY or SMTP_URL (API refuses to
-start without one), DNS A records (apex + www), the VPS (x86_64, 2 vCPU/4 GB min, 4/8 recommended, Singapore).
-Local stack: deploy/.env (localhost) now has IMAGE_REPO → `sh deploy/deploy.sh` pulls the Docker Hub images; Mailpit
-container waafa-mailpit (axllent/mailpit:v1.27) on :8025/:1025. Stop: docker compose -f deploy/compose.yml down.
-OWNER RULE: real code review on every PR, posted from the owner's account (gh api .../pulls/N/reviews, COMMENT +
-inline comments; bot PRs APPROVE), fix + reply, then merge; never Copilot; no AI wording. Reviews do count
-(contributionsCollection.totalPullRequestReviewContributions).
-Next: 1) owner buys the VPS + DNS + Resend → deploy; 2) after go-live: Search Console, Rich Results test, Sample
-content, Tracking IDs, Turnstile (GitHub variable + re-run + secret), uptime; 3) #71 rest, Bangla P1.
-Gotchas: compose pull only warns for buildable services (use docker pull); Git Bash mangles rev:path
-(MSYS_NO_PATHCONV=1); seo.spec needs test.slow() on this PC; no testing-library (react-dom/server in unit tests).
+Updated 2026-10-13 04:30 Dhaka.
+STATE: everything merged to main, nothing open except epics, #71 (later), #74 (owner's VPS deploy). Go-live: owner
+deploys on 14 Oct with docs/DEPLOY.md quick start (bootstrap-server.sh → clone → scp deploy/.env.production →
+check.sh → deploy.sh → backups cron). Production settings file is complete (validated: all values, LF) and stays on
+the owner's PC (gitignored); it already holds Resend + Google keys and the first admin.
+THIS SESSION: #146 Log in words (PR #150), #149 Resend + Google env fallback (#151), #147 country flags (#152), #148
+larger hero + flight path in the sky (#153, with #154 e2e outside-day fix), docs #155; then #156 airline logos (#159:
+scripts/fetch-airline-logos.mjs → 89 marks in public/media/airlines, AirlineLogo, optional Airline.logo), #157 hero
+fare card + chip flags + ribbon + glows (#161), #158 bootstrap-server.sh + runbook + web cap 1 GB (#160).
+SECRETS: Resend key + Google client only in gitignored deploy/.env.production and local deploy/.env. Resend domain
+verified; test mail sent. Owner should rotate the Google secret and Resend key after launch (both were pasted in chat).
+Local stack: Docker Hub images; web image is built for https://waafasworld.com, so Google sign-in can only complete on
+the live domain. Local mail goes through Resend (not Mailpit). Redeploy local: MSYS_NO_PATHCONV=1 sh deploy/deploy.sh.
+OWNER TODO: Google Cloud web client → origin https://waafasworld.com, redirect https://waafasworld.com/api/auth/google/callback,
+Audience → Publish app. Add a Home destination "Bali" (DPS) if the hero chip should show its flag.
+MCP: magic (21st.dev) timed out earlier; shadcn/github MCP flaky (gh CLI works).
+Next: 1) owner go-live; 2) after: Search Console, Rich Results, Sample content, Tracking IDs, Turnstile, uptime;
+3) #71 rest, Bangla P1.
+Gotchas: Windows case-insensitive file names (CountryFlag.tsx vs countryFlagSrc.ts); stacked calendars repeat outside
+days (e2e uses :not([data-outside])); pics.avs.io returns a 200 placeholder for unknown codes; dev server first compile
+takes minutes with the Docker stack running (~300–500 MB free).
