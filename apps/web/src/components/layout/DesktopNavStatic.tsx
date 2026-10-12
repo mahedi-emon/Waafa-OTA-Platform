@@ -45,7 +45,23 @@ function DesktopNavStatic({ items, label, currentLabel, className }: DesktopNavS
                   ) : null}
                 </Link>
               </li>
-            ) : null,
+            ) : (
+              // A panel without a page (More): the same trigger, so the header keeps its width when the interactive
+              // menu takes over (issue 142); it opens once the page is interactive.
+              <li key={item.id} className="static">
+                <button
+                  type="button"
+                  aria-haspopup="menu"
+                  className={cn(navigationMenuTriggerStyle(), "group", CURRENT_TEXT)}
+                >
+                  {item.label}
+                  <ChevronDownIcon
+                    className="relative top-px size-3.5 text-mist-500"
+                    aria-hidden="true"
+                  />
+                </button>
+              </li>
+            ),
           )}
         </ul>
       </div>

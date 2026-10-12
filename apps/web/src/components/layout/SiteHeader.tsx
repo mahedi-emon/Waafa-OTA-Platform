@@ -92,11 +92,13 @@ async function SiteHeader() {
           {site.accountsLive ? (
             <Link
               href="/login"
-              // Icon only from 1024 px; the words from 1360 px (the label overflowed at 1024 px and, by 8 px, at 1280 px: issues 138 and 140); never wraps to two lines.
-              className="hidden size-11 shrink-0 items-center justify-center gap-2 rounded-full bg-navy-900 text-[15px] font-semibold whitespace-nowrap text-white transition-colors duration-150 hover:bg-royal-800 focus-visible:ring-3 focus-visible:ring-ring/40 lg:inline-flex hd:w-auto hd:px-5"
+              // Icon only on every desktop width, like the help button: the words pushed the header past the page grid (issues
+              // 138, 140 and 142). The phone menu shows the words.
+              title={t("logIn")}
+              className="hidden size-11 shrink-0 items-center justify-center rounded-full bg-navy-900 text-white transition-colors duration-150 hover:bg-royal-800 focus-visible:ring-3 focus-visible:ring-ring/40 lg:inline-flex"
             >
               <User aria-hidden="true" className="size-[18px]" />
-              <span className="sr-only hd:not-sr-only">{t("logIn")}</span>
+              <span className="sr-only">{t("logIn")}</span>
             </Link>
           ) : null}
           <MobileMenu

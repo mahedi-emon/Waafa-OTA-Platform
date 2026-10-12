@@ -11,10 +11,6 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* 1360 px, in rem like the built-in breakpoints so variants sort correctly: the header shows the Log in words from
-     here (issue 140). */
-  --breakpoint-hd: 85rem;
-
   /* Only WAAFA colours exist: Tailwind's default palette is removed so off-brand colours cannot slip in. */
   --color-*: initial;
   --color-white: #ffffff;

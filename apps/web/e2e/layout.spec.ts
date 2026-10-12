@@ -194,3 +194,15 @@ test("the tab bar label wraps at 320 px instead of being cut", async ({ page }) 
   const scroll = await label.evaluate((element) => element.scrollWidth - element.clientWidth);
   expect(scroll).toBeLessThanOrEqual(0);
 });
+
+test.describe("server-rendered desktop nav (issue 142)", () => {
+  test.use({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+
+  test("shows More before the interactive menu takes over, so the header never shifts", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const nav = page.locator("header nav").first();
+    await expect(nav.getByRole("button", { name: "More" })).toBeVisible();
+  });
+});
