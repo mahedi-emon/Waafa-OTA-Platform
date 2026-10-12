@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
-import { getContactSettings } from "@/lib/data/settings";
+import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { getVisaCountry, listVisaCountries } from "@/lib/data/visa";
+import { schemaId } from "@/lib/seo/schemaIds";
+import { absoluteUrl } from "@/lib/siteUrl";
 import { VisaChecklist } from "./_components/VisaChecklist";
 import { VisaFeeBar } from "./_components/VisaFeeBar";
 import { VisaFeeCard, type VisaFee } from "./_components/VisaFeeCard";
@@ -57,8 +59,9 @@ async function VisaCountryPageContent({
   const { country: slug } = await params;
   const country = await getVisaCountry(slug);
   if (!country) notFound();
-  const [contact, t, tTypes] = await Promise.all([
+  const [contact, site, t, tTypes] = await Promise.all([
     getContactSettings(),
+    getSiteSettings(),
     getTranslations("Visa"),
     getTranslations("Search.visaTypes"),
   ]);
@@ -69,6 +72,42 @@ async function VisaCountryPageContent({
     serviceCharge: type.serviceCharge,
   }));
   const notes = [...new Set(country.types.flatMap((type) => type.notes))];
+  const pageUrl = absoluteUrl(`/visa-services/${country.slug}`);
+  // Service with an indicative offer per visa type (issue 125): the same total as the fee card, VAT included; when
+  // the embassy fee is not known yet the offer is the service charge and says the rest is confirmed before payment.
+  const service = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${pageUrl}#service`,
+    url: pageUrl,
+    name: t("country.title", { country: country.name }),
+    serviceType: t("country.serviceType"),
+    description: t("country.lead"),
+    provider: {
+      "@type": "TravelAgency",
+      "@id": schemaId("agency"),
+      name: site.travelBrand,
+      url: absoluteUrl("/"),
+    },
+    areaServed: { "@type": "Country", name: contact.country },
+    offers: fees.map((fee) => {
+      const price = fee.serviceCharge + (fee.embassyFee ?? 0);
+      return {
+        "@type": "Offer",
+        name: t("country.offerName", { country: country.name, type: fee.label }),
+        url: `${pageUrl}?type=${fee.type}`,
+        price,
+        priceCurrency: "BDT",
+        priceSpecification: {
+          "@type": "PriceSpecification",
+          price,
+          priceCurrency: "BDT",
+          valueAddedTaxIncluded: true,
+        },
+        ...(fee.embassyFee === null ? { description: t("country.offerPending") } : {}),
+      };
+    }),
+  };
 
   const tabs = country.types.map((type) => {
     const facts = [
@@ -109,6 +148,7 @@ async function VisaCountryPageContent({
 
   return (
     <main id="main" className="site-container flex flex-col gap-6 pt-4 pb-40 md:pt-6 lg:pb-24">
+      {fees.length > 0 ? <JsonLd data={service} /> : null}
       {country.faqs.length > 0 ? (
         <JsonLd
           data={{

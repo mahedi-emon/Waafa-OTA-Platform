@@ -23,6 +23,8 @@ const meta = (page: Page, selector: string) =>
   page.locator(selector).first().getAttribute("content");
 
 test("every public page has its own share preview", async ({ page }) => {
+  // Twelve full page loads in one test: allow three times the default on slow machines.
+  test.slow();
   const titles = new Set<string>();
   for (const route of ROUTES) {
     await page.goto(route);
@@ -66,6 +68,63 @@ test("listings carry ItemList and Home names the website", async ({ page }) => {
   );
   expect(home).toContain('"@type":"WebSite"');
   expect(home).toContain('"@type":["TravelAgency","LocalBusiness"]');
+});
+
+/** Every JSON-LD block on the page, parsed; `@graph` nodes are flattened into the list. */
+async function structuredData(page: Page): Promise<Array<Record<string, unknown>>> {
+  const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
+  return blocks.flatMap((block) => {
+    const data = JSON.parse(block) as Record<string, unknown>;
+    return Array.isArray(data["@graph"])
+      ? (data["@graph"] as Array<Record<string, unknown>>)
+      : [data];
+  });
+}
+
+const typed = (nodes: Array<Record<string, unknown>>, type: string) =>
+  nodes.find((node) =>
+    Array.isArray(node["@type"]) ? node["@type"].includes(type) : node["@type"] === type,
+  );
+
+test("store, About, Gallery, Visa Guide and visa services describe themselves (issue 125)", async ({
+  page,
+}) => {
+  await page.goto("/shop");
+  let nodes = await structuredData(page);
+  expect(typed(nodes, "OnlineStore")?.name).toBe("Waafas World");
+  expect(typed(nodes, "ItemList")?.numberOfItems).toBeGreaterThan(0);
+
+  await page.goto("/about-us");
+  nodes = await structuredData(page);
+  expect(typed(nodes, "AboutPage")).toBeTruthy();
+  const organization = typed(nodes, "Organization");
+  expect(organization?.["@id"]).toMatch(/#organization$/);
+  expect(JSON.stringify(organization?.brand)).toContain("Waafas World");
+
+  await page.goto("/gallery");
+  nodes = await structuredData(page);
+  expect((typed(nodes, "ImageGallery")?.mainEntity as { "@type": string })["@type"]).toBe(
+    "ItemList",
+  );
+
+  await page.goto("/visa-guide");
+  nodes = await structuredData(page);
+  expect((typed(nodes, "CollectionPage")?.mainEntity as { "@type": string })["@type"]).toBe(
+    "ItemList",
+  );
+
+  await page.goto("/visa-services/thailand");
+  nodes = await structuredData(page);
+  const service = typed(nodes, "Service");
+  expect((service?.provider as { "@id": string })["@id"]).toMatch(/#agency$/);
+  const offers = service?.offers as Array<{ priceCurrency: string; price: number }>;
+  expect(offers.length).toBeGreaterThan(0);
+  for (const offer of offers) {
+    expect(offer.priceCurrency).toBe("BDT");
+    expect(offer.price).toBeGreaterThan(0);
+  }
+  // Reviews and ratings are never invented.
+  expect(JSON.stringify(nodes)).not.toMatch(/aggregateRating|"review"/i);
 });
 
 test("the sitemap lists photos", async ({ request }) => {

@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Canonical } from "@/components/seo/Canonical";
+import { CollectionPageJsonLd } from "@/components/seo/CollectionPageJsonLd";
 import { Link } from "@/i18n/navigation";
 import { listVisaGuides } from "@/lib/data/visa";
 import { withSocial } from "@/lib/seo/withSocial";
@@ -29,6 +30,16 @@ export default async function VisaGuidePage() {
   return (
     <main id="main" className="site-container flex flex-col gap-10 pt-4 pb-28 md:pt-6">
       <Canonical path="/visa-guide" />
+      <CollectionPageJsonLd
+        path="/visa-guide"
+        name={t("title")}
+        description={t("metaDescription")}
+        items={guides.map((guide) => ({
+          name: guide.title,
+          path: `/visa-guide/${guide.slug}`,
+          image: guide.cover.src,
+        }))}
+      />
       <div className="flex flex-col gap-6">
         <Breadcrumbs items={[{ label: t("breadcrumb") }]} />
         <header className="flex max-w-3xl flex-col gap-3">
