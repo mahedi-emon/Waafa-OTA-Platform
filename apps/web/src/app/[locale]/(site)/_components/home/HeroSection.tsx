@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { MapPin, Phone } from "lucide-react";
 import type { HomeContent, MediaSlot, OpeningHours } from "@waafa/shared";
+import { cn } from "cn";
 import { GoldTriangle } from "@/components/brand/GoldTriangle";
 import { OfficeStatusChip } from "@/components/layout/OfficeStatusChip";
 import { SmartImage } from "@/components/media/SmartImage";
@@ -20,6 +21,12 @@ type HeroSectionProps = {
 };
 
 const MEDIA_SIZES = "(min-width: 1320px) 1240px, calc(100vw - 32px)";
+
+/**
+ * The media panel: 4:3 on phones (the search stays within one thumb), 16:10 on tablets, and a cinematic fixed height
+ * from 1024 px that grows with the window (issue 148). The height is known before the poster loads, so nothing shifts.
+ */
+const FRAME = "aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:h-[clamp(480px,58vh,620px)]";
 
 /** Splits a headline line into words for the CSS word reveal (`--i` staggers them). */
 function renderWords(text: string, offset = 0) {
@@ -48,7 +55,6 @@ function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps
 
   return (
     <section aria-labelledby="home-hero-title" className="relative site-container pt-6 md:pt-10">
-      <FlightPath />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-end lg:gap-12">
         <div>
           <p className="mb-3 flex items-center gap-2 text-[12.5px] font-bold tracking-[0.16em] text-brand-700 uppercase">
@@ -80,7 +86,7 @@ function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps
       </div>
 
       <div className="relative mt-6 md:mt-8">
-        <div className="relative overflow-hidden rounded-[28px] bg-mist-100">
+        <div className="relative overflow-hidden rounded-[28px] bg-mist-100 lg:rounded-[32px]">
           {media?.video ? (
             <SmartVideo
               sources={media.video}
@@ -88,7 +94,7 @@ function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps
               alt={media.video.poster.alt}
               sizes={MEDIA_SIZES}
               preloadPoster
-              className="aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/8]"
+              className={FRAME}
             />
           ) : media?.image ? (
             <SmartImage
@@ -97,11 +103,17 @@ function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps
               ratio="16/9"
               sizes={MEDIA_SIZES}
               preload
-              frameClassName="aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/8]"
+              frameClassName={FRAME}
             />
           ) : (
-            <div className="aspect-[4/3] bg-(image:--ribbon) sm:aspect-[16/9] lg:aspect-[21/8]" />
+            <div className={cn(FRAME, "bg-(image:--ribbon)")} />
           )}
+          {/* Soft shade at both edges: the chips read on any sky, and the search card sits on a grounded edge. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-linear-to-b from-midnight-950/25 via-transparent via-35% to-midnight-950/45"
+          />
+          <FlightPath />
           <p className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[13.5px] font-semibold text-navy-900 shadow-sm md:top-6 md:left-6">
             <MapPin aria-hidden="true" className="size-4 text-electric-600" />
             <span className="text-mist-600">{hero.rotatingLabel}</span>
