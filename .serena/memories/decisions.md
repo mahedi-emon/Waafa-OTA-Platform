@@ -1,72 +1,30 @@
 # Decisions (full table: docs/TRACKER.md section 8)
-- D1 Project "Todo" = Ready. D2 attribution off. D3 local Node 25, CI Node 22, pnpm pinned. D4 label prefixes.
-- D5 milestone dues (A 11 Oct, B 12, C 13, D 13 Nov, E/F open). D6 PRD beats skills (Inter+PJS, lucide, light-only).
-- D7 shadcn CLI file names; custom PascalCase. D8 --primary/--ring electric-600. D9 logo full colour on light only,
-  light footer. D10 header 64/72 px. D11 above-the-fold motion in CSS. D12 TS 6.0.3 + ESLint 9.
-- D13 single [locale] root layout, admin at [locale]/admin. D14 next-intl no detection/cookie. D15 @tailwindcss/postcss.
-- D16 default palette removed. D17 shadcn radix-nova + Lucide + pointer. D18 framer-motion removed.
-- D19 LogoLockup = supplied cut-outs via next/image. D20 pill buttons 48/38/56, icon 44. D21 hover = colour/overlay;
-  accordion fades. D22 "Waafa Taka" ৳ subset font. D23 grid-cols-1 at phone base. D24 messages={null} + pickMessages.
-- D25 WhatsApp/Facebook glyphs from Simple Icons. D26 /styleguide dev + STYLEGUIDE=1 only.
-- D27 UI reads cached accessors only; fixture repos pure with `now`. D28 fixtures zod inputs, frozen.
-- D29 headed sections for pages/blog/guides. D30 visa embassy fee null by default. D31 sample people rules.
-- D32 gallery/feedback/team sample rules. D33 package categories[]/months[]; airline strip featuredOrder.
-- D34 /shop/printing-solutions, /shop/international-trading. D35 Phase A createLead stores nothing.
-- D36 v4 adopted: #1–#22 = A1–A22, A0 #27, epics #28–#33, A1b #34; A17 = system states + LiveBody placeholder only.
-- D37 drawn prototype loops never ship; real footage. D38 dangerouslySetInnerHTML only RichText + JsonLd.
-- D39 hex guard on apps/web/src; brandColors.ts. D40 21st key env names. D41 husky local hooksPath; CI HUSKY=0.
-- D42 job-level path filters. D43 Project dates/estimates. D44 no Phase F words (guards). D45 MEDIA_CREDITS.md.
-- D46–D55 (A6/A5): login hidden until accounts; navs read pathname after hydration; config cache hours; no root-params;
-  announcement dismissal localStorage; tagline from 1280; Radix focus proxy excluded from axe; RSC prefetch 404s allowed
-  until A22; six real clips; media slots.
-- D56 inner-page competitor Lighthouse = 1 run on package listings.
-- D57 search tabs/trip pill = CSS transform (no layoutId/domMax). D58 country code chip, no flags. D59 card one row from
-  xl (1280). D60 Back restore via sessionStorage snapshot (+ Activity). D61 pickers/popover/vaul/submit logic lazy.
-  D62 no tour budget field (board). D63 week starts Sunday; >30-night days disabled.
-- D64–D77 (A7–A10): see TRACKER; D75 one LeadRequestCard (contact first) for every Manual module.
-- D78 unknown package slug = Next not-found, status 200 + noindex (Cache Components streaming); branded 404 in A17.
-  D79 package query inline at #query, booking card choices via PackageBookingProvider. D80 Plan my trip contact first,
-  help card instead of live summary. D81 package filters GET form. D82 plan place chips in SearchSettings.planTripPlaces.
-  D83 native date inputs on Plan my trip. D84 package lightbox via next/dynamic.
-- D85 param pages await params inside Suspense (Next 16.4 instant-navigation check). D86 visa apply = LeadRequestCard,
-  contact first + one trip/documents step. D87 Phase A visa files stay in the browser, metadata only. D88 sanitize-html
-  in RichText (server-only). D89 visa type client state mirrored to ?type= (replaceState). D90 fully static pages use
-  the Canonical component (hoisted link), NOT alternates.canonical (build fails on /[locale] shell). D91 checklist
-  ticks not stored; SVG ring.
-- D92 bulk lead module QTE (dialog, store wording via contactCopy). D93 ShopContent + StoreRow title/subtitle.
-  D94 withDeals = one effective price. D95 guest cart localStorage store (components/shop/useCart); cart page A14.
-  D96 listing GET filters, select attributes only (`a.<key>` params). D97 finder two GET steps. D98 hide empty
-  categories on store home. D99 product video under description. D100 shared PhotoLightbox. D101 Canonical on static
-  store pages.
-- D102 one shared priceCart (browser sends ids and quantities only). D103 free delivery on pre-coupon subtotal; zone from
-  address. D104 one-page checkout, success in place, cart cleared. D105 Phase A store on globalThis. D106 payment proof
-  metadata only; DocumentSlot in components/forms. D107 stock not decremented in Phase A; mini-cart drawer etc. cut to A22.
-- D108 service pages = ServicePage record + shared request card. D109 attachments metadata only. D110 PageBlock collection
-  for info page cards. D111 About route chips (map in A22). D112 empty office slot → navy visit card. D113 directions
-  link, no map iframe. D114 gallery videos open externally. D115 optional feedback rating, never an average.
-- D116 global-error fixed English. D117 offline = notice (no SW). D118 404 without site search box. D119 maintenance
-  replaces the public site in the (site) layout; admin/API unaffected.
-- D120 group fares link with ?groupFare= (fare = fare type). D121 partial flight links prefill (admin default origin).
-  D122 RATE_LIMIT_FACTOR only on the Playwright server. D123 footer brand in text (one logo). D124 request steps ask
-  travellers / rooms+guests.
-- D125 launch data model: relational tables for transactions; content/settings as JSON documents validated by shared
-  CONTENT_MODEL. D126 API via tsx + explicit @Inject. D127 private local Postgres on 5433. D128 seed admin only from
-  SEED_ADMIN_* (12+ chars). D129 admin is a BFF: web keeps API tokens in its own httpOnly cookies; API Bearer only.
-- D130 web reads all public content from one snapshot GET /api/v1/public/snapshot (ETag). D131 intake server to server
-  (x-intake-key, Idempotency-Key UUID; only successes replayed; refusals release the key). D132 orders lock product
-  documents FOR UPDATE. D133 emails via BullMQ when REDIS_URL, in-process otherwise; staff alerts to STAFF_ALERT_EMAIL.
-  D134 OpenAPI from zod (z.toJSONSchema) outside production. D135 lead/content access by role (404 outside modules).
-  D136 web API mode by env (WAAFA_API_URL + WAAFA_INTAKE_KEY): fixture repos over the cached snapshot via proxy; writes
-  to /api/v1/public; /api/revalidate (HMAC) expires every tag with { expire: 0 }.
-- D141 prod = owner VPS (2 vCPU/4 GB) Docker Compose + nginx/certbot (deploy/), only nginx public. D142 provider
-  adapters + ProviderCredential (AES-256-GCM, PROVIDER_SECRET_KEY); stubs refuse booking calls; Integrations = Super
-  Admin. D143 admin at /secure-admin-control (ADMIN_BASE_PATH), /admin 404. D144 client imports from
-  @waafa/shared/constants (zod-free); Motion features stay sync. D145 per-route first-load ceilings (e2e/budget.spec.ts),
-  200 KB in #91. D146 BannerHero inset panel, Ken Burns after 1.2 s desktop. D147 CardFx/HoverVideo in-house.
-- Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; on Windows kill node
-  children of stopped servers; shadcn MCP needs registries ["@shadcn"]; react-day-picker v10 `selected` needs onSelect
-  (use custom modifiers); shadcn Calendar `classNames` REPLACE defaults per key; ghost Button `before:` overlay shows on
-  hover (add before:hidden); PowerShell Move-Item treats [locale] as wildcard (use bash mv / -LiteralPath); Radix RadioGroupItem
-  with className "sr-only" stays in the flow (use "absolute inset-0 size-full opacity-0 after:hidden" + relative label);
-  Radix SelectValue is empty on SSR (pass the label as children); a stale `next start` on port 3100 makes e2e test an
-  old build (kill it first).
+- D1–D63: see TRACKER (planning, design system, MotionKit, search card, Back restore, pickers lazy).
+- D64–D124: see TRACKER (home, flights/hotels Manual, packages, visa, store, cart/checkout, service pages, info pages,
+  system states, group fares, footer brand text).
+- D125 launch data model: relational for transactions; content/settings JSON documents (shared CONTENT_MODEL).
+  D126 API via tsx + explicit @Inject. D127 local Postgres 5433. D128 seed admin from SEED_ADMIN_*. D129 admin = BFF
+  (web httpOnly cookies; API Bearer).
+- D130 public snapshot GET /api/v1/public/snapshot (ETag). D131 intake server to server (x-intake-key,
+  Idempotency-Key). D132 orders lock products FOR UPDATE. D133 emails via BullMQ. D134 OpenAPI outside production.
+  D135 lead/content access by role. D136 web API mode by env (WAAFA_API_URL + WAAFA_INTAKE_KEY).
+- D141 prod = owner VPS Docker Compose + nginx/certbot. D142 provider adapters + ProviderCredential (AES-256-GCM).
+  D143 admin at /secure-admin-control, /admin 404. D144 client imports zod-free constants. D145 per-route JS ceilings.
+  D146 BannerHero inset panel. D147 CardFx/HoverVideo in-house. D151 CSP without nonces. D152 audit highs not runtime.
+  D153 rehearsal on Docker Desktop.
+- D154 (12 Oct, #91) overlays/toasts/desktop menu load on use; CSS page + word motion; native details accordions;
+  zod jitless via beforeInteractive script; message precompile and content-visibility tried and dropped.
+- D155 (#107) IntegrationSetting per provider (Active, isLive → production creds, markup for flight/hotel) next to
+  per-environment sealed credentials; custom providers "custom-<kind>-<slug>" with generic fields; audited reveal;
+  getIntegrationConfig / resolveCategory (manual fallback); email via active Resend/SMTP else env mailer.
+- D156 (#109) media uploads on VPS volume, sharp in the API (WebP, 2560 px, no EXIF), /uploads via nginx → API.
+- D157 (#111) customers keyed by phone across leads and orders until accounts (Phase D). D158 (#116) tiptap rich text.
+- D159 (12 Oct) every PR: COMMENT code review with inline comments from the owner's account before merge; never
+  Copilot; bot PRs may be approved. D160 (#126) nginx gzip + proxy cache (/_next/static 30 d, /_next/image 7 d per
+  format, /media 1 d), Next compression off in the Docker image only, deploy.sh clears the cache.
+- Structured data (#125): shared @ids from lib/seo/schemaIds.ts; CollectionPageJsonLd; data must mirror visible content
+  (store ItemList follows the Best sellers row); never ratings/reviews.
+- Gotchas: Radix radios need aria-labelledby; tabs need panels; import MotionKit files directly; PowerShell Move-Item
+  treats [locale] as wildcard; Radix SelectValue empty on SSR; never use t.raw (placeholders via t(key,{x:"{x}"}));
+  getByLabel is substring (use exact); e2e sign-ins need their own x-forwarded-for (5 per 15 min per address);
+  Bash heredocs with quotes can break (write scripts with Write); "#123" in web code trips the hex guard.

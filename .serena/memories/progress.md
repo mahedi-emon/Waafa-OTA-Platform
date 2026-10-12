@@ -1,30 +1,17 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
-- 2026-10-11 14:00 Dhaka — Merged: #81 VPS Docker + nginx (#74 waits for owner SSH/DNS/email), #83 provider adapters +
-  Integrations (#82), #84 zod out of first load (#39 closed → #91 Phase D), #86 admin at /secure-admin-control (#85),
-  #90 product photo bug (#89). Open: #87 public screens at 5 widths (screenshots artifact), #88 board parity + motion
-  (BannerHero, chips, home hero, request cards, CardFx spotlight/tilt, HoverVideo, shimmer). Phase A 24/24 once #22
-  closes with #87/#88.
-- 2026-10-11 06:00 Dhaka — Launch admin (#68), Turnstile (#70), Live locked (#73), runbook (#75), admin QA (#76),
-  signature motion (#77), review fixes (#79).
-- 2026-10-11 01:00 Dhaka — Phase B launch scope 4/4 merged: #54 (PR #58), #55 (PR #59), #56 (PR #62, + bugs #60 #61),
-  #57 (PR #63). Phase C: #64 C1 web on the API, PR #65 open. Next: admin UI (A18–A21) with one generic schema editor.
-- 2026-10-10 21:40 Dhaka — #17 merged (PR #50), #51 review fixes merged (PR #53); Phase B issues #54–#57 opened.
-- 2026-10-10 20:30 Dhaka — #16 merged (PR #49); #17 A17 system states built (branded 404 via [...rest], error boundary,
-  global-error, offline notice, maintenance screen, Live placeholder). Phase A 19/24 after #17 (79%).
-- 2026-10-10 19:45 Dhaka — #16 A16 information pages built (About, Contact, FAQs, Blog + post, Gallery + album, Feedback,
-  Refund/Privacy/Terms, Baggage, EMI, Offline payment; /api/feedback, /api/payment-proof). Phase A 18/24 after #16 (75%).
-- 2026-10-10 17:40 Dhaka — #14 merged (PR #47), #15 merged (PR #48: printing + trading service pages, PRN/TRD requests).
-  Phase A 17/24 (71%). #16 In progress.
-- 2026-10-10 16:10 Dhaka — #14 A14 cart, checkout, success, track built on `feat/14-cart-checkout` (priceCart shared,
-  /api/shop/quote, /api/orders, /shop/cart|checkout|track). Phase A 16/24 after #14 (67%). PR pending.
-- 2026-10-10 15:30 Dhaka — #12 merged (PR #45). #13 A13 Waafas World catalogue built on `feat/13-store` (store bar,
-  home rows, listings, product page, finder, deals, bulk quote, guest cart); PR pending. Phase A 15/24 after #13 (62%).
-- 2026-10-10 13:30 Dhaka — #11 merged (PR #44). #12 A12 visa list/country/apply + Visa Guide built on `feat/12-visa`; PR pending.
-  Status: Phase A 14/24 after #12 (58%).
-- 2026-10-10 12:10 Dhaka — #11 A11 packages list, package detail (booking card, inline PKG query), Plan my trip (CTR) built; PR #44.
-- 2026-10-10 09:45 — #9 A9 merged (PR #42), #10 A10 hotels merged (PR #43).
-- 2026-10-10 06:15 — #7 A7 Home merged (PR #41). 03:30 — #8 A8 search card merged (PR #40). 01:20 — #34 A1b (PR #38).
-- Status: Phase A 13/24 after #11 (54%). Behind ~6 issues vs HANDOFF; owner scope decision pending. Bug #39 open (perf).
-- 2026-10-09 — A0 #27 (PR #35), A6 #6 (PR #36), A5 #5 (PR #37), A4 #4 (PR #26), A3 #3 (PR #25), A2 #2 (PR #24),
-  A1 #1 (PR #23).
-- Next: A12 visa → A13–A16 store → A17 static pages → A18–A21 admin → A22.
+- 2026-10-12 10:30 Dhaka — Launch-day prep: #126 nginx gzip + proxy cache (PR #127, review: 2 findings fixed), #125
+  structured data for /shop, About, Gallery, Visa Guide, visa country Service + Offer (PR #129, review: 1 finding
+  fixed), docs #118 reviewed. Integrations request = already shipped in #108 (verified). Dependabot #128: approve/merge
+  blocked by the local permission check; owner merges it.
+- 2026-10-12 01:30 Dhaka — Night batch for the owner ("finish #91, Phase A/B leftovers, API manager, run + test"):
+  merged #106 (#91 perf: home JS 318→215 KB, Lighthouse home 45→64, visa 91, CLS 0) and #110 (#109 media library);
+  #108 (#107 integrations manager), #112 (#111 reports + customers), #114 (#113 lead board) in CI / merging; docs #115.
+  #71 stays open for the heavy editors (itinerary drag, variants grid, category tree, rich text, TOTP, bookings).
+- 2026-10-11 19:30 Dhaka — Launch-ready: #103 CSP + analytics after consent, SECURITY.md, local Docker rehearsal,
+  C2 matrix verified; #74 waits for the owner's VPS deploy.
+- 2026-10-11 14:00 Dhaka — #81 VPS Docker + nginx, #83 provider adapters, #84, #86 hidden admin path, #87/#88 board
+  parity + motion, #90; Phase A closed.
+- 2026-10-11 06:00 — launch admin (#68), Turnstile (#70), Live locked (#73), runbook (#75), admin QA (#76), motion (#77).
+- 2026-10-11 01:00 — Phase B launch scope merged (#58, #59, #62, #63); C1 web on the API (#65).
+- 2026-10-10 — A7–A17 merged (home, search, flights, hotels, packages, visa, store, cart, services, info pages, states).
+- 2026-10-09 — A0–A6 merged.
