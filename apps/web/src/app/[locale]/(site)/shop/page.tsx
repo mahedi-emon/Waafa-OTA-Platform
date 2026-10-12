@@ -62,6 +62,9 @@ export default async function ShopPage() {
     pricedProducts({ sort: "popular", limit: ROW }),
   ]);
   const storeUrl = absoluteUrl("/shop");
+  // The list follows the Best sellers row: switched off in Admin, the page shows no such list, so neither does the data.
+  const bestRow = rows.find((row) => row.key === "bestSellers");
+  const bestItems = bestRow ? popular.items : [];
   // OnlineStore for Waafas World and its best sellers as an ItemList (issue 125). No ratings: none are collected.
   const structuredData = {
     "@context": "https://schema.org",
@@ -79,14 +82,14 @@ export default async function ShopPage() {
         areaServed: { "@type": "Country", name: contact.country },
         parentOrganization: { "@id": schemaId("organization") },
       },
-      ...(popular.items.length > 0
+      ...(bestRow && bestItems.length > 0
         ? [
             {
               "@type": "ItemList",
               "@id": `${storeUrl}#best-sellers`,
-              name: t("home.bestSellers"),
-              numberOfItems: popular.items.length,
-              itemListElement: popular.items.map((product, index) => ({
+              name: heading(bestRow, t("home.bestSellers")).title,
+              numberOfItems: bestItems.length,
+              itemListElement: bestItems.map((product, index) => ({
                 "@type": "ListItem",
                 position: index + 1,
                 url: absoluteUrl(`/shop/p/${product.slug}`),
