@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 12 Oct 10:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
+Updated: 12 Oct 14:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -36,6 +36,16 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #130 · Deploy: prebuilt images on Docker Hub, server pulls instead of building — ✅ Done (with #131)
+| Field | Value |
+| --- | --- |
+| Opened → closed | 12 Oct 14:00 → 12 Oct |
+| Branch · PR | `chore/130-docker-hub-images` · #131 |
+| Built | Workflow **Docker images** (`.github/workflows/docker.yml`): on every push to main builds api, web (prerendered from a throwaway API in the runner, SITE_URL https://waafasworld.com) and nginx with `deploy.sh --build`, checks routes, gzip, canonical domain and image labels through nginx, scans env/labels/history for the build secrets, then pushes `emon6107/waafa-ota-platform:{api,web,nginx}-<sha>` and `-latest`; PRs that touch the recipe build and check without pushing. compose names images by `IMAGE_REPO`/`IMAGE_TAG`; `deploy.sh` pulls by default (`docker pull`, so a failed pull stops), refuses a web image built for another SITE_URL or Turnstile key, refreshes web caches with a signed call (`deploy/revalidate.mjs`), `--build` keeps the old path; check.sh memory rule 3.5 GB in pull mode and an x86_64 check; DEPLOY.md server size, Docker Hub flow, GitHub variables, rollback by tag. Production settings for waafasworld.com created locally in `deploy/.env.production` (gitignored) |
+| Tests | Docker images workflow on the PR (build, smoke, secret scan) · CI VPS deploy smoke (build mode) · local: sh -n, node --check, compose config; local run from the pushed images |
+| Review | Code review on #131 from the owner's account: 1 finding (compose pull only warns for buildable services) fixed |
+| Decisions | D161, D162 |
 
 ### #125 · SEO: structured data for the store home, About, Gallery, Visa Guide index and visa services — ✅ Done (with #129)
 | Field | Value |
@@ -1103,6 +1113,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D158 | 12 Oct | tiptap for rich text bodies, one heading level (h3), output still sanitised on the server | Owner edits policies and posts without HTML; the sanitiser already maps headings to h3 | #116 |
 | D159 | 12 Oct | Every PR gets a code review before merge, posted from the owner's GitHub account (COMMENT review with inline comments, findings fixed and answered on the thread); never Copilot | Owner rule: reviews count on the owner's profile; GitHub does not let an author approve their own PR, so own PRs get COMMENT reviews and bot PRs can be approved | #126 |
 | D160 | 12 Oct | nginx compresses (gzip) and caches `/_next/static` (30 d), `/_next/image` (7 d, per image format) and `/media/` (1 d); Next compression off in the Docker image only; deploy.sh clears the cache | Node on a 2-core VPS spends its CPU on rendering; image URLs carry no content hash, so a deploy must drop cached copies | #126 |
+| D161 | 12 Oct | Production images are built by GitHub Actions and pushed to the public Docker Hub repository emon6107/waafa-ota-platform as api-, web- and nginx- tags (sha + latest); the VPS pulls them | Owner request; the 2-core server never runs the 2 GB web build, deploys take minutes, rollback is a tag; the site address and Turnstile site key are build-time, so they are GitHub variables and image labels checked at deploy | #130 |
+| D162 | 12 Oct | Dependabot PRs are approved from the owner's account and squash-merged; their merge commit keeps dependabot[bot] as author | GitHub sets the PR author on squash merges; rewriting history is not allowed; the attribution rule targets AI and co-author trailers, not the dependency bot | #128 |
 
 ## 9. Bugs and known issues
 

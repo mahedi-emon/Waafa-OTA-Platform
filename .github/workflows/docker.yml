@@ -1,0 +1,136 @@
+name: Docker images
+
+# Builds the API, web and nginx images on every push to main (or by hand), checks them through nginx, then pushes them
+# to Docker Hub as <repo>:api-<sha>, :web-<sha>, :nginx-<sha> and the matching -latest tags (issue 130). The VPS pulls
+# them with deploy/deploy.sh (IMAGE_REPO in deploy/.env), so the server never builds.
+# The web prerenders from a throwaway API and database in this runner; every secret here is random and discarded, so
+# the images hold none. Repository variables: SITE_URL (default https://waafasworld.com), TURNSTILE_SITE_KEY (public).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "fixtures/**"
+      - "deploy/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".dockerignore"
+      - ".github/workflows/docker.yml"
+  # Pull requests that touch the image recipe build and check the images without pushing them.
+  pull_request:
+    paths:
+      - "deploy/**"
+      - "apps/api/Dockerfile"
+      - "apps/web/Dockerfile"
+      - ".dockerignore"
+      - ".github/workflows/docker.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: docker-images-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_REPO: ${{ vars.DOCKERHUB_REPO || 'emon6107/waafa-ota-platform' }}
+  SITE_URL: ${{ vars.SITE_URL || 'https://waafasworld.com' }}
+  TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
+
+jobs:
+  images:
+    name: Build, check and push
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Tag and throwaway settings
+        run: |
+          TAG=$(git rev-parse --short=7 HEAD)
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          secret() { openssl rand -hex 24; }
+          umask 077
+          cat > deploy/.env <<ENV
+          IMAGE_REPO=$IMAGE_REPO
+          IMAGE_TAG=$TAG
+          SITE_URL=$SITE_URL
+          SITE_DOMAIN=localhost
+          ACME_EMAIL=
+          POSTGRES_PASSWORD=$(secret)
+          JWT_SECRET=$(secret)
+          REVALIDATE_SECRET=$(secret)
+          INTAKE_KEY=$(secret)
+          PROVIDER_SECRET_KEY=$(secret)
+          SMTP_URL=smtp://127.0.0.1:2525
+          MAIL_FROM=Waafa <no-reply@example.com>
+          STAFF_ALERT_EMAIL=desk@example.com
+          SEED_ADMIN_EMAIL=owner@example.com
+          SEED_ADMIN_PASSWORD=$(secret)
+          TURNSTILE_SITE_KEY=$TURNSTILE_SITE_KEY
+          ENV
+
+      - name: Build and start (deploy.sh --build)
+        run: sh deploy/deploy.sh --build
+
+      - name: Site answers through nginx
+        run: |
+          for path in / /flights /tour-packages /visa-services /shop /about-us /contact /faqs /secure-admin-control/sign-in /sitemap.xml /robots.txt; do
+            status=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost$path")
+            echo "$path $status"
+            [ "$status" = "200" ] || exit 1
+          done
+          [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost/admin)" = "404" ]
+          # Built for the production address: canonical links name it.
+          curl -s http://localhost/about-us | grep -q "$SITE_URL/about-us"
+          # nginx compresses text and caches hashed build files (issue 126).
+          curl -s -H 'Accept-Encoding: gzip' -o /dev/null -D - http://localhost/ | grep -qi '^content-encoding: gzip'
+          label=$(docker image inspect -f '{{ index .Config.Labels "org.waafa.site-url" }}' "$IMAGE_REPO:web-$TAG")
+          [ "$label" = "$SITE_URL" ]
+
+      - name: No secrets in the images
+        run: |
+          for service in api web nginx; do
+            image="$IMAGE_REPO:$service-$TAG"
+            for name in POSTGRES_PASSWORD JWT_SECRET REVALIDATE_SECRET INTAKE_KEY PROVIDER_SECRET_KEY SEED_ADMIN_PASSWORD; do
+              value=$(sed -n "s/^$name=//p" deploy/.env)
+              if docker image inspect "$image" --format '{{json .Config.Env}} {{json .Config.Labels}}' | grep -qF "$value"; then
+                echo "$name found in $image" >&2
+                exit 1
+              fi
+              if docker history --no-trunc "$image" | grep -qF "$value"; then
+                echo "$name found in the history of $image" >&2
+                exit 1
+              fi
+            done
+          done
+          echo "No build secret in any image"
+
+      - name: Log in to Docker Hub
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push
+        if: github.ref == 'refs/heads/main'
+        run: |
+          for service in api web nginx; do
+            docker push "$IMAGE_REPO:$service-$TAG"
+            docker tag "$IMAGE_REPO:$service-$TAG" "$IMAGE_REPO:$service-latest"
+            docker push "$IMAGE_REPO:$service-latest"
+          done
+          {
+            echo "### Pushed to Docker Hub"
+            echo "Tag \`$TAG\` (and \`latest\`) for api, web and nginx in \`$IMAGE_REPO\`, built for $SITE_URL."
+            echo "On the server: \`git pull && sh deploy/deploy.sh\` (IMAGE_TAG=latest) or pin IMAGE_TAG=$TAG."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Logs
+        if: failure()
+        run: docker compose -f deploy/compose.yml logs --tail 150
