@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 12 Oct 21:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, off until keys (#134) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
+Updated: 13 Oct 01:00 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -36,6 +36,52 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #154 · Bug: search e2e date locator matched an outside day — ✅ Done (with #153)
+| Field | Value |
+| --- | --- |
+| Found | 13 Oct 00:07 Dhaka, CI on #153 right after midnight (today+75 = 27 Dec, also an outside day of January) |
+| Fix | `td[data-day=…]:not([data-outside]) button` in pickDay and the two direct locators |
+
+### #148 · Larger hero media, cleaner flight-path motion — ✅ Done (with #153)
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 12 Oct 22:00 with screenshots: the flight-path line crossed the lead and the Open now chip; make the hero video bigger and more beautiful |
+| Branch · PR | `feat/148-hero-polish` · #153 |
+| Built | Media panel 4:3 / 16:10 / `clamp(480px, 58vh, 620px)` from 1024 px with soft top and bottom shade; FlightPath redrawn inside the panel sky (dashed route, departure dot, plane flying at the tip with SVG animateMotion, resting at the top right); reduced motion shows the end state |
+| Checked | 320 (no horizontal scroll), 390, 1024 (reduced motion), 1440 (mid-flight and resting) |
+| Tools · skills | Serena, Playwright MCP, ui-ux-pro-max (search-first hero); magic (21st.dev) timed out, so the motion follows MOTION.md §8 |
+| Decision | D167 |
+
+### #147 · Real country flags wherever a country appears — ✅ Done (with #152)
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 12 Oct: download every country flag and show it everywhere |
+| Branch · PR | `feat/147-country-flags` · #152 |
+| Built | flag-icons 7.2.3 (MIT): 256 ISO flags plus EU, SVGO-optimised, in `/media/flags`; `CountryFlag` (cva sizes xs–lg, empty alt beside the name, two-letter fallback) on visa cards and the country page, visa, destination and airport pickers, destination tiles (flag from the destination airport) and both ends of group fare cards; CountryCode removed |
+| Tests | `countryFlagSrc.test.ts` (case, UK/EL aliases, EU, unknown and path input) |
+| Tools · skills | Serena, Playwright MCP |
+| Decision | D164 |
+
+### #149 · Production email through Resend and Google sign-in keys — ✅ Done (with #151)
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 12 Oct: fix Resend mail, set the Google OAuth client, production ready for a 2 vCPU / 4 GB server |
+| Branch · PR | `chore/149-mail-google-prod` · #151 |
+| Built | Resend domain waafasworld.com verified (checked through the API); RESEND_API_KEY, GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in the gitignored deploy/.env.production and the local deploy/.env only; API reads the Google pair from the environment while Admin has no Google record (admin record wins, admin-off stays off); Resend refusals log their reason; DEPLOY.md 5b (redirect URIs, Publish app) |
+| Tests | `customers.unit.test.ts` (4 states); a live test email went out through Resend |
+| Sizing | compose limits already fit 4 GB (about 2.8 GB of limits) with the 4 GB swap file from DEPLOY.md |
+| Decision | D165, D166 |
+
+### #146 · Visible Log in button, store byline and category copy — ✅ Done (with #150)
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 12 Oct: Log in button missing; "Mice" → "Mouse"; "Waafa International’s online store" → "Waafas World by Waafa International" |
+| Branch · PR | `fix/146-login-store-copy` · #150 |
+| Built | Header Log in: navy pill with words from 1280 px, icon from 1024 px; header tagline from 1440 px so the grid holds; Accounts live on by default for new installs; mega menu byline "by {company}"; store bar tagline "by Waafa International"; SEO lines; "Mouse, keyboards, cables" |
+| Tests | account.spec (default on: Log in with words, /login opens soon, /account → /login); API-mode header grid adds 1439 px and the logo gap |
+| Tools · skills | Serena, Playwright MCP |
+| Decision | D165 |
 
 ### #138 · Bug: header overflow at 1024 px with accounts on; delete account ended on the error page — ✅ Done (with #139)
 | Field | Value |
@@ -855,6 +901,10 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-116 | Log in link (header on desktop, phone menu) and /login, /account pages | `getSiteSettings()` → accountsLive | Settings › Site (Accounts live) | `GET /api/v1/public/snapshot` | ⬜ after the owner turns it on |
 | AC-117 | Continue with Google button and the Google redirect | `googleSignInConfig()` → `IntegrationSetting(google)` + `ProviderCredential` (client ID, sealed client secret) | Settings › Integrations › Sign-in | `GET /api/v1/public/auth/google/config`, `POST /api/v1/public/auth/google` | ✅ 12 Oct · API-mode e2e (config, redirect with PKCE) |
 | AC-118 | My account: requests and orders | `readAccount()` → `Customer` + leads and orders with the verified email | Leads, Orders (status changes show here) | `GET /api/v1/public/account` | ✅ 12 Oct · API tests |
+| AC-119 | Header Log in button | `site.accountsLive` | Content › Site settings › Accounts live | `PUT /api/v1/admin/settings/siteSettings` | ✅ 13 Oct · account.spec |
+| AC-120 | Waafas World byline "by Waafa International" (mega menu, store bar) | `site.companyName`, `shopContent.tagline` | Settings › General; Content › Store | `PUT /api/v1/admin/settings/{siteSettings,shopContent}` | ✅ 13 Oct |
+| AC-121 | Country flags | `visaCountry.flagCode`; `airport.countryCode` (destinations, group fares, pickers) | Visa › Countries; Travel › Airports | `PUT /api/v1/admin/content/{visaCountries,airports}/:id` | ✅ 13 Oct · countryFlagSrc test |
+| AC-122 | Google sign-in keys | Integrations › Sign-in record, server env fallback | Settings › Integrations › Sign-in | `POST /api/v1/admin/providers/google/:environment`, `POST /api/v1/admin/providers/google/setting` | ✅ 13 Oct · customers.unit.test |
 
 ## 5. Components inventory
 
@@ -1138,11 +1188,16 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D161 | 12 Oct | Production images are built by GitHub Actions and pushed to the public Docker Hub repository emon6107/waafa-ota-platform as api-, web- and nginx- tags (sha + latest); the VPS pulls them | Owner request; the 2-core server never runs the 2 GB web build, deploys take minutes, rollback is a tag; the site address and Turnstile site key are build-time, so they are GitHub variables and image labels checked at deploy | #130 |
 | D162 | 12 Oct | Dependabot PRs are approved from the owner's account and squash-merged; their merge commit keeps dependabot[bot] as author | GitHub sets the PR author on squash merges; rewriting history is not allowed; the attribution rule targets AI and co-author trailers, not the dependency bot | #128 |
 | D163 | 12 Oct | Google sign-in ships now behind two switches (Integrations › Sign-in active and Settings › Accounts live); the API exchanges the code with the secret from Integrations, the web keeps an opaque session token in an httpOnly cookie; My account lists requests and orders by verified email | Owner asked for Google login before launch; FR-ACC is Phase 1B, so it stays off until the owner adds Google keys; no customer table links leads yet, and the verified email is the safe join | #134 |
+| D164 | 13 Oct | Real country flags (flag-icons, MIT, self-hosted SVG) replace the two-letter marks; the mark stays as fallback | Owner request; flags are national symbols, not illustrations, so correction 7 does not apply | #147 |
+| D165 | 13 Oct | Log in shows its words from 1280 px, the header tagline from 1440 px; Accounts live defaults to on for new installs | Owner could not find the icon-only button; the tagline is the only element that can give up the room | #146 |
+| D166 | 13 Oct | Google sign-in keys may come from the server env (GOOGLE_CLIENT_ID/SECRET) while Admin has no Google record; Admin always wins | Production signs in from the first start without a manual admin step; the admin screen stays the control | #149 |
+| D167 | 13 Oct | Home hero media taller (clamp 480–620 px from 1024 px) and the flight path drawn inside the media sky | Owner request; the old line crossed text | #148 |
 
 ## 9. Bugs and known issues
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #154 Search e2e picked today+75 days; on 13 Oct that is 27 Dec, which the stacked phone calendar also shows as an outside day in January, so the locator matched two buttons | P2 (test only) | apps/web/e2e/search.spec.ts | ✅ Fixed in #153: date locators skip outside days |
 | #142 From 1280 px the Log in words pushed the header controls about 25 px past the page grid (no scroll, off the grid); the server-rendered nav skipped More until hydration, shifting the header | P1 | header | Fixed in the #142 PR: icon-only Log in on every desktop width (words in the phone menu), nav items 6 px apart below 1280 px and 8 px from 1280 px (CI fonts render ~14 px wider: 1024 px was 9 px past the grid there), More rendered in the static nav; e2e: no-JS nav shows More, grid and nav-gap check at 1024 to 1920 px |
 | #140 Header still 8 px too wide at exactly 1280 px (xl) once the Log in label showed, and at 1440 px the label wrapped to two lines (design review of the local screenshots); CI fonts render narrower, so only the local Docker run caught it | P1 | header | Fixed in the #140 PR: words from 1360 px (theme breakpoint `hd`, 85rem) on one line, icon-only 1024–1359 px, nav items 8 px apart below 1280 px (CI fonts render wider: its 1024 px frame showed the icon cut off); measured locally at 1024–1440 px; CI overflow loop at 1024/1280/1300/1360/1440 |
 | #138 With Accounts live on, the desktop Log in button pushed the header 40 px past a 1024 px screen; deleting an account ended on the error page (server action redirect into the streaming /login, React error 412); sign-in redirects sent local runs to the production domain | P1 | header, /account, sign-in routes | Fixed in the #138 PR with unit, fixture e2e and API-mode e2e regression tests and a local run on the Docker stack |
@@ -1208,6 +1263,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 12 Oct 22:15–13 Oct 01:00 | Owner: Log in button, Mouse, "Waafas World by Waafa International", every country flag, better hero motion and a bigger hero video, Resend and Google keys, production for 2 vCPU / 4 GB. Keys only in gitignored env files; Resend test email sent; four issues built, reviewed from the owner's account and merged | #146–#149 | #150–#153 | unit + e2e in CI, Playwright MCP at 320–1920 |
 | 12 Oct 18:30–21:30 | Owner: test Google sign-in end to end. Local run on the Docker stack (Docker Hub images): admin connects Google, Accounts live, /login at 7 widths with axe, redirect to Google with PKCE, callback errors, a signed-in session (created in PostgreSQL), My account, log out, delete. Found and fixed: delete ended on the error page and the header overflowed at 1024 px (#138, PR #139), 1280 px overflow and a wrapping label (#140, PR #141), header past the grid and More missing before hydration (#142, PR #143; CI fonts caught 1024 px). Final local run 4/4 at 320–1920 px | #138, #140, #142, #144 | #139, #141, #143 | web unit 282 · fixture + API-mode e2e · local suite 4/4 |
 | 12 Oct 16:00–18:30 | Owner asked whether Google login exists: it was FR-ACC (Phase 1B), not built. Built it switched off: Integrations › Sign-in (Google client), API customers + sessions + code exchange, /login, /account, phone menu Log in (#134, PR #135; review: 1 finding fixed). New Docker Hub images built from main | #134, #136 | #135 | shared 77 · API 126 · web 273 · e2e fixture + API mode · CI green |
 | 12 Oct 13:30–15:30 | Owner: open issue/PR, reviews on his profile (checked: 12 review contributions counted), run the project, Docker Hub images, server size, production env. #128 approved from the owner's account and merged; #130 Docker Hub pipeline (PR #131, review: 1 finding fixed); production settings for waafasworld.com created locally (gitignored); local stack runs from the pushed images | #128, #130, #132 | #128, #131 | Docker images workflow (build, smoke, secret scan, push) · CI all green |
@@ -1241,6 +1297,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner (13 Oct): Google Cloud → Clients → add the redirect URIs `https://waafasworld.com/api/auth/google/callback` and `http://localhost/api/auth/google/callback` (origins too), then Audience → Publish app (DEPLOY.md 5b).
+2. Owner: VPS (2 vCPU / 4 GB + 4 GB swap) and DNS → copy deploy/.env.production to /opt/waafa/deploy/.env → `sh deploy/check.sh` → `sh deploy/deploy.sh`. Email and Google keys are already in that file.
+3. After go-live: Search Console, Rich Results, Sample content, Tracking IDs, Turnstile, uptime; then #71 rest and Bangla (P1).
+
+Earlier (12 Oct 21:30):
 0. Google sign-in (optional, any time after go-live): docs/DEPLOY.md 5b (Google Cloud OAuth client, redirect URI, Integrations › Sign-in, Accounts live).
 1. Owner (13 Oct): buy the VPS (x86_64, 2 vCPU / 4 GB minimum, 4 vCPU / 8 GB recommended, Ubuntu 24.04, Singapore), point waafasworld.com and www at it, create a Resend account (verify the domain) and put RESEND_API_KEY in the production settings; then DEPLOY.md quick start with the prepared `deploy/.env.production` copied to `/opt/waafa/deploy/.env`.
 2. Right after: change the admin password, remove SEED_ADMIN_* from the server env, Search Console + sitemap, Rich Results test, replace Sample content, Tracking IDs, uptime monitor; Turnstile = GitHub variable TURNSTILE_SITE_KEY + re-run Docker images + server secret.
