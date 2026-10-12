@@ -1,7 +1,9 @@
 import { Plane } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { formatDate, formatDayMonth, formatTaka, type GroupFare } from "@waafa/shared";
+import { CountryFlag } from "@/components/media/CountryFlag";
 import { Link } from "@/i18n/navigation";
+import { getAirport } from "@/lib/data/travel";
 
 type GroupFareCardProps = { fare: GroupFare };
 
@@ -10,7 +12,11 @@ type GroupFareCardProps = { fare: GroupFare };
  * price and Request. Fares are indicative and confirmed before payment (PRD compliance).
  */
 async function GroupFareCard({ fare }: GroupFareCardProps) {
-  const t = await getTranslations("Home.groupFares");
+  const [t, from, to] = await Promise.all([
+    getTranslations("Home.groupFares"),
+    getAirport(fare.from.iata),
+    getAirport(fare.to.iata),
+  ]);
   const dates = fare.returnDate
     ? `${formatDayMonth(fare.departDate)} – ${formatDayMonth(fare.returnDate)}`
     : formatDate(fare.departDate);
@@ -34,7 +40,10 @@ async function GroupFareCard({ fare }: GroupFareCardProps) {
           <p className="font-display text-[28px] leading-none font-extrabold text-navy-900">
             {fare.from.iata}
           </p>
-          <p className="mt-1 text-[12.5px] text-mist-600">{fare.from.city}</p>
+          <p className="mt-1.5 flex items-center gap-1.5 text-[12.5px] text-mist-600">
+            {from ? <CountryFlag code={from.countryCode} size="xs" /> : null}
+            {fare.from.city}
+          </p>
         </div>
         <div className="relative flex flex-col items-center gap-1 text-mist-500">
           <span aria-hidden="true" className="w-full border-t border-dashed border-mist-300" />
@@ -50,7 +59,10 @@ async function GroupFareCard({ fare }: GroupFareCardProps) {
           <p className="font-display text-[28px] leading-none font-extrabold text-navy-900">
             {fare.to.iata}
           </p>
-          <p className="mt-1 text-[12.5px] text-mist-600">{fare.to.city}</p>
+          <p className="mt-1.5 flex items-center justify-end gap-1.5 text-[12.5px] text-mist-600">
+            {to ? <CountryFlag code={to.countryCode} size="xs" /> : null}
+            {fare.to.city}
+          </p>
         </div>
       </div>
 

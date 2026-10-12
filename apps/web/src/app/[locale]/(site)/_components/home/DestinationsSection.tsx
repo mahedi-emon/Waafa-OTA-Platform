@@ -4,6 +4,7 @@ import { SampleBadge } from "@/components/content/SampleBadge";
 import { SectionHeading } from "@/components/content/SectionHeading";
 import { DestinationCard } from "@/components/travel/DestinationCard";
 import { listDestinations } from "@/lib/data/content";
+import { getAirport } from "@/lib/data/travel";
 import { DestinationFilter } from "./DestinationFilter";
 import { HomeSectionShell } from "./HomeSectionShell";
 
@@ -15,6 +16,8 @@ async function DestinationsSection({ section }: { section: HomeSection }) {
     getTranslations("Home"),
   ]);
   if (destinations.length === 0) return null;
+  // The flag comes from the destination airport (Admin › Travel › Airports), so no country field is duplicated.
+  const airports = await Promise.all(destinations.map((d) => getAirport(d.iata)));
   const used = new Set(destinations.flatMap((d) => d.tags));
   const filters = [
     { value: "all", label: t("filters.all") },
@@ -41,12 +44,13 @@ async function DestinationsSection({ section }: { section: HomeSection }) {
         label={t("filterLabel")}
         filters={filters}
         emptyLabel={t("empty")}
-        items={destinations.map((destination) => ({
+        items={destinations.map((destination, index) => ({
           key: destination.id,
           tags: destination.tags,
           node: (
             <DestinationCard
               destination={destination}
+              countryCode={airports[index]?.countryCode}
               labels={{
                 flight: t("flight", { time: destination.flightTime }),
                 price: t("from", { price: formatTaka(destination.fromPrice) }),

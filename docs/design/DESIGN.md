@@ -319,6 +319,7 @@ Every visual deviation from the prototype, with the reason (correction 11: the p
 | Gallery video tiles play in place | Poster with a play mark that opens YouTube or Facebook | Video embeds are on the cut list | D114 |
 | Offline as its own screen | Notice above the tab bar on the current page | No service worker yet; nothing the visitor typed is lost | D117 |
 | 404 search box "Search trips, visas or products" | Home plus five popular pages | No site-wide search route yet | D118 |
+| Two-letter country marks ("TH", "EU") in pickers and visa cards | Real country flags (self-hosted SVG, 4:3, empty alt beside the name) on visa cards and pages, the visa, destination and airport pickers, destination tiles and group fares | Owner request 12 Oct; flags are national symbols, not illustrations, so correction 7 does not apply. The two-letter mark stays as the fallback | D164 |
 
 ## Known gaps
 - Logo vectors: the lockup uses the supplied PNG cut-outs until the original SVG/AI arrives (owner question).

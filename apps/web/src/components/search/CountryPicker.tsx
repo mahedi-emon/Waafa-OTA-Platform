@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import type { VisaRegion } from "@waafa/shared";
 import { VISA_REGIONS } from "@waafa/shared/constants";
 import { matchesQuery } from "@/lib/search/highlight";
-import { CountryCode } from "./CountryCode";
+import { CountryFlag } from "@/components/media/CountryFlag";
 import { NoMatch } from "./NoMatch";
 import { OptionList } from "./OptionList";
 import { useSearchCard } from "./SearchCardContext";
@@ -29,7 +29,7 @@ function CountryPicker({ title }: CountryPickerProps) {
         key: country.slug,
         label: country.name,
         sub: t("values.passport"),
-        mark: <CountryCode code={country.flagCode} />,
+        mark: <CountryFlag code={country.flagCode} />,
         selected: state.visa.country?.slug === country.slug,
         onSelect: () => dispatch({ type: "pickCountry", country }),
       })),

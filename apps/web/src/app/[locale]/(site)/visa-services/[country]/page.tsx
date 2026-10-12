@@ -5,7 +5,7 @@ import { BookOpen, FileDown, Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { CountryCode } from "@/components/search/CountryCode";
+import { CountryFlag } from "@/components/media/CountryFlag";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
   Accordion,
@@ -170,7 +170,7 @@ async function VisaCountryPageContent({
           <div className="flex min-w-0 flex-col gap-10">
             <header className="flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-2">
-                <CountryCode code={country.flagCode} />
+                <CountryFlag code={country.flagCode} size="lg" />
                 <p className="text-[13px] font-bold tracking-[0.14em] text-brand-700 uppercase">
                   {t("country.kicker", { country: country.name })}
                 </p>

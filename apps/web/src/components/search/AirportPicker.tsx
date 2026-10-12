@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Plane } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Airport } from "@waafa/shared";
+import { CountryFlag } from "@/components/media/CountryFlag";
 import { matchesQuery } from "@/lib/search/highlight";
 import { NoMatch } from "./NoMatch";
-import { OptionIcon } from "./OptionIcon";
 import { OptionList, type PickerOption, type PickerOptionGroup } from "./OptionList";
 import { useSearchCard } from "./SearchCardContext";
 import { useRemoteSuggestions } from "./useRemoteSuggestions";
@@ -41,11 +40,7 @@ function AirportPicker({ title }: AirportPickerProps) {
     label: airport.city,
     sub: `${airport.name}, ${airport.country}`,
     code: airport.iata,
-    mark: (
-      <OptionIcon>
-        <Plane />
-      </OptionIcon>
-    ),
+    mark: <CountryFlag code={airport.countryCode} />,
     selected: current?.iata === airport.iata,
     onSelect: () => dispatch({ type: "pickAirport", airport }),
   });
