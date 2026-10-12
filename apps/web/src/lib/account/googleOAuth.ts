@@ -51,8 +51,9 @@ export function authorizeUrl(params: {
 /** Only this site's own pages: a path, not "//host", not the API, short; anything else goes to My account. */
 export function safeNext(value: unknown): string {
   if (typeof value !== "string" || value.length > 200) return "/account";
-  if (!value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\"))
-    return "/account";
+  // Printable ASCII only, no backslash, and not "//": browsers drop tabs and newlines when they read a Location
+  // header, so "/\t/evil.example.com" would otherwise become the protocol-relative "//evil.example.com".
+  if (!/^\/(?!\/)[\x21-\x5B\x5D-\x7E]*$/.test(value)) return "/account";
   if (value.startsWith("/api/") || value === "/login" || value.startsWith("/login?"))
     return "/account";
   return value;
