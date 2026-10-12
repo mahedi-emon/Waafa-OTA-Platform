@@ -12,7 +12,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
-import { deleteCustomerAccount, signOutCustomer } from "@/lib/account/accountActions";
 import { readAccount } from "@/lib/account/accountApi";
 import { SESSION_COOKIE } from "@/lib/account/googleOAuth";
 import { getSiteSettings } from "@/lib/data/settings";
@@ -70,7 +69,8 @@ async function AccountContent({
             </p>
           </div>
         </div>
-        <form action={signOutCustomer}>
+        {/* Plain posts answered with a 303 (issue 138): the next page loads in full. */}
+        <form method="post" action="/api/account/sign-out">
           <Button type="submit" variant="white" className="w-full md:w-auto">
             <LogOut aria-hidden="true" />
             {t("signOut")}
@@ -176,7 +176,7 @@ async function AccountContent({
               {t("deleteTitle")}
             </h2>
             <p className="text-[14px] leading-relaxed text-mist-700">{t("deleteBody")}</p>
-            <form action={deleteCustomerAccount} className="flex flex-col gap-3">
+            <form method="post" action="/api/account/delete" className="flex flex-col gap-3">
               <div className="flex min-h-11 items-center gap-3">
                 <Checkbox id="account-delete-confirm" name="confirm" value="yes" required />
                 <Label htmlFor="account-delete-confirm" className="text-[14.5px] text-ink-900">
