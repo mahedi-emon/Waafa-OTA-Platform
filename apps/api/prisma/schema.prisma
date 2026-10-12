@@ -341,3 +341,34 @@ model MediaAsset {
 
   @@index([createdAt])
 }
+
+// Customer accounts (FR-ACC, issue 134) ---------------------------------------------------------------------------
+
+/// A visitor who signed in (Google for now). Requests and orders stay guest records; My account lists those sent with
+/// this verified email. Deleting the account removes this row and its sessions, never the requests or orders.
+model Customer {
+  id           String            @id @default(cuid())
+  /// Lower-case, verified by Google.
+  email        String            @unique
+  name         String
+  /// Google's stable account ID ("sub").
+  googleSub    String?           @unique
+  lastSignInAt DateTime?         @db.Timestamptz(3)
+  createdAt    DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime          @updatedAt @db.Timestamptz(3)
+  sessions     CustomerSession[]
+}
+
+/// One sign-in. The cookie holds the token; only its SHA-256 is stored.
+model CustomerSession {
+  id         String    @id @default(cuid())
+  customerId String
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  expiresAt  DateTime  @db.Timestamptz(3)
+  revokedAt  DateTime? @db.Timestamptz(3)
+  userAgent  String?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([customerId])
+}

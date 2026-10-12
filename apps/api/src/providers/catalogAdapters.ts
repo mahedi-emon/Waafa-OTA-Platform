@@ -14,6 +14,7 @@ import {
   type PaymentProvider,
   type ProviderAdapter,
   type ProviderContext,
+  type SignInProvider,
 } from "./adapters";
 
 /*
@@ -198,6 +199,50 @@ export function stubPaymentProvider(
   };
 }
 
+/** Google publishes its sign-in endpoints here; reaching it shows the server can talk to Google. */
+export const GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration";
+
+/** Google sign-in (issue 134): both fields saved, a Google client ID, and Google's sign-in service answers. */
+export async function checkGoogleSignIn(
+  definition: ProviderDefinition,
+  context: ProviderContext,
+  fetcher: Fetcher = fetch,
+): Promise<HealthResult> {
+  const missing = validateProviderConnection(definition, {
+    settings: { ...context.settings },
+    secrets: { ...context.secrets },
+  });
+  if (missing.length > 0) return { ok: false, message: missing[0]?.message ?? "Incomplete" };
+  if (!/\.apps\.googleusercontent\.com$/.test(context.settings.clientId ?? "")) {
+    return { ok: false, message: "A Google client ID ends in .apps.googleusercontent.com" };
+  }
+  try {
+    const response = await fetcher(GOOGLE_DISCOVERY_URL, {
+      method: "GET",
+      redirect: "manual",
+      signal: context.signal ?? AbortSignal.timeout(5_000),
+    });
+    if (response.status !== 200) {
+      return { ok: false, message: `Google's sign-in service answered HTTP ${response.status}` };
+    }
+    return {
+      ok: true,
+      message:
+        "Saved; Google answers. Customers can sign in while this is active and Settings › Accounts live is on.",
+    };
+  } catch {
+    return { ok: false, message: "Google's sign-in service did not answer" };
+  }
+}
+
+export function signInProvider(definition: ProviderDefinition, fetcher?: Fetcher): SignInProvider {
+  return {
+    id: definition.id,
+    kind: "auth",
+    healthCheck: (context) => checkGoogleSignIn(definition, context, fetcher),
+  };
+}
+
 /**
  * The adapter for a catalog or custom provider; a certified adapter replaces its stub here in Phase E. Pass the
  * definition for a custom provider (its name lives in its setting).
@@ -219,6 +264,8 @@ export function adapterFor(
     case "sms":
     case "email":
       return messagingProvider(definition, fetcher, probe);
+    case "auth":
+      return signInProvider(definition, fetcher);
   }
 }
 

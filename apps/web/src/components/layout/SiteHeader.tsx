@@ -106,6 +106,7 @@ async function SiteHeader() {
                 links={drawer?.items ?? []}
                 more={more?.items ?? []}
                 contact={contact}
+                accountsLive={site.accountsLive}
               />
             }
             labels={{

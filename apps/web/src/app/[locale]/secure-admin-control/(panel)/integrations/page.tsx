@@ -12,7 +12,9 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GOOGLE_CALLBACK_PATH } from "@/lib/account/googleOAuth";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
+import { absoluteUrl } from "@/lib/siteUrl";
 import { AddProviderForm } from "./_components/AddProviderForm";
 import type { IntegrationStrings } from "./_components/integrationStrings";
 import { ProviderCard } from "./_components/ProviderCard";
@@ -24,14 +26,21 @@ type ProvidersList = {
   connections: ProviderConnectionView[];
 };
 
-/** The four tabs (owner request, issue 107): SMS and email share Communication. */
-const TABS: Array<{ id: "flight" | "hotel" | "payment" | "communication"; kinds: ProviderKind[] }> =
-  [
-    { id: "flight", kinds: ["flight"] },
-    { id: "hotel", kinds: ["hotel"] },
-    { id: "payment", kinds: ["payment"] },
-    { id: "communication", kinds: ["sms", "email"] },
-  ];
+/**
+ * The tabs (owner request, issue 107): SMS and email share Communication; Sign-in holds Google (issue 134) and takes
+ * no custom providers.
+ */
+const TABS: Array<{
+  id: "flight" | "hotel" | "payment" | "communication" | "signin";
+  kinds: ProviderKind[];
+  custom: boolean;
+}> = [
+  { id: "flight", kinds: ["flight"], custom: true },
+  { id: "hotel", kinds: ["hotel"], custom: true },
+  { id: "payment", kinds: ["payment"], custom: true },
+  { id: "communication", kinds: ["sms", "email"], custom: true },
+  { id: "signin", kinds: ["auth"], custom: false },
+];
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.integrations");
@@ -186,10 +195,21 @@ async function Integrations() {
                 </section>
               );
             })}
-            <AddProviderForm
-              kinds={tab.kinds.map((kind) => ({ kind, label: t(`kinds.${kind}`) }))}
-              strings={addStrings}
-            />
+            {tab.custom ? (
+              <AddProviderForm
+                kinds={tab.kinds
+                  .filter((kind): kind is Exclude<ProviderKind, "auth"> => kind !== "auth")
+                  .map((kind) => ({ kind, label: t(`kinds.${kind}`) }))}
+                strings={addStrings}
+              />
+            ) : (
+              <Alert variant="info">
+                <Info aria-hidden="true" />
+                <AlertDescription className="break-words">
+                  {t("signInNote", { callback: absoluteUrl(GOOGLE_CALLBACK_PATH) })}
+                </AlertDescription>
+              </Alert>
+            )}
           </TabsContent>
         ))}
       </Tabs>

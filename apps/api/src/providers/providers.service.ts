@@ -447,12 +447,14 @@ export class ProvidersService {
         this.resolveCategory(kind),
       ),
     );
+    const google = await this.getIntegrationConfig("auth", "google");
     return {
       flight: { mode: flight?.mode === "provider" ? "provider" : "manual" },
       hotel: { mode: hotel?.mode === "provider" ? "provider" : "manual" },
       payment: { ready: payment?.mode === "provider" },
       sms: { ready: sms?.mode === "provider" },
       email: { ready: email?.mode === "provider" },
+      auth: { google: google.status === "ready" },
     };
   }
 

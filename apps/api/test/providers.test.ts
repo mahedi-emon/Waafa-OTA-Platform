@@ -142,7 +142,7 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
       isLive: false,
     });
     expect(new Set(body.settings.map((item) => item.kind))).toEqual(
-      new Set(["flight", "hotel", "payment", "sms", "email"]),
+      new Set(["flight", "hotel", "payment", "sms", "email", "auth"]),
     );
   });
 
@@ -205,6 +205,7 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
       payment: { ready: true },
       sms: { ready: false },
       email: { ready: false },
+      auth: { google: false },
     });
     expect(status.body).not.toContain("sabre");
     const anonymous = await app.inject({

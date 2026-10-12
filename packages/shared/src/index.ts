@@ -21,5 +21,6 @@ export * from "./schemas/visa";
 export * from "./schemas/shop";
 export * from "./schemas/admin";
 export * from "./schemas/providers";
+export * from "./schemas/customers";
 
 export * from "./content/registry";

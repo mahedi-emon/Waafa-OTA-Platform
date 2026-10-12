@@ -37,6 +37,16 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #134 · Customer sign-in with Google (FR-ACC part), off until the owner adds the keys — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Opened → closed | 12 Oct 16:00 → |
+| Branch · PR | `feat/134-google-sign-in` · see the issue |
+| Built | Shared: provider kind `auth`, catalog `google` (client ID, sealed client secret), customer schemas (PKCE verifier, sign-in input, session, account view). API: `Customer` + `CustomerSession` (migration 20261012120000), `googleOAuth.ts` (code exchange at Google with the client secret; ID token claims: issuer, audience, expiry, verified email), `CustomersService` (redirect must be the site's callback, upsert by Google ID then email, 30-day opaque sessions stored as SHA-256, account by verified email, sign-out, delete without touching requests or orders), `public/auth/google/config`, `public/auth/google`, `public/account`, `account/sign-out`, `account/delete` with rate limits; Google health check (client ID shape and Google discovery). Web: Integrations › Sign-in tab with the redirect URI to paste into Google; `/api/auth/google/start` (state + PKCE S256 in a 10-minute httpOnly cookie scoped to the callback) and `/callback` (timing-safe state check, session cookie httpOnly, Lax, Secure); `/login` (Google button or a guest note, errors), `/account` (initials, requests, orders, log out, delete with confirmation); Log in on the phone menu; robots disallow /account; everything 404s while Settings › Accounts live is off |
+| Tests | shared 77 · API 126 (unit: claims, exchange; DB: off until connected, redirect check, refused or unverified, sign-in, account by email, sign-out, delete) · web unit 273 (PKCE, authorize URL, safe next, pending cookie) · e2e fixture (hidden while off, start and callback refuse) · API-mode e2e (admin connects Google, Accounts live, button, redirect with PKCE, /account asks to log in) |
+| Not in this issue | Phone OTP (needs the SMS gateway) and email + password stay in FR-ACC (#31); the Google profile photo is not loaded (initials) |
+| Decisions | D163 |
+
 ### #130 · Deploy: prebuilt images on Docker Hub, server pulls instead of building — ✅ Done (with #131)
 | Field | Value |
 | --- | --- |
@@ -833,6 +843,9 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-113 | Flight route landing pages (/flights/[route]) and Popular routes on /flights | `flightRoutes` collection | Content › Flight routes | `GET /api/v1/public/snapshot` | ✅ 11 Oct · snapshot |
 | AC-114 | External API provider switches and markup (Active, Sandbox / Live, markup; custom providers; SMS and email) | `IntegrationSetting` + `ProviderCredential` | Settings › Integrations (Super Admin) | `GET/POST/DELETE /api/v1/admin/providers*` | ✅ 12 Oct · e2e |
 | AC-115 | Every photo on the site can come from the media library (`/uploads/...` address in any image field) | `MediaAsset` + media volume | Content › Media library | `POST/GET/PATCH/DELETE /api/v1/admin/media`, `GET /uploads/*` | ✅ 12 Oct · e2e |
+| AC-116 | Log in link (header on desktop, phone menu) and /login, /account pages | `getSiteSettings()` → accountsLive | Settings › Site (Accounts live) | `GET /api/v1/public/snapshot` | ⬜ after the owner turns it on |
+| AC-117 | Continue with Google button and the Google redirect | `googleSignInConfig()` → `IntegrationSetting(google)` + `ProviderCredential` (client ID, sealed client secret) | Settings › Integrations › Sign-in | `GET /api/v1/public/auth/google/config`, `POST /api/v1/public/auth/google` | ✅ 12 Oct · API-mode e2e (config, redirect with PKCE) |
+| AC-118 | My account: requests and orders | `readAccount()` → `Customer` + leads and orders with the verified email | Leads, Orders (status changes show here) | `GET /api/v1/public/account` | ✅ 12 Oct · API tests |
 
 ## 5. Components inventory
 
@@ -1115,6 +1128,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D160 | 12 Oct | nginx compresses (gzip) and caches `/_next/static` (30 d), `/_next/image` (7 d, per image format) and `/media/` (1 d); Next compression off in the Docker image only; deploy.sh clears the cache | Node on a 2-core VPS spends its CPU on rendering; image URLs carry no content hash, so a deploy must drop cached copies | #126 |
 | D161 | 12 Oct | Production images are built by GitHub Actions and pushed to the public Docker Hub repository emon6107/waafa-ota-platform as api-, web- and nginx- tags (sha + latest); the VPS pulls them | Owner request; the 2-core server never runs the 2 GB web build, deploys take minutes, rollback is a tag; the site address and Turnstile site key are build-time, so they are GitHub variables and image labels checked at deploy | #130 |
 | D162 | 12 Oct | Dependabot PRs are approved from the owner's account and squash-merged; their merge commit keeps dependabot[bot] as author | GitHub sets the PR author on squash merges; rewriting history is not allowed; the attribution rule targets AI and co-author trailers, not the dependency bot | #128 |
+| D163 | 12 Oct | Google sign-in ships now behind two switches (Integrations › Sign-in active and Settings › Accounts live); the API exchanges the code with the secret from Integrations, the web keeps an opaque session token in an httpOnly cookie; My account lists requests and orders by verified email | Owner asked for Google login before launch; FR-ACC is Phase 1B, so it stays off until the owner adds Google keys; no customer table links leads yet, and the verified email is the safe join | #134 |
 
 ## 9. Bugs and known issues
 

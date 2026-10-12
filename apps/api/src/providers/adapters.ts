@@ -122,7 +122,15 @@ export interface MessagingProvider {
   healthCheck(context: ProviderContext): Promise<HealthResult>;
 }
 
-export type ProviderAdapter = FlightProvider | HotelProvider | PaymentProvider | MessagingProvider;
+/** Customer sign-in providers (issue 134): the connection is checked here; the sign-in flow is in customers/. */
+export interface SignInProvider {
+  readonly id: ProviderKey;
+  readonly kind: "auth";
+  healthCheck(context: ProviderContext): Promise<HealthResult>;
+}
+
+export type ProviderAdapter =
+  FlightProvider | HotelProvider | PaymentProvider | MessagingProvider | SignInProvider;
 
 /** Thrown by an adapter that cannot do a call yet (stub before certification, Manual mode). */
 export class ProviderUnavailableError extends Error {
