@@ -1,17 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "cn";
 import { usePrefersReducedMotion } from "./reducedMotion";
 
-type TextRotateProps = { words: string[]; intervalMs?: number; className?: string };
+type TextRotateProps = {
+  words: string[];
+  /** Optional mark shown before each word (a country flag on the hero chip), same order as words. */
+  marks?: ReadonlyArray<ReactNode>;
+  intervalMs?: number;
+  className?: string;
+};
 
 /**
  * Rotating word (MOTION.md "Rotating destination chip", after 21st.dev Text Rotate 657): every 3 s the word rises
  * out and the next rises in (opacity + y), in CSS so the hero needs no animation library (issue 91). Reduced motion
  * shows the first word only. Screen readers get the whole list once instead of a live-changing word.
  */
-function TextRotate({ words, intervalMs = 3000, className }: TextRotateProps) {
+function TextRotate({ words, marks, intervalMs = 3000, className }: TextRotateProps) {
   const reduce = usePrefersReducedMotion();
   const [slot, setSlot] = useState<{ index: number; previous: number | null }>({
     index: 0,
@@ -37,17 +43,22 @@ function TextRotate({ words, intervalMs = 3000, className }: TextRotateProps) {
         <span
           key={`out-${previous}-${index}`}
           aria-hidden="true"
-          className="slot-out whitespace-nowrap [grid-area:1/1]"
+          className="slot-out inline-flex items-center gap-1.5 whitespace-nowrap [grid-area:1/1]"
           onAnimationEnd={() => setSlot((current) => ({ ...current, previous: null }))}
         >
+          {marks?.[previous]}
           {words[previous]}
         </span>
       ) : null}
       <span
         key={`in-${index}`}
         aria-hidden="true"
-        className={cn("whitespace-nowrap [grid-area:1/1]", previous !== null && "slot-in")}
+        className={cn(
+          "inline-flex items-center gap-1.5 whitespace-nowrap [grid-area:1/1]",
+          previous !== null && "slot-in",
+        )}
       >
+        {marks?.[index]}
         {words[index]}
       </span>
     </span>
