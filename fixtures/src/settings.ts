@@ -28,12 +28,12 @@ export const siteSettings: In<typeof SiteSettingsSchema> = {
   footerAbout:
     "Waafa International has served Dhaka’s offices since 2010. In 2026 we opened Waafa Tours and Travel: flights, holidays and visas from the same Motijheel office.",
   storeIntro:
-    "Waafa International’s online store. Printer and office supplies today, more of what you need every month. Cash on delivery across Bangladesh.",
-  accountsLive: false,
+    "Printer and office supplies today, more of what you need every month. Cash on delivery across Bangladesh.",
+  accountsLive: true,
   defaultSeo: {
     title: "Waafa Tours and Travel · Flights, tours and visas from Dhaka",
     description:
-      "Flights, hotels, tour packages and visas from our Motijheel office, plus Waafas World, Waafa International’s online store. A real person confirms every price.",
+      "Flights, hotels, tour packages and visas from our Motijheel office, plus Waafas World by Waafa International. A real person confirms every price.",
   },
   reviewsUrl: "https://www.facebook.com/waafatoursandtravel",
 };
@@ -581,7 +581,7 @@ export const homeContent: In<typeof HomeContentSchema> = {
 
 /** Waafas World copy (Content › Store). Sample until the owner approves it. */
 export const shopContent: In<typeof ShopContentSchema> = {
-  tagline: "Waafa International’s online store",
+  tagline: "by Waafa International",
   bulkStrip: {
     title: "Buying for your company?",
     body: "Bulk prices, monthly supply and VAT invoices for offices.",

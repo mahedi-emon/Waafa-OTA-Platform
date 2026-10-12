@@ -6,6 +6,8 @@ import { Link } from "@/i18n/navigation";
 
 type ShopMegaPanelProps = {
   storeName: string;
+  /** "by Waafa International" under the store name (company from Settings › General). */
+  storeBy: string;
   storeIntro: string;
   /** Level-1 categories in admin order. */
   categories: Category[];
@@ -21,6 +23,7 @@ type ShopMegaPanelProps = {
  */
 function ShopMegaPanel({
   storeName,
+  storeBy,
   storeIntro,
   categories,
   services,
@@ -33,8 +36,11 @@ function ShopMegaPanel({
     <div className="grid grid-cols-[250px_minmax(0,1fr)_252px]">
       <div className="flex flex-col justify-between gap-6 bg-(image:--ribbon-soft) p-6">
         <div className="flex flex-col gap-2.5">
-          <p className="font-display text-[22px] leading-tight font-bold tracking-tight text-navy-900">
-            {storeName}
+          <p className="flex flex-col gap-0.5">
+            <span className="font-display text-[22px] leading-tight font-bold tracking-tight text-navy-900">
+              {storeName}
+            </span>
+            <span className="text-[13px] font-semibold text-brand-700">{storeBy}</span>
           </p>
           <p className="text-[14.5px] leading-relaxed text-mist-700">{storeIntro}</p>
         </div>

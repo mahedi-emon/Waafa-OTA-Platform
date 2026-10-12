@@ -42,7 +42,7 @@ async function SiteHeader() {
         className="absolute inset-0 header-solid-layer border-b border-mist-200/80 bg-white/90 shadow-[0_10px_30px_-24px_rgb(2_13_57/0.45)] backdrop-blur-md"
       />
       <div className="relative site-container flex h-full items-center gap-3">
-        <LogoLockup taglineFrom="xl" className="mr-auto lg:mr-0" />
+        <LogoLockup taglineFrom="wide" className="mr-auto lg:mr-0" />
 
         <DesktopNavSwitch
           items={navItems}
@@ -60,6 +60,7 @@ async function SiteHeader() {
           shopPanel={
             <ShopMegaPanel
               storeName={site.storeName}
+              storeBy={t("storeBy", { company: site.companyName })}
               storeIntro={site.storeIntro}
               categories={topCategories}
               services={shopPanel?.items ?? []}
@@ -92,13 +93,13 @@ async function SiteHeader() {
           {site.accountsLive ? (
             <Link
               href="/login"
-              // Icon only on every desktop width, like the help button: the words pushed the header past the page grid (issues
-              // 138, 140 and 142). The phone menu shows the words.
+              // Icon and words from 1280 px; icon only from 1024 to 1279 px, where the words would push the header past
+              // the page grid (issues 138, 140, 142, 146). The phone menu shows the words.
               title={t("logIn")}
-              className="hidden size-11 shrink-0 items-center justify-center rounded-full bg-navy-900 text-white transition-colors duration-150 hover:bg-royal-800 focus-visible:ring-3 focus-visible:ring-ring/40 lg:inline-flex"
+              className="hidden h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full bg-navy-900 text-[14.5px] font-semibold text-white shadow-[0_8px_20px_-12px_rgb(2_13_57/0.7)] transition-colors duration-150 hover:bg-royal-800 focus-visible:ring-3 focus-visible:ring-ring/40 lg:inline-flex xl:px-4"
             >
               <User aria-hidden="true" className="size-[18px]" />
-              <span className="sr-only">{t("logIn")}</span>
+              <span className="sr-only xl:not-sr-only">{t("logIn")}</span>
             </Link>
           ) : null}
           <MobileMenu

@@ -264,8 +264,8 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   expect(google.toString()).not.toContain("e2e-google-secret");
 
   // With the Log in button in the header, no width scrolls sideways and the header stays on the page grid: the
-  // right controls end inside the content edge and the nav keeps its distance (issues 138, 140 and 142).
-  for (const width of [1024, 1280, 1300, 1360, 1440, 1920]) {
+  // right controls end inside the content edge and the nav keeps its distance (issues 138, 140, 142 and 146).
+  for (const width of [1024, 1280, 1300, 1360, 1439, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     for (const path of ["/", "/login"]) {
       await page.goto(path);
@@ -277,7 +277,9 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
         const login = document.querySelector('header a[href="/login"]');
         const items = document.querySelectorAll("header nav li");
         const last = items[items.length - 1];
-        if (!box || !login?.parentElement || !last) return null;
+        const logo = box?.firstElementChild;
+        const nav = document.querySelector("header nav");
+        if (!box || !login?.parentElement || !last || !logo || !nav) return null;
         const contentRight =
           box.getBoundingClientRect().right - parseFloat(getComputedStyle(box).paddingRight);
         const controls = login.parentElement.getBoundingClientRect();
@@ -285,12 +287,14 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
           overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           pastGrid: controls.right - contentRight,
           navGap: controls.left - last.getBoundingClientRect().right,
+          logoGap: nav.getBoundingClientRect().left - logo.getBoundingClientRect().right,
         };
       });
       expect(layout, `${path} at ${width}px`).not.toBeNull();
       expect(layout?.overflow, `${path} at ${width}px: horizontal scroll`).toBeLessThanOrEqual(0);
       expect(layout?.pastGrid, `${path} at ${width}px: past the grid`).toBeLessThanOrEqual(0.5);
       expect(layout?.navGap, `${path} at ${width}px: nav gap`).toBeGreaterThanOrEqual(8);
+      expect(layout?.logoGap, `${path} at ${width}px: logo gap`).toBeGreaterThanOrEqual(8);
     }
   }
   await expect(page.getByRole("link", { name: "Log in", exact: true })).toBeVisible();

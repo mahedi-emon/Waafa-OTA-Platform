@@ -130,7 +130,7 @@ export const categories: In<typeof CategorySchema>[] = [
     parentId: null,
     level: 1,
     icon: "monitor",
-    description: "Mice, keyboards, cables",
+    description: "Mouse, keyboards, cables",
     order: 2,
     sample: true,
   },
