@@ -38,6 +38,18 @@ export const VisaTypeDetailSchema = z
     embassyFee: TakaSchema.nullable(),
     embassyFeeNote: z.string().max(120).optional(),
     serviceCharge: TakaSchema,
+    /**
+     * What the site shows for this visa type, per applicant, all in (issue 179): "৳7,500 – ৳9,500", or "From ৳7,500"
+     * without a top. Left empty, the site shows "From" the embassy fee plus the service charge; never one fixed price.
+     */
+    priceRange: z
+      .object({ min: TakaSchema, max: TakaSchema.optional() })
+      .strict()
+      .refine((range) => range.max === undefined || range.max >= range.min, {
+        message: "The top of the range can't be lower than the bottom",
+        path: ["max"],
+      })
+      .optional(),
     notes: z.array(z.string().min(1).max(240)).default([]),
   })
   .strict();

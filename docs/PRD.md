@@ -312,6 +312,7 @@ Packages and visas are admin-managed content with query and apply forms at launc
 
 - FR-VISA-01 (P0) Country list: search, region filter, cards with flag, visa types, processing time and starting fee.
 - FR-VISA-02 (P0) Country page with a tab per visa type: document checklist, processing time, validity, maximum stay, entry type, fees split into embassy fee and service charge, notes, downloadable forms, FAQs.
+- FR-VISA-02a (P0, owner 13 Oct) Price range: each visa type has an admin price range (minimum, optional maximum). Lists, the country page, the apply summary and structured data show "৳7,500 – ৳9,500", or "From ৳7,500" without a maximum, never one fixed price; a visa expert confirms the exact amount before payment.
 - FR-VISA-03 (P0) Apply form: number of applicants, contact, travel date, visa type, document uploads (passport bio page, photo, others; JPG, PNG or PDF up to 5 MB each), notes, preferred office appointment date and time window. Creates a visa application (VSA-…).
 - FR-VISA-04 (P0) Application statuses: New, Documents pending, Documents verified, Submitted to embassy, Approved, Rejected, Delivered, Cancelled. The customer gets an email on each change (SMS from P1).
 - FR-VISA-05 (P0) Documents sit in a private bucket, open only through signed links valid 10 minutes, are deleted 90 days after the case closes (configurable), and every staff download is audit-logged.

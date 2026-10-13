@@ -86,7 +86,7 @@
     "visa": {
       "all": "All countries",
       "processing": "Processing",
-      "fee": "Our fee from",
+      "fee": "Price from",
       "documents": "See documents",
       "note": "Embassies make every visa decision. Our fee is separate from the embassy fee; both are confirmed before you pay."
     },
@@ -1173,7 +1173,11 @@
       "whatsappMessage": "Hi Waafa, I want to apply for a {country} {type} visa.",
       "payLater": "Pay when we submit your file, not before.",
       "barLine": "{type} visa, per applicant",
-      "barTotal": "{total} total",
+      "barTotal": "{total}",
+    "price": "Price per applicant",
+    "priceFrom": "From {price}",
+    "priceNote": "Embassy fee and our service charge included. A visa expert confirms the exact amount for your file before you pay.",
+    "groupPrice": "Price for {count, plural, one {# applicant} other {# applicants}}",
       "feeLabel": "Fees",
       "metaDescription": "{country} visa from Bangladesh: documents, processing time and fees, with the file checked by Waafa’s visa desk before it reaches the embassy."
     },

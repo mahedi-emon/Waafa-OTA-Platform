@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { formatTaka, type VisaCountry } from "@waafa/shared";
+import { formatTaka, lowestVisaPrice, type VisaCountry } from "@waafa/shared";
 import { Link } from "@/i18n/navigation";
 import { CardFx } from "@/components/fx/CardFx";
 import { CountryFlag } from "@/components/media/CountryFlag";
@@ -16,7 +16,8 @@ async function VisaCountryCard({ country, submissionLabel }: VisaCountryCardProp
   const t = await getTranslations("Home.visa");
   const tSearch = await getTranslations("Search.visaTypes");
   const first = country.types[0];
-  const fee = Math.min(...country.types.map((type) => type.serviceCharge));
+  // The lowest starting price across the types, all in (issue 179); the label reads "Price from".
+  const fee = lowestVisaPrice(country.types);
 
   return (
     <CardFx className="rounded-2xl">

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
+import { visaPrice } from "@waafa/shared";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HelpCard } from "@/components/results/HelpCard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -53,8 +54,7 @@ async function VisaApplyPageContent({
   const types = country.types.map((type) => ({
     type: type.type,
     label: tTypes(`${type.type}.label`),
-    embassyFee: type.embassyFee,
-    serviceCharge: type.serviceCharge,
+    price: visaPrice(type),
   }));
 
   return (

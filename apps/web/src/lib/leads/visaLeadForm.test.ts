@@ -1,6 +1,6 @@
 import { LeadCreateInputSchema } from "@waafa/shared";
 import { describe, expect, it } from "vitest";
-import { buildVisaLead, visaFees, visaFileDefaults, visaFileSchema } from "./visaLeadForm";
+import { buildVisaLead, visaFileDefaults, visaFileSchema } from "./visaLeadForm";
 
 const TODAY = "2026-10-10";
 const contact = {
@@ -87,18 +87,5 @@ describe("visa application", () => {
       documents: [{ kind: "passport-bio" }, { kind: "other", fileName: "noc.pdf" }],
     });
     expect(JSON.stringify(lead)).not.toContain("storageKey");
-  });
-
-  it("multiplies fees by applicants and keeps an unknown embassy fee open", () => {
-    expect(visaFees({ embassyFee: 4000, serviceCharge: 3500 }, 2)).toEqual({
-      embassy: 8000,
-      service: 7000,
-      total: 15000,
-    });
-    expect(visaFees({ embassyFee: null, serviceCharge: 3000 }, 3)).toEqual({
-      embassy: null,
-      service: 9000,
-      total: null,
-    });
   });
 });
