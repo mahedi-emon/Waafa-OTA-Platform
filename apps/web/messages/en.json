@@ -14,6 +14,17 @@
     "taglineLine2": "for Advancement,",
     "taglineLine3": "Future & Achievement"
   },
+  "Explore": {
+    "title": "Explore more",
+    "visaFor": "{country} visa",
+    "groups": {
+      "visa": "Visa by country",
+      "packages": "Tour packages",
+      "routes": "Flights from Dhaka",
+      "guides": "Visa guides",
+      "blog": "Travel tips"
+    }
+  },
   "Loader": {
     "page": "Loading…",
     "fares": "Finding fares…"
@@ -674,7 +685,7 @@
     "priceConfirmed": "Price confirmed before you pay"
   },
   "Hotels": {
-    "metaTitle": "Hotels in Bangladesh and abroad, rates checked by a person",
+    "metaTitle": "Hotels in Bangladesh and abroad, checked by a person",
     "metaDescription": "Tell us where and when. A WAAFA travel expert checks hotels for your dates and sends the best options with room type, meals and cancellation rules.",
     "breadcrumb": "Hotels",
     "summary": {
@@ -780,7 +791,7 @@
   },
   "Packages": {
     "metaTitle": "Tour packages from Bangladesh, planned day by day",
-    "metaDescription": "Holidays from Dhaka with the full day-by-day plan, what’s included and a price per person. Send a query and a travel expert confirms dates and the final price.",
+    "metaDescription": "Holidays from Dhaka with a day-by-day plan, what’s included and a price per person. Send a query and a travel expert confirms dates and the price.",
     "breadcrumb": "Tour packages",
     "list": {
       "title": "Trips planned day by day",
@@ -1072,8 +1083,8 @@
     "helpTitle": "Prefer to talk it through?"
   },
   "Visa": {
-    "metaTitle": "Visa services: documents, processing time and fees by country",
-    "metaDescription": "Choose your country to see the documents, processing time and fees. WAAFA checks your papers, fills in the forms, books the appointment and follows the file.",
+    "metaTitle": "Visa services: documents, fees and processing time",
+    "metaDescription": "Pick a country for its documents, processing time and fees. WAAFA checks your papers, fills in the forms, books the appointment and follows the file.",
     "breadcrumb": "Visa services",
     "sample": "Sample times and fees",
     "list": {
@@ -1276,7 +1287,7 @@
   },
   "Shop": {
     "name": "Waafas World",
-    "metaTitle": "Waafas World: printer supplies, office products and more",
+    "metaTitle": "Waafas World: printer supplies and office products",
     "metaDescription": "Waafas World by Waafa International. Genuine and compatible printer supplies, office products and everyday items, cash on delivery across Bangladesh.",
     "bar": {
       "label": "Waafas World",

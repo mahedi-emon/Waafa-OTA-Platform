@@ -1,8 +1,10 @@
 import "server-only";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { getMediaSlot } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
 import { absoluteUrl } from "@/lib/siteUrl";
+import { clampText, DESCRIPTION_MAX, fitTitle, TITLE_MAX } from "./metaText";
 
 type ShareImage = { url: string; alt: string; width?: number; height?: number };
 
@@ -38,20 +40,42 @@ export async function defaultShareImage(): Promise<ShareImage | undefined> {
 }
 
 /**
+ * Fits the page title into what search results show (issue 173): the "| Waafa" template only when the whole title
+ * stays within 60 characters, else the page title alone, shortened at a word if it is still too long.
+ */
+function fitPageTitle(title: Metadata["title"], template: string): Metadata["title"] {
+  if (typeof title === "string") {
+    const fitted = fitTitle(title, template);
+    return fitted.absolute ? { absolute: fitted.title } : fitted.title;
+  }
+  if (title && "absolute" in title && title.absolute) {
+    return { ...title, absolute: clampText(title.absolute, TITLE_MAX) };
+  }
+  return title;
+}
+
+/**
  * Adds the share preview a page needs on Facebook, WhatsApp, LinkedIn and X (#96): og:title, description, url,
  * site name, en_BD locale, type and image, plus a large Twitter card, all derived from the page's own title,
  * description and canonical. Values the page already set win; without an image the admin default is used.
- * Next merges metadata shallowly, so every public page passes its metadata through here.
+ * Next merges metadata shallowly, so every public page passes its metadata through here. Titles and descriptions
+ * are kept within 60 and 155 characters (issue 173), whatever length an admin record has.
  */
 export async function withSocial(
   metadata: Metadata,
   options: SocialOptions = {},
 ): Promise<Metadata> {
-  const [site, fallback] = await Promise.all([getSiteSettings(), defaultShareImage()]);
-  const title = titleText(metadata.title) ?? site.defaultSeo.title ?? site.travelBrand;
-  const description =
+  const [site, fallback, t] = await Promise.all([
+    getSiteSettings(),
+    defaultShareImage(),
+    getTranslations("Metadata"),
+  ]);
+  const pageTitle = fitPageTitle(metadata.title, t("titleTemplate"));
+  const title = titleText(pageTitle) ?? site.defaultSeo.title ?? site.travelBrand;
+  const rawDescription =
     (typeof metadata.description === "string" ? metadata.description : undefined) ??
     site.defaultSeo.description;
+  const description = rawDescription ? clampText(rawDescription, DESCRIPTION_MAX) : undefined;
   const canonical = metadata.alternates?.canonical;
   const url =
     typeof canonical === "string"
@@ -65,6 +89,8 @@ export async function withSocial(
 
   return {
     ...metadata,
+    ...(pageTitle ? { title: pageTitle } : {}),
+    ...(typeof metadata.description === "string" && description ? { description } : {}),
     openGraph: {
       siteName: site.travelBrand,
       locale: "en_BD",

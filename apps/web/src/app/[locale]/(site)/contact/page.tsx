@@ -17,6 +17,7 @@ import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { ContactForm } from "./_components/ContactForm";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Contact");
@@ -189,6 +190,7 @@ export default async function ContactPage() {
           </Link>
         </aside>
       </div>
+      <ExploreMore groups={["packages", "visa", "routes"]} />
     </main>
   );
 }

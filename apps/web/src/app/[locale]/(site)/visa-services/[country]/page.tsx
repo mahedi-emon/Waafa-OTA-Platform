@@ -26,6 +26,7 @@ import { VisaTypeProvider } from "./_components/VisaTypeProvider";
 import { VisaTypeTabs } from "./_components/VisaTypeTabs";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateStaticParams() {
   const countries = await listVisaCountries();
@@ -304,6 +305,10 @@ async function VisaCountryPageContent({
           }}
         />
       </VisaTypeProvider>
+      <ExploreMore
+        groups={["visa", "guides", "packages"]}
+        exclude={`/visa-services/${country.slug}`}
+      />
     </main>
   );
 }

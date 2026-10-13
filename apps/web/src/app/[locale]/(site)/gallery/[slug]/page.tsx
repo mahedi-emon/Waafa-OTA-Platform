@@ -13,6 +13,7 @@ import { getGalleryAlbum, listGalleryAlbums } from "@/lib/data/content";
 import { AlbumGrid } from "./_components/AlbumGrid";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateStaticParams() {
   const albums = await listGalleryAlbums();
@@ -92,6 +93,7 @@ async function AlbumContent({ params }: Pick<PageProps<"/[locale]/gallery/[slug]
       <p className="max-w-3xl rounded-2xl bg-mist-50 p-5 text-[14.5px] leading-relaxed text-mist-700">
         {t("consent")}
       </p>
+      <ExploreMore groups={["packages", "blog", "visa"]} />
     </main>
   );
 }

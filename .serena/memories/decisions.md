@@ -47,3 +47,10 @@
   treats [locale] as wildcard; Radix SelectValue empty on SSR; never use t.raw (placeholders via t(key,{x:"{x}"}));
   getByLabel is substring (use exact); e2e sign-ins need their own x-forwarded-for (5 per 15 min per address);
   Bash heredocs with quotes can break (write scripts with Write); "#123" in web code trips the hex guard.
+- D172 Sample records (any record with its own page) are noindex,follow and out of sitemap.xml via lib/seo/indexing.ts
+  isIndexable/recordRobots; Sample off in Admin = indexed again (#168).
+- D173 Hero loop (SmartVideo preloadPoster) starts on first scroll/touch/pointer move/key so its frame never becomes LCP.
+- D174 On demand: results-page search card (DeferredSearchCard), lead step 2, zod/libphonenumber (lazyResolver), corporate
+  quote form; inlineCss and content-visibility rejected (slower FCP; axe target-size on off-screen links).
+- D175 withSocial fits titles (60, "| Waafa" only if it fits) and descriptions (155) in code; Explore more links on pages
+  with few links; Home h1 includes the brand eyebrow; Home JSON-LD alternateNames list all brand names (#173).

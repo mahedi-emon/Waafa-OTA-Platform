@@ -22,6 +22,7 @@ import { getVisaCountry, getVisaGuide, listVisaGuides } from "@/lib/data/visa";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateStaticParams() {
   const guides = await listVisaGuides();
@@ -249,6 +250,7 @@ async function VisaGuidePostPageContent({
           ) : null}
         </article>
       </div>
+      <ExploreMore groups={["visa", "guides", "packages"]} exclude={`/visa-guide/${guide.slug}`} />
     </main>
   );
 }

@@ -1,4 +1,7 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-13 21:00 Dhaka — Site live (C8, #74 closed). SEO after go-live: #168 Sample noindex (PR #169), #170 perf
+  (PR #171; CI Home 57, Flights 74, Packages 90, Visa 90, Shop 84), #172 nav label Visa (PR #174), #173 on-page SEO
+  + brand names (PR #175).
 - 2026-10-13 09:30 Dhaka — #163 hero fare card removed (PR #165), #164 image-only server bundle deploy/server
   (PR #166). Production .env + bundle packed locally (waafa-server.tgz).
 - 2026-10-13 04:30 Dhaka — #156 airline logos (PR #159), #157 hero fare card + chip flags (PR #161), #158 VPS
