@@ -313,7 +313,7 @@ describe("visa repository", () => {
 
 describe("shop repository", () => {
   it("keeps hidden prices out of price bands and puts them last in price order (issue 178)", async () => {
-    const hidden = new Set(["prod-bd-crg070h", "prod-bd-w1510a"]);
+    const hidden = new Set(["prod-bd-crg070h"]);
     const banded = await shop.listProducts({ minPrice: 0, limit: 100 });
     expect(banded.items.some((product) => hidden.has(product.id))).toBe(false);
     for (const sort of ["price-asc", "price-desc"] as const) {
@@ -323,7 +323,7 @@ describe("shop repository", () => {
       expect(ordered.slice(firstHidden).every((product) => !product.showPrice)).toBe(true);
     }
     const all = await shop.listProducts({ limit: 100 });
-    expect(all.items.filter((product) => hidden.has(product.id))).toHaveLength(2);
+    expect(all.items.filter((product) => hidden.has(product.id))).toHaveLength(1);
   });
 
   it("includes sub-category products when listing a parent category", async () => {

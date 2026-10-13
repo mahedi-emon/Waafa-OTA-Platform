@@ -465,6 +465,7 @@ export const products: Product[] = [
     collectionIds: ["col-office"],
     bulkFrom: 10,
     popularity: 64,
+    showPrice: true,
     createdAt: "2026-10-01T10:00:00+06:00",
     status: "published",
     sample: true,
