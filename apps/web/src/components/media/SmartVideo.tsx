@@ -22,6 +22,16 @@ function subscribeToConnection(onChange: () => void): () => void {
 /** Phones (below the md breakpoint) get the 720 px files; the browser picks the first matching source. */
 const PHONE_QUERY = "(max-width: 767px)";
 
+/** The first sign of a visitor: any of these ends the page's LCP window, so the hero loop may start (issue 170). */
+const ENGAGE_EVENTS = [
+  "pointermove",
+  "pointerdown",
+  "keydown",
+  "scroll",
+  "wheel",
+  "touchstart",
+] as const;
+
 type SmartVideoProps = {
   /**
    * MP4 (H.264) is required; WebM (VP9) is offered first when present. The `*Mobile` files (720 px wide)
@@ -34,14 +44,19 @@ type SmartVideoProps = {
   alt: string;
   /** next/image `sizes` for the poster, e.g. "(min-width: 1280px) 1320px, 100vw". */
   sizes: string;
-  /** Preload the poster: only for the hero on the page that shows it first. */
+  /**
+   * Preload the poster: only for the hero on the page that shows it first. The poster is then the LCP image, and
+   * the loop waits for the visitor's first scroll, touch, pointer move or key, so its first frame never replaces
+   * the poster as the page's LCP (issue 170).
+   */
   preloadPoster?: boolean;
   className?: string;
 };
 
 /**
  * Muted background loop (HANDOFF, MOTION.md). The poster shows first; the video loads and plays only while
- * on screen and only when `canAutoplayVideo` allows it, then fades in over the poster (opacity only).
+ * on screen and only when `canAutoplayVideo` allows it, then fades in over the poster (opacity only). A hero loop
+ * (`preloadPoster`) starts on the visitor's first interaction.
  */
 function SmartVideo({
   sources,
@@ -60,11 +75,23 @@ function SmartVideo({
     () => false,
   );
   const [playing, setPlaying] = useState(false);
+  const [engaged, setEngaged] = useState(!preloadPoster);
+
+  useEffect(() => {
+    if (engaged || !allowed) return;
+    const engage = () => setEngaged(true);
+    for (const type of ENGAGE_EVENTS) {
+      window.addEventListener(type, engage, { once: true, passive: true });
+    }
+    return () => {
+      for (const type of ENGAGE_EVENTS) window.removeEventListener(type, engage);
+    };
+  }, [engaged, allowed]);
 
   useEffect(() => {
     const container = containerRef.current;
     const video = videoRef.current;
-    if (!allowed || !container || !video) return;
+    if (!allowed || !engaged || !container || !video) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -78,7 +105,7 @@ function SmartVideo({
     );
     observer.observe(container);
     return () => observer.disconnect();
-  }, [allowed]);
+  }, [allowed, engaged]);
 
   return (
     <div ref={containerRef} className={cn("relative overflow-hidden bg-mist-100", className)}>
@@ -91,7 +118,7 @@ function SmartVideo({
         fetchPriority={preloadPoster ? "high" : undefined}
         className="object-cover"
       />
-      {allowed ? (
+      {allowed && engaged ? (
         <video
           ref={videoRef}
           muted

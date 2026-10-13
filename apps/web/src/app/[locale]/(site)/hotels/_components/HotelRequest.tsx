@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { HotelSearch } from "@waafa/shared";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
 import { useDhakaToday } from "@/components/search/useDhakaToday";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Drawer,
   DrawerClose,
@@ -16,13 +18,13 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
-import {
-  buildHotelLead,
-  stayDefaults,
-  type StayStepInput,
-  type StayStepValues,
-} from "@/lib/leads/hotelLeadForm";
-import { StayStep } from "./StayStep";
+import type { StayStepInput, StayStepValues } from "@/lib/leads/hotelLeadForm";
+import { stayDefaults } from "@/lib/leads/hotelStay";
+
+/** Step 2 and its validation load when the visitor reaches it, not with the page (issue 170). */
+const StayStep = dynamic(() => import("./StayStep").then((mod) => mod.StayStep), {
+  loading: () => <Skeleton className="mx-5 my-6 h-[520px] rounded-2xl md:mx-7" />,
+});
 
 type HotelRequestProps = {
   search: HotelSearch | null;
@@ -120,9 +122,16 @@ function HotelRequest(props: HotelRequestProps) {
           emailRequired={props.emailRequired}
           phoneDisplay={props.phoneDisplay}
           whatsappE164={props.whatsappE164}
-          buildLead={(contact, values, page) =>
-            buildHotelLead({ contact, stay: values, search: props.search, preferences, page })
-          }
+          buildLead={async (contact, values, page) => {
+            const { buildHotelLead } = await import("@/lib/leads/hotelLeadForm");
+            return buildHotelLead({
+              contact,
+              stay: values,
+              search: props.search,
+              preferences,
+              page,
+            });
+          }}
           renderSecondStep={({ sending, goBack, submit }) => (
             <StayStep
               defaultValues={stay}

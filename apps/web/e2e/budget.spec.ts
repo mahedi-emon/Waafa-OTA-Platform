@@ -8,14 +8,16 @@ import { expect, test } from "@playwright/test";
 const TARGET_KB = 200;
 /**
  * Measured in CI on 11 Oct after issue 91 (home 215, flights 338, packages 189, visa 186, shop 315, contact 298 KB)
- * plus a small margin: a regression fails CI; lower these as the bundles shrink.
+ * plus a small margin: a regression fails CI; lower these as the bundles shrink. Issue 170 (13 Oct): flights 259 and
+ * shop 215 KB once the hidden search card, the lead form's second step and validation, and the corporate quote form
+ * load on demand.
  */
 const CEILING_KB: Record<string, number> = {
   "/": 235,
-  "/flights": 355,
+  "/flights": 275,
   "/tour-packages": 205,
   "/visa-services": 205,
-  "/shop": 335,
+  "/shop": 230,
   "/contact": 315,
 };
 const ROUTES = Object.keys(CEILING_KB);

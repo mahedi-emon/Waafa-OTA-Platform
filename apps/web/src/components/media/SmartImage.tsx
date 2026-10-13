@@ -17,7 +17,8 @@ type SmartImageProps = Omit<ImageProps, "alt" | "placeholder"> & {
 
 /**
  * next/image with WAAFA defaults: AVIF/WebP, a blurred placeholder for imported photos, a mist frame that
- * reserves the space (no layout shift), and lazy loading unless `preload` is set for the LCP image.
+ * reserves the space (no layout shift), and lazy loading unless `preload` is set for the LCP image. A preloaded
+ * image is also fetched at high priority (issue 170): the preload hint alone left the store banner queued as Low.
  */
 function SmartImage({
   alt,
@@ -27,8 +28,14 @@ function SmartImage({
   className,
   sizes,
   src,
+  preload,
+  fetchPriority,
   ...props
 }: SmartImageProps) {
+  const priority = {
+    ...(preload ? { preload } : {}),
+    ...(fetchPriority || preload ? { fetchPriority: fetchPriority ?? "high" } : {}),
+  };
   const hasBlur = typeof src === "object" && "blurDataURL" in src && Boolean(src.blurDataURL);
   const zoom =
     zoomOnHover &&
@@ -42,6 +49,7 @@ function SmartImage({
         sizes={sizes}
         placeholder={hasBlur ? "blur" : "empty"}
         className={cn(zoom, className)}
+        {...priority}
         {...props}
       />
     );
@@ -59,6 +67,7 @@ function SmartImage({
         sizes={sizes ?? "100vw"}
         placeholder={hasBlur ? "blur" : "empty"}
         className={cn("object-cover", zoom, className)}
+        {...priority}
         {...props}
       />
     </div>
