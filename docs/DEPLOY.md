@@ -30,61 +30,77 @@ snapshot backups as a second copy.
 Outside the server: an email sender (Resend, or any SMTP server), Cloudflare Turnstile (optional at launch) and the
 domain's DNS.
 
-## Quick start (manual deploy, about 30 minutes)
+## Quick start: image-only deploy (no source code on the server, about 30 minutes)
 
-The production settings file is ready on the owner's PC: `deploy/.env.production` (secrets, Resend and Google keys;
-never committed). Replace `SERVER_IP` with the VPS address and `deploy` with your sudo user (or use `root`).
+The server never gets the source code (the GitHub repository can stay private). GitHub Actions builds the api, web
+and nginx images on every push to `main` and pushes them to Docker Hub (`emon6107/waafa-ota-platform`); the server
+only pulls them. Everything the server needs is the folder `deploy/server` (issue 164):
 
-**0. DNS (do this first, it can take a few minutes):** at the domain registrar add two A records, `waafasworld.com` →
-`SERVER_IP` and `www.waafasworld.com` → `SERVER_IP` (remove any old A or AAAA records for both).
+| File | What it does |
+| --- | --- |
+| `compose.yml` | The stack from images only: PostgreSQL, Redis, API, worker, web, nginx (HTTPS), certbot |
+| `deploy.sh` | Pulls the images, starts everything in order, refreshes the web caches, gets the Let's Encrypt certificate |
+| `setup-server.sh` | Once on a fresh Ubuntu: updates, Asia/Dhaka, 4 GB swap, firewall 22/80/443, Docker with log rotation |
+| `backup.sh` | Daily database and photo backup, 14 kept |
+| `revalidate.mjs` | Used by deploy.sh to refresh the site's caches |
+| `.env` | The production settings (only on the owner's PC and the server; gitignored, never in git or chat) |
 
-```bash
-# 1. From your PC: log in to the server
-ssh deploy@SERVER_IP
+nginx is part of the stack (the `nginx` image: reverse proxy, HTTPS, www → apex redirect, gzip, caching, security
+headers, rate limits on form posts). Nothing to install or configure by hand; `setup-server.sh` stops a host nginx or
+Apache so ports 80 and 443 are free.
 
-# 2. On the server, once: updates, Asia/Dhaka time, 4 GB swap, firewall (22, 80, 443), Docker with log rotation,
-#    frees ports 80/443 from a host nginx or Apache, creates /opt/waafa
-curl -fsSL https://raw.githubusercontent.com/mahedi-emon/Waafa-OTA-Platform/main/deploy/bootstrap-server.sh | sudo sh -s -- "$USER"
-exit                       # log out and in again so docker works without sudo
-ssh deploy@SERVER_IP
+**0. DNS first:** A records `waafasworld.com` → `SERVER_IP` and `www.waafasworld.com` → `SERVER_IP` (remove old A
+and AAAA records for both).
 
-# 3. The code
-git clone https://github.com/mahedi-emon/Waafa-OTA-Platform.git /opt/waafa
-cd /opt/waafa
+**1. On your PC (PowerShell, in the project folder):** pack the bundle with its `.env` and copy it up.
 
-# 4. From your PC (a second terminal, in the project folder): copy the prepared settings
-scp deploy/.env.production deploy@SERVER_IP:/opt/waafa/deploy/.env
-
-# 5. Back on the server: lock the file, check everything (Docker, memory, ports, settings, DNS), then deploy.
-#    deploy.sh pulls the images from Docker Hub, starts PostgreSQL, Redis, API, worker, web and nginx, runs the
-#    migrations and the seed, refreshes the caches and gets the Let's Encrypt certificate for both names.
-chmod 600 deploy/.env
-sh deploy/check.sh
-sh deploy/deploy.sh
-
-# 6. Daily backups at 03:15 (database and uploaded photos, 14 days kept)
-(crontab -l 2>/dev/null; echo "15 3 * * * cd /opt/waafa && sh deploy/backup.sh >> deploy/backups/backup.log 2>&1") | crontab -
+```powershell
+cd H:\Waafa-OTA-Platform
+tar -czf waafa-server.tgz -C deploy/server .
+scp waafa-server.tgz root@SERVER_IP:/root/
 ```
 
-Without the prepared file (a new server for someone else): `sh deploy/init-env.sh waafasworld.com you@example.com`
-creates `deploy/.env` with new random secrets; then fill `RESEND_API_KEY`, `STAFF_ALERT_EMAIL`, `SEED_ADMIN_EMAIL`,
-`SEED_ADMIN_PASSWORD` and, for Google sign-in, `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
-
-nginx runs inside Docker (the `nginx` service: HTTPS, www → apex redirect, gzip, caching, security headers), so the
-server needs no nginx of its own. Useful commands on the server:
+**2. On the server:**
 
 ```bash
+ssh root@SERVER_IP
+mkdir -p /opt/waafa && tar -xzf /root/waafa-server.tgz -C /opt/waafa && rm /root/waafa-server.tgz
+sh /opt/waafa/setup-server.sh root          # once: updates, swap, firewall, Docker (use your sudo user instead of root if you have one)
 cd /opt/waafa
-docker compose -f deploy/compose.yml ps                 # every service and its health
-docker compose -f deploy/compose.yml logs -f --tail=100 api web nginx
-sh deploy/deploy.sh                                      # every release (pulls the newest images)
-IMAGE_TAG=<7-character sha> sh deploy/deploy.sh          # roll back to an earlier release (step 7)
-free -h && docker stats --no-stream                      # memory
+# Only if the Docker Hub repository is private: docker login -u emon6107   (password = a Docker Hub access token, read-only)
+sh deploy.sh                                # pull, start, refresh, HTTPS
+(crontab -l 2>/dev/null; echo "15 3 * * * cd /opt/waafa && sh backup.sh >> backups/backup.log 2>&1") | crontab -
 ```
 
-Then open `https://waafasworld.com/secure-admin-control`, sign in with the first Super Admin (`SEED_ADMIN_EMAIL` and
-`SEED_ADMIN_PASSWORD` from the settings file), change the password, remove both lines from `deploy/.env`, and follow
-the launch checks in step 5. Every later release: `cd /opt/waafa && git pull && sh deploy/deploy.sh`.
+**Every later release** (after a merge to `main` and a green "Docker images" run): `cd /opt/waafa && sh deploy.sh`.
+Roll back: `IMAGE_TAG=<7-character sha> sh deploy.sh`. When `deploy/server` itself changes (rare), copy the bundle
+again (step 1; the server's `.env` stays unless you overwrite it).
+
+**Everyday commands (in /opt/waafa):**
+
+```bash
+docker compose ps                                   # every service and its health
+docker compose logs -f --tail=100 api web nginx     # live logs
+docker compose restart web                          # restart one service
+free -h && docker stats --no-stream                 # memory
+sh backup.sh                                        # a backup now
+```
+
+Then open `https://waafasworld.com/secure-admin-control`, sign in with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`,
+change the password, delete both lines from `/opt/waafa/.env`, and follow the launch checks in step 5.
+
+### Private repositories
+
+- GitHub: Settings → General → Danger Zone → Change visibility → Private. Actions keep building images (private
+  repositories have a monthly minutes allowance on the free plan; the image build is the job that matters for the
+  server). The server needs no GitHub access.
+- Docker Hub (optional): Repositories → `waafa-ota-platform` → Settings → Make private; then create an access token
+  (Account settings → Personal access tokens, read-only) and run `docker login -u emon6107` once on the server.
+
+### Deploy from a clone (the earlier way)
+
+A server with the repository cloned to /opt/waafa still works: `sh deploy/check.sh` and `sh deploy/deploy.sh` with
+`deploy/.env`, every release `git pull && sh deploy/deploy.sh`.
 
 ## 0. Owner checklist
 
@@ -153,7 +169,7 @@ checks the main routes, checks that no secret is inside any image, then pushes `
 2. starts PostgreSQL, Redis and the API (migrations and the idempotent seed run on start) and waits until `/ready`
    answers;
 3. starts the worker, the web, nginx and certbot, and clears the nginx cache;
-4. once the web is healthy, sends a signed revalidation (`deploy/revalidate.mjs` inside the API container), so the
+4. once the web is healthy, sends a signed revalidation (`deploy/server/revalidate.mjs` inside the API container), so the
    pages prerendered at build time render again from this server's database;
 5. with `ACME_EMAIL` set, gets the Let's Encrypt certificate and switches nginx to HTTPS (DNS must already point at the
    server).

@@ -1,14 +1,14 @@
 #!/bin/sh
 # One-time setup of a fresh Ubuntu 22.04 or 24.04 VPS for WAAFA (issue 158). Safe to run again.
-#   sudo sh deploy/bootstrap-server.sh <deploy-user>
-# or, before the repository is on the server:
-#   curl -fsSL https://raw.githubusercontent.com/mahedi-emon/Waafa-OTA-Platform/main/deploy/bootstrap-server.sh | sudo sh -s -- <deploy-user>
+# Part of the image-only server bundle (deploy/server, issue 164). After copying the folder to /opt/waafa:
+#   sudo sh /opt/waafa/setup-server.sh <deploy-user>
 # It installs updates, sets Asia/Dhaka time, adds a 4 GB swap file, opens only SSH, HTTP and HTTPS, installs Docker
-# with log rotation, frees ports 80 and 443 from a host nginx or Apache (nginx runs inside Docker), and creates /opt/waafa.
+# with log rotation, frees ports 80 and 443 from a host nginx or Apache (nginx runs inside Docker), and makes the deploy
+# user the owner of /opt/waafa.
 set -eu
 
 if [ "$(id -u)" -ne 0 ]; then
-  echo "Run with sudo: sudo sh deploy/bootstrap-server.sh <deploy-user>" >&2
+  echo "Run with sudo: sudo sh setup-server.sh <deploy-user>" >&2
   exit 1
 fi
 DEPLOY_USER="${1:-${SUDO_USER:-}}"
@@ -65,7 +65,7 @@ fi
 echo "7/7 App folder /opt/waafa"
 mkdir -p /opt/waafa
 if [ -n "$DEPLOY_USER" ]; then
-  chown "$DEPLOY_USER" /opt/waafa
+  chown -R "$DEPLOY_USER" /opt/waafa
 fi
 
 echo
@@ -73,7 +73,7 @@ echo "Done. Memory and swap:"
 free -h
 echo
 if [ -n "$DEPLOY_USER" ] && [ "$DEPLOY_USER" != "root" ]; then
-  echo "Log out and back in once so $DEPLOY_USER can use docker, then follow docs/DEPLOY.md (Quick start, step 2)."
+  echo "Log out and back in once so $DEPLOY_USER can use docker, then: cd /opt/waafa && sh deploy.sh"
 else
-  echo "Next: docs/DEPLOY.md (Quick start, step 2)."
+  echo "Next: cd /opt/waafa && sh deploy.sh"
 fi
