@@ -2,22 +2,20 @@ import { expect, test, type Page } from "@playwright/test";
 
 /*
  * Share previews and structured data (#96): every public page has its own og:title and description, an og:image,
- * a large Twitter card and Google's large image preview; listings carry ItemList; the sitemap lists photos.
+ * a large Twitter card and Google's large image preview; listings carry ItemList; the sitemap lists the real pages.
+ * Record pages still marked Sample send noindex, follow and stay out of the sitemap (issue 168).
  */
-const ROUTES = [
-  "/",
-  "/flights",
+/** Pages that are not admin records: always indexed. */
+const INDEXED = ["/", "/flights", "/tour-packages", "/visa-services", "/shop", "/blog", "/contact"];
+/** Record pages: every fixture record is Sample, so these send noindex, follow (issue 168). */
+const SAMPLE_RECORDS = [
   "/flights/dhaka-to-dubai",
-  "/tour-packages",
   "/tour-packages/maldives-island-stay",
-  "/visa-services",
   "/visa-services/thailand",
-  "/shop",
   "/shop/p/better-day-ce505a-cf280a-black-toner",
-  "/blog",
-  "/contact",
   "/about-us",
-] as const;
+];
+const ROUTES = [...INDEXED, ...SAMPLE_RECORDS];
 
 const meta = (page: Page, selector: string) =>
   page.locator(selector).first().getAttribute("content");
@@ -42,7 +40,9 @@ test("every public page has its own share preview", async ({ page }) => {
     expect(await meta(page, 'meta[name="twitter:card"]'), `${route} twitter:card`).toBe(
       "summary_large_image",
     );
-    expect(await meta(page, 'meta[name="robots"]'), `${route} robots`).toContain("index");
+    expect(await meta(page, 'meta[name="robots"]'), `${route} robots`).toBe(
+      SAMPLE_RECORDS.includes(route) ? "noindex, follow" : "index, follow",
+    );
   }
   // Each page names itself: no page shares another page's title.
   expect(titles.size).toBe(ROUTES.length);
@@ -127,8 +127,15 @@ test("store, About, Gallery, Visa Guide and visa services describe themselves (i
   expect(JSON.stringify(nodes)).not.toMatch(/aggregateRating|"review"/i);
 });
 
-test("the sitemap lists photos", async ({ request }) => {
+test("the sitemap lists the public pages and leaves Sample records out (issue 168)", async ({
+  request,
+}) => {
   const body = await (await request.get("/sitemap.xml")).text();
-  expect(body).toContain("<image:loc>");
+  for (const route of INDEXED.filter((path) => path !== "/")) {
+    expect(body, route).toContain(`${route}</loc>`);
+  }
+  for (const route of SAMPLE_RECORDS) {
+    expect(body, route).not.toContain(`${route}</loc>`);
+  }
   expect(body).not.toContain("secure-admin-control");
 });

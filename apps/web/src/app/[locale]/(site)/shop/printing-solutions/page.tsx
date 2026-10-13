@@ -8,6 +8,7 @@ import { pickMessages } from "@/i18n/pickMessages";
 import { getServicePage } from "@/lib/data/content";
 import { getContactSettings, getLeadFormSettings } from "@/lib/data/settings";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return withSocial({
     title: page.seo.title ?? page.title,
     description: page.seo.description ?? page.lead,
-    ...(page.seo.noIndex ? { robots: { index: false } } : {}),
+    ...recordRobots(page),
   });
 }
 

@@ -4,6 +4,7 @@ import { getPage, getServicePage, listBlogPosts, listGalleryAlbums } from "@/lib
 import { listBrands, listCategories, listCollections, listProducts } from "@/lib/data/shop";
 import { listFlightRoutes, listPackages } from "@/lib/data/travel";
 import { listVisaCountries, listVisaGuides } from "@/lib/data/visa";
+import { isIndexable } from "@/lib/seo/indexing";
 import { absoluteUrl } from "@/lib/siteUrl";
 
 /** Every product, read page by page (the data layer caps a page at 100). */
@@ -19,9 +20,9 @@ async function allProducts(): Promise<Product[]> {
 }
 
 /**
- * sitemap.xml (FR-SEO): every indexable public route. Noindex records, empty categories and pages that do not exist
- * stay out; data-driven routes (packages, visa countries, products, posts, albums) are listed from the data layer,
- * with their photos as image entries (#96).
+ * sitemap.xml (FR-SEO): every indexable public route. Records still marked Sample or set to noindex (issue 168), empty
+ * categories and pages that do not exist stay out; data-driven routes (packages, visa countries, products, posts,
+ * albums) are listed from the data layer, with their photos as image entries (#96).
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [
@@ -57,10 +58,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getPage("terms-and-conditions"),
   ]);
 
-  // A category is worth indexing when it or a sub-category holds a product.
+  // A category is worth indexing when it or a sub-category holds an indexable product.
+  const indexedProducts = products.filter(isIndexable);
   const parentOf = new Map(categories.map((category) => [category.id, category.parentId]));
   const stocked = new Set<string>();
-  for (const product of products) {
+  for (const product of indexedProducts) {
     let id: string | null | undefined = product.categoryId;
     while (id) {
       stocked.add(id);
@@ -82,72 +84,67 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("/", 1, "daily"),
     page("/flights", 0.8, "weekly"),
     page("/flights/group-fares", 0.8, "daily"),
-    ...routes
-      .filter((route) => !route.seo.noIndex)
-      .map((route) => ({
-        ...page(`/flights/${route.slug}`, 0.8, "weekly"),
-        images: [absoluteUrl(route.image.src)],
-      })),
+    ...routes.filter(isIndexable).map((route) => ({
+      ...page(`/flights/${route.slug}`, 0.8, "weekly"),
+      images: [absoluteUrl(route.image.src)],
+    })),
     page("/hotels", 0.7, "weekly"),
     page("/tour-packages", 0.9, "daily"),
-    ...packages
-      .filter((pkg) => !pkg.seo.noIndex)
-      .map((pkg) => ({
-        url: absoluteUrl(`/tour-packages/${pkg.slug}`),
-        lastModified: pkg.publishedAt,
-        images: [absoluteUrl(pkg.cover.src)],
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
-      })),
+    ...packages.filter(isIndexable).map((pkg) => ({
+      url: absoluteUrl(`/tour-packages/${pkg.slug}`),
+      lastModified: pkg.publishedAt,
+      images: [absoluteUrl(pkg.cover.src)],
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
     page("/plan-my-trip", 0.7, "monthly"),
     page("/visa-services", 0.9, "weekly"),
     ...countries
-      .filter((country) => !country.seo.noIndex)
+      .filter(isIndexable)
       .map((country) => page(`/visa-services/${country.slug}`, 0.8, "weekly")),
     page("/visa-guide", 0.6, "weekly"),
-    ...guides
-      .filter((guide) => !guide.seo.noIndex)
-      .map((guide) => ({
-        url: absoluteUrl(`/visa-guide/${guide.slug}`),
-        lastModified: guide.updatedAt,
-        changeFrequency: "monthly" as const,
-        priority: 0.6,
-      })),
+    ...guides.filter(isIndexable).map((guide) => ({
+      url: absoluteUrl(`/visa-guide/${guide.slug}`),
+      lastModified: guide.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
     page("/shop", 0.9, "daily"),
     page("/shop/categories", 0.6, "weekly"),
     page("/shop/deals", 0.7, "daily"),
     page("/shop/finder", 0.6, "monthly"),
-    ...(printing && !printing.seo.noIndex
+    ...(printing && isIndexable(printing)
       ? [page("/shop/printing-solutions", 0.7, "monthly")]
       : []),
-    ...(trading && !trading.seo.noIndex
+    ...(trading && isIndexable(trading)
       ? [page("/shop/international-trading", 0.7, "monthly")]
       : []),
     ...categories
-      .filter((category) => !category.seo.noIndex && stocked.has(category.id))
+      .filter((category) => isIndexable(category) && stocked.has(category.id))
       .map((category) => page(`/shop/c/${category.slug}`, 0.7, "daily")),
     ...brands
-      .filter((brand) => products.some((product) => product.brandId === brand.id))
+      .filter(
+        (brand) =>
+          isIndexable(brand) && indexedProducts.some((product) => product.brandId === brand.id),
+      )
       .map((brand) => page(`/shop/brand/${brand.slug}`, 0.5, "weekly")),
-    ...collections.map((collection) => page(`/shop/collection/${collection.slug}`, 0.5, "weekly")),
-    ...products
-      .filter((product) => !product.seo.noIndex)
-      .map((product) => ({
-        ...page(`/shop/p/${product.slug}`, 0.8, "daily"),
-        images: product.images.slice(0, 3).map((image) => absoluteUrl(image.src)),
-      })),
+    ...collections
+      .filter(isIndexable)
+      .map((collection) => page(`/shop/collection/${collection.slug}`, 0.5, "weekly")),
+    ...indexedProducts.map((product) => ({
+      ...page(`/shop/p/${product.slug}`, 0.8, "daily"),
+      images: product.images.slice(0, 3).map((image) => absoluteUrl(image.src)),
+    })),
     page("/blog", 0.6, "weekly"),
-    ...posts
-      .filter((post) => !post.seo.noIndex)
-      .map((post) => ({
-        url: absoluteUrl(`/blog/${post.slug}`),
-        lastModified: post.publishedAt,
-        images: [absoluteUrl(post.cover.src)],
-        changeFrequency: "monthly" as const,
-        priority: 0.5,
-      })),
+    ...posts.filter(isIndexable).map((post) => ({
+      url: absoluteUrl(`/blog/${post.slug}`),
+      lastModified: post.publishedAt,
+      images: [absoluteUrl(post.cover.src)],
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
     page("/gallery", 0.5, "weekly"),
-    ...albums.map((album) => ({
+    ...albums.filter(isIndexable).map((album) => ({
       url: absoluteUrl(`/gallery/${album.slug}`),
       lastModified: album.publishedAt,
       images: [absoluteUrl(album.cover.src)],
@@ -161,7 +158,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("/emi", 0.4, "monthly"),
     page("/offline-payment", 0.4, "monthly"),
     ...policies
-      .filter((item): item is NonNullable<typeof item> => item !== null && !item.seo.noIndex)
+      .filter((item): item is NonNullable<typeof item> => item !== null && isIndexable(item))
       .map((item) => ({
         url: absoluteUrl(`/${item.slug}`),
         lastModified: item.lastUpdated,

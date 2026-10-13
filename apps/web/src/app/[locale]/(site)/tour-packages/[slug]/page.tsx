@@ -33,6 +33,7 @@ import { PackageBookingProvider } from "./_components/PackageBookingProvider";
 import { PackageGallery } from "./_components/PackageGallery";
 import { PackageQuery } from "./_components/PackageQuery";
 import { ShareButton } from "./_components/ShareButton";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -53,7 +54,7 @@ export async function generateMetadata({
     description,
     alternates: { canonical: `/tour-packages/${pkg.slug}` },
     openGraph: { title, description, images: [{ url: pkg.cover.src, alt: pkg.cover.alt }] },
-    ...(pkg.seo.noIndex ? { robots: { index: false } } : {}),
+    ...recordRobots(pkg),
   });
 }
 

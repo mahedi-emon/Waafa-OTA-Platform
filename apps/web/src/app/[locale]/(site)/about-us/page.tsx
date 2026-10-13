@@ -27,6 +27,7 @@ import {
 } from "@/lib/data/content";
 import { getContactSettings, getHomeContent, getSiteSettings } from "@/lib/data/settings";
 import { schemaId } from "@/lib/seo/schemaIds";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 import { absoluteUrl } from "@/lib/siteUrl";
 
@@ -35,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return withSocial({
     title: page?.seo.title ?? t("metaTitle"),
     description: page?.seo.description ?? t("metaDescription"),
-    ...(page?.seo.noIndex ? { robots: { index: false } } : {}),
+    ...(page ? recordRobots(page) : {}),
   });
 }
 

@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 13 Oct 09:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
+Updated: 13 Oct 16:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: SEO after go-live (#168 → performance → on-page checks) · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -30,12 +30,21 @@ Serena memory `audit_findings`.
 | --- | --- | --- | --- | --- | --- | --- |
 | A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + #39, #52, #89 | 24 | 0 | 0 | ✅ 100% |
 | B · Backend | 12 Oct · epic #29 | 5 (#54 – #57, #82 providers) + bugs #60, #61, #66, #72, #78 | 5 | 0 | 0 | ✅ 100% |
-| C · Integration & Launch | 13 Oct · epic #30 | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (code + rehearsal done) | 6 | 0 | 1 (#74: owner runs the VPS deploy) | 90% |
+| C · Integration & Launch | 13 Oct · epic #30 | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (live 13 Oct) | 7 | 0 | 0 | ✅ 100% |
 | D · P1 completion | 13 Nov · epic #31 | #71 admin editors, #91 performance (more with PROMPT 5) | 0 | 0 | 0 | 0% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #168 · SEO: Sample records are noindex,follow and stay out of the sitemap — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct (site live): any package, visa guide, blog post, flight route, product or offer still marked Sample gets noindex,follow and stays out of sitemap.xml; Sample off → indexed again; tests. P0, first of three SEO parts |
+| Built | `lib/seo/indexing.ts`: `isIndexable` (not Sample, not SEO › noindex) and `recordRobots` (noindex, follow). Every record page's `generateMetadata` uses it: packages, flight routes, visa countries and guides, blog posts, products, categories, brands, collections, gallery albums, About, policies, Printing and Trading pages. `sitemap.ts` keeps only indexable records; a category or brand needs an indexable product. Offers (Home offer banners, group fares, deals) have no page of their own; their list pages stay indexed. Admin record note says the page is hidden from search until Sample is off |
+| Tested | Vitest: indexing (7), sitemap with Sample on/off, noindex, photos (6); Playwright seo.spec: Sample record pages send `noindex, follow`, list pages `index, follow`, sitemap leaves Sample records out; routes, packages and 404 specs green |
+| Tools and skills | Serena (memories, overview), GitHub MCP (issue, commits through the API: the cloud session's git identity is not the owner's) |
+| Decision | D172 |
 
 ### #164 · Image-only server bundle (no code on the server) — ✅ Done (with #166)
 | Field | Value |
@@ -318,10 +327,10 @@ Serena memory `audit_findings`.
 | Admin control | AC-110 |
 | Decisions | D142 |
 
-### #74 · C3 Deploy: Docker Compose on the owner's VPS with nginx — 🟡 In progress (code merged, waits for the owner)
+### #74 · C3 Deploy: Docker Compose on the owner's VPS with nginx — ✅ Done (C8: live on https://waafasworld.com, 13 Oct, HTTPS on)
 | Field | Value |
 | --- | --- |
-| Opened → closed | 11 Oct 04:30 → open |
+| Opened → closed | 11 Oct 04:30 → 13 Oct (owner deployed the Docker Hub images on the VPS) |
 | Branch · PR · merge | `feat/74-vps-docker` · #81 · squash |
 | Built | `deploy/compose.yml` for one 2 vCPU / 4 GB VPS: PostgreSQL 16, Redis 7, API, worker, Next.js standalone web, nginx (reverse proxy, Let's Encrypt via certbot, POST rate limit, www → apex) and certbot; only nginx is public. `deploy/deploy.sh` starts the API before the web build; `deploy/backup.sh` keeps 14 daily dumps; `deploy/.env.example`; `docs/DEPLOY.md` rewritten |
 | Tests | CI "VPS deploy smoke (Docker Compose)" runs the whole stack and checks nine routes through nginx plus the /admin 404 |
@@ -942,6 +951,7 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-121 | Country flags | `visaCountry.flagCode`; `airport.countryCode` (destinations, group fares, pickers) | Visa › Countries; Travel › Airports | `PUT /api/v1/admin/content/{visaCountries,airports}/:id` | ✅ 13 Oct · countryFlagSrc test |
 | AC-122 | Google sign-in keys | Integrations › Sign-in record, server env fallback | Settings › Integrations › Sign-in | `POST /api/v1/admin/providers/google/:environment`, `POST /api/v1/admin/providers/google/setting` | ✅ 13 Oct · customers.unit.test |
 | AC-123 | Airline logos (strip, fare cards, route pages, filter) | `airline.logo` (else bundled by `airline.code`) | Travel › Airlines › Logo | `PUT /api/v1/admin/content/airlines/:id` | ✅ 13 Oct · airlineLogoSrc test |
+| AC-124 | Search indexing of a record page (robots meta, sitemap entry) | record `sample` + `seo.noIndex` → `isIndexable` | The record's editor (Sample switch, SEO › noindex) in Travel, Visa, Content, Waafas World | `PUT /api/v1/admin/content/:key/:id` | ✅ 13 Oct · indexing + sitemap tests, seo e2e |
 
 ## 5. Components inventory
 
@@ -1233,6 +1243,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D169 | 13 Oct | Hero gets the next group fare card over the route's start, flags in the destination chip, ribbon line and static glows | Owner request for a more attractive hero; all from Admin data; glass stays on the search card | #157 |
 | D170 | 13 Oct | Web container cap 1 GB; one-shot bootstrap script for the VPS | Measured ~750 MB; fewer manual steps on launch day | #158 |
 | D171 | 13 Oct | The VPS gets no source code: deploy/server bundle (images only) copied with tar + scp; repo deploy path kept as an alternative | Owner: GitHub goes private, the server only pulls Docker Hub images | #164 |
+| D172 | 13 Oct | A record still marked Sample is noindex, follow and out of the sitemap, for every record with its own page (not only the six named types), including About and the policies; categories and brands need an indexable product to be listed | One predictable rule for staff: real content = Sample off; placeholder text never reaches Google | #168 |
 
 ## 9. Bugs and known issues
 
@@ -1304,6 +1315,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 13 Oct 15:00–16:30 | Site live (C8, #74 closed). Owner: SEO after go-live in three parts. Part 1: Sample records noindex,follow and out of the sitemap. Cloud session: commits go through the GitHub API so the owner stays the author | #168, #74 | #169 | web unit 301 · seo/routes/packages/system e2e 17/17 |
 | 13 Oct 08:00–09:30 | Owner: hero card off the video; no code on the server (images only, private GitHub); env and the deploy steps in chat. Bundle tested on the local stack; production .env validated and packed with the bundle locally. A stray `git stash pop` applied the old A5 media stash on main: reset to HEAD, stash kept | #163, #164 | #165, #166 | CI green; bundle deploy run locally |
 | 13 Oct 02:00–04:30 | Owner: airline logos (auto, admin can add), a more attractive hero, production env and the VPS runbook with commands, push everything. Logos bundled and checked by eye; hero fare card from real data; bootstrap script; web cap 1 GB | #156–#158 | #159–#161 | unit + e2e in CI, Playwright MCP 320–1920 |
 | 12 Oct 22:15–13 Oct 01:00 | Owner: Log in button, Mouse, "Waafas World by Waafa International", every country flag, better hero motion and a bigger hero video, Resend and Google keys, production for 2 vCPU / 4 GB. Keys only in gitignored env files; Resend test email sent; four issues built, reviewed from the owner's account and merged | #146–#149 | #150–#153 | unit + e2e in CI, Playwright MCP at 320–1920 |
@@ -1340,6 +1352,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. SEO part 2 (P1): Lighthouse mobile 85+ on Home, Flights, Packages, Visa, Shop (LCP: hero poster, priority image, fonts; first-load JS; CLS 0); before/after here.
+2. SEO part 3 (P1): one H1, unique title (≤ 60) and description (≤ 155), alt text and internal links on every public page.
+3. Owner: turn Sample off on each record as real content replaces it (Admin record editor); Search Console → resubmit /sitemap.xml.
+
+Earlier (13 Oct 09:30):
 1. Owner (14 Oct): DNS A records → on the PC `tar -czf waafa-server.tgz -C deploy/server .` (already packed) → `scp` → on the server unpack to /opt/waafa → `sh setup-server.sh root` → `sh deploy.sh` → backups cron (docs/DEPLOY.md quick start).
 2. Owner: GitHub → private (Settings › General › Danger Zone); optional Docker Hub private + `docker login` on the server; Google Cloud redirect URI + Publish app; first admin sign-in, change password, remove SEED_ADMIN_* from /opt/waafa/.env.
 3. After go-live: Search Console, Rich Results, Sample content, Tracking IDs, Turnstile, uptime; #71 rest, Bangla (P1).

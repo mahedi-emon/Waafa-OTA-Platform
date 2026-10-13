@@ -28,6 +28,7 @@ import {
   listGroupFares,
 } from "@/lib/data/travel";
 import { getVisaCountry } from "@/lib/data/visa";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -48,7 +49,7 @@ export async function generateMetadata({
       title,
       description,
       alternates: { canonical: `/flights/${route.slug}` },
-      ...(route.seo.noIndex ? { robots: { index: false } } : {}),
+      ...recordRobots(route),
     },
     { image: { url: route.image.src, alt: route.image.alt } },
   );

@@ -7,6 +7,7 @@ import { ListingSkeleton } from "@/components/shop/ListingSkeleton";
 import { ProductListing } from "@/components/shop/ProductListing";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getBrand, listBrands } from "@/lib/data/shop";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -24,6 +25,7 @@ export async function generateMetadata({
     title: brand.name,
     description: brand.description ?? t("brandLead", { brand: brand.name }),
     alternates: { canonical: `/shop/brand/${brand.slug}` },
+    ...recordRobots(brand),
   });
 }
 

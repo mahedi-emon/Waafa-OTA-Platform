@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { getVisaCountry, getVisaGuide, listVisaGuides } from "@/lib/data/visa";
 import { absoluteUrl } from "@/lib/siteUrl";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -45,7 +46,7 @@ export async function generateMetadata({
       description,
       images: [{ url: guide.cover.src, alt: guide.cover.alt }],
     },
-    ...(guide.seo.noIndex ? { robots: { index: false } } : {}),
+    ...recordRobots(guide),
   });
 }
 

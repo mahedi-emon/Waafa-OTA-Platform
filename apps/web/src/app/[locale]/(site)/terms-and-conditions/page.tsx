@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PolicyPage } from "@/components/content/PolicyPage";
 import { getPage } from "@/lib/data/content";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ...(page.seo.description || page.summary
       ? { description: page.seo.description ?? page.summary }
       : {}),
-    ...(page.seo.noIndex ? { robots: { index: false } } : {}),
+    ...recordRobots(page),
   });
 }
 

@@ -2961,7 +2961,7 @@
       "variant": "Kind",
       "emptyList": "No items yet.",
       "lastSaved": "Last saved {time} by {name}",
-      "sampleNote": "Sample record: replace it with real content before launch.",
+      "sampleNote": "Sample record: search engines skip its page and the sitemap leaves it out. Replace it with real content and turn Sample off to have it indexed.",
       "unsaved": "Unsaved changes",
       "keys": {
         "siteSettings": "Site and SEO",
