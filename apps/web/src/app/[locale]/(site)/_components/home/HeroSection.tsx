@@ -11,8 +11,7 @@ import { SmartVideo } from "@/components/media/SmartVideo";
 import { FlightPath } from "@/components/motion/FlightPath";
 import { TextRotate } from "@/components/motion/TextRotate";
 import { listDestinations } from "@/lib/data/content";
-import { getAirport, listAirlines, listGroupFares, searchAirports } from "@/lib/data/travel";
-import { HeroFareCard } from "./HeroFareCard";
+import { getAirport, searchAirports } from "@/lib/data/travel";
 
 type HeroSectionProps = {
   hero: HomeContent["hero"];
@@ -62,24 +61,12 @@ function renderWords(text: string, offset = 0) {
 /**
  * Home hero (Home, Home-m boards; DESIGN.md "Home hero"): headline on white with a word-by-word CSS reveal and a ribbon
  * line, an inset rounded media panel whose poster is the LCP image, a rotating destination chip with each country's
- * flag, the next group fare as a card on the media (from 1024 px), and the search card overlapping the lower edge.
+ * flag, and the search card overlapping the lower edge.
  */
 async function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectionProps) {
-  // Everything below comes from Admin: destinations and airports give the chip its flags, Travel › Group fares the
-  // card on the media (the next departure that is still open).
-  const [destinations, fares, airlines] = await Promise.all([
-    listDestinations(),
-    listGroupFares(),
-    listAirlines(),
-  ]);
+  // Destinations and airports from Admin give the rotating chip its flags.
+  const destinations = await listDestinations();
   const flags = await Promise.all(hero.rotating.map((place) => countryOf(place, destinations)));
-  const fare = [...fares].sort((a, b) => a.departDate.localeCompare(b.departDate))[0];
-  const [fareFrom, fareTo] = fare
-    ? await Promise.all([getAirport(fare.from.iata), getAirport(fare.to.iata)])
-    : [null, null];
-  const fareAirline = fare
-    ? (airlines.find((airline) => airline.code === fare.airline.code) ?? fare.airline)
-    : null;
   const firstLine = hero.title.split(" ").length;
   // "Mixkit · Mixkit" (no named author) reads as "Mixkit".
   const rawCredit = media?.video?.credit ?? media?.image?.credit;
@@ -165,14 +152,6 @@ async function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectio
               )}
             />
           </p>
-          {fare && fareAirline ? (
-            <HeroFareCard
-              fare={fare}
-              airline={fareAirline}
-              fromCountry={fareFrom?.countryCode ?? null}
-              toCountry={fareTo?.countryCode ?? null}
-            />
-          ) : null}
           {credit ? (
             <p className="absolute top-4 right-4 hidden rounded-full bg-midnight-950/55 px-2 py-0.5 text-[11px] text-white/90 sm:block md:top-6 md:right-6">
               {credit}

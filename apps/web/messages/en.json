@@ -27,11 +27,6 @@
       "view": "View",
       "code": "Code {code}"
     },
-    "heroFare": {
-      "kicker": "Next group fare",
-      "cta": "See fares",
-      "label": "Next group fare: {airline}, {from} to {to} on {date}, from {price} per adult. See all group fares."
-    },
     "groupFares": {
       "all": "All group fares",
       "request": "Request",
