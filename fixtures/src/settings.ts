@@ -69,7 +69,7 @@ export const menus: In<typeof MenuSchema>[] = [
     items: [
       { id: "home", label: "Home", href: "/", icon: "house" },
       { id: "packages", label: "Tour Packages", href: "/tour-packages", icon: "map" },
-      { id: "visa", label: "Visa Services", href: "/visa-services", icon: "stamp" },
+      { id: "visa", label: "Visa", href: "/visa-services", icon: "stamp" },
       { id: "shop", label: "Waafas World", href: "/shop", icon: "shopping-bag", panel: "shop" },
       { id: "gallery", label: "Gallery", href: "/gallery", icon: "images" },
       { id: "feedback", label: "Feedback", href: "/feedback", icon: "message-square-quote" },
@@ -151,7 +151,7 @@ export const menus: In<typeof MenuSchema>[] = [
       { id: "dr-flights", label: "Flights", href: "/flights", icon: "plane" },
       { id: "dr-hotels", label: "Hotels", href: "/hotels", icon: "bed-double" },
       { id: "dr-packages", label: "Tour Packages", href: "/tour-packages", icon: "map" },
-      { id: "dr-visa", label: "Visa Services", href: "/visa-services", icon: "stamp" },
+      { id: "dr-visa", label: "Visa", href: "/visa-services", icon: "stamp" },
       { id: "dr-shop", label: "Waafas World", href: "/shop", icon: "shopping-bag" },
       { id: "dr-gallery", label: "Gallery", href: "/gallery", icon: "images" },
       { id: "dr-feedback", label: "Feedback", href: "/feedback", icon: "message-square-quote" },

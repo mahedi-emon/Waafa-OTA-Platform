@@ -36,7 +36,7 @@ describe("settings repository", () => {
     expect(header.items.map((item) => item.label)).toEqual([
       "Home",
       "Tour Packages",
-      "Visa Services",
+      "Visa",
       "Waafas World",
       "Gallery",
       "Feedback",

@@ -37,6 +37,13 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #172 · Header menu: "Visa Services" becomes "Visa" — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct: in the nav bar, "Visa Services" should read "Visa" |
+| Built | Default menu data: header and phone drawer item label "Visa" (route stays /visa-services); footer column keeps "Visa Services". Menus are admin data and the seed never overwrites them, so the live site changes in Admin › Content › Menus › header (owner told) |
+| Tested | Fixture repository test and the desktop header e2e expect "Visa" |
+
 ### #170 · Performance: Lighthouse mobile on Home, Flights, Packages, Visa, Shop — ✅ Done
 | Field | Value |
 | --- | --- |

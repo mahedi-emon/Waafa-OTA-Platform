@@ -153,7 +153,7 @@ Frontend and backend overlap on Sunday 11 October; owner content must arrive by 
 
 The navbar carries seven items; flights and hotels are reached through the search widget, and Waafas World runs as its own store sub-site under /shop.
 
-**Desktop header, left to right:** logo lockup (W mark + WAAFA + tagline), then Home, Tour Packages, Visa Services, Waafas World, Gallery, Feedback, More, then a hotline/WhatsApp chip and Login (Account from P1).
+**Desktop header, left to right:** logo lockup (W mark + WAAFA + tagline), then Home, Tour Packages, Visa (links to /visa-services; owner 13 Oct), Waafas World, Gallery, Feedback, More, then a hotline/WhatsApp chip and Login (Account from P1).
 
 **Store label: "Waafas World".** It is the store's own name, matches the waafasworld.com domain and fits any product range, not only printing supplies. Hovering it opens a panel with the top categories plus three doors: Shop all products (store), Printing Solutions (service quote), International Trading (RFQ). Clicking the label opens the store at /shop.
 
