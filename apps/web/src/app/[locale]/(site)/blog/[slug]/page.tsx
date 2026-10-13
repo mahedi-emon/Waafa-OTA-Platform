@@ -22,6 +22,7 @@ import {
 } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
 import { absoluteUrl } from "@/lib/siteUrl";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -47,7 +48,7 @@ export async function generateMetadata({
       description,
       images: [{ url: post.cover.src, alt: post.cover.alt }],
     },
-    ...(post.seo.noIndex ? { robots: { index: false } } : {}),
+    ...recordRobots(post),
   });
 }
 

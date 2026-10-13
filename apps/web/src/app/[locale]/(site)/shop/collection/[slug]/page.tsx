@@ -7,6 +7,7 @@ import { ListingSkeleton } from "@/components/shop/ListingSkeleton";
 import { ProductListing } from "@/components/shop/ProductListing";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getCollection, listCollections } from "@/lib/data/shop";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -24,6 +25,7 @@ export async function generateMetadata({
     title: collection.name,
     description: collection.description ?? t("collectionMeta", { name: collection.name }),
     alternates: { canonical: `/shop/collection/${collection.slug}` },
+    ...recordRobots(collection),
   });
 }
 

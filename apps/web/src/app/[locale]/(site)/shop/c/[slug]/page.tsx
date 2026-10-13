@@ -9,6 +9,7 @@ import { ProductListing } from "@/components/shop/ProductListing";
 import { Link } from "@/i18n/navigation";
 import { getShopContent, getSiteSettings } from "@/lib/data/settings";
 import { getAttributeSet, getCategory, listCategories } from "@/lib/data/shop";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -29,7 +30,7 @@ export async function generateMetadata({
       category.description ??
       t("categoryMeta", { category: category.name }),
     alternates: { canonical: `/shop/c/${category.slug}` },
-    ...(category.seo.noIndex ? { robots: { index: false } } : {}),
+    ...recordRobots(category),
   });
 }
 

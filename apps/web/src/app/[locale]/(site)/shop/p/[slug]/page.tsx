@@ -28,6 +28,7 @@ import { brandNames, pricedProduct, pricedProducts } from "@/lib/shop/catalogue"
 import { stockBadge } from "@/lib/shop/variants";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { ProductView } from "./_components/ProductView";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -51,7 +52,7 @@ export async function generateMetadata({
       title,
       images: product.images.slice(0, 1).map((image) => ({ url: image.src, alt: image.alt })),
     },
-    ...(product.seo.noIndex ? { robots: { index: false } } : {}),
+    ...recordRobots(product),
   });
 }
 

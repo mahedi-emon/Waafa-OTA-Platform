@@ -24,6 +24,7 @@ import { VisaFeeBar } from "./_components/VisaFeeBar";
 import { VisaFeeCard, type VisaFee } from "./_components/VisaFeeCard";
 import { VisaTypeProvider } from "./_components/VisaTypeProvider";
 import { VisaTypeTabs } from "./_components/VisaTypeTabs";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -43,7 +44,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: `/visa-services/${country.slug}` },
-    ...(country.seo.noIndex ? { robots: { index: false } } : {}),
+    ...recordRobots(country),
   });
 }
 

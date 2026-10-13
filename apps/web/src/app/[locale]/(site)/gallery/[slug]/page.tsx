@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { getGalleryAlbum, listGalleryAlbums } from "@/lib/data/content";
 import { AlbumGrid } from "./_components/AlbumGrid";
+import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -28,6 +29,7 @@ export async function generateMetadata({
     title: `${album.title} · ${t("metaTitle")}`,
     description: `${album.title}: ${t("items", { count: album.items.length })}. ${t("lead")}`,
     alternates: { canonical: `/gallery/${album.slug}` },
+    ...recordRobots(album),
     openGraph: { images: [{ url: album.cover.src, alt: album.cover.alt }] },
   });
 }
