@@ -1,9 +1,11 @@
 # Session handoff (update at every session end)
-Updated 2026-10-13 04:30 Dhaka.
-STATE: everything merged to main, nothing open except epics, #71 (later), #74 (owner's VPS deploy). Go-live: owner
-deploys on 14 Oct with docs/DEPLOY.md quick start (bootstrap-server.sh → clone → scp deploy/.env.production →
-check.sh → deploy.sh → backups cron). Production settings file is complete (validated: all values, LF) and stays on
-the owner's PC (gitignored); it already holds Resend + Google keys and the first admin.
+Updated 2026-10-13 09:30 Dhaka.
+STATE: everything merged to main (last: #165 hero card removed, #166 image-only server bundle). Go-live 14 Oct with
+NO source code on the server: deploy/server/ (compose images only, deploy.sh, setup-server.sh, backup.sh,
+revalidate.mjs) + deploy/server/.env (= deploy/.env.production, gitignored) packed as waafa-server.tgz in the repo root
+(gitignored). Server: unpack to /opt/waafa → sh setup-server.sh root → sh deploy.sh → cron backup.sh. GitHub may go
+private; Docker Hub private needs docker login on the server. Old stash@{0} "A5 media WIP" must stay untouched (never
+`git stash pop` without a fresh stash: it popped that one once; main was reset to HEAD).
 THIS SESSION: #146 Log in words (PR #150), #149 Resend + Google env fallback (#151), #147 country flags (#152), #148
 larger hero + flight path in the sky (#153, with #154 e2e outside-day fix), docs #155; then #156 airline logos (#159:
 scripts/fetch-airline-logos.mjs → 89 marks in public/media/airlines, AirlineLogo, optional Airline.logo), #157 hero
