@@ -1,4 +1,6 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-13 22:30 Dhaka — #176 visa route /visa + seed patch (PR #177 merged); #178 store price on request and
+  #179 visa price ranges (PR #180).
 - 2026-10-13 21:00 Dhaka — Site live (C8, #74 closed). SEO after go-live: #168 Sample noindex (PR #169), #170 perf
   (PR #171; CI Home 57, Flights 74, Packages 90, Visa 90, Shop 84), #172 nav label Visa (PR #174), #173 on-page SEO
   + brand names (PR #175).

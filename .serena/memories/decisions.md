@@ -54,3 +54,8 @@
   quote form; inlineCss and content-visibility rejected (slower FCP; axe target-size on off-screen links).
 - D175 withSocial fits titles (60, "| Waafa" only if it fits) and descriptions (155) in code; Explore more links on pages
   with few links; Home h1 includes the brand eyebrow; Home JSON-LD alternateNames list all brand names (#173).
+- D176 Visa route /visa (308 from /visa-services); live admin data changed only through one-time seed patches
+  (`_seedPatches`, audited), never by re-seeding (#176).
+- D177 Store prices hidden by default per product (`showPrice`); hidden prices blanked server-side (publicProduct),
+  out of filters, sorts, JSON-LD and priceCart; Ask for price on WhatsApp (#178).
+- D178 Visa price = admin range per type (`priceRange {min,max?}`): "৳a – ৳b" or "From ৳a"; fallback fee + charge (#179).
