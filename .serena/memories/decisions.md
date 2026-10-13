@@ -37,6 +37,8 @@
   Admin wins, code fallback; "We book", never partners. D169 (#157) hero: next group fare card over the route's
   departure dot (bottom calc(34.9%-12px)), flags in TextRotate marks, RibbonLine, masked static glows; glass only on
   the search card. D170 (#158) web mem cap 1g; deploy/bootstrap-server.sh for fresh Ubuntu.
+- D171 (#164) server gets no code: deploy/server bundle from Docker Hub images; guards check it against deploy/compose.yml.
+  D169 now without the hero fare card (#163).
 - Header (#142, words now per D165): nav trigger px-1.5, xl:px-2;
   account Log out/Delete are POST route handlers with same-origin check (no server-action redirects into streaming pages).
 - Structured data (#125): shared @ids from lib/seo/schemaIds.ts; CollectionPageJsonLd; data must mirror visible content

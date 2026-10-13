@@ -1,4 +1,6 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-13 09:30 Dhaka — #163 hero fare card removed (PR #165), #164 image-only server bundle deploy/server
+  (PR #166). Production .env + bundle packed locally (waafa-server.tgz).
 - 2026-10-13 04:30 Dhaka — #156 airline logos (PR #159), #157 hero fare card + chip flags (PR #161), #158 VPS
   bootstrap + runbook + web cap 1 GB (PR #160). Launch-ready; owner deploys 14 Oct.
 - 2026-10-13 01:15 Dhaka — Owner batch: #146 Log in words + store copy (PR #150), #149 Resend + Google env keys

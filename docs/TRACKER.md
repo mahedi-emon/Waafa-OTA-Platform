@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 13 Oct 04:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, hero fare card, VPS runbook (#156–#158) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
+Updated: 13 Oct 09:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 owner go-live · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: launch · Launch: 12–13 Oct 2026 · Status: launch-ready; the owner deploys by hand with docs/DEPLOY.md
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -36,6 +36,20 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #164 · Image-only server bundle (no code on the server) — ✅ Done (with #166)
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct: no code on the server, only Docker Hub images; GitHub will be private; env ready to copy; deploy setup with nginx in chat; save it locally |
+| Built | `deploy/server/`: compose.yml (images only), deploy.sh (pull, start, refresh, Let's Encrypt, rollback by IMAGE_TAG), setup-server.sh (moved from deploy/bootstrap-server.sh), backup.sh, revalidate.mjs (moved); `.env` beside them and `waafa-server.tgz` on the PC only (gitignored); guards keep both compose files in step |
+| Tested | The bundle's deploy.sh ran the local Docker stack end to end |
+| Decision | D171 |
+
+### #163 · Remove the group fare card from the hero media — ✅ Done (with #165)
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct (screenshot): remove the US-Bangla DAC → KUL card from over the video |
+| Built | HeroFareCard, its data reads and messages removed; chip flags, ribbon line and glows kept; D169 updated |
 
 ### #158 · Production env check and the VPS go-live runbook — ✅ Done (with #160)
 | Field | Value |
@@ -928,7 +942,6 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-121 | Country flags | `visaCountry.flagCode`; `airport.countryCode` (destinations, group fares, pickers) | Visa › Countries; Travel › Airports | `PUT /api/v1/admin/content/{visaCountries,airports}/:id` | ✅ 13 Oct · countryFlagSrc test |
 | AC-122 | Google sign-in keys | Integrations › Sign-in record, server env fallback | Settings › Integrations › Sign-in | `POST /api/v1/admin/providers/google/:environment`, `POST /api/v1/admin/providers/google/setting` | ✅ 13 Oct · customers.unit.test |
 | AC-123 | Airline logos (strip, fare cards, route pages, filter) | `airline.logo` (else bundled by `airline.code`) | Travel › Airlines › Logo | `PUT /api/v1/admin/content/airlines/:id` | ✅ 13 Oct · airlineLogoSrc test |
-| AC-124 | Hero fare card | earliest open `groupFares` record + its airline | Travel › Group fares; Travel › Airlines | `PUT /api/v1/admin/content/groupFares/:id` | ✅ 13 Oct |
 
 ## 5. Components inventory
 
@@ -1219,6 +1232,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D168 | 13 Oct | Airline logos: bundled square marks by IATA code (script, pics.avs.io), Admin logo wins, code fallback; shown as "We book", never partners | Owner request; staff adding an airline see its logo with no upload | #156 |
 | D169 | 13 Oct | Hero gets the next group fare card over the route's start, flags in the destination chip, ribbon line and static glows | Owner request for a more attractive hero; all from Admin data; glass stays on the search card | #157 |
 | D170 | 13 Oct | Web container cap 1 GB; one-shot bootstrap script for the VPS | Measured ~750 MB; fewer manual steps on launch day | #158 |
+| D171 | 13 Oct | The VPS gets no source code: deploy/server bundle (images only) copied with tar + scp; repo deploy path kept as an alternative | Owner: GitHub goes private, the server only pulls Docker Hub images | #164 |
 
 ## 9. Bugs and known issues
 
@@ -1290,6 +1304,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 13 Oct 08:00–09:30 | Owner: hero card off the video; no code on the server (images only, private GitHub); env and the deploy steps in chat. Bundle tested on the local stack; production .env validated and packed with the bundle locally. A stray `git stash pop` applied the old A5 media stash on main: reset to HEAD, stash kept | #163, #164 | #165, #166 | CI green; bundle deploy run locally |
 | 13 Oct 02:00–04:30 | Owner: airline logos (auto, admin can add), a more attractive hero, production env and the VPS runbook with commands, push everything. Logos bundled and checked by eye; hero fare card from real data; bootstrap script; web cap 1 GB | #156–#158 | #159–#161 | unit + e2e in CI, Playwright MCP 320–1920 |
 | 12 Oct 22:15–13 Oct 01:00 | Owner: Log in button, Mouse, "Waafas World by Waafa International", every country flag, better hero motion and a bigger hero video, Resend and Google keys, production for 2 vCPU / 4 GB. Keys only in gitignored env files; Resend test email sent; four issues built, reviewed from the owner's account and merged | #146–#149 | #150–#153 | unit + e2e in CI, Playwright MCP at 320–1920 |
 | 12 Oct 18:30–21:30 | Owner: test Google sign-in end to end. Local run on the Docker stack (Docker Hub images): admin connects Google, Accounts live, /login at 7 widths with axe, redirect to Google with PKCE, callback errors, a signed-in session (created in PostgreSQL), My account, log out, delete. Found and fixed: delete ended on the error page and the header overflowed at 1024 px (#138, PR #139), 1280 px overflow and a wrapping label (#140, PR #141), header past the grid and More missing before hydration (#142, PR #143; CI fonts caught 1024 px). Final local run 4/4 at 320–1920 px | #138, #140, #142, #144 | #139, #141, #143 | web unit 282 · fixture + API-mode e2e · local suite 4/4 |
@@ -1325,6 +1340,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner (14 Oct): DNS A records → on the PC `tar -czf waafa-server.tgz -C deploy/server .` (already packed) → `scp` → on the server unpack to /opt/waafa → `sh setup-server.sh root` → `sh deploy.sh` → backups cron (docs/DEPLOY.md quick start).
+2. Owner: GitHub → private (Settings › General › Danger Zone); optional Docker Hub private + `docker login` on the server; Google Cloud redirect URI + Publish app; first admin sign-in, change password, remove SEED_ADMIN_* from /opt/waafa/.env.
+3. After go-live: Search Console, Rich Results, Sample content, Tracking IDs, Turnstile, uptime; #71 rest, Bangla (P1).
+
+Earlier (13 Oct 04:30):
 1. Owner (14 Oct): VPS (Ubuntu 24.04, x86_64, 2 vCPU / 4 GB) → DNS A records → docs/DEPLOY.md quick start (bootstrap-server.sh, clone, scp deploy/.env.production, check.sh, deploy.sh, backups cron).
 2. Owner: Google Cloud → web client origins/redirect URI for https://waafasworld.com, Publish app; first admin sign-in, change password, remove SEED_ADMIN_* from the server env.
 3. After go-live: Search Console, Rich Results, replace Sample content (fares, destinations), Tracking IDs, Turnstile, uptime; #71 rest, Bangla (P1).
