@@ -39,9 +39,10 @@ function LogoLockup({
 
   const content = (
     <>
+      {/* The mark carries the brand name for image search and link text; the wordmark beside it repeats it. */}
       <Image
         src={markImage}
-        alt=""
+        alt={t("name")}
         width={66}
         height={40}
         loading="eager"

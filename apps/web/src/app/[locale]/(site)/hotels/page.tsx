@@ -22,6 +22,7 @@ import { loadHotelSearch, parseHotelValues } from "@/lib/search/hotelParams";
 import { formatFieldDate } from "@/lib/search/isoDate";
 import { HotelRequest } from "./_components/HotelRequest";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Hotels");
@@ -117,6 +118,7 @@ export default async function HotelsPage({ searchParams }: PageProps<"/[locale]/
       >
         <HotelResults searchParams={searchParams} />
       </Suspense>
+      <ExploreMore groups={["packages", "visa", "routes"]} />
     </main>
   );
 }

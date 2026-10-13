@@ -10,6 +10,7 @@ import { getContactSettings, getLeadFormSettings, getSearchSettings } from "@/li
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { PlanTripRequest } from "./_components/PlanTripRequest";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("PlanTrip");
@@ -100,6 +101,7 @@ export default async function PlanMyTripPage({
         </div>
         <HelpCard pageName={t("breadcrumb")} />
       </div>
+      <ExploreMore groups={["packages", "visa", "guides"]} />
     </main>
   );
 }

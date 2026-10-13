@@ -523,6 +523,7 @@ The site must feel instant on a mid-range Android phone on 4G, pass a security r
 - Clean slugs, canonical URLs, breadcrumbs with BreadcrumbList markup.
 - JSON-LD: Organization and TravelAgency, LocalBusiness for the office, Product with Offer, TouristTrip for packages, FAQPage, BlogPosting.
 - Split sitemap.xml and robots.txt; noindex for admin, cart, checkout, account and parameterised results pages.
+- Titles stay within 60 characters (the "| Waafa" suffix only when it fits) and descriptions within 155, cut at a word, whatever an admin record holds; one h1 per page, the Home h1 names the brand; every image has alt text; info and detail pages end with "Explore more" links to visa countries, packages, routes, guides and articles. Home structured data names the brand as Waafa Tours and Travel, Waafa International, WAAFA and Waafas World.
 - A record page (package, visa country or guide, blog post, flight route, product, category, brand, collection, album, page) that is still marked Sample, or set to SEO › noindex in Admin, sends `robots: noindex, follow` and stays out of sitemap.xml; turning Sample off indexes it again with no code change.
 - Dynamic Open Graph images for packages, posts and products.
 - GA4 through GTM plus Meta Pixel; events: search, generate\_lead, whatsapp\_click, call\_click, view\_item, add\_to\_cart, begin\_checkout, purchase. Search Console verified at launch.

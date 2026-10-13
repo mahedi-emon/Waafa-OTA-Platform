@@ -11,9 +11,22 @@ function clock(minutes: number): string {
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+/** Other names people search for, without the entity's own name or repeats (any letter case). */
+function otherNames(name: string, ...names: string[]): string[] {
+  const seen = new Set([name.trim().toLowerCase()]);
+  return names.filter((item) => {
+    const key = item.trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 /**
  * WebSite, Organization and TravelAgency + LocalBusiness for Home (FR-SEO, #96), built only from admin settings: the
- * site name Google shows, the logo, the office with hours, phone, map and the share photo.
+ * site name Google shows, the logo, the office with hours, phone, map and the share photo. Each entity also carries
+ * the other brand names (WAAFA, Waafa Tours and Travel, Waafa International, Waafas World) so a search for any of them
+ * finds the site (issue 173).
  */
 async function HomeJsonLd() {
   const [site, contact, image] = await Promise.all([
@@ -45,7 +58,7 @@ async function HomeJsonLd() {
             "@id": schemaId("website"),
             url,
             name: site.travelBrand,
-            alternateName: ["WAAFA", site.storeName],
+            alternateName: otherNames(site.travelBrand, "WAAFA", site.companyName, site.storeName),
             inLanguage: "en-BD",
             publisher: { "@id": schemaId("organization") },
           },
@@ -53,6 +66,7 @@ async function HomeJsonLd() {
             "@type": "Organization",
             "@id": schemaId("organization"),
             name: site.companyName,
+            alternateName: otherNames(site.companyName, "WAAFA", site.travelBrand),
             url,
             logo: absoluteUrl("/icon.png"),
             sameAs: contact.socials.map((social) => social.url),
@@ -61,6 +75,7 @@ async function HomeJsonLd() {
             "@type": ["TravelAgency", "LocalBusiness"],
             "@id": schemaId("agency"),
             name: site.travelBrand,
+            alternateName: otherNames(site.travelBrand, "WAAFA", site.companyName),
             url,
             telephone: contact.phoneE164,
             email: contact.email,

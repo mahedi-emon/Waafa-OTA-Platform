@@ -20,6 +20,7 @@ import { getLeadFormSettings, getSiteSettings } from "@/lib/data/settings";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { FeedbackForm } from "./_components/FeedbackForm";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Feedback");
@@ -174,6 +175,7 @@ async function FeedbackContent({
           <FeedbackForm countries={countries} />
         </NextIntlClientProvider>
       </section>
+      <ExploreMore groups={["packages", "visa", "blog"]} />
     </main>
   );
 }

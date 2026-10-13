@@ -10,6 +10,7 @@ import { listEmiBanks, listPageBlocks } from "@/lib/data/content";
 import { getContactSettings, getEmiSettings } from "@/lib/data/settings";
 import { EmiCalculator } from "./_components/EmiCalculator";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Emi");
@@ -146,6 +147,7 @@ export default async function EmiPage() {
           </dl>
         </section>
       </div>
+      <ExploreMore groups={["packages", "routes"]} />
     </main>
   );
 }

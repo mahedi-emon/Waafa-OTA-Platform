@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 13 Oct 16:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168), Lighthouse performance (#170) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: SEO after go-live (#168 ✅ → #170 performance → on-page checks) · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 13 Oct 21:00 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168), Lighthouse performance (#170), nav label Visa (#172), on-page SEO and brand names (#173) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: SEO after go-live (#168 ✅, #170 ✅, #172 ✅, #173 on-page) · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -37,6 +37,16 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #173 · SEO on-page: one H1, titles ≤ 60, descriptions ≤ 155, alt text, internal links, brand names — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct (part 3 of 3): exactly one H1, unique title (≤ 60) and description (≤ 155), image alt text, internal links on every public page; searches for Waafa, Waafa International, Waafa Tours and Travel should find the site |
+| Audit | 48 routes at 390 px: one H1 everywhere; titles over 60 on Hotels, Visa services, Waafas World, Printing Solutions and long visa guides; descriptions over 155 on Packages, Visa services and long records; no duplicates; logo mark alt empty; 1–4 body links on Hotels, Plan my trip, Feedback, EMI, Offline payment, Contact, Group fares, Baggage, visa countries, visa guides, gallery albums |
+| Built | `lib/seo/metaText.ts` (`clampText`, `fitTitle`) used by `withSocial` on every public page: the "| Waafa" suffix only when the title fits, titles and descriptions cut at a word within 60 / 155 whatever an admin record holds. Shorter UI copy (Hotels, Visa, Waafas World titles; Packages, Visa descriptions; Printing Solutions sample title). Home h1 includes the brand eyebrow (no visual change). Home structured data: WebSite, Organization and TravelAgency carry the other brand names (WAAFA, Waafa International, Waafa Tours and Travel, Waafas World). Logo mark alt "WAAFA". `ExploreMore` + `LinkPill`: "Explore more" links from Admin records (visa countries, packages, routes, guides, articles) on eleven pages with few links |
+| Tested | Vitest metaText (9); Playwright seo.spec: one h1, title ≤ 60 and unique, description ≤ 155, no img without alt on 27 routes; Home h1 and structured data name the brand; Explore more on four pages without a self-link; full e2e 114 passed; screenshots at 320 / 390 / 1440 (no overflow, no console errors) |
+| Tools and skills | Serena, Playwright (audit script, screenshots), GitHub MCP |
+| Decision | D175 |
+
 ### #172 · Header menu: "Visa Services" becomes "Visa" — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -44,7 +54,7 @@ Serena memory `audit_findings`.
 | Built | Default menu data: header and phone drawer item label "Visa" (route stays /visa-services); footer column keeps "Visa Services". Menus are admin data and the seed never overwrites them, so the live site changes in Admin › Content › Menus › header (owner told) |
 | Tested | Fixture repository test and the desktop header e2e expect "Visa" |
 
-### #170 · Performance: Lighthouse mobile on Home, Flights, Packages, Visa, Shop — ✅ Done
+### #170 · Performance: Lighthouse mobile on Home, Flights, Packages, Visa, Shop — ✅ Done (Packages, Visa 90 in CI; Home, Flights, Shop below 85: follow-up)
 | Field | Value |
 | --- | --- |
 | Asked | Owner, 13 Oct: performance is an SEO factor; Lighthouse mobile Home 64, Flights 67 → 85+ on Home, Flights, Packages, Visa, Shop; focus LCP, first-load JS, CLS stays 0; before/after here. P1, part 2 of 3 |
@@ -54,19 +64,22 @@ Serena memory `audit_findings`.
 | Tested | Vitest `lazyResolver` (3) + leads suites; full e2e except the five-width screens 111 passed (budget, flights, hotels, store, home, search, layout, seo); Playwright at 320/390/768/1024/1440 on /flights (Edit opens the prefilled card, contact errors show, no overflow, no console errors); Home loop mounts after the first interaction |
 | Tools and skills | Serena, Lighthouse 12.8 (local, median of 3 after a warm-up run), CPU profiles via Playwright CDP, GitHub MCP |
 | Decision | D173, D174 |
+| PR | #171 (squash) |
 
 Lighthouse mobile (simulated slow 4G, 4× CPU). Performance · LCP · TBT; CLS 0 everywhere, A11y / Best practices / SEO 100.
 
-| Route | CI before (main, 13 Oct) | Local before (median of 3) | Local after (median of 3) | CI after (this PR) |
+| Route | CI before (main, 13 Oct) | Local before (median of 3) | Local after (median of 3) | CI after (#171, 1 run) |
 | --- | --- | --- | --- | --- |
-| / | 59 · 5.3 s | 80 · 4.0 s · 310 ms | **86** · 4.0 s · 120 ms | see PR |
-| /flights | 69 · 5.5 s | 69 · 4.9 s · 510 ms | **80** · 4.0 s · 310 ms | see PR |
-| /tour-packages | 77 | 89 · 3.6 s · 90 ms | **90** · 3.6 s · 60 ms | see PR |
-| /visa-services | 92 · 3.3 s | 89 · 3.4 s · 160 ms | **91** · 3.4 s · 100 ms | see PR |
-| /shop | 84 · 4.1 s | 83 · 4.5 s · 130 ms | **88** · 3.8 s · 100 ms | see PR |
+| / | 59 · 5.3 s | 80 · 4.0 s · 310 ms | **86** · 4.0 s · 120 ms | 57 |
+| /flights | 69 · 5.5 s | 69 · 4.9 s · 510 ms | **80** · 4.0 s · 310 ms | 74 |
+| /tour-packages | 77 | 89 · 3.6 s · 90 ms | **90** · 3.6 s · 60 ms | 90 |
+| /visa-services | 92 · 3.3 s | 89 · 3.4 s · 160 ms | **91** · 3.4 s · 100 ms | 90 |
+| /shop | 84 · 4.1 s | 83 · 4.5 s · 130 ms | **88** · 3.8 s · 100 ms | 84 |
 | /hotels | — | — | 82 · 3.9 s · 280 ms | — |
 
 First-load JS (gzip, budget e2e): flights 338 → 259 KB, shop 315 → 215 KB, home 217 KB, packages 189 KB, visa 187 KB.
+
+CI runners score Home lower than a laptop (1 run, slower CPU: Home's 1,900 nodes take longer to parse and hydrate); the live site is measured with PageSpeed Insights after deploy. Home and Flights below 85 in CI stay open as a follow-up (Next steps).
 
 ### #168 · SEO: Sample records are noindex,follow and stay out of the sitemap — ✅ Done
 | Field | Value |
@@ -983,6 +996,7 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-122 | Google sign-in keys | Integrations › Sign-in record, server env fallback | Settings › Integrations › Sign-in | `POST /api/v1/admin/providers/google/:environment`, `POST /api/v1/admin/providers/google/setting` | ✅ 13 Oct · customers.unit.test |
 | AC-123 | Airline logos (strip, fare cards, route pages, filter) | `airline.logo` (else bundled by `airline.code`) | Travel › Airlines › Logo | `PUT /api/v1/admin/content/airlines/:id` | ✅ 13 Oct · airlineLogoSrc test |
 | AC-124 | Search indexing of a record page (robots meta, sitemap entry) | record `sample` + `seo.noIndex` → `isIndexable` | The record's editor (Sample switch, SEO › noindex) in Travel, Visa, Content, Waafas World | `PUT /api/v1/admin/content/:key/:id` | ✅ 13 Oct · indexing + sitemap tests, seo e2e |
+| AC-125 | Explore more links (visa countries, packages, routes, guides, articles) | `listVisaCountries` (popular first), `listPackages` (popular), `listFlightRoutes`, `listVisaGuides`, `listBlogPosts` | Visa › Countries, Travel › Tour packages and Flight routes, Content › Visa guides and Blog | `GET /api/v1/public/snapshot` | ✅ 13 Oct · seo e2e |
 
 ## 5. Components inventory
 
@@ -1280,6 +1294,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D172 | 13 Oct | A record still marked Sample is noindex, follow and out of the sitemap, for every record with its own page (not only the six named types), including About and the policies; categories and brands need an indexable product to be listed | One predictable rule for staff: real content = Sample off; placeholder text never reaches Google | #168 |
 | D173 | 13 Oct | The hero loop starts on the visitor's first scroll, touch, pointer move or key; the poster alone until then | Its first frame replaced the poster as LCP after hydration (Home 59 in CI); every visitor who scrolls or moves the mouse still sees it (MOTION.md) | #170 |
 | D174 | 13 Oct | Hidden or later UI loads on demand: results-page search card, lead step 2, form validation (zod, libphonenumber), corporate quote form; `inlineCss` and `content-visibility` rejected | Cuts flights 79 KB and shop 100 KB of first-load JS; inline CSS slowed first paint; content-visibility broke axe target-size checks | #170 |
+| D175 | 13 Oct | Titles and descriptions are fitted in code (60 / 155, cut at a word), not only by admin validation; Explore more links on pages with few links; Home h1 carries the brand eyebrow | Admin records can be any length; a page's main heading and structured data should name the brand for brand searches | #173 |
 
 ## 9. Bugs and known issues
 
@@ -1351,6 +1366,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 13 Oct 19:30–21:00 | #171 and #174 merged (CI Lighthouse after: Home 57, Flights 74, Packages 90, Visa 90, Shop 84). Owner: nav label Visa (#172; live menu changes in Admin). Part 3 on-page SEO and brand names | #172, #173 | #174, #175 | web unit 313 · e2e 114 passed |
 | 13 Oct 16:30–19:30 | #169 merged (Sample noindex). Owner: brand search and where to enter each SEO setting (answered in chat), then finish all parts. Part 2 performance: hero video LCP, on-demand search card, lead steps, validation and quote form; before/after table | #170 | #171 | web unit 304 · e2e 111 passed · Lighthouse local median of 3 |
 | 13 Oct 15:00–16:30 | Site live (C8, #74 closed). Owner: SEO after go-live in three parts. Part 1: Sample records noindex,follow and out of the sitemap. Cloud session: commits go through the GitHub API so the owner stays the author | #168, #74 | #169 | web unit 301 · seo/routes/packages/system e2e 17/17 |
 | 13 Oct 08:00–09:30 | Owner: hero card off the video; no code on the server (images only, private GitHub); env and the deploy steps in chat. Bundle tested on the local stack; production .env validated and packed with the bundle locally. A stray `git stash pop` applied the old A5 media stash on main: reset to HEAD, stash kept | #163, #164 | #165, #166 | CI green; bundle deploy run locally |
@@ -1389,6 +1405,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. Owner: Admin › Content › Menus › header → label "Visa"; Search Console (verify with the HTML tag in Settings › General, submit /sitemap.xml); Google Business Profile; socials in Settings › Contact; turn Sample off on each real record (About and policies too); PageSpeed Insights on the live site after `sh deploy.sh`.
+2. Performance follow-up (P1): Home and Flights below 85 in CI. Home: fewer nodes before the fold (1,900 now, admin item counts per section) and lighter hydration; Flights: the lead card and preferences rail hydration.
+3. #71 rest, Bangla (P1).
+
+Earlier (13 Oct 19:30):
 1. SEO part 3 (P1): one H1, unique title (≤ 60) and description (≤ 155), alt text and internal links on every public page; brand names (Waafa, Waafa International, Waafa Tours and Travel) in Home title, H1, description and Organization alternateName.
 2. Owner: Search Console (verify with the HTML tag in Settings › General, submit /sitemap.xml), Google Business Profile, socials in Settings › Contact, Sample off on each real record; PageSpeed Insights on the live site after `sh deploy.sh`.
 3. Performance follow-up: Flights TBT (hydration of the lead card and preferences rail) if CI stays below 85.

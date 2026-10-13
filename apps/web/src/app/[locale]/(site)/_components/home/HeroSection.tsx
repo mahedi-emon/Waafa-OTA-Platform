@@ -59,7 +59,8 @@ function renderWords(text: string, offset = 0) {
 }
 
 /**
- * Home hero (Home, Home-m boards; DESIGN.md "Home hero"): headline on white with a word-by-word CSS reveal and a ribbon
+ * Home hero (Home, Home-m boards; DESIGN.md "Home hero"): the brand eyebrow and the headline (one h1) on white with a
+ * word-by-word CSS reveal and a ribbon
  * line, an inset rounded media panel whose poster is the LCP image, a rotating destination chip with each country's
  * flag, and the search card overlapping the lower edge.
  */
@@ -84,11 +85,12 @@ async function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectio
       />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-end lg:gap-12">
         <div>
-          <p className="mb-3 flex items-center gap-2 text-[12.5px] font-bold tracking-[0.16em] text-brand-700 uppercase">
-            <GoldTriangle />
-            {eyebrow}
-          </p>
+          {/* The brand eyebrow is part of the h1, so the page's main heading names the company (issue 173). */}
           <h1 id="home-hero-title" className="max-w-[17ch] type-display text-navy-900">
+            <span className="mb-3 flex items-center gap-2 font-sans text-[12.5px] leading-normal font-bold tracking-[0.16em] text-brand-700 uppercase">
+              <GoldTriangle />
+              {eyebrow}
+            </span>
             {renderWords(hero.title)}
             <span className="block text-electric-600">
               {renderWords(hero.titleAccent, firstLine)}

@@ -16,6 +16,7 @@ import { getContactSettings, getLeadFormSettings, getPaymentSettings } from "@/l
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { PaymentProofForm } from "./_components/PaymentProofForm";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("OfflinePay");
@@ -157,6 +158,7 @@ export default async function OfflinePaymentPage() {
           </NextIntlClientProvider>
         </section>
       ) : null}
+      <ExploreMore groups={["packages", "visa"]} />
     </main>
   );
 }

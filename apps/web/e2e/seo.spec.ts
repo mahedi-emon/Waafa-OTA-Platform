@@ -139,3 +139,67 @@ test("the sitemap lists the public pages and leaves Sample records out (issue 16
   }
   expect(body).not.toContain("secure-admin-control");
 });
+
+/** Public pages for the on-page checks: list pages, info pages and one record of each kind (issue 173). */
+const ON_PAGE_ROUTES = [
+  ...INDEXED,
+  ...SAMPLE_RECORDS,
+  "/hotels",
+  "/plan-my-trip",
+  "/flights/group-fares",
+  "/visa-guide",
+  "/visa-guide/thailand",
+  "/visa-guide/india",
+  "/gallery",
+  "/gallery/nepal",
+  "/faqs",
+  "/feedback",
+  "/emi",
+  "/shop/printing-solutions",
+  "/refund-policy",
+];
+
+test("every public page has one h1, a title within 60, a description within 155 and alt on every image (issue 173)", async ({
+  page,
+}) => {
+  test.slow();
+  const titles = new Map<string, string>();
+  for (const route of ON_PAGE_ROUTES) {
+    await page.goto(route);
+    await expect(page.locator("h1"), `${route} h1`).toHaveCount(1);
+    const title = await page.title();
+    expect(title.length, `${route} title "${title}"`).toBeLessThanOrEqual(60);
+    expect(
+      titles.get(title),
+      `${route} shares its title with ${titles.get(title)}`,
+    ).toBeUndefined();
+    titles.set(title, route);
+    const description = (await meta(page, 'meta[name="description"]')) ?? "";
+    expect(description.length, `${route} description`).toBeGreaterThan(0);
+    expect(description.length, `${route} description "${description}"`).toBeLessThanOrEqual(155);
+    expect(await page.locator("img:not([alt])").count(), `${route} images without alt`).toBe(0);
+  }
+});
+
+test("Home names the brand in its h1 and its structured data (issue 173)", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Waafa Tours and Travel");
+  const nodes = await structuredData(page);
+  const names = nodes.flatMap((node) => [
+    node.name,
+    ...((node.alternateName as string[] | undefined) ?? []),
+  ]);
+  for (const name of ["Waafa Tours and Travel", "Waafa International", "WAAFA", "Waafas World"]) {
+    expect(names, name).toContain(name);
+  }
+});
+
+test("pages with few links end with Explore more (issue 173)", async ({ page }) => {
+  for (const route of ["/hotels", "/contact", "/visa-services/thailand", "/gallery/nepal"]) {
+    await page.goto(route);
+    const explore = page.getByRole("navigation", { name: "Explore more" });
+    await expect(explore, route).toBeVisible();
+    expect(await explore.getByRole("link").count(), route).toBeGreaterThanOrEqual(4);
+    await expect(explore.locator(`a[href="${route}"]`)).toHaveCount(0);
+  }
+});

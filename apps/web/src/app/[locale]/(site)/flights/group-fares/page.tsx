@@ -13,6 +13,7 @@ import { Link } from "@/i18n/navigation";
 import { listGroupFares } from "@/lib/data/travel";
 import { formatMonth } from "@/lib/search/isoDate";
 import { withSocial } from "@/lib/seo/withSocial";
+import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Flights.groupPage");
@@ -259,6 +260,7 @@ export default async function GroupFaresPage({
         <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand-700" />
         {t("about")}
       </p>
+      <ExploreMore groups={["routes", "visa", "packages"]} />
     </main>
   );
 }

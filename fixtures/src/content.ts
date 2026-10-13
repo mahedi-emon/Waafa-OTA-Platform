@@ -1385,7 +1385,7 @@ export const servicePages: In<typeof ServicePageSchema>[] = [
       },
     ],
     seo: {
-      title: "Printing Solutions · toner, servicing and one monthly invoice",
+      title: "Printing Solutions · toner, servicing, one invoice",
       description:
         "Toner on a schedule, printer servicing and a single monthly invoice for every branch, from Waafa International in Motijheel, Dhaka.",
       noIndex: false,
