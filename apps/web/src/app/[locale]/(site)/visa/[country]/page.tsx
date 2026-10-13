@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BookOpen, FileDown, Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { visaPrice } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { CountryFlag } from "@/components/media/CountryFlag";
@@ -70,13 +71,12 @@ async function VisaCountryPageContent({
   const fees: VisaFee[] = country.types.map((type) => ({
     type: type.type,
     label: tTypes(`${type.type}.label`),
-    embassyFee: type.embassyFee,
-    serviceCharge: type.serviceCharge,
+    price: visaPrice(type),
   }));
   const notes = [...new Set(country.types.flatMap((type) => type.notes))];
   const pageUrl = absoluteUrl(`/visa/${country.slug}`);
-  // Service with an indicative offer per visa type (issue 125): the same total as the fee card, VAT included; when
-  // the embassy fee is not known yet the offer is the service charge and says the rest is confirmed before payment.
+  // Service with an indicative offer per visa type (issue 125): the same range as the fee card, VAT included, as an
+  // AggregateOffer (low and high price; a starting price alone without a top, issue 179).
   const service = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -92,23 +92,15 @@ async function VisaCountryPageContent({
       url: absoluteUrl("/"),
     },
     areaServed: { "@type": "Country", name: contact.country },
-    offers: fees.map((fee) => {
-      const price = fee.serviceCharge + (fee.embassyFee ?? 0);
-      return {
-        "@type": "Offer",
-        name: t("country.offerName", { country: country.name, type: fee.label }),
-        url: `${pageUrl}?type=${fee.type}`,
-        price,
-        priceCurrency: "BDT",
-        priceSpecification: {
-          "@type": "PriceSpecification",
-          price,
-          priceCurrency: "BDT",
-          valueAddedTaxIncluded: true,
-        },
-        ...(fee.embassyFee === null ? { description: t("country.offerPending") } : {}),
-      };
-    }),
+    offers: fees.map((fee) => ({
+      "@type": "AggregateOffer",
+      name: t("country.offerName", { country: country.name, type: fee.label }),
+      url: `${pageUrl}?type=${fee.type}`,
+      lowPrice: fee.price.min,
+      ...(fee.price.max !== undefined ? { highPrice: fee.price.max } : {}),
+      priceCurrency: "BDT",
+      description: t("country.priceNote"),
+    })),
   };
 
   const tabs = country.types.map((type) => {
@@ -276,10 +268,9 @@ async function VisaCountryPageContent({
                 labels={{
                   title: t("country.feeTitle", { country: country.name, type: "{type}" }),
                   perApplicant: t("country.perApplicant"),
-                  embassyFee: t("country.embassyFee"),
-                  serviceCharge: t("country.serviceCharge"),
-                  total: t("country.total"),
-                  confirmedLater: t("country.confirmedLater"),
+                  price: t("country.price"),
+                  priceFrom: t("country.priceFrom", { price: "{price}" }),
+                  priceNote: t("country.priceNote"),
                   apply: t("country.apply"),
                   whatsapp: t("country.whatsapp"),
                   whatsappMessage: t("country.whatsappMessage", {
@@ -299,6 +290,7 @@ async function VisaCountryPageContent({
           labels={{
             line: t("country.barLine", { type: "{type}" }),
             total: t("country.barTotal", { total: "{total}" }),
+            priceFrom: t("country.priceFrom", { price: "{price}" }),
             apply: t("country.applyShort"),
           }}
         />

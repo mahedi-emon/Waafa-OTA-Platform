@@ -266,7 +266,7 @@ export default async function ShopPage() {
       );
     },
     deals: async (row) => {
-      const deals = await listDeals();
+      const deals = (await listDeals()).filter((deal) => deal.product.showPrice);
       if (deals.length === 0) return null;
       const soonest = deals[0];
       const { title, subtitle } = heading(row, t("home.deals"), t("home.dealsLead"));

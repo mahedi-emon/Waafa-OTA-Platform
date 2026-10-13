@@ -74,6 +74,39 @@ test.describe("store at 390", () => {
   });
 });
 
+test.describe("price on request at 390 (issue 178)", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("a product with a hidden price asks for it on WhatsApp and never shows it", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto("/shop/p/better-day-canon-crg-070h-black-toner");
+    const main = page.locator("main");
+    await expect(main.getByText("Price on request").first()).toBeVisible();
+    const ask = main.getByRole("link", { name: "Ask for price on WhatsApp" });
+    await expect(ask).toHaveAttribute("href", /^https:\/\/wa\.me\/\d+\?text=.*CRG%20070H/);
+    await expect(main.getByRole("button", { name: "Add to cart" })).toHaveCount(0);
+    // Nothing in the page or its data gives the price (৳3,250, MRP ৳3,900) away: the server blanks it.
+    const html = await page.content();
+    for (const hint of ["3,250", "3250", "3,900", "3900", '"Offer"']) {
+      expect(html, hint).not.toContain(hint);
+    }
+    await axe(page);
+    expect(errors).toEqual([]);
+  });
+
+  test("cards show Price on request next to priced products", async ({ page }) => {
+    await page.goto("/shop/brand/better-day");
+    await expect(
+      page.getByRole("link", { name: "Ask the price of Better Day CRG 070H on WhatsApp" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Add Better Day CE505A \/ CF280A to cart/ }),
+    ).toBeVisible();
+  });
+});
+
 test.describe("store at 1440", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 

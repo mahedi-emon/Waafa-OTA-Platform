@@ -54,9 +54,11 @@ function RecentlyViewed({ title, clearLabel, exclude }: RecentlyViewedProps) {
                 <span className="line-clamp-2 text-[13.5px] font-semibold text-ink-900">
                   {item.title}
                 </span>
-                <span className="mt-auto pt-1 font-display text-[15px] font-extrabold text-navy-900 tabular-nums">
-                  {formatTaka(item.price)}
-                </span>
+                {item.price !== undefined ? (
+                  <span className="mt-auto pt-1 font-display text-[15px] font-extrabold text-navy-900 tabular-nums">
+                    {formatTaka(item.price)}
+                  </span>
+                ) : null}
               </span>
             </Link>
           </li>

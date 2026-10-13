@@ -20,6 +20,7 @@ function product(id: string, price: number, stock: number, extra: Partial<Produc
     title: `Product ${id}`,
     status: "published",
     codEligible: true,
+    showPrice: true,
     options: [{ key: "size", label: "Size", display: "pill", values: [{ value: "M" }] }],
     images: [{ src: "/a.jpg", alt: "a" }],
     variants: [
@@ -139,6 +140,21 @@ describe("priceCart", () => {
       lines: [{ variantId: "a-v", quantity: 1 }],
     });
     expect(gone.lines[0]).toMatchObject({ quantity: 0, status: "unavailable" });
+  });
+
+  it("never sells a product whose price is hidden (Price on request, issue 178)", () => {
+    const hidden = product("h", 900, 5, { showPrice: false });
+    const shown = product("s", 400, 5);
+    const quote = priceCart({
+      ...base,
+      products: [hidden, shown],
+      lines: [
+        { variantId: "h-v", quantity: 1 },
+        { variantId: "s-v", quantity: 1 },
+      ],
+    });
+    expect(quote.lines.map((line) => line.variantId)).toEqual(["s-v"]);
+    expect(quote.subtotal).toBe(400);
   });
 
   it("merges duplicate lines and ignores unknown or unpublished variants", () => {

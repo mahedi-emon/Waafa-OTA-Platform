@@ -76,16 +76,6 @@ export function visaFileDefaults(args: {
   };
 }
 
-/** Fees for the summary: per applicant times applicants; an unknown embassy fee stays null. */
-export function visaFees(
-  fees: { embassyFee: number | null; serviceCharge: number },
-  applicants: number,
-): { embassy: number | null; service: number; total: number | null } {
-  const embassy = fees.embassyFee === null ? null : fees.embassyFee * applicants;
-  const service = fees.serviceCharge * applicants;
-  return { embassy, service, total: embassy === null ? null : embassy + service };
-}
-
 export function buildVisaLead(args: {
   contact: ContactStepValues;
   values: VisaFileValues;

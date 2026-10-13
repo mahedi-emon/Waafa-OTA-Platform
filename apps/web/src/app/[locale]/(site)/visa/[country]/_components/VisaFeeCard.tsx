@@ -1,16 +1,17 @@
 "use client";
 
-import { formatTaka, whatsappLink, type VisaTypeKey } from "@waafa/shared";
+import { whatsappLink, type VisaPrice, type VisaTypeKey } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { formatVisaPrice } from "@/lib/visa/visaPrice";
 import { useVisaType } from "./useVisaType";
 
 export type VisaFee = {
   type: VisaTypeKey;
   label: string;
-  embassyFee: number | null;
-  serviceCharge: number;
+  /** Per applicant, all in: a range, or a starting price (issue 179). */
+  price: VisaPrice;
 };
 
 type VisaFeeCardProps = {
@@ -22,10 +23,10 @@ type VisaFeeCardProps = {
     /** "{type}" is replaced with the visa type label. */
     title: string;
     perApplicant: string;
-    embassyFee: string;
-    serviceCharge: string;
-    total: string;
-    confirmedLater: string;
+    price: string;
+    /** "{price}" is replaced. */
+    priceFrom: string;
+    priceNote: string;
     apply: string;
     whatsapp: string;
     /** "{type}" is replaced with the visa type label. */
@@ -35,12 +36,14 @@ type VisaFeeCardProps = {
   };
 };
 
-/** Fee card (VisaCountry aside): embassy fee and our service charge for the chosen type, then Apply. */
+/**
+ * Fee card (VisaCountry aside): the chosen type's price per applicant as a range or a starting price, never one fixed
+ * figure (issue 179), with what it includes, then Apply.
+ */
 function VisaFeeCard({ slug, fees, whatsappE164, sample, labels }: VisaFeeCardProps) {
   const { type } = useVisaType();
   const fee = fees.find((item) => item.type === type) ?? fees[0];
   if (!fee) return null;
-  const total = fee.embassyFee === null ? null : fee.embassyFee + fee.serviceCharge;
 
   return (
     <div className="flex flex-col gap-4 rounded-[20px] border border-mist-200 bg-white p-5 shadow-md">
@@ -50,29 +53,16 @@ function VisaFeeCard({ slug, fees, whatsappE164, sample, labels }: VisaFeeCardPr
         </h2>
         <span className="shrink-0 text-[12.5px] text-mist-600">{labels.perApplicant}</span>
       </div>
-      <dl className="flex flex-col gap-2.5 text-[14.5px]">
-        <div className="flex items-baseline justify-between gap-3">
-          <dt className="text-mist-700">{labels.embassyFee}</dt>
-          <dd className="text-right font-semibold whitespace-nowrap text-ink-900 tabular-nums">
-            {fee.embassyFee === null ? labels.confirmedLater : formatTaka(fee.embassyFee)}
-          </dd>
-        </div>
-        <div className="flex items-baseline justify-between gap-3">
-          <dt className="text-mist-700">{labels.serviceCharge}</dt>
-          <dd className="font-semibold text-ink-900 tabular-nums">
-            {formatTaka(fee.serviceCharge)}
-          </dd>
-        </div>
-        <div className="flex items-baseline justify-between gap-3 border-t border-mist-200 pt-2.5">
-          <dt className="font-semibold text-navy-900">{labels.total}</dt>
-          <dd
-            aria-live="polite"
-            className="font-display text-[20px] font-extrabold text-navy-900 tabular-nums"
-          >
-            {total === null ? `${formatTaka(fee.serviceCharge)} +` : formatTaka(total)}
-          </dd>
-        </div>
-      </dl>
+      <div className="flex flex-col gap-1.5 border-t border-mist-200 pt-3">
+        <p className="text-[13.5px] font-semibold text-mist-700">{labels.price}</p>
+        <p
+          aria-live="polite"
+          className="font-display text-[24px] leading-tight font-extrabold text-navy-900 tabular-nums"
+        >
+          {formatVisaPrice(fee.price, labels.priceFrom)}
+        </p>
+        <p className="text-[13px] leading-snug text-mist-600">{labels.priceNote}</p>
+      </div>
       {sample ? (
         <p className="text-[12.5px] font-semibold text-warning-700">{labels.sample}</p>
       ) : null}

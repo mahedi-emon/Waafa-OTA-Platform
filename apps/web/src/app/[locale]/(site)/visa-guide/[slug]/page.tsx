@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { formatDate, formatTaka } from "@waafa/shared";
+import { formatDate, visaPrice } from "@waafa/shared";
 import { RichText } from "@/components/content/RichText";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -22,6 +22,7 @@ import { getVisaCountry, getVisaGuide, listVisaGuides } from "@/lib/data/visa";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
+import { formatVisaPrice } from "@/lib/visa/visaPrice";
 import { ExploreMore } from "@/components/seo/ExploreMore";
 
 export async function generateStaticParams() {
@@ -171,21 +172,15 @@ async function VisaGuidePostPageContent({
               <h2 id="guide-fees" className="font-display text-[18px] font-bold text-navy-900">
                 {t("feesTitle", { type: tTypes(`${firstType.type}.label`) })}
               </h2>
-              <dl className="flex flex-col gap-2 text-[15px]">
-                <div className="flex justify-between gap-3">
-                  <dt className="text-mist-700">{tVisa("country.embassyFee")}</dt>
-                  <dd className="font-semibold text-ink-900 tabular-nums">
-                    {firstType.embassyFee === null
-                      ? tVisa("country.confirmedLater")
-                      : formatTaka(firstType.embassyFee)}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-mist-700">{tVisa("country.serviceCharge")}</dt>
-                  <dd className="font-semibold text-ink-900 tabular-nums">
-                    {formatTaka(firstType.serviceCharge)}
-                  </dd>
-                </div>
+              <dl className="flex flex-col gap-1 text-[15px]">
+                <dt className="text-mist-700">{tVisa("country.price")}</dt>
+                <dd className="font-display text-[20px] font-extrabold text-navy-900 tabular-nums">
+                  {formatVisaPrice(
+                    visaPrice(firstType),
+                    tVisa("country.priceFrom", { price: "{price}" }),
+                  )}
+                </dd>
+                <dd className="text-[13px] text-mist-600">{tVisa("country.priceNote")}</dd>
               </dl>
               {country?.sample ? (
                 <p className="text-[12.5px] font-semibold text-warning-700">{tVisa("sample")}</p>

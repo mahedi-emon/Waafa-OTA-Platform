@@ -96,7 +96,7 @@ function visaType(
   type: VisaType["type"],
   processingTime: string,
   serviceCharge: number,
-  extra: Partial<Pick<VisaType, "stay" | "entry" | "validity" | "embassyFee">> = {},
+  extra: Partial<Pick<VisaType, "stay" | "entry" | "validity" | "embassyFee" | "priceRange">> = {},
 ): VisaType {
   const { embassyFee = null, ...facts } = extra;
   return {
@@ -167,6 +167,7 @@ const countries: Country[] = [
         entry: "Single entry",
         validity: "3 months",
         embassyFee: 4000,
+        priceRange: { min: 7500, max: 9500 },
       }),
       visaType("business", "About 10 working days", 4500, {
         stay: "Up to 90 days",

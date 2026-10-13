@@ -312,6 +312,20 @@ describe("visa repository", () => {
 });
 
 describe("shop repository", () => {
+  it("keeps hidden prices out of price bands and puts them last in price order (issue 178)", async () => {
+    const hidden = new Set(["prod-bd-crg070h"]);
+    const banded = await shop.listProducts({ minPrice: 0, limit: 100 });
+    expect(banded.items.some((product) => hidden.has(product.id))).toBe(false);
+    for (const sort of ["price-asc", "price-desc"] as const) {
+      const ordered = (await shop.listProducts({ sort, limit: 100 })).items;
+      const firstHidden = ordered.findIndex((product) => !product.showPrice);
+      expect(firstHidden).toBeGreaterThan(0);
+      expect(ordered.slice(firstHidden).every((product) => !product.showPrice)).toBe(true);
+    }
+    const all = await shop.listProducts({ limit: 100 });
+    expect(all.items.filter((product) => hidden.has(product.id))).toHaveLength(1);
+  });
+
   it("includes sub-category products when listing a parent category", async () => {
     const electronics = await shop.listProducts({ category: "electronics-and-gadgets" });
     expect(electronics.items.map((product) => product.id).sort()).toEqual([
@@ -356,7 +370,10 @@ describe("shop repository", () => {
     expect(
       (await shop.listProducts({ search: "cf280a" })).items.map((product) => product.id),
     ).toEqual(["prod-bd-cf280a"]);
-    const byPrice = (await shop.listProducts({ sort: "price-desc" })).items.map(productFromPrice);
+    // Priced products in price order (products with a hidden price follow them, issue 178).
+    const byPrice = (await shop.listProducts({ sort: "price-desc" })).items
+      .filter((product) => product.showPrice)
+      .map(productFromPrice);
     expect(byPrice).toEqual([...byPrice].sort((a, b) => b - a));
   });
 

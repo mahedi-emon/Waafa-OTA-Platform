@@ -117,12 +117,21 @@ test("store, About, Gallery, Visa Guide and visa services describe themselves (i
   nodes = await structuredData(page);
   const service = typed(nodes, "Service");
   expect((service?.provider as { "@id": string })["@id"]).toMatch(/#agency$/);
-  const offers = service?.offers as Array<{ priceCurrency: string; price: number }>;
+  // A range or a starting price per visa type, never one fixed price (issue 179).
+  const offers = service?.offers as Array<{
+    "@type": string;
+    priceCurrency: string;
+    lowPrice: number;
+    highPrice?: number;
+  }>;
   expect(offers.length).toBeGreaterThan(0);
   for (const offer of offers) {
+    expect(offer["@type"]).toBe("AggregateOffer");
     expect(offer.priceCurrency).toBe("BDT");
-    expect(offer.price).toBeGreaterThan(0);
+    expect(offer.lowPrice).toBeGreaterThan(0);
+    if (offer.highPrice !== undefined) expect(offer.highPrice).toBeGreaterThan(offer.lowPrice);
   }
+  expect(offers.some((offer) => offer.highPrice !== undefined)).toBe(true);
   // Reviews and ratings are never invented.
   expect(JSON.stringify(nodes)).not.toMatch(/aggregateRating|"review"/i);
 });
@@ -216,4 +225,15 @@ test("old /visa-services links move permanently to /visa (issue 176)", async ({ 
   }
   const page = await request.get("/visa");
   expect(page.status()).toBe(200);
+});
+
+test("visa prices read as a range or a starting price, never one fixed price (issue 179)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/visa/thailand");
+  const card = page.getByRole("complementary", { name: /fee/i });
+  await expect(card.getByText("৳7,500 – ৳9,500")).toBeVisible();
+  await page.goto("/visa/thailand?type=business");
+  await expect(card.getByText(/^From ৳\d/)).toBeVisible();
 });

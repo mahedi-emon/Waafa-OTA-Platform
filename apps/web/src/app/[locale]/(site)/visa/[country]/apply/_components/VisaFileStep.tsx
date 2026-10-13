@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { formatDate, formatTaka, type VisaTypeKey } from "@waafa/shared";
+import { formatDate, visaPriceFor, type VisaPrice, type VisaTypeKey } from "@waafa/shared";
 import { ChipRadioGroup } from "@/components/forms/ChipRadioGroup";
 import { FormField } from "@/components/forms/FormField";
 import { NumberStepper } from "@/components/forms/NumberStepper";
@@ -18,19 +18,19 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   DOCUMENT_SLOTS,
   MAX_VISA_APPLICANTS,
-  visaFees,
   visaFileSchema,
   type VisaFileInput,
   type VisaFileValues,
 } from "@/lib/leads/visaLeadForm";
 import { addDays, formatFieldDate } from "@/lib/search/isoDate";
 import { DocumentSlot } from "@/components/forms/DocumentSlot";
+import { formatVisaPrice } from "@/lib/visa/visaPrice";
 
 export type VisaTypeOption = {
   type: VisaTypeKey;
   label: string;
-  embassyFee: number | null;
-  serviceCharge: number;
+  /** Per applicant, all in: a range or a starting price (issue 179). */
+  price: VisaPrice;
 };
 
 type VisaFileStepProps = {
@@ -109,7 +109,7 @@ function VisaFileStep(props: VisaFileStepProps) {
       : tLeads(`errors.${code}` as "errors.consentRequired");
   };
   const selected = props.types.find((option) => option.type === visaType) ?? props.types[0];
-  const fees = selected ? visaFees(selected, applicants) : null;
+  const price = selected ? visaPriceFor(selected.price, applicants) : null;
   const visitDays = today ? nextOfficeDays(today, props.officeDays, 6) : [];
   const errorCount = Object.keys(errors).length;
 
@@ -324,29 +324,18 @@ function VisaFileStep(props: VisaFileStepProps) {
             </div>
           ))}
         </dl>
-        {fees ? (
-          <div className="flex flex-col gap-2 rounded-2xl border border-mist-200 p-4 text-[14.5px]">
-            <dl className="flex flex-col gap-2">
-              <div className="flex justify-between gap-3">
-                <dt className="text-mist-700">{t("apply.embassyTimes", { count: applicants })}</dt>
-                <dd className="font-semibold text-ink-900 tabular-nums">
-                  {fees.embassy === null ? t("country.confirmedLater") : formatTaka(fees.embassy)}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-mist-700">{t("apply.serviceTimes", { count: applicants })}</dt>
-                <dd className="font-semibold text-ink-900 tabular-nums">
-                  {formatTaka(fees.service)}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-3 border-t border-mist-200 pt-2">
-                <dt className="font-semibold text-navy-900">{t("apply.total")}</dt>
-                <dd className="font-display text-[18px] font-extrabold text-navy-900 tabular-nums">
-                  {fees.total === null ? `${formatTaka(fees.service)} +` : formatTaka(fees.total)}
-                </dd>
-              </div>
-            </dl>
-            <p className="pt-1 text-[13px] text-mist-600">{t("apply.payNote")}</p>
+        {price ? (
+          <div className="flex flex-col gap-1.5 rounded-2xl border border-mist-200 p-4 text-[14.5px]">
+            <p className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="font-semibold text-navy-900">
+                {t("country.groupPrice", { count: applicants })}
+              </span>
+              <span className="font-display text-[18px] font-extrabold text-navy-900 tabular-nums">
+                {formatVisaPrice(price, t("country.priceFrom", { price: "{price}" }))}
+              </span>
+            </p>
+            <p className="text-[13px] text-mist-600">{t("country.priceNote")}</p>
+            <p className="text-[13px] text-mist-600">{t("apply.payNote")}</p>
           </div>
         ) : null}
         <Controller

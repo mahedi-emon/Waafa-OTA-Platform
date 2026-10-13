@@ -86,7 +86,7 @@
     "visa": {
       "all": "All countries",
       "processing": "Processing",
-      "fee": "Our fee from",
+      "fee": "Price from",
       "documents": "See documents",
       "note": "Embassies make every visa decision. Our fee is separate from the embassy fee; both are confirmed before you pay."
     },
@@ -1173,7 +1173,11 @@
       "whatsappMessage": "Hi Waafa, I want to apply for a {country} {type} visa.",
       "payLater": "Pay when we submit your file, not before.",
       "barLine": "{type} visa, per applicant",
-      "barTotal": "{total} total",
+      "barTotal": "{total}",
+      "price": "Price per applicant",
+      "priceFrom": "From {price}",
+      "priceNote": "Embassy fee and our service charge included. A visa expert confirms the exact amount for your file before you pay.",
+      "groupPrice": "Price for {count, plural, one {# applicant} other {# applicants}}",
       "feeLabel": "Fees",
       "metaDescription": "{country} visa from Bangladesh: documents, processing time and fees, with the file checked by Waafa’s visa desk before it reaches the embassy."
     },
@@ -1349,7 +1353,11 @@
       "increase": "Add one more {title}",
       "inCart": "{count} in cart",
       "added": "Added to cart",
-      "viewCart": "View cart"
+      "viewCart": "View cart",
+      "priceOnRequest": "Price on request",
+      "askPrice": "Ask for price",
+      "askPriceLabel": "Ask the price of {title} on WhatsApp",
+      "askPriceMessage": "Hello WAAFA, please share the price of {title}."
     },
     "stock": {
       "in-stock": "In stock",
@@ -1461,6 +1469,10 @@
       "related": "You may also like",
       "seeMore": "See more",
       "recentlyViewed": "Recently viewed",
+      "priceOnRequest": "Price on request",
+      "priceOnRequestNote": "Our team confirms the price and stock on WhatsApp or by phone, then books your order.",
+      "askPrice": "Ask for price on WhatsApp",
+      "callForPrice": "Call {phone}",
       "stickyBuy": "Buy now",
       "optionSoldOut": "{value}, sold out"
     },

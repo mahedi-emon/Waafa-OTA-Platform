@@ -220,6 +220,16 @@ describe.skipIf(!dbAvailable)("public intake (B3)", () => {
     expect(await prisma.order.count()).toBe(1);
   });
 
+  it("never sells a product whose price is hidden (issue 178)", async () => {
+    const hidden = await post("orders", {
+      lines: [{ variantId: "bd-crg070h", quantity: 1 }],
+      address,
+      payment: { method: "cod" },
+    });
+    expect(hidden.statusCode).toBe(409);
+    expect(await prisma.order.count()).toBe(0);
+  });
+
   it("sells the last item once when two orders race for it", async () => {
     const order = {
       lines: [{ variantId: "tee-nvy-xl", quantity: 2 }],

@@ -152,6 +152,11 @@ export const ProductSchema = z
     compatibleModelIds: z.array(IdSchema).default([]),
     collectionIds: z.array(IdSchema).default([]),
     codEligible: z.boolean().default(true),
+    /**
+     * Show the price and Add to cart (issue 178). Off by default: the store shows the product with "Price on request"
+     * and an Ask for price button on WhatsApp, and it cannot be ordered online until the admin turns this on.
+     */
+    showPrice: z.boolean().default(false),
     /** Bulk quote button threshold, e.g. 20 units (FR-SHOP-04). */
     bulkFrom: z.number().int().positive().optional(),
     popularity: z.number().int().min(0),

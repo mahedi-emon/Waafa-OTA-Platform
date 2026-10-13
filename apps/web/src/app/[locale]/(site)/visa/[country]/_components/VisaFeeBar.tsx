@@ -1,27 +1,24 @@
 "use client";
 
-import { formatTaka } from "@waafa/shared";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { formatVisaPrice } from "@/lib/visa/visaPrice";
 import type { VisaFee } from "./VisaFeeCard";
 import { useVisaType } from "./useVisaType";
 
 type VisaFeeBarProps = {
   slug: string;
   fees: VisaFee[];
-  /** "{type}" and "{total}" are replaced. */
-  labels: { line: string; total: string; apply: string };
+  /** "{type}", "{total}" and "{price}" are replaced. */
+  labels: { line: string; total: string; priceFrom: string; apply: string };
 };
 
-/** Phone bar (VisaCountry-m): the chosen type's total per applicant and Apply, above the tab bar. */
+/** Phone bar (VisaCountry-m): the chosen type's price per applicant (range or "From") and Apply, above the tab bar. */
 function VisaFeeBar({ slug, fees, labels }: VisaFeeBarProps) {
   const { type } = useVisaType();
   const fee = fees.find((item) => item.type === type) ?? fees[0];
   if (!fee) return null;
-  const total =
-    fee.embassyFee === null
-      ? `${formatTaka(fee.serviceCharge)} +`
-      : formatTaka(fee.embassyFee + fee.serviceCharge);
+  const total = formatVisaPrice(fee.price, labels.priceFrom);
 
   return (
     <div

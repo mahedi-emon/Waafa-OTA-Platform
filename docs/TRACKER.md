@@ -37,6 +37,24 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #179 · Visa: price shown as a range per visa type, never a fixed price — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct: visa prices should read as a range (like "৳7,500 – ৳9,500"), not one fixed price |
+| Built | `VisaType.priceRange { min, max? }` (Admin › Visa › Countries › each type › Price range). `visaPrice`, `lowestVisaPrice`, `visaPriceFor` in `packages/shared`; `formatVisaPrice` in web. With a max: "৳7,500 – ৳9,500"; without: "From ৳7,500"; no range yet: "From" embassy fee + service charge. Visa cards ("Price from"), country fee card and phone bar, apply summary (per applicant and group), visa guide, `AggregateOffer` low/high price. Note: a visa expert confirms the exact amount before payment |
+| Tested | Vitest: visaPrice (shared), formatVisaPrice (web); Playwright: range on the Thailand page and in JSON-LD; visa, seo, home, search e2e 30 passed; screenshots 390 and 1440, no overflow |
+| Tools and skills | Serena, Playwright, GitHub MCP |
+| Decision | D178 |
+
+### #178 · Waafas World: prices hidden by default, Ask for price on WhatsApp, per-product Show price — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct: no prices in Waafas World, products only; the admin chooses which products show a price |
+| Built | `Product.showPrice` (default off: every live product hides its price after the deploy; Admin › Waafas World › Products › Show price). Hidden: card and product page "Price on request", Ask for price on WhatsApp (product named) and Call, no cart, Buy now, %-off chip, deal row or Offer JSON-LD; `publicProduct` blanks variant prices on the server; price bands skip it and price sorts put it last; shared `priceCart` never sells it (web quote and API orders). Recently viewed keeps no price for it. Sample fixtures: CF280A toner, T-shirt, power bank and headphones show prices; CRG 070H and HP 151A toners do not |
+| Tested | Vitest: priceCart drops hidden products, publicProduct blanks prices, repository bands and sorts (shared 78, web 316); Playwright: hidden product page (no price in HTML, WhatsApp link, no cart, axe) and mixed cards; store, orders, home, budget, seo specs 33/33 |
+| Decision | D177 |
+| D178 | 13 Oct | Visa prices show as an admin range per type, never one fixed amount; no range falls back to "From" fee + charge | Owner: visa costs vary by file; a range is honest and the expert confirms before payment | #179 |
+
 ### #176 · Visa moves to /visa, and the live menu reads "Visa" — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1006,6 +1024,8 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-123 | Airline logos (strip, fare cards, route pages, filter) | `airline.logo` (else bundled by `airline.code`) | Travel › Airlines › Logo | `PUT /api/v1/admin/content/airlines/:id` | ✅ 13 Oct · airlineLogoSrc test |
 | AC-124 | Search indexing of a record page (robots meta, sitemap entry) | record `sample` + `seo.noIndex` → `isIndexable` | The record's editor (Sample switch, SEO › noindex) in Travel, Visa, Content, Waafas World | `PUT /api/v1/admin/content/:key/:id` | ✅ 13 Oct · indexing + sitemap tests, seo e2e |
 | AC-125 | Explore more links (visa countries, packages, routes, guides, articles) | `listVisaCountries` (popular first), `listPackages` (popular), `listFlightRoutes`, `listVisaGuides`, `listBlogPosts` | Visa › Countries, Travel › Tour packages and Flight routes, Content › Visa guides and Blog | `GET /api/v1/public/snapshot` | ✅ 13 Oct · seo e2e |
+| AC-126 | Store price shown or Price on request + Ask for price | `product.showPrice` | Waafas World › Products › Show price | `PUT /api/v1/admin/content/products/:id` | ✅ 13 Oct · store e2e |
+| AC-127 | Visa price range per type ("৳a – ৳b" or "From ৳a") | `visaCountry.types[].priceRange.{min,max}` | Visa › Countries › type › Price range | `PUT /api/v1/admin/content/visaCountries/:id` | ✅ 13 Oct · seo e2e |
 
 ## 5. Components inventory
 
@@ -1305,6 +1325,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D174 | 13 Oct | Hidden or later UI loads on demand: results-page search card, lead step 2, form validation (zod, libphonenumber), corporate quote form; `inlineCss` and `content-visibility` rejected | Cuts flights 79 KB and shop 100 KB of first-load JS; inline CSS slowed first paint; content-visibility broke axe target-size checks | #170 |
 | D175 | 13 Oct | Titles and descriptions are fitted in code (60 / 155, cut at a word), not only by admin validation; Explore more links on pages with few links; Home h1 carries the brand eyebrow | Admin records can be any length; a page's main heading and structured data should name the brand for brand searches | #173 |
 | D176 | 13 Oct | Visa lives at /visa (308 from /visa-services); data changes that must reach the live database ship as one-time seed patches (`_seedPatches`), never by overwriting admin data wholesale | Owner request; the seed must not overwrite admin edits, but a renamed route has to move stored links | #176 |
+| D177 | 13 Oct | Store prices hidden by default per product (Show price in Admin); hidden prices are blanked server-side and never sold online | Owner: products only, admin chooses which show a price; a hidden price must not leak through the page data, filters or the cart | #178 |
 
 ## 9. Bugs and known issues
 
@@ -1376,6 +1397,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 13 Oct 21:00–22:30 | Owner: nav "Visa" and URL /visa on the live site (#176, seed patch), Waafas World prices hidden by default with Ask for price (#178), visa price ranges (#179). Store and visa ship in one PR to save a CI cycle before go-live | #176, #178, #179 | #177 | web unit 316+ · e2e store, visa, seo |
 | 13 Oct 19:30–21:00 | #171 and #174 merged (CI Lighthouse after: Home 57, Flights 74, Packages 90, Visa 90, Shop 84). Owner: nav label Visa (#172; live menu changes in Admin). Part 3 on-page SEO and brand names | #172, #173 | #174, #175 | web unit 313 · e2e 114 passed |
 | 13 Oct 16:30–19:30 | #169 merged (Sample noindex). Owner: brand search and where to enter each SEO setting (answered in chat), then finish all parts. Part 2 performance: hero video LCP, on-demand search card, lead steps, validation and quote form; before/after table | #170 | #171 | web unit 304 · e2e 111 passed · Lighthouse local median of 3 |
 | 13 Oct 15:00–16:30 | Site live (C8, #74 closed). Owner: SEO after go-live in three parts. Part 1: Sample records noindex,follow and out of the sitemap. Cloud session: commits go through the GitHub API so the owner stays the author | #168, #74 | #169 | web unit 301 · seo/routes/packages/system e2e 17/17 |

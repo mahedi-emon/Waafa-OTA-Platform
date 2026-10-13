@@ -1,7 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import { formatTaka, type Product } from "@waafa/shared";
+import { formatTaka, whatsappLink, type Product } from "@waafa/shared";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Link } from "@/i18n/navigation";
+import { getContactSettings } from "@/lib/data/settings";
 import { MAX_LINE_QTY } from "@/lib/shop/cart";
 import { canBuy, defaultVariant, priceInfo, priceRange, stockBadge } from "@/lib/shop/variants";
 import { AddToCartControl } from "./AddToCartControl";
@@ -15,14 +17,16 @@ type ProductCardProps = {
 
 /**
  * Waafas World product card (FR-SHOP-03, DESIGN.md "Cards"): image on mist-50, percent-off and badge chips, brand,
- * two-line title, price against MRP, stock badge, and Add to cart (a stepper once added) or Choose options.
+ * two-line title, price against MRP, stock badge, and Add to cart (a stepper once added) or Choose options. A product
+ * whose price the admin keeps hidden (issue 178) shows "Price on request" and Ask for price on WhatsApp instead.
  */
 async function ProductCard({
   product,
   brandName,
   sizes = "(min-width: 1024px) 220px, 45vw",
 }: ProductCardProps) {
-  const t = await getTranslations("Shop");
+  const [t, contact] = await Promise.all([getTranslations("Shop"), getContactSettings()]);
+  const showPrice = product.showPrice;
   const variant = defaultVariant(product);
   const image = variant.images[0] ?? product.images[0];
   const hasOptions = product.options.length > 0;
@@ -47,7 +51,7 @@ async function ProductCard({
           />
         ) : null}
         <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-          {price.percentOff > 0 && !hasOptions ? (
+          {showPrice && price.percentOff > 0 && !hasOptions ? (
             <span className="rounded-full bg-danger-600 px-2 py-0.5 text-[11.5px] font-bold text-white tabular-nums">
               {t("card.off", { percent: price.percentOff })}
             </span>
@@ -73,12 +77,18 @@ async function ProductCard({
           <p className="line-clamp-1 text-[12.5px] text-mist-600">{product.cardSpec}</p>
         ) : null}
         <p className="mt-auto flex flex-wrap items-baseline gap-x-2 pt-1.5">
-          <span className="font-display text-[17px] font-extrabold text-navy-900 tabular-nums">
-            {hasOptions && range.min !== range.max
-              ? t("card.from", { price: formatTaka(range.min) })
-              : formatTaka(price.price)}
-          </span>
-          {!hasOptions && price.mrp ? (
+          {showPrice ? (
+            <span className="font-display text-[17px] font-extrabold text-navy-900 tabular-nums">
+              {hasOptions && range.min !== range.max
+                ? t("card.from", { price: formatTaka(range.min) })
+                : formatTaka(price.price)}
+            </span>
+          ) : (
+            <span className="font-display text-[15px] font-bold text-navy-900">
+              {t("card.priceOnRequest")}
+            </span>
+          )}
+          {showPrice && !hasOptions && price.mrp ? (
             <>
               <s className="text-[12.5px] text-mist-500 tabular-nums">{formatTaka(price.mrp)}</s>
               <span className="text-[12.5px] font-semibold text-success-600">
@@ -95,7 +105,21 @@ async function ProductCard({
           />
         ) : null}
         <div className="pt-2">
-          {hasOptions ? (
+          {!showPrice ? (
+            <a
+              href={whatsappLink(
+                contact.whatsappE164,
+                t("card.askPriceMessage", { title: product.title }),
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t("card.askPriceLabel", { title: product.shortTitle })}
+              className="relative z-10 inline-flex h-[38px] w-full items-center justify-center gap-1.5 rounded-full bg-electric-50 text-sm font-semibold text-brand-700 transition-colors duration-150 outline-none hover:bg-electric-100 focus-visible:ring-3 focus-visible:ring-ring/40"
+            >
+              <WhatsAppIcon className="size-4" />
+              {t("card.askPrice")}
+            </a>
+          ) : hasOptions ? (
             <span
               aria-hidden="true"
               className="inline-flex h-[38px] w-full items-center justify-center rounded-full bg-electric-50 text-sm font-semibold text-brand-700"
