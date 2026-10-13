@@ -99,7 +99,7 @@ $COMPOSE exec -T nginx sh -c 'rm -rf /var/cache/nginx/waafa/*' || echo "nginx ca
 echo "4/5 Fresh content"
 wait_healthy web
 # Pages were prerendered when the image was built; expire every cache tag so they render from this server's database.
-$COMPOSE exec -T api node --input-type=module < deploy/revalidate.mjs ||
+$COMPOSE exec -T api node --input-type=module < deploy/server/revalidate.mjs ||
   echo "Web caches not refreshed: pages show the build's content until the next admin save." >&2
 
 echo "5/5 HTTPS certificate"

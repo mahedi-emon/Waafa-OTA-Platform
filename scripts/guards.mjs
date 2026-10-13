@@ -163,6 +163,23 @@ for (const file of files.filter((f) => f.startsWith("apps/web/messages/") && f.e
     });
 }
 
+// The image-only server bundle (issue 164) must pass every setting the repository's compose file passes.
+{
+  const settings = (file) =>
+    new Set(
+      read(file)
+        .match(/\$\{[A-Z_]+/g)
+        ?.map((m) => m.slice(2)) ?? [],
+    );
+  const server = settings("deploy/server/compose.yml");
+  // Build arguments only: they are baked into the images the bundle pulls.
+  const buildOnly = new Set(["TURNSTILE_SITE_KEY"]);
+  for (const name of settings("deploy/compose.yml")) {
+    if (!server.has(name) && !buildOnly.has(name))
+      fail("deploy/server/compose.yml", 0, `missing \${${name}} (deploy/compose.yml passes it)`);
+  }
+}
+
 if (failures.length > 0) {
   console.error(`guards: ${failures.length} problem${failures.length === 1 ? "" : "s"}\n`);
   for (const f of failures) console.error(`  ${f}`);
