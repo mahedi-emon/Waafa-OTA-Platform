@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FlightPreferences, FlightSearch, OpeningHours } from "@waafa/shared";
@@ -8,6 +9,7 @@ import { OfficeStatusChip } from "@/components/layout/OfficeStatusChip";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
 import { useDhakaToday } from "@/components/search/useDhakaToday";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Drawer,
   DrawerClose,
@@ -17,14 +19,14 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Link } from "@/i18n/navigation";
-import {
-  buildFlightLead,
-  tripDefaults,
-  type TripStepInput,
-  type TripStepValues,
-} from "@/lib/leads/flightLeadForm";
+import type { TripStepInput, TripStepValues } from "@/lib/leads/flightLeadForm";
+import { tripDefaults } from "@/lib/leads/flightTrip";
 import { PreferencesPanel } from "./PreferencesPanel";
-import { TripStep } from "./TripStep";
+
+/** Step 2 and its validation load when the visitor reaches it, not with the page (issue 170). */
+const TripStep = dynamic(() => import("./TripStep").then((mod) => mod.TripStep), {
+  loading: () => <Skeleton className="mx-5 my-6 h-[520px] rounded-2xl md:mx-7" />,
+});
 
 export type GroupFareSummary = {
   id: string;
@@ -158,16 +160,17 @@ function FlightRequest(props: FlightRequestProps) {
           emailRequired={props.emailRequired}
           phoneDisplay={props.phoneDisplay}
           whatsappE164={props.whatsappE164}
-          buildLead={(contact, values, page) =>
-            buildFlightLead({
+          buildLead={async (contact, values, page) => {
+            const { buildFlightLead } = await import("@/lib/leads/flightLeadForm");
+            return buildFlightLead({
               contact,
               trip: values,
               search: props.search,
               preferences,
               ...(props.groupFare ? { groupFareId: props.groupFare.id } : {}),
               page,
-            })
-          }
+            });
+          }}
           renderSecondStep={({ sending, goBack, submit }) => (
             <TripStep
               defaultValues={trip}

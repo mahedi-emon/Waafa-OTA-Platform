@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { CircleAlert, CircleCheck, Home, Search } from "lucide-react";
+import { CircleAlert, Home, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
 import { whatsappLink, type LeadCreateInput, type LeadCreated } from "@waafa/shared";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { ContactStepValues } from "@/lib/leads/contactForm";
 import { ContactStep } from "./ContactStep";
+import { LeadCardHeader } from "./LeadCardHeader";
 import { LeadSuccess } from "./LeadSuccess";
 
 type LeadRequestCardProps<T> = {
@@ -29,7 +30,11 @@ type LeadRequestCardProps<T> = {
   phoneDisplay: string;
   whatsappE164: string;
   /** Turns the two steps into the shared lead contract (the server validates again). */
-  buildLead: (contact: ContactStepValues, values: T, page: string) => LeadCreateInput;
+  buildLead: (
+    contact: ContactStepValues,
+    values: T,
+    page: string,
+  ) => LeadCreateInput | Promise<LeadCreateInput>;
   renderSecondStep: (step: {
     sending: boolean;
     goBack: () => void;
@@ -85,7 +90,7 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
     const key = idempotencyKey ?? crypto.randomUUID();
     setIdempotencyKey(key);
     try {
-      const lead = props.buildLead(contact, values, window.location.pathname);
+      const lead = await props.buildLead(contact, values, window.location.pathname);
       const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/leads", {
         method: "POST",
@@ -162,30 +167,13 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
         aria-labelledby={props.titleId}
         className="overflow-hidden rounded-[20px] border border-mist-200 bg-white shadow-sm"
       >
-        <header className="flex flex-col gap-2 border-b border-mist-200 bg-(image:--ribbon-soft) px-5 py-6 md:px-7 md:py-7">
-          <p className="flex items-center gap-2 type-label text-brand-700">
-            <span aria-hidden="true" className="h-px w-6 bg-brand-700" />
-            {props.kicker}
-          </p>
-          <h2
-            id={props.titleId}
-            className="font-display text-[24px] leading-[1.12] font-extrabold tracking-tight text-balance text-navy-900 md:text-[30px]"
-          >
-            {props.title}
-          </h2>
-          <p className="max-w-[60ch] text-[14.5px] leading-relaxed text-mist-600">{props.lead}</p>
-          <ul className="mt-1 flex flex-wrap gap-2">
-            {[t("noPayment"), t("priceConfirmed")].map((text) => (
-              <li
-                key={text}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/85 px-3 py-1 text-[12.5px] font-semibold text-navy-900 ring-1 ring-mist-200"
-              >
-                <CircleCheck aria-hidden="true" className="size-3.5 text-success-600" />
-                {text}
-              </li>
-            ))}
-          </ul>
-        </header>
+        <LeadCardHeader
+          kicker={props.kicker}
+          title={props.title}
+          lead={props.lead}
+          badges={[t("noPayment"), t("priceConfirmed")]}
+          titleId={props.titleId}
+        />
         {props.banner}
         <ol aria-label={t("steps.label")} className="flex gap-2 px-5 pt-5 md:px-7">
           {(["contact", "second"] as const).map((step, index) => {

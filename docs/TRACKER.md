@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 13 Oct 16:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: SEO after go-live (#168 → performance → on-page checks) · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 13 Oct 16:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168), Lighthouse performance (#170) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: SEO after go-live (#168 ✅ → #170 performance → on-page checks) · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -36,6 +36,30 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #170 · Performance: Lighthouse mobile on Home, Flights, Packages, Visa, Shop — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct: performance is an SEO factor; Lighthouse mobile Home 64, Flights 67 → 85+ on Home, Flights, Packages, Visa, Shop; focus LCP, first-load JS, CLS stays 0; before/after here. P1, part 2 of 3 |
+| Found | Home: the hero **video's first frame became the LCP** after hydration (5+ s in CI), not the poster. Flights: the lead card's text streamed late behind about 370 KB of scripts; the hidden search card (behind Edit), the second step and zod + libphonenumber all loaded up front. Shop: zod + libphonenumber + the corporate quote form loaded up front; the banner image was preloaded but fetched at Low priority |
+| Built | `SmartVideo`: a hero loop (`preloadPoster`) starts on the first scroll, touch, pointer move or key, so the poster stays the LCP. `DeferredSearchCard` (+ `loadSearchCard`, `DeferredSearchCardClient`): Flights and Hotels load the search card island only when Edit opens. `lazyResolver`: lead forms load zod, the schema and libphonenumber on the first check; Flights' TripStep and Hotels' StayStep load when step 2 is reached (`flightTrip.ts`, `hotelStay.ts` keep the defaults zod-free; `buildLead` may be async). `BulkQuoteForm` loads when the corporate quote dialog opens. `LeadCardHeader` shared by the card and the Flights loading preview, so the largest text is in the first HTML. `SmartImage`: a preloaded image is fetched at high priority. Budget ceilings lowered: flights 355 → 275 KB, shop 335 → 230 KB |
+| Tried and dropped | `experimental.inlineCss` (FCP 1.5 → 2.0 s: the stylesheet is larger than the request it saves); `content-visibility: auto` on Home sections and the footer (TBT −80 ms, but axe flags off-screen links as 0 px touch targets; tests stay strict) |
+| Tested | Vitest `lazyResolver` (3) + leads suites; full e2e except the five-width screens 111 passed (budget, flights, hotels, store, home, search, layout, seo); Playwright at 320/390/768/1024/1440 on /flights (Edit opens the prefilled card, contact errors show, no overflow, no console errors); Home loop mounts after the first interaction |
+| Tools and skills | Serena, Lighthouse 12.8 (local, median of 3 after a warm-up run), CPU profiles via Playwright CDP, GitHub MCP |
+| Decision | D173, D174 |
+
+Lighthouse mobile (simulated slow 4G, 4× CPU). Performance · LCP · TBT; CLS 0 everywhere, A11y / Best practices / SEO 100.
+
+| Route | CI before (main, 13 Oct) | Local before (median of 3) | Local after (median of 3) | CI after (this PR) |
+| --- | --- | --- | --- | --- |
+| / | 59 · 5.3 s | 80 · 4.0 s · 310 ms | **86** · 4.0 s · 120 ms | see PR |
+| /flights | 69 · 5.5 s | 69 · 4.9 s · 510 ms | **80** · 4.0 s · 310 ms | see PR |
+| /tour-packages | 77 | 89 · 3.6 s · 90 ms | **90** · 3.6 s · 60 ms | see PR |
+| /visa-services | 92 · 3.3 s | 89 · 3.4 s · 160 ms | **91** · 3.4 s · 100 ms | see PR |
+| /shop | 84 · 4.1 s | 83 · 4.5 s · 130 ms | **88** · 3.8 s · 100 ms | see PR |
+| /hotels | — | — | 82 · 3.9 s · 280 ms | — |
+
+First-load JS (gzip, budget e2e): flights 338 → 259 KB, shop 315 → 215 KB, home 217 KB, packages 189 KB, visa 187 KB.
 
 ### #168 · SEO: Sample records are noindex,follow and stay out of the sitemap — ✅ Done
 | Field | Value |
@@ -996,6 +1020,9 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AnnouncementBar · AnnouncementShell · FloatingWhatsApp · Breadcrumbs | `components/layout/` | custom | every public page |
 | MenuIcon | `components/icons/MenuIcon.tsx` | Lucide (allow-listed names from data) | menus, panels, grids |
 | JsonLd | `components/seo/JsonLd.tsx` | custom (escaped JSON) | breadcrumbs, pages |
+| DeferredSearchCard · DeferredSearchCardClient · loadSearchCard | `components/search/` | custom (next/dynamic) | /flights, /hotels (card behind Edit, #170) |
+| LeadCardHeader · lazyResolver | `components/leads/`, `lib/forms/` | custom | lead cards, Flights loading preview, lead forms (#170) |
+| BulkQuoteForm | `components/shop/` | custom (loaded when the dialog opens) | corporate quote dialog (#170) |
 
 ## 6. Tooling
 
@@ -1244,6 +1271,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D170 | 13 Oct | Web container cap 1 GB; one-shot bootstrap script for the VPS | Measured ~750 MB; fewer manual steps on launch day | #158 |
 | D171 | 13 Oct | The VPS gets no source code: deploy/server bundle (images only) copied with tar + scp; repo deploy path kept as an alternative | Owner: GitHub goes private, the server only pulls Docker Hub images | #164 |
 | D172 | 13 Oct | A record still marked Sample is noindex, follow and out of the sitemap, for every record with its own page (not only the six named types), including About and the policies; categories and brands need an indexable product to be listed | One predictable rule for staff: real content = Sample off; placeholder text never reaches Google | #168 |
+| D173 | 13 Oct | The hero loop starts on the visitor's first scroll, touch, pointer move or key; the poster alone until then | Its first frame replaced the poster as LCP after hydration (Home 59 in CI); every visitor who scrolls or moves the mouse still sees it (MOTION.md) | #170 |
+| D174 | 13 Oct | Hidden or later UI loads on demand: results-page search card, lead step 2, form validation (zod, libphonenumber), corporate quote form; `inlineCss` and `content-visibility` rejected | Cuts flights 79 KB and shop 100 KB of first-load JS; inline CSS slowed first paint; content-visibility broke axe target-size checks | #170 |
 
 ## 9. Bugs and known issues
 
@@ -1315,6 +1344,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 13 Oct 16:30–19:30 | #169 merged (Sample noindex). Owner: brand search and where to enter each SEO setting (answered in chat), then finish all parts. Part 2 performance: hero video LCP, on-demand search card, lead steps, validation and quote form; before/after table | #170 | #171 | web unit 304 · e2e 111 passed · Lighthouse local median of 3 |
 | 13 Oct 15:00–16:30 | Site live (C8, #74 closed). Owner: SEO after go-live in three parts. Part 1: Sample records noindex,follow and out of the sitemap. Cloud session: commits go through the GitHub API so the owner stays the author | #168, #74 | #169 | web unit 301 · seo/routes/packages/system e2e 17/17 |
 | 13 Oct 08:00–09:30 | Owner: hero card off the video; no code on the server (images only, private GitHub); env and the deploy steps in chat. Bundle tested on the local stack; production .env validated and packed with the bundle locally. A stray `git stash pop` applied the old A5 media stash on main: reset to HEAD, stash kept | #163, #164 | #165, #166 | CI green; bundle deploy run locally |
 | 13 Oct 02:00–04:30 | Owner: airline logos (auto, admin can add), a more attractive hero, production env and the VPS runbook with commands, push everything. Logos bundled and checked by eye; hero fare card from real data; bootstrap script; web cap 1 GB | #156–#158 | #159–#161 | unit + e2e in CI, Playwright MCP 320–1920 |
@@ -1352,6 +1382,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. SEO part 3 (P1): one H1, unique title (≤ 60) and description (≤ 155), alt text and internal links on every public page; brand names (Waafa, Waafa International, Waafa Tours and Travel) in Home title, H1, description and Organization alternateName.
+2. Owner: Search Console (verify with the HTML tag in Settings › General, submit /sitemap.xml), Google Business Profile, socials in Settings › Contact, Sample off on each real record; PageSpeed Insights on the live site after `sh deploy.sh`.
+3. Performance follow-up: Flights TBT (hydration of the lead card and preferences rail) if CI stays below 85.
+
+Earlier (13 Oct 16:30):
 1. SEO part 2 (P1): Lighthouse mobile 85+ on Home, Flights, Packages, Visa, Shop (LCP: hero poster, priority image, fonts; first-load JS; CLS 0); before/after here.
 2. SEO part 3 (P1): one H1, unique title (≤ 60) and description (≤ 155), alt text and internal links on every public page.
 3. Owner: turn Sample off on each record as real content replaces it (Admin record editor); Search Console → resubmit /sitemap.xml.

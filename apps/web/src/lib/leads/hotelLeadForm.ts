@@ -71,26 +71,7 @@ export const stayStepSchema = z
 export type StayStepInput = z.input<typeof stayStepSchema>;
 export type StayStepValues = z.output<typeof stayStepSchema>;
 
-export function stayDefaults(search: HotelSearch | null): StayStepInput {
-  return {
-    place: search?.placeLabel ?? "",
-    nationality: search?.nationality ?? "BD",
-    checkin: search?.checkIn ?? "",
-    checkout: search?.checkOut ?? "",
-    budgetBand: "any",
-    meals: "any",
-    stars: "any",
-    guests: {
-      rooms: search?.rooms.length ?? 1,
-      adults: search ? search.rooms.reduce((sum, room) => sum + room.adults, 0) : 2,
-      childAges: search ? search.rooms.flatMap((room) => room.childAges) : [],
-    },
-    preferredContact: "call",
-    bestTime: "any",
-    notes: "",
-    consent: false,
-  };
-}
+export { stayDefaults } from "./hotelStay";
 
 export function buildHotelLead(args: {
   contact: ContactStepValues;

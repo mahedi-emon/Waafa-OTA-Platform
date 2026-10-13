@@ -8,7 +8,7 @@ import { HelpCard } from "@/components/results/HelpCard";
 import { LivePlaceholder } from "@/components/results/LivePlaceholder";
 import { ResultsBody } from "@/components/results/ResultsBody";
 import { TripSummaryBar } from "@/components/results/TripSummaryBar";
-import { SearchCard } from "@/components/search/SearchCard";
+import { DeferredSearchCard } from "@/components/search/DeferredSearchCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessages } from "@/i18n/pickMessages";
 import {
@@ -72,7 +72,7 @@ async function HotelResults({
         details={details}
         labels={{ region: t("summary.label"), edit: t("summary.edit"), close: t("summary.close") }}
       >
-        <SearchCard source="hotels" initialHotel={search} />
+        <DeferredSearchCard source="hotels" initialHotel={search} />
       </TripSummaryBar>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">

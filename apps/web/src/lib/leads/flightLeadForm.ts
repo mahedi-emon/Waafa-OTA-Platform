@@ -78,32 +78,7 @@ export const tripStepSchema = z
 export type TripStepInput = z.input<typeof tripStepSchema>;
 export type TripStepValues = z.output<typeof tripStepSchema>;
 
-/** Step 2 defaults from the URL search (one-way or round trip; multi-city starts from its first leg). */
-export function tripDefaults(
-  search: FlightSearch | null,
-  fareDate?: string,
-  prefill?: { from?: string; to?: string; depart?: string },
-): TripStepInput {
-  const first = search?.legs[0];
-  return {
-    from: first?.from ?? prefill?.from ?? "",
-    to: first?.to ?? prefill?.to ?? "",
-    depart: fareDate ?? first?.date ?? prefill?.depart ?? "",
-    return: search?.tripType === "round-trip" ? (search.returnDate ?? "") : "",
-    cabin: search?.cabin ?? "economy",
-    travellers: {
-      adults: search?.travellers.adults ?? 1,
-      childAges: [...(search?.travellers.childAges ?? [])],
-      infants: search?.travellers.infants ?? 0,
-    },
-    airline: search?.preferredAirline ?? "",
-    flex: search?.flexibleDates ?? false,
-    preferredContact: "call",
-    bestTime: "",
-    notes: "",
-    consent: false,
-  };
-}
+export { tripDefaults } from "./flightTrip";
 
 /** The request as the shared lead contract expects it (the server parses it again). */
 export function buildFlightLead(args: {

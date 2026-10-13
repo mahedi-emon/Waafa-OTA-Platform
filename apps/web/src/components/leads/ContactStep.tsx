@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
@@ -9,7 +8,8 @@ import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { contactStepSchema, type ContactStepValues } from "@/lib/leads/contactForm";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
+import type { ContactStepValues } from "@/lib/leads/contactForm";
 
 type ContactStepProps = {
   defaultValues: ContactStepValues;
@@ -29,9 +29,20 @@ function ContactStep({
   copy,
 }: ContactStepProps) {
   const t = useTranslations("Leads");
-  const schema = useMemo(() => contactStepSchema(emailRequired), [emailRequired]);
+  // zod and the phone rules load on the first check, not with the page (issue 170).
+  const resolver = useMemo(
+    () =>
+      lazyResolver<ContactStepValues>(async () => {
+        const [{ zodResolver }, { contactStepSchema }] = await Promise.all([
+          import("@hookform/resolvers/zod"),
+          import("@/lib/leads/contactForm"),
+        ]);
+        return zodResolver(contactStepSchema(emailRequired));
+      }),
+    [emailRequired],
+  );
   const form = useForm<ContactStepValues>({
-    resolver: zodResolver(schema),
+    resolver,
     defaultValues,
     mode: "onTouched",
   });

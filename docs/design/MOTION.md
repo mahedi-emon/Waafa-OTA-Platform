@@ -69,7 +69,7 @@ Build column: **MK** = MotionKit primitive in `components/motion`; **fx** = 21st
 | --- | --- | --- | --- | --- | --- |
 | Headline word reveal | home hero `h1`, page titles | words rise 0.35 em + fade, 60 ms apart, 500 ms each | **CSS keyframes** (`--i` per word) so it never waits for hydration; based on fx Soft Blur In (19835) without the blur | both | words visible at once |
 | Rotating destination chip | hero meta | every 3 s, outgoing rises out, incoming rises in (opacity + y) | fx Text Rotate (657) | both | first destination only, no rotation |
-| Hero media | hero panel | muted loop, plays when visible; poster is the LCP image | MK `SmartVideo` | phone: poster only on Save-Data or 2G/3G | poster only |
+| Hero media | hero panel | muted loop, plays when visible and after the visitor's first scroll, touch, pointer move or key (issue 170: its first frame must never replace the poster as the LCP); poster is the LCP image | MK `SmartVideo` | phone: poster only on Save-Data or 2G/3G | poster only |
 | Ribbon parallax | hero ribbon underlay | translateY at 0.15× scroll | MK `Parallax` (`useScroll` + `useTransform`) | desktop | static |
 | Border beam | search card | a light runs round the border every 7 s | fx Border Beam (18473) as a rotating conic layer masked to the border (transform only) | desktop | off |
 | Search tabs | search card | spring.tab pill | `layoutId="search-tab-pill"` | both | instant |
@@ -125,7 +125,7 @@ transform/opacity rule); drag and drop (dnd-kit) uses transforms with `spring.li
 
 - **Phones** (`pointer: coarse` or < 1024 px): feedback motion only (press scale, sheets, pills, steppers, success
   states, reveals). No hover effects, no parallax, no spotlight, no tilt, no border beam, no sheen, no Ken Burns.
-  Video hero plays only on good connections; otherwise the poster.
+  Video hero plays only on good connections and after the first touch or scroll; until then, and otherwise, the poster.
 - **Desktop** (`hover: hover` and `pointer: fine`): adds lift, image zoom, spotlight, tilt, hover preview, border beam,
   sheen, ribbon parallax. Each runs on one element at a time (the hovered one).
 - **Never on either:** scroll hijacking, custom cursors, autoplaying carousels that move content under a finger,
