@@ -133,7 +133,7 @@ describe("sitemap (issue 168)", () => {
       "/tour-packages/real-package",
       "/flights/dhaka-to-real",
       "/visa-guide/real-guide",
-      "/visa-services/real-country",
+      "/visa/real-country",
       "/blog/real-post",
       "/shop/p/real-product",
       "/shop/c/real-category",
@@ -148,7 +148,7 @@ describe("sitemap (issue 168)", () => {
       "/tour-packages/sample-package",
       "/flights/dhaka-to-sample",
       "/visa-guide/sample-guide",
-      "/visa-services/sample-country",
+      "/visa/sample-country",
       "/blog/sample-post",
       "/shop/p/sample-product",
       "/shop/collection/sample-collection",
@@ -168,7 +168,7 @@ describe("sitemap (issue 168)", () => {
   it("keeps the static routes whatever the records are", async () => {
     for (const list of Object.values(data)) if (Array.isArray(list)) list.length = 0;
     const paths = await urls();
-    for (const path of ["/", "/flights", "/tour-packages", "/visa-services", "/shop", "/blog"]) {
+    for (const path of ["/", "/flights", "/tour-packages", "/visa", "/shop", "/blog"]) {
       expect(paths).toContain(path);
     }
   });

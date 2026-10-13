@@ -85,7 +85,7 @@ function VisaApplyRequest({
           { title: t("apply.success.step3Title"), body: t("apply.success.step3Body") },
         ],
         whatsappMessage: (reference) => t("apply.success.whatsappMessage", { reference }),
-        againHref: "/visa-services",
+        againHref: "/visa",
         againLabel: t("apply.success.again"),
       }}
     />

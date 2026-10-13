@@ -172,7 +172,7 @@ describe("submitSearch: hotels, tours and visa", () => {
     });
     const result = submitSearch(state, TODAY, LABELS);
     if (!result.ok) throw new Error("expected a valid search");
-    expect(result.submission.href).toBe("/visa-services/thailand");
+    expect(result.submission.href).toBe("/visa/thailand");
     expect(result.submission.summary).toBe("Thailand · Tourist");
   });
 });
@@ -181,14 +181,14 @@ describe("recent and log payloads", () => {
   it("maps a submission to a recent chip and a search log", () => {
     const submission = {
       module: "visa" as const,
-      href: "/visa-services/thailand",
+      href: "/visa/thailand",
       summary: "Thailand · Tourist",
       params: { country: "thailand" },
     };
     expect(toRecentSearch(submission, 5)).toEqual({
       module: "visa",
       label: "Thailand · Tourist",
-      href: "/visa-services/thailand",
+      href: "/visa/thailand",
       at: 5,
     });
     expect(toSearchLog(submission, "phone", "")).toMatchObject({ device: "phone", source: "/" });

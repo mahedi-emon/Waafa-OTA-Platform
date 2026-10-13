@@ -31,19 +31,19 @@ export async function generateMetadata(): Promise<Metadata> {
   return withSocial({
     title: t("metaTitle"),
     description: t("metaDescription"),
-    alternates: { canonical: "/visa-services" },
+    alternates: { canonical: "/visa" },
   });
 }
 
 type Params = Record<string, string | string[] | undefined>;
 
-/** "/visa-services?region=europe&q=fra", leaving out empty values. */
+/** "/visa?region=europe&q=fra", leaving out empty values. */
 function listHref(region: VisaRegion | undefined, query: string): string {
   const params = new URLSearchParams();
   if (query) params.set("q", query);
   if (region) params.set("region", region);
   const search = params.toString();
-  return search ? `/visa-services?${search}` : "/visa-services";
+  return search ? `/visa?${search}` : "/visa";
 }
 
 async function VisaResults({ searchParams }: { searchParams: Promise<Params> }) {
@@ -109,7 +109,7 @@ async function VisaResults({ searchParams }: { searchParams: Promise<Params> }) 
         name={t("list.title")}
         items={countries.map((country) => ({
           name: country.name,
-          path: `/visa-services/${country.slug}`,
+          path: `/visa/${country.slug}`,
         }))}
       />
       {countries.length > 0 ? (
@@ -144,7 +144,7 @@ async function VisaResults({ searchParams }: { searchParams: Promise<Params> }) 
                 </a>
               </Button>
               <Button asChild variant="secondary">
-                <Link href="/visa-services">{t("list.emptyAll")}</Link>
+                <Link href="/visa">{t("list.emptyAll")}</Link>
               </Button>
             </div>
           }
@@ -154,10 +154,8 @@ async function VisaResults({ searchParams }: { searchParams: Promise<Params> }) 
   );
 }
 
-/** /visa-services (Visa, Visa-none, Visa-m boards): search, regions, country cards, how it works and questions. */
-export default async function VisaServicesPage({
-  searchParams,
-}: PageProps<"/[locale]/visa-services">) {
+/** /visa (Visa, Visa-none, Visa-m boards): search, regions, country cards, how it works and questions. */
+export default async function VisaServicesPage({ searchParams }: PageProps<"/[locale]/visa">) {
   const [faqs, countries, media, t] = await Promise.all([
     listFaqs({ category: "visa" }),
     listVisaCountries(),
@@ -214,7 +212,7 @@ export default async function VisaServicesPage({
                 {popular.map((country) => (
                   <Link
                     key={country.slug}
-                    href={`/visa-services/${country.slug}`}
+                    href={`/visa/${country.slug}`}
                     className="inline-flex min-h-10 items-center rounded-full bg-white/10 px-3.5 font-semibold text-white ring-1 ring-white/20 transition-colors duration-150 outline-none hover:bg-white/20 focus-visible:ring-3 focus-visible:ring-cyan-400/60"
                   >
                     {country.name}

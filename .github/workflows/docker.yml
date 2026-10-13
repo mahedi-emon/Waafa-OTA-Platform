@@ -79,7 +79,7 @@ jobs:
 
       - name: Site answers through nginx
         run: |
-          for path in / /flights /tour-packages /visa-services /shop /about-us /contact /faqs /secure-admin-control/sign-in /sitemap.xml /robots.txt; do
+          for path in / /flights /tour-packages /visa /shop /about-us /contact /faqs /secure-admin-control/sign-in /sitemap.xml /robots.txt; do
             status=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost$path")
             echo "$path $status"
             [ "$status" = "200" ] || exit 1

@@ -153,7 +153,7 @@ Frontend and backend overlap on Sunday 11 October; owner content must arrive by 
 
 The navbar carries seven items; flights and hotels are reached through the search widget, and Waafas World runs as its own store sub-site under /shop.
 
-**Desktop header, left to right:** logo lockup (W mark + WAAFA + tagline), then Home, Tour Packages, Visa (links to /visa-services; owner 13 Oct), Waafas World, Gallery, Feedback, More, then a hotline/WhatsApp chip and Login (Account from P1).
+**Desktop header, left to right:** logo lockup (W mark + WAAFA + tagline), then Home, Tour Packages, Visa (route /visa; owner 13 Oct), Waafas World, Gallery, Feedback, More, then a hotline/WhatsApp chip and Login (Account from P1).
 
 **Store label: "Waafas World".** It is the store's own name, matches the waafasworld.com domain and fits any product range, not only printing supplies. Hovering it opens a panel with the top categories plus three doors: Shop all products (store), Printing Solutions (service quote), International Trading (RFQ). Clicking the label opens the store at /shop.
 
@@ -188,7 +188,7 @@ The navbar carries seven items; flights and hotels are reached through the searc
 | /hotels | Hotel results: query panel in Manual mode | P0 |
 | /tour-packages, /tour-packages/\[slug\] | Package list with filters; package detail | P0 |
 | /plan-my-trip | Custom tour request | P0 |
-| /visa-services, /visa-services/\[country\] | Visa list; country detail with apply form | P0 |
+| /visa, /visa/\[country\] | Visa list; country detail with apply form | P0 |
 | /visa-guide, /visa-guide/\[country\] | Editorial visa guides | P0 |
 | /shop and children | Waafas World home, category, brand, collection, product, search, find by model, cart, checkout, order success, track order, printing solutions, international trading | P0 |
 | /shop/campaign/\[slug\] | Campaign and deal pages | P1 |
@@ -246,7 +246,7 @@ Every page shares a sticky header, a WhatsApp button and a footer whose content 
 - FR-SRCH-02 (P0) Flight: One-way, Round-trip, Multi-city (up to 5 legs); From and To with a swap button; dates; travellers and class (adults 1 to 9, children 2 to 11 with ages, infants under 2 no more than adults; Economy, Premium Economy, Business, First); options: preferred airline, direct only, flexible ±3 days, fare type Regular or Student.
 - FR-SRCH-03 (P0) Hotel: city or hotel autocomplete, check-in and check-out (max 30 nights), 1 to 5 rooms with adults and child ages, guest nationality (default Bangladesh).
 - FR-SRCH-04 (P0) Tour: destination or keyword, travel month, travellers, optional budget; opens filtered /tour-packages.
-- FR-SRCH-05 (P0) Visa: destination country, nationality (default Bangladesh), visa type; opens /visa-services/\[country\].
+- FR-SRCH-05 (P0) Visa: destination country, nationality (default Bangladesh), visa type; opens /visa/\[country\].
 - FR-SRCH-06 (P0) Airport autocomplete over a seeded airport dataset (IATA code, city, airport, country) with Bangladeshi airports and top routes pinned: DAC, CGP, ZYL, CXB, JSR, SPD, RJH, BZL, then DXB, DOH, KUL, SIN, BKK, CCU, DEL, KTM, MLE, IST, LHR, JFK, YYZ.
 - FR-SRCH-07 (P0) Mobile: each field opens a full-screen picker or bottom sheet with search, recent picks and popular picks; the Search button stays pinned.
 - FR-SRCH-08 (P0) Validation: From differs from To, return on or after departure, total travellers 9 or fewer.

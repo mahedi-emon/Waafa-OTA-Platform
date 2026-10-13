@@ -20,22 +20,22 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/visa-services/[country]/apply">): Promise<Metadata> {
+}: PageProps<"/[locale]/visa/[country]/apply">): Promise<Metadata> {
   const { country: slug } = await params;
   const [country, t] = await Promise.all([getVisaCountry(slug), getTranslations("Visa.apply")]);
   if (!country) return {};
   return withSocial({
     title: t("metaTitle", { country: country.name }),
     description: t("lead"),
-    alternates: { canonical: `/visa-services/${country.slug}/apply` },
+    alternates: { canonical: `/visa/${country.slug}/apply` },
     robots: { index: false },
   });
 }
 
-/** /visa-services/[country]/apply (VisaApply boards): contact first, then trip, documents, visit and review. */
+/** /visa/[country]/apply (VisaApply boards): contact first, then trip, documents, visit and review. */
 async function VisaApplyPageContent({
   params,
-}: Pick<PageProps<"/[locale]/visa-services/[country]/apply">, "params">) {
+}: Pick<PageProps<"/[locale]/visa/[country]/apply">, "params">) {
   const { country: slug } = await params;
   const country = await getVisaCountry(slug);
   if (!country) notFound();
@@ -61,8 +61,8 @@ async function VisaApplyPageContent({
     <main id="main" className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6">
       <Breadcrumbs
         items={[
-          { label: t("breadcrumb"), href: "/visa-services" },
-          { label: country.name, href: `/visa-services/${country.slug}` },
+          { label: t("breadcrumb"), href: "/visa" },
+          { label: country.name, href: `/visa/${country.slug}` },
           { label: t("apply.breadcrumb") },
         ]}
       />
@@ -98,9 +98,7 @@ async function VisaApplyPageContent({
 }
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
-export default function VisaApplyPage({
-  params,
-}: PageProps<"/[locale]/visa-services/[country]/apply">) {
+export default function VisaApplyPage({ params }: PageProps<"/[locale]/visa/[country]/apply">) {
   return (
     <Suspense
       fallback={

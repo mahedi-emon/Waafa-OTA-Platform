@@ -55,7 +55,7 @@ export async function generateMetadata({
 const CTA_HREF = {
   flights: "/flights",
   packages: "/tour-packages",
-  visa: "/visa-services",
+  visa: "/visa",
   shop: "/shop",
   contact: "/contact",
 } as const;

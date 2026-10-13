@@ -35,7 +35,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/visa-services/[country]">): Promise<Metadata> {
+}: PageProps<"/[locale]/visa/[country]">): Promise<Metadata> {
   const { country: slug } = await params;
   const [country, t] = await Promise.all([getVisaCountry(slug), getTranslations("Visa.country")]);
   if (!country) return {};
@@ -44,7 +44,7 @@ export async function generateMetadata({
   return withSocial({
     title,
     description,
-    alternates: { canonical: `/visa-services/${country.slug}` },
+    alternates: { canonical: `/visa/${country.slug}` },
     ...recordRobots(country),
   });
 }
@@ -52,12 +52,12 @@ export async function generateMetadata({
 const h2 = "font-display text-[22px] font-bold text-navy-900";
 
 /**
- * /visa-services/[country] (VisaCountry, VisaCountry-medical, VisaCountry-m boards): a tab per visa type with facts
+ * /visa/[country] (VisaCountry, VisaCountry-medical, VisaCountry-m boards): a tab per visa type with facts
  * and the documents checklist, forms, notes, questions, and a fee card (a bar on phones) that follows the tab.
  */
 async function VisaCountryPageContent({
   params,
-}: Pick<PageProps<"/[locale]/visa-services/[country]">, "params">) {
+}: Pick<PageProps<"/[locale]/visa/[country]">, "params">) {
   const { country: slug } = await params;
   const country = await getVisaCountry(slug);
   if (!country) notFound();
@@ -74,7 +74,7 @@ async function VisaCountryPageContent({
     serviceCharge: type.serviceCharge,
   }));
   const notes = [...new Set(country.types.flatMap((type) => type.notes))];
-  const pageUrl = absoluteUrl(`/visa-services/${country.slug}`);
+  const pageUrl = absoluteUrl(`/visa/${country.slug}`);
   // Service with an indicative offer per visa type (issue 125): the same total as the fee card, VAT included; when
   // the embassy fee is not known yet the offer is the service charge and says the rest is confirmed before payment.
   const service = {
@@ -164,9 +164,7 @@ async function VisaCountryPageContent({
           }}
         />
       ) : null}
-      <Breadcrumbs
-        items={[{ label: t("breadcrumb"), href: "/visa-services" }, { label: country.name }]}
-      />
+      <Breadcrumbs items={[{ label: t("breadcrumb"), href: "/visa" }, { label: country.name }]} />
       <VisaTypeProvider types={country.types.map((type) => type.type)}>
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12">
           <div className="flex min-w-0 flex-col gap-10">
@@ -305,18 +303,13 @@ async function VisaCountryPageContent({
           }}
         />
       </VisaTypeProvider>
-      <ExploreMore
-        groups={["visa", "guides", "packages"]}
-        exclude={`/visa-services/${country.slug}`}
-      />
+      <ExploreMore groups={["visa", "guides", "packages"]} exclude={`/visa/${country.slug}`} />
     </main>
   );
 }
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
-export default function VisaCountryPage({
-  params,
-}: PageProps<"/[locale]/visa-services/[country]">) {
+export default function VisaCountryPage({ params }: PageProps<"/[locale]/visa/[country]">) {
   return (
     <Suspense
       fallback={

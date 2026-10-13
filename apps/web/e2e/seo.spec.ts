@@ -6,12 +6,12 @@ import { expect, test, type Page } from "@playwright/test";
  * Record pages still marked Sample send noindex, follow and stay out of the sitemap (issue 168).
  */
 /** Pages that are not admin records: always indexed. */
-const INDEXED = ["/", "/flights", "/tour-packages", "/visa-services", "/shop", "/blog", "/contact"];
+const INDEXED = ["/", "/flights", "/tour-packages", "/visa", "/shop", "/blog", "/contact"];
 /** Record pages: every fixture record is Sample, so these send noindex, follow (issue 168). */
 const SAMPLE_RECORDS = [
   "/flights/dhaka-to-dubai",
   "/tour-packages/maldives-island-stay",
-  "/visa-services/thailand",
+  "/visa/thailand",
   "/shop/p/better-day-ce505a-cf280a-black-toner",
   "/about-us",
 ];
@@ -54,7 +54,7 @@ test("Google may show large image previews", async ({ page }) => {
 });
 
 test("listings carry ItemList and Home names the website", async ({ page }) => {
-  for (const route of ["/tour-packages", "/visa-services", "/blog"]) {
+  for (const route of ["/tour-packages", "/visa", "/blog"]) {
     await page.goto(route);
     const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
     expect(
@@ -113,7 +113,7 @@ test("store, About, Gallery, Visa Guide and visa services describe themselves (i
     "ItemList",
   );
 
-  await page.goto("/visa-services/thailand");
+  await page.goto("/visa/thailand");
   nodes = await structuredData(page);
   const service = typed(nodes, "Service");
   expect((service?.provider as { "@id": string })["@id"]).toMatch(/#agency$/);
@@ -195,11 +195,25 @@ test("Home names the brand in its h1 and its structured data (issue 173)", async
 });
 
 test("pages with few links end with Explore more (issue 173)", async ({ page }) => {
-  for (const route of ["/hotels", "/contact", "/visa-services/thailand", "/gallery/nepal"]) {
+  for (const route of ["/hotels", "/contact", "/visa/thailand", "/gallery/nepal"]) {
     await page.goto(route);
     const explore = page.getByRole("navigation", { name: "Explore more" });
     await expect(explore, route).toBeVisible();
     expect(await explore.getByRole("link").count(), route).toBeGreaterThanOrEqual(4);
     await expect(explore.locator(`a[href="${route}"]`)).toHaveCount(0);
   }
+});
+
+test("old /visa-services links move permanently to /visa (issue 176)", async ({ request }) => {
+  for (const [from, to] of [
+    ["/visa-services", "/visa"],
+    ["/visa-services/thailand", "/visa/thailand"],
+    ["/visa-services/thailand/apply", "/visa/thailand/apply"],
+  ] as const) {
+    const response = await request.get(from, { maxRedirects: 0 });
+    expect([301, 308], from).toContain(response.status());
+    expect(new URL(response.headers()["location"] ?? "", "http://x").pathname, from).toBe(to);
+  }
+  const page = await request.get("/visa");
+  expect(page.status()).toBe(200);
 });

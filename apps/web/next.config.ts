@@ -20,6 +20,19 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  // Visa moved from /visa-services to /visa (issue 176): old links, bookmarks and search results keep working.
+  async redirects() {
+    return [
+      { source: "/visa-services", destination: "/visa", permanent: true },
+      { source: "/visa-services/:path*", destination: "/visa/:path*", permanent: true },
+      { source: "/:locale(en|bn)/visa-services", destination: "/:locale/visa", permanent: true },
+      {
+        source: "/:locale(en|bn)/visa-services/:path*",
+        destination: "/:locale/visa/:path*",
+        permanent: true,
+      },
+    ];
+  },
   // CSP and hardening headers on every route (issue 102); https upgrades follow NEXT_PUBLIC_SITE_URL.
   async headers() {
     return [

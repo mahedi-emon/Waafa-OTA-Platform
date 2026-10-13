@@ -326,7 +326,7 @@ jobs:
             if curl -sf http://localhost/robots.txt > /dev/null; then break; fi
             sleep 2
           done
-          for path in / /flights /tour-packages /visa-services /shop /contact /faqs /secure-admin-control/sign-in /sitemap.xml; do
+          for path in / /flights /tour-packages /visa /shop /contact /faqs /secure-admin-control/sign-in /sitemap.xml; do
             status=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost$path")
             echo "$path $status"
             [ "$status" = "200" ] || exit 1

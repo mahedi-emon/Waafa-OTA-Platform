@@ -16,7 +16,7 @@ const CEILING_KB: Record<string, number> = {
   "/": 235,
   "/flights": 275,
   "/tour-packages": 205,
-  "/visa-services": 205,
+  "/visa": 205,
   "/shop": 230,
   "/contact": 315,
 };

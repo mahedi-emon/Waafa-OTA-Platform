@@ -23,7 +23,7 @@ async function VisaSection({ section }: { section: HomeSection }) {
         kicker={section.kicker}
         title={section.title || tHome("defaults.visa")}
         subtitle={section.subtitle}
-        action={{ href: "/visa-services", label: t("all") }}
+        action={{ href: "/visa", label: t("all") }}
         aside={
           countries.some((c) => c.sample) ? (
             <SampleBadge label={tHome("sample")} title={tHome("sampleNote")} />

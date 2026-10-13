@@ -623,7 +623,7 @@ export const faqs: In<typeof FaqSchema>[] = [
     question: "Which visas do you help with?",
     answer:
       "Tourist, business, student, medical and transit visas, for the countries listed on our visa pages.",
-    link: { label: "Check a country", href: "/visa-services" },
+    link: { label: "Check a country", href: "/visa" },
     order: 1,
     sample: true,
   },
@@ -1481,7 +1481,7 @@ export const pageBlocks: In<typeof PageBlockSchema>[] = [
     icon: "stamp",
     title: "Visa services",
     body: "Tourist, business, student, medical and transit visas, with a document check before anything reaches an embassy.",
-    link: { label: "Check a country", href: "/visa-services" },
+    link: { label: "Check a country", href: "/visa" },
     order: 1,
     sample: true,
   },

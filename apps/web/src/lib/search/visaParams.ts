@@ -28,7 +28,7 @@ export const serializeVisaSearch = createSerializer(visaSearchParams);
 export const loadVisaSearch = createLoader(visaSearchParams);
 
 export function visaSearchHref(country: string, type: VisaTypeKey, applicants: number): string {
-  return serializeVisaSearch(`/visa-services/${encodeURIComponent(country)}`, {
+  return serializeVisaSearch(`/visa/${encodeURIComponent(country)}`, {
     type,
     applicants: clamp(applicants, 1, MAX_VISA_APPLICANTS),
     nationality: "BD",

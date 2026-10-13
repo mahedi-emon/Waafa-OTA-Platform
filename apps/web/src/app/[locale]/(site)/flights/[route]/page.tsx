@@ -253,7 +253,7 @@ async function FlightRouteContent({
             <p className="mt-1 text-[15px] text-white/80">{t("visaLead")}</p>
           </div>
           <Link
-            href={`/visa-services/${visa.slug}`}
+            href={`/visa/${visa.slug}`}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-6 text-[15px] font-semibold text-navy-900 hover:bg-mist-100"
           >
             {t("visaAction")}

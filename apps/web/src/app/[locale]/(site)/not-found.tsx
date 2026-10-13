@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 
 const LINKS = [
   { key: "packages", href: "/tour-packages" },
-  { key: "visa", href: "/visa-services" },
+  { key: "visa", href: "/visa" },
   { key: "store", href: "/shop" },
   { key: "track", href: "/shop/track" },
   { key: "contact", href: "/contact" },
