@@ -11,7 +11,8 @@ export type ViewedProduct = {
   slug: string;
   title: string;
   brand: string;
-  price: number;
+  /** Left out when the admin keeps the price hidden (issue 178). */
+  price?: number;
   image?: { src: string; alt: string };
 };
 

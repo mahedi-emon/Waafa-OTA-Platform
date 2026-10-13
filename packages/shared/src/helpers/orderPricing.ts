@@ -124,7 +124,8 @@ export function priceCart(input: PriceCartInput): Quote {
   const lines: PricedLine[] = [];
   for (const [variantId, requested] of merged) {
     const found = byVariant.get(variantId);
-    if (!found || found.product.status !== "published") continue;
+    // A product whose price the admin keeps hidden (Price on request, issue 178) is never sold online.
+    if (!found || found.product.status !== "published" || !found.product.showPrice) continue;
     const { product, variant } = found;
     const shot = variant.images[0] ?? product.images[0];
     const max = maxQuantity(variant);

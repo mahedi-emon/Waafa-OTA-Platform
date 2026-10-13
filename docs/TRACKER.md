@@ -37,6 +37,14 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #178 · Waafas World: prices hidden by default, Ask for price on WhatsApp, per-product Show price — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct: no prices in Waafas World, products only; the admin chooses which products show a price |
+| Built | `Product.showPrice` (default off: every live product hides its price after the deploy; Admin › Waafas World › Products › Show price). Hidden: card and product page "Price on request", Ask for price on WhatsApp (product named) and Call, no cart, Buy now, %-off chip, deal row or Offer JSON-LD; `publicProduct` blanks variant prices on the server; price bands skip it and price sorts put it last; shared `priceCart` never sells it (web quote and API orders). Recently viewed keeps no price for it. Sample fixtures: CF280A toner, T-shirt, power bank and headphones show prices; CRG 070H and HP 151A toners do not |
+| Tested | Vitest: priceCart drops hidden products, publicProduct blanks prices, repository bands and sorts (shared 78, web 316); Playwright: hidden product page (no price in HTML, WhatsApp link, no cart, axe) and mixed cards; store, orders, home, budget, seo specs 33/33 |
+| Decision | D177 |
+
 ### #176 · Visa moves to /visa, and the live menu reads "Visa" — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1006,6 +1014,7 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-123 | Airline logos (strip, fare cards, route pages, filter) | `airline.logo` (else bundled by `airline.code`) | Travel › Airlines › Logo | `PUT /api/v1/admin/content/airlines/:id` | ✅ 13 Oct · airlineLogoSrc test |
 | AC-124 | Search indexing of a record page (robots meta, sitemap entry) | record `sample` + `seo.noIndex` → `isIndexable` | The record's editor (Sample switch, SEO › noindex) in Travel, Visa, Content, Waafas World | `PUT /api/v1/admin/content/:key/:id` | ✅ 13 Oct · indexing + sitemap tests, seo e2e |
 | AC-125 | Explore more links (visa countries, packages, routes, guides, articles) | `listVisaCountries` (popular first), `listPackages` (popular), `listFlightRoutes`, `listVisaGuides`, `listBlogPosts` | Visa › Countries, Travel › Tour packages and Flight routes, Content › Visa guides and Blog | `GET /api/v1/public/snapshot` | ✅ 13 Oct · seo e2e |
+| AC-126 | Store price shown or Price on request + Ask for price | `product.showPrice` | Waafas World › Products › Show price | `PUT /api/v1/admin/content/products/:id` | ✅ 13 Oct · store e2e |
 
 ## 5. Components inventory
 
@@ -1305,6 +1314,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D174 | 13 Oct | Hidden or later UI loads on demand: results-page search card, lead step 2, form validation (zod, libphonenumber), corporate quote form; `inlineCss` and `content-visibility` rejected | Cuts flights 79 KB and shop 100 KB of first-load JS; inline CSS slowed first paint; content-visibility broke axe target-size checks | #170 |
 | D175 | 13 Oct | Titles and descriptions are fitted in code (60 / 155, cut at a word), not only by admin validation; Explore more links on pages with few links; Home h1 carries the brand eyebrow | Admin records can be any length; a page's main heading and structured data should name the brand for brand searches | #173 |
 | D176 | 13 Oct | Visa lives at /visa (308 from /visa-services); data changes that must reach the live database ship as one-time seed patches (`_seedPatches`), never by overwriting admin data wholesale | Owner request; the seed must not overwrite admin edits, but a renamed route has to move stored links | #176 |
+| D177 | 13 Oct | Store prices hidden by default per product (Show price in Admin); hidden prices are blanked server-side and never sold online | Owner: products only, admin chooses which show a price; a hidden price must not leak through the page data, filters or the cart | #178 |
 
 ## 9. Bugs and known issues
 

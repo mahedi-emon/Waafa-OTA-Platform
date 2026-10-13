@@ -1349,7 +1349,11 @@
       "increase": "Add one more {title}",
       "inCart": "{count} in cart",
       "added": "Added to cart",
-      "viewCart": "View cart"
+      "viewCart": "View cart",
+      "priceOnRequest": "Price on request",
+      "askPrice": "Ask for price",
+      "askPriceLabel": "Ask the price of {title} on WhatsApp",
+      "askPriceMessage": "Hello WAAFA, please share the price of {title}."
     },
     "stock": {
       "in-stock": "In stock",
@@ -1461,7 +1465,11 @@
       "related": "You may also like",
       "seeMore": "See more",
       "recentlyViewed": "Recently viewed",
-      "stickyBuy": "Buy now",
+      "priceOnRequest": "Price on request",
+    "priceOnRequestNote": "Our team confirms the price and stock on WhatsApp or by phone, then books your order.",
+    "askPrice": "Ask for price on WhatsApp",
+    "callForPrice": "Call {phone}",
+    "stickyBuy": "Buy now",
       "optionSoldOut": "{value}, sold out"
     },
     "finder": {

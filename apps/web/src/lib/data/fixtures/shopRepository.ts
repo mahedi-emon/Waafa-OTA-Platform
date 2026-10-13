@@ -41,11 +41,23 @@ function withDescendants(rootIds: readonly string[], categories: readonly Catego
   return ids;
 }
 
+/**
+ * Price order and price bands use only prices the store shows (issue 178): a product with its price hidden sorts
+ * after the priced ones and never matches a price band, so neither reveals what it costs.
+ */
+function byPrice(direction: 1 | -1) {
+  return (a: Product, b: Product) => {
+    if (a.showPrice !== b.showPrice) return a.showPrice ? -1 : 1;
+    if (!a.showPrice) return b.popularity - a.popularity;
+    return direction * (productFromPrice(a) - productFromPrice(b));
+  };
+}
+
 const PRODUCT_SORTS: Record<ProductSort, (a: Product, b: Product) => number> = {
   popular: (a, b) => b.popularity - a.popularity,
   newest: (a, b) => b.createdAt.localeCompare(a.createdAt),
-  "price-asc": (a, b) => productFromPrice(a) - productFromPrice(b),
-  "price-desc": (a, b) => productFromPrice(b) - productFromPrice(a),
+  "price-asc": byPrice(1),
+  "price-desc": byPrice(-1),
 };
 
 /** A variant option with the key, or a spec row with the label, holds one of the values (case-insensitive). */
@@ -150,10 +162,14 @@ export function createFixtureShopRepository(data: FixtureData): ShopRepository {
       const sorted = products
         .filter((product) => matchesSearch(searchFields(product), query.search))
         .filter(
-          (product) => query.minPrice === undefined || productFromPrice(product) >= query.minPrice,
+          (product) =>
+            query.minPrice === undefined ||
+            (product.showPrice && productFromPrice(product) >= query.minPrice),
         )
         .filter(
-          (product) => query.maxPrice === undefined || productFromPrice(product) <= query.maxPrice,
+          (product) =>
+            query.maxPrice === undefined ||
+            (product.showPrice && productFromPrice(product) <= query.maxPrice),
         )
         .filter((product) => !query.inStock || isAvailable(product))
         .filter((product) =>

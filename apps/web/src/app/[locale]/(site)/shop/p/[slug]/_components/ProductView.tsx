@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { Check, Expand, Minus, Plus, ShoppingCart, Truck, Wallet } from "lucide-react";
+import { Check, Expand, Minus, Phone, Plus, ShoppingCart, Truck, Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { notify } from "@/components/feedback/notify";
 import { cn } from "cn";
 import { flyToCart } from "@/lib/shop/flyToCart";
-import { formatTaka, type Product, type ShippingZone } from "@waafa/shared";
+import { formatTaka, whatsappLink, type Product, type ShippingZone } from "@waafa/shared";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { SmartImage } from "@/components/media/SmartImage";
 import { StockBadge } from "@/components/shop/StockBadge";
 import { useCart } from "@/components/shop/useCart";
@@ -39,14 +40,25 @@ type ProductViewProps = {
   codLimit: number;
   /** "Compatible with" models, only when the category uses compatibility. */
   compatible: string[];
+  /** WhatsApp and phone for Ask for price when the price is hidden (issue 178). */
+  contact: { whatsappE164: string; phoneDisplay: string; phoneE164: string };
 };
 
 /**
  * Product top (ShopProduct boards, FR-SHOP-04): gallery that follows the variant, title, stock, SKU, price against
  * MRP with the saving, option selectors that update everything, quantity, Add to cart and Buy now, delivery by zone,
- * cash on delivery, warranty, "Compatible with" and a sticky buy bar on phones.
+ * cash on delivery, warranty, "Compatible with" and a sticky buy bar on phones. When the admin keeps the price hidden
+ * (issue 178), the price reads "Price on request" and Ask for price on WhatsApp and Call replace the cart.
  */
-function ProductView({ product, brand, category, zones, codLimit, compatible }: ProductViewProps) {
+function ProductView({
+  product,
+  brand,
+  category,
+  zones,
+  codLimit,
+  compatible,
+  contact,
+}: ProductViewProps) {
   const t = useTranslations("Shop");
   const router = useRouter();
   const { add } = useCart();
@@ -62,13 +74,20 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
   const shown = images[Math.min(photo, images.length - 1)] ?? images[0];
   const price = priceInfo(variant);
   const stock = stockBadge(variant);
-  const buyable = canBuy(variant);
+  const showPrice = product.showPrice;
+  const buyable = showPrice && canBuy(variant);
   const maxQty = variant.stock > 0 ? Math.min(variant.stock, MAX_LINE_QTY) : MAX_LINE_QTY;
   const zone = zones.find((item) => item.id === zoneId) ?? zones[0];
   const variantLabel = product.options
     .map((option) => selection[option.key])
     .filter(Boolean)
     .join(" · ");
+  const askHref = whatsappLink(
+    contact.whatsappE164,
+    t("card.askPriceMessage", {
+      title: variantLabel ? `${product.title} (${variantLabel})` : product.title,
+    }),
+  );
 
   useEffect(() => {
     const image = product.images[0];
@@ -76,7 +95,7 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
       slug: product.slug,
       title: product.title,
       brand,
-      price: defaultVariant(product).price,
+      ...(product.showPrice ? { price: defaultVariant(product).price } : {}),
       ...(image ? { image: { src: image.src, alt: image.alt } } : {}),
     });
   }, [product, brand]);
@@ -162,7 +181,7 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
               </span>
             </button>
             <span className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
-              {price.percentOff > 0 ? (
+              {showPrice && price.percentOff > 0 ? (
                 <span className="rounded-full bg-danger-600 px-2.5 py-1 text-[12px] font-bold text-white tabular-nums">
                   {t("card.off", { percent: price.percentOff })}
                 </span>
@@ -233,28 +252,39 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span
-              aria-live="polite"
-              className="font-display text-[32px] font-extrabold text-navy-900 tabular-nums"
-            >
-              {formatTaka(price.price)}
-            </span>
-            {price.mrp ? (
-              <s className="text-[16px] text-mist-500 tabular-nums">{formatTaka(price.mrp)}</s>
-            ) : null}
-            {product.codEligible ? (
-              <span className="rounded-full bg-success-50 px-2.5 py-1 text-[12px] font-semibold text-success-600">
-                {t("product.cod")}
+        {showPrice ? (
+          <div className="flex flex-col gap-1">
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span
+                aria-live="polite"
+                className="font-display text-[32px] font-extrabold text-navy-900 tabular-nums"
+              >
+                {formatTaka(price.price)}
               </span>
-            ) : null}
-          </p>
-          <p className="text-[13.5px] text-mist-600">
-            {price.save > 0 ? `${t("product.save", { amount: formatTaka(price.save) })} · ` : ""}
-            {t("product.vat")}
-          </p>
-        </div>
+              {price.mrp ? (
+                <s className="text-[16px] text-mist-500 tabular-nums">{formatTaka(price.mrp)}</s>
+              ) : null}
+              {product.codEligible ? (
+                <span className="rounded-full bg-success-50 px-2.5 py-1 text-[12px] font-semibold text-success-600">
+                  {t("product.cod")}
+                </span>
+              ) : null}
+            </p>
+            <p className="text-[13.5px] text-mist-600">
+              {price.save > 0 ? `${t("product.save", { amount: formatTaka(price.save) })} · ` : ""}
+              {t("product.vat")}
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1">
+            <p className="font-display text-[26px] font-extrabold text-navy-900">
+              {t("product.priceOnRequest")}
+            </p>
+            <p className="max-w-[46ch] text-[13.5px] text-mist-600">
+              {t("product.priceOnRequestNote")}
+            </p>
+          </div>
+        )}
 
         {product.options.map((option) => (
           <fieldset key={option.key} className="flex flex-col gap-2">
@@ -333,49 +363,74 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
           </div>
         ) : null}
 
-        <div className="flex flex-col gap-3">
-          <div role="group" aria-label={t("product.quantity")} className="flex items-center gap-3">
-            <span className="text-[14px] font-semibold text-ink-900">{t("product.quantity")}</span>
-            <div className="flex items-center gap-1 rounded-full border border-mist-200 p-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                aria-label={t("product.decrease")}
-                aria-disabled={qty <= 1}
-                onClick={() => qty > 1 && setQty(qty - 1)}
-              >
-                <Minus aria-hidden="true" />
-              </Button>
-              <output
-                aria-live="polite"
-                className="w-8 text-center font-display text-[16px] font-extrabold text-navy-900 tabular-nums"
-              >
-                {qty}
-              </output>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                aria-label={t("product.increase")}
-                aria-disabled={qty >= maxQty}
-                onClick={() => qty < maxQty && setQty(qty + 1)}
-              >
-                <Plus aria-hidden="true" />
-              </Button>
-            </div>
+        {!showPrice ? (
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button asChild size="lg" className="sm:flex-1">
+              <a href={askHref} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon />
+                {t("product.askPrice")}
+              </a>
+            </Button>
+            <Button asChild size="lg" variant="secondary" className="sm:flex-1">
+              <a href={`tel:${contact.phoneE164}`}>
+                <Phone aria-hidden="true" />
+                <span className="tabular-nums">
+                  {t("product.callForPrice", { phone: contact.phoneDisplay })}
+                </span>
+              </a>
+            </Button>
           </div>
-          {buyable ? (
-            <div className="flex flex-col gap-2 sm:flex-row">{buyButtons(false)}</div>
-          ) : (
-            <p
-              role="status"
-              className="rounded-xl bg-mist-100 px-4 py-3 text-[14.5px] font-semibold text-mist-700"
+        ) : (
+          <div className="flex flex-col gap-3">
+            <div
+              role="group"
+              aria-label={t("product.quantity")}
+              className="flex items-center gap-3"
             >
-              {t("product.soldOut")}
-            </p>
-          )}
-        </div>
+              <span className="text-[14px] font-semibold text-ink-900">
+                {t("product.quantity")}
+              </span>
+              <div className="flex items-center gap-1 rounded-full border border-mist-200 p-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={t("product.decrease")}
+                  aria-disabled={qty <= 1}
+                  onClick={() => qty > 1 && setQty(qty - 1)}
+                >
+                  <Minus aria-hidden="true" />
+                </Button>
+                <output
+                  aria-live="polite"
+                  className="w-8 text-center font-display text-[16px] font-extrabold text-navy-900 tabular-nums"
+                >
+                  {qty}
+                </output>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={t("product.increase")}
+                  aria-disabled={qty >= maxQty}
+                  onClick={() => qty < maxQty && setQty(qty + 1)}
+                >
+                  <Plus aria-hidden="true" />
+                </Button>
+              </div>
+            </div>
+            {buyable ? (
+              <div className="flex flex-col gap-2 sm:flex-row">{buyButtons(false)}</div>
+            ) : (
+              <p
+                role="status"
+                className="rounded-xl bg-mist-100 px-4 py-3 text-[14.5px] font-semibold text-mist-700"
+              >
+                {t("product.soldOut")}
+              </p>
+            )}
+          </div>
+        )}
 
         <ul className="flex flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-4 text-[14px]">
           {zone ? (
@@ -431,6 +486,24 @@ function ProductView({ product, brand, category, zones, codLimit, compatible }: 
         </ul>
       </div>
 
+      {!showPrice ? (
+        <div
+          data-bottom-bar=""
+          className="fixed inset-x-0 bottom-(--tab-space) z-30 border-t border-mist-200 bg-white/95 px-4 py-2.5 shadow-[0_-12px_28px_-22px_rgb(2_13_57/0.35)] backdrop-blur-md lg:hidden"
+        >
+          <div className="mx-auto flex max-w-xl items-center justify-between gap-2">
+            <p className="min-w-0 font-display text-[16px] font-extrabold text-navy-900">
+              {t("product.priceOnRequest")}
+            </p>
+            <Button asChild size="md" className="shrink-0">
+              <a href={askHref} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon />
+                {t("card.askPrice")}
+              </a>
+            </Button>
+          </div>
+        </div>
+      ) : null}
       {buyable ? (
         <div
           data-bottom-bar=""

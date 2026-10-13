@@ -21,13 +21,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** /shop/deals (ShopDeals, ShopDeals-m): running deals, ending soonest first, each with its own timer. */
 export default async function DealsPage() {
-  const [deals, names, site, t, tc] = await Promise.all([
+  const [running, names, site, t, tc] = await Promise.all([
     listDeals(),
     brandNames(),
     getSiteSettings(),
     getTranslations("Shop.list"),
     getTranslations("Shop.countdown"),
   ]);
+  // A deal is a price; products whose price the admin keeps hidden stay out of it (issue 178).
+  const deals = running.filter((deal) => deal.product.showPrice);
   const labels = {
     days: tc("days"),
     hours: tc("hours"),

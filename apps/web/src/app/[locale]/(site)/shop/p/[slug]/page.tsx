@@ -112,16 +112,21 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
           sku: product.variants[0]?.sku,
           brand: { "@type": "Brand", name: brand },
           ...(category ? { category: category.name } : {}),
-          offers: product.variants.map((variant) => ({
-            "@type": "Offer",
-            sku: variant.sku,
-            price: variant.price,
-            priceCurrency: "BDT",
-            availability: AVAILABILITY[stockBadge(variant)],
-            itemCondition: "https://schema.org/NewCondition",
-            url,
-            seller: { "@type": "Organization", name: site.storeName },
-          })),
+          // No price, no Offer: a hidden price (issue 178) never reaches structured data.
+          ...(product.showPrice
+            ? {
+                offers: product.variants.map((variant) => ({
+                  "@type": "Offer",
+                  sku: variant.sku,
+                  price: variant.price,
+                  priceCurrency: "BDT",
+                  availability: AVAILABILITY[stockBadge(variant)],
+                  itemCondition: "https://schema.org/NewCondition",
+                  url,
+                  seller: { "@type": "Organization", name: site.storeName },
+                })),
+              }
+            : {}),
         }}
       />
       <div className="flex flex-col gap-5">
@@ -140,6 +145,11 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
             zones={shipping.zones}
             codLimit={payment.codLimit}
             compatible={compatible}
+            contact={{
+              whatsappE164: contact.whatsappE164,
+              phoneDisplay: contact.phoneDisplay,
+              phoneE164: contact.phoneE164,
+            }}
           />
         </NextIntlClientProvider>
       </div>
