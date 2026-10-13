@@ -61,7 +61,7 @@ describe("recent searches (FR-SRCH-09)", () => {
     list = addRecentSearch(list, {
       module: "visa",
       label: "Thailand",
-      href: "/visa-services/thailand",
+      href: "/visa/thailand",
       at: 100,
     });
     expect(recentForModule(list, "visa")).toHaveLength(1);
@@ -77,7 +77,7 @@ describe("recent searches (FR-SRCH-09)", () => {
     }
     expect(
       parseRecentSearches(
-        JSON.stringify([{ module: "visa", label: "X", href: "/visa-services/thailand", at: 1 }]),
+        JSON.stringify([{ module: "visa", label: "X", href: "/visa/thailand", at: 1 }]),
       ),
     ).toHaveLength(1);
     expect(parseRecentSearches(JSON.stringify({ module: "flights" }))).toEqual([]);

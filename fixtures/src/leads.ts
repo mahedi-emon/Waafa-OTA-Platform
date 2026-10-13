@@ -95,7 +95,7 @@ export const leads: In<typeof LeadSchema>[] = [
       applicants: 2,
       travelDate: "2026-11-20",
     },
-    source: { channel: "web", page: "/visa-services/thailand" },
+    source: { channel: "web", page: "/visa/thailand" },
     summary: "Thailand tourist visa · 2 applicants · travel 20 Nov",
     travelDate: "2026-11-20",
     travellers: 2,

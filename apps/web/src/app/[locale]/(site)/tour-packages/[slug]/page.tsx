@@ -437,7 +437,7 @@ async function PackagePageContent({
                         <p className="text-[15px] leading-relaxed text-white/80">{pkg.visa.body}</p>
                         {pkg.visa.countrySlug ? (
                           <Link
-                            href={`/visa-services/${pkg.visa.countrySlug}`}
+                            href={`/visa/${pkg.visa.countrySlug}`}
                             className="mt-1 self-start text-[15px] font-semibold text-cyan-400 underline underline-offset-4"
                           >
                             {t("detail.visaLink")}

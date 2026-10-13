@@ -98,10 +98,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })),
     page("/plan-my-trip", 0.7, "monthly"),
-    page("/visa-services", 0.9, "weekly"),
-    ...countries
-      .filter(isIndexable)
-      .map((country) => page(`/visa-services/${country.slug}`, 0.8, "weekly")),
+    page("/visa", 0.9, "weekly"),
+    ...countries.filter(isIndexable).map((country) => page(`/visa/${country.slug}`, 0.8, "weekly")),
     page("/visa-guide", 0.6, "weekly"),
     ...guides.filter(isIndexable).map((guide) => ({
       url: absoluteUrl(`/visa-guide/${guide.slug}`),

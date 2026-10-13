@@ -7,7 +7,7 @@
       "url": [
         "http://localhost:3200/",
         "http://localhost:3200/tour-packages",
-        "http://localhost:3200/visa-services",
+        "http://localhost:3200/visa",
         "http://localhost:3200/flights",
         "http://localhost:3200/shop"
       ],

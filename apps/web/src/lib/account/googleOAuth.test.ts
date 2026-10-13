@@ -59,7 +59,7 @@ describe("Google sign-in helpers (issue 134)", () => {
   });
 
   it("round-trips the pending cookie and refuses a tampered one", () => {
-    const pending = { state: "s", verifier: "v".repeat(64), next: "/visa-services" };
+    const pending = { state: "s", verifier: "v".repeat(64), next: "/visa" };
     expect(decodePending(encodePending(pending))).toEqual(pending);
     expect(decodePending(encodePending({ ...pending, next: "//evil.example.com" }))?.next).toBe(
       "/account",

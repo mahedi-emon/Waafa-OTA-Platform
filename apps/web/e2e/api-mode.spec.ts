@@ -251,7 +251,7 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   await expect(page.getByRole("link", { name: "Continue with Google" })).toBeVisible();
 
   // The start route sends the visitor to Google with PKCE and the site's own callback.
-  const start = await request.get("/api/auth/google/start?next=/visa-services", {
+  const start = await request.get("/api/auth/google/start?next=/visa", {
     maxRedirects: 0,
   });
   expect(start.status()).toBe(303);

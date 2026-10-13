@@ -37,6 +37,15 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #176 · Visa moves to /visa, and the live menu reads "Visa" — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 13 Oct: the live nav still showed "Visa Services" after #172; label "Visa" and URL /visa |
+| Why | #172 changed the default menu data only; live menus are admin data in PostgreSQL and the seed never overwrites them |
+| Built | Route `/visa-services` → `/visa` (list, country, apply) with 308 redirects from every old path (also `/en/…`). `apps/api/src/seed/seedPatches.ts`: one-time patches run by the start-up seed and recorded in `_seedPatches` (+ an audit log entry); patch `2026-10-13-visa-route` moves every stored `/visa-services…` link to `/visa…` and renames the header and drawer item to "Visa" (footer keeps its label). Canonicals, sitemap, structured data, CI smoke paths and docs follow |
+| Tested | API: patch unit tests (5) and a database test (moves links, renames once, skipped on the next deploy); API suite 136 passed. Web unit 313, e2e 114 + redirect test |
+| Decision | D176 |
+
 ### #173 · SEO on-page: one H1, titles ≤ 60, descriptions ≤ 155, alt text, internal links, brand names — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1295,6 +1304,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D173 | 13 Oct | The hero loop starts on the visitor's first scroll, touch, pointer move or key; the poster alone until then | Its first frame replaced the poster as LCP after hydration (Home 59 in CI); every visitor who scrolls or moves the mouse still sees it (MOTION.md) | #170 |
 | D174 | 13 Oct | Hidden or later UI loads on demand: results-page search card, lead step 2, form validation (zod, libphonenumber), corporate quote form; `inlineCss` and `content-visibility` rejected | Cuts flights 79 KB and shop 100 KB of first-load JS; inline CSS slowed first paint; content-visibility broke axe target-size checks | #170 |
 | D175 | 13 Oct | Titles and descriptions are fitted in code (60 / 155, cut at a word), not only by admin validation; Explore more links on pages with few links; Home h1 carries the brand eyebrow | Admin records can be any length; a page's main heading and structured data should name the brand for brand searches | #173 |
+| D176 | 13 Oct | Visa lives at /visa (308 from /visa-services); data changes that must reach the live database ship as one-time seed patches (`_seedPatches`), never by overwriting admin data wholesale | Owner request; the seed must not overwrite admin edits, but a renamed route has to move stored links | #176 |
 
 ## 9. Bugs and known issues
 

@@ -31,7 +31,7 @@ Board names are the file names in `project/` (phone versions end in `-m`). P0 sh
 | `/hotels` | Hotels, Hotels-2, Hotels-done, Hotels-m-*; Live: HotelsLive, -map, -detail, -book, -done, -m-* | Same shell; Live adds list or map, rooms and rate plans | P0 / P2 |
 | `/tour-packages`, `/tour-packages/[slug]` | Packages, Packages-empty, PackageDetail, -photos, -query, -done, Packages-m-* | Filter sheet, gallery lightbox, itinerary timeline, sticky booking card | P0 |
 | `/plan-my-trip` | PlanTrip, PlanTrip-4, PlanTrip-done, PlanTrip-m-* | Multi-step form | P0 |
-| `/visa-services`, `/visa-services/[country]` | Visa, Visa-none, VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | Country cards, checklist, private document upload | P0 |
+| `/visa`, `/visa/[country]` | Visa, Visa-none, VisaCountry, -medical, VisaApply, -2, -3, -4, -err, -done, -m-* | Country cards, checklist, private document upload | P0 |
 | `/visa-guide`, `/visa-guide/[country]` | VisaGuide, VisaGuidePost (+ -m) | Article layout with contents list | P0 |
 | `/shop` | Shop, Shop-m, Shop-mega, Shop-suggest, Shop-bulk, Shop-mini | ShopBar, campaign carousel, rows that hide when empty, PCard | P0 |
 | `/shop/c/[slug]`, brand, collection | ShopList, -printers, -empty, -m, -m-filters, -m-fashion, ShopCats, ShopDeals | Attribute filters from the category set, sort, Load more | P0 |

@@ -77,7 +77,7 @@ function VisaFeeCard({ slug, fees, whatsappE164, sample, labels }: VisaFeeCardPr
         <p className="text-[12.5px] font-semibold text-warning-700">{labels.sample}</p>
       ) : null}
       <Button asChild size="lg">
-        <Link href={`/visa-services/${slug}/apply?type=${fee.type}`}>{labels.apply}</Link>
+        <Link href={`/visa/${slug}/apply?type=${fee.type}`}>{labels.apply}</Link>
       </Button>
       <Button asChild size="lg" variant="whatsapp">
         <a

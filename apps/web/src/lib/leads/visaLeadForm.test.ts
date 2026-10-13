@@ -75,7 +75,7 @@ describe("visa application", () => {
         contact,
         values,
         country: { slug: "thailand", name: "Thailand" },
-        page: "/visa-services/thailand/apply",
+        page: "/visa/thailand/apply",
       }),
     );
     expect(lead.payload).toMatchObject({

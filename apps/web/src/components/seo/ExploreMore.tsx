@@ -28,7 +28,7 @@ async function ExploreMore({ groups, exclude }: ExploreMoreProps) {
       [...(await listVisaCountries())]
         .sort((a, b) => Number(b.popular) - Number(a.popular))
         .map((country) => ({
-          href: `/visa-services/${country.slug}`,
+          href: `/visa/${country.slug}`,
           label: t("visaFor", { country: country.name }),
         })),
     packages: async () =>

@@ -72,7 +72,7 @@ test("one WAAFA logo per page: the footer names the brand in text", async ({ pag
 });
 
 test("the visa list offers to start an application", async ({ page }) => {
-  await page.goto("/visa-services");
+  await page.goto("/visa");
   await expect(page.getByRole("link", { name: "Start an application" })).toHaveAttribute(
     "href",
     "#visa-search",

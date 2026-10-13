@@ -26,7 +26,7 @@ async function VisaCountryCard({ country, submissionLabel }: VisaCountryCardProp
           <div className="min-w-0 flex-1">
             <h3 className="truncate font-display text-[16px] font-bold text-navy-900">
               <Link
-                href={`/visa-services/${country.slug}`}
+                href={`/visa/${country.slug}`}
                 className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
               >
                 {country.name}

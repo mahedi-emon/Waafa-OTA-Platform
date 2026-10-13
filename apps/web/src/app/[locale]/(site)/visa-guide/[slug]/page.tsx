@@ -241,7 +241,7 @@ async function VisaGuidePostPageContent({
               </h2>
               <p className="text-[15px] text-white/80">{t("serviceBody")}</p>
               <Button asChild variant="white" className="self-start">
-                <Link href={`/visa-services/${country.slug}`}>
+                <Link href={`/visa/${country.slug}`}>
                   {t("service", { country: country.name })}
                   <ArrowRight aria-hidden="true" />
                 </Link>

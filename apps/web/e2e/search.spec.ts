@@ -238,7 +238,7 @@ test.describe("desktop (1440)", () => {
     await applicants.getByRole("button", { name: "Applicants: add one" }).click();
     await applicants.getByRole("button", { name: "Done" }).click();
     await page.getByRole("button", { name: "Check requirements" }).click();
-    await page.waitForURL("**/visa-services/thailand?type=business&applicants=2");
+    await page.waitForURL("**/visa/thailand?type=business&applicants=2");
   });
 
   test("works by keyboard: tabs with arrows, pickers with Enter and Escape", async ({ page }) => {

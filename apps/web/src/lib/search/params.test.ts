@@ -174,14 +174,12 @@ describe("tour and visa URLs (FR-SRCH-04, FR-SRCH-05)", () => {
   });
 
   it("opens the country page with type and applicants", () => {
-    expect(visaSearchHref("thailand", "tourist", 1)).toBe("/visa-services/thailand");
+    expect(visaSearchHref("thailand", "tourist", 1)).toBe("/visa/thailand");
     expect(visaSearchHref("malaysia", "medical", 3)).toBe(
-      "/visa-services/malaysia?type=medical&applicants=3",
+      "/visa/malaysia?type=medical&applicants=3",
     );
-    expect(visaSearchHref("india", "business", 40)).toBe(
-      "/visa-services/india?type=business&applicants=10",
-    );
-    expect(loadVisaSearch(url("/visa-services/india?type=work"))).toMatchObject({
+    expect(visaSearchHref("india", "business", 40)).toBe("/visa/india?type=business&applicants=10");
+    expect(loadVisaSearch(url("/visa/india?type=work"))).toMatchObject({
       type: "tourist",
     });
   });

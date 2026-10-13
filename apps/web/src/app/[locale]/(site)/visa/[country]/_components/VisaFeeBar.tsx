@@ -38,7 +38,7 @@ function VisaFeeBar({ slug, fees, labels }: VisaFeeBarProps) {
           </span>
         </p>
         <Button asChild className="shrink-0">
-          <Link href={`/visa-services/${slug}/apply?type=${fee.type}`}>{labels.apply}</Link>
+          <Link href={`/visa/${slug}/apply?type=${fee.type}`}>{labels.apply}</Link>
         </Button>
       </div>
     </div>

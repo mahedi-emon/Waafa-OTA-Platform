@@ -25,7 +25,7 @@ test.describe("visa at 390", () => {
 
   test("finds a country and reads its checklist", async ({ page }) => {
     const errors = collectErrors(page);
-    await page.goto("/visa-services");
+    await page.goto("/visa");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Visa files, prepared properly",
     );
@@ -46,7 +46,7 @@ test.describe("visa at 390", () => {
     await expect(panel.getByText("1/7")).toBeVisible();
     await expect(page.getByRole("link", { name: "Apply", exact: true })).toHaveAttribute(
       "href",
-      "/visa-services/thailand/apply?type=medical",
+      "/visa/thailand/apply?type=medical",
     );
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     expect(scrollWidth).toBeLessThanOrEqual(390);
@@ -55,7 +55,7 @@ test.describe("visa at 390", () => {
   });
 
   test("offers WhatsApp when a country is not listed", async ({ page }) => {
-    await page.goto("/visa-services?q=atlantis");
+    await page.goto("/visa?q=atlantis");
     await expect(page.getByRole("heading", { name: "We don’t list “atlantis” yet" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Ask on WhatsApp" })).toHaveAttribute(
       "href",
@@ -65,7 +65,7 @@ test.describe("visa at 390", () => {
 
   test("applies with documents, rejecting a wrong file", async ({ page }) => {
     const errors = collectErrors(page);
-    await page.goto("/visa-services/thailand/apply?type=medical&applicants=2");
+    await page.goto("/visa/thailand/apply?type=medical&applicants=2");
     await page.getByLabel("Full name").fill("Sample Nusrat Jahan");
     await page.getByLabel("Mobile number").fill("01712-345678");
     await page.getByRole("button", { name: "Continue" }).click();
