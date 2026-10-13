@@ -28,7 +28,7 @@ test.describe("desktop header (1440)", () => {
     for (const label of [
       "Home",
       "Tour Packages",
-      "Visa Services",
+      "Visa",
       "Waafas World",
       "Gallery",
       "Feedback",
