@@ -81,6 +81,6 @@ test("the visa list offers to start an application", async ({ page }) => {
 
 test("Home has its own canonical and the admin SEO title", async ({ page }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle("Waafa Tours and Travel · Flights, tours and visas from Dhaka");
+  await expect(page).toHaveTitle("Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/$/);
 });

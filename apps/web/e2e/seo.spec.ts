@@ -232,3 +232,65 @@ test("visa prices read as a range or a starting price, never one fixed price (is
   await page.goto("/visa/thailand?type=business");
   await expect(card.getByText(/^From ৳\d/)).toBeVisible();
 });
+
+test("Home tells search engines what the agency sells and how to reach it (issue 184)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle("Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh");
+  const nodes = await structuredData(page);
+  const agency = nodes.find((node) => JSON.stringify(node["@type"]).includes("TravelAgency"));
+  const catalogue = agency?.hasOfferCatalog as
+    { itemListElement: Array<{ itemOffered: { name: string; url: string } }> } | undefined;
+  expect(catalogue?.itemListElement.map((item) => item.itemOffered.name)).toEqual([
+    "Air tickets",
+    "Hotel booking",
+    "Tour packages",
+    "Visa processing",
+  ]);
+  const organization = nodes.find((node) => node["@type"] === "Organization");
+  const points = organization?.contactPoint as Array<{ telephone: string }> | undefined;
+  expect(points?.map((point) => point.telephone)).toEqual(["+8801823232241", "+8801823232242"]);
+});
+
+test("llms.txt sums up the business for AI search, without prices (issue 184)", async ({
+  request,
+}) => {
+  const response = await request.get("/llms.txt");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toContain("text/plain");
+  const body = await response.text();
+  expect(body.startsWith("# Waafa Tours and Travel\n")).toBe(true);
+  for (const text of [
+    "Waafa International",
+    "Waafas World",
+    "/visa/thailand)",
+    "/tour-packages/maldives-island-stay)",
+    "+880 1823-232241, +880 1823-232242",
+  ]) {
+    expect(body, text).toContain(text);
+  }
+  expect(body).not.toContain("৳");
+});
+
+test("share previews load a small resized image that WhatsApp can show (issue 185)", async ({
+  page,
+  request,
+}) => {
+  for (const route of ["/", "/tour-packages/maldives-island-stay", "/gallery/nepal"]) {
+    await page.goto(route);
+    const image = await meta(page, 'meta[property="og:image"]');
+    expect(image, route).toContain("/_next/image?url=");
+    expect(image, route).toContain("w=1200");
+    // Link preview crawlers ask for any image type and get a JPEG well under WhatsApp's 300 KB.
+    const response = await request.get(
+      new URL(image ?? "").pathname + new URL(image ?? "").search,
+      {
+        headers: { accept: "*/*" },
+      },
+    );
+    expect(response.status(), route).toBe(200);
+    expect(response.headers()["content-type"], route).toBe("image/jpeg");
+    expect((await response.body()).length, route).toBeLessThan(300_000);
+  }
+});

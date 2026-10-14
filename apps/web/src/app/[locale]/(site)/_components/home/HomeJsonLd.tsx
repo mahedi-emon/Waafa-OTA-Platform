@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { contactPhones } from "@waafa/shared";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
@@ -23,18 +24,34 @@ function otherNames(name: string, ...names: string[]): string[] {
   });
 }
 
+/** The travel services the agency offers, each with the page that sells it (issue 184). */
+const SERVICES = [
+  { key: "flights", path: "/flights" },
+  { key: "hotels", path: "/hotels" },
+  { key: "packages", path: "/tour-packages" },
+  { key: "visa", path: "/visa" },
+] as const;
+
 /**
  * WebSite, Organization and TravelAgency + LocalBusiness for Home (FR-SEO, #96), built only from admin settings: the
  * site name Google shows, the logo, the office with hours, phone, map and the share photo. Each entity also carries
  * the other brand names (WAAFA, Waafa Tours and Travel, Waafa International, Waafas World) so a search for any of them
- * finds the site (issue 173).
+ * finds the site (issue 173), and the agency lists what it sells (air tickets, hotels, tour packages, visa
+ * processing) with a contact point per office number, so travel searches match it (issue 184).
  */
 async function HomeJsonLd() {
-  const [site, contact, image] = await Promise.all([
+  const [site, contact, image, t] = await Promise.all([
     getSiteSettings(),
     getContactSettings(),
     defaultShareImage(),
+    getTranslations("Metadata"),
   ]);
+  const phones = contactPhones(contact).map((phone) => phone.e164);
+  const sameAs = contact.socials.map((social) => social.url);
+  const services = SERVICES.map((service) => ({
+    name: t(`services.${service.key}`),
+    url: absoluteUrl(service.path),
+  }));
   const url = absoluteUrl("/");
   const address = {
     "@type": "PostalAddress",
@@ -70,7 +87,16 @@ async function HomeJsonLd() {
             alternateName: otherNames(site.companyName, "WAAFA", site.travelBrand),
             url,
             logo: absoluteUrl("/icon.png"),
-            sameAs: contact.socials.map((social) => social.url),
+            email: contact.email,
+            address,
+            contactPoint: phones.map((telephone) => ({
+              "@type": "ContactPoint",
+              telephone,
+              contactType: t("contactType"),
+              areaServed: "BD",
+              availableLanguage: ["English", "Bengali"],
+            })),
+            sameAs,
           },
           {
             "@type": ["TravelAgency", "LocalBusiness"],
@@ -78,7 +104,7 @@ async function HomeJsonLd() {
             name: site.travelBrand,
             alternateName: otherNames(site.travelBrand, "WAAFA", site.companyName),
             url,
-            telephone: contactPhones(contact).map((phone) => phone.e164),
+            telephone: phones,
             email: contact.email,
             logo: absoluteUrl("/icon.png"),
             ...(image ? { image: absoluteUrl(image.url) } : {}),
@@ -88,6 +114,16 @@ async function HomeJsonLd() {
             areaServed: { "@type": "Country", name: "Bangladesh" },
             address,
             openingHoursSpecification: hours,
+            knowsAbout: services.map((service) => service.name),
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: t("services.catalogue"),
+              itemListElement: services.map((service) => ({
+                "@type": "Offer",
+                itemOffered: { "@type": "Service", name: service.name, url: service.url },
+              })),
+            },
+            ...(sameAs.length > 0 ? { sameAs } : {}),
             parentOrganization: { "@id": schemaId("organization") },
           },
         ],

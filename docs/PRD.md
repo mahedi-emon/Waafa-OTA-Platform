@@ -502,7 +502,7 @@ The site must feel instant on a mid-range Android phone on 4G, pass a security r
 - Mobile p75: LCP 2.5 s or less, INP 200 ms or less, CLS 0.1 or less; Lighthouse mobile Performance 90+ on Home, package list and detail, shop home and product pages.
 - First-load JavaScript on public pages 200 KB gzipped or less.
 - React Server Components by default; static generation with on-demand revalidation for admin-managed content; client components only where interaction needs them.
-- next/image with AVIF or WebP, explicit sizes, a priority hero image with blur placeholder, lazy loading below the fold.
+- next/image with AVIF or WebP, explicit sizes, a priority hero image with blur placeholder, lazy loading below the fold. Photos at quality 65 and the logo at 90 (owner, 14 Oct: lighter images), widths up to 2560 px, a month-long optimiser cache; shipped photos are stored as mozjpeg q80.
 - next/font, self-hosted, two families at most, `display: swap`.
 - Motion animates transform and opacity only, loaded through LazyMotion; reduced-motion users get static states.
 - API p95: 300 ms for cached reads, 800 ms for writes; lead submit completes within 1 s on 4G.
@@ -527,7 +527,8 @@ The site must feel instant on a mid-range Android phone on 4G, pass a security r
 - Split sitemap.xml and robots.txt; noindex for admin, cart, checkout, account and parameterised results pages.
 - Titles stay within 60 characters (the "| Waafa" suffix only when it fits) and descriptions within 155, cut at a word, whatever an admin record holds; one h1 per page, the Home h1 names the brand; every image has alt text; info and detail pages end with "Explore more" links to visa countries, packages, routes, guides and articles. Home structured data names the brand as Waafa Tours and Travel, Waafa International, WAAFA and Waafas World.
 - Every published record page (package, visa country or guide, blog post, flight route, product, category, brand, collection, album, page) is indexed and listed in sitemap.xml, Sample or not (owner, 14 Oct: About Us and the record pages must rank). Only the record's SEO › noindex switch in Admin sends `robots: noindex, follow` and keeps it out of the sitemap. Sample stays a visible label.
-- Dynamic Open Graph images for packages, posts and products.
+- Dynamic Open Graph images for packages, posts and products. Every share image goes through the optimiser at 1200 px, so Facebook and WhatsApp previews load a JPEG well under 300 KB.
+- Page titles and descriptions follow what people in Bangladesh search (air tickets from Dhaka, visa processing in Dhaka, tour packages from Bangladesh, hotel booking, travel agency in Dhaka); Home structured data lists the agency's services and a contact point per office number; `/llms.txt` summarises the business, services, visa countries, guides, packages, routes and contact for AI search, from admin data and without prices.
 - GA4 through GTM plus Meta Pixel; events: search, generate\_lead, whatsapp\_click, call\_click, view\_item, add\_to\_cart, begin\_checkout, purchase. Search Console verified at launch.
 
 **Accessibility (NFR-A11Y)** — WCAG 2.2 AA: text contrast 4.5:1 or more (the gold accent never carries small text), visible focus rings, full keyboard support, accessible comboboxes and date pickers, announced form errors, labels on every input, 44 px touch targets, required alt text, a skip link, reduced-motion support.

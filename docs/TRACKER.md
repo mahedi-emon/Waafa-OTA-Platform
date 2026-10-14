@@ -37,6 +37,25 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #185 · Images: lighter photos and share previews, backup check — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 14 Oct: images are too heavy; make them smaller and keep them safe on the server with working backups |
+| Found | Visitors already got AVIF/WebP at the right width (Home 345 KB of images at 412 px over 46 photos); link previews used the full JPEG (up to 813 KB, over WhatsApp's 300 KB); shipped JPEGs at q87 |
+| Built | `qualities: [65, 90]` (photos 65 through `SmartImage`/`SmartVideo`, logo 90), `deviceSizes` up to 2560 (1440 added, 3840 gone), `minimumCacheTTL` 31 days; `shareImageSrc`/`sharePreview` send every og:image through the optimiser at 1200 px (a JPEG for crawlers); shipped photos re-encoded mozjpeg q80 at the same size (7.5 MB → 4.9 MB). Uploads already become WebP ≤ 2560 px without metadata; `backup.sh` already keeps the database and every uploaded photo (14 days) |
+| Before → after (image KB, 412 px / 1440 px) | Home 345 → 259 / 345 → 255 · Tour packages 311 → 226 / 134 → 97 · Flights 173 → 132 / 133 → 101 · Shop 147 → 117 / 133 → 103 · Package page 132 → 99 / 117 → 84 · Gallery 176 → 131 / 147 → 106 · Blog 212 → 158 / 162 → 120 |
+| Tested | Vitest: shareImageSrc, sharePreview (5); Playwright seo.spec: og:image is the 1200 px optimiser URL and returns a JPEG under 300 KB; screenshots 390 and 1440 |
+| Decision | D182 |
+
+### #184 · SEO: titles and structured data for brand and travel searches, llms.txt — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 14 Oct: Waafa, Waafa Tours and Travel, Waafa International, travel, visa, flight and tour searches should find the site; professional SEO that needs no more work |
+| Built | Search-intent titles and descriptions: Air Tickets from Dhaka, Hotel Booking in Bangladesh and Worldwide, Tour Packages from Bangladesh, Visa Processing in Dhaka, {country} Visa from Bangladesh (meta title only, the h1 stays), About Waafa Tours and Travel and Waafa International, Contact Waafa: Travel Agency in Motijheel, FAQs, Travel Blog. Home default SEO "Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh" with every service and both brands; seed patch `2026-10-14-home-seo` updates the live text only while it is the launch wording. Home JSON-LD: Organization email, address and a ContactPoint per office number; TravelAgency `knowsAbout` and `hasOfferCatalog` (air tickets, hotels, tour packages, visa processing with their pages), `sameAs`. `/llms.txt` from admin data (brands, services, visa countries, guides, packages, routes, contact; no prices) |
+| Not code | Google Business Profile, Search Console requests, Bing, links from Facebook and directories, reviews: owner steps in the close-out. hreflang left out while the site has one language (Bangla P1 adds it) |
+| Tested | API: updateHomeSeo unit (2) and patch database test (API 143); Playwright seo.spec: Home title, offer catalogue and contact points, llms.txt; titles ≤ 60 and descriptions ≤ 155 on every public page |
+| Decision | D181 |
+
 ### #183 · SEO: every published page is indexable (Sample no longer noindex) — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1044,6 +1063,8 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-126 | Store price shown or Price on request + Ask for price | `product.showPrice` | Waafas World › Products › Show price | `PUT /api/v1/admin/content/products/:id` | ✅ 13 Oct · store e2e |
 | AC-127 | Visa price range per type ("৳a – ৳b" or "From ৳a") | `visaCountry.types[].priceRange.{min,max}` | Visa › Countries › type › Price range | `PUT /api/v1/admin/content/visaCountries/:id` | ✅ 13 Oct · seo e2e |
 | AC-128 | Office phone numbers (footer, Help panel, Contact, JSON-LD) | `contactSettings.phoneDisplay/phoneE164` + `contactSettings.extraPhones[]` | Settings › Contact › Extra phones | `PUT /api/v1/admin/content/contactSettings` | ✅ 14 Oct · content e2e |
+| AC-129 | Home search title and description | `siteSettings.defaultSeo.{title,description}` | Settings › General › SEO | `PUT /api/v1/admin/content/siteSettings` | ✅ 14 Oct · seo e2e |
+| AC-130 | llms.txt (brands, services, visa countries, guides, packages, routes, contact) | site and contact settings + visa, guide, package and route records (SEO › noindex leaves one out) | Settings › General and Contact; each record's editor | `GET /llms.txt` (web) | ✅ 14 Oct · seo e2e |
 
 ## 5. Components inventory
 
@@ -1347,6 +1368,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D178 | 13 Oct | Visa prices show as an admin range per type, never one fixed amount; no range falls back to "From" fee + charge | Owner: visa costs vary by file; a range is honest and the expert confirms before payment | #179 |
 | D179 | 14 Oct | Extra office numbers are a list after the main number (`extraPhones`); WhatsApp stays on the main number; live data gets the second number through a one-time seed patch | Owner: two numbers now, more from Admin; seed never overwrites admin data | #181 |
 | D180 | 14 Oct | Every published record page is indexed whatever its Sample flag; only SEO › noindex hides one. Replaces D172 | Owner: About Us noindex in Search Console, wants the site ranked with no manual steps; the live records are all seeded as Sample, so D172 hid the pages that rank (visa, routes, packages, products) | #183 |
+| D181 | 14 Oct | Meta titles and descriptions use search wording (air tickets, visa processing, tour packages, Dhaka, Bangladesh) while h1s keep the board copy; live admin SEO text changes only through a one-time patch that leaves edited wording alone; `/llms.txt` lists links, never prices | Owner: rank for brand and travel searches; people in Bangladesh search "air ticket" and "visa processing"; prices are confirmed by a person | #184 |
+| D182 | 14 Oct | Photos at quality 65 (AVIF ≈ 41), logo at 90, widths up to 2560, image cache 31 days, share images at 1200 px through the optimiser, shipped JPEGs at mozjpeg q80 | Owner: lighter images; 65 is 25 to 28% smaller than 75 with no visible change (side-by-side crops); WhatsApp drops previews over 300 KB | #185 |
 
 ## 9. Bugs and known issues
 
@@ -1418,6 +1441,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 14 Oct | Owner: About Us noindex in Search Console, full SEO, lighter images. #183 every published page indexable (PR #186); #184 search titles, services and contact points in structured data, llms.txt, home SEO seed patch; #185 photos q65, share images 1200 px, shipped JPEGs −35% | #183, #184, #185 | #186, #187 | API 143 · web unit 319 · e2e 121 |
 | 14 Oct | Owner: second contact number and more from Admin (#181, seed patch adds 01823-232242 on deploy). #180 merged (store price on request, visa ranges) | #181 | #182 | API 140 · web unit 317 · e2e 120 |
 | 13 Oct 21:00–22:30 | Owner: nav "Visa" and URL /visa on the live site (#176, seed patch), Waafas World prices hidden by default with Ask for price (#178), visa price ranges (#179). Store and visa ship in one PR to save a CI cycle before go-live | #176, #178, #179 | #177 | web unit 316+ · e2e store, visa, seo |
 | 13 Oct 19:30–21:00 | #171 and #174 merged (CI Lighthouse after: Home 57, Flights 74, Packages 90, Visa 90, Shop 84). Owner: nav label Visa (#172; live menu changes in Admin). Part 3 on-page SEO and brand names | #172, #173 | #174, #175 | web unit 313 · e2e 114 passed |
