@@ -2,20 +2,20 @@ import { expect, test, type Page } from "@playwright/test";
 
 /*
  * Share previews and structured data (#96): every public page has its own og:title and description, an og:image,
- * a large Twitter card and Google's large image preview; listings carry ItemList; the sitemap lists the real pages.
- * Record pages still marked Sample send noindex, follow and stay out of the sitemap (issue 168).
+ * a large Twitter card and Google's large image preview; listings carry ItemList; the sitemap lists the public pages.
+ * Record pages are indexed and listed even while marked Sample; only SEO › noindex hides one (issue 183).
  */
 /** Pages that are not admin records: always indexed. */
 const INDEXED = ["/", "/flights", "/tour-packages", "/visa", "/shop", "/blog", "/contact"];
-/** Record pages: every fixture record is Sample, so these send noindex, follow (issue 168). */
-const SAMPLE_RECORDS = [
+/** Record pages: every fixture record is Sample, and they are indexed all the same (issue 183). */
+const RECORDS = [
   "/flights/dhaka-to-dubai",
   "/tour-packages/maldives-island-stay",
   "/visa/thailand",
   "/shop/p/better-day-ce505a-cf280a-black-toner",
   "/about-us",
 ];
-const ROUTES = [...INDEXED, ...SAMPLE_RECORDS];
+const ROUTES = [...INDEXED, ...RECORDS];
 
 const meta = (page: Page, selector: string) =>
   page.locator(selector).first().getAttribute("content");
@@ -40,9 +40,7 @@ test("every public page has its own share preview", async ({ page }) => {
     expect(await meta(page, 'meta[name="twitter:card"]'), `${route} twitter:card`).toBe(
       "summary_large_image",
     );
-    expect(await meta(page, 'meta[name="robots"]'), `${route} robots`).toBe(
-      SAMPLE_RECORDS.includes(route) ? "noindex, follow" : "index, follow",
-    );
+    expect(await meta(page, 'meta[name="robots"]'), `${route} robots`).toBe("index, follow");
   }
   // Each page names itself: no page shares another page's title.
   expect(titles.size).toBe(ROUTES.length);
@@ -136,15 +134,12 @@ test("store, About, Gallery, Visa Guide and visa services describe themselves (i
   expect(JSON.stringify(nodes)).not.toMatch(/aggregateRating|"review"/i);
 });
 
-test("the sitemap lists the public pages and leaves Sample records out (issue 168)", async ({
+test("the sitemap lists the public pages and every record page, Sample ones too (issue 183)", async ({
   request,
 }) => {
   const body = await (await request.get("/sitemap.xml")).text();
-  for (const route of INDEXED.filter((path) => path !== "/")) {
+  for (const route of [...INDEXED.filter((path) => path !== "/"), ...RECORDS]) {
     expect(body, route).toContain(`${route}</loc>`);
-  }
-  for (const route of SAMPLE_RECORDS) {
-    expect(body, route).not.toContain(`${route}</loc>`);
   }
   expect(body).not.toContain("secure-admin-control");
 });
@@ -152,7 +147,7 @@ test("the sitemap lists the public pages and leaves Sample records out (issue 16
 /** Public pages for the on-page checks: list pages, info pages and one record of each kind (issue 173). */
 const ON_PAGE_ROUTES = [
   ...INDEXED,
-  ...SAMPLE_RECORDS,
+  ...RECORDS,
   "/hotels",
   "/plan-my-trip",
   "/flights/group-fares",
