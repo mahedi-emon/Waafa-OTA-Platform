@@ -6,6 +6,7 @@ import Image from "next/image";
 import { cn } from "cn";
 import markImage from "@/assets/brand/waafa-mark.png";
 import { Link } from "@/i18n/navigation";
+import { LOGO_QUALITY } from "@/lib/media/imageQuality";
 import { CurrentMarker } from "./CurrentMarker";
 import { isActivePath } from "./isActivePath";
 import { useLazyOverlay } from "./useLazyOverlay";
@@ -94,7 +95,14 @@ function TabBar({ items, moreSheet, labels }: TabBarProps) {
                   data-cart-target=""
                   className="-mt-7 grid size-14 place-items-center rounded-full bg-white shadow-lg ring-2 ring-electric-100 transition-transform duration-150 group-active/tab:scale-95 group-has-[[data-current]]/tab:ring-electric-600"
                 >
-                  <Image src={markImage} alt="" width={33} height={20} className="h-5 w-[33px]" />
+                  <Image
+                    src={markImage}
+                    alt=""
+                    width={33}
+                    height={20}
+                    quality={LOGO_QUALITY}
+                    className="h-5 w-[33px]"
+                  />
                 </span>
                 <span className="max-w-[72px] text-[11px] leading-[1.1] font-semibold">
                   {item.label}

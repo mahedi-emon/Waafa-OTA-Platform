@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image, { type StaticImageData } from "next/image";
 import { cn } from "cn";
+import { PHOTO_QUALITY } from "@/lib/media/imageQuality";
 import { usePrefersReducedMotion } from "@/components/motion/reducedMotion";
 import { canAutoplayVideo, type ConnectionInfo } from "./videoPolicy";
 
@@ -114,6 +115,7 @@ function SmartVideo({
         alt={alt}
         fill
         sizes={sizes}
+        quality={PHOTO_QUALITY}
         preload={preloadPoster}
         fetchPriority={preloadPoster ? "high" : undefined}
         className="object-cover"

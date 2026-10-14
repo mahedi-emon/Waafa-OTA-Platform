@@ -1,5 +1,6 @@
 import Image, { type ImageProps } from "next/image";
 import { cn } from "cn";
+import { PHOTO_QUALITY } from "@/lib/media/imageQuality";
 
 type SmartImageProps = Omit<ImageProps, "alt" | "placeholder"> & {
   /** Required. Describe the photo; pass "" only for purely decorative images. */
@@ -16,7 +17,7 @@ type SmartImageProps = Omit<ImageProps, "alt" | "placeholder"> & {
 };
 
 /**
- * next/image with WAAFA defaults: AVIF/WebP, a blurred placeholder for imported photos, a mist frame that
+ * next/image with WAAFA defaults: AVIF/WebP at photo quality 65 (issue 185), a blurred placeholder for imported photos, a mist frame that
  * reserves the space (no layout shift), and lazy loading unless `preload` is set for the LCP image. A preloaded
  * image is also fetched at high priority (issue 170): the preload hint alone left the store banner queued as Low.
  */
@@ -30,6 +31,7 @@ function SmartImage({
   src,
   preload,
   fetchPriority,
+  quality = PHOTO_QUALITY,
   ...props
 }: SmartImageProps) {
   const priority = {
@@ -47,6 +49,7 @@ function SmartImage({
         src={src}
         alt={alt}
         sizes={sizes}
+        quality={quality}
         placeholder={hasBlur ? "blur" : "empty"}
         className={cn(zoom, className)}
         {...priority}
@@ -65,6 +68,7 @@ function SmartImage({
         alt={alt}
         fill
         sizes={sizes ?? "100vw"}
+        quality={quality}
         placeholder={hasBlur ? "blur" : "empty"}
         className={cn("object-cover", zoom, className)}
         {...priority}

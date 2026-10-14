@@ -3,10 +3,9 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { getMediaSlot } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
+import { type ShareImage, shareImageSrc, sharePreview } from "@/lib/media/imageQuality";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { clampText, DESCRIPTION_MAX, fitTitle, TITLE_MAX } from "./metaText";
-
-type ShareImage = { url: string; alt: string; width?: number; height?: number };
 
 type SocialOptions = {
   /** "article" for blog posts and visa guides. */
@@ -14,6 +13,30 @@ type SocialOptions = {
   /** The page's own photo (package cover, product, post); otherwise the admin default. */
   image?: ShareImage;
 };
+
+/** Open Graph images a page set itself ("/media/…" strings or { url, alt, width, height }), resized the same way. */
+function sharePreviews(images: unknown): unknown {
+  const list: unknown[] = Array.isArray(images) ? images : [images];
+  return list.map((item) => {
+    if (typeof item === "string") return { url: shareImageSrc(item) };
+    if (item && typeof item === "object" && "url" in item && typeof item.url === "string") {
+      const record = item as Record<string, unknown> & { url: string };
+      const width = typeof record.width === "number" ? record.width : undefined;
+      const height = typeof record.height === "number" ? record.height : undefined;
+      const alt = typeof record.alt === "string" ? record.alt : "";
+      return {
+        ...record,
+        ...sharePreview({
+          url: record.url,
+          alt,
+          ...(width ? { width } : {}),
+          ...(height ? { height } : {}),
+        }),
+      };
+    }
+    return item;
+  });
+}
 
 function titleText(title: Metadata["title"]): string | undefined {
   if (!title) return undefined;
@@ -31,12 +54,12 @@ export async function defaultShareImage(): Promise<ShareImage | undefined> {
   const [site, hero] = await Promise.all([getSiteSettings(), getMediaSlot("home-hero")]);
   const image = site.defaultSeo.image ?? hero?.image ?? hero?.video?.poster;
   if (!image) return undefined;
-  return {
+  return sharePreview({
     url: typeof image.src === "string" ? image.src : String(image.src),
     alt: image.alt,
     ...(image.width ? { width: image.width } : {}),
     ...(image.height ? { height: image.height } : {}),
-  };
+  });
 }
 
 /**
@@ -85,7 +108,12 @@ export async function withSocial(
         : undefined;
   const existing = (metadata.openGraph ?? {}) as Record<string, unknown>;
   const image = options.image ?? fallback;
-  const images = (existing.images as unknown) ?? (image ? [image] : undefined);
+  const images =
+    existing.images !== undefined
+      ? sharePreviews(existing.images)
+      : image
+        ? [sharePreview(image)]
+        : undefined;
 
   return {
     ...metadata,
@@ -98,8 +126,8 @@ export async function withSocial(
       title,
       ...(description ? { description } : {}),
       ...(url ? { url } : {}),
-      ...(images ? { images } : {}),
       ...existing,
+      ...(images ? { images } : {}),
     } as Metadata["openGraph"],
     twitter: {
       card: "summary_large_image",
