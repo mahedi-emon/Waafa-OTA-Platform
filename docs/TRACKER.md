@@ -54,7 +54,6 @@ Serena memory `audit_findings`.
 | Tested | Vitest: visaPrice (shared), formatVisaPrice (web); Playwright: range on the Thailand page and in JSON-LD; visa, seo, home, search e2e 30 passed; screenshots 390 and 1440, no overflow |
 | Tools and skills | Serena, Playwright, GitHub MCP |
 | Decision | D178 |
-| D179 | 14 Oct | Extra office numbers are a list after the main number (`extraPhones`); WhatsApp stays on the main number; live data gets the second number through a one-time seed patch | Owner: two numbers now, more from Admin; seed never overwrites admin data | #181 |
 
 ### #178 · Waafas World: prices hidden by default, Ask for price on WhatsApp, per-product Show price — ✅ Done
 | Field | Value |
@@ -63,7 +62,6 @@ Serena memory `audit_findings`.
 | Built | `Product.showPrice` (default off: every live product hides its price after the deploy; Admin › Waafas World › Products › Show price). Hidden: card and product page "Price on request", Ask for price on WhatsApp (product named) and Call, no cart, Buy now, %-off chip, deal row or Offer JSON-LD; `publicProduct` blanks variant prices on the server; price bands skip it and price sorts put it last; shared `priceCart` never sells it (web quote and API orders). Recently viewed keeps no price for it. Sample fixtures: CF280A toner, T-shirt, power bank and headphones show prices; CRG 070H and HP 151A toners do not |
 | Tested | Vitest: priceCart drops hidden products, publicProduct blanks prices, repository bands and sorts (shared 78, web 316); Playwright: hidden product page (no price in HTML, WhatsApp link, no cart, axe) and mixed cards; store, orders, home, budget, seo specs 33/33 |
 | Decision | D177 |
-| D178 | 13 Oct | Visa prices show as an admin range per type, never one fixed amount; no range falls back to "From" fee + charge | Owner: visa costs vary by file; a range is honest and the expert confirms before payment | #179 |
 
 ### #176 · Visa moves to /visa, and the live menu reads "Visa" — ✅ Done
 | Field | Value |
@@ -1337,6 +1335,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D175 | 13 Oct | Titles and descriptions are fitted in code (60 / 155, cut at a word), not only by admin validation; Explore more links on pages with few links; Home h1 carries the brand eyebrow | Admin records can be any length; a page's main heading and structured data should name the brand for brand searches | #173 |
 | D176 | 13 Oct | Visa lives at /visa (308 from /visa-services); data changes that must reach the live database ship as one-time seed patches (`_seedPatches`), never by overwriting admin data wholesale | Owner request; the seed must not overwrite admin edits, but a renamed route has to move stored links | #176 |
 | D177 | 13 Oct | Store prices hidden by default per product (Show price in Admin); hidden prices are blanked server-side and never sold online | Owner: products only, admin chooses which show a price; a hidden price must not leak through the page data, filters or the cart | #178 |
+| D178 | 13 Oct | Visa prices show as an admin range per type, never one fixed amount; no range falls back to "From" fee + charge | Owner: visa costs vary by file; a range is honest and the expert confirms before payment | #179 |
+| D179 | 14 Oct | Extra office numbers are a list after the main number (`extraPhones`); WhatsApp stays on the main number; live data gets the second number through a one-time seed patch | Owner: two numbers now, more from Admin; seed never overwrites admin data | #181 |
 
 ## 9. Bugs and known issues
 
