@@ -20,7 +20,7 @@ async function allProducts(): Promise<Product[]> {
 }
 
 /**
- * sitemap.xml (FR-SEO): every indexable public route. Records still marked Sample or set to noindex (issue 168), empty
+ * sitemap.xml (FR-SEO): every indexable public route. Records the admin set to SEO › noindex (issue 183), empty
  * categories and pages that do not exist stay out; data-driven routes (packages, visa countries, products, posts,
  * albums) are listed from the data layer, with their photos as image entries (#96).
  */

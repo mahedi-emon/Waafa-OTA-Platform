@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 type Seo = { noIndex: boolean };
 type Rec = { sample: boolean; seo: Seo; slug: string };
 
-/** The records the data layer returns; each test flips the Sample flags it needs. */
+/** The records the data layer returns; each test flips the flags it needs. */
 const data = {
   packages: [] as Array<Rec & { publishedAt: string; cover: { src: string } }>,
   routes: [] as Array<Rec & { image: { src: string } }>,
@@ -49,50 +49,57 @@ vi.mock("@/lib/data/shop", () => ({
 const { default: sitemap } = await import("./sitemap");
 
 const seo = { noIndex: false };
+const hidden = { noIndex: true };
 const urls = async () => (await sitemap()).map((entry) => new URL(entry.url).pathname);
 
 beforeEach(() => {
   data.packages = [
     {
-      slug: "real-package",
-      sample: false,
+      slug: "sample-package",
+      sample: true,
       seo,
       publishedAt: "2026-10-01",
       cover: { src: "/a.jpg" },
     },
     {
-      slug: "sample-package",
-      sample: true,
-      seo,
+      slug: "hidden-package",
+      sample: false,
+      seo: hidden,
       publishedAt: "2026-10-01",
       cover: { src: "/b.jpg" },
     },
   ];
   data.routes = [
-    { slug: "dhaka-to-real", sample: false, seo, image: { src: "/r.jpg" } },
-    { slug: "dhaka-to-sample", sample: true, seo, image: { src: "/s.jpg" } },
+    { slug: "dhaka-to-sample", sample: true, seo, image: { src: "/r.jpg" } },
+    { slug: "dhaka-to-hidden", sample: false, seo: hidden, image: { src: "/s.jpg" } },
   ];
   data.guides = [
-    { slug: "real-guide", sample: false, seo, updatedAt: "2026-10-01" },
     { slug: "sample-guide", sample: true, seo, updatedAt: "2026-10-01" },
+    { slug: "hidden-guide", sample: false, seo: hidden, updatedAt: "2026-10-01" },
   ];
   data.countries = [
-    { slug: "real-country", sample: false, seo },
     { slug: "sample-country", sample: true, seo },
+    { slug: "hidden-country", sample: false, seo: hidden },
   ];
   data.posts = [
-    { slug: "real-post", sample: false, seo, publishedAt: "2026-10-01", cover: { src: "/p.jpg" } },
-    { slug: "sample-post", sample: true, seo, publishedAt: "2026-10-01", cover: { src: "/q.jpg" } },
+    { slug: "sample-post", sample: true, seo, publishedAt: "2026-10-01", cover: { src: "/p.jpg" } },
+    {
+      slug: "hidden-post",
+      sample: false,
+      seo: hidden,
+      publishedAt: "2026-10-01",
+      cover: { src: "/q.jpg" },
+    },
   ];
   data.categories = [
-    { id: "c1", parentId: null, slug: "real-category", sample: false, seo },
-    { id: "c2", parentId: null, slug: "sample-only-category", sample: false, seo },
+    { id: "c1", parentId: null, slug: "stocked-category", sample: true, seo },
+    { id: "c2", parentId: null, slug: "hidden-stock-category", sample: false, seo },
   ];
   data.products = [
     {
       id: "p1",
-      slug: "real-product",
-      sample: false,
+      slug: "sample-product",
+      sample: true,
       seo,
       categoryId: "c1",
       brandId: "b1",
@@ -100,50 +107,36 @@ beforeEach(() => {
     },
     {
       id: "p2",
-      slug: "sample-product",
-      sample: true,
-      seo,
+      slug: "hidden-product",
+      sample: false,
+      seo: hidden,
       categoryId: "c2",
       brandId: "b2",
       images: [{ src: "/y.jpg" }],
     },
   ];
   data.brands = [
-    { id: "b1", slug: "real-brand", sample: false },
-    { id: "b2", slug: "sample-stock-brand", sample: false },
+    { id: "b1", slug: "stocked-brand", sample: true },
+    { id: "b2", slug: "hidden-stock-brand", sample: false },
   ];
-  data.collections = [
-    { slug: "real-collection", sample: false },
-    { slug: "sample-collection", sample: true },
-  ];
+  data.collections = [{ slug: "sample-collection", sample: true }];
   data.albums = [
-    { slug: "real-album", sample: false, publishedAt: "2026-10-01", cover: { src: "/g.jpg" } },
-    { slug: "sample-album", sample: true, publishedAt: "2026-10-01", cover: { src: "/h.jpg" } },
+    { slug: "sample-album", sample: true, publishedAt: "2026-10-01", cover: { src: "/g.jpg" } },
   ];
   data.pages = {
-    "about-us": { slug: "about-us", sample: false, seo, lastUpdated: "2026-10-01" },
-    "privacy-policy": { slug: "privacy-policy", sample: true, seo, lastUpdated: "2026-10-01" },
+    "about-us": { slug: "about-us", sample: true, seo, lastUpdated: "2026-10-01" },
+    "privacy-policy": {
+      slug: "privacy-policy",
+      sample: false,
+      seo: hidden,
+      lastUpdated: "2026-10-01",
+    },
   };
 });
 
-describe("sitemap (issue 168)", () => {
-  it("lists real records and leaves every Sample record out", async () => {
+describe("sitemap (issue 183)", () => {
+  it("lists every published record, Sample ones too", async () => {
     const paths = await urls();
-    for (const path of [
-      "/tour-packages/real-package",
-      "/flights/dhaka-to-real",
-      "/visa-guide/real-guide",
-      "/visa/real-country",
-      "/blog/real-post",
-      "/shop/p/real-product",
-      "/shop/c/real-category",
-      "/shop/brand/real-brand",
-      "/shop/collection/real-collection",
-      "/gallery/real-album",
-      "/about-us",
-    ]) {
-      expect(paths, path).toContain(path);
-    }
     for (const path of [
       "/tour-packages/sample-package",
       "/flights/dhaka-to-sample",
@@ -151,18 +144,35 @@ describe("sitemap (issue 168)", () => {
       "/visa/sample-country",
       "/blog/sample-post",
       "/shop/p/sample-product",
+      "/shop/c/stocked-category",
+      "/shop/brand/stocked-brand",
       "/shop/collection/sample-collection",
       "/gallery/sample-album",
+      "/about-us",
+    ]) {
+      expect(paths, path).toContain(path);
+    }
+  });
+
+  it("leaves out records the admin set to SEO › noindex", async () => {
+    const paths = await urls();
+    for (const path of [
+      "/tour-packages/hidden-package",
+      "/flights/dhaka-to-hidden",
+      "/visa-guide/hidden-guide",
+      "/visa/hidden-country",
+      "/blog/hidden-post",
+      "/shop/p/hidden-product",
       "/privacy-policy",
     ]) {
       expect(paths, path).not.toContain(path);
     }
   });
 
-  it("leaves out categories and brands that hold only Sample products", async () => {
+  it("leaves out categories and brands that hold only noindex products", async () => {
     const paths = await urls();
-    expect(paths).not.toContain("/shop/c/sample-only-category");
-    expect(paths).not.toContain("/shop/brand/sample-stock-brand");
+    expect(paths).not.toContain("/shop/c/hidden-stock-category");
+    expect(paths).not.toContain("/shop/brand/hidden-stock-brand");
   });
 
   it("keeps the static routes whatever the records are", async () => {
@@ -173,20 +183,16 @@ describe("sitemap (issue 168)", () => {
     }
   });
 
-  it("lists a record again once the admin turns Sample off", async () => {
-    expect(await urls()).not.toContain("/tour-packages/sample-package");
-    data.packages[1]!.sample = false;
-    expect(await urls()).toContain("/tour-packages/sample-package");
+  it("lists a record again once the admin turns noindex off", async () => {
+    expect(await urls()).not.toContain("/tour-packages/hidden-package");
+    data.packages[1]!.seo = { noIndex: false };
+    expect(await urls()).toContain("/tour-packages/hidden-package");
   });
 
-  it("still respects SEO › noindex on a real record", async () => {
-    data.posts[0]!.seo = { noIndex: true };
-    expect(await urls()).not.toContain("/blog/real-post");
-  });
-
-  it("leaves Sample photos out of the image entries", async () => {
+  it("keeps the photos of indexed records only", async () => {
     const images = (await sitemap()).flatMap((entry) => entry.images ?? []);
     expect(images.some((src) => src.endsWith("/a.jpg"))).toBe(true);
+    expect(images.some((src) => src.endsWith("/x.jpg"))).toBe(true);
     expect(images.some((src) => src.endsWith("/b.jpg"))).toBe(false);
     expect(images.some((src) => src.endsWith("/y.jpg"))).toBe(false);
   });

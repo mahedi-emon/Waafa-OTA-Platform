@@ -37,6 +37,15 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #183 · SEO: every published page is indexable (Sample no longer noindex) — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 14 Oct (Search Console): https://waafasworld.com/about-us "Excluded by 'noindex' tag"; full SEO with no manual steps later |
+| Why | #168 made Sample records noindex; every seeded live record is Sample, so About Us, the policies and every visa, route, package, product and post page were hidden from Google |
+| Built | `isIndexable` = not SEO › noindex (Sample ignored); robots meta and sitemap follow it on every record page. Admin Sample note reworded |
+| Tested | Vitest: indexing (4), sitemap (6: Sample listed, noindex left out, categories and brands, photos); Playwright seo.spec: record pages `index, follow` and in the sitemap |
+| Decision | D180 (replaces D172) |
+
 ### #181 · Contact: second office number and more numbers from Admin — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1030,7 +1039,7 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-121 | Country flags | `visaCountry.flagCode`; `airport.countryCode` (destinations, group fares, pickers) | Visa › Countries; Travel › Airports | `PUT /api/v1/admin/content/{visaCountries,airports}/:id` | ✅ 13 Oct · countryFlagSrc test |
 | AC-122 | Google sign-in keys | Integrations › Sign-in record, server env fallback | Settings › Integrations › Sign-in | `POST /api/v1/admin/providers/google/:environment`, `POST /api/v1/admin/providers/google/setting` | ✅ 13 Oct · customers.unit.test |
 | AC-123 | Airline logos (strip, fare cards, route pages, filter) | `airline.logo` (else bundled by `airline.code`) | Travel › Airlines › Logo | `PUT /api/v1/admin/content/airlines/:id` | ✅ 13 Oct · airlineLogoSrc test |
-| AC-124 | Search indexing of a record page (robots meta, sitemap entry) | record `sample` + `seo.noIndex` → `isIndexable` | The record's editor (Sample switch, SEO › noindex) in Travel, Visa, Content, Waafas World | `PUT /api/v1/admin/content/:key/:id` | ✅ 13 Oct · indexing + sitemap tests, seo e2e |
+| AC-124 | Search indexing of a record page (robots meta, sitemap entry) | record `seo.noIndex` → `isIndexable` (Sample no longer counts, #183) | The record's editor (SEO › noindex) in Travel, Visa, Content, Waafas World | `PUT /api/v1/admin/content/:key/:id` | ✅ 14 Oct · indexing + sitemap tests, seo e2e |
 | AC-125 | Explore more links (visa countries, packages, routes, guides, articles) | `listVisaCountries` (popular first), `listPackages` (popular), `listFlightRoutes`, `listVisaGuides`, `listBlogPosts` | Visa › Countries, Travel › Tour packages and Flight routes, Content › Visa guides and Blog | `GET /api/v1/public/snapshot` | ✅ 13 Oct · seo e2e |
 | AC-126 | Store price shown or Price on request + Ask for price | `product.showPrice` | Waafas World › Products › Show price | `PUT /api/v1/admin/content/products/:id` | ✅ 13 Oct · store e2e |
 | AC-127 | Visa price range per type ("৳a – ৳b" or "From ৳a") | `visaCountry.types[].priceRange.{min,max}` | Visa › Countries › type › Price range | `PUT /api/v1/admin/content/visaCountries/:id` | ✅ 13 Oct · seo e2e |
@@ -1329,7 +1338,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D169 | 13 Oct | Hero gets the next group fare card over the route's start, flags in the destination chip, ribbon line and static glows | Owner request for a more attractive hero; all from Admin data; glass stays on the search card | #157 |
 | D170 | 13 Oct | Web container cap 1 GB; one-shot bootstrap script for the VPS | Measured ~750 MB; fewer manual steps on launch day | #158 |
 | D171 | 13 Oct | The VPS gets no source code: deploy/server bundle (images only) copied with tar + scp; repo deploy path kept as an alternative | Owner: GitHub goes private, the server only pulls Docker Hub images | #164 |
-| D172 | 13 Oct | A record still marked Sample is noindex, follow and out of the sitemap, for every record with its own page (not only the six named types), including About and the policies; categories and brands need an indexable product to be listed | One predictable rule for staff: real content = Sample off; placeholder text never reaches Google | #168 |
+| D172 | 13 Oct | A record still marked Sample is noindex, follow and out of the sitemap, for every record with its own page (not only the six named types), including About and the policies; categories and brands need an indexable product to be listed | One predictable rule for staff: real content = Sample off; placeholder text never reaches Google | #168 (replaced by D180, #183) |
 | D173 | 13 Oct | The hero loop starts on the visitor's first scroll, touch, pointer move or key; the poster alone until then | Its first frame replaced the poster as LCP after hydration (Home 59 in CI); every visitor who scrolls or moves the mouse still sees it (MOTION.md) | #170 |
 | D174 | 13 Oct | Hidden or later UI loads on demand: results-page search card, lead step 2, form validation (zod, libphonenumber), corporate quote form; `inlineCss` and `content-visibility` rejected | Cuts flights 79 KB and shop 100 KB of first-load JS; inline CSS slowed first paint; content-visibility broke axe target-size checks | #170 |
 | D175 | 13 Oct | Titles and descriptions are fitted in code (60 / 155, cut at a word), not only by admin validation; Explore more links on pages with few links; Home h1 carries the brand eyebrow | Admin records can be any length; a page's main heading and structured data should name the brand for brand searches | #173 |
@@ -1337,6 +1346,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D177 | 13 Oct | Store prices hidden by default per product (Show price in Admin); hidden prices are blanked server-side and never sold online | Owner: products only, admin chooses which show a price; a hidden price must not leak through the page data, filters or the cart | #178 |
 | D178 | 13 Oct | Visa prices show as an admin range per type, never one fixed amount; no range falls back to "From" fee + charge | Owner: visa costs vary by file; a range is honest and the expert confirms before payment | #179 |
 | D179 | 14 Oct | Extra office numbers are a list after the main number (`extraPhones`); WhatsApp stays on the main number; live data gets the second number through a one-time seed patch | Owner: two numbers now, more from Admin; seed never overwrites admin data | #181 |
+| D180 | 14 Oct | Every published record page is indexed whatever its Sample flag; only SEO › noindex hides one. Replaces D172 | Owner: About Us noindex in Search Console, wants the site ranked with no manual steps; the live records are all seeded as Sample, so D172 hid the pages that rank (visa, routes, packages, products) | #183 |
 
 ## 9. Bugs and known issues
 
