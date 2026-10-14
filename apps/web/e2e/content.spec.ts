@@ -79,6 +79,21 @@ test.describe("forms and filters at 390", () => {
     expect(errors).toEqual([]);
   });
 
+  test("contact page and footer list both office numbers (issue 181)", async ({ page }) => {
+    await page.goto("/contact");
+    const main = page.locator("main");
+    for (const [label, tel] of [
+      ["Call 01823-232241", "tel:+8801823232241"],
+      ["Call 01823-232242", "tel:+8801823232242"],
+    ] as const) {
+      await expect(main.getByRole("link", { name: label })).toHaveAttribute("href", tel);
+    }
+    const footer = page.locator("footer");
+    await expect(footer.locator('a[href="tel:+8801823232241"]')).toHaveText("01823-232241");
+    await expect(footer.locator('a[href="tel:+8801823232242"]')).toHaveText("01823-232242");
+    await axe(page);
+  });
+
   test("feedback is received for moderation, never shown straight away", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/feedback");

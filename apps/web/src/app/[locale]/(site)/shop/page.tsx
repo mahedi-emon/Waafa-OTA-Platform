@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { ArrowRight, Building2, Printer } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { whatsappLink, type Product, type StoreRow } from "@waafa/shared";
+import { contactPhones, whatsappLink, type Product, type StoreRow } from "@waafa/shared";
 import { SectionHeading } from "@/components/content/SectionHeading";
 import { MenuIcon } from "@/components/icons/MenuIcon";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
@@ -76,7 +76,7 @@ export default async function ShopPage() {
         url: storeUrl,
         description: t("metaDescription"),
         logo: absoluteUrl("/icon.png"),
-        telephone: contact.phoneE164,
+        telephone: contactPhones(contact).map((phone) => phone.e164),
         email: contact.email,
         currenciesAccepted: "BDT",
         areaServed: { "@type": "Country", name: contact.country },

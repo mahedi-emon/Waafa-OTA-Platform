@@ -26,3 +26,21 @@ export function whatsappLink(e164: string, message?: string): string {
     ? `https://wa.me/${number}?text=${encodeURIComponent(message)}`
     : `https://wa.me/${number}`;
 }
+
+export type ContactPhone = { display: string; e164: string };
+
+/**
+ * Every office number in order: the main one, then the extra numbers from Admin (issue 181). A number repeated in
+ * the list is shown once.
+ */
+export function contactPhones(contact: {
+  phoneDisplay: string;
+  phoneE164: string;
+  extraPhones?: ContactPhone[];
+}): ContactPhone[] {
+  const phones: ContactPhone[] = [{ display: contact.phoneDisplay, e164: contact.phoneE164 }];
+  for (const phone of contact.extraPhones ?? []) {
+    if (!phones.some((item) => item.e164 === phone.e164)) phones.push(phone);
+  }
+  return phones;
+}

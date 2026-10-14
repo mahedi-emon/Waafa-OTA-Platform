@@ -81,11 +81,42 @@ async function visaRoute(prisma: PrismaClient): Promise<number> {
   return changed;
 }
 
+const MAIN_PHONE = "+8801823232241";
+const SECOND_PHONE = { display: "01823-232242", e164: "+8801823232242" };
+
+/**
+ * The stored contact settings with the office's second number added after the main one (issue 181). Only when the
+ * main number is still 01823-232241 and an admin has not set extra numbers yet; any other value is returned as it is.
+ */
+export function addSecondPhone(contact: unknown): unknown {
+  if (!contact || typeof contact !== "object" || Array.isArray(contact)) return contact;
+  const record = contact as { phoneE164?: unknown; extraPhones?: unknown };
+  if (record.phoneE164 !== MAIN_PHONE) return contact;
+  if (Array.isArray(record.extraPhones) && record.extraPhones.length > 0) return contact;
+  return { ...record, extraPhones: [SECOND_PHONE] };
+}
+
+/** Issue 181: the live contact settings gain the second office number, 01823-232242. */
+async function secondPhone(prisma: PrismaClient): Promise<number> {
+  const row = await prisma.setting.findUnique({ where: { key: "contactSettings" } });
+  if (!row) return 0;
+  const value = addSecondPhone(row.value);
+  if (same(value, row.value)) return 0;
+  await prisma.setting.update({
+    where: { key: row.key },
+    data: { value: json(value), version: { increment: 1 }, updatedBy: "seed-patch" },
+  });
+  return 1;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
   apply: (prisma: PrismaClient) => Promise<number>;
-}> = [{ id: "2026-10-13-visa-route", apply: visaRoute }];
+}> = [
+  { id: "2026-10-13-visa-route", apply: visaRoute },
+  { id: "2026-10-14-second-phone", apply: secondPhone },
+];
 
 export type PatchResult = { applied: string[]; changed: number };
 

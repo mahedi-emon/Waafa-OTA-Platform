@@ -95,12 +95,13 @@ describe("compliance (PRD §2 and the CLAUDE.md Never list)", () => {
     expect(data.team.filter((member) => member.photo !== undefined)).toEqual([]);
   });
 
-  it("contains no Bangladeshi mobile number except the company’s published one", () => {
-    const company = "01823232241";
+  it("contains no Bangladeshi mobile number except the company’s published ones", () => {
+    // The office's two published numbers (issue 181).
+    const company = ["01823232241", "01823232242"];
     const numbers = text.flatMap(
       (value) => value.replace(/[\s-]/g, "").match(/(?:\+?880)?01[3-9]\d{8}/g) ?? [],
     );
-    expect(numbers.filter((number) => !number.endsWith(company))).toEqual([]);
+    expect(numbers.filter((number) => !company.some((own) => number.endsWith(own)))).toEqual([]);
   });
 
   it("uses real media files from apps/web/public/media with a linked credit for every stock photo and clip", () => {

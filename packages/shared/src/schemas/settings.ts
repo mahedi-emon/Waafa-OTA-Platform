@@ -38,6 +38,20 @@ export const ContactSettingsSchema = z
     /** E.164 for tel: and wa.me links, e.g. "+8801823232241". */
     phoneE164: z.string().regex(/^\+[1-9]\d{6,14}$/),
     whatsappE164: z.string().regex(/^\+[1-9]\d{6,14}$/),
+    /** More numbers shown after the main one (issue 181), in this order; add or remove rows in Admin. */
+    extraPhones: z
+      .array(
+        z
+          .object({
+            /** National format for display, e.g. "01823-232242". */
+            display: z.string().min(1),
+            /** E.164 for the tel: link, e.g. "+8801823232242". */
+            e164: z.string().regex(/^\+[1-9]\d{6,14}$/),
+          })
+          .strict(),
+      )
+      .max(6)
+      .default([]),
     email: EmailSchema,
     mapUrl: z.url().optional(),
     officeHours: OpeningHoursSchema,

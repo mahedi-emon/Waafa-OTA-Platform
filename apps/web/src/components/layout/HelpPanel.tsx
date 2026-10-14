@@ -1,7 +1,7 @@
 import { Headset, Mail, MapPin, Phone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ContactSettings } from "@waafa/shared";
-import { whatsappLink } from "@waafa/shared/helpers/phone";
+import { contactPhones, whatsappLink } from "@waafa/shared/helpers/phone";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { ContactRow } from "./ContactRow";
 import { OfficeStatusChip } from "./OfficeStatusChip";
@@ -17,8 +17,8 @@ function formatInternational(e164: string): string {
 }
 
 /**
- * "Need help?" panel (Home-help and Home-m-help boards): who you will talk to, the live office status and the four
- * ways to reach the office. Rendered on the server; the popover (desktop) and bottom sheet (phones) show it.
+ * "Need help?" panel (Home-help and Home-m-help boards): who you will talk to, the live office status and every
+ * way to reach the office (each office number, WhatsApp, email, the map). Rendered on the server; the popover (desktop) and bottom sheet (phones) show it.
  */
 async function HelpPanel({ contact }: HelpPanelProps) {
   const t = await getTranslations("Layout");
@@ -51,19 +51,22 @@ async function HelpPanel({ contact }: HelpPanelProps) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <ContactRow
-          icon={<Phone aria-hidden="true" />}
-          label={t("call")}
-          value={contact.phoneDisplay}
-          href={`tel:${contact.phoneE164}`}
-          linkLabel={`${t("call")} ${contact.phoneDisplay}`}
-          copy={{
-            value: contact.phoneDisplay,
-            label: t("copyPhone"),
-            copiedLabel: t("phoneCopied"),
-            failedLabel: t("copyFailed"),
-          }}
-        />
+        {contactPhones(contact).map((phone) => (
+          <ContactRow
+            key={phone.e164}
+            icon={<Phone aria-hidden="true" />}
+            label={t("call")}
+            value={phone.display}
+            href={`tel:${phone.e164}`}
+            linkLabel={`${t("call")} ${phone.display}`}
+            copy={{
+              value: phone.display,
+              label: `${t("copyPhone")} ${phone.display}`,
+              copiedLabel: t("phoneCopied"),
+              failedLabel: t("copyFailed"),
+            }}
+          />
+        ))}
         <ContactRow
           icon={<WhatsAppIcon className="text-whatsapp-700" />}
           label={t("whatsapp")}

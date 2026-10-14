@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
-import { whatsappLink } from "@waafa/shared";
+import { contactPhones, whatsappLink } from "@waafa/shared";
 import { PageHero } from "@/components/content/PageHero";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -51,6 +51,13 @@ export default async function ContactPage() {
       body: `${contact.officeHoursText}. ${t("channels.callBody")}`,
       href: `tel:${contact.phoneE164}`,
       external: false,
+      // The other office numbers from Admin, each its own tel: link (issue 181).
+      more: contactPhones(contact)
+        .slice(1)
+        .map((phone) => ({
+          label: t("channels.call", { phone: phone.display }),
+          href: `tel:${phone.e164}`,
+        })),
     },
     {
       key: "whatsapp",
@@ -62,6 +69,7 @@ export default async function ContactPage() {
         contact.whatsappMessage.replace("{page}", t("metaTitle")),
       ),
       external: true,
+      more: [],
     },
     {
       key: "email",
@@ -70,6 +78,7 @@ export default async function ContactPage() {
       body: t("channels.emailBody"),
       href: `mailto:${contact.email}`,
       external: false,
+      more: [],
     },
     {
       key: "visit",
@@ -78,6 +87,7 @@ export default async function ContactPage() {
       body: address,
       href: contact.mapUrl ?? "#office",
       external: Boolean(contact.mapUrl),
+      more: [],
     },
   ];
 
@@ -90,7 +100,7 @@ export default async function ContactPage() {
           "@type": "TravelAgency",
           name: site.travelBrand,
           url: absoluteUrl("/"),
-          telephone: contact.phoneE164,
+          telephone: contactPhones(contact).map((phone) => phone.e164),
           email: contact.email,
           address: {
             "@type": "PostalAddress",
@@ -113,20 +123,31 @@ export default async function ContactPage() {
 
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {channels.map((channel) => (
-          <li key={channel.key}>
+          <li
+            key={channel.key}
+            className="group relative flex h-full flex-col gap-2 rounded-2xl border border-mist-200 bg-white p-5 focus-within:ring-3 focus-within:ring-ring/40 hover:border-mist-300 hover:shadow-md"
+          >
+            <span className="grid size-10 place-items-center rounded-xl bg-electric-50 text-brand-700 [&_svg]:size-5">
+              {channel.icon}
+            </span>
+            {/* The title link covers the card; extra numbers sit above it as their own links (issue 181). */}
             <a
               href={channel.href}
               {...(channel.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              className="group flex h-full flex-col gap-2 rounded-2xl border border-mist-200 bg-white p-5 outline-none hover:border-mist-300 hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/40"
+              className="text-[16px] font-bold break-words text-navy-900 outline-none group-hover:text-brand-700 after:absolute after:inset-0 after:rounded-2xl after:content-['']"
             >
-              <span className="grid size-10 place-items-center rounded-xl bg-electric-50 text-brand-700 [&_svg]:size-5">
-                {channel.icon}
-              </span>
-              <span className="text-[16px] font-bold break-words text-navy-900 group-hover:text-brand-700">
-                {channel.title}
-              </span>
-              <span className="text-[14px] leading-relaxed text-mist-700">{channel.body}</span>
+              {channel.title}
             </a>
+            {channel.more.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="relative z-10 -my-1 inline-flex min-h-11 items-center self-start text-[16px] font-bold text-navy-900 outline-none hover:text-brand-700 focus-visible:underline"
+              >
+                {link.label}
+              </a>
+            ))}
+            <span className="text-[14px] leading-relaxed text-mist-700">{channel.body}</span>
           </li>
         ))}
       </ul>
