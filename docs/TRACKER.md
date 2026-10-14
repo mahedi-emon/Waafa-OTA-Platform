@@ -37,6 +37,15 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #181 · Contact: second office number and more numbers from Admin — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 14 Oct: contact numbers +880 1823 232241 and +880 1823 232242, more addable from the admin panel |
+| Built | `ContactSettings.extraPhones [{ display, e164 }]` (up to 6, Admin › Settings › Contact). `contactPhones()` in `packages/shared` (main number first, repeats dropped). Footer, Help panel (one Call row each) and the Contact page Call card (each number its own tel: link) list every number; Home, About, Contact and store JSON-LD carry them all as `telephone`. Seed patch `2026-10-14-second-phone` adds 01823-232242 to the live contact when it still has only 01823-232241 |
+| Tested | Vitest: contactPhones (shared), addSecondPhone (API unit), seed patch database test (API 140 passed); Playwright: both numbers on Contact and in the footer with axe (full e2e 120 passed); screenshots 390 and 1440, no overflow |
+| Tools and skills | Playwright, GitHub MCP |
+| Decision | D179 |
+
 ### #179 · Visa: price shown as a range per visa type, never a fixed price — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -45,6 +54,7 @@ Serena memory `audit_findings`.
 | Tested | Vitest: visaPrice (shared), formatVisaPrice (web); Playwright: range on the Thailand page and in JSON-LD; visa, seo, home, search e2e 30 passed; screenshots 390 and 1440, no overflow |
 | Tools and skills | Serena, Playwright, GitHub MCP |
 | Decision | D178 |
+| D179 | 14 Oct | Extra office numbers are a list after the main number (`extraPhones`); WhatsApp stays on the main number; live data gets the second number through a one-time seed patch | Owner: two numbers now, more from Admin; seed never overwrites admin data | #181 |
 
 ### #178 · Waafas World: prices hidden by default, Ask for price on WhatsApp, per-product Show price — ✅ Done
 | Field | Value |
@@ -1026,6 +1036,7 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-125 | Explore more links (visa countries, packages, routes, guides, articles) | `listVisaCountries` (popular first), `listPackages` (popular), `listFlightRoutes`, `listVisaGuides`, `listBlogPosts` | Visa › Countries, Travel › Tour packages and Flight routes, Content › Visa guides and Blog | `GET /api/v1/public/snapshot` | ✅ 13 Oct · seo e2e |
 | AC-126 | Store price shown or Price on request + Ask for price | `product.showPrice` | Waafas World › Products › Show price | `PUT /api/v1/admin/content/products/:id` | ✅ 13 Oct · store e2e |
 | AC-127 | Visa price range per type ("৳a – ৳b" or "From ৳a") | `visaCountry.types[].priceRange.{min,max}` | Visa › Countries › type › Price range | `PUT /api/v1/admin/content/visaCountries/:id` | ✅ 13 Oct · seo e2e |
+| AC-128 | Office phone numbers (footer, Help panel, Contact, JSON-LD) | `contactSettings.phoneDisplay/phoneE164` + `contactSettings.extraPhones[]` | Settings › Contact › Extra phones | `PUT /api/v1/admin/content/contactSettings` | ✅ 14 Oct · content e2e |
 
 ## 5. Components inventory
 
@@ -1397,6 +1408,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 14 Oct | Owner: second contact number and more from Admin (#181, seed patch adds 01823-232242 on deploy). #180 merged (store price on request, visa ranges) | #181 | #182 | API 140 · web unit 317 · e2e 120 |
 | 13 Oct 21:00–22:30 | Owner: nav "Visa" and URL /visa on the live site (#176, seed patch), Waafas World prices hidden by default with Ask for price (#178), visa price ranges (#179). Store and visa ship in one PR to save a CI cycle before go-live | #176, #178, #179 | #177 | web unit 316+ · e2e store, visa, seo |
 | 13 Oct 19:30–21:00 | #171 and #174 merged (CI Lighthouse after: Home 57, Flights 74, Packages 90, Visa 90, Shop 84). Owner: nav label Visa (#172; live menu changes in Admin). Part 3 on-page SEO and brand names | #172, #173 | #174, #175 | web unit 313 · e2e 114 passed |
 | 13 Oct 16:30–19:30 | #169 merged (Sample noindex). Owner: brand search and where to enter each SEO setting (answered in chat), then finish all parts. Part 2 performance: hero video LCP, on-demand search card, lead steps, validation and quote form; before/after table | #170 | #171 | web unit 304 · e2e 111 passed · Lighthouse local median of 3 |

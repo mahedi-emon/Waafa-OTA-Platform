@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ArrowRight, MapPin, Phone } from "lucide-react";
+import { contactPhones } from "@waafa/shared";
 import { InfoCard } from "@/components/content/InfoCard";
 import { PageHero } from "@/components/content/PageHero";
 import { RichText } from "@/components/content/RichText";
@@ -101,7 +102,7 @@ export default async function AboutPage() {
         url: absoluteUrl("/"),
         logo: absoluteUrl("/icon.png"),
         email: contact.email,
-        telephone: contact.phoneE164,
+        telephone: contactPhones(contact).map((phone) => phone.e164),
         address: {
           "@type": "PostalAddress",
           streetAddress: contact.addressLines.join(", "),

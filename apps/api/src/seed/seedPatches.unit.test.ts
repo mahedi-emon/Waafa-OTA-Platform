@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { moveVisaLinks, moveVisaPath, renameVisaNavItem } from "./seedPatches";
+import { addSecondPhone, moveVisaLinks, moveVisaPath, renameVisaNavItem } from "./seedPatches";
 
 describe("moveVisaPath (issue 176)", () => {
   it("moves the visa list, country and apply paths to /visa", () => {
@@ -74,5 +74,33 @@ describe("renameVisaNavItem", () => {
       key: "header",
       items: [custom],
     });
+  });
+});
+
+describe("addSecondPhone (issue 181)", () => {
+  const second = { display: "01823-232242", e164: "+8801823232242" };
+  const contact = {
+    phoneDisplay: "01823-232241",
+    phoneE164: "+8801823232241",
+    email: "info@waafasworld.com",
+  };
+
+  it("adds 01823-232242 after the main number when no extra numbers are set", () => {
+    expect(addSecondPhone(contact)).toEqual({ ...contact, extraPhones: [second] });
+    expect(addSecondPhone({ ...contact, extraPhones: [] })).toEqual({
+      ...contact,
+      extraPhones: [second],
+    });
+  });
+
+  it("keeps numbers an admin set and contacts with another main number", () => {
+    const custom = {
+      ...contact,
+      extraPhones: [{ display: "01711-000000", e164: "+8801711000000" }],
+    };
+    expect(addSecondPhone(custom)).toBe(custom);
+    const moved = { ...contact, phoneE164: "+8801711000000" };
+    expect(addSecondPhone(moved)).toBe(moved);
+    expect(addSecondPhone(null)).toBeNull();
   });
 });

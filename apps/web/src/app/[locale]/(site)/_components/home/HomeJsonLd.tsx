@@ -1,3 +1,4 @@
+import { contactPhones } from "@waafa/shared";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { schemaId } from "@/lib/seo/schemaIds";
@@ -77,7 +78,7 @@ async function HomeJsonLd() {
             name: site.travelBrand,
             alternateName: otherNames(site.travelBrand, "WAAFA", site.companyName),
             url,
-            telephone: contact.phoneE164,
+            telephone: contactPhones(contact).map((phone) => phone.e164),
             email: contact.email,
             logo: absoluteUrl("/icon.png"),
             ...(image ? { image: absoluteUrl(image.url) } : {}),

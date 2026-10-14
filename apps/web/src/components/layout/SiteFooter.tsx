@@ -11,7 +11,7 @@ import {
   Truck,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { whatsappLink, type MenuItem, type PaymentMethodBadge } from "@waafa/shared";
+import { contactPhones, whatsappLink, type MenuItem, type PaymentMethodBadge } from "@waafa/shared";
 import { FacebookIcon } from "@/components/icons/FacebookIcon";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Link } from "@/i18n/navigation";
@@ -171,12 +171,15 @@ async function SiteFooter() {
               <li className="flex gap-3">
                 <Phone aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-brand-700" />
                 <span className="flex flex-col">
-                  <a
-                    href={`tel:${contact.phoneE164}`}
-                    className="font-semibold text-navy-900 tabular-nums hover:text-brand-700"
-                  >
-                    {contact.phoneDisplay}
-                  </a>
+                  {contactPhones(contact).map((phone) => (
+                    <a
+                      key={phone.e164}
+                      href={`tel:${phone.e164}`}
+                      className="inline-flex min-h-7 items-center self-start font-semibold text-navy-900 tabular-nums hover:text-brand-700"
+                    >
+                      {phone.display}
+                    </a>
+                  ))}
                   <span className="text-[13.5px]">{t("phoneAndWhatsApp")}</span>
                 </span>
               </li>

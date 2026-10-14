@@ -49,6 +49,7 @@ export const contactSettings: In<typeof ContactSettingsSchema> = {
   phoneDisplay: "01823-232241",
   phoneE164: "+8801823232241",
   whatsappE164: "+8801823232241",
+  extraPhones: [{ display: "01823-232242", e164: "+8801823232242" }],
   email: "info@waafasworld.com",
   mapUrl:
     "https://www.google.com/maps/search/?api=1&query=Motijheel%20Plaza%2C%20Aziz%20Square%2C%20Motijheel%2C%20Dhaka",
