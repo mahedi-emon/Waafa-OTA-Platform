@@ -1,4 +1,6 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-14 16:30 Dhaka — #181 second phone (PR #182), #183 index every page (PR #186); #184 search SEO +
+  llms.txt and #185 lighter images (PR #187).
 - 2026-10-13 22:30 Dhaka — #176 visa route /visa + seed patch (PR #177 merged); #178 store price on request and
   #179 visa price ranges (PR #180).
 - 2026-10-13 21:00 Dhaka — Site live (C8, #74 closed). SEO after go-live: #168 Sample noindex (PR #169), #170 perf

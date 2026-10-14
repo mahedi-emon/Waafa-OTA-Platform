@@ -5,6 +5,9 @@ import { seedDatabase } from "../src/seed/seedDatabase";
 import { applySeedPatches, PATCH_MARKER } from "../src/seed/seedPatches";
 import { dbAvailable, resetDatabase, testPrisma } from "./helpers";
 
+/** Every shipped patch, in order. */
+const ALL_PATCHES = ["2026-10-13-visa-route", "2026-10-14-second-phone", "2026-10-14-home-seo"];
+
 /** A record as the live site stored it before visa moved to /visa (issue 176). */
 async function storeOld(prisma: PrismaClient) {
   const header = await prisma.contentDocument.findUniqueOrThrow({
@@ -55,7 +58,7 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
     const footerKey = await storeOld(prisma);
 
     const first = await applySeedPatches(prisma);
-    expect(first.applied).toEqual(["2026-10-13-visa-route", "2026-10-14-second-phone"]);
+    expect(first.applied).toEqual(ALL_PATCHES);
     expect(first.changed).toBeGreaterThanOrEqual(2);
 
     const header = await prisma.contentDocument.findUniqueOrThrow({
@@ -84,8 +87,10 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
     ).not.toContain("/visa-services");
 
     const marker = await prisma.setting.findUniqueOrThrow({ where: { key: PATCH_MARKER } });
-    expect(marker.value).toEqual(["2026-10-13-visa-route", "2026-10-14-second-phone"]);
-    expect(await prisma.auditLog.count({ where: { action: "seed.patch" } })).toBe(2);
+    expect(marker.value).toEqual(ALL_PATCHES);
+    expect(await prisma.auditLog.count({ where: { action: "seed.patch" } })).toBe(
+      ALL_PATCHES.length,
+    );
 
     // A later deploy skips it, so a label the admin sets afterwards is kept.
     await storeOld(prisma);
@@ -105,7 +110,7 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
     });
     await prisma.setting.update({
       where: { key: PATCH_MARKER },
-      data: { value: ["2026-10-13-visa-route"] },
+      data: { value: ["2026-10-13-visa-route", "2026-10-14-home-seo"] },
     });
 
     expect(await applySeedPatches(prisma)).toEqual({
@@ -118,5 +123,33 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
       extraPhones: [{ display: "01823-232242", e164: "+8801823232242" }],
     });
     expect(patched.updatedBy).toBe("seed-patch");
+  });
+  it("writes the Home title and description for search, keeping wording an admin chose (issue 184)", async () => {
+    const stored = await prisma.setting.findUniqueOrThrow({ where: { key: "siteSettings" } });
+    const launch = {
+      ...(stored.value as Record<string, unknown>),
+      defaultSeo: {
+        title: "Waafa Tours and Travel · Flights, tours and visas from Dhaka",
+        description: "Our own description",
+      },
+    };
+    await prisma.setting.update({
+      where: { key: "siteSettings" },
+      data: { value: launch as Prisma.InputJsonValue },
+    });
+    await prisma.setting.update({
+      where: { key: PATCH_MARKER },
+      data: { value: ALL_PATCHES.filter((id) => id !== "2026-10-14-home-seo") },
+    });
+
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-14-home-seo"],
+      changed: 1,
+    });
+    const patched = await prisma.setting.findUniqueOrThrow({ where: { key: "siteSettings" } });
+    expect((patched.value as { defaultSeo: unknown }).defaultSeo).toEqual({
+      title: "Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh",
+      description: "Our own description",
+    });
   });
 });

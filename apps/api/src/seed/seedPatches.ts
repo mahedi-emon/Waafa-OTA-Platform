@@ -109,6 +109,49 @@ async function secondPhone(prisma: PrismaClient): Promise<number> {
   return 1;
 }
 
+/** The Home title and description the seed shipped with at launch, and what replaces them (issue 184). */
+const HOME_SEO = {
+  title: {
+    from: "Waafa Tours and Travel · Flights, tours and visas from Dhaka",
+    to: "Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh",
+  },
+  description: {
+    from: "Flights, hotels, tour packages and visas from our Motijheel office, plus Waafas World by Waafa International. A real person confirms every price.",
+    to: "Air tickets, visa processing, tour packages and hotel booking from our Motijheel office in Dhaka, plus Waafas World by Waafa International.",
+  },
+} as const;
+
+/**
+ * The stored site settings with the Home title and description written for search (issue 184): each field changes
+ * only while it still holds the launch text, so wording an admin chose stays. Any other value is returned as it is.
+ */
+export function updateHomeSeo(settings: unknown): unknown {
+  if (!settings || typeof settings !== "object" || Array.isArray(settings)) return settings;
+  const record = settings as { defaultSeo?: unknown };
+  const seo = record.defaultSeo;
+  if (!seo || typeof seo !== "object" || Array.isArray(seo)) return settings;
+  const current = seo as { title?: unknown; description?: unknown };
+  const next = { ...current };
+  if (current.title === HOME_SEO.title.from) next.title = HOME_SEO.title.to;
+  if (current.description === HOME_SEO.description.from) {
+    next.description = HOME_SEO.description.to;
+  }
+  return { ...record, defaultSeo: next };
+}
+
+/** Issue 184: the live Home title and description name the services and Dhaka for search. */
+async function homeSeo(prisma: PrismaClient): Promise<number> {
+  const row = await prisma.setting.findUnique({ where: { key: "siteSettings" } });
+  if (!row) return 0;
+  const value = updateHomeSeo(row.value);
+  if (same(value, row.value)) return 0;
+  await prisma.setting.update({
+    where: { key: row.key },
+    data: { value: json(value), version: { increment: 1 }, updatedBy: "seed-patch" },
+  });
+  return 1;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -116,6 +159,7 @@ export const SEED_PATCHES: ReadonlyArray<{
 }> = [
   { id: "2026-10-13-visa-route", apply: visaRoute },
   { id: "2026-10-14-second-phone", apply: secondPhone },
+  { id: "2026-10-14-home-seo", apply: homeSeo },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

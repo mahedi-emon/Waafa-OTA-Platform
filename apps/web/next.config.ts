@@ -1,6 +1,7 @@
 import path from "node:path";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { PHOTO_QUALITY } from "./src/lib/media/imageQuality";
 import { securityHeaders } from "./src/lib/security/securityHeaders";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
@@ -19,6 +20,12 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@waafa/shared", "@waafa/fixtures"],
   images: {
     formats: ["image/avif", "image/webp"],
+    // Photos at 65: about 28% smaller than 75 and the same to the eye (issue 185). The logo asks for 90 to stay crisp.
+    qualities: [PHOTO_QUALITY, 90],
+    // 1440 serves full-width banners on common laptops; 2560 is the largest an upload can be, so nothing asks for 3840.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1440, 1920, 2560],
+    // A month: an uploaded photo gets a new name when it changes, and a deploy starts with an empty image cache.
+    minimumCacheTTL: 2_678_400,
   },
   // Visa moved from /visa-services to /visa (issue 176): old links, bookmarks and search results keep working.
   async redirects() {

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
 import { Link } from "@/i18n/navigation";
+import { LOGO_QUALITY } from "@/lib/media/imageQuality";
 import markImage from "@/assets/brand/waafa-mark.png";
 import wordmarkImage from "@/assets/brand/waafa-wordmark.png";
 
@@ -45,6 +46,7 @@ function LogoLockup({
         alt={t("name")}
         width={66}
         height={40}
+        quality={LOGO_QUALITY}
         loading="eager"
         className="h-8 w-[53px] shrink-0 object-contain md:h-10 md:w-[66px]"
       />
@@ -53,6 +55,7 @@ function LogoLockup({
         alt=""
         width={113}
         height={19}
+        quality={LOGO_QUALITY}
         loading="eager"
         className="h-[15px] w-[89px] shrink-0 object-contain md:h-[19px] md:w-[113px]"
       />

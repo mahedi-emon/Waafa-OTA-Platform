@@ -31,9 +31,9 @@ export const siteSettings: In<typeof SiteSettingsSchema> = {
     "Printer and office supplies today, more of what you need every month. Cash on delivery across Bangladesh.",
   accountsLive: true,
   defaultSeo: {
-    title: "Waafa Tours and Travel · Flights, tours and visas from Dhaka",
+    title: "Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh",
     description:
-      "Flights, hotels, tour packages and visas from our Motijheel office, plus Waafas World by Waafa International. A real person confirms every price.",
+      "Air tickets, visa processing, tour packages and hotel booking from our Motijheel office in Dhaka, plus Waafas World by Waafa International.",
   },
   reviewsUrl: "https://www.facebook.com/waafatoursandtravel",
 };

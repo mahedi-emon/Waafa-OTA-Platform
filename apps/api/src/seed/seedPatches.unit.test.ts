@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { addSecondPhone, moveVisaLinks, moveVisaPath, renameVisaNavItem } from "./seedPatches";
+import {
+  addSecondPhone,
+  moveVisaLinks,
+  moveVisaPath,
+  renameVisaNavItem,
+  updateHomeSeo,
+} from "./seedPatches";
 
 describe("moveVisaPath (issue 176)", () => {
   it("moves the visa list, country and apply paths to /visa", () => {
@@ -102,5 +108,34 @@ describe("addSecondPhone (issue 181)", () => {
     const moved = { ...contact, phoneE164: "+8801711000000" };
     expect(addSecondPhone(moved)).toBe(moved);
     expect(addSecondPhone(null)).toBeNull();
+  });
+});
+
+describe("updateHomeSeo (issue 184)", () => {
+  const launch = {
+    travelBrand: "Waafa Tours and Travel",
+    defaultSeo: {
+      title: "Waafa Tours and Travel · Flights, tours and visas from Dhaka",
+      description:
+        "Flights, hotels, tour packages and visas from our Motijheel office, plus Waafas World by Waafa International. A real person confirms every price.",
+    },
+  };
+
+  it("replaces the launch title and description with the search wording", () => {
+    expect(updateHomeSeo(launch)).toEqual({
+      travelBrand: "Waafa Tours and Travel",
+      defaultSeo: {
+        title: "Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh",
+        description:
+          "Air tickets, visa processing, tour packages and hotel booking from our Motijheel office in Dhaka, plus Waafas World by Waafa International.",
+      },
+    });
+  });
+
+  it("keeps any field an admin already changed, and values that are not settings", () => {
+    const edited = { ...launch, defaultSeo: { ...launch.defaultSeo, title: "Our own title" } };
+    expect(updateHomeSeo(edited)).toMatchObject({ defaultSeo: { title: "Our own title" } });
+    expect(updateHomeSeo({ travelBrand: "x" })).toEqual({ travelBrand: "x" });
+    expect(updateHomeSeo(null)).toBeNull();
   });
 });

@@ -2,7 +2,32 @@
   "Metadata": {
     "title": "Waafa Tours and Travel",
     "titleTemplate": "%s | Waafa",
-    "description": "Flights, hotels, tour packages and visas from Motijheel, Dhaka, plus Waafas World by Waafa International."
+    "description": "Air tickets, visa processing, tour packages and hotel booking in Motijheel, Dhaka, plus Waafas World by Waafa International.",
+    "services": {
+      "catalogue": "Travel services",
+      "flights": "Air tickets",
+      "hotels": "Hotel booking",
+      "packages": "Tour packages",
+      "visa": "Visa processing"
+    },
+    "contactType": "customer service"
+  },
+  "Llms": {
+    "intro": "{brand} is a travel agency in {city}, {country}, also known as {names}. A travel expert confirms every fare, room, package and visa price before payment.",
+    "services": "Services",
+    "store": "{store}: printer supplies, office products and more",
+    "visa": "Visa countries",
+    "visaLink": "{country} visa from Bangladesh",
+    "guides": "Visa guides",
+    "packages": "Tour packages",
+    "routes": "Flight routes",
+    "contact": "Contact",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "office": "Office",
+    "hours": "Office hours",
+    "contactPage": "Contact page"
   },
   "Common": {
     "skipToContent": "Skip to content"
@@ -445,8 +470,8 @@
     }
   },
   "Flights": {
-    "metaTitle": "Flights from Bangladesh, fares checked by a person",
-    "metaDescription": "Tell us your route and dates. A WAAFA travel expert compares airlines and confirms the fare and the rules with you before you pay.",
+    "metaTitle": "Air Tickets from Dhaka: Flights to Any Country",
+    "metaDescription": "Air tickets from Dhaka to any country. A WAAFA travel expert compares airlines, fares and baggage, then confirms the price and rules before you pay.",
     "breadcrumb": "Flights",
     "summary": {
       "label": "Your search",
@@ -685,8 +710,8 @@
     "priceConfirmed": "Price confirmed before you pay"
   },
   "Hotels": {
-    "metaTitle": "Hotels in Bangladesh and abroad, checked by a person",
-    "metaDescription": "Tell us where and when. A WAAFA travel expert checks hotels for your dates and sends the best options with room type, meals and cancellation rules.",
+    "metaTitle": "Hotel Booking in Bangladesh and Worldwide",
+    "metaDescription": "Hotel booking in Bangladesh and abroad. Tell us where and when, and a WAAFA travel expert sends the best rooms with meals and cancellation rules.",
     "breadcrumb": "Hotels",
     "summary": {
       "label": "Your search",
@@ -790,8 +815,8 @@
     }
   },
   "Packages": {
-    "metaTitle": "Tour packages from Bangladesh, planned day by day",
-    "metaDescription": "Holidays from Dhaka with a day-by-day plan, what’s included and a price per person. Send a query and a travel expert confirms dates and the price.",
+    "metaTitle": "Tour Packages from Bangladesh: Day-by-Day Holidays",
+    "metaDescription": "Tour packages from Dhaka with flights, hotels, visa help and a day-by-day plan. See what’s included and the price per person, then send a query.",
     "breadcrumb": "Tour packages",
     "list": {
       "title": "Trips planned day by day",
@@ -1083,8 +1108,8 @@
     "helpTitle": "Prefer to talk it through?"
   },
   "Visa": {
-    "metaTitle": "Visa services: documents, fees and processing time",
-    "metaDescription": "Pick a country for its documents, processing time and fees. WAAFA checks your papers, fills in the forms, books the appointment and follows the file.",
+    "metaTitle": "Visa Processing in Dhaka: Documents, Fees and Time",
+    "metaDescription": "Visa processing in Dhaka for tourist, business, student, medical and transit visas. WAAFA checks your papers, fills the forms and books the appointment.",
     "breadcrumb": "Visa services",
     "sample": "Sample times and fees",
     "list": {
@@ -1142,6 +1167,7 @@
     "country": {
       "kicker": "{country} visa",
       "title": "{country} visa for Bangladeshi passports",
+      "metaTitle": "{country} Visa from Bangladesh: Documents and Fees",
       "lead": "Pick your visa type to see the documents, how long it takes and what it costs. We check every page before it goes to the embassy.",
       "typesLabel": "Visa type",
       "processing": "Processing",
@@ -1920,7 +1946,7 @@
     "questions": "Good to know"
   },
   "About": {
-    "metaTitle": "About us",
+    "metaTitle": "About Waafa Tours and Travel and Waafa International",
     "metaDescription": "Waafa International has served Dhaka’s offices since 2010. Meet the team behind Waafa Tours and Travel and Waafas World in Motijheel.",
     "kicker": "About us",
     "visit": "Visit our office",
@@ -1943,7 +1969,7 @@
     "photoCredit": "Photo: {credit}"
   },
   "Contact": {
-    "metaTitle": "Contact us",
+    "metaTitle": "Contact Waafa: Travel Agency in Motijheel, Dhaka",
     "metaDescription": "Call, WhatsApp, email or visit Waafa in Motijheel, Dhaka. Saturday to Thursday, 10 am to 6 pm.",
     "kicker": "Contact",
     "title": "Talk to a person, not a bot",
@@ -2013,7 +2039,7 @@
     "directions": "Get directions"
   },
   "Faqs": {
-    "metaTitle": "FAQs",
+    "metaTitle": "FAQs: Air Tickets, Visas, Tours and Orders",
     "metaDescription": "Answers on payments, refunds, visas, deliveries and how a booking works at Waafa Tours and Travel and Waafas World.",
     "kicker": "FAQs",
     "title": "Answers before you ask",
@@ -2043,7 +2069,7 @@
     "whatsapp": "WhatsApp"
   },
   "Blog": {
-    "metaTitle": "Travel tips, guides and stories",
+    "metaTitle": "Travel Blog: Tips and Guides for Bangladeshi Travellers",
     "metaDescription": "Written by our travel and visa desks for travellers from Bangladesh: what to pack, when to go, and the rules nobody explains.",
     "kicker": "Blog",
     "title": "Travel tips, guides and stories",

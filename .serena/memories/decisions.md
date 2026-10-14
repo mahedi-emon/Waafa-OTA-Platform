@@ -59,3 +59,8 @@
 - D177 Store prices hidden by default per product (`showPrice`); hidden prices blanked server-side (publicProduct),
   out of filters, sorts, JSON-LD and priceCart; Ask for price on WhatsApp (#178).
 - D178 Visa price = admin range per type (`priceRange {min,max?}`): "৳a – ৳b" or "From ৳a"; fallback fee + charge (#179).
+- D179 Extra office numbers = `contactSettings.extraPhones[]` after the main number; WhatsApp stays on the main (#181).
+- D180 Every published record page is indexed whatever its Sample flag; only SEO › noindex hides one (#183, replaces D172).
+- D181 Meta titles use search wording (air tickets, visa processing, tour packages, Dhaka); h1s keep board copy;
+  /llms.txt lists links, never prices (#184).
+- D182 Photos q65 (AVIF ≈ 41), logo q90, widths ≤ 2560, image cache 31 days, og:image via optimiser at 1200 px (#185).

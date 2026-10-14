@@ -40,7 +40,7 @@ export async function generateMetadata({
   const { country: slug } = await params;
   const [country, t] = await Promise.all([getVisaCountry(slug), getTranslations("Visa.country")]);
   if (!country) return {};
-  const title = country.seo.title ?? t("title", { country: country.name });
+  const title = country.seo.title ?? t("metaTitle", { country: country.name });
   const description = country.seo.description ?? t("metaDescription", { country: country.name });
   return withSocial({
     title,
