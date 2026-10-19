@@ -31,6 +31,9 @@ for (const name of files) {
   }
 }
 
+/** A table cell of the job summary: backslashes first, then pipes, on one line. */
+const cell = (text) =>
+  String(text).replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/\s+/g, " ");
 /** Annotation text can't hold raw newlines or percent signs. */
 const escape = (text) =>
   String(text).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
@@ -48,7 +51,7 @@ const summary = process.env.GITHUB_STEP_SUMMARY;
 if (summary) {
   const rows = findings.map(
     (finding) =>
-      `| ${finding.level} | ${finding.rule} | ${finding.file}:${finding.line} | ${finding.message.replace(/\|/g, "\\|").replace(/\s+/g, " ")} |`,
+      `| ${cell(finding.level)} | ${cell(finding.rule)} | ${cell(`${finding.file}:${finding.line}`)} | ${cell(finding.message)} |`,
   );
   appendFileSync(
     summary,
