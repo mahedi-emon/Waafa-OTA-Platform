@@ -13,6 +13,7 @@ import {
   type Role,
 } from "@waafa/shared";
 import type { StaffPrincipal } from "../auth/principal";
+import { photoOf } from "../common/photo";
 import { ContentService } from "../content/content.service";
 import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
@@ -29,23 +30,6 @@ const verifiesProofs = (staff: StaffPrincipal) => hasAny(staff, "accounts");
 /** `%` and `_` typed by staff are plain characters, not wildcards. */
 function likePattern(query: string): string {
   return `%${query.replace(/[\\%_]/g, (match) => `\\${match}`)}%`;
-}
-
-/** The record's first photo for search results, wherever the schema keeps it. */
-function photoOf(data: Record<string, unknown>): string | undefined {
-  for (const key of ["cover", "image", "photo", "logo", "poster"]) {
-    const value = data[key];
-    if (value && typeof value === "object" && typeof (value as { src?: unknown }).src === "string")
-      return (value as { src: string }).src;
-  }
-  for (const key of ["images", "gallery", "photos"]) {
-    const list = data[key];
-    if (Array.isArray(list) && list[0] && typeof list[0] === "object") {
-      const src = (list[0] as { src?: unknown }).src;
-      if (typeof src === "string") return src;
-    }
-  }
-  return undefined;
 }
 
 /**

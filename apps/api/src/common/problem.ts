@@ -9,7 +9,7 @@ import {
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ZodError, type ZodType, type z } from "zod";
 
-/** An RFC 7807 problem with an optional list of field errors. */
+/** An RFC 7807 problem with an optional list of field errors and extension members (e.g. who saved first). */
 export class ProblemException extends HttpException {
   constructor(
     status: number,
@@ -17,10 +17,14 @@ export class ProblemException extends HttpException {
     readonly detail?: string,
     readonly fields?: Array<{ path: string; message: string }>,
     readonly code?: string,
+    readonly extra?: Record<string, unknown>,
   ) {
-    super({ title, detail, fields, code }, status);
+    super({ title, detail, fields, code, ...extra }, status);
   }
 }
+
+/** Who saved a record last, sent with a "stale" conflict so the admin can say "Rafi changed this 2 min ago". */
+export type CurrentVersion = { version: number; updatedBy: string | null; updatedAt: string };
 
 export const problems = {
   badRequest: (detail?: string, code?: string) =>
@@ -33,6 +37,15 @@ export const problems = {
     new ProblemException(HttpStatus.NOT_FOUND, "Not found", detail),
   conflict: (detail: string, code?: string) =>
     new ProblemException(HttpStatus.CONFLICT, "Conflict", detail, undefined, code),
+  stale: (current: CurrentVersion | null) =>
+    new ProblemException(
+      HttpStatus.CONFLICT,
+      "Conflict",
+      "Someone else saved this first; reload to see it",
+      undefined,
+      "stale",
+      current ? { current } : undefined,
+    ),
   tooMany: (detail = "Too many requests, try again later") =>
     new ProblemException(HttpStatus.TOO_MANY_REQUESTS, "Too many requests", detail),
 };
@@ -79,6 +92,7 @@ export class ProblemFilter implements ExceptionFilter {
         ...(exception.detail ? { detail: exception.detail } : {}),
         ...(exception.fields ? { fields: exception.fields } : {}),
         ...(exception.code ? { code: exception.code } : {}),
+        ...exception.extra,
       };
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();

@@ -17,7 +17,9 @@ import type { FastifyReply } from "fastify";
 import {
   AdminSearchQuerySchema,
   AuditListQuerySchema,
+  ContentOptionsQuerySchema,
   ContentOrderInputSchema,
+  ContentRestoreInputSchema,
   ContentWriteInputSchema,
   FeedbackListQuerySchema,
   FeedbackModerationInputSchema,
@@ -236,6 +238,50 @@ export class AdminContentController {
     return this.content.reorder(staff, this.content.collectionKey(key), input.ids);
   }
 
+  /** Reference pickers: any staff member may list the choices, whoever edits them. */
+  @Get("content/:key/options")
+  options(@Param("key") key: string, @Query() query: unknown) {
+    const input = parseInput(ContentOptionsQuerySchema, query);
+    return this.content.options(this.content.collectionKey(key), input.q);
+  }
+
+  @Get("content/:key/:id/history")
+  history(
+    @Staff() staff: StaffPrincipal,
+    @Param("key") key: string,
+    @Param("id") recordId: string,
+  ) {
+    return this.content.history(staff, this.content.collectionKey(key), id(recordId));
+  }
+
+  @Post("content/:key/:id/restore")
+  @HttpCode(200)
+  restore(
+    @Staff() staff: StaffPrincipal,
+    @Param("key") key: string,
+    @Param("id") recordId: string,
+    @Body() body: unknown,
+  ) {
+    const input = parseInput(ContentRestoreInputSchema, body);
+    return this.content.restore(
+      staff,
+      this.content.collectionKey(key),
+      id(recordId),
+      input.auditId,
+      input.version,
+    );
+  }
+
+  @Post("content/:key/:id/duplicate")
+  @HttpCode(201)
+  duplicate(
+    @Staff() staff: StaffPrincipal,
+    @Param("key") key: string,
+    @Param("id") recordId: string,
+  ) {
+    return this.content.duplicate(staff, this.content.collectionKey(key), id(recordId));
+  }
+
   @Get("content/:key/:id")
   readOne(
     @Staff() staff: StaffPrincipal,
@@ -276,6 +322,20 @@ export class AdminContentController {
   writeSetting(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Body() body: unknown) {
     const input = parseInput(ContentWriteInputSchema, body);
     return this.content.writeSetting(staff, this.content.key(key), input.data, input.version);
+  }
+
+  @Get("settings/:key/history")
+  settingHistory(@Staff() staff: StaffPrincipal, @Param("key") key: string) {
+    const setting = this.content.settingKey(key);
+    return this.content.history(staff, setting, setting);
+  }
+
+  @Post("settings/:key/restore")
+  @HttpCode(200)
+  restoreSetting(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Body() body: unknown) {
+    const input = parseInput(ContentRestoreInputSchema, body);
+    const setting = this.content.settingKey(key);
+    return this.content.restore(staff, setting, setting, input.auditId, input.version);
   }
 }
 
