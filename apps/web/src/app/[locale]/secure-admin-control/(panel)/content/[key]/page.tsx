@@ -51,7 +51,6 @@ async function ContentKeyView({
         />
         <NextIntlClientProvider messages={pickMessagePaths(messages, EDITOR_MESSAGES)}>
           <ContentEditor
-            key={data.version}
             mode="setting"
             contentKey={key}
             blueprint={blueprint}

@@ -75,7 +75,7 @@ test("a question is edited in plain words, saved with Ctrl S, and History brings
 
   await page.getByRole("tab", { name: "History" }).click();
   await expect(page.getByText("Answer edited").first()).toBeVisible();
-  await expect(page.getByText("Current version")).toBeVisible();
+  await expect(page.getByText("Current version", { exact: true })).toBeVisible();
   // Restore the first save (the version before the newest one).
   await page.getByRole("button", { name: "Restore this version" }).first().click();
   await page.getByRole("button", { name: "Restore", exact: true }).click();
@@ -172,7 +172,9 @@ test("a new question starts plain, misses are explained, and Duplicate makes a h
     page.getByRole("alert").filter({ hasText: /fields? needs? attention/ }),
   ).toBeVisible();
 
-  await page.getByText("Visa", { exact: true }).first().click();
+  // Seven categories: a list to pick from.
+  await page.getByLabel("Category").click();
+  await page.getByRole("option", { name: "Visa", exact: true }).click();
   await page.getByLabel("Question").fill(`Sample: do you help with transit visas? ${STAMP}`);
   await page.getByLabel("Answer").fill("Yes. Tell us your route and we will check what you need.");
   await page.getByRole("button", { name: "Create" }).click();
@@ -191,7 +193,7 @@ test("the lead page shows the request as labelled facts, not data", async ({ pag
     .getByRole("link", { name: /^(FLT|HTL|PKG|CTR|VSA|PRN|TRD|CNT|EMI|QTE)-/ })
     .first()
     .click();
-  await expect(page.getByRole("heading", { name: "Request" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What they asked for" })).toBeVisible();
   await expect(page.getByRole("button", { name: /raw|json/i })).toHaveCount(0);
   await expect(page.locator("pre")).toHaveCount(0);
 });

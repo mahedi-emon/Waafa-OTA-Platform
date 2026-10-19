@@ -45,7 +45,6 @@ async function RecordView({
       />
       <NextIntlClientProvider messages={pickMessagePaths(messages, EDITOR_MESSAGES)}>
         <ContentEditor
-          key={record.version}
           mode="record"
           contentKey={key}
           recordId={record.id}

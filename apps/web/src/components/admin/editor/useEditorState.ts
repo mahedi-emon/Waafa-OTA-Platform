@@ -112,6 +112,23 @@ export function useEditorState(input: EditorInput) {
   const [keptAt, setKeptAt] = useState<number | null>(null);
   const [draftHandled, setDraftHandled] = useState(false);
   const [pending, startTransition] = useTransition();
+  // A newer version from the server (a restored version, the page refreshed after someone else saved) replaces what
+  // is shown; the editor's own saves already match it, so tabs and open cards stay as they are.
+  const [seenVersion, setSeenVersion] = useState(input.version);
+  if (input.version !== seenVersion) {
+    setSeenVersion(input.version);
+    if (input.version !== saved.version) {
+      setValue(input.initial);
+      setSaved({
+        value: input.initial,
+        version: input.version,
+        updatedAt: input.updatedAt,
+        updatedBy: input.updatedBy ?? null,
+      });
+      setErrors(new Map());
+      setNotice(null);
+    }
+  }
   /** Set right before the editor reloads the page itself, so the browser doesn't ask "Leave site?". */
   const unloading = useRef(false);
 
