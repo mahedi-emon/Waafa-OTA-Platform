@@ -162,6 +162,9 @@ with a link to its editor (R7).
   editors 1200 px (form column ≤ 720 px + rail 320 px).
 - Table rows 44 px (desktop compact), 56 px with a thumbnail; phone cards ≥ 64 px with 44 px targets.
 - Form field height 44 px; gap 20 px between fields, 32 px between sections.
+- Touch: every control takes touches over at least 44 × 44 px. Compact ones (38 px buttons, chips, drag handles,
+  remove buttons, breadcrumbs) keep their look and get an invisible `::after` hit area sized so it never reaches a
+  neighbour; a `::after` measures from inside a 1 px border, so bordered chips need 3 px, not 2.
 - Radius: inputs and buttons 12 px (pill for primary actions and chips), panels 16 px, sheets 20 px.
 - Elevation: panels flat with a hairline; popovers and sheets `shadow-lg` navy-tinted; nothing floats without a reason.
 - Icons: lucide 16 px in tables and chips, 18 px in buttons, 20 px in the sidebar; stroke 1.75.
@@ -319,6 +322,10 @@ order).
   2 min ago": See their version / Save mine over theirs); the leave guard (links, Ctrl K, closing the tab); plain errors
   with links to the fields and Retry; the session-ended dialog that signs in again and comes back. History also offers
   "Restore the version before this change" on its oldest entry, so the very first edit of a seeded record can be undone.
+  Drafts on the device go only when staff save, Discard, drop the draft, delete the record or edit back to the saved
+  version; Leave and an unanswered draft offer keep them. Words typed while a save is on its way stay on screen,
+  unsaved. A list item with a problem stays open so its error link reaches the field. Duplicate is offered only where
+  a copy can be valid (D204).
 - Status in R2: records with draft / published / archived get Save draft, Publish, Update, Unpublish and Archive
   buttons instead of a status field. Records with a show switch say Shown or Hidden; settings and lists without
   drafts or a switch say Live, "Changes show on the site as soon as you save". Every chip carries its reason.

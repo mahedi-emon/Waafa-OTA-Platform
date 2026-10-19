@@ -26,6 +26,10 @@ SectionLabelContext from EditorSection); multi-field sections must not share a n
 "names a field like its section only…"); statusOf returns "direct" (chip Live, "Changes show on the site as soon as
 you save") for settings/lists without workflow or show switch; never remount editors with key={version} (state syncs
 to a new server version in useEditorState); toasts repeat text, so e2e waits for the first one to hide.
+R2 independent review (20 Oct) rules: useEditorState builds every change on `latest` (ref) via `show()`, never on a
+render's `value`; drafts are cleared only by save success, Discard, Drop, Delete or editing back (never because the
+form looks clean); category level top = 1; touch areas use invisible ::after (bordered chips need 3px; flush stacks of
+38 px buttons need gap-1.5). Do not cancel CI runs (owner, 20 Oct): let every push's CI finish and fix to green.
 Key decisions: D184 sidebar stays midnight-950; D185 status families info/progress/success/warning/danger/neutral,
 new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D;
 D186 21st.dev picks (ADMIN.md §14; free tier = 2 installs/day); D187 SchemaEditor stays the engine (no fork),
