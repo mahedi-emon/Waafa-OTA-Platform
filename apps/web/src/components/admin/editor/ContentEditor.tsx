@@ -171,8 +171,12 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
           ) : (
             <Tabs value={tab} onValueChange={setTab} className="gap-5">
               <TabsList variant="line" className="w-full justify-start border-b border-mist-200">
-                <TabsTrigger value="edit">{t("tabs.edit")}</TabsTrigger>
-                <TabsTrigger value="history">{t("tabs.history")}</TabsTrigger>
+                <TabsTrigger value="edit" className="min-w-11">
+                  {t("tabs.edit")}
+                </TabsTrigger>
+                <TabsTrigger value="history" className="min-w-11">
+                  {t("tabs.history")}
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="edit">{form}</TabsContent>
               <TabsContent value="history">

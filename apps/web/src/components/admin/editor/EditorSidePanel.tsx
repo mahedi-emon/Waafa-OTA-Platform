@@ -106,7 +106,7 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
             href={where}
             target="_blank"
             rel="noopener"
-            className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-lg text-[14px] font-semibold text-brand-700 hover:underline focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+            className="mt-3 inline-flex min-h-11 items-center gap-1.5 rounded-lg text-[14px] font-semibold text-brand-700 hover:underline focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
           >
             {t("side.viewOnSite")}
             <ExternalLink aria-hidden="true" className="size-3.5" />
@@ -242,7 +242,8 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
       {!state.isNew ? (
         <section
           aria-labelledby="side-actions"
-          className="rounded-2xl border border-mist-200 bg-white p-2"
+          // The gap keeps each button's touch area (it reaches 3 px past the button) off its neighbour.
+          className="flex flex-col gap-1.5 rounded-2xl border border-mist-200 bg-white p-2"
         >
           <h2 id="side-actions" className="sr-only">
             {t("side.actions")}
@@ -259,17 +260,19 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
           </Button>
           {mode === "record" ? (
             <>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={state.pending}
-                onClick={state.duplicate}
-                className="w-full justify-start"
-              >
-                <Copy aria-hidden="true" className="size-4" />
-                {t("side.duplicate")}
-              </Button>
+              {blueprint.duplicable ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={state.pending}
+                  onClick={state.duplicate}
+                  className="w-full justify-start"
+                >
+                  <Copy aria-hidden="true" className="size-4" />
+                  {t("side.duplicate")}
+                </Button>
+              ) : null}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button

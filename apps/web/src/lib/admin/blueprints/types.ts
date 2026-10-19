@@ -179,6 +179,8 @@ export type ResolvedBlueprint = {
   publish: Array<{ path: string; label: string }>;
   /** The record has a draft / published / archived status, set by Save draft, Publish and Unpublish. */
   workflow: boolean;
+  /** Duplicate is offered: false for lists of fixed places or codes, where a copy can't be valid. */
+  duplicable: boolean;
   sample: boolean;
   seo: boolean;
 };

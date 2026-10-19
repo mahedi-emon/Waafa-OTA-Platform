@@ -35,6 +35,15 @@ async function NewRecord({
     getMessages(),
     resolveBlueprint(key),
   ]);
+  // Lists keyed by a slug also give each record an inner id; a new one must be free in both.
+  const takenIds = [
+    ...new Set(
+      list.items.flatMap((item) => {
+        const inner = (item.data as { id?: unknown } | null)?.id;
+        return typeof inner === "string" ? [item.id, inner] : [item.id];
+      }),
+    ),
+  ];
   const initial = defaultFor(schema, schema);
   // New records are real content, not Sample data.
   if (initial && typeof initial === "object" && "sample" in (schema.properties ?? {})) {
@@ -61,7 +70,7 @@ async function NewRecord({
           blueprint={blueprint}
           schema={schema}
           initial={initial}
-          takenIds={list.items.map((item) => item.id)}
+          takenIds={takenIds}
           canAdvanced={staff.roles.includes("super-admin")}
           origin={SITE_URL}
         />

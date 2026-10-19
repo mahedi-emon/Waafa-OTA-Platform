@@ -11,7 +11,7 @@ function Switch({ className, ...props }: React.ComponentProps<typeof SwitchPrimi
       data-slot="switch"
       className={cn(
         "peer group/switch relative inline-flex h-[26px] w-11 shrink-0 cursor-pointer items-center rounded-full p-[3px]",
-        "after:absolute after:-inset-2",
+        "after:absolute after:-inset-x-2 after:-inset-y-[9px]",
         "data-checked:bg-primary data-unchecked:bg-mist-300",
         "data-disabled:cursor-not-allowed data-disabled:opacity-45",
         className,

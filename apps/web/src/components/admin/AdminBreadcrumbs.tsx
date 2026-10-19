@@ -72,7 +72,7 @@ function AdminBreadcrumbs({ back, current }: AdminBreadcrumbsProps) {
                     <Link
                       href={crumb.href}
                       prefetch={false}
-                      className="font-medium text-brand-700 hover:underline"
+                      className="relative font-medium text-brand-700 after:absolute after:-inset-x-1.5 after:-inset-y-3 hover:underline"
                     >
                       {crumb.label}
                     </Link>

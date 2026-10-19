@@ -70,7 +70,7 @@ function ColourField({ path, value, optional }: ColourFieldProps) {
                   aria-label={t("current", { value: preset.toUpperCase() })}
                   onClick={() => meta.change(preset)}
                   style={{ backgroundColor: preset }}
-                  className="size-9 cursor-pointer rounded-full border border-mist-300 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+                  className="relative size-10 cursor-pointer rounded-full border border-mist-300 after:absolute after:-inset-[3px] focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
                 />
               </li>
             ))}

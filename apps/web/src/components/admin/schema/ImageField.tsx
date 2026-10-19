@@ -116,7 +116,7 @@ function ImageField({ path, node, value, optional, nullable }: ImageFieldProps) 
           />
           {node.properties?.credit ? (
             <details className="group rounded-lg border border-mist-200 px-3 py-2 open:pb-3">
-              <summary className="min-h-9 cursor-pointer content-center text-[14px] font-semibold text-navy-900">
+              <summary className="min-h-11 cursor-pointer content-center text-[14px] font-semibold text-navy-900">
                 {t("credit")}
               </summary>
               <div className="mt-2 flex flex-col gap-4">

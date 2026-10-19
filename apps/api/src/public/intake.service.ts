@@ -133,9 +133,14 @@ export class IntakeService {
       // Lock the products this order touches, so two orders can't sell the same last item.
       const rows = await tx.$queryRaw<Array<{ docId: string; data: Product }>>`
         SELECT "docId", "data" FROM "ContentDocument" WHERE "collection" = 'products' FOR UPDATE`;
+      // Only products on sale: a draft (a copy being prepared) is never priced or loses stock.
       const products = rows
         .map((row) => row.data)
-        .filter((product) => product.variants.some((variant) => wanted.has(variant.id)));
+        .filter(
+          (product) =>
+            product.status === "published" &&
+            product.variants.some((variant) => wanted.has(variant.id)),
+        );
       const [deals, coupons] = await Promise.all([
         tx.contentDocument.findMany({ where: { collection: "deals" } }),
         tx.contentDocument.findMany({ where: { collection: "coupons" } }),

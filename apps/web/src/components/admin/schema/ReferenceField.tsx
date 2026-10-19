@@ -198,7 +198,7 @@ function ReferenceField({
           <button
             type="button"
             onClick={clear}
-            className="min-h-8 cursor-pointer rounded-full px-2.5 text-[12.5px] font-semibold text-mist-600 hover:bg-mist-100 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+            className="relative min-h-8 cursor-pointer rounded-full px-2.5 text-[12.5px] font-semibold text-mist-600 after:absolute after:inset-x-0 after:-inset-y-1.5 hover:bg-mist-100 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
           >
             {t("clear")}
           </button>
@@ -226,7 +226,7 @@ function ReferenceField({
                   type="button"
                   aria-label={t("clear") + ": " + (option?.title ?? current)}
                   onClick={() => unpick(current)}
-                  className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-mist-600 hover:bg-mist-100 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+                  className="relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-mist-600 after:absolute after:-inset-1.5 hover:bg-mist-100 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
                 >
                   <X aria-hidden="true" className="size-3.5" />
                 </button>
@@ -311,7 +311,7 @@ function ReferenceField({
                     href={`/secure-admin-control/content/${ref.key}/new`}
                     target="_blank"
                     rel="noopener"
-                    className="flex min-h-10 items-center gap-2 rounded-lg px-2 text-[14px] font-semibold text-brand-700 hover:bg-electric-50 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+                    className="flex min-h-11 items-center gap-2 rounded-lg px-2 text-[14px] font-semibold text-brand-700 hover:bg-electric-50 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
                   >
                     <Plus aria-hidden="true" className="size-4" />
                     {t("create", { thing: nouns.one })}

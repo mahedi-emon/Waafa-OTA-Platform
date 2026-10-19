@@ -2,7 +2,14 @@ import { randomUUID } from "node:crypto";
 import type { NestFastifyApplication } from "@nestjs/platform-fastify";
 import argon2 from "argon2";
 import { loadFixtures } from "@waafa/fixtures";
-import { ContentHistorySchema, ContentOptionsSchema, type Role } from "@waafa/shared";
+import {
+  canCopy,
+  CONTENT_KEYS,
+  CONTENT_MODEL,
+  ContentHistorySchema,
+  ContentOptionsSchema,
+  type Role,
+} from "@waafa/shared";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { signAccessToken } from "../src/auth/tokens";
 import { ContentService } from "../src/content/content.service";
@@ -148,7 +155,7 @@ describe.skipIf(!dbAvailable)(
       });
       expect(again.statusCode).toBe(200);
       const reused = await call(editor, "POST", "/content/blogPosts", {
-        data: { ...post.data, title: "Sample other post" },
+        data: { ...post.data, id: `${String(post.data.id)}-other`, title: "Sample other post" },
       });
       expect(reused.statusCode).toBe(201);
       expect(
@@ -238,12 +245,68 @@ describe.skipIf(!dbAvailable)(
       expect(faqCopy.json<Record_>().id).toBe(`${faq.id}-copy`);
 
       expect((await call(editor, "POST", "/content/products/any/duplicate")).statusCode).toBe(403);
+      expect((await call(owner, "POST", "/content/coupons/any/duplicate")).statusCode).toBe(409);
       expect((await call(editor, "POST", "/content/blogPosts/missing/duplicate")).statusCode).toBe(
         404,
       );
     });
 
-    it("lists picker choices for any staff member and filters them", async () => {
+    it("gives a copied product its own variants, so the original keeps its orders", async () => {
+      const shop = await person("Sample Shop", ["shop-manager"]);
+      const products = (await call(shop, "GET", "/content/products")).json<{
+        items: Record_[];
+      }>();
+      type Variants = {
+        id: string;
+        defaultVariantId: string;
+        variants: Array<{ id: string; sku: string }>;
+      };
+      const original = products.items.find((item) => (item.data as Variants).variants.length > 1);
+      if (!original) throw new Error("no product with variants");
+      const before = original.data as Variants;
+
+      const copy = await call(shop, "POST", `/content/products/${original.id}/duplicate`);
+      expect(copy.statusCode).toBe(201);
+      const after = copy.json<Record_>().data as Variants;
+      expect(after.id).not.toBe(before.id);
+      expect(after.variants.map((variant) => variant.id)).toEqual(
+        before.variants.map((variant) => `${variant.id}-copy`),
+      );
+      expect(after.variants.map((variant) => variant.sku)).toEqual(
+        before.variants.map((variant) => `${variant.sku}-COPY`),
+      );
+      expect(after.defaultVariantId).toBe(`${before.defaultVariantId}-copy`);
+
+      // Two records never share the inner id other records point at.
+      const other = products.items.find((item) => item.id !== original.id);
+      if (!other) throw new Error("only one product");
+      const clash = await call(shop, "PUT", `/content/products/${other.id}`, {
+        data: { ...other.data, id: before.id },
+        version: other.version,
+      });
+      expect(clash.statusCode).toBe(409);
+    });
+
+    it("copies a record of every list that allows it, and no other", async () => {
+      for (const key of CONTENT_KEYS) {
+        if (CONTENT_MODEL[key].kind !== "collection") continue;
+        const list = (await call(owner, "GET", `/content/${key}`)).json<{ items: Record_[] }>();
+        const first = list.items[0];
+        if (!first) continue;
+        const copy = await call(
+          owner,
+          "POST",
+          `/content/${key}/${encodeURIComponent(first.id)}/duplicate`,
+        );
+        expect({ key, status: copy.statusCode }).toEqual({ key, status: canCopy(key) ? 201 : 409 });
+      }
+    });
+
+    it("lists picker choices: open lists to any staff member, the rest by edit access", async () => {
+      // A sales agent may pick a blog category, but never reads the coupon codes.
+      expect((await call(agent, "GET", "/content/coupons/options")).statusCode).toBe(403);
+      expect((await call(owner, "GET", "/content/coupons/options")).statusCode).toBe(200);
+
       const all = ContentOptionsSchema.parse(
         (await call(agent, "GET", "/content/blogCategories/options")).json(),
       );

@@ -133,7 +133,9 @@ test("a Super Admin connects an external API, turns it on and reveals the secret
   if (!(await active.isChecked())) await active.click();
   await card.getByRole("radio", { name: "Percentage" }).click();
   await card.getByLabel("Value").fill("5");
-  await card.getByRole("button", { name: "Save settings" }).click();
+  // Saved already when a rerun finds these exact settings (the button stays off with nothing to save).
+  const saveSettings = card.getByRole("button", { name: "Save settings" });
+  if (await saveSettings.isEnabled()) await saveSettings.click();
   await expect(card.getByText("Active", { exact: true }).first()).toBeVisible();
   await expect(card.getByRole("switch", { name: "Active" })).toBeChecked();
 
@@ -189,15 +191,24 @@ test("a policy body edited in the rich text editor shows on the site (issue 116)
   const line = `Refund requests are answered within two working days. Checked ${Date.now()}.`;
   await signIn(page);
   await page.goto("/secure-admin-control/content/pages/refund-policy");
-  await expect(page.getByRole("toolbar", { name: "Text formatting" }).first()).toBeVisible();
+  // A long page starts with its sections folded (D0 R2): open the first one to write in it, once React listens.
+  const card = page.getByRole("button", { name: /^Flights (Expand|Collapse)$/ });
+  await expect(async () => {
+    if ((await card.getAttribute("aria-expanded")) !== "true") await card.click();
+    await expect(card).toHaveAttribute("aria-expanded", "true", { timeout: 1_500 });
+  }).toPass({ timeout: 30_000 });
+  await expect(page.getByRole("toolbar", { name: "Text formatting" }).first()).toBeVisible({
+    timeout: 15_000,
+  });
   const body = page.locator('[role="textbox"][aria-multiline="true"]').first();
   await body.click();
   await page.keyboard.press("ControlOrMeta+a");
   await page.keyboard.type(line);
   await page.keyboard.press("ControlOrMeta+a");
   await page.getByRole("button", { name: "Bold" }).first().click();
-  await page.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(page.getByText("Saved").first()).toBeVisible();
+  // A live page saves with Update (the sticky action bar).
+  await page.getByRole("button", { name: "Update", exact: true }).click();
+  await expect(page.getByText("Updated on the site.").first()).toBeVisible();
   await expect(async () => {
     await page.goto("/refund-policy");
     await expect(page.locator("strong", { hasText: line })).toBeVisible();

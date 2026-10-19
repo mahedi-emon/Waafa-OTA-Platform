@@ -58,7 +58,7 @@ function MonthsField({ path, value, optional }: MonthsFieldProps) {
                 onClick={() => toggle(item)}
                 onBlur={meta.touch}
                 className={cn(
-                  "inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full border px-3 text-[14px] tabular-nums transition-colors duration-150 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none",
+                  "relative inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full border px-3 text-[14px] tabular-nums transition-colors duration-150 after:absolute after:inset-x-0 after:-inset-y-[3px] focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none",
                   on
                     ? "border-electric-600 bg-electric-50 font-semibold text-brand-700"
                     : "border-mist-300 bg-white text-ink-900 hover:border-mist-400",

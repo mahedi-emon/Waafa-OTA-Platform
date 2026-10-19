@@ -238,11 +238,11 @@ export class AdminContentController {
     return this.content.reorder(staff, this.content.collectionKey(key), input.ids);
   }
 
-  /** Reference pickers: any staff member may list the choices, whoever edits them. */
+  /** Reference pickers: lists other editors pick from are open to any staff member; the rest need edit access. */
   @Get("content/:key/options")
-  options(@Param("key") key: string, @Query() query: unknown) {
+  options(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Query() query: unknown) {
     const input = parseInput(ContentOptionsQuerySchema, query);
-    return this.content.options(this.content.collectionKey(key), input.q);
+    return this.content.options(staff, this.content.collectionKey(key), input.q);
   }
 
   @Get("content/:key/:id/history")

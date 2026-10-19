@@ -96,6 +96,11 @@ export function useEditorState(input: EditorInput) {
   const router = useRouter();
   const t = useTranslations("Admin.editor");
   const [value, setValue] = useState<unknown>(input.initial);
+  /**
+   * The newest value, also between renders: two changes in one event (a picker that fills a second field) and
+   * callbacks that run later (Undo) build on it, never on the value of an older render.
+   */
+  const latest = useRef<unknown>(input.initial);
   const [saved, setSaved] = useState({
     value: input.initial,
     version: input.version,
@@ -156,6 +161,14 @@ export function useEditorState(input: EditorInput) {
     () => JSON.stringify(value) !== JSON.stringify(saved.value),
     [value, saved.value],
   );
+  useEffect(() => {
+    latest.current = value;
+  }, [value]);
+  /** Shows a new value now and lets every later change build on it. */
+  const show = useCallback((next: unknown) => {
+    latest.current = next;
+    setValue(next);
+  }, []);
   const live =
     !isNew &&
     blueprint.workflow &&
@@ -192,7 +205,7 @@ export function useEditorState(input: EditorInput) {
 
   const change = useCallback(
     (path: Path, next: unknown) => {
-      let updated = setAt(value, path, next);
+      let updated = setAt(latest.current, path, next);
       if (path.length === 1 && typeof path[0] === "string") {
         const name = path[0];
         if (slugPatterns.includes(name) && following.has(name)) {
@@ -206,21 +219,36 @@ export function useEditorState(input: EditorInput) {
             updated = setAt(updated, [pattern], slugify(next, 80));
         }
       }
-      setValue(updated);
+      show(updated);
       recheck(updated);
+      // Edited back to what is saved: a draft written in this visit has nothing left to keep. A draft found when
+      // the page opened stays until staff restore or drop it.
+      if ((!loadedDraft || draftHandled) && JSON.stringify(updated) === JSON.stringify(saved.value))
+        clearDraft(storage);
     },
-    [value, slugPatterns, following, blueprint, recheck],
+    [
+      show,
+      slugPatterns,
+      following,
+      blueprint,
+      recheck,
+      loadedDraft,
+      draftHandled,
+      saved.value,
+      storage,
+    ],
   );
 
   const update = useCallback(
-    (path: Path, fn: (current: unknown) => unknown) => change(path, fn(getAt(value, path))),
-    [change, value],
+    (path: Path, fn: (current: unknown) => unknown) =>
+      change(path, fn(getAt(latest.current, path))),
+    [change],
   );
 
   const touch = useCallback(
     (path: Path) => {
       const key = dottedOf(path);
-      const problem = validateRecord(schema, value, blueprint).get(key);
+      const problem = validateRecord(schema, latest.current, blueprint).get(key);
       setErrors((current) => {
         if (!problem && !current.has(key)) return current;
         const next = new Map(current);
@@ -229,15 +257,13 @@ export function useEditorState(input: EditorInput) {
         return next;
       });
     },
-    [schema, value, blueprint],
+    [schema, blueprint],
   );
 
-  // Keep the draft on this device a moment after each change; drop it once everything is saved.
+  // Keep the draft on this device a moment after each change. It is dropped only by a save, Discard, Drop, Delete
+  // or editing back to the saved version, never because the form looks clean (Leave keeps it on purpose).
   useEffect(() => {
-    if (!dirty) {
-      clearDraft(storage);
-      return;
-    }
+    if (!dirty) return;
     const timer = window.setTimeout(() => {
       const draft: Draft = {
         value,
@@ -297,7 +323,7 @@ export function useEditorState(input: EditorInput) {
   }, [dirty]);
 
   const report = (problem: AdminProblem, intent: SaveIntent) => {
-    const view = viewOfProblem(problem, validateRecord(schema, value, blueprint));
+    const view = viewOfProblem(problem, validateRecord(schema, latest.current, blueprint));
     if (view.kind === "fields") {
       setErrors(view.errors);
       setNotice({ kind: "fields", count: view.errors.size });
@@ -312,8 +338,11 @@ export function useEditorState(input: EditorInput) {
   };
 
   const save = (intent: SaveIntent, options: { version?: number } = {}) => {
+    const startedWith = latest.current;
     const withStatus =
-      blueprint.workflow && intent !== "save" ? setAt(value, ["status"], STATUS[intent]) : value;
+      blueprint.workflow && intent !== "save"
+        ? setAt(startedWith, ["status"], STATUS[intent])
+        : startedWith;
     const prepared = applyAutomatic(trimmed(withStatus), blueprint, {
       isNew,
       now: new Date(),
@@ -350,8 +379,11 @@ export function useEditorState(input: EditorInput) {
         report(result.problem, intent);
         return;
       }
-      clearDraft(storage);
-      setValue(prepared);
+      // Words typed while the save was on its way stay on screen, still unsaved (and kept on this device).
+      if (JSON.stringify(latest.current) === JSON.stringify(startedWith)) {
+        clearDraft(storage);
+        show(prepared);
+      }
       setSaved({
         value: prepared,
         version: result.version,
@@ -385,14 +417,14 @@ export function useEditorState(input: EditorInput) {
   };
 
   const discard = () => {
-    setValue(saved.value);
+    show(saved.value);
     setErrors(new Map());
     setNotice(null);
     clearDraft(storage);
   };
 
   const restoreDraft = () => {
-    if (loadedDraft) setValue(loadedDraft.value);
+    if (loadedDraft) show(loadedDraft.value);
     setDraftHandled(true);
   };
   const dropDraft = () => {
@@ -407,7 +439,7 @@ export function useEditorState(input: EditorInput) {
     if (choice === "reload") {
       // Keep this person's work on the device; the reloaded page offers it back.
       writeDraft(storage, {
-        value,
+        value: latest.current,
         savedAt: Date.now(),
         ...(open.current ? { baseVersion: open.current.version } : {}),
       });
@@ -424,13 +456,15 @@ export function useEditorState(input: EditorInput) {
     setLeaveTo(null);
     if (!target) return;
     setNavigationGuard(null);
-    // The draft stays on the device, so the work can be restored on return.
+    // The draft stays on the device, so the work can be restored on return; the form only looks clean so
+    // leaving doesn't ask again.
+    const work = latest.current;
     writeDraft(storage, {
-      value,
+      value: work,
       savedAt: Date.now(),
       ...(saved.version ? { baseVersion: saved.version } : {}),
     });
-    setSaved((current) => ({ ...current, value }));
+    setSaved((current) => ({ ...current, value: work }));
     router.push(target);
   };
 
@@ -439,7 +473,9 @@ export function useEditorState(input: EditorInput) {
       if (!recordId) return;
       const result = await duplicateRecord(contentKey, recordId);
       if (!result.ok) {
-        report(result.problem, "save");
+        // A copy that can't be saved is not this record's problem: say so instead of marking its fields.
+        if (viewOfProblem(result.problem).kind === "fields") toast.error(t("side.duplicateFailed"));
+        else report(result.problem, "save");
         return;
       }
       const target = `/secure-admin-control/content/${contentKey}/${encodeURIComponent(result.id ?? "")}`;
@@ -458,7 +494,7 @@ export function useEditorState(input: EditorInput) {
       }
       clearDraft(storage);
       setNavigationGuard(null);
-      setSaved((current) => ({ ...current, value }));
+      setSaved((current) => ({ ...current, value: latest.current }));
       toast.success(t("side.deleted"));
       router.push(`/secure-admin-control/content/${contentKey}`);
     });

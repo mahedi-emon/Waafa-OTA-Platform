@@ -9,7 +9,10 @@ export function scrollToSection(id: string): void {
     ?.focus({ preventScroll: true });
 }
 
-/** Scrolls to the field at a dotted path ("prices.2.price") and focuses it, opening folded list items first. */
+/**
+ * Scrolls to the field at a dotted path ("prices.2.price") and focuses it. List items with a problem stay open
+ * (RepeaterField), and lines carry the same ids (LinesField), so every error's link has a field to reach.
+ */
 export function scrollToField(dotted: string): void {
   const id = `field-${dotted.replace(/[^\w-]/g, "-") || "root"}`;
   const target = document.getElementById(id) ?? document.getElementById(`${id}-label`);

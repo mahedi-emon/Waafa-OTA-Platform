@@ -1,10 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
+  canCopy,
   CONTENT_KEYS,
   CONTENT_MODEL,
   contentRecordId,
   hasRecordOrder,
   isContentKey,
+  isPickerKey,
   parseContent,
   type CollectionKey,
   type ContentKey,
@@ -45,6 +47,32 @@ function sortByRecordOrder<T extends { data: unknown; position: number }>(
       (orderOf(a.data) ?? Number.MAX_SAFE_INTEGER) - (orderOf(b.data) ?? Number.MAX_SAFE_INTEGER) ||
       a.position - b.position,
   );
+}
+
+/** `text` with `tail` at the end, the start cut so the whole fits in `max` characters. */
+const fit = (text: string, tail: string, max: number) =>
+  `${text.slice(0, Math.max(1, max - tail.length)).replace(/-+$/, "")}${tail}`;
+
+/**
+ * A copied product gets its own variant ids and SKUs, and its default variant follows: orders and deals point at a
+ * variant by its id alone, so a copy sharing them would take the live product's orders (D0 R2 review).
+ */
+function renewVariants(data: Record<string, unknown>, suffix: string, taken: Set<string>): void {
+  const variants = Array.isArray(data.variants)
+    ? (data.variants as Array<Record<string, unknown>>)
+    : [];
+  const renamed = new Map<string, string>();
+  for (const variant of variants) {
+    if (typeof variant.id !== "string") continue;
+    let next = fit(variant.id, suffix, 64);
+    for (let n = 2; taken.has(next); n += 1) next = fit(variant.id, `${suffix}-${n}`, 64);
+    taken.add(next);
+    renamed.set(variant.id, next);
+    variant.id = next;
+    if (typeof variant.sku === "string") variant.sku = fit(variant.sku, suffix.toUpperCase(), 40);
+  }
+  if (typeof data.defaultVariantId === "string")
+    data.defaultVariantId = renamed.get(data.defaultVariantId) ?? data.defaultVariantId;
 }
 
 /**
@@ -235,6 +263,7 @@ export class AdminContentService {
     assertContentAccess(staff, key);
     const record = this.validate(key, data);
     const id = contentRecordId(key, record);
+    await this.assertInnerIdFree(key, record);
     const last = await this.prisma.contentDocument.findFirst({
       where: { collection: key },
       orderBy: { position: "desc" },
@@ -294,6 +323,7 @@ export class AdminContentService {
       where: { collection_docId: { collection: key, docId: id } },
     });
     if (!before) throw problems.notFound("Record not found");
+    await this.assertInnerIdFree(key, record, id);
     // The list owns the order: a save (or a restore of an old version) never moves the record (#205).
     const kept = hasRecordOrder(key) ? orderOf(before.data) : undefined;
     if (kept !== undefined && record && typeof record === "object")
@@ -452,6 +482,11 @@ export class AdminContentService {
   /** A copy with "(copy)" in its title and a free id, saved as a hidden draft and never Sample. */
   async duplicate(staff: StaffPrincipal, key: CollectionKey, id: string) {
     assertContentAccess(staff, key);
+    if (!canCopy(key))
+      throw problems.conflict(
+        "Records of this list are fixed places or codes and can't be copied",
+        "noCopy",
+      );
     const row = await this.prisma.contentDocument.findUnique({
       where: { collection_docId: { collection: key, docId: id } },
     });
@@ -466,23 +501,64 @@ export class AdminContentService {
         })
       ).map((doc) => doc.docId),
     );
+    // Ids hold 64 characters and slugs 120: a long one is cut so the suffix always fits.
     const base = String(data[idField] ?? id);
+    const named = (tail: string) => fit(base, tail, idField === "id" ? 64 : 120);
     let suffix = "-copy";
-    for (let n = 2; taken.has(`${base}${suffix}`); n += 1) suffix = `-copy-${n}`;
-    data[idField] = `${base}${suffix}`;
-    if (idField !== "id" && typeof data.id === "string") data.id = `${data.id}${suffix}`;
-    if (titleField !== idField && typeof data[titleField] === "string")
-      data[titleField] = `${data[titleField] as string} (copy)`;
+    for (let n = 2; taken.has(named(suffix)); n += 1) suffix = `-copy-${n}`;
+    data[idField] = named(suffix);
+    if (idField !== "id" && typeof data.id === "string") data.id = fit(data.id, suffix, 64);
+    if (titleField !== idField && typeof data[titleField] === "string") {
+      const title = data[titleField] as string;
+      data[titleField] = `${title} (copy)`;
+      // A title at its longest keeps its words; the hidden copy's own link tells the two apart.
+      if (!parseContent(key, data).success) data[titleField] = title;
+    }
     if (typeof data.sample === "boolean") data.sample = false;
     for (const flag of ["visible", "isActive", "enabled"])
       if (typeof data[flag] === "boolean") data[flag] = false;
     if (typeof data.status === "string" && parseContent(key, { ...data, status: "draft" }).success)
       data.status = "draft";
+    if (key === "products") renewVariants(data, suffix, await this.variantIdsInUse());
     return this.create(staff, key, data, "content.duplicate");
   }
 
-  /** Choices for reference pickers: titles, photos and the values records point at (any staff may read them). */
-  async options(key: CollectionKey, query?: string) {
+  /** Every variant id the store uses, so a copy's new ones are free. */
+  private async variantIdsInUse(): Promise<Set<string>> {
+    const rows = await this.prisma.contentDocument.findMany({
+      where: { collection: "products" },
+      select: { data: true },
+    });
+    const ids = new Set<string>();
+    for (const row of rows) {
+      const variants = (row.data as { variants?: Array<{ id?: unknown }> }).variants ?? [];
+      for (const variant of variants) if (typeof variant.id === "string") ids.add(variant.id);
+    }
+    return ids;
+  }
+
+  /**
+   * Lists keyed by a slug or code also give each record an inner id that other records point at (a deal's product,
+   * a cart line); two records must never share it.
+   */
+  private async assertInnerIdFree(key: CollectionKey, record: unknown, exceptDocId = "") {
+    if (CONTENT_MODEL[key].idField === "id") return;
+    const inner = (record as { id?: unknown } | null)?.id;
+    if (typeof inner !== "string" || !inner) return;
+    const clash = await this.prisma.$queryRaw<Array<{ docId: string }>>`
+      SELECT "docId" FROM "ContentDocument"
+      WHERE "collection" = ${key} AND "data"->>'id' = ${inner} AND "docId" <> ${exceptDocId}
+      LIMIT 1`;
+    if (clash.length > 0)
+      throw problems.conflict(`Another record already uses the id "${inner}"`, "exists");
+  }
+
+  /**
+   * Choices for reference pickers: titles, photos and the values records point at. Lists other editors pick from
+   * are open to any staff member; any other list's choices need edit access to it.
+   */
+  async options(staff: StaffPrincipal, key: CollectionKey, query?: string) {
+    if (!isPickerKey(key)) assertContentAccess(staff, key);
     const { titleField } = CONTENT_MODEL[key];
     const rows = sortByRecordOrder(
       key,

@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { valueWords } from "@/lib/admin/blueprints/historyText";
-import { childPattern } from "@/lib/admin/blueprints/paths";
+import { childPattern, dottedOf } from "@/lib/admin/blueprints/paths";
 import { defaultFor, resolve, type JsonSchema, type Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
 import { SchemaField } from "./SchemaField";
@@ -125,9 +125,17 @@ function RepeaterField({ path, node, value, optional }: RepeaterFieldProps) {
       return next;
     });
 
+  /** An item with a problem in it stays open, so the error and its link reach the field (ADMIN.md §9). */
+  const hasProblem = (index: number) => {
+    const item = dottedOf([...path, index]);
+    for (const at of editor.errors.keys())
+      if (at === item || at.startsWith(`${item}.`)) return true;
+    return false;
+  };
+
   const card = (index: number, handle: ReactNode) => {
     const key = stable.keys[index] ?? String(index);
-    const expanded = open.has(key);
+    const expanded = open.has(key) || hasProblem(index);
     const bodyId = `${meta.id}-item-${index}`;
     const title = summaryOf(items[index], index);
     return (
@@ -139,7 +147,7 @@ function RepeaterField({ path, node, value, optional }: RepeaterFieldProps) {
             aria-expanded={expanded}
             aria-controls={bodyId}
             onClick={() => toggle(key)}
-            className="flex min-h-10 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-2 text-left focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+            className="flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-2 text-left focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
           >
             <ChevronDown
               aria-hidden="true"

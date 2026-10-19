@@ -148,10 +148,15 @@ export function applyAutomatic(
           set(path, Math.max(1, Math.round(wordCount(owner) / 200)));
           break;
         case "levelFromParent": {
+          // Store categories go three deep: a top category is 1, its children 2, theirs 3.
           const parentId = (owner as { parentId?: unknown } | null)?.parentId;
-          const level =
-            typeof parentId === "string" && parentId ? (context.levelOf?.(parentId) ?? 0) + 1 : 0;
-          set(path, level);
+          if (typeof parentId !== "string" || !parentId) {
+            set(path, 1);
+            break;
+          }
+          // Until the categories have loaded the parent's level is unknown: keep the stored one, never guess.
+          const parentLevel = context.levelOf?.(parentId);
+          if (typeof parentLevel === "number") set(path, parentLevel + 1);
           break;
         }
       }

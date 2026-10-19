@@ -1,4 +1,4 @@
-import { CONTENT_MODEL, type ContentKey } from "@waafa/shared";
+import { canCopy, CONTENT_MODEL, type ContentKey } from "@waafa/shared";
 import { humanize } from "../format";
 import type { JsonSchema } from "../schema";
 import { inferWidget } from "./infer";
@@ -127,6 +127,7 @@ export function buildResolvedBlueprint(
     ...(blueprint.heading ? { heading: blueprint.heading } : {}),
     publish,
     workflow,
+    duplicable: canCopy(key),
     sample: Boolean(top("sample")),
     seo: Boolean(top("seo")),
   };

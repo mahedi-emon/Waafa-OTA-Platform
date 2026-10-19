@@ -113,6 +113,8 @@ export type PriceCartInput = {
 export function priceCart(input: PriceCartInput): Quote {
   const byVariant = new Map<string, { product: Product; variant: Variant }>();
   for (const product of input.products) {
+    // Only what is on sale: a draft (a copy being prepared) never takes the place of the live product.
+    if (product.status !== "published") continue;
     for (const variant of product.variants) byVariant.set(variant.id, { product, variant });
   }
 

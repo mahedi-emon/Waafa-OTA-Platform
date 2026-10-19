@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { parseContent } from "@waafa/shared";
 import { editorSchema } from "../editorSchema";
 import { applyAutomatic, camelKey, nowInDhaka, todayInDhaka } from "./automatic";
 import { buildResolvedBlueprint } from "./build";
@@ -128,17 +129,37 @@ describe("automatic fields", () => {
     expect(keyed.attributes.map((item) => item.key)).toEqual(["pageYield", "pageYield2", "colour"]);
 
     const categories = buildResolvedBlueprint("categories", editorSchema("categories"), words);
+    // Levels follow the store's tree, which starts at 1 (CategorySchema: 1 to 3).
+    const levelOf = (id: string) => (id === "printing" ? 1 : undefined);
     const child = applyAutomatic({ name: "Toner", parentId: "printing" }, categories, {
       isNew: true,
       now: NOW,
-      levelOf: (id) => (id === "printing" ? 0 : undefined),
+      levelOf,
     }) as { level: number };
-    expect(child.level).toBe(1);
-    const top = applyAutomatic({ name: "Printing", parentId: null }, categories, {
-      isNew: true,
+    expect(child.level).toBe(2);
+    const top = applyAutomatic({ name: "Printing", parentId: null, level: 2 }, categories, {
+      isNew: false,
+      now: NOW,
+      levelOf,
+    }) as { level: number };
+    expect(top.level).toBe(1);
+    // While the categories are still loading, a child keeps the level it has.
+    const loading = applyAutomatic({ name: "Ink", parentId: "printing", level: 2 }, categories, {
+      isNew: false,
       now: NOW,
     }) as { level: number };
-    expect(top.level).toBe(0);
+    expect(loading.level).toBe(2);
+    const printing = {
+      id: "printing",
+      slug: "printing",
+      name: "Printing",
+      parentId: null,
+      level: top.level,
+      icon: "printer",
+      order: 0,
+      sample: false,
+    };
+    expect(parseContent("categories", printing).success).toBe(true);
   });
 
   it("stamps 'Last updated' on every save", () => {

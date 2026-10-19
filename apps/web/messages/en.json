@@ -3720,6 +3720,7 @@
         "history": "See history",
         "duplicate": "Duplicate",
         "duplicated": "A copy was saved as a draft.",
+        "duplicateFailed": "A copy of this record couldn't be saved. Nothing changed here; check its details, then try again.",
         "delete": "Delete",
         "deleteTitle": "Delete this {thing}?",
         "deleteBody": "It disappears from the site and from lists. Deleting can't be undone yet.",

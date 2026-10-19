@@ -35,7 +35,7 @@ function ChoiceField({ path, value, optional, nullable, options }: ChoiceFieldPr
     <button
       type="button"
       onClick={() => meta.change(optional ? undefined : null)}
-      className="min-h-8 cursor-pointer rounded-full px-2.5 text-[12.5px] font-semibold text-mist-600 hover:bg-mist-100 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+      className="relative min-h-8 cursor-pointer rounded-full px-2.5 text-[12.5px] font-semibold text-mist-600 after:absolute after:inset-x-0 after:-inset-y-1.5 hover:bg-mist-100 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
     >
       {t("clear")}
     </button>

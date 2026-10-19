@@ -34,7 +34,7 @@ function EditorAdvanced({ fields }: EditorAdvancedProps) {
         }
       }}
     >
-      <summary className="min-h-10 cursor-pointer content-center font-display text-[16px] font-bold text-navy-900">
+      <summary className="min-h-11 cursor-pointer content-center font-display text-[16px] font-bold text-navy-900">
         {t("advanced.title")}
       </summary>
       <p className="mt-1 text-[14px] text-mist-600">{t("advanced.lead")}</p>

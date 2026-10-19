@@ -110,7 +110,7 @@ function ObjectField({ schema, path, value, optional, bare = false }: ObjectFiel
             type="button"
             aria-label={t("removeThing", { thing: meta.label })}
             onClick={() => meta.change(undefined)}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-full text-mist-500 hover:bg-mist-100 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+            className="relative flex size-8 cursor-pointer items-center justify-center rounded-full text-mist-500 after:absolute after:-inset-1.5 hover:bg-mist-100 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
           >
             <Trash2 aria-hidden="true" className="size-4" />
           </button>

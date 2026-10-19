@@ -37,12 +37,16 @@ async function signIn(page: Page) {
   await expect(page.getByRole("heading", { level: 1, name: /^Hello, / })).toBeVisible();
 }
 
-async function openFirstFaq(page: Page) {
-  await page.goto("/secure-admin-control/content/faqs");
-  await page
-    .getByRole("link", { name: /^Edit / })
-    .first()
-    .click();
+/** Opens an FAQ: the first in the list, or one by id that no other spec edits (History tests need a clean story). */
+async function openFirstFaq(page: Page, id?: string) {
+  if (id) await page.goto(`/secure-admin-control/content/faqs/${id}`);
+  else {
+    await page.goto("/secure-admin-control/content/faqs");
+    await page
+      .getByRole("link", { name: /^Edit / })
+      .first()
+      .click();
+  }
   await expect(page.getByRole("tab", { name: "History" })).toBeVisible();
   // The editor is interactive once its words and widgets are hydrated.
   await expect(page.getByRole("textbox", { name: "Answer", exact: true })).toBeEditable();
@@ -54,7 +58,8 @@ test("a question is edited in plain words, saved with Ctrl S, and History brings
   test.setTimeout(120_000);
   const errors = collectErrors(page);
   await signIn(page);
-  await openFirstFaq(page);
+  // Its own question: api-mode.spec edits the first one before this file runs in CI.
+  await openFirstFaq(page, "faq-change-cancel");
 
   // Plain labels, no ids, no JSON tab.
   for (const label of ["Category", "Question", "Answer"])
@@ -121,8 +126,17 @@ test("typed work survives a reload, and leaving with unsaved changes asks first"
     `${original} (draft ${STAMP})`,
   );
 
-  // A reload offers the draft back.
-  page.once("dialog", (dialog) => void dialog.accept());
+  // Leave keeps the work on this device, as the dialog promises.
+  await page
+    .getByRole("link", { name: /^Dashboard/ })
+    .first()
+    .click();
+  await page.getByRole("button", { name: "Leave", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 1, name: /^Hello, / })).toBeVisible();
+  await openFirstFaq(page);
+  await expect(page.getByText(/are on this device\.$/)).toBeVisible();
+
+  // Ignoring the offer doesn't lose it: a reload offers the draft again.
   await page.reload();
   await expect(page.getByText(/are on this device\.$/)).toBeVisible();
   await page.getByRole("button", { name: "Restore them" }).click();
@@ -200,6 +214,55 @@ test("a new question starts plain, misses are explained, and Duplicate makes a h
 
   await page.getByRole("button", { name: "Duplicate" }).first().click();
   await expect(page.getByText("A copy was saved as a draft.")).toBeVisible();
+});
+
+test("picking an airline fills in its name too, and the version before comes back", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  const errors = collectErrors(page);
+  await signIn(page);
+  await page.goto("/secure-admin-control/content/baggageRules");
+  await page
+    .getByRole("link", { name: /^Edit / })
+    .first()
+    .click();
+  await expect(page.getByRole("tab", { name: "History" })).toBeVisible();
+  const heading = page.getByRole("heading", { level: 1 });
+  const headingBefore = (await heading.innerText()).trim();
+  const picker = page.getByRole("combobox", { name: "Airline" });
+  const before = (await picker.innerText()).trim();
+  await until(() => picker.click(), page.getByPlaceholder("Search airlines"));
+  const options = page.getByRole("option");
+  let chosen = "";
+  for (let index = 0; index < (await options.count()); index += 1) {
+    // An option shows the logo's initials, the airline's name and maybe a Sample badge: the name is the longest.
+    const name =
+      (await options.nth(index).innerText())
+        .split("\n")
+        .map((part) => part.trim())
+        .sort((a, b) => b.length - a.length)[0] ?? "";
+    if (name && !before.includes(name)) {
+      chosen = name;
+      await options.nth(index).click();
+      break;
+    }
+  }
+  expect(chosen).not.toBe("");
+  await until(() => page.keyboard.press("Control+s"), page.getByText("Saved.").first());
+  // The record is named after its airline: the picker filled the name in the same change.
+  await expect(heading).toContainText(chosen);
+  await expect(picker).toContainText(chosen);
+
+  await page.getByRole("tab", { name: "History" }).click();
+  await page.getByRole("button", { name: "Restore the version before this change" }).click();
+  await page.getByRole("button", { name: "Restore", exact: true }).click();
+  await expect(page.getByText("The older version is back.")).toBeVisible();
+  // Code and name come back together.
+  await expect(heading).toHaveText(headingBefore);
+  await page.getByRole("tab", { name: "Edit" }).click();
+  await expect(picker).not.toContainText(chosen);
+  expect(errors).toEqual([]);
 });
 
 test("the lead page shows the request as labelled facts, not data", async ({ page }) => {

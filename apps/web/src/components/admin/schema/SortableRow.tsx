@@ -39,7 +39,7 @@ function SortableRow({ id, label, reduce, children }: SortableRowProps) {
       {...attributes}
       {...listeners}
       aria-label={`${t("drag")}: ${label}`}
-      className="flex size-9 shrink-0 cursor-grab touch-none items-center justify-center rounded-lg text-mist-500 hover:bg-mist-100 hover:text-navy-900 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none active:cursor-grabbing"
+      className="relative flex size-9 shrink-0 cursor-grab touch-none items-center justify-center rounded-lg text-mist-500 after:absolute after:-inset-1 hover:bg-mist-100 hover:text-navy-900 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none active:cursor-grabbing"
     >
       <GripVertical aria-hidden="true" className="size-4" />
     </button>

@@ -198,3 +198,44 @@ export function hasRecordOrder(key: ContentKey): boolean {
   const shape = (entry.schema as { shape?: Record<string, unknown> }).shape;
   return Boolean(shape && Object.hasOwn(shape, "order"));
 }
+
+/**
+ * Lists that editors elsewhere pick from (a package's destination, a product's brand): any staff member may read
+ * their titles and photos as picker choices. Every other list's choices need edit access to it (D0 R2 review).
+ */
+export const PICKER_KEYS = [
+  "airlines",
+  "airports",
+  "attributeSets",
+  "blogCategories",
+  "brands",
+  "categories",
+  "collections",
+  "compatibleModels",
+  "products",
+  "tourPackages",
+  "visaCountries",
+  "visaGuides",
+] as const satisfies readonly CollectionKey[];
+
+export function isPickerKey(key: ContentKey): boolean {
+  return (PICKER_KEYS as readonly string[]).includes(key);
+}
+
+/** Lists of fixed places or codes (menus, home sections, IATA codes, coupon codes): a copy could never be valid. */
+const UNCOPYABLE = new Set<ContentKey>([
+  "menus",
+  "notificationTemplates",
+  "homeSections",
+  "servicePages",
+  "mediaSlots",
+  "storeRows",
+  "airports",
+  "airlines",
+  "coupons",
+]);
+
+/** Whether Duplicate is offered for a key's records. */
+export function canCopy(key: ContentKey): boolean {
+  return CONTENT_MODEL[key].kind === "collection" && !UNCOPYABLE.has(key);
+}

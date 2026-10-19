@@ -24,7 +24,7 @@ function RichTextTool({ label, active, disabled = false, onClick, children }: To
       onMouseDown={(event) => event.preventDefault()}
       onClick={onClick}
       className={cn(
-        "grid size-9 cursor-pointer place-items-center rounded-lg text-navy-900 outline-none hover:bg-mist-100 focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-40 [&_svg]:size-4",
+        "grid size-9 cursor-pointer place-items-center rounded-lg text-navy-900 outline-none hover:bg-mist-100 focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-40 max-sm:size-11 [&_svg]:size-4",
         active && "hover:bg-navy-800 bg-navy-900 text-white",
       )}
     >

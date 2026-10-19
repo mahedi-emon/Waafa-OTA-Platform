@@ -52,18 +52,24 @@ function TagsField({ path, item, value, optional }: TagsFieldProps) {
       optional={optional}
       {...(meta.error ? { error: meta.error } : {})}
     >
-      <div className="flex min-h-11 flex-wrap items-center gap-1.5 rounded-md border border-input bg-white px-2 py-1.5 shadow-xs focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/13">
+      <div
+        // A tap anywhere in the box (not on a chip) types a new tag.
+        onClick={(event) => {
+          if (event.target === event.currentTarget) document.getElementById(meta.id)?.focus();
+        }}
+        className="flex min-h-[50px] cursor-text flex-wrap items-center gap-1.5 rounded-md border border-input bg-white px-2 py-1.5 shadow-xs focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/13"
+      >
         {tags.map((tag, index) => (
           <span
             key={`${String(tag)}-${index}`}
-            className="inline-flex h-8 items-center gap-1 rounded-full bg-mist-100 pr-1 pl-3 text-[14px] font-medium text-navy-900"
+            className="inline-flex h-9 items-center gap-1 rounded-full bg-mist-100 pr-1.5 pl-3 text-[14px] font-medium text-navy-900"
           >
             {String(tag)}
             <button
               type="button"
               aria-label={t("removeTag", { tag: String(tag) })}
               onClick={() => remove(index)}
-              className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-mist-600 hover:bg-mist-200 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+              className="relative flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-mist-600 after:absolute after:-inset-2 hover:bg-mist-200 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
             >
               <X aria-hidden="true" className="size-3.5" />
             </button>
@@ -94,7 +100,7 @@ function TagsField({ path, item, value, optional }: TagsFieldProps) {
             add(text);
             meta.touch();
           }}
-          className="h-8 min-w-32 flex-1 bg-transparent px-1.5 text-base outline-none placeholder:text-mist-500"
+          className="h-9 min-w-32 flex-1 bg-transparent px-1.5 text-base outline-none placeholder:text-mist-500"
         />
       </div>
     </FieldShell>

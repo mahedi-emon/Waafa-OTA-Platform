@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONTENT_KEYS, CONTENT_MODEL, type ContentKey } from "@waafa/shared";
+import { CONTENT_KEYS, CONTENT_MODEL, isPickerKey, type ContentKey } from "@waafa/shared";
 import messages from "../../../../messages/en.json";
 import { editorSchema } from "../editorSchema";
 import { buildResolvedBlueprint, type Words } from "./build";
@@ -68,8 +68,12 @@ describe("form engine v2 blueprints (D0 R2)", () => {
         ...(blueprint.publish ?? []).filter((pattern) => !patterns.has(pattern)),
       ];
       expect(unknown).toEqual([]);
-      for (const spec of Object.values(blueprint.fields ?? {}))
-        if (spec.ref) expect(CONTENT_MODEL[spec.ref.key].kind).toBe("collection");
+      for (const spec of Object.values(blueprint.fields ?? {})) {
+        if (!spec.ref) continue;
+        expect(CONTENT_MODEL[spec.ref.key].kind).toBe("collection");
+        // The API lets every staff member read a picker's choices only for these lists.
+        expect(isPickerKey(spec.ref.key)).toBe(true);
+      }
     });
 
     it("names a field like its section only when it is the section's one field", () => {
