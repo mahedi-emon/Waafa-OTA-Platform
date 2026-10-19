@@ -195,6 +195,10 @@ link opens the full editor. Below 768 px rows become cards.
 - Left: section navigation (sticky; check marks for complete sections, a dot for missing required fields). Purpose-built
   editors use the same rail as steps (Basics → Photos → …); any step is reachable at any time.
 - Centre: one column of sections; each section has a title, a one-line description and fields with labels and help.
+  A name shows once: the only field of a section named like it ("Delivery zones" in Delivery zones) keeps its label
+  for screen readers only, a group named like its section draws without a second title, and a section with more
+  fields never shares its name with one of them (blueprint unit test). Long section names wrap to two lines in the
+  rail.
 - Right rail (≥ 1280 px; below that it becomes the top of the form): **Status** chip with its reason, Visibility
   (Publish now / Schedule, Show on website), Preview and View on site, the **publish checklist**, the SEO snippet
   preview, "Edited 5 min ago by Rafi", History, Duplicate, Move to Trash.
@@ -299,7 +303,8 @@ order).
 - Widgets: text and long text with counters, number with − / +, money (৳, lakh grouping, VAT included), slug (follows
   the title until edited, full address, warning on live records), date and date-time (calendar, Today / Now / Clear,
   Asia/Dhaka), time of day, weekdays (Saturday first), switch, choice (radio cards up to six, a list above), several
-  choices (chips), tags, lines (one sentence per row, Enter adds the next), repeater (cards with a summary line, fold,
+  choices (chips), tags, lines (one sentence per row that grows with its words, Enter adds the next, a pasted list
+  becomes rows), repeater (cards with a summary line, fold,
   drag with dnd-kit loaded after hydration, Move up / down, Duplicate, Remove with Undo), reference picker (search,
   thumbnails, Sample and Draft badges, several at once, "New …" in a new tab), icon picker (only icons the site
   draws), colour (system picker, code, colours the product already uses), phone (local numbers become +880…), SEO
@@ -312,9 +317,12 @@ order).
   Cmd+S); History tab with sentences ("Price per person (2): ৳64,900 → ৳59,900") and Restore this version; the draft
   kept on this device with Restore / Discard after a reload or a new sign-in; the edit-conflict dialog ("Rafi saved this
   2 min ago": See their version / Save mine over theirs); the leave guard (links, Ctrl K, closing the tab); plain errors
-  with links to the fields and Retry; the session-ended dialog that signs in again and comes back.
+  with links to the fields and Retry; the session-ended dialog that signs in again and comes back. History also offers
+  "Restore the version before this change" on its oldest entry, so the very first edit of a seeded record can be undone.
 - Status in R2: records with draft / published / archived get Save draft, Publish, Update, Unpublish and Archive
-  buttons instead of a status field. Scheduling, expiry and the worker job come with R4.
+  buttons instead of a status field. Records with a show switch say Shown or Hidden; settings and lists without
+  drafts or a switch say Live, "Changes show on the site as soon as you save". Every chip carries its reason.
+  Scheduling, expiry and the worker job come with R4.
 
 ---
 
