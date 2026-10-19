@@ -12,6 +12,9 @@ export type Words = (key: string) => string | undefined;
 /** Fields the system owns on every record: never drawn in a section. */
 const SYSTEM_FIELDS = new Set(["status", "sample"]);
 
+/** Web addresses and site paths are read whole, so these texts take the full row. */
+const ADDRESS_NAMES = new Set(["href", "url", "mapUrl"]);
+
 /**
  * A blueprint with every word resolved and every field's widget decided, ready for the editor. Words come from
  * Admin.blueprints.<key> first (record-specific labels and help), then the shared Admin.fieldNames / fieldHelp /
@@ -70,7 +73,7 @@ export function buildResolvedBlueprint(
       ...(spec?.fixed ? { fixed: true } : {}),
       ...(spec?.prefix ? { prefix: spec.prefix } : {}),
       ...(spec?.source ? { source: spec.source } : {}),
-      ...(spec?.wide ? { wide: true } : {}),
+      ...(spec?.wide || (widget === "text" && ADDRESS_NAMES.has(info.name)) ? { wide: true } : {}),
       ...(spec?.order ? { order: spec.order } : {}),
       ...(spec?.from ? { from: spec.from } : {}),
       ...(spec?.variantOf ? { variantOf: spec.variantOf } : {}),

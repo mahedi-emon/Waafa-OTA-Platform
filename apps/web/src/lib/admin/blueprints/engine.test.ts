@@ -287,3 +287,17 @@ describe("status", () => {
     expect(statusOf(resolved("contactSettings"), {}, false)).toEqual({ state: "direct" });
   });
 });
+
+describe("layout", () => {
+  it("gives web addresses the full row", () => {
+    const faqs = buildResolvedBlueprint("faqs", editorSchema("faqs"), words);
+    expect(faqs.fields.link_href?.wide).toBe(true);
+    expect(faqs.fields.link_label?.wide).toBeUndefined();
+    const contact = buildResolvedBlueprint(
+      "contactSettings",
+      editorSchema("contactSettings"),
+      words,
+    );
+    expect(contact.fields.mapUrl?.wide).toBe(true);
+  });
+});
