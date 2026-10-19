@@ -38,6 +38,14 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #208 · CI · CodeQL runs on the private repository — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 20 Oct: "why is CI skipped? It is very important: run all of it, check everything, so nothing fails" (CodeQL showed "skipping" since #206, and an R2 run had been cancelled to save minutes) |
+| Built | `.github/workflows/codeql.yml`: the skip is gone; the analysis writes SARIF instead of uploading while the repository is private; a Findings step (`scripts/codeql-findings.mjs`) annotates each finding on its file and line, lists them in the job summary and fails on any error or warning (notes are shown, not blocking); the SARIF is kept 7 days as an artifact. The workflow file itself is in the path filter |
+| Tests | Script checked on sample SARIF (no findings → pass; an error → fail with `::error file=…,line=…`); the CodeQL check on this pull request ran and passed |
+| Decision | D205 (replaces D192). No more cancelled runs: every push's CI finishes and is fixed to green |
+
 ### #191 · D0 R1 · Admin shell, design system and sign-in — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1404,6 +1412,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D190 | 19 Oct | Frame strings reach client leaves through a scoped NextIntlClientProvider with nested paths (`pickMessagePaths`); the rest of the catalogue stays on the server | Plural counts render on the client; next-intl documents nested providers with picked messages | #191 |
 | D191 | 19 Oct | Lead `pending` reads "Waiting for customer", order `processing` reads "Packing"; stored values unchanged | Plain words (ADMIN.md §13); live data keeps its meaning | #191 |
 | D192 | 19 Oct | CodeQL is skipped while the repository is private (`if: github.event.repository.private == false`) | Code scanning on a private repository needs GitHub Code Security (paid); every run failed at upload after about five Actions minutes. It comes back by itself if the repository is made public | #204 |
+| D205 | 20 Oct | CodeQL runs on every pull request and push again (replaces D192): on the private repository the analysis keeps its SARIF (`upload: never`, `output: codeql-results`) and `scripts/codeql-findings.mjs` turns each finding into an annotation and a job-summary row and fails the check on any error or warning; the SARIF is kept 7 days as an artifact; on a public repository it uploads as before | Owner, 20 Oct: every CI check must run and pass, nothing skipped. Same queries (security-extended), same path filters, about five minutes a run | #208 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1482,6 +1491,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 20 Oct | Owner: never skip CI. #208 CodeQL runs on the private repository (SARIF read in the job, fails on findings); R2 review fixes verified locally in the CI job order first | #208 | #208 PR | CodeQL green; script on sample SARIF |
 | 19 Oct 18:20–21:30 | R1 admin shell: grouped sidebar with badges, top bar (Ctrl K, + New, bell), breadcrumbs, page header, StatusChip, settings door, states, sign-in; `GET /admin/inbox` and `GET /admin/search`; role rules shared | #191 | R1 PR | shared 87 · web unit 325 · API 145 · e2e admin-shell 4/4, admin-screens 2/2 (axe at 390 and 1440, five widths), budget 6/6 |
 | 19 Oct 15:30–18:15 | Owner: admin redesign first (confusing admin, manual statuses, image upload, unreadable tables, section-wise control). Epic #201 with R0–R10 (#190–#200) on Project #4 with all fields; R0 audit (108 screenshots on a production build; local dev stack: PostgreSQL :5433, API :4000, web :3100), ADMIN.md and the WAAFA Admin design system | #190 | R0 PR | docs only |
 | 14 Oct | Owner: About Us noindex in Search Console, full SEO, lighter images. #183 every published page indexable (PR #186); #184 search titles, services and contact points in structured data, llms.txt, home SEO seed patch; #185 photos q65, share images 1200 px, shipped JPEGs −35% | #183, #184, #185 | #186, #187 | API 143 · web unit 319 · e2e 121 |
