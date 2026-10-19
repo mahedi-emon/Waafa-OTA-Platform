@@ -7,6 +7,7 @@ on:
       - "packages/**"
       - "fixtures/**"
       - "scripts/**"
+      - ".github/workflows/codeql.yml"
   push:
     branches: [main]
   schedule:
@@ -18,10 +19,6 @@ permissions:
 jobs:
   analyze:
     name: Analyze (JavaScript and TypeScript)
-    # Code scanning on a private repository needs GitHub Code Security (a paid add-on), so while the repository is
-    # private the job is skipped instead of failing at upload after minutes of analysis (D192). It runs again by
-    # itself once the repository is public.
-    if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -34,6 +31,20 @@ jobs:
         with:
           languages: javascript-typescript
           queries: security-extended
+      # Code scanning on a private repository needs GitHub Code Security (a paid add-on). The analysis runs anyway:
+      # its results are read below instead of uploaded, so a finding still fails the check (D205, replaces D192).
       - uses: github/codeql-action/analyze@v4
         with:
           category: "/language:javascript-typescript"
+          upload: ${{ github.event.repository.private && 'never' || 'always' }}
+          output: codeql-results
+      - name: Findings
+        run: node scripts/codeql-findings.mjs codeql-results
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: codeql-results
+          path: codeql-results
+          retention-days: 7
+          if-no-files-found: ignore
