@@ -64,3 +64,7 @@
 - D181 Meta titles use search wording (air tickets, visa processing, tour packages, Dhaka); h1s keep board copy;
   /llms.txt lists links, never prices (#184).
 - D182 Photos q65 (AVIF ≈ 41), logo q90, widths ≤ 2560, image cache 31 days, og:image via optimiser at 1200 px (#185).
+- D183 Admin follows docs/design/ADMIN.md (epic #201); Admin* boards no longer the floor. D184 sidebar stays
+  midnight-950. D185 status families (info, progress, success, warning, danger, neutral) + tokens sky-50/sky-700,
+  success-700, warning-800, danger-700. D186 21st.dev picks (ADMIN.md §14). D187 SchemaEditor + blueprints (no fork),
+  RHF for fixed forms, URLs /content/[key] + /website/home, /website/menus, /visa-applications, /settings/[section].

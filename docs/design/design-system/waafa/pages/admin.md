@@ -1,5 +1,8 @@
 # Admin overrides (WAAFA)
 
+> Superseded on 19 Oct 2026 by the admin design system: `docs/design/ADMIN.md` and
+> `docs/design/design-system/waafa-admin/` (MASTER.md and pages/). Kept for history.
+
 > Overrides `../MASTER.md` for `/admin/*`. Source: PRD §13, HANDOFF (Admin* boards). Generator suggestion
 > (marketing-page rules) does not apply: the admin is a dense working tool.
 

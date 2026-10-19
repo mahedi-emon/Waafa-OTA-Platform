@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 13 Oct 21:00 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168), Lighthouse performance (#170), nav label Visa (#172), on-page SEO and brand names (#173) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: SEO after go-live (#168 ✅, #170 ✅, #172 ✅, #173 on-page) · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 19 Oct 18:15 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168), Lighthouse performance (#170), nav label Visa (#172), on-page SEO and brand names (#173) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: D0 Admin redesign (epic #201, top priority before other Phase D work): R0 #190 audit and ADMIN.md ✅, next R1 #191 shell and design system · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -32,10 +32,20 @@ Serena memory `audit_findings`.
 | B · Backend | 12 Oct · epic #29 | 5 (#54 – #57, #82 providers) + bugs #60, #61, #66, #72, #78 | 5 | 0 | 0 | ✅ 100% |
 | C · Integration & Launch | 13 Oct · epic #30 | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (live 13 Oct) | 7 | 0 | 0 | ✅ 100% |
 | D · P1 completion | 13 Nov · epic #31 | #71 admin editors, #91 performance (more with PROMPT 5) | 0 | 0 | 0 | 0% |
+| D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 1 | 0 | 0 | 9% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #190 · D0 R0 · Admin audit and redesign plan (ADMIN.md) — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner, 19 Oct: the admin is confusing and looks bad; redesign it first (statuses set automatically, image upload everywhere, readable tables, section-wise control of the website, understandable at a glance), then the rest of Phase D. Epic #201 with R0–R10 = #190–#200 on Project #4 (all fields) |
+| Found | 54 screens × 1440 and 390 px captured on a production build against a fresh local database (Sample content + 15 Sample leads, 5 orders, 4 proofs, 3 feedback), local only in `test-results/admin-audit/before/`. Every problem mapped to the principles in ADMIN.md §15: schema editors with ID, Slug, Brand ID, Src/Width/Height, Related slugs, Popularity, a JSON tab and "+ field" chips (package editor 12,600 px tall); free status dropdowns on leads and orders; lead facts as "Search › Legs › 1 › To" with a Raw JSON toggle; lists without thumbnails, status or pagination; 40-item flat sidebar; US-format date inputs; "Paid to acc-bkash" on proofs; raw audit events; "1 records" |
+| Built | `docs/design/ADMIN.md` (principles, tool decisions, IA and routes, tokens and status families, page patterns, field widget catalogue, blueprints, status machines, safety nets, DataTable, media, motion, words, component set with sources, before → after by issue); `docs/design/design-system/waafa-admin/` (MASTER.md + dashboard, list-table, editor-form, media-library, inbox, reconciled); DESIGN.md deviation row, HANDOFF admin row and the old `waafa/pages/admin.md` point to it |
+| Tools and skills | **ui-ux-pro-max**: design system persisted as WAAFA Admin + 5 pages; kept Minimalism & Swiss, high-density data views, 12-column grid, one or two animated elements per view; UX rules (labels, validate on blur, submit feedback, error next steps, bulk bar, tables to cards, breadcrumbs); shadcn rules (Sidebar in a provider, DataTable, Command groups, Sheet sides, sonner); rejected its App Store pattern, sky/orange palette and Fira fonts (PRD §16). **design-superpowers** creative (read from the synced plugin files; not listed in this VS Code session): L2, Refresh Strategist depth Evolution with keep/evolve/retire, Layout Strategist 12 columns, 8 px base, compact tables, list-detail. **ui-color-palette** MCP `get_palette` (TAILWIND, OKLCH v3, sources locked) → sky-700, success-700, warning-800, danger-700; pairs ≥ 6.2:1 (D185). **shadcn MCP**: registry check, TanStack Table v9 data-table example; to add sidebar, collapsible, resizable, chart, hover-card, context-menu. **magic MCP (21st.dev)** + **21st-ui** workflow: 12 needs × 6 results, picks D186. **design-taste-frontend** (dials 3/3/6, anti-template list) and **frontend-design**. Playwright MCP (capture script), GitHub (epic, issues, sub-issues, Project fields), Serena |
+| Decision | D183–D187 |
 
 ### #185 · Images: lighter photos and share previews, backup check — ✅ Done
 | Field | Value |
@@ -1127,7 +1137,7 @@ Tested 9 Oct 2026 (v4 Step 1).
 | github | MCP | ✅ | 09 Oct | Issues and PRs (`get_me` → mahedi-emon); Projects through `gh` |
 | gh CLI | CLI | ✅ | 09 Oct | Issues, Project #4 fields, sub-issues, merges (2.102, scopes repo, project, workflow) |
 | figma (project) | MCP | ⏸ off | — | Not needed; claude.ai Figma connector available if the handoff lacks a detail |
-| ui-color-palette | MCP (plugin) | ❌ 503 | 09 Oct | Palette scales and contrast; server down ("Service temporarily unavailable"); its skills wait for it |
+| ui-color-palette | MCP (plugin) | ✅ reachable | 19 Oct | Palette scales and contrast; the plugin is not loaded in the VS Code session, so `get_palette` is called over HTTP JSON-RPC from a local client (admin status families, D185) |
 | figma-desktop, framer, sketch, penpot, gitlab | MCP (plugin) | ❌ not connected | 09 Oct | Not needed for this build |
 | Claude Docs, Notion, Google Drive connectors | MCP | available | — | Not used (repo docs are the source) |
 | Node / pnpm | Runtime | ✅ | 09 Oct | Node 25.2.1 local (22.11.0 installed; CI Node 22), pnpm 12.10.1 |
@@ -1141,9 +1151,9 @@ Tested 9 Oct 2026 (v4 Step 1).
 | ui-ux-pro-max | Skill (project) | ✅ loaded | 09 Oct | Design system, UX and stack rules, pre-delivery checklist |
 | design-taste-frontend | Skill (project) | ✅ loaded | 09 Oct | Anti-template direction, layout and copy rules |
 | frontend-design | Skill (project) | ✅ loaded | 09 Oct | Aesthetic direction, typography, restraint |
-| design-superpowers:design-review | Skill | ✅ loaded | 09 Oct | Review pass on every finished screen |
+| design-superpowers:design-review | Skill | ✅ synced (files read from disk; not listed in the VS Code session) | 19 Oct | Review pass on every finished screen |
 | design-superpowers:design | Skill | available | — | Composing features from the design system |
-| design-superpowers:creative | Skill | available | — | Visual direction, moodboards |
+| design-superpowers:creative | Skill | ✅ used from the synced files | 19 Oct | Visual direction, moodboards |
 | design-superpowers:ds-make | Skill | available | — | Tokens and component variants |
 | design-superpowers:ds-manage | Skill | available | — | DS docs and drift checks |
 | design-superpowers:ds-consumer | Skill | available | — | Choosing DS components for features |
@@ -1157,8 +1167,8 @@ Tested 9 Oct 2026 (v4 Step 1).
 | design:ux-copy | Skill | available | — | Microcopy, errors, empty states |
 | design:research-synthesis | Skill | available | — | Research synthesis (not needed) |
 | design:user-research | Skill | available | — | Research plans (not needed) |
-| 21st:21st-ui | Skill | available | — | Choosing and adapting 21st.dev components |
-| ui-color-palette:* (14 skills) | Skill | ⏸ MCP down | — | build-color-system, scale-palette, audit-palette, generate-code, generate-semantic-code, generate-source-colors, manage-palettes, figma, penpot, framer, sketch, help, gh-cli, gitlab-cli-skills |
+| 21st:21st-ui | Skill | ✅ used from the synced files | 19 Oct | Choosing and adapting 21st.dev components |
+| ui-color-palette:* (14 skills) | Skill | ✅ audit-palette and scale-palette followed with the MCP | 19 Oct | build-color-system, scale-palette, audit-palette, generate-code, generate-semantic-code, generate-source-colors, manage-palettes, figma, penpot, framer, sketch, help, gh-cli, gitlab-cli-skills |
 | figma:* (14 skills) | Skill | available | — | figma-use, figma-generate-design, figma-generate-library, figma-design-to-code, figma-implement-motion, figma-code-connect, figma-create-new-file, figma-generate-diagram, figma-generative-plugins, figma-shaders, figma-swiftui, figma-use-figjam, figma-use-motion, figma-use-slides (only if the handoff lacks a detail) |
 | dataviz | Skill | available | — | Admin charts (A18, A21) |
 | code-review | Skill | available | — | Diff review before PRs |
@@ -1369,12 +1379,18 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D179 | 14 Oct | Extra office numbers are a list after the main number (`extraPhones`); WhatsApp stays on the main number; live data gets the second number through a one-time seed patch | Owner: two numbers now, more from Admin; seed never overwrites admin data | #181 |
 | D180 | 14 Oct | Every published record page is indexed whatever its Sample flag; only SEO › noindex hides one. Replaces D172 | Owner: About Us noindex in Search Console, wants the site ranked with no manual steps; the live records are all seeded as Sample, so D172 hid the pages that rank (visa, routes, packages, products) | #183 |
 | D181 | 14 Oct | Meta titles and descriptions use search wording (air tickets, visa processing, tour packages, Dhaka, Bangladesh) while h1s keep the board copy; live admin SEO text changes only through a one-time patch that leaves edited wording alone; `/llms.txt` lists links, never prices | Owner: rank for brand and travel searches; people in Bangladesh search "air ticket" and "visa processing"; prices are confirmed by a person | #184 |
+| D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
+| D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
+| D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
+| D186 | 19 Oct | 21st.dev picks (ADMIN.md §14): uvain/file-upload, originui/image-crop + in-house focal point, diceui/sortable, diceui/kanban + Move menu, corr/stepper, uvain/revenue-charts-kpi with an SVG sparkline, olewandowski1/timeline-3, cnippet-dev/v-combobox-13, serafimcloud/empty-state, sean0205/c-calendar-16, felipemenezes098/collapsible-05 on shadcn Sidebar, patrick-xin/vercel-notification-popover; installed when the issue that needs them starts | Owner: compare at least three options per need; picks favour keyboard support, dnd-kit and react-dropzone (pre-approved) and calm motion | #190 |
+| D187 | 19 Oct | Record editors stay on the generic SchemaEditor with a typed blueprint per content key (no fork); React Hook Form + zod only for small fixed forms; content URLs stay `/content/[key]`, new routes for website/home, website/menus, visa-applications and settings/[section] | Owner rule (engine, not a fork); stable URLs need no redirects | #190 |
 | D182 | 14 Oct | Photos at quality 65 (AVIF ≈ 41), logo at 90, widths up to 2560, image cache 31 days, share images at 1200 px through the optimiser, shipped JPEGs at mozjpeg q80 | Owner: lighter images; 65 is 25 to 28% smaller than 75 with no visible change (side-by-side crops); WhatsApp drops previews over 300 KB | #185 |
 
 ## 9. Bugs and known issues
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| Local `next dev` on the H: drive reloads admin pages in a loop and compiles very slowly with about 1 GB free (19 Oct) | P2 (local only) | apps/web dev server | Workaround: `next build` + `next start` on :3100 against the API on :4000 and a dev PostgreSQL on :5433; production and CI unaffected |
 | #154 Search e2e picked today+75 days; on 13 Oct that is 27 Dec, which the stacked phone calendar also shows as an outside day in January, so the locator matched two buttons | P2 (test only) | apps/web/e2e/search.spec.ts | ✅ Fixed in #153: date locators skip outside days |
 | #142 From 1280 px the Log in words pushed the header controls about 25 px past the page grid (no scroll, off the grid); the server-rendered nav skipped More until hydration, shifting the header | P1 | header | Fixed in the #142 PR: icon-only Log in on every desktop width (words in the phone menu), nav items 6 px apart below 1280 px and 8 px from 1280 px (CI fonts render ~14 px wider: 1024 px was 9 px past the grid there), More rendered in the static nav; e2e: no-JS nav shows More, grid and nav-gap check at 1024 to 1920 px |
 | #140 Header still 8 px too wide at exactly 1280 px (xl) once the Log in label showed, and at 1440 px the label wrapped to two lines (design review of the local screenshots); CI fonts render narrower, so only the local Docker run caught it | P1 | header | Fixed in the #140 PR: words from 1360 px (theme breakpoint `hd`, 85rem) on one line, icon-only 1024–1359 px, nav items 8 px apart below 1280 px (CI fonts render wider: its 1024 px frame showed the icon cut off); measured locally at 1024–1440 px; CI overflow loop at 1024/1280/1300/1360/1440 |
@@ -1441,6 +1457,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 19 Oct 15:30–18:15 | Owner: admin redesign first (confusing admin, manual statuses, image upload, unreadable tables, section-wise control). Epic #201 with R0–R10 (#190–#200) on Project #4 with all fields; R0 audit (108 screenshots on a production build; local dev stack: PostgreSQL :5433, API :4000, web :3100), ADMIN.md and the WAAFA Admin design system | #190 | R0 PR | docs only |
 | 14 Oct | Owner: About Us noindex in Search Console, full SEO, lighter images. #183 every published page indexable (PR #186); #184 search titles, services and contact points in structured data, llms.txt, home SEO seed patch; #185 photos q65, share images 1200 px, shipped JPEGs −35% | #183, #184, #185 | #186, #187 | API 143 · web unit 319 · e2e 121 |
 | 14 Oct | Owner: second contact number and more from Admin (#181, seed patch adds 01823-232242 on deploy). #180 merged (store price on request, visa ranges) | #181 | #182 | API 140 · web unit 317 · e2e 120 |
 | 13 Oct 21:00–22:30 | Owner: nav "Visa" and URL /visa on the live site (#176, seed patch), Waafas World prices hidden by default with Ask for price (#178), visa price ranges (#179). Store and visa ship in one PR to save a CI cycle before go-live | #176, #178, #179 | #177 | web unit 316+ · e2e store, visa, seo |
@@ -1483,6 +1500,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. R1 #191: admin shell and design system (grouped sidebar with role filtering and count badges, top bar with Ctrl+K, + New and notifications, breadcrumbs, page header, admin tokens and StatusChip, empty/loading/error states, offline banner, sign-in page).
+2. R2 #192 form engine v2 (blueprints for every content key, widgets, action bar, right rail, autosave, History, Duplicate, conflict check), then R3 #193 media.
+3. Checkpoints for the owner after R1, R3, R6 and R8 (Banglish summary + screenshots + "test this yourself").
+
+Earlier (14 Oct):
 1. Owner: Admin › Content › Menus › header → label "Visa"; Search Console (verify with the HTML tag in Settings › General, submit /sitemap.xml); Google Business Profile; socials in Settings › Contact; turn Sample off on each real record (About and policies too); PageSpeed Insights on the live site after `sh deploy.sh`.
 2. Performance follow-up (P1): Home and Flights below 85 in CI. Home: fewer nodes before the fold (1,900 now, admin item counts per section) and lighter hydration; Flights: the lead card and preferences rail hydration.
 3. #71 rest, Bangla (P1).
