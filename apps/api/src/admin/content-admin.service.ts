@@ -3,6 +3,7 @@ import {
   CONTENT_KEYS,
   CONTENT_MODEL,
   contentRecordId,
+  hasRecordOrder,
   isContentKey,
   parseContent,
   type CollectionKey,
@@ -25,8 +26,26 @@ const RECORD_ACTIONS = ["content.create", "content.update", "content.restore", "
 const BORN_ACTIONS = new Set(["content.create", "content.duplicate"]);
 const RESTORABLE_ACTIONS = [...RECORD_ACTIONS, "settings.update", "settings.restore"];
 const HISTORY_LIMIT = 60;
-/** Record fields other records point at (a package's destination slug, an airline's code). */
-const OPTION_VALUE_FIELDS = ["id", "slug", "code", "key", "iata"];
+/** Record fields other records point at (a package's destination slug, an airline's code, a category's level). */
+const OPTION_VALUE_FIELDS = ["id", "slug", "code", "key", "iata", "level"];
+
+const orderOf = (data: unknown): number | undefined => {
+  const value = (data as { order?: unknown } | null)?.order;
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+};
+
+/** Lists the site sorts by `order` show in that order in the admin too, so both always agree (#205). */
+function sortByRecordOrder<T extends { data: unknown; position: number }>(
+  key: ContentKey,
+  rows: T[],
+): T[] {
+  if (!hasRecordOrder(key)) return rows;
+  return [...rows].sort(
+    (a, b) =>
+      (orderOf(a.data) ?? Number.MAX_SAFE_INTEGER) - (orderOf(b.data) ?? Number.MAX_SAFE_INTEGER) ||
+      a.position - b.position,
+  );
+}
 
 /**
  * Live booking needs a provider, a health check, online payment and a Super Admin with a typed confirmation (FR-GS-03,
@@ -117,10 +136,13 @@ export class AdminContentService {
         updatedBy: row.updatedBy,
       };
     }
-    const rows = await this.prisma.contentDocument.findMany({
-      where: { collection: key },
-      orderBy: [{ position: "asc" }, { docId: "asc" }],
-    });
+    const rows = sortByRecordOrder(
+      key,
+      await this.prisma.contentDocument.findMany({
+        where: { collection: key },
+        orderBy: [{ position: "asc" }, { docId: "asc" }],
+      }),
+    );
     return {
       key,
       kind: "collection",
@@ -218,6 +240,15 @@ export class AdminContentService {
       orderBy: { position: "desc" },
       select: { position: true },
     });
+    // A new record goes to the end of a list the site sorts by order; staff never type it (#205).
+    if (hasRecordOrder(key) && record && typeof record === "object") {
+      const rows = await this.prisma.contentDocument.findMany({
+        where: { collection: key },
+        select: { data: true },
+      });
+      const highest = Math.max(-1, ...rows.map((row) => orderOf(row.data) ?? -1));
+      (record as { order: number }).order = highest + 1;
+    }
     try {
       await this.prisma.$transaction(async (tx) => {
         await tx.contentDocument.create({
@@ -263,6 +294,10 @@ export class AdminContentService {
       where: { collection_docId: { collection: key, docId: id } },
     });
     if (!before) throw problems.notFound("Record not found");
+    // The list owns the order: a save (or a restore of an old version) never moves the record (#205).
+    const kept = hasRecordOrder(key) ? orderOf(before.data) : undefined;
+    if (kept !== undefined && record && typeof record === "object")
+      (record as { order: number }).order = kept;
     const current = {
       version: before.version,
       updatedBy: before.updatedBy,
@@ -446,17 +481,22 @@ export class AdminContentService {
   /** Choices for reference pickers: titles, photos and the values records point at (any staff may read them). */
   async options(key: CollectionKey, query?: string) {
     const { titleField } = CONTENT_MODEL[key];
-    const rows = await this.prisma.contentDocument.findMany({
-      where: { collection: key },
-      orderBy: [{ position: "asc" }, { docId: "asc" }],
-      select: { docId: true, data: true },
-    });
+    const rows = sortByRecordOrder(
+      key,
+      await this.prisma.contentDocument.findMany({
+        where: { collection: key },
+        orderBy: [{ position: "asc" }, { docId: "asc" }],
+        select: { docId: true, data: true, position: true },
+      }),
+    );
     const needle = query?.trim().toLowerCase() ?? "";
     const items = rows.map((row) => {
       const data = row.data as Record<string, unknown>;
       const values: Record<string, string> = {};
-      for (const field of OPTION_VALUE_FIELDS)
-        if (typeof data[field] === "string") values[field] = data[field] as string;
+      for (const field of OPTION_VALUE_FIELDS) {
+        const value = data[field];
+        if (typeof value === "string" || typeof value === "number") values[field] = String(value);
+      }
       const image = photoOf(data);
       return {
         id: row.docId,
@@ -479,17 +519,27 @@ export class AdminContentService {
     assertContentAccess(staff, key);
     const rows = await this.prisma.contentDocument.findMany({
       where: { collection: key },
-      select: { docId: true },
+      select: { docId: true, data: true },
     });
-    const known = new Set(rows.map((row) => row.docId));
+    const known = new Map(rows.map((row) => [row.docId, row.data]));
     if (ids.length !== known.size || ids.some((id) => !known.has(id))) {
       throw problems.badRequest("Send every record id of the list exactly once");
     }
+    const ordered = hasRecordOrder(key);
     await this.prisma.$transaction(async (tx) => {
       for (const [position, id] of ids.entries()) {
+        // The site sorts these lists by each record's order, so the new place is written there too (#205).
+        const data = known.get(id);
+        const moved = ordered && orderOf(data) !== position;
         await tx.contentDocument.update({
           where: { collection_docId: { collection: key, docId: id } },
-          data: { position, updatedBy: staff.name },
+          data: {
+            position,
+            updatedBy: staff.name,
+            ...(moved
+              ? { data: json({ ...(data as Record<string, unknown>), order: position }) }
+              : {}),
+          },
         });
       }
       await this.audit.record(

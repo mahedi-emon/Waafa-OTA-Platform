@@ -187,3 +187,14 @@ export function contentRecordId(key: CollectionKey, record: unknown): string {
 export function parseContent(key: ContentKey, value: unknown) {
   return CONTENT_MODEL[key].schema.safeParse(value);
 }
+
+/**
+ * Collections whose records carry an `order` the site sorts by (FAQs, team, home sections…). The admin list owns it:
+ * moving a record writes it, a new record goes last, and saving a record never changes it (#205).
+ */
+export function hasRecordOrder(key: ContentKey): boolean {
+  const entry = CONTENT_MODEL[key];
+  if (entry.kind !== "collection") return false;
+  const shape = (entry.schema as { shape?: Record<string, unknown> }).shape;
+  return Boolean(shape && Object.hasOwn(shape, "order"));
+}
