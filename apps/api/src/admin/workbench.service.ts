@@ -14,6 +14,7 @@ import {
 } from "@waafa/shared";
 import type { StaffPrincipal } from "../auth/principal";
 import { ContentService } from "../content/content.service";
+import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { canEditContent, leadModulesFor } from "./access";
 
@@ -22,6 +23,8 @@ const OPEN_VISA = ["new", "pending", "in-progress", "quoted"];
 
 const isManager = (staff: StaffPrincipal) => isManagerRole(staff.roles);
 const hasAny = (staff: StaffPrincipal, ...roles: Role[]) => hasAnyRole(staff.roles, ...roles);
+/** Shop managers can open payment proofs but only Accounts verifies them, so only they get the queue. */
+const verifiesProofs = (staff: StaffPrincipal) => hasAny(staff, "accounts");
 
 /** `%` and `_` typed by staff are plain characters, not wildcards. */
 function likePattern(query: string): string {
@@ -95,7 +98,7 @@ export class AdminWorkbenchService {
       );
     if (hasAny(staff, "shop-manager", "accounts"))
       count("ordersToConfirm", this.prisma.order.count({ where: { status: "placed" } }));
-    if (hasAny(staff, "accounts", "shop-manager"))
+    if (verifiesProofs(staff))
       count("proofsToVerify", this.prisma.paymentProof.count({ where: { status: "received" } }));
     if (hasAny(staff, "content-editor"))
       count("feedbackToReview", this.prisma.feedback.count({ where: { status: "pending" } }));
@@ -126,7 +129,7 @@ export class AdminWorkbenchService {
       count(
         "sampleLeft",
         this.prisma.$queryRaw<Array<{ total: bigint }>>`
-          SELECT count(*)::bigint AS total FROM "ContentDocument" WHERE (data->>'sample')::boolean IS TRUE`.then(
+          SELECT count(*)::bigint AS total FROM "ContentDocument" WHERE data->'sample' = 'true'::jsonb`.then(
           (rows) => Number(rows[0]?.total ?? 0),
         ),
       );
@@ -172,7 +175,7 @@ export class AdminWorkbenchService {
               });
           }),
       );
-    if (hasAny(staff, "accounts", "shop-manager"))
+    if (verifiesProofs(staff))
       jobs.push(
         this.prisma.paymentProof
           .findMany({
@@ -254,14 +257,22 @@ export class AdminWorkbenchService {
               hits.push({ kind: "order", id: row.id, title: row.name, detail: row.reference });
           }),
       );
-    if (phonePattern && (modules.length > 0 || seesOrders))
+    // Customers come from the same places the customer profile reads: leads of this person's modules, and orders
+    // only for the roles that work on orders.
+    const people: Prisma.Sql[] = [];
+    if (phonePattern && modules.length > 0)
+      people.push(
+        Prisma.sql`SELECT phone, name, "createdAt" FROM "Lead" WHERE phone LIKE ${phonePattern} AND module = ANY(${modules})`,
+      );
+    if (phonePattern && seesOrders)
+      people.push(
+        Prisma.sql`SELECT phone, name, "createdAt" FROM "Order" WHERE phone LIKE ${phonePattern}`,
+      );
+    if (people.length > 0)
       jobs.push(
         this.prisma.$queryRaw<Array<{ phone: string; name: string }>>`
-          SELECT DISTINCT ON (phone) phone, name FROM (
-            SELECT phone, name, "createdAt" FROM "Lead" WHERE phone LIKE ${phonePattern}
-            UNION ALL
-            SELECT phone, name, "createdAt" FROM "Order" WHERE phone LIKE ${phonePattern}
-          ) people ORDER BY phone, "createdAt" DESC LIMIT 4`.then((rows) => {
+          SELECT DISTINCT ON (phone) phone, name FROM (${Prisma.join(people, " UNION ALL ")}) people
+          ORDER BY phone, "createdAt" DESC LIMIT 4`.then((rows) => {
           for (const row of rows)
             hits.push({ kind: "customer", id: row.phone, title: row.name, detail: row.phone });
         }),

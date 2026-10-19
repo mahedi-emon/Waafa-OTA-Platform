@@ -25,6 +25,8 @@ describe.skipIf(!dbAvailable)("admin workbench: inbox counts and Ctrl+K search (
   let agent: Person;
   let shop: Person;
   let editor: Person;
+  let visa: Person;
+  let accounts: Person;
 
   async function person(name: string, roles: Role[]): Promise<Person> {
     const user = await prisma.staffUser.create({
@@ -80,6 +82,8 @@ describe.skipIf(!dbAvailable)("admin workbench: inbox counts and Ctrl+K search (
     agent = await person("Sample Agent", ["travel-sales"]);
     shop = await person("Sample Shop", ["shop-manager"]);
     editor = await person("Sample Editor", ["content-editor"]);
+    visa = await person("Sample Visa", ["visa-officer"]);
+    accounts = await person("Sample Accounts", ["accounts"]);
   });
 
   it("counts the work each role can open and lists the newest arrivals", async () => {
@@ -135,6 +139,10 @@ describe.skipIf(!dbAvailable)("admin workbench: inbox counts and Ctrl+K search (
     expect(shopInbox.counts.newLeads).toBe(0);
     expect(shopInbox.counts).toHaveProperty("ordersToConfirm");
     expect(shopInbox.counts).toHaveProperty("lowStock");
+    // They can open payment proofs, but verifying them is Accounts' job.
+    expect(shopInbox.counts).not.toHaveProperty("proofsToVerify");
+    const accountsInbox = InboxSummarySchema.parse((await get(accounts, "/inbox")).json());
+    expect(accountsInbox.counts).toHaveProperty("proofsToVerify");
   });
 
   it("finds leads by reference, name and phone, customers by phone, and records the role can edit", async () => {
@@ -171,6 +179,15 @@ describe.skipIf(!dbAvailable)("admin workbench: inbox counts and Ctrl+K search (
       (await get(shop, `/search?q=${reference}`)).json(),
     );
     expect(shopLeads.hits.some((hit) => hit.kind === "lead")).toBe(false);
+
+    // Customers by phone follow the customer profile's rules: a contact lead is not a visa officer's or a shop
+    // manager's customer, so neither of them sees the name behind the number.
+    for (const who of [visa, shop]) {
+      const people = AdminSearchResultSchema.parse(
+        (await get(who, "/search?q=01000000777")).json(),
+      );
+      expect(people.hits.some((hit) => hit.kind === "customer" || hit.kind === "lead")).toBe(false);
+    }
 
     // Wildcards are plain text, and a query needs two characters.
     expect((await get(owner, "/search?q=%25%25")).statusCode).toBe(200);

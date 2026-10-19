@@ -17,7 +17,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import type { AdminSearchHit } from "@waafa/shared";
+import { hasAnyRole, isManagerRole, type AdminSearchHit } from "@waafa/shared";
 import {
   Dialog,
   DialogClose,
@@ -119,10 +119,11 @@ function AdminCommandDialog({ open, onOpenChange }: AdminCommandDialogProps) {
         : "idle";
 
   const has = (key: string) => nav.items.some((item) => item.key === key);
-  const manager = nav.staff.roles.some((role) => role === "admin" || role === "super-admin");
+  const manager = isManagerRole(nav.staff.roles);
   // Everyday jobs first; "New …" for every record type the role can create follows.
   const actions: Action[] = [
-    ...(has("proofs")
+    // Shop managers can open proofs, but only Accounts verifies them.
+    ...(has("proofs") && hasAnyRole(nav.staff.roles, "accounts")
       ? [
           {
             id: "proofs",
