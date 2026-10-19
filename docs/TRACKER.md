@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 19 Oct 18:15 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168), Lighthouse performance (#170), nav label Visa (#172), on-page SEO and brand names (#173) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: D0 Admin redesign (epic #201, top priority before other Phase D work): R0 #190 audit and ADMIN.md ✅, next R1 #191 shell and design system · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 19 Oct 21:30 Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168), Lighthouse performance (#170), nav label Visa (#172), on-page SEO and brand names (#173) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: D0 Admin redesign (epic #201): R0 #190 ✅, R1 #191 shell and design system ✅, next R2 #192 form engine v2 · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -32,11 +32,22 @@ Serena memory `audit_findings`.
 | B · Backend | 12 Oct · epic #29 | 5 (#54 – #57, #82 providers) + bugs #60, #61, #66, #72, #78 | 5 | 0 | 0 | ✅ 100% |
 | C · Integration & Launch | 13 Oct · epic #30 | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (live 13 Oct) | 7 | 0 | 0 | ✅ 100% |
 | D · P1 completion | 13 Nov · epic #31 | #71 admin editors, #91 performance (more with PROMPT 5) | 0 | 0 | 0 | 0% |
-| D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 1 | 0 | 0 | 9% |
+| D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 2 | 0 | 0 | 18% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #191 · D0 R1 · Admin shell, design system and sign-in — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Epic #201: staff can't tell where things are or what needs them; one shell for every screen |
+| Built | Sidebar from the new IA (Home, Inbox, Travel, Waafas World, Website; Settings in the footer) on the shadcn Sidebar: groups fold (remembered per device), folds to icons on desktop (Ctrl+B, cookie), a sheet below 1024 px; count badges from `GET /admin/inbox` (new and overdue leads, visa, orders to confirm, proofs, feedback, low stock, group fares ending, Sample left), rendered with the page and polled every 30 s while the tab is visible. Top bar: Ctrl K, + New (records the role can edit), notification bell (popover / bottom sheet, All and New for you, Mark all as seen), View site, account. Ctrl K: actions, every page with its one-line help, and records from `GET /admin/search` (leads by reference, name or phone; orders; customers by phone; content records the role can edit). Breadcrumbs and the page header pattern (title, status chip, one line, primary action) on every page. StatusChip (icon + word + colour + "why", D185) on leads, orders and customers. Settings index (one door, plain sections). Empty, loading and error states; offline banner. Sign-in: brand panel, plain wrong-password and paused messages, Show password, Keep me signed in with what it means. Role rules moved to `packages/shared` (helpers/access.ts) so the admin shows exactly what the API allows |
+| Tests | shared 87 · web unit 325 · API 145 · e2e admin-shell 4/4, admin-screens 2/2 (axe at 390 and 1440, five widths), budget 6/6 |
+| Code review | PR #203 owner review (D159): Ctrl K customers by phone read every lead and order whatever the role (P1), so a visa officer could see a store customer's name; now the same sources as the customer profile (leads of the person's modules, orders for order roles). Proofs to verify counted for shop managers, who can't verify (P3); Sample count cast could fail the inbox (P3). Fixed with regression tests (both fail on the old code) |
+| First-load JS (admin, gzip) | Dashboard 242 · Leads 251 · Settings 242 · Package editor 250 · Orders 243 KB (the Ctrl K palette and the bell's list and phone sheet load on first use: −20 KB on every admin page); public budgets unchanged (Home 217, Flights 258, Packages 189, Visa 187, Shop 215, Contact 299) |
+| Tools and skills | shadcn MCP (sidebar via registry view, collapsible, hover-card, context-menu; CLI declined to overwrite our primitives), magic MCP (21st.dev 10479 patrick-xin/vercel-notification-popover and 1435 serafimcloud/empty-state retrieved and rebuilt on our primitives; free tier 2 a day), ui-color-palette tokens from R0 (D185), ui-ux-pro-max pre-delivery checklist, design-superpowers design-review on the 390/1440 shots, Context7 (next-intl nested providers), Playwright MCP, Serena |
+| Decision | D188–D191 |
 
 ### #190 · D0 R0 · Admin audit and redesign plan (ADMIN.md) — ✅ Done
 | Field | Value |
@@ -1080,6 +1091,15 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 
 | Component | Path | Source (shadcn · 21st.dev id · custom) | Used on |
 | --- | --- | --- | --- |
+| AdminFrame · AdminSidebar · AdminNavContext · useAdminInbox · useInboxSummary · useStoredValue | `apps/web/src/components/admin/` | shadcn **sidebar** (registry, sheet below 1024 px, icon rail 3.5rem, reduced motion) + **collapsible**; group pattern after 21st.dev felipemenezes098/collapsible-05 | admin shell |
+| AdminTopBar · AdminNewMenu | `components/admin/` | shadcn dropdown-menu, button | admin shell |
+| AdminCommand | `components/admin/AdminCommand.tsx` | cmdk + shadcn dialog, kbd | Ctrl K everywhere in Admin |
+| AdminNotifications | `components/admin/AdminNotifications.tsx` | 21st.dev patrick-xin/vercel-notification-popover (10479) rebuilt on shadcn popover, drawer (vaul) and line tabs | top bar |
+| AdminEmpty | `components/admin/AdminEmpty.tsx` | 21st.dev serafimcloud/empty-state (1435) restyled, no hover motion | admin lists, error state |
+| StatusChip · LeadStatusBadge · OrderStatusChip · statusChips | `components/admin/`, `lib/admin/statusChips.ts` | custom cva on shadcn tooltip; tones from ui-color-palette (D185) | leads, orders, customers (all lists from R5) |
+| AdminBreadcrumbs · AdminPageHeader | `components/admin/` | shadcn breadcrumb | every admin page |
+| OfflineBanner | `components/admin/OfflineBanner.tsx` | custom | admin frame |
+| collapsible · hover-card · context-menu · sidebar | `components/ui/` | shadcn registry (@shadcn) | admin |
 | SearchCard, SearchCardClient | `apps/web/src/components/search/` | custom (shadcn Tabs, Radio group, Button) | `/` (A7 hero), results bars (A9, A10) |
 | Picker popover and sheet | `components/search/PickerPopover.tsx`, `PickerSheet.tsx` | shadcn Popover, Drawer (vaul), loaded with next/dynamic | search card |
 | OptionList | `components/search/OptionList.tsx` | shadcn Command (cmdk) | airport, place, destination, country, visa-type pickers |
@@ -1379,6 +1399,10 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D179 | 14 Oct | Extra office numbers are a list after the main number (`extraPhones`); WhatsApp stays on the main number; live data gets the second number through a one-time seed patch | Owner: two numbers now, more from Admin; seed never overwrites admin data | #181 |
 | D180 | 14 Oct | Every published record page is indexed whatever its Sample flag; only SEO › noindex hides one. Replaces D172 | Owner: About Us noindex in Search Console, wants the site ranked with no manual steps; the live records are all seeded as Sample, so D172 hid the pages that rank (visa, routes, packages, products) | #183 |
 | D181 | 14 Oct | Meta titles and descriptions use search wording (air tickets, visa processing, tour packages, Dhaka, Bangladesh) while h1s keep the board copy; live admin SEO text changes only through a one-time patch that leaves edited wording alone; `/llms.txt` lists links, never prices | Owner: rank for brand and travel searches; people in Bangladesh search "air ticket" and "visa processing"; prices are confirmed by a person | #184 |
+| D188 | 19 Oct | Admin shell on the shadcn Sidebar: IA groups that fold, icon rail on desktop (Ctrl+B, cookie), a sheet below 1024 px; Settings is one door in the sidebar footer (`/settings` index now, left sub-navigation in R9); badges and the bell from `GET /admin/inbox` (rendered with the page, polled every 30 s while visible); Ctrl K searches `GET /admin/search` | Owner: staff can't tell where things are or what waits; one settings door keeps the sidebar short (Shopify, Linear); tablets need the full width for editors | #191 |
+| D189 | 19 Oct | Role rules live in `packages/shared/src/helpers/access.ts`; the API enforces them and the admin uses them to show only what the API allows (Menus and the footer stay with managers) | One source of truth, no links that end in "not for your role" | #191 |
+| D190 | 19 Oct | Frame strings reach client leaves through a scoped NextIntlClientProvider with nested paths (`pickMessagePaths`); the rest of the catalogue stays on the server | Plural counts render on the client; next-intl documents nested providers with picked messages | #191 |
+| D191 | 19 Oct | Lead `pending` reads "Waiting for customer", order `processing` reads "Packing"; stored values unchanged | Plain words (ADMIN.md §13); live data keeps its meaning | #191 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1457,6 +1481,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 19 Oct 18:20–21:30 | R1 admin shell: grouped sidebar with badges, top bar (Ctrl K, + New, bell), breadcrumbs, page header, StatusChip, settings door, states, sign-in; `GET /admin/inbox` and `GET /admin/search`; role rules shared | #191 | R1 PR | shared 87 · web unit 325 · API 145 · e2e admin-shell 4/4, admin-screens 2/2 (axe at 390 and 1440, five widths), budget 6/6 |
 | 19 Oct 15:30–18:15 | Owner: admin redesign first (confusing admin, manual statuses, image upload, unreadable tables, section-wise control). Epic #201 with R0–R10 (#190–#200) on Project #4 with all fields; R0 audit (108 screenshots on a production build; local dev stack: PostgreSQL :5433, API :4000, web :3100), ADMIN.md and the WAAFA Admin design system | #190 | R0 PR | docs only |
 | 14 Oct | Owner: About Us noindex in Search Console, full SEO, lighter images. #183 every published page indexable (PR #186); #184 search titles, services and contact points in structured data, llms.txt, home SEO seed patch; #185 photos q65, share images 1200 px, shipped JPEGs −35% | #183, #184, #185 | #186, #187 | API 143 · web unit 319 · e2e 121 |
 | 14 Oct | Owner: second contact number and more from Admin (#181, seed patch adds 01823-232242 on deploy). #180 merged (store price on request, visa ranges) | #181 | #182 | API 140 · web unit 317 · e2e 120 |
@@ -1500,6 +1525,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. R2 #192 form engine v2: blueprints for every content key, widgets (except media), sticky action bar, right rail, unsaved guard, autosave, History with restore, Duplicate, edit-conflict check, plain errors, session warning; lead page labelled facts.
+2. R3 #193 media (upload everywhere, crop and focal point, library v2, video route).
+3. Checkpoint for the owner after R3 (Banglish summary + screenshots + "test this yourself").
+
+Earlier (19 Oct 18:15):
 1. R1 #191: admin shell and design system (grouped sidebar with role filtering and count badges, top bar with Ctrl+K, + New and notifications, breadcrumbs, page header, admin tokens and StatusChip, empty/loading/error states, offline banner, sign-in page).
 2. R2 #192 form engine v2 (blueprints for every content key, widgets, action bar, right rail, autosave, History, Duplicate, conflict check), then R3 #193 media.
 3. Checkpoints for the owner after R1, R3, R6 and R8 (Banglish summary + screenshots + "test this yourself").

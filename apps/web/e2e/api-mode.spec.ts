@@ -27,7 +27,7 @@ async function signIn(page: Page) {
   await page.goto("/secure-admin-control");
   await expect(page).toHaveURL(/\/secure-admin-control\/sign-in/);
   await page.getByLabel("Work email").fill(ADMIN_EMAIL);
-  await page.getByLabel("Password").fill(ADMIN_PASSWORD);
+  await page.getByLabel("Password", { exact: true }).fill(ADMIN_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByRole("heading", { level: 1, name: /^Hello, / })).toBeVisible();
 }

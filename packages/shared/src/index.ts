@@ -10,6 +10,7 @@ export * from "./helpers/deals";
 export * from "./helpers/leadSummary";
 export * from "./helpers/markup";
 export * from "./helpers/visaPrice";
+export * from "./helpers/access";
 
 export * from "./constants";
 export * from "./schemas/common";

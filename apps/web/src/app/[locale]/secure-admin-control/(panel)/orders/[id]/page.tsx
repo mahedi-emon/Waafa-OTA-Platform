@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Phone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { OrderStatusChip } from "@/components/admin/OrderStatusChip";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Badge } from "@/components/ui/badge";
@@ -42,14 +43,8 @@ async function Order({
     <>
       <AdminPageHeader
         back={{ href: "/secure-admin-control/orders", label: t("title") }}
-        title={
-          <span className="flex flex-wrap items-center gap-3">
-            <span className="font-mono">{order.reference}</span>
-            <Badge variant={order.status === "delivered" ? "success" : "brand"}>
-              {status(order.status)}
-            </Badge>
-          </span>
-        }
+        title={order.reference}
+        status={<OrderStatusChip status={order.status} label={status(order.status)} size="md" />}
         lead={`${formatDhakaDateTime(order.createdAt)} · ${taka(order.total)}`}
       />
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">

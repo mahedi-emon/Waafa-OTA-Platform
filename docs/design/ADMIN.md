@@ -68,7 +68,7 @@ footer's calm. The work surface stays light (mist-50 page, white panels).
 | **Home** | Dashboard (today's work) | `/secure-admin-control` | — | everyone |
 | | Reports (includes search activity) | `/reports` | — | admin, accounts, shop-manager, travel-sales, visa-officer |
 | **Inbox** | Leads (tabs: All, Flights, Hotels, Packages, Plan my trip, Visa, Printing, Trading, Bulk quotes, EMI, Contact) | `/leads` | new + overdue | admin, travel-sales, visa-officer, shop-manager |
-| | Visa applications (checklist stage) | `/visa-applications` | documents waiting | admin, visa-officer |
+| | Visa applications (checklist stage) | `/leads?module=visa` now, `/visa-applications` in R6 | open visa applications | admin, visa-officer |
 | | Orders | `/orders` | to confirm | admin, shop-manager, accounts |
 | | Payment proofs | `/payments` | to verify | admin, accounts, shop-manager |
 | | Customers (newsletter as a tab) | `/customers` | — | admin, accounts, shop-manager, travel-sales, visa-officer |
@@ -89,17 +89,17 @@ footer's calm. The work surface stays light (mist-50 page, white panels).
 | | Coupons | `/content/coupons` | — | admin, shop-manager |
 | | Product attributes | `/content/attributeSets` | — | admin, shop-manager |
 | | Compatible models | `/content/compatibleModels` | — | admin, shop-manager |
-| **Website** | Home page (section manager, hero) | `/website/home` | — | admin, content-editor |
-| | Menus (header, footer, phone) | `/website/menus` | — | admin, content-editor |
+| **Website** | Home page (section manager, hero) | `/content?group=home` now, `/website/home` in R7 | — | admin, content-editor |
+| | Menus and footer (header, footer, phone) | `/content/menus` now, `/website/menus` in R7 | — | admin (menus are settings documents) |
 | | Announcement bar | `/content/announcements` | — | admin, content-editor |
-| | Banners and offers | `/content/banners` | — | admin, content-editor, shop-manager |
+| | Banners and offers | `/content/banners` | — | admin, content-editor |
 | | Pages (About, policies, service pages, page blocks) | `/content/pages` | — | admin, content-editor |
 | | Blog (categories as a tab) | `/content/blogPosts` | — | admin, content-editor |
 | | FAQs | `/content/faqs` | — | admin, content-editor |
 | | Gallery | `/content/galleryAlbums` | — | admin, content-editor |
 | | Team | `/content/team` | — | admin, content-editor |
 | | Media library (Site images tab replaces Media slots) | `/media` | — | admin, content-editor, shop-manager, travel-sales |
-| **Settings** | One page with a left sub-navigation (section 5.6) | `/settings/[section]` | setup steps left | admin (Users, Integrations, Advanced: Super Admin) |
+| **Settings** (sidebar footer) | One door: `/settings` index of plain sections now (R1), one page with a left sub-navigation in R9 (section 5.6) | `/settings` | setup steps left (R9) | admin, accounts (payments), shop-manager (delivery); Users, Integrations, Advanced: Super Admin |
 
 The sidebar footer holds the account (name, role in plain words, My account, Sign out) and "View site". Content routes
 keep the stable `/content/[key]` addresses; staff never read them (breadcrumbs and titles use plain words).

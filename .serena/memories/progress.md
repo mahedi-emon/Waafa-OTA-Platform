@@ -1,4 +1,7 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-19 21:30 Dhaka — R1 #191 admin shell: grouped sidebar + badges (GET /admin/inbox), top bar (Ctrl K with
+  GET /admin/search, + New, bell), breadcrumbs, page header, StatusChip, /settings door, states, sign-in; role rules in
+  packages/shared/helpers/access.ts. Tests: shared 87, web 325, API 145, e2e shell 4/4 + screens 2/2, budget 6/6.
 - 2026-10-19 18:20 Dhaka — Owner: admin redesign first. Epic #201 + R0–R10 (#190–#200) on Project #4; R0 #190 audit
   (108 local screenshots) + docs/design/ADMIN.md + waafa-admin design system; D183–D187.
 - 2026-10-14 16:30 Dhaka — #181 second phone (PR #182), #183 index every page (PR #186); #184 search SEO +

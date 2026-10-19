@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { OrderStatusSchema } from "@waafa/shared";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { OrderStatusChip } from "@/components/admin/OrderStatusChip";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { ListFilters } from "@/components/admin/ListFilters";
 import { StatusTabs } from "@/components/admin/StatusTabs";
@@ -121,19 +122,7 @@ async function Orders({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        order.status === "delivered"
-                          ? "success"
-                          : order.status === "cancelled" || order.status === "returned"
-                            ? "neutral"
-                            : order.status === "placed"
-                              ? "warning"
-                              : "brand"
-                      }
-                    >
-                      {t(`statuses.${order.status}`)}
-                    </Badge>
+                    <OrderStatusChip status={order.status} label={t(`statuses.${order.status}`)} />
                   </TableCell>
                   <TableCell className="text-[13px] whitespace-nowrap text-mist-600">
                     {formatDhakaDateTime(order.createdAt)}

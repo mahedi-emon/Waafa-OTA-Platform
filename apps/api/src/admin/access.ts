@@ -1,41 +1,20 @@
-import { CONTENT_MODEL, type ContentKey, type LeadModule, type Role } from "@waafa/shared";
+import {
+  canEditContentKey,
+  leadModulesForRoles,
+  type ContentKey,
+  type LeadModule,
+} from "@waafa/shared";
 import type { StaffPrincipal } from "../auth/principal";
 import { problems } from "../common/problem";
 
 /*
- * Who may do what (PRD §4 roles). Super Admin passes everything; Admin / Manager passes everything except users and
- * roles. The other roles see the leads of their modules and edit the content of their area.
+ * Who may do what (PRD §4 roles): the rules live in packages/shared (helpers/access.ts) so the admin shows exactly
+ * what the API allows. Super Admin passes everything; Admin / Manager passes everything except users and roles.
  */
-
-const ALL_MODULES: LeadModule[] = [
-  "flights",
-  "hotels",
-  "packages",
-  "plan-trip",
-  "visa",
-  "printing",
-  "trading",
-  "contact",
-  "emi",
-  "bulk",
-];
-
-const MODULES_BY_ROLE: Partial<Record<Role, LeadModule[]>> = {
-  "travel-sales": ["flights", "hotels", "packages", "plan-trip", "contact", "emi", "bulk"],
-  "visa-officer": ["visa"],
-  "shop-manager": ["printing", "trading", "bulk"],
-};
-
-const isManager = (staff: StaffPrincipal) =>
-  staff.roles.includes("super-admin") || staff.roles.includes("admin");
 
 /** The lead modules this person works on; empty means no lead access. */
 export function leadModulesFor(staff: StaffPrincipal): LeadModule[] {
-  if (isManager(staff)) return ALL_MODULES;
-  const modules = new Set<LeadModule>();
-  for (const role of staff.roles)
-    for (const module of MODULES_BY_ROLE[role] ?? []) modules.add(module);
-  return [...modules];
+  return leadModulesForRoles(staff.roles);
 }
 
 export function assertLeadAccess(staff: StaffPrincipal, module: string): void {
@@ -43,27 +22,8 @@ export function assertLeadAccess(staff: StaffPrincipal, module: string): void {
     throw problems.notFound("Lead not found");
 }
 
-/** Content areas by role; settings keys with their own owner are listed separately. */
-const KEY_OWNERS: Partial<Record<ContentKey, Role[]>> = {
-  shippingSettings: ["shop-manager"],
-  paymentSettings: ["accounts"],
-  announcements: ["content-editor"],
-  emiSettings: ["content-editor", "accounts"],
-};
-
-const GROUP_OWNERS: Record<(typeof CONTENT_MODEL)[ContentKey]["group"], Role[]> = {
-  settings: [],
-  home: ["content-editor"],
-  content: ["content-editor"],
-  travel: ["content-editor", "travel-sales"],
-  visa: ["visa-officer", "content-editor"],
-  shop: ["shop-manager"],
-};
-
 export function canEditContent(staff: StaffPrincipal, key: ContentKey): boolean {
-  if (isManager(staff)) return true;
-  const owners = KEY_OWNERS[key] ?? GROUP_OWNERS[CONTENT_MODEL[key].group];
-  return owners.some((role) => staff.roles.includes(role));
+  return canEditContentKey(staff.roles, key);
 }
 
 export function assertContentAccess(staff: StaffPrincipal, key: ContentKey): void {

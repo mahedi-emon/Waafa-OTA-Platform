@@ -1,4 +1,10 @@
-import type { Role } from "@waafa/shared";
+import {
+  canEditContentKey,
+  hasAnyRole,
+  type ContentKey,
+  type InboxCountKey,
+  type Role,
+} from "@waafa/shared";
 
 /** Icon names the admin navigation uses (mapped to lucide icons in AdminNavIcon). */
 export type AdminIconName =
@@ -8,20 +14,34 @@ export type AdminIconName =
   | "leads"
   | "search"
   | "fares"
+  | "routes"
+  | "hotels"
+  | "airlines"
   | "packages"
   | "visa"
+  | "guide"
   | "passport"
   | "orders"
   | "proofs"
   | "products"
   | "categories"
+  | "brands"
   | "collections"
+  | "deals"
+  | "rows"
+  | "attributes"
+  | "models"
   | "coupons"
   | "home"
+  | "menus"
+  | "announcement"
+  | "banners"
   | "team"
   | "gallery"
   | "feedback"
   | "pages"
+  | "blog"
+  | "faqs"
   | "media"
   | "content"
   | "modes"
@@ -32,84 +52,107 @@ export type AdminIconName =
   | "integrations"
   | "general"
   | "newsletter"
-  | "audit";
+  | "audit"
+  | "settings";
 
 export type AdminNavItem = {
   key: string;
-  /** Message key under Admin.nav. */
+  /** Message key under Admin.nav; the one-line help is Admin.navHelp.<key>. */
   label: string;
   href: string;
   icon: AdminIconName;
   /** Who sees it; Super Admin sees everything. Empty = every signed-in person. */
   roles: Role[];
+  /** Work waiting here, shown as a count badge. */
+  badge?: InboxCountKey;
+  /** When this count is above zero the badge turns red (overdue work). */
+  urgent?: InboxCountKey;
+  /** Other pages that belong to this item (detail pages, related lists); the longest match wins. */
+  also?: string[];
 };
 
 export type AdminNavGroup = { label: string; items: AdminNavItem[] };
 
-const MANAGERS: Role[] = ["admin"];
-const SALES: Role[] = ["admin", "travel-sales", "visa-officer", "shop-manager"];
+const ADMIN = "/secure-admin-control";
+const content = (key: ContentKey) => `${ADMIN}/content/${key}`;
+
+const LEADS: Role[] = ["admin", "travel-sales", "visa-officer", "shop-manager"];
+const STORE_OPS: Role[] = ["admin", "shop-manager", "accounts"];
 const CONTENT: Role[] = ["admin", "content-editor"];
 const TRAVEL: Role[] = ["admin", "content-editor", "travel-sales"];
 const SHOP: Role[] = ["admin", "shop-manager"];
+const REPORTS: Role[] = ["admin", "accounts", "shop-manager", "travel-sales", "visa-officer"];
 
-/** The sidebar (AdminSide board), grouped as on the board; items without a launch screen open the content editor. */
+/**
+ * The sidebar (docs/design/ADMIN.md §3.1): Home, Inbox, Travel, Waafas World and Website. Settings sits in the
+ * sidebar footer. Items whose dedicated screen arrives later (R6, R7, R9) open the closest existing screen.
+ */
 export const ADMIN_NAV: AdminNavGroup[] = [
   {
-    label: "overview",
+    label: "home",
     items: [
-      {
-        key: "dashboard",
-        label: "dashboard",
-        href: "/secure-admin-control",
-        icon: "dashboard",
-        roles: [],
-      },
+      { key: "dashboard", label: "dashboard", href: ADMIN, icon: "dashboard", roles: [] },
       {
         key: "reports",
         label: "reports",
-        href: "/secure-admin-control/reports",
+        href: `${ADMIN}/reports`,
         icon: "reports",
-        roles: ["admin", "accounts", "shop-manager", "travel-sales", "visa-officer"],
-      },
-      {
-        key: "customers",
-        label: "customers",
-        href: "/secure-admin-control/customers",
-        icon: "customers",
-        roles: ["admin", "accounts", "shop-manager", "travel-sales", "visa-officer"],
+        roles: REPORTS,
+        also: [`${ADMIN}/search`],
       },
     ],
   },
   {
-    label: "sales",
+    label: "inbox",
     items: [
       {
         key: "leads",
         label: "leads",
-        href: "/secure-admin-control/leads",
+        href: `${ADMIN}/leads`,
         icon: "leads",
-        roles: SALES,
+        roles: LEADS,
+        badge: "newLeads",
+        urgent: "overdueLeads",
       },
       {
-        key: "search",
-        label: "searchActivity",
-        href: "/secure-admin-control/search",
-        icon: "search",
-        roles: ["admin", "travel-sales"],
+        key: "visaApplications",
+        label: "visaApplications",
+        href: `${ADMIN}/leads?module=visa`,
+        icon: "passport",
+        roles: ["admin", "visa-officer"],
+        badge: "visaWaiting",
       },
       {
-        key: "groupFares",
-        label: "groupFares",
-        href: "/secure-admin-control/content/groupFares",
-        icon: "fares",
-        roles: TRAVEL,
+        key: "orders",
+        label: "orders",
+        href: `${ADMIN}/orders`,
+        icon: "orders",
+        roles: STORE_OPS,
+        badge: "ordersToConfirm",
       },
       {
-        key: "flightRoutes",
-        label: "flightRoutes",
-        href: "/secure-admin-control/content/flightRoutes",
-        icon: "fares",
-        roles: TRAVEL,
+        key: "proofs",
+        label: "paymentProofs",
+        href: `${ADMIN}/payments`,
+        icon: "proofs",
+        roles: ["admin", "accounts", "shop-manager"],
+        badge: "proofsToVerify",
+      },
+      {
+        key: "customers",
+        label: "customers",
+        href: `${ADMIN}/customers`,
+        icon: "customers",
+        roles: REPORTS,
+        also: [`${ADMIN}/subscribers`],
+      },
+      {
+        key: "feedback",
+        label: "feedback",
+        href: `${ADMIN}/feedback`,
+        icon: "feedback",
+        roles: CONTENT,
+        badge: "feedbackToReview",
       },
     ],
   },
@@ -119,23 +162,53 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       {
         key: "packages",
         label: "packages",
-        href: "/secure-admin-control/content/tourPackages",
+        href: content("tourPackages"),
         icon: "packages",
         roles: TRAVEL,
       },
       {
-        key: "visaLeads",
-        label: "visaLeads",
-        href: "/secure-admin-control/leads?module=visa",
-        icon: "passport",
-        roles: ["admin", "visa-officer"],
+        key: "groupFares",
+        label: "groupFares",
+        href: content("groupFares"),
+        icon: "fares",
+        roles: TRAVEL,
+        badge: "groupFaresEnding",
+      },
+      {
+        key: "flightRoutes",
+        label: "flightRoutes",
+        href: content("flightRoutes"),
+        icon: "routes",
+        roles: TRAVEL,
+      },
+      {
+        key: "hotelPlaces",
+        label: "hotelPlaces",
+        href: content("hotelPlaces"),
+        icon: "hotels",
+        roles: TRAVEL,
       },
       {
         key: "visaCountries",
         label: "visaCountries",
-        href: "/secure-admin-control/content/visaCountries",
+        href: content("visaCountries"),
         icon: "visa",
         roles: ["admin", "visa-officer", "content-editor"],
+      },
+      {
+        key: "visaGuides",
+        label: "visaGuides",
+        href: content("visaGuides"),
+        icon: "guide",
+        roles: ["admin", "visa-officer", "content-editor"],
+      },
+      {
+        key: "airlines",
+        label: "airlines",
+        href: content("airlines"),
+        icon: "airlines",
+        roles: TRAVEL,
+        also: [content("airports"), content("baggageRules")],
       },
     ],
   },
@@ -143,183 +216,205 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     label: "store",
     items: [
       {
-        key: "orders",
-        label: "orders",
-        href: "/secure-admin-control/orders",
-        icon: "orders",
-        roles: ["admin", "shop-manager", "accounts"],
-      },
-      {
-        key: "proofs",
-        label: "paymentProofs",
-        href: "/secure-admin-control/payments",
-        icon: "proofs",
-        roles: ["admin", "accounts", "shop-manager"],
-      },
-      {
         key: "products",
         label: "products",
-        href: "/secure-admin-control/content/products",
+        href: content("products"),
         icon: "products",
         roles: SHOP,
+        badge: "lowStock",
       },
       {
         key: "categories",
         label: "categories",
-        href: "/secure-admin-control/content/categories",
+        href: content("categories"),
         icon: "categories",
         roles: SHOP,
       },
+      { key: "brands", label: "brands", href: content("brands"), icon: "brands", roles: SHOP },
       {
         key: "collections",
         label: "collections",
-        href: "/secure-admin-control/content/collections",
+        href: content("collections"),
         icon: "collections",
         roles: SHOP,
       },
+      { key: "deals", label: "deals", href: content("deals"), icon: "deals", roles: SHOP },
       {
-        key: "coupons",
-        label: "coupons",
-        href: "/secure-admin-control/content/coupons",
-        icon: "coupons",
+        key: "storeRows",
+        label: "storeRows",
+        href: content("storeRows"),
+        icon: "rows",
+        roles: SHOP,
+        also: [content("shopContent")],
+      },
+      { key: "coupons", label: "coupons", href: content("coupons"), icon: "coupons", roles: SHOP },
+      {
+        key: "attributes",
+        label: "attributes",
+        href: content("attributeSets"),
+        icon: "attributes",
+        roles: SHOP,
+      },
+      {
+        key: "compatibleModels",
+        label: "compatibleModels",
+        href: content("compatibleModels"),
+        icon: "models",
         roles: SHOP,
       },
     ],
   },
   {
-    label: "content",
+    label: "website",
     items: [
       {
-        key: "home",
-        label: "home",
-        href: "/secure-admin-control/content?group=home",
+        key: "homePage",
+        label: "homePage",
+        href: `${ADMIN}/content?group=home`,
         icon: "home",
         roles: CONTENT,
+        also: [
+          content("homeContent"),
+          content("homeSections"),
+          content("trustItems"),
+          content("values"),
+          content("timeline"),
+          content("destinations"),
+        ],
       },
       {
-        key: "team",
-        label: "team",
-        href: "/secure-admin-control/content/team",
-        icon: "team",
+        key: "menus",
+        label: "menus",
+        href: content("menus"),
+        icon: "menus",
+        // Menus and the footer are settings documents: managers edit them (packages/shared access rules).
+        roles: ["admin"],
+        also: [content("footerSettings")],
+      },
+      {
+        key: "announcements",
+        label: "announcements",
+        href: content("announcements"),
+        icon: "announcement",
         roles: CONTENT,
       },
       {
-        key: "gallery",
-        label: "gallery",
-        href: "/secure-admin-control/content/galleryAlbums",
-        icon: "gallery",
-        roles: CONTENT,
-      },
-      {
-        key: "feedback",
-        label: "feedback",
-        href: "/secure-admin-control/feedback",
-        icon: "feedback",
-        roles: CONTENT,
+        key: "banners",
+        label: "banners",
+        href: content("banners"),
+        icon: "banners",
+        roles: ["admin", "content-editor"],
       },
       {
         key: "pages",
         label: "pages",
-        href: "/secure-admin-control/content?group=content",
+        href: content("pages"),
         icon: "pages",
         roles: CONTENT,
+        also: [content("servicePages"), content("pageBlocks")],
       },
+      {
+        key: "blog",
+        label: "blog",
+        href: content("blogPosts"),
+        icon: "blog",
+        roles: CONTENT,
+        also: [content("blogCategories")],
+      },
+      { key: "faqs", label: "faqs", href: content("faqs"), icon: "faqs", roles: CONTENT },
+      {
+        key: "gallery",
+        label: "gallery",
+        href: content("galleryAlbums"),
+        icon: "gallery",
+        roles: CONTENT,
+      },
+      { key: "team", label: "team", href: content("team"), icon: "team", roles: CONTENT },
       {
         key: "mediaLibrary",
         label: "mediaLibrary",
-        href: "/secure-admin-control/media",
+        href: `${ADMIN}/media`,
         icon: "media",
         roles: ["admin", "content-editor", "shop-manager", "travel-sales"],
-      },
-      {
-        key: "media",
-        label: "media",
-        href: "/secure-admin-control/content/mediaSlots",
-        icon: "media",
-        roles: CONTENT,
-      },
-      {
-        key: "subscribers",
-        label: "subscribers",
-        href: "/secure-admin-control/subscribers",
-        icon: "newsletter",
-        roles: CONTENT,
-      },
-      {
-        key: "allContent",
-        label: "allContent",
-        href: "/secure-admin-control/content",
-        icon: "content",
-        roles: [],
-      },
-    ],
-  },
-  {
-    label: "settings",
-    items: [
-      {
-        key: "modes",
-        label: "modes",
-        href: "/secure-admin-control/content/bookingModes",
-        icon: "modes",
-        roles: MANAGERS,
-      },
-      {
-        key: "footer",
-        label: "footer",
-        href: "/secure-admin-control/content/footerSettings",
-        icon: "footer",
-        roles: MANAGERS,
-      },
-      {
-        key: "payments",
-        label: "payments",
-        href: "/secure-admin-control/content?group=payments",
-        icon: "payments",
-        roles: ["admin", "shop-manager", "accounts"],
-      },
-      {
-        key: "notifications",
-        label: "notifications",
-        href: "/secure-admin-control/notifications",
-        icon: "notifications",
-        roles: MANAGERS,
-      },
-      {
-        key: "users",
-        label: "users",
-        href: "/secure-admin-control/users",
-        icon: "users",
-        roles: ["super-admin"],
-      },
-      {
-        key: "integrations",
-        label: "integrations",
-        href: "/secure-admin-control/integrations",
-        icon: "integrations",
-        roles: ["super-admin"],
-      },
-      {
-        key: "general",
-        label: "general",
-        href: "/secure-admin-control/content?group=settings",
-        icon: "general",
-        roles: MANAGERS,
-      },
-      {
-        key: "audit",
-        label: "audit",
-        href: "/secure-admin-control/audit",
-        icon: "audit",
-        roles: MANAGERS,
+        also: [content("mediaSlots")],
       },
     ],
   },
 ];
 
+/** Settings live behind one door in the sidebar footer (R9 turns the index into one page with a left sub-navigation). */
+export const SETTINGS_ITEM: AdminNavItem = {
+  key: "settings",
+  label: "settings",
+  href: `${ADMIN}/settings`,
+  icon: "settings",
+  roles: ["admin", "accounts", "shop-manager"],
+  also: [
+    `${ADMIN}/content?group=settings`,
+    `${ADMIN}/content?group=payments`,
+    `${ADMIN}/users`,
+    `${ADMIN}/integrations`,
+    `${ADMIN}/audit`,
+    `${ADMIN}/notifications`,
+    content("siteSettings"),
+    content("contactSettings"),
+    content("bookingModes"),
+    content("paymentSettings"),
+    content("shippingSettings"),
+    content("emiSettings"),
+    content("emiBanks"),
+    content("leadFormSettings"),
+    content("maintenanceSettings"),
+    content("trackingSettings"),
+    content("searchSettings"),
+    content("notificationTemplates"),
+    `${ADMIN}/content`,
+  ],
+};
+
+/** Records staff can create from "+ New" (ADMIN.md §3.2), grouped like the sidebar. */
+export type NewRecordItem = { key: ContentKey; label: string; icon: AdminIconName };
+export type NewRecordGroup = { label: string; items: NewRecordItem[] };
+
+export const NEW_RECORDS: NewRecordGroup[] = [
+  {
+    label: "travel",
+    items: [
+      { key: "tourPackages", label: "tourPackage", icon: "packages" },
+      { key: "groupFares", label: "groupFare", icon: "fares" },
+      { key: "flightRoutes", label: "flightRoute", icon: "routes" },
+      { key: "visaCountries", label: "visaCountry", icon: "visa" },
+      { key: "visaGuides", label: "visaGuide", icon: "guide" },
+    ],
+  },
+  {
+    label: "store",
+    items: [
+      { key: "products", label: "product", icon: "products" },
+      { key: "categories", label: "category", icon: "categories" },
+      { key: "brands", label: "brand", icon: "brands" },
+      { key: "collections", label: "collection", icon: "collections" },
+      { key: "deals", label: "deal", icon: "deals" },
+      { key: "coupons", label: "coupon", icon: "coupons" },
+    ],
+  },
+  {
+    label: "website",
+    items: [
+      { key: "banners", label: "banner", icon: "banners" },
+      { key: "announcements", label: "announcement", icon: "announcement" },
+      { key: "blogPosts", label: "blogPost", icon: "blog" },
+      { key: "faqs", label: "faq", icon: "faqs" },
+      { key: "pages", label: "page", icon: "pages" },
+      { key: "galleryAlbums", label: "galleryAlbum", icon: "gallery" },
+      { key: "team", label: "teamMember", icon: "team" },
+    ],
+  },
+];
+
 export function canSee(roles: readonly Role[], item: AdminNavItem): boolean {
-  if (item.roles.length === 0 || roles.includes("super-admin")) return true;
-  return item.roles.some((role) => roles.includes(role));
+  if (item.roles.length === 0) return true;
+  return hasAnyRole(roles, ...item.roles);
 }
 
 /** The navigation this person sees: groups without visible items are dropped. */
@@ -330,23 +425,49 @@ export function navFor(roles: readonly Role[]): AdminNavGroup[] {
   })).filter((group) => group.items.length > 0);
 }
 
-/** The active item for a pathname and query: the longest matching href wins. */
+/** The "+ New" menu for this person: only records their role can edit. */
+export function newRecordsFor(roles: readonly Role[]): NewRecordGroup[] {
+  return NEW_RECORDS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => canEditContentKey(roles, item.key)),
+  })).filter((group) => group.items.length > 0);
+}
+
+/** How well `href` matches the current page: its length when it matches, else 0 (query hrefs need their query). */
+function matchLength(href: string, path: string, here: string): number {
+  const [hrefPath = "", hrefQuery] = href.split("?");
+  if (hrefQuery) return here.startsWith(href) ? href.length : 0;
+  if (path === hrefPath) return href.length;
+  // The admin root and the content overview only match exactly; everything lives under them.
+  if (hrefPath === ADMIN || hrefPath === `${ADMIN}/content`) return 0;
+  return path.startsWith(`${hrefPath}/`) ? href.length : 0;
+}
+
+/** The active item for a pathname and query: the longest matching href (or `also` page) wins. */
 export function activeKey(
   pathname: string,
   search: string,
-  groups: AdminNavGroup[],
+  items: readonly AdminNavItem[],
 ): string | null {
   const path = pathname.replace(/^\/[a-z]{2}(?=\/secure-admin-control)/, "");
   const here = `${path}${search}`;
   let best: { key: string; length: number } | null = null;
-  for (const item of groups.flatMap((group) => group.items)) {
-    const [itemPath = "", itemQuery] = item.href.split("?");
-    const matches = itemQuery
-      ? here.startsWith(item.href)
-      : path === itemPath ||
-        (itemPath !== "/secure-admin-control" && path.startsWith(`${itemPath}/`));
-    if (matches && (!best || item.href.length > best.length))
-      best = { key: item.key, length: item.href.length };
+  for (const item of items) {
+    for (const href of [item.href, ...(item.also ?? [])]) {
+      const length = matchLength(href, path, here);
+      if (length > 0 && (!best || length > best.length)) best = { key: item.key, length };
+    }
   }
   return best?.key ?? null;
+}
+
+/** Every item in display order, Settings last: for breadcrumbs, Ctrl+K and active state. */
+export function allItems(groups: readonly AdminNavGroup[], roles: readonly Role[]): AdminNavItem[] {
+  const items = groups.flatMap((group) => group.items);
+  return canSee(roles, SETTINGS_ITEM) ? [...items, SETTINGS_ITEM] : items;
+}
+
+/** The group an item belongs to (Settings has none). */
+export function groupOf(groups: readonly AdminNavGroup[], key: string): AdminNavGroup | undefined {
+  return groups.find((group) => group.items.some((item) => item.key === key));
 }

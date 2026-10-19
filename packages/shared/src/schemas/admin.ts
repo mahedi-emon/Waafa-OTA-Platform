@@ -205,6 +205,65 @@ export const ContentOrderInputSchema = z
   .object({ ids: z.array(z.string().min(1).max(160)).min(1).max(2000) })
   .strict();
 
+/** Work waiting for staff (D0 R1): sidebar badges, the notification bell and the dashboard's Today queue. */
+export const InboxCountKeySchema = z.enum([
+  "newLeads",
+  "overdueLeads",
+  "visaWaiting",
+  "ordersToConfirm",
+  "proofsToVerify",
+  "feedbackToReview",
+  "lowStock",
+  "groupFaresEnding",
+  "sampleLeft",
+]);
+
+/** One new item for the notification bell: a lead, an order or a payment proof that arrived. */
+export const InboxItemSchema = z
+  .object({
+    kind: z.enum(["lead", "order", "proof"]),
+    id: IdSchema,
+    /** The person's name; the reference or summary goes in `detail`. */
+    title: z.string().min(1).max(120),
+    detail: z.string().max(160),
+    at: IsoDateTimeSchema,
+  })
+  .strict();
+
+/** Counts the person may see (keys they can't open are left out) and the newest arrivals. */
+export const InboxSummarySchema = z
+  .object({
+    counts: z.partialRecord(InboxCountKeySchema, z.number().int().min(0)),
+    recent: z.array(InboxItemSchema).max(30),
+    at: IsoDateTimeSchema,
+  })
+  .strict();
+
+/** Ctrl+K record search: a name, a reference (FLT-261019-0001) or part of a phone number. */
+export const AdminSearchQuerySchema = z.object({ q: z.string().trim().min(2).max(80) }).strict();
+
+export const AdminSearchHitSchema = z
+  .object({
+    kind: z.enum(["lead", "order", "customer", "record"]),
+    id: z.string().min(1).max(160),
+    title: z.string().min(1).max(160),
+    detail: z.string().max(160).optional(),
+    /** CONTENT_MODEL key for records, so the admin can open the right editor. */
+    contentKey: z.string().max(40).optional(),
+    image: z.string().max(500).optional(),
+  })
+  .strict();
+
+export const AdminSearchResultSchema = z
+  .object({ hits: z.array(AdminSearchHitSchema).max(40) })
+  .strict();
+
+export type InboxCountKey = z.infer<typeof InboxCountKeySchema>;
+export type InboxItem = z.infer<typeof InboxItemSchema>;
+export type InboxSummary = z.infer<typeof InboxSummarySchema>;
+export type AdminSearchHit = z.infer<typeof AdminSearchHitSchema>;
+export type AdminSearchResult = z.infer<typeof AdminSearchResultSchema>;
+
 export type Role = z.infer<typeof RoleSchema>;
 export type StaffUser = z.infer<typeof StaffUserSchema>;
 export type AuditEntry = z.infer<typeof AuditEntrySchema>;
