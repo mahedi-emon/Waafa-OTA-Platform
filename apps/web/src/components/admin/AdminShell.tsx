@@ -32,6 +32,7 @@ const FRAME_MESSAGES = [
   "Admin.command",
   "Admin.content.keys",
   "Admin.states",
+  "Admin.editor.session",
 ];
 
 type AdminShellProps = { staff: StaffSession; children: ReactNode };

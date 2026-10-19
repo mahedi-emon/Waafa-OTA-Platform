@@ -2756,8 +2756,6 @@
       "repeats": "Later requests from the same phone: {references}",
       "request": "What they asked for",
       "requestLead": "As the customer sent it",
-      "readable": "Readable",
-      "raw": "Raw JSON",
       "customer": "Customer",
       "phone": "Phone",
       "email": "Email",
@@ -2799,6 +2797,201 @@
         "email": "Email",
         "whatsapp": "WhatsApp",
         "converted": "Booking"
+      },
+      "factWords": {
+        "travellers": "{adults, plural, one {# adult} other {# adults}}{children, plural, =0 {} one {, # child} other {, # children}}{infants, plural, =0 {} one {, # infant} other {, # infants}}",
+        "flight": "Flight {n}",
+        "anyDate": "Any date",
+        "files": "{count, plural, one {# file} other {# files}}"
+      },
+      "facts": {
+        "trip": "Trip",
+        "returnDate": "Return",
+        "travellers": "Travellers",
+        "cabin": "Cabin",
+        "airline": "Preferred airline",
+        "directOnly": "Direct flights only",
+        "flexibleDates": "Dates are flexible",
+        "fareType": "Fare",
+        "groupFare": "From a group fare",
+        "stops": "Stops",
+        "times": "Times of day",
+        "airlines": "Airlines",
+        "bag": "Checked bag",
+        "refundableOnly": "Refundable fares only",
+        "place": "Where",
+        "checkIn": "Check-in",
+        "checkOut": "Check-out",
+        "rooms": "Room",
+        "nationality": "Nationality",
+        "stars": "Hotel stars",
+        "budgetPerNight": "Budget per night",
+        "budgetBand": "Budget",
+        "meals": "Meals",
+        "seaView": "Sea view",
+        "freeCancellation": "Free cancellation",
+        "package": "Package",
+        "departure": "Departure",
+        "roomSharing": "Room sharing",
+        "destinations": "Places",
+        "startDate": "Start date",
+        "month": "Month",
+        "nights": "Nights",
+        "budgetPerPerson": "Budget per person",
+        "hotelClass": "Hotels",
+        "tripFor": "Trip for",
+        "interests": "Interests",
+        "includeFlights": "Flights included",
+        "visaHelp": "Needs visa help",
+        "country": "Country",
+        "visaType": "Visa type",
+        "applicants": "Applicants",
+        "travelDate": "Travel date",
+        "appointment": "Appointment",
+        "documents": "Documents",
+        "company": "Company",
+        "service": "Service",
+        "volume": "Volume",
+        "frequency": "How often",
+        "location": "Location",
+        "attachments": "Attachments",
+        "direction": "Import or export",
+        "product": "Product",
+        "quantity": "Quantity",
+        "targetPrice": "Target price",
+        "deliveryTerms": "Delivery terms",
+        "timeline": "Timeline",
+        "specifications": "Specifications",
+        "topic": "Topic",
+        "message": "Message",
+        "bank": "Bank",
+        "amount": "Amount",
+        "tenure": "Months",
+        "items": "Items",
+        "notes": "Notes"
+      },
+      "values": {
+        "tripType": {
+          "one-way": "One way",
+          "round-trip": "Return",
+          "multi-city": "Multi-city"
+        },
+        "cabin": {
+          "economy": "Economy",
+          "premium-economy": "Premium economy",
+          "business": "Business",
+          "first": "First"
+        },
+        "fareType": {
+          "regular": "Regular",
+          "student": "Student fare"
+        },
+        "stops": {
+          "any": "Any",
+          "direct": "Direct only",
+          "one": "Up to one stop"
+        },
+        "times": {
+          "morning": "Morning",
+          "afternoon": "Afternoon",
+          "evening": "Evening",
+          "night": "Night"
+        },
+        "bag": {
+          "20": "20 kg",
+          "30": "30 kg",
+          "any": "Any"
+        },
+        "stars": {
+          "3": "3 star",
+          "4": "4 star",
+          "5": "5 star"
+        },
+        "hotelBudget": {
+          "under-5000": "Under ৳5,000 a night",
+          "5000-10000": "৳5,000 to ৳10,000 a night",
+          "10000-20000": "৳10,000 to ৳20,000 a night",
+          "over-20000": "Over ৳20,000 a night"
+        },
+        "meals": {
+          "room-only": "Room only",
+          "breakfast": "Breakfast",
+          "half-board": "Half board"
+        },
+        "roomSharing": {
+          "twin": "Twin sharing",
+          "triple": "Triple sharing",
+          "single": "Single room",
+          "child-with-bed": "Child with bed",
+          "child-without-bed": "Child without bed",
+          "infant": "Infant"
+        },
+        "tripBudget": {
+          "under-30000": "Under ৳30,000 per person",
+          "30000-60000": "৳30,000 to ৳60,000 per person",
+          "60000-100000": "৳60,000 to ৳1,00,000 per person",
+          "over-100000": "Over ৳1,00,000 per person"
+        },
+        "hotelClass": {
+          "3": "3 star",
+          "4": "4 star",
+          "5": "5 star",
+          "resort": "Resort"
+        },
+        "tripFor": {
+          "family": "Family",
+          "couple": "Couple",
+          "friends": "Friends",
+          "solo": "Solo",
+          "office": "Office trip"
+        },
+        "visaType": {
+          "tourist": "Tourist",
+          "business": "Business",
+          "student": "Student",
+          "medical": "Medical",
+          "transit": "Transit"
+        },
+        "appointmentWindow": {
+          "morning": "Morning",
+          "afternoon": "Afternoon"
+        },
+        "printingService": {
+          "managed-printing": "Managed printing",
+          "toner-supply": "Toner supply",
+          "printer-repair": "Printer repair",
+          "bulk-printing": "Bulk printing",
+          "new-printers": "New printers",
+          "paper-supplies": "Paper supplies",
+          "other": "Something else"
+        },
+        "frequency": {
+          "one-off": "Once",
+          "weekly": "Every week",
+          "monthly": "Every month",
+          "quarterly": "Every three months"
+        },
+        "direction": {
+          "import": "Import",
+          "export": "Export",
+          "sourcing": "Sourcing"
+        },
+        "deliveryTerms": {
+          "exw": "Ex works (EXW)",
+          "fob": "Free on board (FOB)",
+          "cif": "Cost, insurance and freight (CIF)",
+          "ddp": "Delivered duty paid (DDP)",
+          "other": "Other"
+        },
+        "topic": {
+          "flights": "Flights",
+          "packages": "Tour packages",
+          "visa": "Visa",
+          "shop": "Waafas World",
+          "printing": "Printing Solutions",
+          "trading": "International Trading",
+          "other": "Something else"
+        }
       }
     },
     "search": {
@@ -3013,25 +3206,7 @@
       "orderSaved": "Order saved",
       "deleteConfirm": "Delete “{title}”? This can’t be undone.",
       "deleted": "Deleted",
-      "created": "Created",
-      "fieldsTab": "Fields",
-      "jsonTab": "JSON",
-      "jsonHint": "Advanced: edit the whole record as JSON. It is checked when you save.",
-      "jsonInvalid": "That isn’t valid JSON.",
-      "addItem": "Add",
-      "removeItem": "Remove",
-      "itemUp": "Up",
-      "itemDown": "Down",
-      "optional": "optional",
-      "unset": "Not set",
-      "setValue": "Set",
-      "clear": "Clear",
-      "choose": "Choose…",
-      "variant": "Kind",
       "emptyList": "No items yet.",
-      "lastSaved": "Last saved {time} by {name}",
-      "sampleNote": "Sample record: visitors see a Sample label. Replace it with real content and turn Sample off. Search engines index its page unless SEO › noindex is on.",
-      "unsaved": "Unsaved changes",
       "keys": {
         "siteSettings": "Site and SEO",
         "contactSettings": "Contact and office hours",
@@ -3084,7 +3259,6 @@
         "coupons": "Coupons",
         "flightRoutes": "Flight routes"
       },
-      "lastSavedAt": "Last saved {time}",
       "richText": {
         "toolbar": "Text formatting",
         "paragraph": "Paragraph",
@@ -3501,7 +3675,7 @@
       },
       "bar": {
         "unsaved": "Unsaved changes",
-        "kept": "Kept on this device {time}",
+        "kept": "Kept on this device <time></time>",
         "allSaved": "All changes saved",
         "newRecord": "Not saved yet",
         "saving": "Saving…",
@@ -3535,8 +3709,8 @@
         "checklistReady": "Ready to publish.",
         "missing": "Add {field}",
         "seo": "In Google",
-        "edited": "Edited {time} by {name}",
-        "editedNoName": "Edited {time}",
+        "edited": "Edited <when></when> by {name}",
+        "editedNoName": "Edited <when></when>",
         "notSaved": "Not saved yet",
         "sample": "Sample content",
         "sampleNote": "Replace it with real details. Lists mark it Sample until then.",
@@ -3554,7 +3728,8 @@
         "archive": "Archive",
         "archiveHint": "Takes it off the site and keeps it for history.",
         "toDraft": "Move back to drafts",
-        "details": "Status and actions"
+        "details": "Status and actions",
+        "cancel": "Cancel"
       },
       "toast": {
         "saved": "Saved.",
@@ -3572,14 +3747,6 @@
         "empty": "No saved changes yet. Changes show here after the first save.",
         "loading": "Loading history…",
         "failed": "History couldn't load.",
-        "actions": {
-          "content.create": "Created",
-          "content.update": "Saved",
-          "content.restore": "Restored an older version",
-          "content.duplicate": "Created as a copy",
-          "settings.update": "Saved",
-          "settings.restore": "Restored an older version"
-        },
         "by": "{name}",
         "current": "Current version",
         "change": "{field}: {from} → {to}",
@@ -3597,17 +3764,30 @@
         "restoreBody": "The page will look like it did then. The current version stays in History, so you can come back to it.",
         "restoreConfirm": "Restore",
         "restored": "The older version is back.",
-        "unsavedFirst": "Save or discard your changes before restoring a version."
+        "unsavedFirst": "Save or discard your changes before restoring a version.",
+        "cancel": "Cancel",
+        "actions": {
+          "content": {
+            "create": "Created",
+            "update": "Saved",
+            "restore": "Restored an older version",
+            "duplicate": "Created as a copy"
+          },
+          "settings": {
+            "update": "Saved",
+            "restore": "Restored an older version"
+          }
+        }
       },
       "conflict": {
-        "title": "{name} saved this {time}",
+        "title": "{name} saved this <time></time>",
         "someone": "Someone",
         "body": "Your changes weren't saved, so nothing of theirs was overwritten. See their version (your changes stay on this device), or save yours over theirs.",
         "reload": "See their version",
         "keep": "Save mine over theirs"
       },
       "draft": {
-        "found": "Unsaved changes from {time} are on this device.",
+        "found": "Unsaved changes from <time></time> are on this device.",
         "newer": "This page was saved by someone after that, so check before you restore.",
         "restore": "Restore them",
         "discard": "Discard"
@@ -3707,7 +3887,8 @@
           "sample": "Sample",
           "draft": "Draft",
           "selected": "{count, plural, one {# chosen} other {# chosen}}",
-          "missing": "Not found: {value}"
+          "missing": "Not found: {value}",
+          "clear": "Remove"
         },
         "tags": {
           "placeholder": "Type, then press Enter",
@@ -3728,7 +3909,8 @@
           "current": "Colour {value}"
         },
         "time": {
-          "pick": "Pick a time"
+          "pick": "Pick a time",
+          "midnight": "Midnight"
         },
         "weekdays": {
           "short": {
@@ -3753,7 +3935,6 @@
         "image": {
           "empty": "No photo yet",
           "address": "Photo address",
-          "addressHint": "Uploading and the media library come with the next update; until then paste the photo's address.",
           "credit": "Photo credit",
           "preview": "Photo preview"
         },
@@ -3786,7 +3967,8 @@
           "hint": "For the Super Admin: the whole record as data. Saving checks it like the form does.",
           "invalid": "This isn't valid JSON. Check the brackets and quotes.",
           "apply": "Use this JSON"
-        }
+        },
+        "itemActions": "Actions for {thing}"
       },
       "advanced": {
         "title": "Advanced",
@@ -4140,7 +4322,8 @@
       "lowStockAt": "Shows Low stock when this many or fewer are left.",
       "mrp": "Shown crossed out. Leave empty when there's no discount.",
       "parentId": "Leave empty for a top category.",
-      "readingMinutes": "Worked out from the length of the text."
+      "readingMinutes": "Worked out from the length of the text.",
+      "src": "Uploading and the media library come with the next update; until then paste the photo's address."
     },
     "choices": {
       "accountKind": {
@@ -4437,7 +4620,9 @@
         },
         "fields": {
           "extraPhones_display": "Number as shown",
-          "extraPhones_e164": "Number with country code"
+          "extraPhones_e164": "Number with country code",
+          "extraPhones_item": "Phone number",
+          "socials_item": "Social link"
         },
         "help": {
           "addressLines": "One line each, as it should print.",
@@ -4467,7 +4652,10 @@
           "paymentMethods_label": "Name shown",
           "paymentMethods_enabled": "Show this method",
           "trustBadges_label": "Badge name",
-          "trustBadges_image": "Badge image"
+          "trustBadges_image": "Badge image",
+          "columns_item": "Column",
+          "paymentMethods_item": "Payment method",
+          "trustBadges_item": "Badge"
         },
         "help": {
           "trustBadges": "Only badges the company really holds."
@@ -4498,7 +4686,8 @@
         "fields": {
           "offlineAccounts_title": "Account name",
           "offlineAccounts_kind": "Account type",
-          "offlineAccounts_lines": "Account details"
+          "offlineAccounts_lines": "Account details",
+          "offlineAccounts_item": "Account"
         },
         "help": {
           "offlineAccounts_lines": "One line each: account name, number, branch.",
@@ -4517,7 +4706,8 @@
         "fields": {
           "zones_name": "Zone name",
           "zones_areas": "Areas in this zone",
-          "zones_estimate": "Delivery time"
+          "zones_estimate": "Delivery time",
+          "zones_item": "Zone"
         },
         "help": {
           "zones_estimate": "As shown at checkout, like 1 to 2 days.",
@@ -4600,7 +4790,8 @@
           "items": "Links",
           "items_label": "Link text",
           "items_description": "Line under the link",
-          "items_visible": "Show this link"
+          "items_visible": "Show this link",
+          "items_item": "Link"
         }
       },
       "announcements": {
@@ -4743,7 +4934,8 @@
           "title": "Page title",
           "highlights": "Key points",
           "sections_heading": "Heading",
-          "sections_body": "Text"
+          "sections_body": "Text",
+          "sections_item": "Section"
         },
         "help": {
           "summary": "Shown under the title and in search results when there's no SEO description."
@@ -4769,7 +4961,11 @@
           "services_title": "Service",
           "services_body": "Description",
           "steps_title": "Step",
-          "steps_body": "Description"
+          "steps_body": "Description",
+          "facts_item": "Fact",
+          "services_item": "Service",
+          "steps_item": "Step",
+          "questions_item": "Question"
         }
       },
       "pageBlocks": {
@@ -4810,7 +5006,8 @@
           "cta": "Call to action at the end",
           "featured": "Feature on the blog",
           "sections_heading": "Heading",
-          "sections_body": "Text"
+          "sections_body": "Text",
+          "sections_item": "Section"
         },
         "help": {
           "excerpt": "Shown on blog cards and in search results."
@@ -4839,7 +5036,8 @@
         "fields": {
           "items": "Photos and videos",
           "items_kind": "Photo or video",
-          "items_url": "Video link"
+          "items_url": "Video link",
+          "items_item": "Photo or video"
         }
       },
       "team": {
@@ -4949,7 +5147,9 @@
           "fromPrice": "Fares from",
           "tips_title": "Tip",
           "tips_body": "Text",
-          "popular": "Popular route"
+          "popular": "Popular route",
+          "tips_item": "Tip",
+          "faqs_item": "Question"
         }
       },
       "tourPackages": {
@@ -4983,7 +5183,15 @@
           "visa_title": "Visa title",
           "visa_body": "Visa text",
           "visa_countrySlug": "Visa country",
-          "faqs": "Questions and answers"
+          "faqs": "Questions and answers",
+          "itinerary_item": "Day",
+          "prices_item": "Price",
+          "highlights_item": "Highlight",
+          "hotels_item": "Hotel",
+          "departures_item": "Departure",
+          "nightsPerCity_item": "City stop",
+          "faqs_item": "Question",
+          "gallery_item": "Photo"
         },
         "help": {
           "placesLabel": "As shown on cards, like Bangkok, Pattaya.",
@@ -5020,7 +5228,11 @@
           "types_checklist_title": "Document",
           "forms_label": "Form name",
           "forms_url": "Download link",
-          "popular": "Popular country"
+          "popular": "Popular country",
+          "types_item": "Visa type",
+          "types_checklist_item": "Document",
+          "forms_item": "Form",
+          "faqs_item": "Question"
         },
         "help": {
           "flagCode": "Two capital letters, like TH for Thailand.",
@@ -5041,7 +5253,8 @@
         "fields": {
           "countrySlug": "Country",
           "sections_heading": "Heading",
-          "sections_body": "Text"
+          "sections_body": "Text",
+          "sections_item": "Section"
         }
       },
       "shopContent": {
@@ -5059,7 +5272,10 @@
         "fields": {
           "corporate_steps_title": "Step",
           "services_title": "Service",
-          "trust_title": "Promise"
+          "trust_title": "Promise",
+          "corporate_steps_item": "Step",
+          "services_item": "Service",
+          "trust_item": "Trust point"
         }
       },
       "attributeSets": {
@@ -5073,7 +5289,8 @@
           "name": "Set name",
           "attributes_label": "Attribute name",
           "attributes_type": "Kind of value",
-          "attributes_options": "Choices"
+          "attributes_options": "Choices",
+          "attributes_item": "Attribute"
         }
       },
       "categories": {
@@ -5134,7 +5351,15 @@
           "options_display": "Show options as",
           "options_values_value": "Value",
           "variants_options": "Option values",
-          "variants_images": "Variant photos"
+          "variants_images": "Variant photos",
+          "images_item": "Photo",
+          "variants_item": "Variant",
+          "options_item": "Option",
+          "options_values_item": "Value",
+          "specs_item": "Specification",
+          "highlights_item": "Highlight",
+          "warranty_items_item": "Warranty point",
+          "variants_images_item": "Photo"
         },
         "help": {
           "showPrice": "When it's off, customers ask for a quote.",

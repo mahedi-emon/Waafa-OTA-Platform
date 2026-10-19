@@ -1,16 +1,19 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
 import { CONTENT_MODEL, isContentKey } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminPanel } from "@/components/admin/AdminPanel";
-import { SchemaEditor } from "@/components/admin/schema/SchemaEditor";
+import { ContentEditor } from "@/components/admin/editor/ContentEditor";
 import { Skeleton } from "@/components/ui/skeleton";
-import { requireStaff } from "@/lib/admin/adminApi";
-import { createRecord } from "@/lib/admin/contentActions";
-import { editorSchema, getEditorStrings } from "@/lib/admin/editorStrings";
+import { pickMessagePaths } from "@/i18n/pickMessages";
+import { adminGet, requireStaff } from "@/lib/admin/adminApi";
+import { EDITOR_MESSAGES } from "@/lib/admin/blueprints/editorMessages";
+import { resolveBlueprint } from "@/lib/admin/blueprints/resolve";
 import { defaultFor } from "@/lib/admin/schema";
+import type { ContentCollection } from "@/lib/admin/types";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.content");
@@ -24,9 +27,14 @@ async function NewRecord({
 }) {
   const { key } = await params;
   if (!isContentKey(key) || CONTENT_MODEL[key].kind !== "collection") notFound();
-  await requireStaff();
-  const [t, strings] = await Promise.all([getTranslations("Admin.content"), getEditorStrings()]);
-  const schema = editorSchema(key);
+  const [staff, list, t, te, messages, { schema, blueprint }] = await Promise.all([
+    requireStaff(),
+    adminGet<ContentCollection>(`/admin/content/${key}`),
+    getTranslations("Admin.content"),
+    getTranslations("Admin.editor.new"),
+    getMessages(),
+    resolveBlueprint(key),
+  ]);
   const initial = defaultFor(schema, schema);
   // New records are real content, not Sample data.
   if (initial && typeof initial === "object" && "sample" in (schema.properties ?? {})) {
@@ -37,27 +45,31 @@ async function NewRecord({
     <>
       <AdminPageHeader
         back={{ href: `/secure-admin-control/content/${key}`, label: t(`keys.${key}`) }}
-        title={t("newRecord")}
+        title={te("title", { thing: blueprint.nouns.one })}
+        lead={te("lead")}
       />
-      <AdminPanel>
-        <SchemaEditor
+      <NextIntlClientProvider messages={pickMessagePaths(messages, EDITOR_MESSAGES)}>
+        <ContentEditor
+          mode="new"
+          contentKey={key}
+          blueprint={blueprint}
           schema={schema}
           initial={initial}
-          onSave={createRecord.bind(null, key)}
-          recordBase={`/secure-admin-control/content/${key}/`}
-          strings={strings}
+          takenIds={list.items.map((item) => item.id)}
+          canAdvanced={staff.roles.includes("super-admin")}
+          origin={SITE_URL}
         />
-      </AdminPanel>
+      </NextIntlClientProvider>
     </>
   );
 }
 
-/** A new record in a content list, starting from the simplest valid shape (D138). */
+/** A new record of a content list, starting from the simplest valid shape (form engine v2, D0 R2). */
 export default function NewContentRecordPage(
   props: PageProps<"/[locale]/secure-admin-control/content/[key]/new">,
 ) {
   return (
-    <Suspense fallback={<Skeleton className="h-[720px] rounded-2xl" />}>
+    <Suspense fallback={<Skeleton className="h-180 rounded-2xl" />}>
       <NewRecord params={props.params} />
     </Suspense>
   );

@@ -12,8 +12,11 @@ type FieldShellProps = {
   /** Shows "Optional" after the label. */
   optional?: boolean;
   error?: string;
-  /** Characters used and allowed ("12 of 60"), for texts with a limit. */
-  counter?: { count: number; max: number };
+  /**
+   * Characters used and allowed ("12 of 60"), for texts with a limit. A soft limit (what Google shows) warns instead
+   * of failing.
+   */
+  counter?: { count: number; max: number; soft?: boolean };
   /** Inline actions next to the label (clear, remove). */
   actions?: ReactNode;
   /**
@@ -72,7 +75,11 @@ function FieldShell({
             <span
               className={cn(
                 "text-[12px] tabular-nums",
-                over ? "font-semibold text-danger-700" : "text-mist-500",
+                over
+                  ? counter?.soft
+                    ? "font-semibold text-warning-800"
+                    : "font-semibold text-danger-700"
+                  : "text-mist-500",
               )}
               aria-live={over ? "polite" : undefined}
             >

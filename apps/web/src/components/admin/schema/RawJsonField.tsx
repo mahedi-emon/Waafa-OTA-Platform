@@ -1,44 +1,47 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Textarea } from "@/components/ui/textarea";
-import { humanize } from "@/lib/admin/format";
-import { pathKey, type Path } from "@/lib/admin/schema";
+import type { Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
-import { useSchemaEditor } from "./useSchemaEditor";
+import { useField } from "./useField";
 
 type RawJsonFieldProps = { path: Path; value: unknown; optional: boolean };
 
-/** Fallback for shapes the form can't draw (free-form records, mixed unions): JSON, checked on every change. */
+/**
+ * Fallback for shapes the form can't draw, checked on every change. Blueprints give every field a widget, so staff
+ * only meet this under Advanced (Super Admin).
+ */
 function RawJsonField({ path, value, optional }: RawJsonFieldProps) {
-  const { errors, strings, change } = useSchemaEditor();
+  const meta = useField(path);
+  const t = useTranslations("Admin.editor.widgets.json");
   const [text, setText] = useState(() =>
     value === undefined ? "" : JSON.stringify(value, null, 2),
   );
   const [invalid, setInvalid] = useState(false);
-  const key = path.at(-1);
-  const id = `field-${pathKey(path).replace(/[^\w-]/g, "-") || "root"}`;
 
   return (
     <FieldShell
-      id={id}
-      label={typeof key === "number" ? String(key + 1) : humanize(String(key ?? ""))}
-      optional={optional ? strings.optional : undefined}
-      error={invalid ? strings.jsonInvalid : errors[pathKey(path)]}
+      id={meta.id}
+      label={meta.label}
+      optional={optional}
+      {...(invalid ? { error: t("invalid") } : meta.error ? { error: meta.error } : {})}
     >
       <Textarea
-        id={id}
+        id={meta.id}
         value={text}
         spellCheck={false}
+        aria-invalid={invalid || meta.error ? true : undefined}
         onChange={(event) => {
           setText(event.target.value);
           if (event.target.value.trim() === "") {
             setInvalid(false);
-            change(path, optional ? undefined : null);
+            meta.change(optional ? undefined : null);
             return;
           }
           try {
-            change(path, JSON.parse(event.target.value));
+            meta.change(JSON.parse(event.target.value));
             setInvalid(false);
           } catch {
             setInvalid(true);

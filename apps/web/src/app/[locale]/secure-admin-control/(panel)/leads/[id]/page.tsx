@@ -2,18 +2,18 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Mail, Phone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { LeadPrioritySchema, LeadStatusSchema } from "@waafa/shared";
+import { LeadPrioritySchema, LeadStatusSchema, type ContentOption } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPanel } from "@/components/admin/AdminPanel";
-import { JsonDetails } from "@/components/admin/JsonDetails";
+import { LeadFacts } from "@/components/admin/LeadFacts";
 import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
-import { flattenForDisplay } from "@/lib/admin/flatten";
 import { displayPhone, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
+import { leadFacts } from "@/lib/admin/leadFacts";
 import type { LeadDetail, StaffDirectoryEntry } from "@/lib/admin/types";
 import { LeadControls } from "./_components/LeadControls";
 import { NoteForm } from "./_components/NoteForm";
@@ -40,9 +40,12 @@ async function Lead({
   params: PageProps<"/[locale]/secure-admin-control/leads/[id]">["params"];
 }) {
   const { id } = await params;
-  const [lead, staff, t, tl, tc, tm, ts, tp] = await Promise.all([
+  const [lead, staff, airports, t, tl, tc, tm, ts, tp] = await Promise.all([
     adminGet<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
     adminGet<StaffDirectoryEntry[]>("/admin/staff"),
+    adminGet<{ items: ContentOption[] }>("/admin/content/airports/options").catch(() => ({
+      items: [] as ContentOption[],
+    })),
     getTranslations("Admin.lead"),
     getTranslations("Admin.leads"),
     getTranslations("Admin.common"),
@@ -50,7 +53,24 @@ async function Lead({
     getTranslations("Admin.statuses"),
     getTranslations("Admin.priorities"),
   ]);
-  const rows = flattenForDisplay(lead.payload, { yes: tc("yes"), no: tc("no") });
+  // Fact labels and value words are looked up by computed keys, so this translator is used untyped.
+  const tf = t as unknown as ((key: string, values?: Record<string, number>) => string) & {
+    has: (key: string) => boolean;
+  };
+  const cityOf = new Map(airports.items.map((airport) => [airport.id, airport.title]));
+  const facts = leadFacts(lead.payload, {
+    label: (key) => (tf.has(`facts.${key}`) ? tf(`facts.${key}`) : key),
+    value: (group, value) =>
+      tf.has(`values.${group}.${value}`) ? tf(`values.${group}.${value}`) : undefined,
+    travellers: (adults, children, infants) =>
+      t("factWords.travellers", { adults, children, infants }),
+    flight: (n) => t("factWords.flight", { n }),
+    airport: (iata) => (cityOf.has(iata) ? `${cityOf.get(iata)} (${iata})` : iata),
+    anyDate: t("factWords.anyDate"),
+    files: (count) => t("factWords.files", { count }),
+    yes: tc("yes"),
+    no: tc("no"),
+  });
   const whatsappText = t("whatsappText", { name: lead.contact.name, reference: lead.reference });
 
   return (
@@ -133,11 +153,7 @@ async function Lead({
           </AdminPanel>
 
           <AdminPanel title={t("request")} lead={t("requestLead")}>
-            <JsonDetails
-              rows={rows}
-              json={JSON.stringify(lead.payload, null, 2)}
-              strings={{ readable: t("readable"), raw: t("raw") }}
-            />
+            <LeadFacts facts={facts} />
           </AdminPanel>
 
           <AdminPanel title={t("timeline")} lead={t("timelineLead")}>
