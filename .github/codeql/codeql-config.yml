@@ -1,0 +1,8 @@
+name: WAAFA CodeQL
+
+# Developer download tools that save fetched logos and photos to disk on purpose, under fixed names (IATA codes
+# checked by a regex, keys from a constant list). They are never shipped, imported by the app or run in CI, so
+# `js/http-to-file-access` there is their job, not a risk (D206). Everything else is analysed.
+paths-ignore:
+  - scripts/fetch-airline-logos.mjs
+  - docs/design/photos/get-waafa-photos.mjs
