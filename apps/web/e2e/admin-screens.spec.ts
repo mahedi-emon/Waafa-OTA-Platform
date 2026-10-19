@@ -26,6 +26,7 @@ const SCREENS = [
   { name: "reports", path: "/secure-admin-control/reports" },
   { name: "customers", path: "/secure-admin-control/customers" },
   { name: "media", path: "/secure-admin-control/media" },
+  { name: "settings", path: "/secure-admin-control/settings" },
 ] as const;
 
 test.skip(!apiMode || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");
@@ -59,7 +60,7 @@ test("signed-in admin screens hold every width, stay error-free and pass axe", a
   await page.setExtraHTTPHeaders({ "x-forwarded-for": "198.51.100.200" });
   await page.goto("/secure-admin-control/sign-in");
   await page.getByLabel("Work email").fill(ADMIN_EMAIL);
-  await page.getByLabel("Password").fill(ADMIN_PASSWORD);
+  await page.getByLabel("Password", { exact: true }).fill(ADMIN_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByRole("heading", { level: 1, name: /^Hello, / })).toBeVisible();
 

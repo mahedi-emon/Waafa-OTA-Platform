@@ -2528,24 +2528,34 @@
     },
     "signIn": {
       "metaTitle": "Sign in",
-      "title": "Sign in to Admin",
-      "lead": "For Waafa staff. This page is not indexed by search engines.",
+      "title": "Sign in to Waafa Admin",
+      "lead": "For Waafa staff. Use the work email your admin added.",
       "email": "Work email",
       "password": "Password",
-      "remember": "Keep me signed in on this device",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "remember": "Keep me signed in",
+      "rememberHint": "Stay signed in on this device for 7 days. Leave it off on shared computers.",
       "submit": "Sign in",
-      "wrong": "That email and password don’t match. After 5 wrong tries, sign-in locks for 15 minutes.",
-      "lockedTitle": "Too many tries",
-      "lockedBody": "For safety, sign-in is locked for 15 minutes after 5 failed tries. Try again later or ask a Super Admin to reset your password.",
-      "unavailable": "Sign-in isn’t available right now. Try again in a minute.",
+      "wrong": "That email and password don't match. Check them and try again.",
+      "wrongTries": "After 5 wrong tries, sign-in pauses for 15 minutes.",
+      "lockedTitle": "Sign-in is paused",
+      "lockedBody": "Too many wrong tries. For your safety, sign-in is paused for 15 minutes. If you forgot your password, ask an admin to reset it in Users and roles.",
+      "unavailable": "Sign-in isn't available right now. Check your connection and try again in a minute.",
       "missing": "Enter your work email and password.",
-      "forgot": "Forgot your password? A Super Admin can reset it in Users and roles.",
-      "totp": "Two-factor sign-in (authenticator app) arrives in P1 and becomes required for Super Admin and Admin."
+      "forgot": "Forgot your password? An admin can reset it in Settings › Users and roles.",
+      "panelTitle": "Everything Waafa runs, in one place",
+      "panelPoints": {
+        "inbox": "Reply to every request in time, with the reply timer",
+        "website": "Change the website section by section, with a preview",
+        "store": "Confirm, pack and ship Waafas World orders"
+      },
+      "noindex": "This page is private and never shown in search engines."
     },
     "shell": {
       "menu": "Open menu",
       "closeMenu": "Close menu",
-      "search": "Search leads, orders, pages…",
+      "search": "Search or jump to…",
       "searchShort": "Search",
       "viewSite": "View site",
       "signOut": "Sign out",
@@ -2556,48 +2566,58 @@
       "commandLead": "Open lead or order",
       "commandLeadHint": "Type a reference such as FLT-261011-0001",
       "commandGroupPages": "Pages",
-      "commandGroupFind": "Find"
+      "commandGroupFind": "Find",
+      "newRecord": "New",
+      "newMenuTitle": "Create",
+      "notifications": "Notifications",
+      "collapse": "Collapse the menu",
+      "expand": "Expand the menu",
+      "settings": "Settings",
+      "skipToContent": "Skip to content",
+      "offline": "You're offline. What you type stays here; save again when the connection is back.",
+      "backOnline": "Back online"
     },
     "nav": {
-      "overview": "Overview",
-      "dashboard": "Dashboard",
-      "sales": "Sales",
-      "leads": "Leads",
-      "searchActivity": "Search activity",
-      "groupFares": "Group fares",
-      "flightRoutes": "Flight routes",
+      "home": "Home",
+      "inbox": "Inbox",
       "travel": "Travel",
-      "packages": "Tour packages",
-      "visaLeads": "Visa applications",
-      "visaCountries": "Visa countries",
       "store": "Waafas World",
+      "website": "Website",
+      "dashboard": "Dashboard",
+      "reports": "Reports",
+      "leads": "Leads",
+      "visaApplications": "Visa applications",
       "orders": "Orders",
       "paymentProofs": "Payment proofs",
+      "customers": "Customers",
+      "feedback": "Feedback",
+      "packages": "Tour packages",
+      "groupFares": "Group fares",
+      "flightRoutes": "Flight routes",
+      "hotelPlaces": "Hotels and places",
+      "visaCountries": "Visa countries",
+      "visaGuides": "Visa guides",
+      "airlines": "Airlines and airports",
       "products": "Products",
       "categories": "Categories",
+      "brands": "Brands",
       "collections": "Collections",
+      "deals": "Deals",
+      "storeRows": "Store home rows",
       "coupons": "Coupons",
-      "content": "Content",
-      "home": "Home and banners",
-      "team": "Team",
+      "attributes": "Product attributes",
+      "compatibleModels": "Compatible models",
+      "homePage": "Home page",
+      "menus": "Menus and footer",
+      "announcements": "Announcement bar",
+      "banners": "Banners and offers",
+      "pages": "Pages",
+      "blog": "Blog",
+      "faqs": "FAQs",
       "gallery": "Gallery",
-      "feedback": "Feedback",
-      "pages": "Pages, blog and FAQs",
-      "media": "Media slots",
-      "allContent": "All content",
-      "settings": "Settings",
-      "modes": "Booking modes",
-      "footer": "Footer and menus",
-      "payments": "Payments and delivery",
-      "notifications": "Notifications",
-      "users": "Users and roles",
-      "integrations": "Integrations",
-      "general": "General",
-      "subscribers": "Newsletter",
-      "audit": "Audit log",
-      "reports": "Reports",
-      "customers": "Customers",
-      "mediaLibrary": "Media library"
+      "team": "Team",
+      "mediaLibrary": "Media library",
+      "settings": "Settings"
     },
     "common": {
       "save": "Save",
@@ -2669,7 +2689,7 @@
     },
     "statuses": {
       "new": "New",
-      "pending": "Pending",
+      "pending": "Waiting for customer",
       "in-progress": "In progress",
       "quoted": "Quoted",
       "booked": "Booked",
@@ -2806,7 +2826,7 @@
       "statuses": {
         "placed": "Placed",
         "confirmed": "Confirmed",
-        "processing": "Processing",
+        "processing": "Packing",
         "shipped": "Shipped",
         "delivered": "Delivered",
         "cancelled": "Cancelled",
@@ -3270,6 +3290,203 @@
       "remove": "Delete",
       "removeConfirm": "Delete this photo? Pages that use it show their placeholder until you choose another.",
       "removed": "Photo deleted"
+    },
+    "navHelp": {
+      "dashboard": "Today's work, the numbers and what needs you first",
+      "reports": "Leads, bookings, orders and searches by date",
+      "leads": "Every request from the website, WhatsApp and calls",
+      "visaApplications": "Visa requests with their documents",
+      "orders": "Waafas World orders to confirm, pack and ship",
+      "proofs": "Bank and mobile transfers to check",
+      "customers": "Everyone who asked or ordered, by phone number",
+      "feedback": "What customers wrote, to approve for the website",
+      "packages": "Tour packages on /tour-packages and the home page",
+      "groupFares": "Group fare seats on /flights and the home page",
+      "flightRoutes": "Route pages such as Dhaka to Bangkok",
+      "hotelPlaces": "Cities and hotels people can ask for",
+      "visaCountries": "Countries on /visa with fees and documents",
+      "visaGuides": "Step-by-step visa guides",
+      "airlines": "Airline names, logos, airports and baggage rules",
+      "products": "Everything for sale in Waafas World",
+      "categories": "Store aisles and their order",
+      "brands": "Brands shown on products and filters",
+      "collections": "Hand-picked groups of products",
+      "deals": "Time-limited prices in the store",
+      "storeRows": "Rows on the Waafas World home page",
+      "coupons": "Discount codes for checkout",
+      "attributes": "Filters such as colour, size or yield",
+      "compatibleModels": "Printers each toner fits, for Find by model",
+      "homePage": "Sections, hero and photos of the home page",
+      "menus": "Header, footer and phone menus",
+      "announcements": "The strip at the top of every page",
+      "banners": "Offer banners on the home and listing pages",
+      "pages": "About us, policies and service pages",
+      "blog": "Travel tips and news",
+      "faqs": "Questions and answers on /faqs",
+      "gallery": "Photo albums on /gallery",
+      "team": "Meet our team on Home and About us",
+      "mediaLibrary": "Every photo and video, ready to reuse",
+      "settings": "Contact details, payments, booking modes, users and more"
+    },
+    "newMenu": {
+      "travel": "Travel",
+      "store": "Waafas World",
+      "website": "Website",
+      "tourPackage": "Tour package",
+      "groupFare": "Group fare",
+      "flightRoute": "Flight route",
+      "visaCountry": "Visa country",
+      "visaGuide": "Visa guide",
+      "product": "Product",
+      "category": "Category",
+      "brand": "Brand",
+      "collection": "Collection",
+      "deal": "Deal",
+      "coupon": "Coupon",
+      "banner": "Banner or offer",
+      "announcement": "Announcement",
+      "blogPost": "Blog post",
+      "faq": "FAQ",
+      "page": "Page",
+      "galleryAlbum": "Gallery album",
+      "teamMember": "Team member"
+    },
+    "bell": {
+      "title": "Notifications",
+      "all": "All",
+      "unseen": "New for you",
+      "markSeen": "Mark all as seen",
+      "empty": "You're all caught up",
+      "emptyBody": "New requests, orders and payment proofs show up here.",
+      "lead": "New request",
+      "order": "New order",
+      "proof": "Payment proof to check",
+      "today": "Today",
+      "earlier": "Earlier",
+      "unseenCount": "{count, plural, one {# new notification} other {# new notifications}}",
+      "openInbox": "Open the inbox"
+    },
+    "counts": {
+      "newLeads": "{count, plural, one {# new lead} other {# new leads}}",
+      "overdueLeads": "{count, plural, one {# past the reply target} other {# past the reply target}}",
+      "visaWaiting": "{count, plural, one {# visa application open} other {# visa applications open}}",
+      "ordersToConfirm": "{count, plural, one {# order to confirm} other {# orders to confirm}}",
+      "proofsToVerify": "{count, plural, one {# payment proof to check} other {# payment proofs to check}}",
+      "feedbackToReview": "{count, plural, one {# feedback to review} other {# feedback to review}}",
+      "lowStock": "{count, plural, one {# product low on stock} other {# products low on stock}}",
+      "groupFaresEnding": "{count, plural, one {# group fare ends this week} other {# group fares end this week}}",
+      "sampleLeft": "{count, plural, one {# Sample record left} other {# Sample records left}}"
+    },
+    "command": {
+      "title": "Search Waafa Admin",
+      "placeholder": "Search names, phone numbers or pages",
+      "hint": "Try a name, a phone number, FLT-261019-0001 or “Bali”",
+      "empty": "Nothing matches. Check the spelling or try part of a phone number.",
+      "searching": "Searching…",
+      "failed": "Search didn't answer. Try again in a moment.",
+      "actions": "Actions",
+      "goTo": "Go to",
+      "leads": "Leads",
+      "orders": "Orders",
+      "customers": "Customers",
+      "records": "Website and catalogue",
+      "open": "Open",
+      "newOf": "New {thing}",
+      "verifyProofs": "Check payment proofs",
+      "overdueLeads": "Open leads past the reply target",
+      "officeHours": "Change office hours or phone numbers",
+      "uploadPhotos": "Upload photos",
+      "editHome": "Edit the home page",
+      "bookingModes": "Switch booking modes",
+      "shortcut": "Ctrl K",
+      "close": "Close search"
+    },
+    "settingsIndex": {
+      "metaTitle": "Settings",
+      "title": "Settings",
+      "lead": "How the business runs on the website: contact details, payments, booking modes, messages and who can sign in.",
+      "groups": {
+        "business": "Business",
+        "selling": "Selling and payments",
+        "messages": "Forms and messages",
+        "website": "Website and search",
+        "team": "Team and security",
+        "advanced": "Advanced"
+      },
+      "items": {
+        "contact": {
+          "title": "Business, contact and office hours",
+          "body": "Phone numbers, WhatsApp, email, address, social links and the opening hours behind the Open now chip."
+        },
+        "site": {
+          "title": "Site name and search engines",
+          "body": "The site title, the text Google shows and the Search Console code."
+        },
+        "tracking": {
+          "title": "Tracking",
+          "body": "Google Analytics, Tag Manager and Meta Pixel IDs (they run after cookie consent)."
+        },
+        "modes": {
+          "title": "Booking modes",
+          "body": "Manual request or Live booking for each service. Live stays locked until Phase E."
+        },
+        "payments": {
+          "title": "Payment accounts and cash on delivery",
+          "body": "Bank, bKash and Nagad accounts for transfers, and the cash on delivery limit."
+        },
+        "shipping": {
+          "title": "Delivery zones and charges",
+          "body": "Where Waafas World delivers, the charge and the delivery time."
+        },
+        "emi": {
+          "title": "EMI and partner banks",
+          "body": "Instalment plans and the banks that offer them."
+        },
+        "leadForms": {
+          "title": "Request forms",
+          "body": "The reply target, required details and the consent text on every form."
+        },
+        "templates": {
+          "title": "Email and SMS messages",
+          "body": "What customers and staff receive after a request, an order or a change."
+        },
+        "sent": {
+          "title": "Sent messages",
+          "body": "Every email the system sent, with its delivery status."
+        },
+        "search": {
+          "title": "Search defaults",
+          "body": "The options the website's search card starts with."
+        },
+        "maintenance": {
+          "title": "Maintenance mode",
+          "body": "Show a short notice to visitors while the site is being updated."
+        },
+        "users": {
+          "title": "Users and roles",
+          "body": "Who can sign in to Admin and what each person can see and do."
+        },
+        "integrations": {
+          "title": "Integrations",
+          "body": "Connections to airlines, hotels, payments, email and sign-in providers."
+        },
+        "audit": {
+          "title": "Audit log",
+          "body": "Every change in Admin, who made it and when."
+        },
+        "allContent": {
+          "title": "All content (advanced)",
+          "body": "Every content list in one place, for Super Admins only."
+        }
+      }
+    },
+    "states": {
+      "errorTitle": "This page didn't load",
+      "errorBody": "Something went wrong on our side or the connection dropped. Your saved work is safe.",
+      "retry": "Try again",
+      "home": "Go to the dashboard",
+      "forbiddenTitle": "Not for your role",
+      "forbiddenBody": "Your role can't open this page. Ask an admin if you need it."
     }
   },
   "Consent": {

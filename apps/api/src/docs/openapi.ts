@@ -163,6 +163,8 @@ function adminRoutes(): RouteDoc[] {
   ): RouteDoc => ({ method, path: `/api/v1/admin${path}`, summary, tag: "admin", auth: "staff", ...(body ? { body } : {}), responses });
   return [
     route("get", "/dashboard", "KPIs, leads by module and status, top routes, activity"),
+    route("get", "/inbox", "Work waiting for this person (counts by queue) and the newest leads, orders and proofs"),
+    route("get", "/search", "Ctrl+K search: leads, orders, customers by phone and content records the role can edit"),
     route("get", "/leads", "Lead list: view, module, status, assignee, created dates, search, paging"),
     route("get", "/leads/export.csv", "CSV of the current filter"),
     route("post", "/leads/bulk", "Bulk assign or status change", LeadBulkInputSchema),

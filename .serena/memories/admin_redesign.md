@@ -10,6 +10,9 @@ orders, proofs matching), R7 #197 website builder (home sections, menus, schedul
 R8 #198 purpose-built editors, R9 #199 dashboard/settings/users/audit/notifications/reports, R10 #200 QA + 14 staff
 task e2e + docs/ADMIN_GUIDE.md (Banglish).
 Checkpoints (Banglish summary + screenshot paths + "test this yourself"): after R0, R1, R3, R6, R8.
+R1 notes: AdminFrame wraps TooltipProvider (the registry sidebar has none: a Tooltip without it crashes SSR);
+Ctrl K dialog and the bell list/phone sheet load on first use (next/dynamic); sidebar link counts via aria-label;
+e2e gestures need `until()` retry (hydration is slow on this machine); `getByLabel("Password", { exact: true })`.
 Key decisions: D184 sidebar stays midnight-950; D185 status families info/progress/success/warning/danger/neutral,
 new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D;
 D186 21st.dev picks (ADMIN.md §14; free tier = 2 installs/day); D187 SchemaEditor stays the engine (no fork),

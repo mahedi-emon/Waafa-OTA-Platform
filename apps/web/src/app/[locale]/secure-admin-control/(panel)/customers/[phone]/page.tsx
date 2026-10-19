@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { formatTaka } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
+import { OrderStatusChip } from "@/components/admin/OrderStatusChip";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
@@ -107,7 +109,7 @@ async function CustomerProfile({
                 </span>
                 <span className="flex flex-wrap items-center gap-2 text-[13px] text-mist-600">
                   <Badge variant="neutral">{label(tm, lead.module)}</Badge>
-                  <Badge variant="brand">{label(ts, lead.status)}</Badge>
+                  <LeadStatusBadge status={lead.status} label={label(ts, lead.status)} />
                   {formatDhakaDateTime(lead.createdAt)}
                 </span>
               </li>
@@ -140,7 +142,7 @@ async function CustomerProfile({
                     {order.reference}
                   </Link>
                   <span className="flex flex-wrap items-center gap-2 text-[13px] text-mist-600">
-                    <Badge variant="neutral">{label(to, order.status)}</Badge>
+                    <OrderStatusChip status={order.status} label={label(to, order.status)} />
                     <span className="font-semibold text-navy-900 tabular-nums">
                       {formatTaka(order.total)}
                     </span>

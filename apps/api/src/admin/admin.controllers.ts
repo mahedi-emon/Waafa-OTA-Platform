@@ -15,6 +15,7 @@ import {
 } from "@nestjs/common";
 import type { FastifyReply } from "fastify";
 import {
+  AdminSearchQuerySchema,
   AuditListQuerySchema,
   ContentOrderInputSchema,
   ContentWriteInputSchema,
@@ -44,6 +45,7 @@ import { AdminInboxService } from "./inbox.service";
 import { AdminLeadsService } from "./leads.service";
 import { AdminOrdersService } from "./orders.service";
 import { AdminUsersService } from "./users.service";
+import { AdminWorkbenchService } from "./workbench.service";
 
 /** Excel reads UTF-8 CSV (taka sign, Bangla names) only with a byte order mark. */
 const BYTE_ORDER_MARK = String.fromCharCode(0xfeff);
@@ -345,5 +347,22 @@ export class AdminDashboardController {
   @Get()
   summary(@Staff() staff: StaffPrincipal) {
     return this.dashboard.summary(staff);
+  }
+}
+
+/** What waits for this person and the Ctrl+K search (D0 R1); scoped to the caller's roles and lead modules. */
+@Controller("admin")
+@UseGuards(StaffGuard)
+export class AdminWorkbenchController {
+  constructor(@Inject(AdminWorkbenchService) private readonly workbench: AdminWorkbenchService) {}
+
+  @Get("inbox")
+  inbox(@Staff() staff: StaffPrincipal) {
+    return this.workbench.inbox(staff);
+  }
+
+  @Get("search")
+  search(@Staff() staff: StaffPrincipal, @Query() query: unknown) {
+    return this.workbench.search(staff, parseInput(AdminSearchQuerySchema, query).q);
   }
 }
