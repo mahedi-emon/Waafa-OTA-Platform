@@ -75,6 +75,15 @@ export async function createApp(
       { parseAs: "buffer", bodyLimit: 12 * 1024 * 1024 + 1024 },
       (_request, body, done) => done(null, body),
     );
+  // Videos too (MP4 or WebM up to 50 MB, D0 R3); only the video upload route reads them.
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .addContentTypeParser(
+      /^video\/(mp4|webm)$/,
+      { parseAs: "buffer", bodyLimit: 50 * 1024 * 1024 + 1024 },
+      (_request, body, done) => done(null, body),
+    );
   app
     .getHttpAdapter()
     .getInstance()

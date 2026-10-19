@@ -68,6 +68,11 @@ export const ImageSchema = z
     credit: z.string().max(120).optional(),
     /** The photo's page on Unsplash or Pexels, linked from the credit. */
     creditUrl: z.url().optional(),
+    /** The part of the photo kept in view when it is cropped to fit (percent from the top left, D0 R3). */
+    focal: z
+      .object({ x: z.number().min(0).max(100), y: z.number().min(0).max(100) })
+      .strict()
+      .optional(),
   })
   .strict();
 
