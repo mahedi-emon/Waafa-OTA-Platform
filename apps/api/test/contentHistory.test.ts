@@ -176,6 +176,41 @@ describe.skipIf(!dbAvailable)(
       ).toBe(403);
     });
 
+    it("undoes the very first change of a seeded record by restoring the version before it", async () => {
+      const faqs = (await call(editor, "GET", "/content/faqs")).json<{ items: Record_[] }>();
+      const faq = faqs.items[0];
+      if (!faq) throw new Error("no faqs");
+      const saved = await call(editor, "PUT", `/content/faqs/${faq.id}`, {
+        data: { ...faq.data, answer: "Sample: a wrong answer." },
+        version: faq.version,
+      });
+      expect(saved.statusCode).toBe(200);
+      const [change] = await history(editor, `/content/faqs/${faq.id}/history`);
+      if (!change) throw new Error("no history");
+      // The seed wrote no history, so only "before" can bring the original back.
+      const restored = await call(editor, "POST", `/content/faqs/${faq.id}/restore`, {
+        auditId: change.id,
+        side: "before",
+        version: faq.version + 1,
+      });
+      expect(restored.statusCode).toBe(200);
+      expect(restored.json<Record_>().data.answer).toBe(faq.data.answer);
+      const createdOnly = await call(editor, "POST", "/content/faqs", {
+        data: { ...faq.data, id: "sample-fresh-question" },
+      });
+      expect(createdOnly.statusCode).toBe(201);
+      const [creation] = await history(editor, "/content/faqs/sample-fresh-question/history");
+      // A created record has nothing before it.
+      expect(
+        (
+          await call(editor, "POST", "/content/faqs/sample-fresh-question/restore", {
+            auditId: creation?.id,
+            side: "before",
+          })
+        ).statusCode,
+      ).toBe(404);
+    });
+
     it("copies a record as a hidden draft with a free id, never Sample", async () => {
       const posts = (await call(editor, "GET", "/content/blogPosts")).json<{ items: Record_[] }>();
       const post = posts.items[0];

@@ -42,7 +42,8 @@ describe("paths", () => {
 describe("slugs and ids", () => {
   it("makes web addresses from titles", () => {
     expect(slugify("Bali 5 Days & 4 Nights")).toBe("bali-5-days-and-4-nights");
-    expect(slugify("  Cox’s Bazar — Sea View!  ")).toBe("cox-s-bazar-sea-view");
+    expect(slugify("  Cox’s Bazar — Sea View!  ")).toBe("coxs-bazar-sea-view");
+    expect(slugify("Cox's Bazar")).toBe("coxs-bazar");
     expect(slugify("Ça va")).toBe("ca-va");
   });
 

@@ -277,7 +277,12 @@ export const ContentHistorySchema = z
 
 /** Make the record look like it did after this audit entry; the version guards against overwriting a newer save. */
 export const ContentRestoreInputSchema = z
-  .object({ auditId: IdSchema, version: z.number().int().positive().optional() })
+  .object({
+    auditId: IdSchema,
+    version: z.number().int().positive().optional(),
+    /** The version saved by this change ("after", the default) or the one it replaced ("before"). */
+    side: z.enum(["before", "after"]).optional(),
+  })
   .strict();
 
 /** One choice for a reference picker: the record's title and photo, and the values other records refer to it by. */

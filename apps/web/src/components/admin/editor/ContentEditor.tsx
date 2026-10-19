@@ -92,11 +92,11 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
         continue;
       }
       const needed = fields.filter((name) => name === "" || required.has(name));
-      states[section.id] =
-        needed.length > 0 &&
-        needed.every((name) => !isEmpty(name === "" ? state.value : getAt(state.value, [name])))
-          ? "complete"
-          : "open";
+      const filled = (name: string) =>
+        !isEmpty(name === "" ? state.value : getAt(state.value, [name]));
+      // Sections without required fields are complete once something is filled in.
+      const done = needed.length > 0 ? needed.every(filled) : fields.some(filled);
+      states[section.id] = done ? "complete" : "open";
     }
     return states;
   }, [schema, blueprint, state.errors, state.value]);

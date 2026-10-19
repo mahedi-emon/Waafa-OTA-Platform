@@ -31,6 +31,7 @@ export const sectionsList: Record<string, FieldSpec> = {
 /** Question and answer lists. */
 export const faqList = (field: string): Record<string, FieldSpec> => ({
   [field]: { widget: "repeater", summary: "question", wide: true },
+  [`${field}_question`]: { wide: true },
   [`${field}_answer`]: textarea,
 });
 

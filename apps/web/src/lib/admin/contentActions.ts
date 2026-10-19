@@ -84,9 +84,10 @@ export async function restoreVersion(
   id: string | null,
   auditId: string,
   version?: number,
+  side: "before" | "after" = "after",
 ): Promise<SaveResult> {
   if (!KEY.test(key) || (id !== null && !ID.test(id)) || !ID.test(auditId)) return badKey();
-  const body = { auditId, ...(version ? { version } : {}) };
+  const body = { auditId, side, ...(version ? { version } : {}) };
   if (id === null) {
     const result = await adminWrite<ContentSingleton>(
       `/admin/settings/${at(key)}/restore`,

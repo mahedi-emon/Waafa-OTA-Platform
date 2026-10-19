@@ -4,12 +4,23 @@ export function slugify(text: string, max = 80): string {
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
+    // "Cox's Bazar" → "coxs-bazar": an apostrophe joins, it doesn't split.
+    .replace(/['’]/g, "")
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, max)
     .replace(/-+$/g, "");
   return slug;
+}
+
+/** A web address part as words for a list: "kuala-lumpur" → "Kuala Lumpur". */
+export function titleCase(slug: string): string {
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /** Four lowercase letters or digits, to keep generated ids apart. */

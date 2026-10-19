@@ -3729,7 +3729,8 @@
         "archiveHint": "Takes it off the site and keeps it for history.",
         "toDraft": "Move back to drafts",
         "details": "Status and actions",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "publishing": "Publishing"
       },
       "toast": {
         "saved": "Saved.",
@@ -3777,7 +3778,9 @@
             "update": "Saved",
             "restore": "Restored an older version"
           }
-        }
+        },
+        "restoreBefore": "Restore the version before this change",
+        "restoreBeforeTitle": "Bring back the version from before {time}?"
       },
       "conflict": {
         "title": "{name} saved this <time></time>",
@@ -3888,7 +3891,9 @@
           "draft": "Draft",
           "selected": "{count, plural, one {# chosen} other {# chosen}}",
           "missing": "Not found: {value}",
-          "clear": "Remove"
+          "clear": "Remove",
+          "addNew": "Add a new {thing}",
+          "add": "Add"
         },
         "tags": {
           "placeholder": "Type, then press Enter",

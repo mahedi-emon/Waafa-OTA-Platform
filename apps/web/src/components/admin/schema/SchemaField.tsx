@@ -19,6 +19,7 @@ import { ImageField } from "./ImageField";
 import { LinesField } from "./LinesField";
 import { MapField } from "./MapField";
 import { MoneyField } from "./MoneyField";
+import { MonthsField } from "./MonthsField";
 import { NumberField } from "./NumberField";
 import { ObjectField } from "./ObjectField";
 import { PhoneField } from "./PhoneField";
@@ -144,6 +145,8 @@ function SchemaField({ schema, path, value, optional, bare = false }: SchemaFiel
     }
     case "lines":
       return <LinesField {...common} />;
+    case "months":
+      return <MonthsField {...common} />;
     case "repeater":
       return <RepeaterField {...common} node={node} />;
     case "icon":

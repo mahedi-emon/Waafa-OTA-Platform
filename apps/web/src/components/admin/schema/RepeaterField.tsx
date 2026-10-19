@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { valueWords } from "@/lib/admin/blueprints/historyText";
 import { childPattern } from "@/lib/admin/blueprints/paths";
 import { defaultFor, resolve, type JsonSchema, type Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
@@ -50,20 +51,28 @@ function RepeaterField({ path, node, value, optional }: RepeaterFieldProps) {
     () => new Set(items.length > 4 ? [] : stable.keys),
   );
 
+  // Itinerary days are numbered by their place in the list ("Day 2 · Istanbul old city").
+  const numbered = Object.entries(editor.blueprint.fields).some(
+    ([pattern, field]) => pattern.startsWith(`${meta.pattern}_`) && field.auto === "dayNumber",
+  );
   const summaryOf = (item: unknown, index: number): string => {
     const record = item && typeof item === "object" ? (item as Record<string, unknown>) : null;
     const key = meta.field.summary;
     const raw = key && record ? record[key] : typeof item === "string" ? item : undefined;
-    const choice = key
-      ? editor.blueprint.fields[childPattern(meta.pattern, key)]?.choices
-      : undefined;
+    const filled = typeof raw === "number" || (typeof raw === "string" && raw.trim() !== "");
+    // Dates, money and choices read as the site shows them ("12 Nov 2026", "৳59,900", "Twin sharing").
     const words =
-      typeof raw === "string" && raw.trim()
-        ? (choice?.find((option) => option.value === raw)?.label ?? raw)
-        : typeof raw === "number"
+      filled && key
+        ? valueWords(editor.blueprint, childPattern(meta.pattern, key), raw, {
+            on: t("on"),
+            off: t("off"),
+          })
+        : filled
           ? String(raw)
           : "";
-    return words || t("itemN", { thing, n: index + 1 });
+    const counter = t("itemN", { thing, n: index + 1 });
+    if (!words) return counter;
+    return numbered ? `${counter} · ${words}` : words;
   };
 
   const setList = (next: unknown[]) => editor.change(path, next);

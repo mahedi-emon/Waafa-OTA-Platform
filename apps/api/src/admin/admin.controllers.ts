@@ -269,6 +269,7 @@ export class AdminContentController {
       id(recordId),
       input.auditId,
       input.version,
+      input.side,
     );
   }
 
@@ -335,7 +336,7 @@ export class AdminContentController {
   restoreSetting(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Body() body: unknown) {
     const input = parseInput(ContentRestoreInputSchema, body);
     const setting = this.content.settingKey(key);
-    return this.content.restore(staff, setting, setting, input.auditId, input.version);
+    return this.content.restore(staff, setting, setting, input.auditId, input.version, input.side);
   }
 }
 

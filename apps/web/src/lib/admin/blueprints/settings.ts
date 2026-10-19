@@ -63,6 +63,7 @@ export const contactSettingsBlueprint = {
     officeHours_opensAt: { widget: "timeOfDay" },
     officeHours_closesAt: { widget: "timeOfDay" },
     officeHours_days: { widget: "weekdays" },
+    officeHoursText: { wide: true },
     socials: { widget: "repeater", summary: "network", wide: true },
     socials_network: { choices: "network" },
   },

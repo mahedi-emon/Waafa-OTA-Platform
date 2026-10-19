@@ -44,15 +44,27 @@ function EditorSection({ section }: EditorSectionProps) {
         {section.fields.map((name) => {
           const field = editor.blueprint.fields[name];
           if (field?.hidden) return null;
-          const wide = isWide(field);
+          const wide = isWide(field, resolve(root.properties?.[name] ?? {}, root));
+          // A group named like its section (Office hours in Office hours) draws without a second title.
+          const plainGroup = field?.widget === "group" && field.label === section.title;
           return (
             <div key={name} className={cn("min-w-0", wide && "md:col-span-2")}>
-              <SchemaField
-                schema={root.properties?.[name] ?? {}}
-                path={[name]}
-                value={record[name]}
-                optional={!required.has(name)}
-              />
+              {plainGroup ? (
+                <ObjectField
+                  schema={resolve(root.properties?.[name] ?? {}, root)}
+                  path={[name]}
+                  value={record[name]}
+                  optional={!required.has(name)}
+                  bare
+                />
+              ) : (
+                <SchemaField
+                  schema={root.properties?.[name] ?? {}}
+                  path={[name]}
+                  value={record[name]}
+                  optional={!required.has(name)}
+                />
+              )}
             </div>
           );
         })}

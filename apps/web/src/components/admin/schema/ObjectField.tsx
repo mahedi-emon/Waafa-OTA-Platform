@@ -85,7 +85,7 @@ function ObjectField({ schema, path, value, optional, bare = false }: ObjectFiel
       {visible.map((name) => {
         const pattern = childPattern(base, name);
         const field = editor.blueprint.fields[pattern];
-        const wide = isWide(field);
+        const wide = isWide(field, resolve(schema.properties?.[name] ?? {}, editor.root));
         return (
           <div key={name} className={cn("min-w-0", wide && "md:col-span-2")}>
             <SchemaField

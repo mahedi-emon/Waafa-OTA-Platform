@@ -26,6 +26,7 @@ export type WidgetKind =
   | "reference"
   | "references"
   | "tags"
+  | "months"
   | "lines"
   | "repeater"
   | "icon"
@@ -78,6 +79,11 @@ export type ReferenceSpec = {
   embed?: Record<string, "value" | "title" | "image">;
   /** Also fills sibling fields from the chosen record (a baggage rule's airline name from its code). */
   fill?: Record<string, "value" | "title" | "image">;
+  /**
+   * The choices are the different values of this field across the list's records (a package's destination group),
+   * and staff can add a new one by typing its name.
+   */
+  distinct?: string;
 };
 
 export type FieldSpec = {

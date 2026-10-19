@@ -76,6 +76,9 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
       (status.state === "none" && !state.isNew));
   const missing = blueprint.workflow ? missingForPublish(blueprint, record) : [];
   const required = new Set(editor.root.required ?? []);
+  // Seeded records were "edited by" the setup, which isn't a person.
+  const editedBy =
+    state.saved.updatedBy && state.saved.updatedBy !== "seed" ? state.saved.updatedBy : null;
   const reason =
     status.state === "new"
       ? t("status.newReason")
@@ -128,10 +131,10 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
         ) : null}
         <p className="mt-3 border-t border-mist-100 pt-3 text-[13px] text-mist-600">
           {state.saved.updatedAt && !state.isNew
-            ? state.saved.updatedBy
+            ? editedBy
               ? t.rich("side.edited", {
                   when: () => <RelativeTime iso={state.saved.updatedAt ?? ""} />,
-                  name: state.saved.updatedBy,
+                  name: editedBy,
                 })
               : t.rich("side.editedNoName", {
                   when: () => <RelativeTime iso={state.saved.updatedAt ?? ""} />,
@@ -179,28 +182,35 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
             id="side-checklist"
             className="mb-3 text-[13px] font-semibold tracking-wide text-mist-500 uppercase"
           >
-            {t("side.checklist")}
+            {t("side.publishing")}
           </h2>
-          {missing.length === 0 ? (
-            <p className="flex items-center gap-2 text-[14px] font-medium text-success-700">
-              <CircleCheck aria-hidden="true" className="size-4" />
-              {t("side.checklistReady")}
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-2">
-              {missing.map((label) => (
-                <li key={label} className="flex items-start gap-2 text-[14px] text-ink-900">
-                  <CircleDashed
-                    aria-hidden="true"
-                    className="mt-0.5 size-4 shrink-0 text-warning-800"
-                  />
-                  {t("side.missing", { field: label })}
-                </li>
-              ))}
-            </ul>
-          )}
+          {status.state === "new" || status.state === "draft" ? (
+            <>
+              <p className="mb-2 text-[13.5px] font-semibold text-navy-900">
+                {t("side.checklist")}
+              </p>
+              {missing.length === 0 ? (
+                <p className="flex items-center gap-2 text-[14px] font-medium text-success-700">
+                  <CircleCheck aria-hidden="true" className="size-4" />
+                  {t("side.checklistReady")}
+                </p>
+              ) : (
+                <ul className="flex flex-col gap-2">
+                  {missing.map((label) => (
+                    <li key={label} className="flex items-start gap-2 text-[14px] text-ink-900">
+                      <CircleDashed
+                        aria-hidden="true"
+                        className="mt-0.5 size-4 shrink-0 text-warning-800"
+                      />
+                      {t("side.missing", { field: label })}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ) : null}
           {!state.isNew && status.state !== "draft" ? (
-            <div className="mt-4 flex flex-col gap-2 border-t border-mist-100 pt-3">
+            <div className="flex flex-col gap-2">
               {status.state === "live" ? (
                 <Button
                   type="button"

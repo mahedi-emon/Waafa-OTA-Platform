@@ -15,7 +15,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { slugify, titleCase } from "@/lib/admin/blueprints/slug";
 import type { Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
 import { loadOptions, useContentOptions } from "./useContentOptions";
@@ -46,10 +48,34 @@ function ReferenceField({
   const meta = useField(path);
   const t = useTranslations("Admin.editor.widgets.reference");
   const [open, setOpen] = useState(false);
+  const [draftName, setDraftName] = useState("");
   const ref = meta.field.ref;
-  const options = useContentOptions(ref?.key);
+  const loaded = useContentOptions(ref?.key);
   if (!ref) return null;
-  const nouns = ref.nouns;
+  const distinct = ref.distinct;
+  // A group key (a package's destination): the choices are the values other records already use.
+  const options = distinct
+    ? {
+        status: loaded.status,
+        items: [
+          ...new Set(
+            loaded.items
+              .map((option) => option.values[distinct])
+              .filter((item): item is string => typeof item === "string" && item !== ""),
+          ),
+        ]
+          .sort()
+          .map((item): ContentOption => ({
+            id: item,
+            title: titleCase(item),
+            sample: false,
+            values: {},
+          })),
+      }
+    : loaded;
+  const nouns = distinct
+    ? { one: meta.label.toLowerCase(), other: meta.label.toLowerCase() }
+    : ref.nouns;
 
   const valueOf = (option: ContentOption) =>
     ref.value ? (option.values[ref.value] ?? option.id) : option.id;
@@ -142,7 +168,11 @@ function ReferenceField({
           />
           <span className="min-w-0 truncate text-[15px] font-semibold text-navy-900">
             {single.option?.title ??
-              (options.status === "ready" ? t("missing", { value: single.current }) : "…")}
+              (distinct
+                ? titleCase(single.current)
+                : options.status === "ready"
+                  ? t("missing", { value: single.current })
+                  : "…")}
           </span>
           {single.option ? badge(single.option) : null}
         </span>
@@ -250,19 +280,46 @@ function ReferenceField({
                   })}
                 </CommandGroup>
               </CommandList>
-              <div className="border-t border-mist-100 p-2">
-                <a
-                  href={`/secure-admin-control/content/${ref.key}/new`}
-                  target="_blank"
-                  rel="noopener"
-                  className="flex min-h-10 items-center gap-2 rounded-lg px-2 text-[14px] font-semibold text-brand-700 hover:bg-electric-50 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+              {distinct ? (
+                <form
+                  className="flex items-center gap-2 border-t border-mist-100 p-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const key = slugify(draftName, 60);
+                    if (!key) return;
+                    meta.change(key);
+                    setDraftName("");
+                    setOpen(false);
+                  }}
                 >
-                  <Plus aria-hidden="true" className="size-4" />
-                  {t("create", { thing: nouns.one })}
-                  <ExternalLink aria-hidden="true" className="ml-auto size-3.5 text-mist-500" />
-                </a>
-                <p className="px-2 pt-1 text-[12.5px] text-mist-600">{t("createHint")}</p>
-              </div>
+                  <Input
+                    value={draftName}
+                    aria-label={t("addNew", { thing: nouns.one })}
+                    placeholder={t("addNew", { thing: nouns.one })}
+                    onChange={(event) => setDraftName(event.target.value)}
+                    // cmdk listens for keys on its root; typing here shouldn't move its selection.
+                    onKeyDown={(event) => event.stopPropagation()}
+                    className="h-10"
+                  />
+                  <Button type="submit" size="sm" variant="soft" disabled={!slugify(draftName, 60)}>
+                    {t("add")}
+                  </Button>
+                </form>
+              ) : (
+                <div className="border-t border-mist-100 p-2">
+                  <a
+                    href={`/secure-admin-control/content/${ref.key}/new`}
+                    target="_blank"
+                    rel="noopener"
+                    className="flex min-h-10 items-center gap-2 rounded-lg px-2 text-[14px] font-semibold text-brand-700 hover:bg-electric-50 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+                  >
+                    <Plus aria-hidden="true" className="size-4" />
+                    {t("create", { thing: nouns.one })}
+                    <ExternalLink aria-hidden="true" className="ml-auto size-3.5 text-mist-500" />
+                  </a>
+                  <p className="px-2 pt-1 text-[12.5px] text-mist-600">{t("createHint")}</p>
+                </div>
+              )}
             </Command>
           </PopoverContent>
         </Popover>

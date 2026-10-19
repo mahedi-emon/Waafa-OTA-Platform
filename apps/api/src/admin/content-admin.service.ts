@@ -27,7 +27,7 @@ const BORN_ACTIONS = new Set(["content.create", "content.duplicate"]);
 const RESTORABLE_ACTIONS = [...RECORD_ACTIONS, "settings.update", "settings.restore"];
 const HISTORY_LIMIT = 60;
 /** Record fields other records point at (a package's destination slug, an airline's code, a category's level). */
-const OPTION_VALUE_FIELDS = ["id", "slug", "code", "key", "iata", "level"];
+const OPTION_VALUE_FIELDS = ["id", "slug", "code", "key", "iata", "level", "destinationSlug"];
 
 const orderOf = (data: unknown): number | undefined => {
   const value = (data as { order?: unknown } | null)?.order;
@@ -427,6 +427,7 @@ export class AdminContentService {
     id: string,
     auditId: string,
     version?: number,
+    side: "before" | "after" = "after",
   ) {
     assertContentAccess(staff, key);
     const entry = await this.prisma.auditLog.findFirst({
@@ -437,13 +438,15 @@ export class AdminContentService {
         OR: await this.segments(key, id),
       },
     });
-    if (!entry || entry.after === null) throw problems.notFound("That version is not available");
-    if (CONTENT_MODEL[key].kind === "singleton")
-      return this.writeSetting(staff, key, entry.after, version, "settings.restore");
-    const collection = key as CollectionKey;
-    if (!this.idIn(collection, entry.after))
+    // "before" undoes a change: the version it replaced (the only way back past the first saved change).
+    const data = side === "before" ? entry?.before : entry?.after;
+    if (!entry || data === null || data === undefined)
       throw problems.notFound("That version is not available");
-    return this.update(staff, collection, id, entry.after, version, "content.restore");
+    if (CONTENT_MODEL[key].kind === "singleton")
+      return this.writeSetting(staff, key, data, version, "settings.restore");
+    const collection = key as CollectionKey;
+    if (!this.idIn(collection, data)) throw problems.notFound("That version is not available");
+    return this.update(staff, collection, id, data, version, "content.restore");
   }
 
   /** A copy with "(copy)" in its title and a free id, saved as a hidden draft and never Sample. */

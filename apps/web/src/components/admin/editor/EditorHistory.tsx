@@ -1,22 +1,10 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { History, RotateCcw } from "lucide-react";
+import { History } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ContentHistorySchema, type ContentHistoryEntry } from "@waafa/shared";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { RelativeTime } from "@/components/admin/RelativeTime";
 import { useRouter } from "@/i18n/navigation";
 import { changesBetween } from "@/lib/admin/blueprints/diff";
@@ -25,6 +13,7 @@ import type { ResolvedBlueprint } from "@/lib/admin/blueprints/types";
 import { restoreVersion } from "@/lib/admin/contentActions";
 import { formatDhakaDateTime } from "@/lib/admin/format";
 import { markSignedOut } from "../sessionStore";
+import { RestoreVersionButton } from "./RestoreVersionButton";
 
 type EditorHistoryProps = {
   contentKey: string;
@@ -81,9 +70,9 @@ function EditorHistory({ contentKey, recordId, blueprint, version, dirty }: Edit
     off: t("off"),
   };
 
-  const restore = (entry: ContentHistoryEntry) =>
+  const restore = (entry: ContentHistoryEntry, side: "before" | "after") =>
     startTransition(async () => {
-      const result = await restoreVersion(contentKey, recordId, entry.id, version);
+      const result = await restoreVersion(contentKey, recordId, entry.id, version, side);
       if (!result.ok) {
         if (result.problem.status === 401) markSignedOut();
         else toast.error(result.problem.status === 409 ? t("unsavedFirst") : t("failed"));
@@ -157,34 +146,24 @@ function EditorHistory({ contentKey, recordId, blueprint, version, dirty }: Edit
                       {t("current")}
                     </span>
                   ) : entry.after !== undefined ? (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          disabled={pending || dirty}
-                          title={dirty ? t("unsavedFirst") : undefined}
-                        >
-                          <RotateCcw aria-hidden="true" className="size-4" />
-                          {t("restore")}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            {t("restoreTitle", { time: formatDhakaDateTime(entry.at) })}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>{t("restoreBody")}</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => restore(entry)}>
-                            {t("restoreConfirm")}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <RestoreVersionButton
+                      label={t("restore")}
+                      title={t("restoreTitle", { time: formatDhakaDateTime(entry.at) })}
+                      disabled={pending || dirty}
+                      {...(dirty ? { reason: t("unsavedFirst") } : {})}
+                      onConfirm={() => restore(entry, "after")}
+                    />
+                  ) : null}
+                  {/* The oldest change can also be undone: the version it replaced (seeded records have no
+                      earlier entry). */}
+                  {index === loaded.entries.length - 1 && !created && entry.before !== undefined ? (
+                    <RestoreVersionButton
+                      label={t("restoreBefore")}
+                      title={t("restoreBeforeTitle", { time: formatDhakaDateTime(entry.at) })}
+                      disabled={pending || dirty}
+                      {...(dirty ? { reason: t("unsavedFirst") } : {})}
+                      onConfirm={() => restore(entry, "before")}
+                    />
                   ) : null}
                 </div>
                 {sentences.length > 0 ? (
