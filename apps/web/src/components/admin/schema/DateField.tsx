@@ -4,12 +4,12 @@ import { useState } from "react";
 import { CalendarDays } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { todayInDhaka } from "@/lib/admin/blueprints/automatic";
 import { formatPlainDate } from "@/lib/admin/format";
 import type { Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
+import { LazyCalendar as Calendar } from "./LazyCalendar";
 import { useField } from "./useField";
 
 type DateFieldProps = { path: Path; value: unknown; optional: boolean; nullable: boolean };

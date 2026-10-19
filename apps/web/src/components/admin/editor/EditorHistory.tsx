@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { History } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ContentHistorySchema, type ContentHistoryEntry } from "@waafa/shared";
+import type { ContentHistory, ContentHistoryEntry } from "@waafa/shared";
 import { RelativeTime } from "@/components/admin/RelativeTime";
 import { useRouter } from "@/i18n/navigation";
 import { changesBetween } from "@/lib/admin/blueprints/diff";
@@ -49,7 +49,8 @@ function EditorHistory({ contentKey, recordId, blueprint, version, dirty }: Edit
       .then(async (response) => {
         if (response.status === 401) markSignedOut();
         if (!response.ok) throw new Error(String(response.status));
-        const parsed = ContentHistorySchema.parse(await response.json());
+        // The admin route checks the shape on the server, so zod stays out of the browser.
+        const parsed = (await response.json()) as ContentHistory;
         if (live) setLoaded({ status: "ready", entries: parsed.entries });
       })
       .catch(() => {

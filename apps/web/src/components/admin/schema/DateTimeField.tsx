@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CalendarClock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
@@ -18,6 +17,7 @@ import { formatDhakaDateTime } from "@/lib/admin/format";
 import { fromLocalInput, toLocalInput, type Path } from "@/lib/admin/schema";
 import { timesOfDay } from "@/lib/admin/time";
 import { FieldShell } from "./FieldShell";
+import { LazyCalendar as Calendar } from "./LazyCalendar";
 import { useField } from "./useField";
 
 type DateTimeFieldProps = { path: Path; value: unknown; optional: boolean; nullable: boolean };

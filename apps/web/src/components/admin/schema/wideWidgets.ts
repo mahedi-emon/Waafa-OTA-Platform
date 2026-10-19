@@ -29,6 +29,8 @@ export function isWide(field: ResolvedField | undefined, node?: JsonSchema): boo
   if (field.wide || WIDE.has(field.widget)) return true;
   switch (field.widget) {
     case "text":
+      // Web addresses are long and must be read whole.
+      if (node?.format === "uri") return true;
       return typeof node?.maxLength === "number" && node.maxLength > SHORT_TEXT;
     case "choice":
       // Radio cards need room; two options fit side by side in half the width.
