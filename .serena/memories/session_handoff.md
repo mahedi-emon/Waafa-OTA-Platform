@@ -1,21 +1,23 @@
 # Session handoff (update at every session end)
-Updated 2026-10-14 16:30 Dhaka.
-STATE: site LIVE on https://waafasworld.com (VPS, Docker Hub images, owner deploys with `sh deploy.sh` in /opt/waafa
-after the Docker images workflow is green). Merged 13-14 Oct: #177 visa route /visa + seed patch, #180 store price on
-request + visa price ranges, #182 second office number (extraPhones + seed patch), #186 every published page indexable
-(Sample no longer noindex, D180). PR #187 open: #184 search titles, services/contact points in Home JSON-LD,
-/llms.txt, home SEO seed patch; #185 photos q65 / logo q90, deviceSizes to 2560, cache 31 days, og:image through the
-optimiser at 1200 px, shipped JPEGs mozjpeg q80.
-SEED PATCHES (apps/api/src/seed/seedPatches.ts, run on API start, recorded in setting `_seedPatches`):
-2026-10-13-visa-route, 2026-10-14-second-phone, 2026-10-14-home-seo. Never edit a shipped patch; add a new id.
-CLOUD SESSIONS: commit with `git commit --author="Mahedi Hasan Emon <mahedi.emon62@gmail.com>"`; after each
-squash-merge, merge origin/main into the designated branch (take our side when main equals our commit), no force-push.
-TRACKER decisions table: insert after the line starting `| D<n> | <date>` (not the `| Decision | D<n> |` row).
-OWNER TODO: deploy after #187; Search Console: request indexing (/, /about-us, /visa, /tour-packages, /flights,
-/hotels, /contact, /visa/thailand) and resubmit sitemap; Google Business Profile (same name, address, both numbers,
-website, photos, reviews); Bing Webmaster import; Facebook page website link; Admin: Show price per product, visa
-price ranges, replace Sample records with real ones (the Sample label then goes).
-NEXT: 1) perf: Home 217 KB / Flights 259 KB first-load JS; 2) Bangla P1 (/bn, hreflang); 3) #71 rest.
-Gotchas: live site is unreachable from cloud containers (proxy 403); turbo typecheck can fail with "Exec format
-error" (run tsc per package); local Postgres for API tests: /tmp/claude-0/pg (pg_ctl -o '-p 5433' as postgres);
-Playwright: executablePath /opt/pw-browsers/chromium; budget e2e can flake under load (rerun alone).
+Updated 2026-10-19 18:20 Dhaka.
+STATE: site LIVE on https://waafasworld.com (owner deploys `sh deploy.sh` after the Docker images workflow is green;
+never touch the VPS or its .env). Repo is PRIVATE now: Actions minutes limited, keep path filters, no needless reruns.
+CURRENT EPIC: D0 Admin redesign #201 (see `mem:admin_redesign`). R0 #190 done on branch docs/190-admin-audit-plan
+(ADMIN.md, waafa-admin design system, TRACKER D183–D187). NEXT: R1 #191 (shell, sidebar IA, top bar, Ctrl+K, + New,
+notifications, breadcrumbs, page header, tokens + StatusChip, states, sign-in), then R2 #192, R3 #193.
+LOCAL DEV STACK (this Windows machine, ~1 GB free RAM):
+- PostgreSQL: docker container `waafa-dev-pg` (postgres:16, port 5433, user/pass waafa/waafa, db waafa_dev);
+  `docker start waafa-dev-pg` if stopped. Do NOT touch the owner's local test stack containers (waafa-api-1, …).
+- Env (CI-style test values, nothing secret): DATABASE_URL=postgresql://waafa:waafa@localhost:5433/waafa_dev,
+  JWT_SECRET=dev-jwt-secret-0123456789-0123456789-abcdef, REVALIDATE_SECRET=dev-revalidate-secret-0123456789-abc,
+  INTAKE_KEY=WAAFA_INTAKE_KEY=dev-intake-key-0123456789-abcdef, WEB_ORIGINS=http://localhost:3100,
+  WEB_REVALIDATE_URL=http://localhost:3100/api/revalidate, SEED_ADMIN_EMAIL=owner@example.com,
+  SEED_ADMIN_PASSWORD=dev-owner-password-123, PROVIDER_SECRET_KEY=dev-provider-secret-key-0123456789-abcdef,
+  WAAFA_API_URL=http://localhost:4000, NEXT_PUBLIC_SITE_URL=http://localhost:3100, MEDIA_DIR=H:/Waafa-OTA-Platform/.media.
+- API: `pnpm --filter @waafa/api migrate && seed && start` (port 4000). Web: `next build` then `next start -p 3100`
+  (next dev reloads in a loop on H: and is very slow; don't use it for screenshots). Sample inbox data was posted
+  through the public intake (15 leads, 5 orders, 4 proofs, 3 feedback).
+- Admin screenshots: test-results/admin-audit/before/*.png (gitignored), capture script test-results/admin-audit/capture.js.
+OWNER TODO (unchanged): Search Console requests, Google Business Profile, Bing, Facebook link, replace Sample records.
+Gotchas: auto-mode classifier blocks creating staff users in other databases and broad rm; Bash heredocs with quotes
+break (write scripts with Write); gh needs PATH += /c/Program Files/GitHub CLI.

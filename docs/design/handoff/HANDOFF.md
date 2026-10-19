@@ -43,7 +43,7 @@ Board names are the file names in `project/` (phone versions end in `-m`). P0 sh
 | More pages | About, Contact, Faqs, Blog, BlogPost, Refund, Privacy, Terms, Baggage, Emi, OfflinePay (+ -m, -sent) | Rich text from Admin, FAQPage markup | P0 |
 | `/track`, `/login`, `/account` | Track, Track-nf, Login, Login-otp, Login-err, Account | Phone OTP sign-in | P1 |
 | 404, 500, offline, maintenance | Error, Error500, Offline, Maintenance, States | Shared empty, error and loading patterns | P0 |
-| `/admin/*` | Admin* (52 screens) | shadcn Sidebar, Data Table, Command, Charts; never indexed | P0 |
+| `/secure-admin-control/*` | `docs/design/ADMIN.md` (supersedes the Admin* boards, D183) | shadcn Sidebar, Data Table, Command, Charts, Sheet; 21st.dev picks in ADMIN.md §14; never indexed | P0 |
 
 ## Components: shadcn/ui first, 21st.dev where it adds polish
 

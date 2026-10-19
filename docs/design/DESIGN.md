@@ -238,7 +238,7 @@ All primitives are shadcn/ui (Radix) restyled with these tokens; effects come fr
   navy pill with a gold triangle and white text.
 - **Feedback states.** Skeletons at the final size with a shimmer; empty states with one line and one action; error states
   that say what happened and how to fix it; toasts via Sonner (3 s, errors persist).
-- **Data (admin).** shadcn Data Table, Command (Ctrl+K), Sidebar on midnight, Charts with the five chart tokens.
+- **Data (admin).** shadcn Data Table, Command (Ctrl+K), Sidebar on midnight, Charts with the five chart tokens. The admin follows `docs/design/ADMIN.md` (supersedes the Admin boards, D183).
 
 ## 7. Do's and Don'ts
 
@@ -325,6 +325,7 @@ Every visual deviation from the prototype, with the reason (correction 11: the p
 | Hero media shows only the video, the rotating chip and the credit | Adds a flag before each rotating place, a ribbon line under the headline and two static radial glows behind it (the group fare card tried in #157 was removed in #163 at the owner's request: the video stays clear) | Owner request 13 Oct: a more attractive hero; flags come from Admin (Destinations, Airports) | D169 |
 | Info and detail pages end with their own content | An "Explore more" block (h2 + up to four groups of rounded text links: visa by country, tour packages, flights from Dhaka, visa guides, travel tips) on Hotels, Plan my trip, Group fares, Contact, Feedback, EMI, Offline payment, Baggage, visa country, visa guide and gallery album pages; four links per group on phones, six from 768 px | SEO part 3 (#173): these pages had one to four links to the rest of the site; links come from Admin records |
 | Home eyebrow "Waafa Tours and Travel" is a paragraph above the h1 | The eyebrow is the first line of the h1, styled exactly as before | SEO part 3 (#173): the page's main heading names the company |
+| Admin* boards (52 screens): flat sidebar, schema-driven editors, status dropdowns, image address fields | The admin redesign in `docs/design/ADMIN.md` (epic #201): grouped sidebar with count badges, plain-word editors built from blueprints, statuses set by actions and dates, upload-everywhere media, one DataTable, inbox pattern, website builder. The Admin boards are no longer the floor | Owner feedback 19 Oct: staff found the admin confusing and could not control the website section by section | D183 |
 
 ## Known gaps
 - Logo vectors: the lockup uses the supplied PNG cut-outs until the original SVG/AI arrives (owner question).
