@@ -3,6 +3,7 @@ import { editorSchema } from "../editorSchema";
 import { applyAutomatic, camelKey, nowInDhaka, todayInDhaka } from "./automatic";
 import { buildResolvedBlueprint } from "./build";
 import { changesBetween } from "./diff";
+import { statusOf } from "./display";
 import { dottedOf, pathFromDotted, pathsMatching, patternOf } from "./paths";
 import { viewOfProblem } from "./problems";
 import { freeId, slugify } from "./slug";
@@ -263,5 +264,26 @@ describe("problems", () => {
       ["title", { code: "required" }],
       ["slug", { code: "invalid" }],
     ]);
+  });
+});
+
+describe("status", () => {
+  const resolved = (key: Parameters<typeof editorSchema>[0]) =>
+    buildResolvedBlueprint(key, editorSchema(key), words);
+
+  it("follows the workflow for records with drafts", () => {
+    const packages = resolved("tourPackages");
+    expect(statusOf(packages, { status: "published" }, false)).toEqual({ state: "live" });
+    expect(statusOf(packages, { status: "archived" }, false)).toEqual({ state: "archived" });
+    expect(statusOf(packages, { status: "draft" }, false)).toEqual({ state: "draft" });
+    expect(statusOf(packages, { status: "published" }, true)).toEqual({ state: "new" });
+  });
+
+  it("follows the show switch, else says that every save changes the site", () => {
+    const announcements = resolved("announcements");
+    expect(statusOf(announcements, { enabled: false }, false)).toEqual({ state: "hidden" });
+    expect(statusOf(announcements, { enabled: true }, false)).toEqual({ state: "shown" });
+    expect(statusOf(resolved("faqs"), { onHome: false }, false)).toEqual({ state: "direct" });
+    expect(statusOf(resolved("contactSettings"), {}, false)).toEqual({ state: "direct" });
   });
 });

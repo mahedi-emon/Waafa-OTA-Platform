@@ -46,7 +46,13 @@ async function NewRecord({
       <AdminPageHeader
         back={{ href: `/secure-admin-control/content/${key}`, label: t(`keys.${key}`) }}
         title={te("title", { thing: blueprint.nouns.one })}
-        lead={te("lead")}
+        lead={te(
+          blueprint.workflow
+            ? "lead"
+            : blueprint.visibility.length > 0
+              ? "leadVisibility"
+              : "leadLive",
+        )}
       />
       <NextIntlClientProvider messages={pickMessagePaths(messages, EDITOR_MESSAGES)}>
         <ContentEditor

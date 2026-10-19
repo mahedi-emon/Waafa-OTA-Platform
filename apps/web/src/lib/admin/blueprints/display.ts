@@ -58,11 +58,14 @@ export function headingOf(blueprint: ResolvedBlueprint, value: unknown): string 
 }
 
 export type RecordStatus = {
-  /** Which StatusChip to show. */
-  state: "new" | "draft" | "live" | "archived" | "shown" | "hidden" | "none";
+  /** Which StatusChip to show; "direct" is content without drafts, live as soon as it is saved. */
+  state: "new" | "draft" | "live" | "archived" | "shown" | "hidden" | "direct";
 };
 
-/** The record's status for the side panel: its workflow status, else whether it shows on the site. */
+/**
+ * The record's status for the side panel: its workflow status, else whether it shows on the site, else "direct"
+ * (settings and lists without drafts or a show switch, which change the site with every save).
+ */
 export function statusOf(
   blueprint: ResolvedBlueprint,
   value: unknown,
@@ -77,5 +80,5 @@ export function statusOf(
   }
   const switchName = blueprint.visibility.find((name) => name === "enabled" || name === "visible");
   if (switchName) return { state: record[switchName] === false ? "hidden" : "shown" };
-  return { state: "none" };
+  return { state: "direct" };
 }

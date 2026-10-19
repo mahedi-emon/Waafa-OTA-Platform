@@ -63,7 +63,7 @@ function TagsField({ path, item, value, optional }: TagsFieldProps) {
               type="button"
               aria-label={t("removeTag", { tag: String(tag) })}
               onClick={() => remove(index)}
-              className="flex size-6 cursor-pointer items-center justify-center rounded-full text-mist-600 hover:bg-mist-200 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+              className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-mist-600 hover:bg-mist-200 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
             >
               <X aria-hidden="true" className="size-3.5" />
             </button>
@@ -82,7 +82,8 @@ function TagsField({ path, item, value, optional }: TagsFieldProps) {
             else setText(next);
           }}
           onKeyDown={(event) => {
-            if (event.key === "Enter") {
+            // Enter while an input method is composing picks the word, not a new tag.
+            if (event.key === "Enter" && !event.nativeEvent.isComposing) {
               event.preventDefault();
               add(text);
             } else if (event.key === "Backspace" && text === "" && tags.length > 0) {

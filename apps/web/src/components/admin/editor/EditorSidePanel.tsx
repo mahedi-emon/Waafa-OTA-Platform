@@ -51,6 +51,7 @@ const CHIP = {
   archived: { tone: "neutral", icon: Archive },
   shown: { tone: "success", icon: Eye },
   hidden: { tone: "neutral", icon: EyeOff },
+  direct: { tone: "success", icon: Radio },
 } as const satisfies Record<string, { tone: ChipTone; icon: typeof Pencil }>;
 
 /**
@@ -70,29 +71,13 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
   const status = statusOf(blueprint, savedRecord, state.isNew);
   const where = publicPathOf(blueprint, savedRecord);
   const showView =
-    where &&
-    (status.state === "live" ||
-      status.state === "shown" ||
-      (status.state === "none" && !state.isNew));
+    where && (status.state === "live" || status.state === "shown" || status.state === "direct");
   const missing = blueprint.workflow ? missingForPublish(blueprint, record) : [];
   const required = new Set(editor.root.required ?? []);
   // Seeded records were "edited by" the setup, which isn't a person.
   const editedBy =
     state.saved.updatedBy && state.saved.updatedBy !== "seed" ? state.saved.updatedBy : null;
-  const reason =
-    status.state === "new"
-      ? t("status.newReason")
-      : status.state === "draft"
-        ? t("status.draftReason")
-        : status.state === "live"
-          ? t("status.liveReason")
-          : status.state === "archived"
-            ? t("status.archivedReason")
-            : status.state === "shown"
-              ? t("status.shownReason")
-              : status.state === "hidden"
-                ? t("status.hiddenReason")
-                : undefined;
+  const reason = t(`status.${status.state}Reason`);
 
   return (
     <div className="flex flex-col gap-4">
@@ -106,18 +91,16 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
         >
           {t("side.status")}
         </h2>
-        {status.state !== "none" ? (
-          <div className="flex flex-col gap-2">
-            <StatusChip
-              tone={CHIP[status.state].tone}
-              icon={CHIP[status.state].icon}
-              label={t(`status.${status.state}`)}
-              {...(reason ? { reason } : {})}
-              focusable
-            />
-            {reason ? <p className="text-[13.5px] text-mist-600">{reason}</p> : null}
-          </div>
-        ) : null}
+        <div className="flex flex-col gap-2">
+          <StatusChip
+            tone={CHIP[status.state].tone}
+            icon={CHIP[status.state].icon}
+            label={t(`status.${status.state}`)}
+            reason={reason}
+            focusable
+          />
+          <p className="text-[13.5px] text-mist-600">{reason}</p>
+        </div>
         {showView ? (
           <a
             href={where}
@@ -129,18 +112,21 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
             <ExternalLink aria-hidden="true" className="size-3.5" />
           </a>
         ) : null}
-        <p className="mt-3 border-t border-mist-100 pt-3 text-[13px] text-mist-600">
-          {state.saved.updatedAt && !state.isNew
-            ? editedBy
-              ? t.rich("side.edited", {
-                  when: () => <RelativeTime iso={state.saved.updatedAt ?? ""} />,
-                  name: editedBy,
-                })
-              : t.rich("side.editedNoName", {
-                  when: () => <RelativeTime iso={state.saved.updatedAt ?? ""} />,
-                })
-            : t("side.notSaved")}
-        </p>
+        {/* A new record's chip already says it isn't saved. */}
+        {!state.isNew ? (
+          <p className="mt-3 border-t border-mist-100 pt-3 text-[13px] text-mist-600">
+            {state.saved.updatedAt
+              ? editedBy
+                ? t.rich("side.edited", {
+                    when: () => <RelativeTime iso={state.saved.updatedAt ?? ""} />,
+                    name: editedBy,
+                  })
+                : t.rich("side.editedNoName", {
+                    when: () => <RelativeTime iso={state.saved.updatedAt ?? ""} />,
+                  })
+              : t("side.notSaved")}
+          </p>
+        ) : null}
         {record.sample === true ? (
           <p className="mt-3 rounded-xl bg-warning-50 p-3 text-[13.5px] text-warning-800">
             <span className="font-semibold">{t("side.sample")}.</span> {t("side.sampleNote")}

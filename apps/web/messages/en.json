@@ -3699,7 +3699,9 @@
         "archivedReason": "Hidden from the site and kept for history.",
         "shownReason": "Shown on the site.",
         "hiddenReason": "Hidden from the site.",
-        "newReason": "Not saved yet."
+        "newReason": "Not saved yet.",
+        "direct": "Live",
+        "directReason": "Changes show on the site as soon as you save."
       },
       "side": {
         "status": "Status",
@@ -3981,7 +3983,9 @@
       },
       "new": {
         "title": "New {thing}",
-        "lead": "Fill in the sections, then save. Nothing shows on the site until you publish."
+        "lead": "Fill in the sections, then save a draft or publish. Nothing shows on the site until you publish.",
+        "leadVisibility": "Fill in the sections, then create it. It is live on the site once created, as set under Visibility.",
+        "leadLive": "Fill in the sections, then create it. It is live on the site once created."
       }
     },
     "fieldNames": {

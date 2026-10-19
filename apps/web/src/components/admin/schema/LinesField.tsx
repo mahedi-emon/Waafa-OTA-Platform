@@ -1,10 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ClipboardEvent, ReactNode } from "react";
 import { Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { pasteIntoLines } from "@/lib/admin/lines";
 import type { Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
 import { SortableList } from "./SortableList";
@@ -14,8 +15,8 @@ import { useStableKeys } from "./useStableKeys";
 type LinesFieldProps = { path: Path; value: unknown; optional: boolean };
 
 /**
- * An ordered list of short sentences (inclusions, terms, address lines): one line each, Enter adds the next line,
- * drag or Move to reorder.
+ * An ordered list of short sentences (inclusions, terms, address lines): one row each that grows with its words,
+ * Enter adds the next row, a pasted list becomes rows, drag or Move to reorder.
  */
 function LinesField({ path, value, optional }: LinesFieldProps) {
   const meta = useField(path);
@@ -50,21 +51,44 @@ function LinesField({ path, value, optional }: LinesFieldProps) {
     setLines(next);
   };
 
+  const paste = (index: number, event: ClipboardEvent<HTMLTextAreaElement>) => {
+    const { selectionStart, selectionEnd } = event.currentTarget;
+    const next = pasteIntoLines(
+      lines,
+      index,
+      selectionStart,
+      selectionEnd,
+      event.clipboardData.getData("text"),
+    );
+    if (!next) return;
+    event.preventDefault();
+    const added = next.length - lines.length;
+    for (let offset = 1; offset <= added; offset += 1) stable.insert(index + offset);
+    setLines(next);
+    focusLine(index + added);
+  };
+
   const row = (index: number, handle: ReactNode) => (
-    <div className="flex min-w-0 items-center gap-1">
-      {handle ?? <span aria-hidden="true" className="w-1" />}
-      <Input
+    <div className="flex min-w-0 items-start gap-1">
+      <span className="mt-1 flex shrink-0">
+        {handle ?? <span aria-hidden="true" className="w-1" />}
+      </span>
+      <Textarea
         id={lineId(index)}
+        rows={1}
         value={lines[index] ?? ""}
         aria-label={t("itemN", { thing: meta.label, n: index + 1 })}
         placeholder={t("lines.placeholder")}
         onChange={(event) => {
           const next = [...lines];
-          next[index] = event.target.value;
+          // One sentence per row: a line break dropped or typed in becomes a space.
+          next[index] = event.target.value.replace(/\r?\n/g, " ");
           setLines(next);
         }}
+        onPaste={(event) => paste(index, event)}
         onKeyDown={(event) => {
-          if (event.key === "Enter") {
+          // Enter while a Bangla or other input method is composing picks the word, not a new row.
+          if (event.key === "Enter" && !event.nativeEvent.isComposing) {
             event.preventDefault();
             insertAfter(index);
           } else if (event.key === "Backspace" && (lines[index] ?? "") === "" && lines.length > 1) {
@@ -73,7 +97,7 @@ function LinesField({ path, value, optional }: LinesFieldProps) {
           }
         }}
         onBlur={meta.touch}
-        className="h-11"
+        className="field-sizing-content min-h-11 resize-none py-2.5 leading-snug"
       />
       <Button
         type="button"

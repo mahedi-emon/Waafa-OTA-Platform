@@ -211,22 +211,22 @@ function ReferenceField({
             {chosen.map(({ current, option }) => (
               <li
                 key={current}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-mist-200 bg-white py-1 pr-1 pl-1.5"
+                className="inline-flex min-h-10 max-w-full items-center gap-2 rounded-full border border-mist-200 bg-white py-1 pr-1 pl-1.5"
               >
                 <AdminThumb
                   src={option?.image}
                   name={option?.title ?? current}
                   size="sm"
-                  className="rounded-full"
+                  className="shrink-0 rounded-full"
                 />
-                <span className="text-[14px] font-medium text-navy-900">
+                <span className="min-w-0 text-[14px] leading-snug font-medium text-navy-900">
                   {option?.title ?? current}
                 </span>
                 <button
                   type="button"
                   aria-label={t("clear") + ": " + (option?.title ?? current)}
                   onClick={() => unpick(current)}
-                  className="flex size-7 cursor-pointer items-center justify-center rounded-full text-mist-600 hover:bg-mist-100 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+                  className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-mist-600 hover:bg-mist-100 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
                 >
                   <X aria-hidden="true" className="size-3.5" />
                 </button>
