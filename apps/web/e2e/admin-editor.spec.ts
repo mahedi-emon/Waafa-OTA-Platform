@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Locator, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { collectErrors } from "./errors";
@@ -8,10 +9,11 @@ import { collectErrors } from "./errors";
  * dialog, Duplicate and the labelled lead facts. Uses only visible, labelled controls. API mode only.
  */
 const API = process.env.WAAFA_API_URL ?? "";
+const INTAKE_KEY = process.env.WAAFA_INTAKE_KEY ?? "";
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "owner@example.com";
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "";
 
-test.skip(!API || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");
+test.skip(!API || !INTAKE_KEY || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");
 test.describe.configure({ mode: "serial" });
 
 let signIns = 0;
@@ -234,6 +236,8 @@ test("picking an airline fills in its name too, and the version before comes bac
   const before = (await picker.innerText()).trim();
   await until(() => picker.click(), page.getByPlaceholder("Search airlines"));
   const options = page.getByRole("option");
+  // The choices load when the picker opens.
+  await expect(options.first()).toBeVisible();
   let chosen = "";
   for (let index = 0; index < (await options.count()); index += 1) {
     // An option shows the logo's initials, the airline's name and maybe a Sample badge: the name is the longest.
@@ -265,15 +269,39 @@ test("picking an airline fills in its name too, and the version before comes bac
   expect(errors).toEqual([]);
 });
 
-test("the lead page shows the request as labelled facts, not data", async ({ page }) => {
+test("the lead page shows the request as labelled facts, not data", async ({ page, request }) => {
   test.setTimeout(90_000);
+  // Its own request: Playwright runs this file first (files go in name order), before any spec leaves a lead.
+  const tail = String(Date.now()).slice(-6);
+  const date = new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10);
+  const response = await request.post(`${API}/api/v1/public/leads`, {
+    headers: {
+      "x-intake-key": INTAKE_KEY,
+      "x-client-ip": `10.78.0.${Number(tail) % 200}`,
+      "idempotency-key": randomUUID(),
+    },
+    data: {
+      contact: { name: `Sample Facts Person ${tail}`, phone: `+8801700${tail}` },
+      payload: {
+        module: "flights",
+        search: {
+          tripType: "one-way",
+          legs: [{ from: "DAC", to: "DXB", date }],
+          travellers: { adults: 2, childAges: [], infants: 0 },
+          cabin: "economy",
+        },
+      },
+      consent: true,
+    },
+  });
+  expect(response.status()).toBe(201);
+  const { reference } = (await response.json()) as { reference: string };
+
   await signIn(page);
   await page.goto("/secure-admin-control/leads");
-  await page
-    .getByRole("link", { name: /^(FLT|HTL|PKG|CTR|VSA|PRN|TRD|CNT|EMI|QTE)-/ })
-    .first()
-    .click();
+  await page.getByRole("link", { name: reference }).first().click();
   await expect(page.getByRole("heading", { name: "What they asked for" })).toBeVisible();
+  await expect(page.getByText(/Dhaka \(DAC\)/).first()).toBeVisible();
   await expect(page.getByRole("button", { name: /raw|json/i })).toHaveCount(0);
   await expect(page.locator("pre")).toHaveCount(0);
 });
