@@ -162,6 +162,9 @@ with a link to its editor (R7).
   editors 1200 px (form column ≤ 720 px + rail 320 px).
 - Table rows 44 px (desktop compact), 56 px with a thumbnail; phone cards ≥ 64 px with 44 px targets.
 - Form field height 44 px; gap 20 px between fields, 32 px between sections.
+- Touch: every control takes touches over at least 44 × 44 px. Compact ones (38 px buttons, chips, drag handles,
+  remove buttons, breadcrumbs) keep their look and get an invisible `::after` hit area sized so it never reaches a
+  neighbour; a `::after` measures from inside a 1 px border, so bordered chips need 3 px, not 2.
 - Radius: inputs and buttons 12 px (pill for primary actions and chips), panels 16 px, sheets 20 px.
 - Elevation: panels flat with a hairline; popovers and sheets `shadow-lg` navy-tinted; nothing floats without a reason.
 - Icons: lucide 16 px in tables and chips, 18 px in buttons, 20 px in the sidebar; stroke 1.75.
@@ -195,6 +198,10 @@ link opens the full editor. Below 768 px rows become cards.
 - Left: section navigation (sticky; check marks for complete sections, a dot for missing required fields). Purpose-built
   editors use the same rail as steps (Basics → Photos → …); any step is reachable at any time.
 - Centre: one column of sections; each section has a title, a one-line description and fields with labels and help.
+  A name shows once: the only field of a section named like it ("Delivery zones" in Delivery zones) keeps its label
+  for screen readers only, a group named like its section draws without a second title, and a section with more
+  fields never shares its name with one of them (blueprint unit test). Long section names wrap to two lines in the
+  rail.
 - Right rail (≥ 1280 px; below that it becomes the top of the form): **Status** chip with its reason, Visibility
   (Publish now / Schedule, Show on website), Preview and View on site, the **publish checklist**, the SEO snippet
   preview, "Edited 5 min ago by Rafi", History, Duplicate, Move to Trash.
@@ -276,15 +283,53 @@ order).
 
 ## 7. Blueprints (form engine v2, R2)
 
-- One typed blueprint per `CONTENT_MODEL` key in `apps/web/src/lib/admin/blueprints/<key>.ts`, built on the generic
-  `SchemaEditor` (the engine is not forked).
-- A blueprint declares: nouns ("tour package", "tour packages"), the one-line description and where it shows, the
-  public URL builder (View on site), title and thumbnail getters (lists, pickers, Ctrl+K), sections (tabs or steps),
-  field order, labels, help, widget per field and its options, hidden and automatic fields, publish requirements, and
-  the list columns and filters.
-- Fields not in a blueprint go to **Advanced** (Super Admin only). Unit tests: every key has a blueprint; every required
-  schema field is reachable in a section or automatic; every label is a plain-language string (no camelCase, no "ID").
+- One typed blueprint per `CONTENT_MODEL` key, grouped by area in `apps/web/src/lib/admin/blueprints/<group>.ts`
+  (settings, home, content, travel, visa, shop) and listed in `registry.ts` as `Record<ContentKey, Blueprint>`, so a
+  missing key fails the build (D193). The engine is the generic schema widgets in `components/admin/schema/`
+  (`SchemaField` picks a widget per field); `components/admin/editor/ContentEditor` is the v2 shell on top. Not forked.
+- Blueprints are plain data (D194): sections, the widget and options per field, automatic rules (id from the title,
+  item ids and keys, today / now, day numbers, reading time, a category's level, list order), references
+  (`ref: { key, value, embed, fill }`), visibility fields for the side panel, the public address
+  (`/tour-packages/{slug}`, or one per record id), the editor heading and the publish requirements. Fields are named by
+  pattern: names joined with `_`, list positions left out (`prices_price`), a list item itself is `<list>_item`.
+- Words live in messages, never in blueprints: `Admin.blueprints.<key>` (nouns, intro, section titles, record-specific
+  labels and help), then the shared `Admin.fieldNames`, `Admin.fieldHelp` and `Admin.choices.<set>`. The server
+  resolves them (`resolveBlueprint`) and the editor gets a `ResolvedBlueprint` as props; widget chrome comes from
+  `Admin.editor` through a scoped provider.
+- Fields not in a section go to **Advanced** (Super Admin only, with the record as JSON). Unit tests
+  (`blueprints.test.ts`): every key has a blueprint; it names only fields its schema has; every required top-level
+  field is in a section, in Visibility or automatic; nothing is left for Advanced; every visible label and choice has a
+  plain-language message (no camelCase, no "ID", brand spellings allowed).
 - Small fixed forms (sign-in, invite user, close lead, convert to booking) use React Hook Form + zod with shadcn Field.
+
+### 7.1 What R2 shipped
+- Widgets: text and long text with counters, number with − / +, money (৳, lakh grouping, VAT included), slug (follows
+  the title until edited, full address, warning on live records), date and date-time (calendar, Today / Now / Clear,
+  Asia/Dhaka), time of day, weekdays (Saturday first), switch, choice (radio cards up to six, a list above), several
+  choices (chips), tags, lines (one sentence per row that grows with its words, Enter adds the next, a pasted list
+  becomes rows), repeater (cards with a summary line, fold,
+  drag with dnd-kit loaded after hydration, Move up / down, Duplicate, Remove with Undo), reference picker (search,
+  thumbnails, Sample and Draft badges, several at once, "New …" in a new tab), icon picker (only icons the site
+  draws), colour (system picker, code, colours the product already uses), phone (local numbers become +880…), SEO
+  panel (Google preview, 60 / 155 counters, share photo, hide from search engines), map (a variant's option values
+  from the product's own options), variant (a deal's product variants), read-only, and an interim photo field (address,
+  description, credit) until R3 adds upload and the library.
+- Shell: section list with ticks and attention marks (Jump to a section below 1024 px); side panel with the status chip
+  and its reason, Visibility, Before you publish, the Google snippet, "Edited 5 min ago by Rafi", History, Duplicate
+  and Delete (folded above the form below 1280 px); sticky action bar (Discard, Save draft, Publish / Update, Ctrl or
+  Cmd+S); History tab with sentences ("Price per person (2): ৳64,900 → ৳59,900") and Restore this version; the draft
+  kept on this device with Restore / Discard after a reload or a new sign-in; the edit-conflict dialog ("Rafi saved this
+  2 min ago": See their version / Save mine over theirs); the leave guard (links, Ctrl K, closing the tab); plain errors
+  with links to the fields and Retry; the session-ended dialog that signs in again and comes back. History also offers
+  "Restore the version before this change" on its oldest entry, so the very first edit of a seeded record can be undone.
+  Drafts on the device go only when staff save, Discard, drop the draft, delete the record or edit back to the saved
+  version; Leave and an unanswered draft offer keep them. Words typed while a save is on its way stay on screen,
+  unsaved. A list item with a problem stays open so its error link reaches the field. Duplicate is offered only where
+  a copy can be valid (D204).
+- Status in R2: records with draft / published / archived get Save draft, Publish, Update, Unpublish and Archive
+  buttons instead of a status field. Records with a show switch say Shown or Hidden; settings and lists without
+  drafts or a switch say Live, "Changes show on the site as soon as you save". Every chip carries its reason.
+  Scheduling, expiry and the worker job come with R4.
 
 ---
 
@@ -446,11 +491,15 @@ grouping. Phone numbers: "+880 1712-345678".
 | RowSheet | shadcn **sheet** (side="right") | lists |
 | Editor shell (section rail, action bar, right rail) | in-house on shadcn **scroll-area**, **separator**, **tooltip** | editors |
 | Stepper (purpose-built editors) | 21st.dev `corr/stepper` (compared with `shadcnspace/stepper-02`, `ddoemonn/wizard-steps`, `nyxbui/stepper`) | R8 editors |
-| SortableList | 21st.dev `diceui/sortable` on dnd-kit (compared with `ddoemonn/reorder-list`, `ebnsina/sortable`, `nikhiljainsam/draggable-priority-list`) | repeaters, home sections, menus, galleries |
+| SortableList | `diceui/sortable` pattern (Root, Item, Handle) on `@dnd-kit/core` 6.3.1 + `sortable` 10 + `modifiers` 9, built in-house because the free retrieval quota was used (compared with `ddoemonn/reorder-list`, `ebnsina/sortable`, `nikhiljainsam/draggable-priority-list`, `ai2/item-drag` for the grip and ghost look); loaded after hydration, Move up / down kept as the single-pointer way (WCAG 2.5.7) | repeaters, lines; home sections, menus, galleries later |
+| ReferencePicker | shadcn **popover** + **command** with thumbnails, Sample / Draft badges and "New …" (combobox pattern of `uvain/combobox-multi-create`, compared with `cnippet-dev/v-combobox-13`, `coss.com/combobox`, `anubra266/basic-tags-input`) | every reference field |
+| IconPicker | shadcn **popover** + **command** over the site's own icon set (compared with `sirwhod/icon-picker-3`, `oldkong88/lucide-icon-drawer`, `ddoemonn/filter-grid`) | trust items, menus, categories |
+| ColourField | system colour picker + code + the product's own colours (compared with `arikchakma/cromia-swatches`, `micka_design/color-picker`, `wensity/color-picker`; no colours written in code, guards) | product option values |
+| Unsaved-changes bar | in-house sticky action bar and leave dialog (compared with `stvenchg/unsaved-changes`, `yadwinder/toast-save`, `KarrixLee/unsave-popup`) | editors |
 | LeadBoard | 21st.dev `diceui/kanban` (compared with `uvain/kanban-board`, `adrielzimbril/kanban`, `cult-ui/kanban-board`) + a "Move to…" menu after `rmahammad/kanban-card-movement` | leads board |
 | Timeline | 21st.dev `olewandowski1/timeline-3` (compared with `kuratlielia/timeline`, `felipemenezes098/item-19`, `cubby-ui/timeline`) | inbox detail, History |
 | TagCombobox | 21st.dev `cnippet-dev/v-combobox-13` (compared with `coss.com/combobox`, `geekles007/multiple-select`, `shugar/combobox`) on shadcn **popover** + **command** | ReferencePicker (multi) |
-| DateField, DateRangeField | shadcn **calendar** + **popover**; presets from 21st.dev `sean0205/c-calendar-16` (compared with `shadcn/date-picker`, `originui/calendar`, `kuratlielia/date-range-picker`) | editors, reports |
+| DateField, DateRangeField | shadcn **calendar** (react-day-picker 10) + **popover** with month and year dropdowns and Today / Now / Clear (R2; compared again with `wensity/date-picker`, `ai2/date-picker-preset`, `originui/calendar`, `shadcn/calendar-picker-in-a-drawer`); range presets from `sean0205/c-calendar-16` for reports (R9) | editors, reports |
 | KpiCard + Sparkline | 21st.dev `uvain/revenue-charts-kpi` (compared with `makviesainte/progress-metric-card`, `appica-dev/sparkline`, `wensity/card`); sparkline as inline SVG | dashboard |
 | Charts | shadcn **chart** (Recharts, dynamic import) | dashboard, reports |
 | Dropzone | 21st.dev `uvain/file-upload` (per-file progress, retry, explained guards; compared with `ephraimduncan/file-upload-01`, `joyco/file-dropzone`, `wensity/file-uploader`) on react-dropzone | MediaField, GalleryField, media library |

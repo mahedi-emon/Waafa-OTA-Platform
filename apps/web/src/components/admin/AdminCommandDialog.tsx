@@ -30,6 +30,7 @@ import { displayPhone } from "@/lib/admin/format";
 import type { AdminIconName, AdminNavItem } from "@/lib/admin/navigation";
 import { AdminNavIcon } from "./AdminNavIcon";
 import { useAdminNav } from "./AdminNavContext";
+import { guardedNavigate } from "./navigationGuard";
 
 const ADMIN = "/secure-admin-control";
 
@@ -218,7 +219,8 @@ function AdminCommandDialog({ open, onOpenChange }: AdminCommandDialogProps) {
   function go(href: string) {
     onOpenChange(false);
     setQuery("");
-    router.push(href);
+    // An editor with unsaved changes asks first (D0 R2).
+    guardedNavigate(href, (target) => router.push(target));
   }
 
   const itemClass =

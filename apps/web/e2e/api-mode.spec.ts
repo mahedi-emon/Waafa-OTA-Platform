@@ -133,7 +133,9 @@ test("a Super Admin connects an external API, turns it on and reveals the secret
   if (!(await active.isChecked())) await active.click();
   await card.getByRole("radio", { name: "Percentage" }).click();
   await card.getByLabel("Value").fill("5");
-  await card.getByRole("button", { name: "Save settings" }).click();
+  // Saved already when a rerun finds these exact settings (the button stays off with nothing to save).
+  const saveSettings = card.getByRole("button", { name: "Save settings" });
+  if (await saveSettings.isEnabled()) await saveSettings.click();
   await expect(card.getByText("Active", { exact: true }).first()).toBeVisible();
   await expect(card.getByRole("switch", { name: "Active" })).toBeChecked();
 
@@ -144,9 +146,11 @@ test("a Super Admin connects an external API, turns it on and reveals the secret
   // A custom SMS provider in the Communication tab.
   await page.getByRole("tab", { name: "SMS and email" }).click();
   const panel = page.getByRole("tabpanel", { name: "SMS and email" });
-  await panel.getByLabel("Provider name").fill("E2E SMS Gateway");
+  // Its own name, so a rerun on a used database adds a new provider instead of clashing with the last one.
+  const provider = `E2E SMS Gateway ${String(Date.now()).slice(-5)}`;
+  await panel.getByLabel("Provider name").fill(provider);
   await panel.getByRole("button", { name: "Add provider" }).click();
-  await expect(panel.getByRole("heading", { name: /E2E SMS Gateway/ })).toBeVisible();
+  await expect(panel.getByRole("heading", { name: provider })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -189,15 +193,32 @@ test("a policy body edited in the rich text editor shows on the site (issue 116)
   const line = `Refund requests are answered within two working days. Checked ${Date.now()}.`;
   await signIn(page);
   await page.goto("/secure-admin-control/content/pages/refund-policy");
-  await expect(page.getByRole("toolbar", { name: "Text formatting" }).first()).toBeVisible();
+  // A long page starts with its sections folded (D0 R2): open the first one to write in it, once React listens.
+  const card = page.getByRole("button", { name: /^Flights (Expand|Collapse)$/ });
+  await expect(async () => {
+    if ((await card.getAttribute("aria-expanded")) !== "true") await card.click();
+    await expect(card).toHaveAttribute("aria-expanded", "true", { timeout: 1_500 });
+  }).toPass({ timeout: 30_000 });
+  await expect(page.getByRole("toolbar", { name: "Text formatting" }).first()).toBeVisible({
+    timeout: 15_000,
+  });
   const body = page.locator('[role="textbox"][aria-multiline="true"]').first();
-  await body.click();
+  await expect(body).toHaveAttribute("contenteditable", "true");
+  // Typing only counts once the editor listens: retry until the words are in it.
+  await expect(async () => {
+    await body.click();
+    await page.keyboard.press("ControlOrMeta+a");
+    await page.keyboard.type(line);
+    await expect(body).toContainText(line, { timeout: 1_500 });
+  }).toPass({ timeout: 30_000 });
   await page.keyboard.press("ControlOrMeta+a");
-  await page.keyboard.type(line);
-  await page.keyboard.press("ControlOrMeta+a");
-  await page.getByRole("button", { name: "Bold" }).first().click();
-  await page.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(page.getByText("Saved").first()).toBeVisible();
+  // A rerun types over an earlier bold line and keeps its bold: press Bold only when it is off.
+  const bold = page.getByRole("button", { name: "Bold" }).first();
+  if ((await bold.getAttribute("aria-pressed")) !== "true") await bold.click();
+  await expect(bold).toHaveAttribute("aria-pressed", "true");
+  // A live page saves with Update (the sticky action bar).
+  await page.getByRole("button", { name: "Update", exact: true }).click();
+  await expect(page.getByText("Updated on the site.").first()).toBeVisible();
   await expect(async () => {
     await page.goto("/refund-policy");
     await expect(page.locator("strong", { hasText: line })).toBeVisible();
@@ -229,7 +250,9 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   await expect(card.getByText("Saved, ends in 5678. Leave empty to keep it.")).toBeVisible();
   const active = card.getByRole("switch", { name: "Active" });
   if (!(await active.isChecked())) await active.click();
-  await card.getByRole("button", { name: "Save settings" }).click();
+  // A rerun finds it active already, with nothing new to save.
+  const saveSettings = card.getByRole("button", { name: "Save settings" });
+  if (await saveSettings.isEnabled()) await saveSettings.click();
   await expect(card.getByRole("switch", { name: "Active" })).toBeChecked();
 
   // Settings › Site › Accounts live shows the Log in link and page.

@@ -154,6 +154,54 @@ describe.skipIf(!dbAvailable)("public intake (B3)", () => {
     expect(problem.fields.length).toBeGreaterThan(0);
   });
 
+  it("sells the live product when a draft copy still shares its variant ids", async () => {
+    const slug = "better-day-hp-151a-w1510a-black-toner";
+    type Stocked = {
+      id: string;
+      slug: string;
+      title: string;
+      variants: Array<{ id: string; stock: number }>;
+    };
+    const stockOf = async (docId: string) =>
+      (
+        (
+          await prisma.contentDocument.findUniqueOrThrow({
+            where: { collection_docId: { collection: "products", docId } },
+          })
+        ).data as Stocked
+      ).variants.find((variant) => variant.id === "bd-w1510a")?.stock;
+    const live = await prisma.contentDocument.findUniqueOrThrow({
+      where: { collection_docId: { collection: "products", docId: slug } },
+    });
+    const data = live.data as Stocked;
+    // A copy made before copies got their own variants: same variant ids, still a draft.
+    await prisma.contentDocument.create({
+      data: {
+        collection: "products",
+        docId: `${slug}-copy`,
+        data: {
+          ...data,
+          id: `${data.id}-copy`,
+          slug: `${slug}-copy`,
+          title: `${data.title} (copy)`,
+          status: "draft",
+        },
+        position: 999,
+      },
+    });
+    app.get(ContentService).invalidate();
+    const stock = await stockOf(slug);
+
+    const response = await post("orders", {
+      lines: [{ variantId: "bd-w1510a", quantity: 1 }],
+      address,
+      payment: { method: "cod" },
+    });
+    expect(response.statusCode).toBe(201);
+    expect(await stockOf(slug)).toBe((stock ?? 0) - 1);
+    expect(await stockOf(`${slug}-copy`)).toBe(stock);
+  });
+
   it("prices an order on the server, takes the stock and tracks it by number and phone", async () => {
     const response = await post("orders", {
       lines: [{ variantId: "bd-w1510a", quantity: 2 }],

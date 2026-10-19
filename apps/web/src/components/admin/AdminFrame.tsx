@@ -7,6 +7,7 @@ import { AdminNavProvider, type AdminNavData } from "./AdminNavContext";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminTopBar } from "./AdminTopBar";
 import { OfflineBanner } from "./OfflineBanner";
+import { SessionWatch } from "./SessionWatch";
 import { useSeedInboxSummary } from "./useInboxSummary";
 
 type AdminFrameProps = {
@@ -39,6 +40,7 @@ function AdminFrame({ nav, brand, sidebarOpen, offlineMessage, children }: Admin
               {children}
             </main>
           </div>
+          <SessionWatch />
         </SidebarProvider>
       </TooltipProvider>
     </AdminNavProvider>

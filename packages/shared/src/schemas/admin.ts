@@ -258,6 +258,58 @@ export const AdminSearchResultSchema = z
   .object({ hits: z.array(AdminSearchHitSchema).max(40) })
   .strict();
 
+/** Form engine v2 (D0 R2): a record's or setting's history from the audit log, newest first. */
+export const ContentHistoryEntrySchema = z
+  .object({
+    id: IdSchema,
+    at: IsoDateTimeSchema,
+    actorName: z.string(),
+    /** content.create, content.update, content.restore, content.duplicate, settings.update, … */
+    action: z.string(),
+    before: z.unknown().optional(),
+    after: z.unknown().optional(),
+  })
+  .strict();
+
+export const ContentHistorySchema = z
+  .object({ entries: z.array(ContentHistoryEntrySchema).max(100) })
+  .strict();
+
+/** Make the record look like it did after this audit entry; the version guards against overwriting a newer save. */
+export const ContentRestoreInputSchema = z
+  .object({
+    auditId: IdSchema,
+    version: z.number().int().positive().optional(),
+    /** The version saved by this change ("after", the default) or the one it replaced ("before"). */
+    side: z.enum(["before", "after"]).optional(),
+  })
+  .strict();
+
+/** One choice for a reference picker: the record's title and photo, and the values other records refer to it by. */
+export const ContentOptionSchema = z
+  .object({
+    id: z.string().min(1).max(160),
+    title: z.string(),
+    image: z.string().max(500).optional(),
+    sample: z.boolean(),
+    status: z.string().max(40).optional(),
+    /** The record's own id, slug, code, key or IATA code, whichever it has. */
+    values: z.record(z.string(), z.string()),
+  })
+  .strict();
+
+export const ContentOptionsSchema = z.object({ items: z.array(ContentOptionSchema) }).strict();
+
+/** Picker search: empty lists everything in admin order. */
+export const ContentOptionsQuerySchema = z
+  .object({ q: z.string().trim().max(80).optional() })
+  .strict();
+
+export type ContentHistoryEntry = z.infer<typeof ContentHistoryEntrySchema>;
+export type ContentHistory = z.infer<typeof ContentHistorySchema>;
+export type ContentRestoreInput = z.infer<typeof ContentRestoreInputSchema>;
+export type ContentOption = z.infer<typeof ContentOptionSchema>;
+
 export type InboxCountKey = z.infer<typeof InboxCountKeySchema>;
 export type InboxItem = z.infer<typeof InboxItemSchema>;
 export type InboxSummary = z.infer<typeof InboxSummarySchema>;

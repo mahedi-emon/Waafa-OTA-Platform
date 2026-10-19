@@ -13,6 +13,23 @@ Checkpoints (Banglish summary + screenshot paths + "test this yourself"): after 
 R1 notes: AdminFrame wraps TooltipProvider (the registry sidebar has none: a Tooltip without it crashes SSR);
 Ctrl K dialog and the bell list/phone sheet load on first use (next/dynamic); sidebar link counts via aria-label;
 e2e gestures need `until()` retry (hydration is slow on this machine); `getByLabel("Password", { exact: true })`.
+R2 notes (branch feat/192-form-engine): blueprints in apps/web/src/lib/admin/blueprints/<group>.ts + registry.ts
+(D193), plain data; words in Admin.blueprints/fieldNames/fieldHelp/choices resolved by resolveBlueprint (server) →
+ResolvedBlueprint prop (D194); patterns = field names joined by "_", list items "<list>_item". Editor shell
+components/admin/editor/ContentEditor (useEditorState: drafts in localStorage, leave guard, Ctrl S via #editor-save,
+conflict dialog, session store) on components/admin/schema/* widgets (SchemaField dispatch). Messages for the editor go
+through a scoped provider (EDITOR_MESSAGES). blueprints.test.ts proves coverage + plain labels. API: history/restore/
+duplicate/options + list order owned by the list (#205). Guards flag "#205"-like issue refs as hex colours in
+apps/web/src: write "issue 205". dnd-kit loads after hydration (SortableList → lazy SortableDnd).
+R2 rules found in review: a section's ONE field named like the section has an sr-only label (useQuietLabel via
+SectionLabelContext from EditorSection); multi-field sections must not share a name with a field (blueprints.test.ts
+"names a field like its section only…"); statusOf returns "direct" (chip Live, "Changes show on the site as soon as
+you save") for settings/lists without workflow or show switch; never remount editors with key={version} (state syncs
+to a new server version in useEditorState); toasts repeat text, so e2e waits for the first one to hide.
+R2 independent review (20 Oct) rules: useEditorState builds every change on `latest` (ref) via `show()`, never on a
+render's `value`; drafts are cleared only by save success, Discard, Drop, Delete or editing back (never because the
+form looks clean); category level top = 1; touch areas use invisible ::after (bordered chips need 3px; flush stacks of
+38 px buttons need gap-1.5). Do not cancel CI runs (owner, 20 Oct): let every push's CI finish and fix to green.
 Key decisions: D184 sidebar stays midnight-950; D185 status families info/progress/success/warning/danger/neutral,
 new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D;
 D186 21st.dev picks (ADMIN.md §14; free tier = 2 installs/day); D187 SchemaEditor stays the engine (no fork),

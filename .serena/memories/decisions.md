@@ -72,3 +72,12 @@
   (/settings index; R9 sub-nav), badges/bell from GET /admin/inbox (30 s poll), Ctrl K from GET /admin/search.
   D189 role rules shared (packages/shared/helpers/access.ts). D190 scoped NextIntlClientProvider with nested paths
   (pickMessagePaths). D191 lead pending = "Waiting for customer", order processing = "Packing" (labels only).
+- D192 CodeQL skipped while the repo is private (code scanning needs GHAS). D193 blueprints grouped by area
+  (blueprints/<group>.ts + registry Record<ContentKey, Blueprint>). D194 blueprint words in messages, resolved on the
+  server (ResolvedBlueprint prop). D195 list order owned by the list (#205). D196 dnd-kit classic after hydration +
+  Move up/down. D197 21st.dev patterns rebuilt on primitives. D198 history follows renames; restore audited (either
+  side). D199 Duplicate = hidden draft "(copy)". D200 interim photo field until R3. D201 sessions: 401 back to editors,
+  sign in returns with the draft. D202 no zod in the browser (routes check), heavy widget parts load on first use.
+  D203 picker options open to all staff only for shared PICKER_KEYS (12 lists); others need edit access. D204 canCopy:
+  fixed/code lists can't be copied (API 409 noCopy, no button); product copies get new variant ids + SKUs; slug-keyed
+  lists keep data.id unique (API 409 exists); priceCart/placeOrder read published products only.

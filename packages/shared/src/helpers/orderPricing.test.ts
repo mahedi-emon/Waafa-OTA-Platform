@@ -172,6 +172,19 @@ describe("priceCart", () => {
     expect(quote.count).toBe(3);
   });
 
+  it("prices the live product when a draft copy shares its variant ids", () => {
+    const live = product("a", 500, 10);
+    const copy = { ...product("a", 999, 10, { status: "draft" }), slug: "a-copy", id: "a-copy" };
+    for (const products of [
+      [live, copy],
+      [copy, live],
+    ]) {
+      const quote = priceCart({ ...base, products, lines: [{ variantId: "a-v", quantity: 1 }] });
+      expect(quote.ready).toBe(true);
+      expect(quote.lines[0]).toMatchObject({ productId: "a", unitPrice: 500 });
+    }
+  });
+
   it("reports invalid and below-minimum coupons without discounting", () => {
     const products = [product("a", 500, 10)];
     const lines = [{ variantId: "a-v", quantity: 1 }];

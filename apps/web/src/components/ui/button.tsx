@@ -5,7 +5,8 @@ import { Slot } from "radix-ui";
 import { Spinner } from "@/components/ui/spinner";
 
 /**
- * WAAFA buttons (Components board): full pills, 48 / 38 / 56 px, Inter 600, press scales to 0.975.
+ * WAAFA buttons (Components board): full pills, 48 / 38 / 56 px, Inter 600, press scales to 0.975. The 38 px sizes
+ * take touches over 44 px through an invisible ::after, so they look the same and stay easy to tap.
  * Hover darkens through an overlay whose opacity fades (MOTION.md: transform and opacity only).
  */
 const buttonVariants = cva(
@@ -36,11 +37,11 @@ const buttonVariants = cva(
         link: "text-brand-700 underline-offset-4 before:hidden hover:underline active:scale-100",
       },
       size: {
-        sm: "h-[38px] px-3.5 text-sm",
+        sm: "h-[38px] px-3.5 text-sm after:absolute after:inset-x-0 after:-inset-y-[3px]",
         md: "h-12 px-5 text-[15px]",
         lg: "h-14 px-7 text-base",
         icon: "size-11",
-        "icon-sm": "size-[38px]",
+        "icon-sm": "size-[38px] after:absolute after:-inset-[3px]",
         "icon-lg": "size-14",
       },
     },

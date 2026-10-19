@@ -1,15 +1,19 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
+  canCopy,
   CONTENT_KEYS,
   CONTENT_MODEL,
   contentRecordId,
+  hasRecordOrder,
   isContentKey,
+  isPickerKey,
   parseContent,
   type CollectionKey,
   type ContentKey,
 } from "@waafa/shared";
 import { AuditService } from "../audit/audit.service";
 import type { StaffPrincipal } from "../auth/principal";
+import { photoOf } from "../common/photo";
 import { problems, validationProblem } from "../common/problem";
 import { ContentService } from "../content/content.service";
 import { Prisma } from "../generated/prisma/client";
@@ -18,6 +22,58 @@ import { RevalidateService } from "../revalidate/revalidate.service";
 import { assertContentAccess, canEditContent } from "./access";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
+
+/** Audit actions that save a whole record; their `after` is a version that can be restored. */
+const RECORD_ACTIONS = ["content.create", "content.update", "content.restore", "content.duplicate"];
+const BORN_ACTIONS = new Set(["content.create", "content.duplicate"]);
+const RESTORABLE_ACTIONS = [...RECORD_ACTIONS, "settings.update", "settings.restore"];
+const HISTORY_LIMIT = 60;
+/** Record fields other records point at (a package's destination slug, an airline's code, a category's level). */
+const OPTION_VALUE_FIELDS = ["id", "slug", "code", "key", "iata", "level", "destinationSlug"];
+
+const orderOf = (data: unknown): number | undefined => {
+  const value = (data as { order?: unknown } | null)?.order;
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+};
+
+/** Lists the site sorts by `order` show in that order in the admin too, so both always agree (#205). */
+function sortByRecordOrder<T extends { data: unknown; position: number }>(
+  key: ContentKey,
+  rows: T[],
+): T[] {
+  if (!hasRecordOrder(key)) return rows;
+  return [...rows].sort(
+    (a, b) =>
+      (orderOf(a.data) ?? Number.MAX_SAFE_INTEGER) - (orderOf(b.data) ?? Number.MAX_SAFE_INTEGER) ||
+      a.position - b.position,
+  );
+}
+
+/** `text` with `tail` at the end, the start cut so the whole fits in `max` characters. */
+const fit = (text: string, tail: string, max: number) =>
+  `${text.slice(0, Math.max(1, max - tail.length)).replace(/-+$/, "")}${tail}`;
+
+/**
+ * A copied product gets its own variant ids and SKUs, and its default variant follows: orders and deals point at a
+ * variant by its id alone, so a copy sharing them would take the live product's orders (D0 R2 review).
+ */
+function renewVariants(data: Record<string, unknown>, suffix: string, taken: Set<string>): void {
+  const variants = Array.isArray(data.variants)
+    ? (data.variants as Array<Record<string, unknown>>)
+    : [];
+  const renamed = new Map<string, string>();
+  for (const variant of variants) {
+    if (typeof variant.id !== "string") continue;
+    let next = fit(variant.id, suffix, 64);
+    for (let n = 2; taken.has(next); n += 1) next = fit(variant.id, `${suffix}-${n}`, 64);
+    taken.add(next);
+    renamed.set(variant.id, next);
+    variant.id = next;
+    if (typeof variant.sku === "string") variant.sku = fit(variant.sku, suffix.toUpperCase(), 40);
+  }
+  if (typeof data.defaultVariantId === "string")
+    data.defaultVariantId = renamed.get(data.defaultVariantId) ?? data.defaultVariantId;
+}
 
 /**
  * Live booking needs a provider, a health check, online payment and a Super Admin with a typed confirmation (FR-GS-03,
@@ -61,6 +117,13 @@ export class AdminContentService {
     return key as CollectionKey;
   }
 
+  settingKey(value: string): ContentKey {
+    const key = this.key(value);
+    if (CONTENT_MODEL[key].kind !== "singleton")
+      throw problems.badRequest(`"${key}" is a list; open one of its records`);
+    return key;
+  }
+
   private changed(key: ContentKey): void {
     this.content.invalidate();
     this.revalidate.request([key]);
@@ -101,10 +164,13 @@ export class AdminContentService {
         updatedBy: row.updatedBy,
       };
     }
-    const rows = await this.prisma.contentDocument.findMany({
-      where: { collection: key },
-      orderBy: [{ position: "asc" }, { docId: "asc" }],
-    });
+    const rows = sortByRecordOrder(
+      key,
+      await this.prisma.contentDocument.findMany({
+        where: { collection: key },
+        orderBy: [{ position: "asc" }, { docId: "asc" }],
+      }),
+    );
     return {
       key,
       kind: "collection",
@@ -133,6 +199,7 @@ export class AdminContentService {
       position: row.position,
       version: row.version,
       updatedAt: row.updatedAt,
+      updatedBy: row.updatedBy,
       data: row.data,
     };
   }
@@ -143,7 +210,13 @@ export class AdminContentService {
     return parsed.data as unknown;
   }
 
-  async writeSetting(staff: StaffPrincipal, key: ContentKey, data: unknown, version?: number) {
+  async writeSetting(
+    staff: StaffPrincipal,
+    key: ContentKey,
+    data: unknown,
+    version?: number,
+    action = "settings.update",
+  ) {
     assertContentAccess(staff, key);
     if (CONTENT_MODEL[key].kind !== "singleton")
       throw problems.badRequest(`"${key}" is a list; edit its records`);
@@ -157,14 +230,18 @@ export class AdminContentService {
           data: { value: json(value), version: { increment: 1 }, updatedBy: staff.name },
         });
         if (updated.count === 0)
-          throw problems.conflict("Someone else saved this first; reload to see it", "stale");
+          throw problems.stale({
+            version: before.version,
+            updatedBy: before.updatedBy,
+            updatedAt: before.updatedAt.toISOString(),
+          });
       } else {
         await tx.setting.create({ data: { key, value: json(value), updatedBy: staff.name } });
       }
       await this.audit.record(
         {
           actor: staff,
-          action: "settings.update",
+          action,
           entity: key,
           entityId: key,
           before: before?.value,
@@ -177,15 +254,30 @@ export class AdminContentService {
     return this.read(staff, key);
   }
 
-  async create(staff: StaffPrincipal, key: CollectionKey, data: unknown) {
+  async create(
+    staff: StaffPrincipal,
+    key: CollectionKey,
+    data: unknown,
+    action = "content.create",
+  ) {
     assertContentAccess(staff, key);
     const record = this.validate(key, data);
     const id = contentRecordId(key, record);
+    await this.assertInnerIdFree(key, record);
     const last = await this.prisma.contentDocument.findFirst({
       where: { collection: key },
       orderBy: { position: "desc" },
       select: { position: true },
     });
+    // A new record goes to the end of a list the site sorts by order; staff never type it (#205).
+    if (hasRecordOrder(key) && record && typeof record === "object") {
+      const rows = await this.prisma.contentDocument.findMany({
+        where: { collection: key },
+        select: { data: true },
+      });
+      const highest = Math.max(-1, ...rows.map((row) => orderOf(row.data) ?? -1));
+      (record as { order: number }).order = highest + 1;
+    }
     try {
       await this.prisma.$transaction(async (tx) => {
         await tx.contentDocument.create({
@@ -198,7 +290,7 @@ export class AdminContentService {
           },
         });
         await this.audit.record(
-          { actor: staff, action: "content.create", entity: key, entityId: id, after: record },
+          { actor: staff, action, entity: key, entityId: id, after: record },
           tx,
         );
       });
@@ -222,6 +314,7 @@ export class AdminContentService {
     id: string,
     data: unknown,
     version?: number,
+    action = "content.update",
   ) {
     assertContentAccess(staff, key);
     const record = this.validate(key, data);
@@ -230,9 +323,17 @@ export class AdminContentService {
       where: { collection_docId: { collection: key, docId: id } },
     });
     if (!before) throw problems.notFound("Record not found");
-    if (version && before.version !== version) {
-      throw problems.conflict("Someone else saved this first; reload to see it", "stale");
-    }
+    await this.assertInnerIdFree(key, record, id);
+    // The list owns the order: a save (or a restore of an old version) never moves the record (#205).
+    const kept = hasRecordOrder(key) ? orderOf(before.data) : undefined;
+    if (kept !== undefined && record && typeof record === "object")
+      (record as { order: number }).order = kept;
+    const current = {
+      version: before.version,
+      updatedBy: before.updatedBy,
+      updatedAt: before.updatedAt.toISOString(),
+    };
+    if (version && before.version !== version) throw problems.stale(current);
     try {
       await this.prisma.$transaction(async (tx) => {
         const updated = await tx.contentDocument.updateMany({
@@ -244,12 +345,11 @@ export class AdminContentService {
             updatedBy: staff.name,
           },
         });
-        if (updated.count === 0)
-          throw problems.conflict("Someone else saved this first; reload to see it", "stale");
+        if (updated.count === 0) throw problems.stale(current);
         await this.audit.record(
           {
             actor: staff,
-            action: "content.update",
+            action,
             entity: key,
             entityId: nextId,
             before: before.data,
@@ -289,22 +389,236 @@ export class AdminContentService {
     this.changed(key);
   }
 
+  /** The record's id inside an audit snapshot, if the snapshot is a record. */
+  private idIn(key: CollectionKey, value: unknown): string | undefined {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+    const id = (value as Record<string, unknown>)[CONTENT_MODEL[key].idField];
+    return typeof id === "string" || typeof id === "number" ? String(id) : undefined;
+  }
+
+  /**
+   * Where a record's audit entries live. A slug change moves a record to a new id, so its history is a chain of
+   * (id, time window) segments, newest first; a later record that reuses an old id never mixes in.
+   */
+  private async segments(key: ContentKey, id: string): Promise<Prisma.AuditLogWhereInput[]> {
+    if (CONTENT_MODEL[key].kind !== "collection") return [{ entityId: key }];
+    const collection = key as CollectionKey;
+    const segments: Prisma.AuditLogWhereInput[] = [];
+    let current = id;
+    let until: Date | undefined;
+    for (let step = 0; step < 8; step += 1) {
+      const window = until ? { lt: until } : {};
+      const rows = await this.prisma.auditLog.findMany({
+        where: { entity: key, entityId: current, action: { in: RECORD_ACTIONS }, at: window },
+        orderBy: { at: "desc" },
+        select: { at: true, action: true, before: true },
+      });
+      // The newest moment the record arrived under this id: created, copied, or renamed from another id.
+      const arrival = rows.find((row) => {
+        const prior = this.idIn(collection, row.before);
+        return BORN_ACTIONS.has(row.action) || (prior !== undefined && prior !== current);
+      });
+      segments.push({
+        entityId: current,
+        at: { ...window, ...(arrival ? { gte: arrival.at } : {}) },
+      });
+      const prior = arrival ? this.idIn(collection, arrival.before) : undefined;
+      if (!arrival || !prior || prior === current) break;
+      current = prior;
+      until = arrival.at;
+    }
+    return segments;
+  }
+
+  /** History of a record or a setting (D0 R2): every saved change from the audit log, newest first. */
+  async history(staff: StaffPrincipal, key: ContentKey, id: string) {
+    assertContentAccess(staff, key);
+    const rows = await this.prisma.auditLog.findMany({
+      where: { entity: key, action: { in: RESTORABLE_ACTIONS }, OR: await this.segments(key, id) },
+      orderBy: [{ at: "desc" }, { id: "desc" }],
+      take: HISTORY_LIMIT,
+    });
+    return {
+      entries: rows.map((row) => ({
+        id: row.id,
+        at: row.at.toISOString(),
+        actorName: row.actorName,
+        action: row.action,
+        ...(row.before === null ? {} : { before: row.before }),
+        ...(row.after === null ? {} : { after: row.after }),
+      })),
+    };
+  }
+
+  /** Makes a record or a setting look like it did after one of its history entries, audited as a restore. */
+  async restore(
+    staff: StaffPrincipal,
+    key: ContentKey,
+    id: string,
+    auditId: string,
+    version?: number,
+    side: "before" | "after" = "after",
+  ) {
+    assertContentAccess(staff, key);
+    const entry = await this.prisma.auditLog.findFirst({
+      where: {
+        id: auditId,
+        entity: key,
+        action: { in: RESTORABLE_ACTIONS },
+        OR: await this.segments(key, id),
+      },
+    });
+    // "before" undoes a change: the version it replaced (the only way back past the first saved change).
+    const data = side === "before" ? entry?.before : entry?.after;
+    if (!entry || data === null || data === undefined)
+      throw problems.notFound("That version is not available");
+    if (CONTENT_MODEL[key].kind === "singleton")
+      return this.writeSetting(staff, key, data, version, "settings.restore");
+    const collection = key as CollectionKey;
+    if (!this.idIn(collection, data)) throw problems.notFound("That version is not available");
+    return this.update(staff, collection, id, data, version, "content.restore");
+  }
+
+  /** A copy with "(copy)" in its title and a free id, saved as a hidden draft and never Sample. */
+  async duplicate(staff: StaffPrincipal, key: CollectionKey, id: string) {
+    assertContentAccess(staff, key);
+    if (!canCopy(key))
+      throw problems.conflict(
+        "Records of this list are fixed places or codes and can't be copied",
+        "noCopy",
+      );
+    const row = await this.prisma.contentDocument.findUnique({
+      where: { collection_docId: { collection: key, docId: id } },
+    });
+    if (!row) throw problems.notFound("Record not found");
+    const { idField, titleField } = CONTENT_MODEL[key];
+    const data = structuredClone(row.data) as Record<string, unknown>;
+    const taken = new Set(
+      (
+        await this.prisma.contentDocument.findMany({
+          where: { collection: key },
+          select: { docId: true },
+        })
+      ).map((doc) => doc.docId),
+    );
+    // Ids hold 64 characters and slugs 120: a long one is cut so the suffix always fits.
+    const base = String(data[idField] ?? id);
+    const named = (tail: string) => fit(base, tail, idField === "id" ? 64 : 120);
+    let suffix = "-copy";
+    for (let n = 2; taken.has(named(suffix)); n += 1) suffix = `-copy-${n}`;
+    data[idField] = named(suffix);
+    if (idField !== "id" && typeof data.id === "string") data.id = fit(data.id, suffix, 64);
+    if (titleField !== idField && typeof data[titleField] === "string") {
+      const title = data[titleField] as string;
+      data[titleField] = `${title} (copy)`;
+      // A title at its longest keeps its words; the hidden copy's own link tells the two apart.
+      if (!parseContent(key, data).success) data[titleField] = title;
+    }
+    if (typeof data.sample === "boolean") data.sample = false;
+    for (const flag of ["visible", "isActive", "enabled"])
+      if (typeof data[flag] === "boolean") data[flag] = false;
+    if (typeof data.status === "string" && parseContent(key, { ...data, status: "draft" }).success)
+      data.status = "draft";
+    if (key === "products") renewVariants(data, suffix, await this.variantIdsInUse());
+    return this.create(staff, key, data, "content.duplicate");
+  }
+
+  /** Every variant id the store uses, so a copy's new ones are free. */
+  private async variantIdsInUse(): Promise<Set<string>> {
+    const rows = await this.prisma.contentDocument.findMany({
+      where: { collection: "products" },
+      select: { data: true },
+    });
+    const ids = new Set<string>();
+    for (const row of rows) {
+      const variants = (row.data as { variants?: Array<{ id?: unknown }> }).variants ?? [];
+      for (const variant of variants) if (typeof variant.id === "string") ids.add(variant.id);
+    }
+    return ids;
+  }
+
+  /**
+   * Lists keyed by a slug or code also give each record an inner id that other records point at (a deal's product,
+   * a cart line); two records must never share it.
+   */
+  private async assertInnerIdFree(key: CollectionKey, record: unknown, exceptDocId = "") {
+    if (CONTENT_MODEL[key].idField === "id") return;
+    const inner = (record as { id?: unknown } | null)?.id;
+    if (typeof inner !== "string" || !inner) return;
+    const clash = await this.prisma.$queryRaw<Array<{ docId: string }>>`
+      SELECT "docId" FROM "ContentDocument"
+      WHERE "collection" = ${key} AND "data"->>'id' = ${inner} AND "docId" <> ${exceptDocId}
+      LIMIT 1`;
+    if (clash.length > 0)
+      throw problems.conflict(`Another record already uses the id "${inner}"`, "exists");
+  }
+
+  /**
+   * Choices for reference pickers: titles, photos and the values records point at. Lists other editors pick from
+   * are open to any staff member; any other list's choices need edit access to it.
+   */
+  async options(staff: StaffPrincipal, key: CollectionKey, query?: string) {
+    if (!isPickerKey(key)) assertContentAccess(staff, key);
+    const { titleField } = CONTENT_MODEL[key];
+    const rows = sortByRecordOrder(
+      key,
+      await this.prisma.contentDocument.findMany({
+        where: { collection: key },
+        orderBy: [{ position: "asc" }, { docId: "asc" }],
+        select: { docId: true, data: true, position: true },
+      }),
+    );
+    const needle = query?.trim().toLowerCase() ?? "";
+    const items = rows.map((row) => {
+      const data = row.data as Record<string, unknown>;
+      const values: Record<string, string> = {};
+      for (const field of OPTION_VALUE_FIELDS) {
+        const value = data[field];
+        if (typeof value === "string" || typeof value === "number") values[field] = String(value);
+      }
+      const image = photoOf(data);
+      return {
+        id: row.docId,
+        title: String(data[titleField] ?? row.docId),
+        ...(image ? { image } : {}),
+        sample: data.sample === true,
+        ...(typeof data.status === "string" ? { status: data.status } : {}),
+        values,
+      };
+    });
+    return {
+      items: needle
+        ? items.filter((item) => `${item.title} ${item.id}`.toLowerCase().includes(needle))
+        : items,
+    };
+  }
+
   /** New list order (home sections, menus, FAQs…): ids in the order they should appear. */
   async reorder(staff: StaffPrincipal, key: CollectionKey, ids: string[]) {
     assertContentAccess(staff, key);
     const rows = await this.prisma.contentDocument.findMany({
       where: { collection: key },
-      select: { docId: true },
+      select: { docId: true, data: true },
     });
-    const known = new Set(rows.map((row) => row.docId));
+    const known = new Map(rows.map((row) => [row.docId, row.data]));
     if (ids.length !== known.size || ids.some((id) => !known.has(id))) {
       throw problems.badRequest("Send every record id of the list exactly once");
     }
+    const ordered = hasRecordOrder(key);
     await this.prisma.$transaction(async (tx) => {
       for (const [position, id] of ids.entries()) {
+        // The site sorts these lists by each record's order, so the new place is written there too (#205).
+        const data = known.get(id);
+        const moved = ordered && orderOf(data) !== position;
         await tx.contentDocument.update({
           where: { collection_docId: { collection: key, docId: id } },
-          data: { position, updatedBy: staff.name },
+          data: {
+            position,
+            updatedBy: staff.name,
+            ...(moved
+              ? { data: json({ ...(data as Record<string, unknown>), order: position }) }
+              : {}),
+          },
         });
       }
       await this.audit.record(

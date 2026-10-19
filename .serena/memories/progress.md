@@ -1,4 +1,7 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-20 01:30 Dhaka — R2 #192 form engine v2 (+ #205 list order): blueprints for all 50 keys, sectioned editor,
+  side panel, action bar, History/restore, drafts, leave guard, conflict + session dialogs, API history/restore/
+  duplicate/options, lead facts. Tests: shared 90, web 555, API 152, admin e2e 15/15; editors 303 KB gzip (D202).
 - 2026-10-19 21:30 Dhaka — R1 #191 admin shell: grouped sidebar + badges (GET /admin/inbox), top bar (Ctrl K with
   GET /admin/search, + New, bell), breadcrumbs, page header, StatusChip, /settings door, states, sign-in; role rules in
   packages/shared/helpers/access.ts. Tests: shared 87, web 325, API 145, e2e shell 4/4 + screens 2/2, budget 6/6.

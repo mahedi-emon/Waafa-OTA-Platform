@@ -13,6 +13,8 @@ export type AdminProblem = {
   detail?: string;
   code?: string;
   fields?: Array<{ path: string; message: string }>;
+  /** With a stale-version conflict: who saved last and when (D0 R2). */
+  current?: { version: number; updatedBy: string | null; updatedAt: string };
 };
 
 export type AdminResult<T> = { ok: true; data: T } | { ok: false; problem: AdminProblem };
@@ -60,6 +62,7 @@ async function problemOf(response: Response): Promise<AdminProblem> {
     ...(body.detail ? { detail: body.detail } : {}),
     ...(body.code ? { code: body.code } : {}),
     ...(body.fields ? { fields: body.fields } : {}),
+    ...(body.current ? { current: body.current } : {}),
   };
 }
 
@@ -77,13 +80,22 @@ export async function adminGet<T>(path: string, query?: RequestOptions["query"])
   return (await response.json()) as T;
 }
 
-/** Writes from server actions: the result or the problem, so forms can show field errors in place. */
+/**
+ * Writes from server actions: the result or the problem, so forms can show field errors in place. Editors pass
+ * `{ signedOut: "problem" }` to get a 401 back instead of a redirect, so typed work stays on screen (D0 R2).
+ */
 export async function adminWrite<T>(
   path: string,
   method: "POST" | "PUT" | "PATCH" | "DELETE",
   body?: unknown,
+  options: { signedOut?: "redirect" | "problem" } = {},
 ): Promise<AdminResult<T>> {
+  const token = (await cookies()).get(ACCESS_COOKIE)?.value;
+  if (!token && options.signedOut === "problem")
+    return { ok: false, problem: { status: 401, title: "Signed out" } };
   const response = await send(path, { method, body });
+  if (response.status === 401 && options.signedOut === "problem")
+    return { ok: false, problem: { status: 401, title: "Signed out" } };
   if (response.status === 401) redirect("/secure-admin-control/sign-in");
   if (!response.ok) return { ok: false, problem: await problemOf(response) };
   const data = response.status === 204 ? (null as T) : ((await response.json()) as T);

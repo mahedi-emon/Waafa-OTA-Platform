@@ -1,17 +1,17 @@
 "use client";
 
-import { humanize } from "@/lib/admin/format";
-import {
-  defaultFor,
-  discriminatorOf,
-  pathKey,
-  type JsonSchema,
-  type Path,
-} from "@/lib/admin/schema";
+import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { cn } from "cn";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { childPattern, patternOf } from "@/lib/admin/blueprints/paths";
+import { defaultFor, discriminatorOf, type JsonSchema, type Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
 import { ObjectField } from "./ObjectField";
 import { RawJsonField } from "./RawJsonField";
 import { SchemaField } from "./SchemaField";
+import { useField } from "./useField";
 import { useSchemaEditor } from "./useSchemaEditor";
 
 type UnionFieldProps = {
@@ -23,25 +23,28 @@ type UnionFieldProps = {
 };
 
 /**
- * One of several shapes (a discriminated union such as a payment method or a link kind): pick the kind, then fill its
- * fields. A single shape that may be empty is drawn as that shape; anything else falls back to JSON.
+ * One of several shapes (a gallery item is a photo or a video; a collection's products are picked or follow rules):
+ * choose the kind with radio cards, then fill its fields. Fields both kinds share keep their values.
  */
 function UnionField({ options, nullable, path, value, optional }: UnionFieldProps) {
-  const { root, strings, change, errors } = useSchemaEditor();
+  const editor = useSchemaEditor();
+  const meta = useField(path);
+  const t = useTranslations("Admin.editor.widgets");
+
   if (options.length === 1 && options[0]) {
     if (value === null || value === undefined) {
       return (
-        <div className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-dashed border-mist-300 px-4">
-          <span className="text-[14px] font-semibold text-navy-900">
-            {humanize(String(path.at(-1) ?? ""))}
-          </span>
-          <button
+        <div className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-dashed border-mist-300 px-4 py-2.5">
+          <span className="text-[14px] font-semibold text-navy-900">{meta.label}</span>
+          <Button
             type="button"
-            onClick={() => change(path, defaultFor(options[0] as JsonSchema, root))}
-            className="min-h-9 cursor-pointer rounded-full px-3 text-[13px] font-semibold text-brand-700 hover:bg-electric-50"
+            variant="soft"
+            size="sm"
+            onClick={() => meta.change(defaultFor(options[0] as JsonSchema, editor.root))}
           >
-            {strings.setValue}
-          </button>
+            <Plus aria-hidden="true" className="size-4" />
+            {t("set")}
+          </Button>
         </div>
       );
     }
@@ -56,36 +59,62 @@ function UnionField({ options, nullable, path, value, optional }: UnionFieldProp
   const record = value && typeof value === "object" ? (value as Record<string, unknown>) : null;
   const kind = record?.[discriminator];
   const active = options.find((option) => option.properties?.[discriminator]?.const === kind);
-  const id = `field-${pathKey(path).replace(/[^\w-]/g, "-")}-kind`;
+  // List items' fields hang off the list's pattern ("items_kind"), a group's off its own.
+  const base = typeof path.at(-1) === "number" ? patternOf(path.slice(0, -1)) : meta.pattern;
+  const choices = editor.blueprint.fields[childPattern(base, discriminator)]?.choices ?? [];
+  const labelOf = (option: JsonSchema) => {
+    const value = String(option.properties?.[discriminator]?.const ?? "");
+    return choices.find((choice) => choice.value === value)?.label ?? value;
+  };
+  const switchTo = (next: string) => {
+    const option = options.find(
+      (candidate) => candidate.properties?.[discriminator]?.const === next,
+    );
+    if (!option) return;
+    const fresh = defaultFor(option, editor.root) as Record<string, unknown>;
+    // Keep what both shapes share (an item's id and caption).
+    for (const name of Object.keys(option.properties ?? {}))
+      if (name !== discriminator && record && record[name] !== undefined)
+        fresh[name] = record[name];
+    meta.change(fresh);
+  };
 
   return (
-    <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-3 sm:p-4">
+    <div className="flex min-w-0 flex-col gap-4">
       <FieldShell
-        id={id}
-        label={`${humanize(String(path.at(-1) ?? ""))} · ${strings.variant}`}
-        error={errors[pathKey(path)]}
+        id={meta.id}
+        label={editor.blueprint.fields[childPattern(base, discriminator)]?.label ?? meta.label}
+        optional={optional}
+        {...(meta.error ? { error: meta.error } : {})}
+        group
       >
-        <select
-          id={id}
+        <RadioGroup
           value={typeof kind === "string" ? kind : ""}
-          onChange={(event) => {
-            const next = options.find(
-              (option) => option.properties?.[discriminator]?.const === event.target.value,
-            );
-            change(path, next ? defaultFor(next, root) : nullable ? null : undefined);
-          }}
-          className="h-12 w-full cursor-pointer rounded-xl border border-mist-300 bg-white px-3 text-[15px]"
+          onValueChange={switchTo}
+          aria-labelledby={`${meta.id}-label`}
+          className="grid grid-cols-1 gap-2 sm:grid-cols-2"
         >
-          {nullable || optional || !active ? <option value="">{strings.choose}</option> : null}
           {options.map((option) => {
-            const optionKind = String(option.properties?.[discriminator]?.const ?? "");
+            const optionValue = String(option.properties?.[discriminator]?.const ?? "");
+            const itemId = `${meta.id}-${optionValue}`;
+            const selected = kind === optionValue;
             return (
-              <option key={optionKind} value={optionKind}>
-                {optionKind}
-              </option>
+              <label
+                key={optionValue}
+                htmlFor={itemId}
+                className={cn(
+                  "flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 text-[14.5px] transition-colors duration-150",
+                  selected
+                    ? "border-electric-600 bg-electric-50 font-semibold text-navy-900"
+                    : "border-mist-200 bg-white text-ink-900 hover:border-mist-300",
+                )}
+              >
+                <RadioGroupItem id={itemId} value={optionValue} />
+                {labelOf(option)}
+              </label>
             );
           })}
-        </select>
+        </RadioGroup>
       </FieldShell>
       {active ? (
         <ObjectField schema={active} path={path} value={value} optional={false} bare />

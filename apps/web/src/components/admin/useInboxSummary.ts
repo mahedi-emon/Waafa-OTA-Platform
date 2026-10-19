@@ -2,6 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import type { InboxCountKey, InboxSummary } from "@waafa/shared";
+import { markSignedOut } from "./sessionStore";
 
 /** Polls what waits for this person (sidebar badges, the bell) every 30 s while the tab is visible (ADMIN.md §3.2). */
 const ENDPOINT = "/secure-admin-control/api/inbox";
@@ -36,6 +37,7 @@ async function poll() {
     const json = (response.headers.get("content-type") ?? "").includes("application/json");
     if (response.status === 401 || response.redirected || !json) {
       emit({ ...state, signedOut: true });
+      markSignedOut();
       stop();
       return;
     }

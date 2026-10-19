@@ -2756,8 +2756,6 @@
       "repeats": "Later requests from the same phone: {references}",
       "request": "What they asked for",
       "requestLead": "As the customer sent it",
-      "readable": "Readable",
-      "raw": "Raw JSON",
       "customer": "Customer",
       "phone": "Phone",
       "email": "Email",
@@ -2799,6 +2797,201 @@
         "email": "Email",
         "whatsapp": "WhatsApp",
         "converted": "Booking"
+      },
+      "factWords": {
+        "travellers": "{adults, plural, one {# adult} other {# adults}}{children, plural, =0 {} one {, # child} other {, # children}}{infants, plural, =0 {} one {, # infant} other {, # infants}}",
+        "flight": "Flight {n}",
+        "anyDate": "Any date",
+        "files": "{count, plural, one {# file} other {# files}}"
+      },
+      "facts": {
+        "trip": "Trip",
+        "returnDate": "Return",
+        "travellers": "Travellers",
+        "cabin": "Cabin",
+        "airline": "Preferred airline",
+        "directOnly": "Direct flights only",
+        "flexibleDates": "Dates are flexible",
+        "fareType": "Fare",
+        "groupFare": "From a group fare",
+        "stops": "Stops",
+        "times": "Times of day",
+        "airlines": "Airlines",
+        "bag": "Checked bag",
+        "refundableOnly": "Refundable fares only",
+        "place": "Where",
+        "checkIn": "Check-in",
+        "checkOut": "Check-out",
+        "rooms": "Room",
+        "nationality": "Nationality",
+        "stars": "Hotel stars",
+        "budgetPerNight": "Budget per night",
+        "budgetBand": "Budget",
+        "meals": "Meals",
+        "seaView": "Sea view",
+        "freeCancellation": "Free cancellation",
+        "package": "Package",
+        "departure": "Departure",
+        "roomSharing": "Room sharing",
+        "destinations": "Places",
+        "startDate": "Start date",
+        "month": "Month",
+        "nights": "Nights",
+        "budgetPerPerson": "Budget per person",
+        "hotelClass": "Hotels",
+        "tripFor": "Trip for",
+        "interests": "Interests",
+        "includeFlights": "Flights included",
+        "visaHelp": "Needs visa help",
+        "country": "Country",
+        "visaType": "Visa type",
+        "applicants": "Applicants",
+        "travelDate": "Travel date",
+        "appointment": "Appointment",
+        "documents": "Documents",
+        "company": "Company",
+        "service": "Service",
+        "volume": "Volume",
+        "frequency": "How often",
+        "location": "Location",
+        "attachments": "Attachments",
+        "direction": "Import or export",
+        "product": "Product",
+        "quantity": "Quantity",
+        "targetPrice": "Target price",
+        "deliveryTerms": "Delivery terms",
+        "timeline": "Timeline",
+        "specifications": "Specifications",
+        "topic": "Topic",
+        "message": "Message",
+        "bank": "Bank",
+        "amount": "Amount",
+        "tenure": "Months",
+        "items": "Items",
+        "notes": "Notes"
+      },
+      "values": {
+        "tripType": {
+          "one-way": "One way",
+          "round-trip": "Return",
+          "multi-city": "Multi-city"
+        },
+        "cabin": {
+          "economy": "Economy",
+          "premium-economy": "Premium economy",
+          "business": "Business",
+          "first": "First"
+        },
+        "fareType": {
+          "regular": "Regular",
+          "student": "Student fare"
+        },
+        "stops": {
+          "any": "Any",
+          "direct": "Direct only",
+          "one": "Up to one stop"
+        },
+        "times": {
+          "morning": "Morning",
+          "afternoon": "Afternoon",
+          "evening": "Evening",
+          "night": "Night"
+        },
+        "bag": {
+          "20": "20 kg",
+          "30": "30 kg",
+          "any": "Any"
+        },
+        "stars": {
+          "3": "3 star",
+          "4": "4 star",
+          "5": "5 star"
+        },
+        "hotelBudget": {
+          "under-5000": "Under ৳5,000 a night",
+          "5000-10000": "৳5,000 to ৳10,000 a night",
+          "10000-20000": "৳10,000 to ৳20,000 a night",
+          "over-20000": "Over ৳20,000 a night"
+        },
+        "meals": {
+          "room-only": "Room only",
+          "breakfast": "Breakfast",
+          "half-board": "Half board"
+        },
+        "roomSharing": {
+          "twin": "Twin sharing",
+          "triple": "Triple sharing",
+          "single": "Single room",
+          "child-with-bed": "Child with bed",
+          "child-without-bed": "Child without bed",
+          "infant": "Infant"
+        },
+        "tripBudget": {
+          "under-30000": "Under ৳30,000 per person",
+          "30000-60000": "৳30,000 to ৳60,000 per person",
+          "60000-100000": "৳60,000 to ৳1,00,000 per person",
+          "over-100000": "Over ৳1,00,000 per person"
+        },
+        "hotelClass": {
+          "3": "3 star",
+          "4": "4 star",
+          "5": "5 star",
+          "resort": "Resort"
+        },
+        "tripFor": {
+          "family": "Family",
+          "couple": "Couple",
+          "friends": "Friends",
+          "solo": "Solo",
+          "office": "Office trip"
+        },
+        "visaType": {
+          "tourist": "Tourist",
+          "business": "Business",
+          "student": "Student",
+          "medical": "Medical",
+          "transit": "Transit"
+        },
+        "appointmentWindow": {
+          "morning": "Morning",
+          "afternoon": "Afternoon"
+        },
+        "printingService": {
+          "managed-printing": "Managed printing",
+          "toner-supply": "Toner supply",
+          "printer-repair": "Printer repair",
+          "bulk-printing": "Bulk printing",
+          "new-printers": "New printers",
+          "paper-supplies": "Paper supplies",
+          "other": "Something else"
+        },
+        "frequency": {
+          "one-off": "Once",
+          "weekly": "Every week",
+          "monthly": "Every month",
+          "quarterly": "Every three months"
+        },
+        "direction": {
+          "import": "Import",
+          "export": "Export",
+          "sourcing": "Sourcing"
+        },
+        "deliveryTerms": {
+          "exw": "Ex works (EXW)",
+          "fob": "Free on board (FOB)",
+          "cif": "Cost, insurance and freight (CIF)",
+          "ddp": "Delivered duty paid (DDP)",
+          "other": "Other"
+        },
+        "topic": {
+          "flights": "Flights",
+          "packages": "Tour packages",
+          "visa": "Visa",
+          "shop": "Waafas World",
+          "printing": "Printing Solutions",
+          "trading": "International Trading",
+          "other": "Something else"
+        }
       }
     },
     "search": {
@@ -3013,25 +3206,7 @@
       "orderSaved": "Order saved",
       "deleteConfirm": "Delete “{title}”? This can’t be undone.",
       "deleted": "Deleted",
-      "created": "Created",
-      "fieldsTab": "Fields",
-      "jsonTab": "JSON",
-      "jsonHint": "Advanced: edit the whole record as JSON. It is checked when you save.",
-      "jsonInvalid": "That isn’t valid JSON.",
-      "addItem": "Add",
-      "removeItem": "Remove",
-      "itemUp": "Up",
-      "itemDown": "Down",
-      "optional": "optional",
-      "unset": "Not set",
-      "setValue": "Set",
-      "clear": "Clear",
-      "choose": "Choose…",
-      "variant": "Kind",
       "emptyList": "No items yet.",
-      "lastSaved": "Last saved {time} by {name}",
-      "sampleNote": "Sample record: visitors see a Sample label. Replace it with real content and turn Sample off. Search engines index its page unless SEO › noindex is on.",
-      "unsaved": "Unsaved changes",
       "keys": {
         "siteSettings": "Site and SEO",
         "contactSettings": "Contact and office hours",
@@ -3084,7 +3259,6 @@
         "coupons": "Coupons",
         "flightRoutes": "Flight routes"
       },
-      "lastSavedAt": "Last saved {time}",
       "richText": {
         "toolbar": "Text formatting",
         "paragraph": "Paragraph",
@@ -3487,6 +3661,1777 @@
       "home": "Go to the dashboard",
       "forbiddenTitle": "Not for your role",
       "forbiddenBody": "Your role can't open this page. Ask an admin if you need it."
+    },
+    "editor": {
+      "tabs": {
+        "edit": "Edit",
+        "history": "History"
+      },
+      "rail": {
+        "title": "On this page",
+        "jump": "Jump to a section",
+        "complete": "Complete",
+        "attention": "Needs attention"
+      },
+      "bar": {
+        "unsaved": "Unsaved changes",
+        "kept": "Kept on this device <time></time>",
+        "allSaved": "All changes saved",
+        "newRecord": "Not saved yet",
+        "saving": "Saving…",
+        "discard": "Discard changes",
+        "saveDraft": "Save draft",
+        "publish": "Publish",
+        "update": "Update",
+        "save": "Save changes",
+        "create": "Create",
+        "shortcut": "Ctrl S saves"
+      },
+      "status": {
+        "draft": "Draft",
+        "live": "Live",
+        "archived": "Archived",
+        "shown": "Shown",
+        "hidden": "Hidden",
+        "new": "New",
+        "draftReason": "Only staff can see drafts.",
+        "liveReason": "Live on the site.",
+        "archivedReason": "Hidden from the site and kept for history.",
+        "shownReason": "Shown on the site.",
+        "hiddenReason": "Hidden from the site.",
+        "newReason": "Not saved yet.",
+        "direct": "Live",
+        "directReason": "Changes show on the site as soon as you save."
+      },
+      "side": {
+        "status": "Status",
+        "visibility": "Visibility",
+        "viewOnSite": "View on site",
+        "checklist": "Before you publish",
+        "checklistReady": "Ready to publish.",
+        "missing": "Add {field}",
+        "seo": "In Google",
+        "edited": "Edited <when></when> by {name}",
+        "editedNoName": "Edited <when></when>",
+        "notSaved": "Not saved yet",
+        "sample": "Sample content",
+        "sampleNote": "Replace it with real details. Lists mark it Sample until then.",
+        "actions": "More actions",
+        "history": "See history",
+        "duplicate": "Duplicate",
+        "duplicated": "A copy was saved as a draft.",
+        "duplicateFailed": "A copy of this record couldn't be saved. Nothing changed here; check its details, then try again.",
+        "delete": "Delete",
+        "deleteTitle": "Delete this {thing}?",
+        "deleteBody": "It disappears from the site and from lists. Deleting can't be undone yet.",
+        "deleteConfirm": "Delete",
+        "deleted": "Deleted.",
+        "unpublish": "Unpublish",
+        "unpublishHint": "Takes it off the site and keeps it as a draft.",
+        "archive": "Archive",
+        "archiveHint": "Takes it off the site and keeps it for history.",
+        "toDraft": "Move back to drafts",
+        "details": "Status and actions",
+        "cancel": "Cancel",
+        "publishing": "Publishing"
+      },
+      "toast": {
+        "saved": "Saved.",
+        "created": "Created.",
+        "published": "Published. It's live on the site.",
+        "updated": "Updated on the site.",
+        "unpublished": "Taken off the site. It's a draft now.",
+        "archived": "Archived. It's off the site.",
+        "view": "View",
+        "nothing": "Nothing to save yet."
+      },
+      "history": {
+        "title": "History",
+        "lead": "Every saved change, newest first. Restoring keeps the current version here too.",
+        "empty": "No saved changes yet. Changes show here after the first save.",
+        "loading": "Loading history…",
+        "failed": "History couldn't load.",
+        "by": "{name}",
+        "current": "Current version",
+        "change": "{field}: {from} → {to}",
+        "set": "{field} set to {to}",
+        "cleared": "{field} cleared",
+        "edited": "{field} edited",
+        "listChanged": "{field}: {from} → {to} items",
+        "more": "{count, plural, one {and # more change} other {and # more changes}}",
+        "noChanges": "No visible changes",
+        "on": "On",
+        "off": "Off",
+        "empty_value": "empty",
+        "restore": "Restore this version",
+        "restoreTitle": "Restore the version from {time}?",
+        "restoreBody": "The page will look like it did then. The current version stays in History, so you can come back to it.",
+        "restoreConfirm": "Restore",
+        "restored": "The older version is back.",
+        "unsavedFirst": "Save or discard your changes before restoring a version.",
+        "cancel": "Cancel",
+        "actions": {
+          "content": {
+            "create": "Created",
+            "update": "Saved",
+            "restore": "Restored an older version",
+            "duplicate": "Created as a copy"
+          },
+          "settings": {
+            "update": "Saved",
+            "restore": "Restored an older version"
+          }
+        },
+        "restoreBefore": "Restore the version before this change",
+        "restoreBeforeTitle": "Bring back the version from before {time}?"
+      },
+      "conflict": {
+        "title": "{name} saved this <time></time>",
+        "someone": "Someone",
+        "body": "Your changes weren't saved, so nothing of theirs was overwritten. See their version (your changes stay on this device), or save yours over theirs.",
+        "reload": "See their version",
+        "keep": "Save mine over theirs"
+      },
+      "draft": {
+        "found": "Unsaved changes from <time></time> are on this device.",
+        "newer": "This page was saved by someone after that, so check before you restore.",
+        "restore": "Restore them",
+        "discard": "Discard"
+      },
+      "leave": {
+        "title": "Leave without saving?",
+        "body": "Your changes stay on this device, so you can restore them when you come back.",
+        "stay": "Stay",
+        "leave": "Leave"
+      },
+      "session": {
+        "title": "Your session has ended",
+        "body": "Sign in again to keep working. Anything you typed is saved on this device and comes back after you sign in.",
+        "signIn": "Sign in again"
+      },
+      "errors": {
+        "fields": "{count, plural, one {One field needs attention} other {# fields need attention}}",
+        "fieldsLead": "Fix the fields below, then save again.",
+        "required": "Fill this in.",
+        "tooLong": "Keep it to {max} characters or fewer.",
+        "tooShort": "Use at least {min} characters.",
+        "pattern": "This doesn't look right. Check the format.",
+        "slug": "Use lowercase letters, numbers and hyphens, like bali-5-days.",
+        "phone": "Use the country code and digits only, like +8801712345678.",
+        "email": "Enter an email address like name@example.com.",
+        "url": "Enter a full address that starts with https://.",
+        "code": "Use capital letters only, like {example}.",
+        "min": "Use {min} or more.",
+        "max": "Use {max} or less.",
+        "minItems": "{min, plural, one {Add at least one.} other {Add at least #.}}",
+        "maxItems": "{max, plural, one {Only one is allowed.} other {Up to # are allowed.}}",
+        "integer": "Use a whole number.",
+        "date": "Pick a date.",
+        "invalid": "This value isn't accepted. Check it and try again.",
+        "forbidden": "Your role can't change this. Ask a Super Admin.",
+        "notFound": "This was deleted or moved. Open the list to find it.",
+        "exists": "Another record already uses this web address or code. Change it and save again.",
+        "liveLocked": "Live booking stays locked until a provider and online payment are connected.",
+        "server": "The server didn't answer. Your changes are kept on this device. Try again.",
+        "offline": "You're offline. Your changes are kept on this device; save again when you're back online.",
+        "retry": "Try again"
+      },
+      "widgets": {
+        "add": "Add {thing}",
+        "addItem": "Add",
+        "remove": "Remove",
+        "removeThing": "Remove {thing}",
+        "removed": "{thing} removed.",
+        "undo": "Undo",
+        "duplicate": "Duplicate",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "drag": "Drag to reorder",
+        "collapse": "Collapse",
+        "expand": "Expand",
+        "itemN": "{thing} {n}",
+        "empty": "Nothing here yet.",
+        "optional": "Optional",
+        "required": "Required",
+        "counter": "{count} of {max}",
+        "clear": "Clear",
+        "set": "Add",
+        "unset": "Not set",
+        "choose": "Choose…",
+        "on": "On",
+        "off": "Off",
+        "moved": "{thing} moved to position {position} of {total}.",
+        "slug": {
+          "edit": "Edit link",
+          "done": "Done",
+          "follows": "Follows the title until you edit it.",
+          "liveWarning": "Old links to this page stop working when you change it."
+        },
+        "money": {
+          "vat": "VAT included"
+        },
+        "number": {
+          "less": "Less",
+          "more": "More"
+        },
+        "date": {
+          "pick": "Pick a date",
+          "today": "Today",
+          "clear": "Clear",
+          "time": "Time",
+          "now": "Now"
+        },
+        "reference": {
+          "search": "Search {things}",
+          "none": "No {things} match.",
+          "create": "New {thing}",
+          "createHint": "Opens in a new tab. Come back and pick it here.",
+          "loading": "Loading…",
+          "failed": "The list couldn't load.",
+          "choose": "Choose {thing}",
+          "change": "Change",
+          "sample": "Sample",
+          "draft": "Draft",
+          "selected": "{count, plural, one {# chosen} other {# chosen}}",
+          "missing": "Not found: {value}",
+          "clear": "Remove",
+          "addNew": "Add a new {thing}",
+          "add": "Add"
+        },
+        "tags": {
+          "placeholder": "Type, then press Enter",
+          "removeTag": "Remove {tag}"
+        },
+        "lines": {
+          "placeholder": "Type a line"
+        },
+        "icon": {
+          "choose": "Choose an icon",
+          "search": "Search icons",
+          "none": "No icon matches.",
+          "current": "Icon: {name}"
+        },
+        "colour": {
+          "custom": "Custom colour",
+          "presets": "Common colours",
+          "current": "Colour {value}"
+        },
+        "time": {
+          "pick": "Pick a time",
+          "midnight": "Midnight"
+        },
+        "weekdays": {
+          "short": {
+            "0": "Sun",
+            "1": "Mon",
+            "2": "Tue",
+            "3": "Wed",
+            "4": "Thu",
+            "5": "Fri",
+            "6": "Sat"
+          },
+          "long": {
+            "0": "Sunday",
+            "1": "Monday",
+            "2": "Tuesday",
+            "3": "Wednesday",
+            "4": "Thursday",
+            "5": "Friday",
+            "6": "Saturday"
+          }
+        },
+        "image": {
+          "empty": "No photo yet",
+          "address": "Photo address",
+          "credit": "Photo credit",
+          "preview": "Photo preview"
+        },
+        "seo": {
+          "title": "Title in Google",
+          "description": "Description in Google",
+          "titleHint": "Google shows about 60 characters. Leave empty to use the page title.",
+          "descriptionHint": "Google shows about 155 characters. Leave empty to use the summary.",
+          "hide": "Hide from search engines",
+          "hideHint": "Keeps this page out of Google and Bing.",
+          "shareImage": "Photo when shared",
+          "preview": "Google preview",
+          "tooLong": "Google may cut this off."
+        },
+        "map": {
+          "key": "Option",
+          "value": "Value",
+          "add": "Add a value"
+        },
+        "variant": {
+          "pickProduct": "Choose the product first.",
+          "none": "This product has no variants.",
+          "loading": "Loading variants…"
+        },
+        "readOnly": {
+          "empty": "Not set"
+        },
+        "json": {
+          "title": "Edit as JSON",
+          "hint": "For the Super Admin: the whole record as data. Saving checks it like the form does.",
+          "invalid": "This isn't valid JSON. Check the brackets and quotes.",
+          "apply": "Use this JSON"
+        },
+        "itemActions": "Actions for {thing}"
+      },
+      "advanced": {
+        "title": "Advanced",
+        "lead": "Fields outside the form and the raw record. Only the Super Admin sees this."
+      },
+      "new": {
+        "title": "New {thing}",
+        "lead": "Fill in the sections, then save a draft or publish. Nothing shows on the site until you publish.",
+        "leadVisibility": "Fill in the sections, then create it. It is live on the site once created, as set under Visibility.",
+        "leadLive": "Fill in the sections, then create it. It is live on the site once created."
+      }
+    },
+    "fieldNames": {
+      "abroad": "Places abroad",
+      "accountsLive": "Customer accounts are open",
+      "addressLines": "Address",
+      "airline": "Airline",
+      "airlineCode": "Airline",
+      "airlineCodes": "Airlines",
+      "alt": "Photo description",
+      "answer": "Answer",
+      "anyDate": "Customers can pick any date",
+      "appliesTo": "Who can pay in instalments",
+      "areas": "Areas",
+      "attributes": "Attributes",
+      "attributeSetId": "Attribute set",
+      "audience": "Sent to",
+      "author": "Author",
+      "backAt": "Back online at",
+      "badges": "Badges",
+      "baggage": "Baggage",
+      "banner": "Banner photo",
+      "bestSeason": "Best time to go",
+      "bestTime": "Best time to fly",
+      "bingSiteVerification": "Bing verification code",
+      "bio": "Short bio",
+      "body": "Text",
+      "brand": "Brand",
+      "brandId": "Brand",
+      "brandIds": "Brands",
+      "bulkFrom": "Bulk price from (pieces)",
+      "bulkStrip": "Bulk order strip",
+      "cabin": "Cabin",
+      "cabinAllowance": "Cabin bag",
+      "cabinClass": "Cabin",
+      "caption": "Caption",
+      "cardsNote": "Cards accepted",
+      "cardSpec": "Line on the product card",
+      "categories": "Categories",
+      "category": "Category",
+      "categoryId": "Category",
+      "categoryIds": "Categories",
+      "channel": "Sent by",
+      "charge": "Delivery charge",
+      "checkedAllowance": "Checked baggage",
+      "checklist": "Documents",
+      "city": "City",
+      "closedText": "Closed message",
+      "closesAt": "Closes at",
+      "code": "Code",
+      "codEligible": "Cash on delivery allowed",
+      "codLimit": "Cash on delivery limit",
+      "collectionIds": "Collections",
+      "columns": "Footer columns",
+      "companyName": "Company name",
+      "compatibility": "Show the printer finder",
+      "compatibleModelIds": "Fits these printers",
+      "consentText": "Consent sentence",
+      "copyrightHolder": "Copyright holder",
+      "corporate": "Corporate orders",
+      "countries": "Countries",
+      "country": "Country",
+      "countryCode": "Country code",
+      "countrySlug": "Visa country",
+      "cover": "Cover photo",
+      "credit": "Photo credit",
+      "creditUrl": "Credit link",
+      "cta": "Button text",
+      "date": "Date",
+      "days": "Open on",
+      "dealPrice": "Deal price",
+      "defaultOrigin": "Default departure airport",
+      "defaultSeo": "Search engines (whole site)",
+      "defaultVariantId": "Default variant",
+      "departDate": "Departure date",
+      "department": "Department",
+      "departures": "Fixed departures",
+      "description": "Description",
+      "designation": "Job title",
+      "destinationSlug": "Destination",
+      "detail": "Detail",
+      "display": "Number as shown",
+      "domestic": "Places in Bangladesh",
+      "durationDays": "Days",
+      "durationNights": "Nights",
+      "e164": "Number with country code",
+      "email": "Email",
+      "emailRequired": "Email is required on forms",
+      "embassyFee": "Embassy fee",
+      "embassyFeeNote": "Embassy fee note",
+      "enabled": "Show on website",
+      "endsAt": "Ends",
+      "entry": "Entry",
+      "estimate": "Delivery time",
+      "excerpt": "Short summary",
+      "exclusions": "Not included",
+      "expiresAt": "Offer ends",
+      "external": "Opens in a new tab",
+      "extraPhones": "More phone numbers",
+      "facebookBody": "Facebook reviews text",
+      "facebookTitle": "Facebook reviews title",
+      "facts": "Key facts",
+      "faqs": "Questions and answers",
+      "farePerAdult": "Fare per adult",
+      "featured": "Featured",
+      "featuredOrder": "Position among featured airlines",
+      "feedbackBody": "Feedback text",
+      "feedbackTitle": "Feedback title",
+      "figure": "Big number",
+      "figureLabel": "What the number means",
+      "filterable": "Customers can filter by it",
+      "finderStrip": "Printer finder strip",
+      "flagCode": "Flag (country code)",
+      "flightTime": "Flight time",
+      "footerAbout": "About text in the footer",
+      "footerTagline": "Footer tagline",
+      "formLead": "Form intro",
+      "forms": "Forms to download",
+      "formSlot": "Photo beside the form",
+      "formTitle": "Form title",
+      "freeDeliveryThreshold": "Free delivery from",
+      "from": "From",
+      "fromPrice": "Price from",
+      "ga4Id": "Google Analytics 4 measurement code",
+      "gallery": "More photos",
+      "googleSiteVerification": "Google verification code",
+      "group": "Group",
+      "groupSize": "Group size",
+      "gtmId": "Google Tag Manager container",
+      "guideSlug": "Visa guide",
+      "headerSlot": "Header photo",
+      "heading": "Heading",
+      "height": "Height",
+      "helpLine": "Help line text",
+      "hero": "Top of the page",
+      "highlights": "Highlights",
+      "hint": "Hint",
+      "hotelNationalities": "Nationalities for hotel search",
+      "hotels": "Hotels",
+      "href": "Goes to",
+      "iata": "Airport",
+      "icon": "Icon",
+      "id": "Code",
+      "image": "Photo",
+      "images": "Photos",
+      "includesShort": "Included, in short",
+      "inclusions": "Included",
+      "initials": "Initials",
+      "instructions": "How to pay",
+      "interestNote": "Interest note",
+      "intro": "Introduction",
+      "item": "Item",
+      "items": "Items",
+      "itinerary": "Day by day",
+      "key": "Name",
+      "kicker": "Small heading above",
+      "kind": "Type",
+      "label": "Label",
+      "lastVerified": "Checked with the airline on",
+      "lead": "Intro text",
+      "lines": "Account details",
+      "link": "Link",
+      "linkedinUrl": "LinkedIn page",
+      "liveLocked": "Live booking locked",
+      "lockReason": "Why it is locked",
+      "logo": "Logo",
+      "lowStockAt": "Low stock warning at",
+      "mapUrl": "Map link",
+      "max": "Up to",
+      "maxDiscount": "Largest discount",
+      "maxPrice": "Price up to",
+      "mediaSlot": "Photo",
+      "menu": "Menu",
+      "message": "Message",
+      "metaPixelId": "Meta Pixel code",
+      "min": "From",
+      "minimumAmount": "Smallest amount for instalments",
+      "minimumOrder": "Smallest order",
+      "minOrder": "Smallest order",
+      "mode": "Booking mode",
+      "model": "Model",
+      "module": "Service",
+      "months": "Best months",
+      "mp4": "Video (MP4)",
+      "mp4Mobile": "Phone video (MP4)",
+      "mrp": "Price before discount",
+      "name": "Name",
+      "nameNote": "Hotel name note",
+      "needed": "Visa needed",
+      "network": "Network",
+      "newsletterButton": "Newsletter button",
+      "newsletterPlaceholder": "Newsletter box hint",
+      "newsletterTitle": "Newsletter title",
+      "nights": "Nights",
+      "nightsLabel": "Nights text",
+      "nightsPerCity": "Nights per city",
+      "noIndex": "Hide from search engines",
+      "note": "Note",
+      "notes": "Notes",
+      "officeHours": "Office hours",
+      "officeHoursText": "Office hours as written",
+      "officePickup": "Customers can pick up at the office",
+      "offlineAccounts": "Accounts customers pay into",
+      "onHome": "Show on the home page",
+      "onlinePaymentLive": "Online payment is live",
+      "opensAt": "Opens at",
+      "options": "Options",
+      "page": "Page",
+      "panel": "Opens panel",
+      "parentId": "Parent category",
+      "partCodes": "Part codes",
+      "paymentMethods": "Payment methods",
+      "paymentNote": "Payment note",
+      "period": "Year or period",
+      "perks": "Perks",
+      "phoneCountries": "Countries in the phone picker",
+      "phoneDisplay": "Phone number as shown",
+      "phoneE164": "Phone number with country code",
+      "photo": "Photo",
+      "pinnedRank": "Position in the airport list",
+      "placement": "Where it shows",
+      "placesLabel": "Places line",
+      "planTripPlaces": "Plan my trip places",
+      "popular": "Popular",
+      "popularFlights": "Popular destinations",
+      "poster": "Poster photo",
+      "preOrder": "Can be pre-ordered",
+      "price": "Price",
+      "priceRange": "Total price range",
+      "prices": "Prices",
+      "primaryCta": "Main button text",
+      "processingTime": "Processing time",
+      "productId": "Product",
+      "productIds": "Products",
+      "provider": "Video site",
+      "question": "Question",
+      "questions": "Questions and answers",
+      "region": "Region",
+      "relatedSlugs": "Related packages",
+      "returnDate": "Return date",
+      "returnsShort": "Returns, in short",
+      "reviews": "Reviews",
+      "reviewsUrl": "Reviews page link",
+      "rotating": "Rotating words",
+      "rotatingLabel": "Before the rotating words",
+      "rule": "Which products",
+      "scope": "Flights",
+      "searchConsoleToken": "Search Console token",
+      "seatsLeft": "Seats left",
+      "sections": "Sections",
+      "seo": "Search engines",
+      "serviceCharge": "Our service charge",
+      "services": "Services",
+      "servicesTitle": "Services title",
+      "sharing": "Room sharing",
+      "short": "Warranty, in short",
+      "shortTitle": "Short name",
+      "showOnAbout": "Show on About us",
+      "showOnHome": "Show on the home page",
+      "showPrice": "Show the price",
+      "sku": "Stock code (SKU)",
+      "slaMinutes": "Reply within (minutes)",
+      "slug": "Web address",
+      "socials": "Social media",
+      "specs": "Specifications",
+      "src": "Photo address",
+      "startsAt": "Starts",
+      "stay": "Stay",
+      "steps": "Steps",
+      "stepsTitle": "Steps title",
+      "stock": "In stock",
+      "stops": "Stops",
+      "store": "Waafas World block",
+      "storeIntro": "Waafas World intro",
+      "storeName": "Store name",
+      "sub": "Subtitle",
+      "subject": "Subject",
+      "submission": "How to apply",
+      "subtitle": "Subtitle",
+      "summary": "Summary",
+      "swatch": "Colour",
+      "tagline": "Tagline",
+      "tags": "Tags",
+      "tenuresMonths": "Instalment months",
+      "terms": "Terms",
+      "text": "Text",
+      "tips": "Tips",
+      "title": "Title",
+      "titleAccent": "Highlighted words",
+      "to": "To",
+      "tone": "Look",
+      "travelBrand": "Travel brand name",
+      "tripType": "Trip",
+      "trust": "Trust points",
+      "trustBadges": "Trust badges",
+      "type": "Type",
+      "types": "Visa types",
+      "unit": "Unit",
+      "url": "Link",
+      "validity": "Validity",
+      "validityText": "Valid until text",
+      "value": "Value",
+      "values": "Values",
+      "variables": "You can use",
+      "variantId": "Variant",
+      "variants": "Variants",
+      "video": "Video",
+      "visa": "Visa",
+      "visaCountrySlug": "Visa country",
+      "visaEasy": "Easy visa",
+      "visaNote": "Visa note",
+      "visible": "Show on website",
+      "visitLabel": "Visit us text",
+      "warranty": "Warranty",
+      "webm": "Video (WebM)",
+      "webmMobile": "Phone video (WebM)",
+      "whatsappE164": "WhatsApp number",
+      "whatsappMessage": "First WhatsApp message",
+      "why": "Why Waafa block",
+      "width": "Width",
+      "zones": "Delivery zones"
+    },
+    "fieldHelp": {
+      "alt": "Describe the photo for people who can't see it, like \"Beach at Patong, Phuket\".",
+      "credit": "The photographer or the site the photo came from.",
+      "creditUrl": "Where the photo came from, if it needs a link.",
+      "slug": "Made from the title. Edit it only if you need a shorter link.",
+      "noIndex": "Keeps this page out of Google and Bing.",
+      "kicker": "A few words shown above the title.",
+      "external": "Use for links to other websites.",
+      "href": "A page on this site, like /visa, or a full address that starts with https://.",
+      "icon": "Shown next to the text on the site.",
+      "whatsappE164": "With the country code, digits only, like +8801712345678.",
+      "e164": "With the country code, digits only, like +8801712345678.",
+      "phoneE164": "With the country code, digits only, like +8801712345678. Used by the call button.",
+      "mp4": "Paste the video's address. Uploading comes with the next update.",
+      "poster": "Shown before the video plays and when motion is reduced.",
+      "fromPrice": "The lowest price, in taka, VAT included.",
+      "farePerAdult": "In taka, VAT included. Shown as indicative until an expert confirms.",
+      "seatsLeft": "Leave empty if you don't want to show it.",
+      "featuredOrder": "1 shows first. Leave empty to keep it off the featured row.",
+      "pinnedRank": "1 shows first. Leave empty for alphabetical order.",
+      "lowStockAt": "Shows Low stock when this many or fewer are left.",
+      "mrp": "Shown crossed out. Leave empty when there's no discount.",
+      "parentId": "Leave empty for a top category.",
+      "readingMinutes": "Worked out from the length of the text.",
+      "src": "Uploading and the media library come with the next update; until then paste the photo's address."
+    },
+    "choices": {
+      "accountKind": {
+        "bank": "Bank account",
+        "bkash": "bKash",
+        "nagad": "Nagad",
+        "office": "Pay at the office"
+      },
+      "attributeType": {
+        "select": "Pick from a list",
+        "number": "Number",
+        "text": "Text",
+        "boolean": "Yes or no"
+      },
+      "blockPage": {
+        "about": "About us",
+        "contact": "Contact",
+        "baggage": "Baggage information",
+        "emi": "EMI",
+        "offline-payment": "Offline payment"
+      },
+      "blogCta": {
+        "flights": "Search flights",
+        "packages": "See tour packages",
+        "visa": "Get visa help",
+        "shop": "Shop Waafas World",
+        "contact": "Talk to us"
+      },
+      "bookingMode": {
+        "manual": "Manual: an expert confirms",
+        "live": "Live booking"
+      },
+      "bookingModule": {
+        "flights": "Flights",
+        "hotels": "Hotels",
+        "packages": "Tour packages",
+        "shopPayment": "Waafas World payment"
+      },
+      "cabin": {
+        "economy": "Economy",
+        "premium-economy": "Premium economy",
+        "business": "Business",
+        "first": "First"
+      },
+      "channel": {
+        "email": "Email",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp"
+      },
+      "collectionRule": {
+        "manual": "Products I pick",
+        "rule": "Products that match rules"
+      },
+      "couponType": {
+        "percent": "Percent off",
+        "fixed": "Taka off"
+      },
+      "destinationTag": {
+        "visa": "Visa help",
+        "short": "Short trip",
+        "beach": "Beach",
+        "city": "City",
+        "mountain": "Mountains",
+        "domestic": "In Bangladesh"
+      },
+      "faqCategory": {
+        "flights": "Flights",
+        "hotels": "Hotels",
+        "packages": "Tour packages",
+        "visa": "Visa",
+        "payments": "Payments",
+        "shop": "Waafas World",
+        "account": "Account"
+      },
+      "flightScope": {
+        "domestic": "Domestic",
+        "international": "International"
+      },
+      "galleryCategory": {
+        "tours": "Tours",
+        "events": "Events",
+        "office": "Office",
+        "travellers": "Travellers"
+      },
+      "galleryItemKind": {
+        "photo": "Photo",
+        "video": "Video"
+      },
+      "homeSection": {
+        "hero": "Top of the page",
+        "trust": "Trust strip",
+        "offers": "Offers",
+        "groupFares": "Group fares",
+        "destinations": "Destinations",
+        "packages": "Tour packages",
+        "visa": "Visa",
+        "why": "Why Waafa",
+        "store": "Waafas World",
+        "testimonials": "Customer feedback",
+        "galleryBlogFaq": "Gallery, blog and FAQ",
+        "team": "Meet our team",
+        "cta": "Closing call"
+      },
+      "hotelPlaceKind": {
+        "city": "City",
+        "hotel": "Hotel"
+      },
+      "mediaSlot": {
+        "home-hero": "Home: top of the page",
+        "flights-header": "Flights: header",
+        "flights-success": "Flights: request sent",
+        "group-fares-header": "Group fares: header",
+        "packages-header": "Tour packages: header",
+        "visa-services-header": "Visa: header",
+        "visa-apply-side": "Visa: beside the application",
+        "visa-guide-header": "Visa guides: header",
+        "visa-track-header": "Visa tracking: header",
+        "printing-header": "Printing Solutions: header",
+        "printing-quote-side": "Printing Solutions: beside the quote form",
+        "trading-header": "International Trading: header",
+        "trading-rfq-side": "International Trading: beside the request form",
+        "shop-service-printing": "Waafas World: printing service card",
+        "shop-service-trading": "Waafas World: trading service card",
+        "office": "Our office"
+      },
+      "menuKey": {
+        "header": "Main menu",
+        "more": "More menu",
+        "drawer": "Phone menu",
+        "tabbar": "Bottom tab bar",
+        "more-phone": "More menu on phones",
+        "shop-panel": "Waafas World menu",
+        "footer-travel": "Footer: travel",
+        "footer-shop": "Footer: Waafas World",
+        "footer-help": "Footer: help",
+        "legal": "Footer: legal"
+      },
+      "menuPanel": {
+        "shop": "Waafas World panel",
+        "more": "More panel"
+      },
+      "network": {
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "linkedin": "LinkedIn",
+        "tiktok": "TikTok",
+        "x": "X"
+      },
+      "optionDisplay": {
+        "swatch": "Colour dots",
+        "pill": "Buttons",
+        "size": "Sizes"
+      },
+      "packageCategory": {
+        "domestic": "In Bangladesh",
+        "international": "Abroad",
+        "group-tours": "Group tours",
+        "honeymoon": "Honeymoon",
+        "family": "Family",
+        "corporate": "Corporate",
+        "cruise": "Cruise"
+      },
+      "packageTag": {
+        "best-seller": "Best seller",
+        "featured": "Featured",
+        "group-departure": "Group departure",
+        "visa-help": "Visa help",
+        "new": "New"
+      },
+      "paymentMethod": {
+        "bank": "Bank transfer",
+        "bkash": "bKash",
+        "nagad": "Nagad",
+        "office": "Pay at the office",
+        "cod": "Cash on delivery",
+        "card": "Card",
+        "sslcommerz": "SSLCommerz"
+      },
+      "placement": {
+        "home-offers": "Home: offers",
+        "shop-hero": "Waafas World: top banner",
+        "shop-campaign": "Waafas World: campaign row",
+        "flights-results": "Flights: results"
+      },
+      "productBadge": {
+        "best-seller": "Best seller",
+        "new": "New",
+        "featured": "Featured",
+        "deal": "Deal"
+      },
+      "region": {
+        "south-asia": "South Asia",
+        "south-east-asia": "South-East Asia",
+        "middle-east": "Middle East",
+        "east-asia": "East Asia",
+        "europe": "Europe",
+        "americas": "Americas",
+        "oceania": "Oceania",
+        "africa": "Africa"
+      },
+      "servicePage": {
+        "printing": "Printing Solutions",
+        "trading": "International Trading"
+      },
+      "sharing": {
+        "twin": "Twin sharing",
+        "triple": "Triple sharing",
+        "single": "Single room",
+        "child-with-bed": "Child with bed",
+        "child-without-bed": "Child without bed",
+        "infant": "Infant"
+      },
+      "storeRow": {
+        "campaigns": "Campaign banners",
+        "categories": "Categories",
+        "collections": "Collections",
+        "deals": "Deals",
+        "bestSellers": "Best sellers",
+        "brands": "Brands",
+        "newArrivals": "New arrivals",
+        "recentlyViewed": "Recently viewed",
+        "services": "Services",
+        "bulkBanner": "Bulk order banner",
+        "trust": "Trust points"
+      },
+      "submission": {
+        "embassy": "At the embassy",
+        "visa-centre": "At the visa centre",
+        "evisa": "E-visa",
+        "online": "Online",
+        "interview": "With an interview",
+        "on-arrival": "On arrival"
+      },
+      "templateKey": {
+        "lead-received-customer": "Request received (to the customer)",
+        "lead-alert-staff": "New request (to staff)",
+        "order-placed-customer": "Order placed (to the customer)",
+        "order-placed-staff": "New order (to staff)",
+        "visa-status-customer": "Visa update (to the customer)",
+        "feedback-received-staff": "New feedback (to staff)",
+        "payment-proof-staff": "Payment proof received (to staff)",
+        "sign-in-code-customer": "Sign-in code (to the customer)"
+      },
+      "tone": {
+        "default": "Normal",
+        "warning": "Warning",
+        "danger": "Important"
+      },
+      "tripType": {
+        "one-way": "One way",
+        "return": "Return"
+      },
+      "videoProvider": {
+        "youtube": "YouTube",
+        "facebook": "Facebook"
+      },
+      "visaType": {
+        "tourist": "Tourist",
+        "business": "Business",
+        "student": "Student",
+        "medical": "Medical",
+        "transit": "Transit"
+      }
+    },
+    "blueprints": {
+      "siteSettings": {
+        "one": "site setting",
+        "other": "site settings",
+        "intro": "Names, footer words and the search engine defaults for the whole site.",
+        "sections": {
+          "names": "Names",
+          "footer": "Footer",
+          "search": "Search engines",
+          "connections": "Connections"
+        },
+        "help": {
+          "travelBrand": "Used in the header and in page titles.",
+          "storeIntro": "One or two sentences about Waafas World.",
+          "googleSiteVerification": "The code from Google Search Console, without the quotes.",
+          "accountsLive": "Turn on when customers may sign in to see their bookings and orders."
+        }
+      },
+      "contactSettings": {
+        "one": "contact detail",
+        "other": "contact details",
+        "intro": "Address, phone numbers, email, office hours and social links shown on every page.",
+        "sections": {
+          "office": "Office",
+          "phones": "Phone and WhatsApp",
+          "email": "Email",
+          "hours": "Office hours",
+          "socials": "Social media"
+        },
+        "fields": {
+          "extraPhones_display": "Number as shown",
+          "extraPhones_e164": "Number with country code",
+          "extraPhones_item": "Phone number",
+          "socials_item": "Social link"
+        },
+        "help": {
+          "addressLines": "One line each, as it should print.",
+          "phoneDisplay": "As people read it, like 01712-345678.",
+          "whatsappMessage": "The first message a customer sends from a WhatsApp button.",
+          "officeHours_days": "The Open now chip on the site follows these hours (Asia/Dhaka time).",
+          "officeHoursText": "As shown on the site, like Saturday to Thursday, 10:00 am to 6:00 pm.",
+          "closedText": "Shown while the office is closed.",
+          "mapUrl": "A Google Maps link to the office.",
+          "helpLine": "A short line under the phone number."
+        }
+      },
+      "footerSettings": {
+        "one": "footer",
+        "other": "footers",
+        "intro": "The footer's columns, payment methods, trust badges and newsletter box.",
+        "sections": {
+          "columns": "Columns",
+          "payments": "Payment methods and badges",
+          "newsletter": "Newsletter",
+          "legal": "Legal"
+        },
+        "fields": {
+          "columns_title": "Column title",
+          "columns_menu": "Menu shown",
+          "paymentMethods_id": "Method",
+          "paymentMethods_label": "Name shown",
+          "paymentMethods_enabled": "Show this method",
+          "trustBadges_label": "Badge name",
+          "trustBadges_image": "Badge image",
+          "columns_item": "Column",
+          "paymentMethods_item": "Payment method",
+          "trustBadges_item": "Badge"
+        },
+        "help": {
+          "trustBadges": "Only badges the company really holds."
+        }
+      },
+      "bookingModes": {
+        "one": "booking mode",
+        "other": "booking modes",
+        "intro": "How each service takes bookings. Live booking stays locked until a provider and online payment are connected.",
+        "sections": {
+          "modes": "Booking modes"
+        },
+        "fields": {
+          "item": "Service"
+        },
+        "help": {
+          "lockReason": "Staff see this next to the locked switch."
+        }
+      },
+      "paymentSettings": {
+        "one": "payment setting",
+        "other": "payment settings",
+        "intro": "The accounts customers pay into and the cash on delivery limit.",
+        "sections": {
+          "accounts": "Accounts customers pay into",
+          "cash": "Cash on delivery"
+        },
+        "fields": {
+          "offlineAccounts_title": "Account name",
+          "offlineAccounts_kind": "Account type",
+          "offlineAccounts_lines": "Account details",
+          "offlineAccounts_item": "Account"
+        },
+        "help": {
+          "offlineAccounts_lines": "One line each: account name, number, branch.",
+          "codLimit": "Orders above this need payment in advance.",
+          "onlinePaymentLive": "Turns on when online payment is connected."
+        }
+      },
+      "shippingSettings": {
+        "one": "delivery setting",
+        "other": "delivery settings",
+        "intro": "Delivery zones, charges and the order rules of Waafas World.",
+        "sections": {
+          "zones": "Delivery zones",
+          "rules": "Order rules"
+        },
+        "fields": {
+          "zones_name": "Zone name",
+          "zones_areas": "Areas in this zone",
+          "zones_estimate": "Delivery time",
+          "zones_item": "Zone"
+        },
+        "help": {
+          "zones_estimate": "As shown at checkout, like 1 to 2 days.",
+          "freeDeliveryThreshold": "Leave empty when there's no free delivery."
+        }
+      },
+      "emiSettings": {
+        "one": "EMI setting",
+        "other": "EMI settings",
+        "intro": "When customers can pay in instalments, on the EMI page and at checkout.",
+        "sections": {
+          "emi": "Instalments (EMI)"
+        },
+        "help": {
+          "tenuresMonths": "The months customers can choose, like 3, 6 and 12."
+        }
+      },
+      "leadFormSettings": {
+        "one": "form setting",
+        "other": "form settings",
+        "intro": "How request forms behave: the reply target, email, phone countries and the consent sentence.",
+        "sections": {
+          "form": "Request forms"
+        },
+        "help": {
+          "slaMinutes": "Requests waiting longer than this during office hours show as overdue.",
+          "phoneCountries": "Two-letter country codes; the first one is the default, like BD."
+        }
+      },
+      "maintenanceSettings": {
+        "one": "maintenance setting",
+        "other": "maintenance settings",
+        "intro": "Puts the public site behind a short notice while work is done.",
+        "sections": {
+          "maintenance": "Maintenance"
+        },
+        "fields": {
+          "enabled": "Maintenance mode is on",
+          "message": "Notice for visitors"
+        },
+        "help": {
+          "backAt": "Shown to visitors in Asia/Dhaka time."
+        }
+      },
+      "trackingSettings": {
+        "one": "tracking setting",
+        "other": "tracking settings",
+        "intro": "Measurement codes for analytics and ads. Leave a code empty to turn that tool off.",
+        "sections": {
+          "tracking": "Tracking codes"
+        },
+        "help": {
+          "ga4Id": "Starts with G-, like G-ABC123XYZ.",
+          "gtmId": "Starts with GTM-.",
+          "metaPixelId": "Digits only."
+        }
+      },
+      "searchSettings": {
+        "one": "search setting",
+        "other": "search settings",
+        "intro": "Defaults of the search boxes: departure airport, popular flights, hotel nationalities and trip places.",
+        "sections": {
+          "flights": "Flights",
+          "hotels": "Hotels",
+          "planTrip": "Plan my trip"
+        },
+        "help": {
+          "popularFlights": "Up to six airports shown as quick picks."
+        }
+      },
+      "menus": {
+        "one": "menu",
+        "other": "menus",
+        "intro": "The links in the header, the phone menu, the tab bar and the footer.",
+        "sections": {
+          "menu": "Menu"
+        },
+        "fields": {
+          "key": "Which menu",
+          "items": "Links",
+          "items_label": "Link text",
+          "items_description": "Line under the link",
+          "items_visible": "Show this link",
+          "items_item": "Link"
+        }
+      },
+      "announcements": {
+        "one": "announcement",
+        "other": "announcements",
+        "intro": "The thin bar at the top of every page, shown between its start and end.",
+        "sections": {
+          "message": "Message"
+        },
+        "fields": {
+          "link_label": "Link text"
+        }
+      },
+      "notificationTemplates": {
+        "one": "message template",
+        "other": "message templates",
+        "intro": "The emails and messages the system sends to customers and staff.",
+        "sections": {
+          "template": "Message"
+        },
+        "fields": {
+          "key": "Which message",
+          "body": "Message text",
+          "enabled": "Send this message"
+        },
+        "help": {
+          "body": "Words in curly brackets are filled in when it is sent, like '{name}'."
+        }
+      },
+      "homeContent": {
+        "one": "home page text",
+        "other": "home page texts",
+        "intro": "The words of the home page: the top, Why Waafa, the store block, reviews and the closing call.",
+        "sections": {
+          "hero": "Top of the page",
+          "why": "Why Waafa",
+          "store": "Waafas World block",
+          "reviews": "Reviews",
+          "cta": "Closing call"
+        },
+        "fields": {
+          "hero_title": "Headline",
+          "hero_lead": "Intro text",
+          "cta_title": "Title",
+          "cta_body": "Text"
+        },
+        "help": {
+          "hero_titleAccent": "Shown in colour after the headline.",
+          "hero_rotating": "One place or short phrase each; they take turns.",
+          "why_figure": "A real number only, like 12+."
+        }
+      },
+      "homeSections": {
+        "one": "home section",
+        "other": "home sections",
+        "intro": "The blocks of the home page: their titles, their order and whether they show.",
+        "sections": {
+          "section": "Section"
+        },
+        "fields": {
+          "key": "Which section",
+          "enabled": "Show on the home page"
+        }
+      },
+      "trustItems": {
+        "one": "trust point",
+        "other": "trust points",
+        "intro": "The short promises under the search box on the home page.",
+        "sections": {
+          "item": "Trust point"
+        },
+        "fields": {
+          "title": "Promise"
+        }
+      },
+      "values": {
+        "one": "value",
+        "other": "values",
+        "intro": "Our values on About us.",
+        "sections": {
+          "value": "Value"
+        }
+      },
+      "timeline": {
+        "one": "milestone",
+        "other": "milestones",
+        "intro": "The company's story on About us, year by year.",
+        "sections": {
+          "event": "Milestone"
+        },
+        "fields": {
+          "text": "What happened"
+        }
+      },
+      "destinations": {
+        "one": "destination",
+        "other": "destinations",
+        "intro": "Destination cards on the home page, with flight time, visa note and price.",
+        "sections": {
+          "place": "Place",
+          "photo": "Photo",
+          "facts": "Facts"
+        },
+        "fields": {
+          "iata": "Nearest airport",
+          "fromPrice": "Flights from",
+          "visaEasy": "Visa is easy"
+        },
+        "help": {
+          "fromPrice": "An indicative fare in taka, VAT included."
+        }
+      },
+      "banners": {
+        "one": "banner",
+        "other": "banners",
+        "intro": "Offer banners on the home page, the store and flight results, shown between their dates.",
+        "sections": {
+          "banner": "Banner",
+          "photo": "Photo",
+          "link": "Button"
+        },
+        "fields": {
+          "code": "Promo code",
+          "link_label": "Button text"
+        },
+        "help": {
+          "code": "Optional; shown so customers can copy it."
+        }
+      },
+      "pages": {
+        "one": "page",
+        "other": "pages",
+        "intro": "Information pages such as policies and terms.",
+        "sections": {
+          "page": "Page",
+          "content": "Content",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "title": "Page title",
+          "highlights": "Key points",
+          "sections_heading": "Heading",
+          "sections_body": "Text",
+          "sections_item": "Section"
+        },
+        "help": {
+          "summary": "Shown under the title and in search results when there's no SEO description."
+        }
+      },
+      "servicePages": {
+        "one": "service page",
+        "other": "service pages",
+        "intro": "The Printing Solutions and International Trading pages.",
+        "sections": {
+          "intro": "Top of the page",
+          "facts": "Key facts",
+          "services": "Services",
+          "steps": "How it works",
+          "form": "Request form",
+          "questions": "Questions and answers",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "key": "Service",
+          "facts_value": "Number or fact",
+          "facts_label": "What it means",
+          "services_title": "Service",
+          "services_body": "Description",
+          "steps_title": "Step",
+          "steps_body": "Description",
+          "facts_item": "Fact",
+          "services_item": "Service",
+          "steps_item": "Step",
+          "questions_item": "Question",
+          "services": "Service cards"
+        }
+      },
+      "pageBlocks": {
+        "one": "page block",
+        "other": "page blocks",
+        "intro": "Small cards on About us, Contact, Baggage information, EMI and Offline payment.",
+        "sections": {
+          "block": "Block",
+          "link": "Link"
+        },
+        "fields": {
+          "link_label": "Link text"
+        },
+        "help": {
+          "group": "Blocks with the same group show together, like office or banks."
+        }
+      },
+      "blogCategories": {
+        "one": "blog category",
+        "other": "blog categories",
+        "intro": "Topics that group blog posts.",
+        "sections": {
+          "category": "Category"
+        }
+      },
+      "blogPosts": {
+        "one": "blog post",
+        "other": "blog posts",
+        "intro": "Articles on the blog, with a cover photo and sections.",
+        "sections": {
+          "post": "Post",
+          "photo": "Cover photo",
+          "content": "Content",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "intro": "Opening paragraph",
+          "cta": "Call to action at the end",
+          "featured": "Feature on the blog",
+          "sections_heading": "Heading",
+          "sections_body": "Text",
+          "sections_item": "Section"
+        },
+        "help": {
+          "excerpt": "Shown on blog cards and in search results."
+        }
+      },
+      "faqs": {
+        "one": "question",
+        "other": "questions",
+        "intro": "Questions and answers on the FAQ page; up to five show on the home page.",
+        "sections": {
+          "question": "Question and answer",
+          "link": "Link"
+        },
+        "fields": {
+          "link_label": "Link text"
+        }
+      },
+      "galleryAlbums": {
+        "one": "album",
+        "other": "albums",
+        "intro": "Photo and video albums in the gallery.",
+        "sections": {
+          "album": "Album",
+          "photos": "Photos and videos"
+        },
+        "fields": {
+          "items": "Album photos and videos",
+          "items_kind": "Photo or video",
+          "items_url": "Video link",
+          "items_item": "Photo or video"
+        }
+      },
+      "team": {
+        "one": "team member",
+        "other": "team members",
+        "intro": "People in Meet our team on the home page and About us. Their initials show until a photo is added.",
+        "sections": {
+          "person": "Person",
+          "photo": "Photo",
+          "contact": "Contact"
+        },
+        "fields": {
+          "featured": "Show first"
+        },
+        "help": {
+          "initials": "Up to three letters, shown until a real photo is uploaded."
+        }
+      },
+      "baggageRules": {
+        "one": "baggage rule",
+        "other": "baggage rules",
+        "intro": "Baggage allowances by airline on Baggage information.",
+        "sections": {
+          "rule": "Airline and cabin",
+          "allowance": "Allowance"
+        }
+      },
+      "emiBanks": {
+        "one": "EMI bank",
+        "other": "EMI banks",
+        "intro": "Banks that offer instalments, on the EMI page.",
+        "sections": {
+          "bank": "Bank"
+        },
+        "fields": {
+          "name": "Bank name"
+        }
+      },
+      "mediaSlots": {
+        "one": "site photo",
+        "other": "site photos",
+        "intro": "The photos and videos in fixed places on the site, such as page headers.",
+        "sections": {
+          "slot": "Place on the site",
+          "media": "Photo and video"
+        },
+        "fields": {
+          "key": "Place on the site"
+        }
+      },
+      "airports": {
+        "one": "airport",
+        "other": "airports",
+        "intro": "Airports in the flight search.",
+        "sections": {
+          "airport": "Airport"
+        },
+        "fields": {
+          "iata": "Airport code",
+          "name": "Airport name"
+        },
+        "help": {
+          "iata": "Three capital letters, like DAC.",
+          "countryCode": "Two capital letters, like BD."
+        }
+      },
+      "airlines": {
+        "one": "airline",
+        "other": "airlines",
+        "intro": "Airlines with their logos, used by fares and baggage rules.",
+        "sections": {
+          "airline": "Airline",
+          "logo": "Logo"
+        },
+        "fields": {
+          "code": "Airline code",
+          "name": "Airline name"
+        },
+        "help": {
+          "code": "Two characters, like BG or EK."
+        }
+      },
+      "groupFares": {
+        "one": "group fare",
+        "other": "group fares",
+        "intro": "Seats bought in advance, on Group fares and the home page.",
+        "sections": {
+          "flight": "Flight",
+          "seat": "Seats and price"
+        }
+      },
+      "flightRoutes": {
+        "one": "flight route",
+        "other": "flight routes",
+        "intro": "Route pages such as Dhaka to Dubai, with tips and questions.",
+        "sections": {
+          "route": "Route",
+          "photo": "Photo",
+          "price": "Price",
+          "tips": "Tips and questions",
+          "visa": "Visa",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "title": "Page title",
+          "airlineCodes": "Airlines on this route",
+          "fromPrice": "Fares from",
+          "tips_title": "Tip",
+          "tips_body": "Text",
+          "popular": "Popular route",
+          "tips_item": "Tip",
+          "faqs_item": "Question"
+        }
+      },
+      "tourPackages": {
+        "one": "tour package",
+        "other": "tour packages",
+        "intro": "Holiday packages on Tour packages and the home page.",
+        "sections": {
+          "basics": "Basics",
+          "trip": "Trip",
+          "photos": "Photos and video",
+          "highlights": "Highlights",
+          "itinerary": "Day by day",
+          "prices": "Prices",
+          "included": "Included and not included",
+          "hotels": "Hotels",
+          "visa": "Visa",
+          "terms": "Terms, questions and related packages",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "title": "Package name",
+          "departures_date": "Departure date",
+          "itinerary_title": "Day title",
+          "itinerary_body": "Plan for the day",
+          "itinerary_tags": "Meals and notes",
+          "highlights_title": "Highlight",
+          "nightsPerCity_city": "City",
+          "prices_label": "Name shown",
+          "prices_price": "Price per person",
+          "hotels_description": "Hotel",
+          "visa_title": "Visa title",
+          "visa_body": "Visa text",
+          "visa_countrySlug": "Visa country",
+          "faqs": "Questions and answers",
+          "itinerary_item": "Day",
+          "prices_item": "Price",
+          "highlights_item": "Highlight",
+          "hotels_item": "Hotel",
+          "departures_item": "Departure",
+          "nightsPerCity_item": "City stop",
+          "faqs_item": "Question",
+          "gallery_item": "Photo",
+          "highlights": "Highlight points",
+          "prices": "Price options"
+        },
+        "help": {
+          "placesLabel": "As shown on cards, like Bangkok, Pattaya.",
+          "fromPrice": "The lowest price per person, in taka, VAT included.",
+          "includesShort": "Up to four short points for the card.",
+          "anyDate": "Turn off when customers can only travel on the fixed departures."
+        }
+      },
+      "hotelPlaces": {
+        "one": "hotel place",
+        "other": "hotel places",
+        "intro": "Cities and hotels customers can search for.",
+        "sections": {
+          "place": "Place"
+        },
+        "fields": {
+          "kind": "City or hotel"
+        }
+      },
+      "visaCountries": {
+        "one": "visa country",
+        "other": "visa countries",
+        "intro": "Countries on the Visa pages, with their visa types, documents and prices.",
+        "sections": {
+          "country": "Basics",
+          "photo": "Photo",
+          "types": "Visa types",
+          "forms": "Forms, questions and guide",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "name": "Country",
+          "types_type": "Visa type",
+          "types_checklist_title": "Document",
+          "forms_label": "Form name",
+          "forms_url": "Download link",
+          "popular": "Popular country",
+          "types_item": "Visa type",
+          "types_checklist_item": "Document",
+          "forms_item": "Form",
+          "faqs_item": "Question"
+        },
+        "help": {
+          "flagCode": "Two capital letters, like TH for Thailand.",
+          "types_embassyFee": "Leave empty when it varies.",
+          "types_processingTime": "Like 5 to 7 working days."
+        }
+      },
+      "visaGuides": {
+        "one": "visa guide",
+        "other": "visa guides",
+        "intro": "Step-by-step visa guides.",
+        "sections": {
+          "guide": "Guide",
+          "photo": "Cover photo",
+          "content": "Content",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "countrySlug": "Country",
+          "sections_heading": "Heading",
+          "sections_body": "Text",
+          "sections_item": "Section"
+        }
+      },
+      "shopContent": {
+        "one": "store text",
+        "other": "store texts",
+        "intro": "The words of the Waafas World home: strips, the corporate block, services and trust points.",
+        "sections": {
+          "tagline": "Tagline",
+          "bulk": "Bulk order strip",
+          "finder": "Printer finder strip",
+          "corporate": "Corporate orders",
+          "services": "Services",
+          "trust": "Trust points"
+        },
+        "fields": {
+          "corporate_steps_title": "Step",
+          "services_title": "Service",
+          "trust_title": "Promise",
+          "corporate_steps_item": "Step",
+          "services_item": "Service",
+          "trust_item": "Trust point"
+        }
+      },
+      "attributeSets": {
+        "one": "attribute set",
+        "other": "attribute sets",
+        "intro": "Product attributes, such as page yield or colour, shared by a category's products.",
+        "sections": {
+          "set": "Attribute set"
+        },
+        "fields": {
+          "name": "Set name",
+          "attributes_label": "Attribute name",
+          "attributes_type": "Kind of value",
+          "attributes_options": "Choices",
+          "attributes_item": "Attribute"
+        }
+      },
+      "categories": {
+        "one": "category",
+        "other": "categories",
+        "intro": "Store categories and their place in the category tree.",
+        "sections": {
+          "category": "Category",
+          "photo": "Banner photo",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "name": "Category name"
+        }
+      },
+      "brands": {
+        "one": "brand",
+        "other": "brands",
+        "intro": "Brands in Waafas World.",
+        "sections": {
+          "brand": "Brand",
+          "logo": "Logo"
+        },
+        "fields": {
+          "name": "Brand name"
+        }
+      },
+      "compatibleModels": {
+        "one": "printer model",
+        "other": "printer models",
+        "intro": "Printer models for the finder: which products fit which printer.",
+        "sections": {
+          "model": "Printer model"
+        },
+        "fields": {
+          "brand": "Printer brand"
+        }
+      },
+      "products": {
+        "one": "product",
+        "other": "products",
+        "intro": "Products in Waafas World, with photos, variants, prices and stock.",
+        "sections": {
+          "basics": "Basics",
+          "photos": "Photos and video",
+          "details": "Details",
+          "warranty": "Warranty",
+          "options": "Options, variants and stock",
+          "selling": "Selling",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "title": "Product name",
+          "highlights_text": "Highlight",
+          "specs_label": "Name",
+          "warranty_items": "Warranty points",
+          "options_label": "Option name",
+          "options_display": "Show options as",
+          "options_values_value": "Value",
+          "variants_options": "Option values",
+          "variants_images": "Variant photos",
+          "images_item": "Photo",
+          "variants_item": "Variant",
+          "options_item": "Option",
+          "options_values_item": "Value",
+          "specs_item": "Specification",
+          "highlights_item": "Highlight",
+          "warranty_items_item": "Warranty point",
+          "variants_images_item": "Photo"
+        },
+        "help": {
+          "showPrice": "When it's off, customers ask for a quote.",
+          "bulkFrom": "Orders of this many pieces or more ask for a quote.",
+          "cardSpec": "A short line under the name on product cards."
+        }
+      },
+      "collections": {
+        "one": "collection",
+        "other": "collections",
+        "intro": "Hand-picked or rule-based groups of products, such as Office essentials.",
+        "sections": {
+          "collection": "Collection",
+          "photo": "Photo",
+          "rule": "Which products"
+        },
+        "fields": {
+          "name": "Collection name",
+          "rule_type": "Products come from"
+        }
+      },
+      "deals": {
+        "one": "deal",
+        "other": "deals",
+        "intro": "Time-limited prices on Deals.",
+        "sections": {
+          "deal": "Deal"
+        }
+      },
+      "storeRows": {
+        "one": "store row",
+        "other": "store rows",
+        "intro": "The rows of the Waafas World home: their titles, their order and whether they show.",
+        "sections": {
+          "row": "Row"
+        },
+        "fields": {
+          "key": "Which row",
+          "enabled": "Show in the store"
+        }
+      },
+      "coupons": {
+        "one": "coupon",
+        "other": "coupons",
+        "intro": "Discount codes customers type at checkout.",
+        "sections": {
+          "coupon": "Coupon"
+        },
+        "fields": {
+          "code": "Coupon code",
+          "type": "Discount type",
+          "value": "Discount",
+          "enabled": "Coupon can be used"
+        },
+        "help": {
+          "code": "Capital letters and digits, like EID500.",
+          "value": "A percent, like 10, or taka, like 500, as the type says."
+        }
+      }
     }
   },
   "Consent": {

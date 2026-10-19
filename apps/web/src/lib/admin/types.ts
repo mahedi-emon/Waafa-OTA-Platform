@@ -272,5 +272,6 @@ export type ContentRecordResponse = {
   position: number;
   version: number;
   updatedAt: string;
+  updatedBy?: string | null;
   data: unknown;
 };
