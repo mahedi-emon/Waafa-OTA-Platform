@@ -4791,7 +4791,7 @@
           "menu": "Menu"
         },
         "fields": {
-          "key": "Menu",
+          "key": "Which menu",
           "items": "Links",
           "items_label": "Link text",
           "items_description": "Line under the link",
@@ -4818,7 +4818,7 @@
           "template": "Message"
         },
         "fields": {
-          "key": "Message",
+          "key": "Which message",
           "body": "Message text",
           "enabled": "Send this message"
         },
@@ -4857,7 +4857,7 @@
           "section": "Section"
         },
         "fields": {
-          "key": "Section",
+          "key": "Which section",
           "enabled": "Show on the home page"
         }
       },
@@ -4970,7 +4970,8 @@
           "facts_item": "Fact",
           "services_item": "Service",
           "steps_item": "Step",
-          "questions_item": "Question"
+          "questions_item": "Question",
+          "services": "Service cards"
         }
       },
       "pageBlocks": {
@@ -5023,7 +5024,7 @@
         "other": "questions",
         "intro": "Questions and answers on the FAQ page; up to five show on the home page.",
         "sections": {
-          "question": "Question",
+          "question": "Question and answer",
           "link": "Link"
         },
         "fields": {
@@ -5039,7 +5040,7 @@
           "photos": "Photos and videos"
         },
         "fields": {
-          "items": "Photos and videos",
+          "items": "Album photos and videos",
           "items_kind": "Photo or video",
           "items_url": "Video link",
           "items_item": "Photo or video"
@@ -5196,7 +5197,9 @@
           "departures_item": "Departure",
           "nightsPerCity_item": "City stop",
           "faqs_item": "Question",
-          "gallery_item": "Photo"
+          "gallery_item": "Photo",
+          "highlights": "Highlight points",
+          "prices": "Price options"
         },
         "help": {
           "placesLabel": "As shown on cards, like Bangkok, Pattaya.",
@@ -5221,7 +5224,7 @@
         "other": "visa countries",
         "intro": "Countries on the Visa pages, with their visa types, documents and prices.",
         "sections": {
-          "country": "Country",
+          "country": "Basics",
           "photo": "Photo",
           "types": "Visa types",
           "forms": "Forms, questions and guide",
@@ -5402,7 +5405,7 @@
           "row": "Row"
         },
         "fields": {
-          "key": "Row",
+          "key": "Which row",
           "enabled": "Show in the store"
         }
       },

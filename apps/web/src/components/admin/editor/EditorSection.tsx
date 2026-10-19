@@ -1,10 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import { cn } from "cn";
 import type { ResolvedSection } from "@/lib/admin/blueprints/types";
 import { resolve } from "@/lib/admin/schema";
+import { fieldId } from "../schema/fieldIds";
 import { ObjectField } from "../schema/ObjectField";
 import { SchemaField } from "../schema/SchemaField";
+import { SectionLabelContext, type SectionLabel } from "../schema/useQuietLabel";
 import { useSchemaEditor } from "../schema/useSchemaEditor";
 import { isWide } from "../schema/wideWidgets";
 
@@ -24,6 +27,16 @@ function EditorSection({ section }: EditorSectionProps) {
   const required = new Set(root.required ?? []);
   const only = section.fields.length === 1 ? section.fields[0] : undefined;
   const onlyField = only !== undefined ? editor.blueprint.fields[only] : undefined;
+  const shown = section.fields.filter((name) => !editor.blueprint.fields[name]?.hidden);
+  const single = shown.length === 1 ? shown[0] : undefined;
+  // The one field of a section named like it ("Delivery zones" in Delivery zones) doesn't repeat the name.
+  const label = useMemo<SectionLabel | null>(
+    () =>
+      single === undefined
+        ? null
+        : { title: section.title, id: fieldId(single === "" ? [] : [single]) },
+    [single, section.title],
+  );
 
   let body;
   if (only === "") {
@@ -87,7 +100,7 @@ function EditorSection({ section }: EditorSectionProps) {
         </h2>
         {section.lead ? <p className="mt-1 text-[14px] text-mist-600">{section.lead}</p> : null}
       </header>
-      {body}
+      <SectionLabelContext.Provider value={label}>{body}</SectionLabelContext.Provider>
     </section>
   );
 }

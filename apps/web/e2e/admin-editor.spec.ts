@@ -45,7 +45,7 @@ async function openFirstFaq(page: Page) {
     .click();
   await expect(page.getByRole("tab", { name: "History" })).toBeVisible();
   // The editor is interactive once its words and widgets are hydrated.
-  await expect(page.getByLabel("Answer")).toBeEditable();
+  await expect(page.getByRole("textbox", { name: "Answer", exact: true })).toBeEditable();
 }
 
 test("a question is edited in plain words, saved with Ctrl S, and History brings the old answer back", async ({
@@ -62,14 +62,16 @@ test("a question is edited in plain words, saved with Ctrl S, and History brings
   await expect(page.getByRole("tab", { name: /json/i })).toHaveCount(0);
   await expect(page.getByLabel(/\bid\b/i)).toHaveCount(0);
 
-  const answer = page.getByLabel("Answer");
+  const answer = page.getByRole("textbox", { name: "Answer", exact: true });
   const original = await answer.inputValue();
   await answer.fill(`${original} Sample one ${STAMP}.`);
   await expect(page.getByText("Unsaved changes")).toBeVisible();
   await until(() => page.keyboard.press("Control+s"), page.getByText("Saved.").first());
   await expect(page.getByText("All changes saved")).toBeVisible();
 
-  await page.getByLabel("Answer").fill(`${original} Sample two ${STAMP}.`);
+  await page
+    .getByRole("textbox", { name: "Answer", exact: true })
+    .fill(`${original} Sample two ${STAMP}.`);
   await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page.getByText("All changes saved")).toBeVisible();
 
@@ -81,7 +83,10 @@ test("a question is edited in plain words, saved with Ctrl S, and History brings
   await page.getByRole("button", { name: "Restore", exact: true }).click();
   await expect(page.getByText("The older version is back.")).toBeVisible();
   await page.getByRole("tab", { name: "Edit" }).click();
-  await expect(page.getByLabel("Answer")).toHaveValue(`${original} Sample one ${STAMP}.`);
+  await expect(page.getByRole("textbox", { name: "Answer", exact: true })).toHaveValue(
+    `${original} Sample one ${STAMP}.`,
+  );
+  await expect(page.getByText("The older version is back.")).toBeHidden({ timeout: 10_000 });
 
   // Undo the very first change too: back to the answer the page had before this test.
   await page.getByRole("tab", { name: "History" }).click();
@@ -89,7 +94,7 @@ test("a question is edited in plain words, saved with Ctrl S, and History brings
   await page.getByRole("button", { name: "Restore", exact: true }).click();
   await expect(page.getByText("The older version is back.")).toBeVisible();
   await page.getByRole("tab", { name: "Edit" }).click();
-  await expect(page.getByLabel("Answer")).toHaveValue(original);
+  await expect(page.getByRole("textbox", { name: "Answer", exact: true })).toHaveValue(original);
   expect(errors).toEqual([]);
 });
 
@@ -99,7 +104,7 @@ test("typed work survives a reload, and leaving with unsaved changes asks first"
   test.setTimeout(120_000);
   await signIn(page);
   await openFirstFaq(page);
-  const question = page.getByLabel("Question");
+  const question = page.getByRole("textbox", { name: "Question", exact: true });
   const original = await question.inputValue();
   await question.fill(`${original} (draft ${STAMP})`);
   // The draft is kept on this device a moment after typing stops.
@@ -112,16 +117,20 @@ test("typed work survives a reload, and leaving with unsaved changes asks first"
     .click();
   await expect(page.getByRole("alertdialog", { name: "Leave without saving?" })).toBeVisible();
   await page.getByRole("button", { name: "Stay" }).click();
-  await expect(page.getByLabel("Question")).toHaveValue(`${original} (draft ${STAMP})`);
+  await expect(page.getByRole("textbox", { name: "Question", exact: true })).toHaveValue(
+    `${original} (draft ${STAMP})`,
+  );
 
   // A reload offers the draft back.
   page.once("dialog", (dialog) => void dialog.accept());
   await page.reload();
   await expect(page.getByText(/are on this device\.$/)).toBeVisible();
   await page.getByRole("button", { name: "Restore them" }).click();
-  await expect(page.getByLabel("Question")).toHaveValue(`${original} (draft ${STAMP})`);
+  await expect(page.getByRole("textbox", { name: "Question", exact: true })).toHaveValue(
+    `${original} (draft ${STAMP})`,
+  );
   await page.getByRole("button", { name: "Discard changes" }).click();
-  await expect(page.getByLabel("Question")).toHaveValue(original);
+  await expect(page.getByRole("textbox", { name: "Question", exact: true })).toHaveValue(original);
 });
 
 test("a save after someone else's shows who saved first, and nothing is overwritten silently", async ({
@@ -136,13 +145,17 @@ test("a save after someone else's shows who saved first, and nothing is overwrit
   await signIn(second);
   await openFirstFaq(first);
   await openFirstFaq(second);
-  const original = await first.getByLabel("Answer").inputValue();
+  const original = await first.getByRole("textbox", { name: "Answer", exact: true }).inputValue();
 
-  await first.getByLabel("Answer").fill(`${original} First ${STAMP}.`);
+  await first
+    .getByRole("textbox", { name: "Answer", exact: true })
+    .fill(`${original} First ${STAMP}.`);
   await first.getByRole("button", { name: "Save changes" }).click();
   await expect(first.getByText("All changes saved")).toBeVisible();
 
-  await second.getByLabel("Answer").fill(`${original} Second ${STAMP}.`);
+  await second
+    .getByRole("textbox", { name: "Answer", exact: true })
+    .fill(`${original} Second ${STAMP}.`);
   await second.getByRole("button", { name: "Save changes" }).click();
   const dialog = second.getByRole("alertdialog", { name: /saved this/ });
   await expect(dialog).toBeVisible();
@@ -150,7 +163,7 @@ test("a save after someone else's shows who saved first, and nothing is overwrit
   await expect(second.getByText("All changes saved")).toBeVisible();
 
   // Put the answer back for the next run.
-  await second.getByLabel("Answer").fill(original);
+  await second.getByRole("textbox", { name: "Answer", exact: true }).fill(original);
   await second.getByRole("button", { name: "Save changes" }).click();
   await expect(second.getByText("All changes saved")).toBeVisible();
   await first.close();
@@ -164,7 +177,7 @@ test("a new question starts plain, misses are explained, and Duplicate makes a h
   await signIn(page);
   await page.goto("/secure-admin-control/content/faqs/new");
   await expect(page.getByRole("heading", { level: 1, name: "New question" })).toBeVisible();
-  await expect(page.getByLabel("Answer")).toBeEditable();
+  await expect(page.getByRole("textbox", { name: "Answer", exact: true })).toBeEditable();
 
   // Saving with empty fields says what to fix, with links to the fields.
   await page.getByRole("button", { name: "Create" }).click();
@@ -175,8 +188,12 @@ test("a new question starts plain, misses are explained, and Duplicate makes a h
   // Seven categories: a list to pick from.
   await page.getByLabel("Category").click();
   await page.getByRole("option", { name: "Visa", exact: true }).click();
-  await page.getByLabel("Question").fill(`Sample: do you help with transit visas? ${STAMP}`);
-  await page.getByLabel("Answer").fill("Yes. Tell us your route and we will check what you need.");
+  await page
+    .getByRole("textbox", { name: "Question", exact: true })
+    .fill(`Sample: do you help with transit visas? ${STAMP}`);
+  await page
+    .getByRole("textbox", { name: "Answer", exact: true })
+    .fill("Yes. Tell us your route and we will check what you need.");
   await page.getByRole("button", { name: "Create" }).click();
   await expect(page.getByRole("tab", { name: "History" })).toBeVisible();
   await expect(page.getByText("Created.").first()).toBeVisible();

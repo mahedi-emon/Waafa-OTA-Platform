@@ -46,7 +46,7 @@ function EditorSectionRail({ sections, states }: EditorSectionRailProps) {
 
   return (
     <nav aria-label={t("title")} className="sticky top-20">
-      <p className="mb-2 px-2 text-[12px] font-semibold tracking-wide text-mist-500 uppercase">
+      <p className="mb-2 px-2 text-[12px] font-semibold tracking-wide text-mist-600 uppercase">
         {t("title")}
       </p>
       <ol className="flex flex-col gap-0.5">
@@ -79,7 +79,7 @@ function EditorSectionRail({ sections, states }: EditorSectionRailProps) {
                     state === "open" && "text-mist-400",
                   )}
                 />
-                <span className="min-w-0 truncate">{section.title}</span>
+                <span className="line-clamp-2 min-w-0 py-2 leading-snug">{section.title}</span>
                 {state !== "open" ? (
                   <span className="sr-only">
                     {state === "complete" ? t("complete") : t("attention")}

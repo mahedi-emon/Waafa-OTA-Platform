@@ -72,6 +72,20 @@ describe("form engine v2 blueprints (D0 R2)", () => {
         if (spec.ref) expect(CONTENT_MODEL[spec.ref.key].kind).toBe("collection");
     });
 
+    it("names a field like its section only when it is the section's one field", () => {
+      // That field's label is for screen readers only (useQuietLabel) and a group named like it draws bare; next to
+      // other fields the name would read twice ("Question" in Question).
+      const repeated = resolved.sections.flatMap((section) => {
+        const fields = section.fields.filter((name) => name !== "" && shown(name));
+        if (fields.length < 2) return [];
+        return fields
+          .filter((name) => resolved.fields[name]?.widget !== "group")
+          .filter((name) => resolved.fields[name]?.label === section.title)
+          .map((name) => `${section.id}.${name}: ${section.title}`);
+      });
+      expect(repeated).toEqual([]);
+    });
+
     it("lets staff reach every required field (or fills it in)", () => {
       const placed = new Set([
         ...blueprint.sections.flatMap((section) => section.fields),

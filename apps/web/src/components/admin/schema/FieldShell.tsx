@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
 import { describedBy } from "./fieldIds";
+import { useQuietLabel } from "./useQuietLabel";
 
 type FieldShellProps = {
   id: string;
@@ -42,6 +43,8 @@ function FieldShell({
   children,
 }: FieldShellProps) {
   const t = useTranslations("Admin.editor.widgets");
+  // The only field of a section with the same name keeps its label for screen readers only.
+  const quiet = useQuietLabel(id, label);
   const labelId = `${id}-label`;
   const helpId = help ? `${id}-help` : undefined;
   const title = (
@@ -52,43 +55,51 @@ function FieldShell({
       ) : null}
     </>
   );
+  const labelClass = quiet ? "sr-only" : "text-[14px] leading-tight font-semibold text-navy-900";
+  const name = group ? (
+    <span id={labelId} className={labelClass}>
+      {title}
+    </span>
+  ) : (
+    <label id={labelId} htmlFor={id} className={labelClass}>
+      {title}
+    </label>
+  );
   const over = counter ? counter.count > counter.max : false;
+  const side =
+    counter || actions ? (
+      <div className="flex shrink-0 items-center gap-2">
+        {counter ? (
+          <span
+            className={cn(
+              "text-[12px] tabular-nums",
+              over
+                ? counter?.soft
+                  ? "font-semibold text-warning-800"
+                  : "font-semibold text-danger-700"
+                : "text-mist-500",
+            )}
+            aria-live={over ? "polite" : undefined}
+          >
+            {t("counter", { count: counter.count, max: counter.max })}
+          </span>
+        ) : null}
+        {actions}
+      </div>
+    ) : null;
 
   return (
     <div className={cn("flex min-w-0 flex-col gap-1.5", className)}>
-      <div className="flex min-h-6 items-end justify-between gap-2">
-        {group ? (
-          <span id={labelId} className="text-[14px] leading-tight font-semibold text-navy-900">
-            {title}
-          </span>
-        ) : (
-          <label
-            id={labelId}
-            htmlFor={id}
-            className="text-[14px] leading-tight font-semibold text-navy-900"
-          >
-            {title}
-          </label>
-        )}
-        <div className="flex shrink-0 items-center gap-2">
-          {counter ? (
-            <span
-              className={cn(
-                "text-[12px] tabular-nums",
-                over
-                  ? counter?.soft
-                    ? "font-semibold text-warning-800"
-                    : "font-semibold text-danger-700"
-                  : "text-mist-500",
-              )}
-              aria-live={over ? "polite" : undefined}
-            >
-              {t("counter", { count: counter.count, max: counter.max })}
-            </span>
-          ) : null}
-          {actions}
+      {quiet && !side ? (
+        name
+      ) : (
+        <div
+          className={cn("flex min-h-6 items-end gap-2", quiet ? "justify-end" : "justify-between")}
+        >
+          {name}
+          {side}
         </div>
-      </div>
+      )}
       {help ? (
         <p id={helpId} className="-mt-0.5 text-[13.5px] leading-snug text-mist-600">
           {help}
