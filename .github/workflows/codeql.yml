@@ -8,6 +8,7 @@ on:
       - "fixtures/**"
       - "scripts/**"
       - ".github/workflows/codeql.yml"
+      - ".github/codeql/**"
   push:
     branches: [main]
   schedule:
@@ -31,12 +32,15 @@ jobs:
         with:
           languages: javascript-typescript
           queries: security-extended
+          config-file: ./.github/codeql/codeql-config.yml
       # Code scanning on a private repository needs GitHub Code Security (a paid add-on). The analysis runs anyway:
       # its results are read below instead of uploaded, so a finding still fails the check (D205, replaces D192).
       - uses: github/codeql-action/analyze@v4
         with:
           category: "/language:javascript-typescript"
           upload: ${{ github.event.repository.private && 'never' || 'always' }}
+          # A private repository can't take the database either; skip the upload and its retries.
+          upload-database: ${{ github.event.repository.private && 'false' || 'true' }}
           output: codeql-results
       - name: Findings
         run: node scripts/codeql-findings.mjs codeql-results

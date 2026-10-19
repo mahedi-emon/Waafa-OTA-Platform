@@ -38,6 +38,14 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #210 · CI · CodeQL on main: developer download scripts — ✅ Done
+| Field | Value |
+| --- | --- |
+| Found | After #209 the push to `main` ran a full analysis (pull request runs report only changed lines) and failed on `js/http-to-file-access` in `scripts/fetch-airline-logos.mjs:147` and `docs/design/photos/get-waafa-photos.mjs:237`, two developer download tools that save fetched images under fixed names. It also spent minutes retrying a database upload a private repository refuses |
+| Built | `.github/codeql/codeql-config.yml` with `paths-ignore` for those two files and the reason; `codeql.yml` uses it, skips the database upload while private, and its path filter includes `.github/codeql/**` |
+| Tests | CodeQL on the push to `main` after the merge (the full analysis) |
+| Decision | D206 |
+
 ### #192 · D0 R2 · Form engine v2 — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1445,6 +1453,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D203 | 20 Oct | Picker choices (`GET /admin/content/:key/options`) are open to every staff member only for `PICKER_KEYS` in packages/shared (the 12 lists editors pick from); every other list's choices need edit access to it; a web test keeps the blueprints' references inside that list | Review: a sales agent could read every coupon code through the picker endpoint | #192 |
 | D204 | 20 Oct | Duplicate: lists of fixed places or codes (menus, notification templates, home sections, service pages, media slots, store rows, airports, airlines, coupons) can't be copied (`canCopy`, API 409, no button); a copied product gets its own variant ids and SKUs; slug-keyed lists keep inner ids unique (API 409 "exists"); a long title keeps its words when " (copy)" won't fit | Review: a product copy shared variant ids with the original and broke its orders | #192 |
 | D205 | 20 Oct | CodeQL runs on every pull request and push again (replaces D192): on the private repository the analysis keeps its SARIF (`upload: never`, `output: codeql-results`) and `scripts/codeql-findings.mjs` turns each finding into an annotation and a job-summary row and fails the check on any error or warning; the SARIF is kept 7 days as an artifact; on a public repository it uploads as before | Owner, 20 Oct: every CI check must run and pass, nothing skipped. Same queries (security-extended), same path filters, about five minutes a run | #208 |
+| D206 | 20 Oct | `.github/codeql/codeql-config.yml` leaves out two developer download tools (`scripts/fetch-airline-logos.mjs`, `docs/design/photos/get-waafa-photos.mjs`): they save fetched logos and photos under fixed names, are never shipped or run in CI, and `js/http-to-file-access` there is their job. Everything else is analysed. While private, the CodeQL database isn't uploaded (no retries) | Pull request runs report only alerts in changed lines; the first full run on `main` met these two older files | #210 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1523,6 +1532,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 20 Oct 04:00–04:30 | R2 merged (#207, 69d57f9). The first full CodeQL run on `main` met two developer download scripts: #210 leaves them out with the reason and skips the private database upload | #192, #205, #210 | #207, #210 PR | CI green on #207 (8/8) |
 | 19 Oct 21:40 – 20 Oct 04:00 | R2 form engine v2: blueprints for all 50 content keys; sectioned editor with side panel, sticky action bar, History with restore, drafts on the device, leave guard, conflict and session dialogs; API history, restore, duplicate, picker options and list order (#205); lead facts. Browser review at 320–1440: one name per section, a status with its reason on every record, growing lines, link fields full width, editor first load 364 → 303 KB; independent review fixed (4 P1, 3 P2, 3 P3) | #192, #205 | #207 | shared 91 · web unit 555 · API 155 · e2e API job 23/23 · smoke 132 · budget 6/6 |
 | 20 Oct | Owner: never skip CI. #208 CodeQL runs on the private repository (SARIF read in the job, fails on findings); R2 review fixes verified locally in the CI job order first | #208 | #208 PR | CodeQL green; script on sample SARIF |
 | 19 Oct 18:20–21:30 | R1 admin shell: grouped sidebar with badges, top bar (Ctrl K, + New, bell), breadcrumbs, page header, StatusChip, settings door, states, sign-in; `GET /admin/inbox` and `GET /admin/search`; role rules shared | #191 | R1 PR | shared 87 · web unit 325 · API 145 · e2e admin-shell 4/4, admin-screens 2/2 (axe at 390 and 1440, five widths), budget 6/6 |
