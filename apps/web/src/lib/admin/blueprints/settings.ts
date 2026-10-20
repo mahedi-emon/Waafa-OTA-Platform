@@ -1,4 +1,5 @@
 import {
+  FRAME,
   keep,
   itemId,
   lines,
@@ -85,7 +86,7 @@ export const footerSettingsBlueprint = {
     paymentNote: textarea,
     trustBadges: { widget: "repeater", summary: "label", wide: true },
     trustBadges_id: itemId,
-    ...photoAt("trustBadges_image"),
+    ...photoAt("trustBadges_image", FRAME.logo),
   },
 } satisfies Blueprint;
 

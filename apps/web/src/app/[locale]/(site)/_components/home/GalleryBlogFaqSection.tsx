@@ -64,6 +64,7 @@ async function GalleryBlogFaqSection({ section, reviews }: GalleryBlogFaqSection
                 >
                   <SmartImage
                     src={album.cover.src}
+                    focal={album.cover.focal}
                     alt={album.cover.alt}
                     ratio="1/1"
                     sizes={

@@ -5,6 +5,7 @@ import {
   clampCrop,
   formatBytes,
   isTooSmall,
+  mediaIdOf,
   mediaKindOf,
   mediaPathOf,
   objectPositionOf,
@@ -30,6 +31,8 @@ describe("media rules (D0 R3)", () => {
     );
     expect(mediaPathOf("/media/hero/dubai.jpg")).toBeNull();
     expect(mediaPathOf("/uploads/../secret.webp")).toBeNull();
+    expect(mediaIdOf("/uploads/2026/10/abc12345.webp")).toBe("abc12345");
+    expect(mediaIdOf("/media/hero/dubai.jpg")).toBeNull();
   });
 
   it("turns a focal point into object-position and warns about small photos", () => {

@@ -438,6 +438,39 @@ photo is too small; crop and focal point (stored with the image so `object-posit
 suggested from the title; credit folded under "Photo credit". The server keeps the existing pipeline (sharp:
 auto-rotate, at most 2560 px, WebP, metadata stripped, width and height stored); next/image makes the sizes.
 
+### 11.1 What R3 shipped
+- **Frames** (D208): every photo field names the frame it shows in on the site (`FRAME` in
+  `lib/admin/blueprints/common.ts`, taken from the SmartImage ratios of the public pages): wide 16:9 ≥ 1600 (heroes,
+  visa covers, banners), landscape 4:3 ≥ 1600 (package covers and galleries, album covers), card 16:10 ≥ 1200 (blog,
+  offers), portrait 3:4 ≥ 900 (destinations), person 4:5 ≥ 600 (team), square 1:1 ≥ 1000 (products), poster 16:9 ≥ 1280,
+  share 1.91:1 ≥ 1200 (search and chat previews), logo and free (own shape). The editor draws the photo in that frame,
+  says "4:3, at least 1600 px wide · 2400 × 1800 px", warns below the width, and the crop uses it. A blueprint test fails
+  any photo field without a frame and any video drawn as a plain group.
+- **MediaField** (one photo): an empty field is a drop zone (drop, paste a file or a web address, Upload a photo,
+  Choose from library) with the frame and file rules; an upload shows its local preview with progress and Cancel, a
+  failure says why with Try again; a set photo shows Replace (upload or library, or drop a file on the photo), Crop
+  (library photos), Focal point, the description (filled from the item's or record's name, a warning while empty), the
+  credit folded and "Use a web address instead" (size measured when it loads). Two columns when the field is at least
+  36 rem wide (container query), one in a side sheet or on a phone.
+- **GalleryField** (many photos): tiles in the frame's shape, the first marked Cover, drag to order (dnd-kit grid
+  after hydration; Move earlier / later and Make cover in each tile's menu), several files at once (two upload at a
+  time, each with progress, Cancel and Try again), several from the library in the order ticked, a side sheet per photo
+  with the full MediaField, Remove with Undo, a "Needs a description" and "Only 900 px wide" note on the tile.
+- **VideoField**: MP4 (plays everywhere) and WebM, each uploaded, chosen from the library or linked; phone versions
+  folded; a dropped file goes to its own format; when no poster is set the browser takes one from the clip at one second
+  and uploads it (real footage, D211); preview with controls, never autoplay; caption and Video credit.
+- **Library page** (`/secure-admin-control/media`): tabs Library · Site images (Super Admin, Admin, Content editor);
+  upload many photos and videos at once; search by words or file name; All · Photos · Videos and Not used yet; Grid
+  (4:3 tiles, description, size, uses) or List (file, size, uses, uploaded by); a details sheet with preview, Copy
+  address, Open file, Crop into a new photo, description and credit with Save, sizes, Where it shows (links to each
+  record or setting), Replace everywhere (choose another file, confirm, each record saved through its History) and
+  Delete file only when nothing shows it. Site images: one card per fixed place with what shows there and Change.
+- **Public site**: SmartImage takes `focal` and sets `object-position`; every cropping image of a record passes it
+  (contained logos and cart thumbnails keep the centre).
+- Heavy parts load on first use (D202): the library picker, the cropper (`@origin-space/image-cropper`), the focal
+  point dialog; react-dropzone sits in the field itself (small). No zod in the browser: media rules come from
+  `@waafa/shared/helpers/media`.
+
 ---
 
 ## 12. Motion (admin)
@@ -502,8 +535,8 @@ grouping. Phone numbers: "+880 1712-345678".
 | DateField, DateRangeField | shadcn **calendar** (react-day-picker 10) + **popover** with month and year dropdowns and Today / Now / Clear (R2; compared again with `wensity/date-picker`, `ai2/date-picker-preset`, `originui/calendar`, `shadcn/calendar-picker-in-a-drawer`); range presets from `sean0205/c-calendar-16` for reports (R9) | editors, reports |
 | KpiCard + Sparkline | 21st.dev `uvain/revenue-charts-kpi` (compared with `makviesainte/progress-metric-card`, `appica-dev/sparkline`, `wensity/card`); sparkline as inline SVG | dashboard |
 | Charts | shadcn **chart** (Recharts, dynamic import) | dashboard, reports |
-| Dropzone | 21st.dev `uvain/file-upload` (per-file progress, retry, explained guards; compared with `ephraimduncan/file-upload-01`, `joyco/file-dropzone`, `wensity/file-uploader`) on react-dropzone | MediaField, GalleryField, media library |
-| ImageCrop + FocalPoint | 21st.dev `originui/image-crop` (fixed-aspect zoom and pan; compared with `haydenbleasel/image-crop`, `ruixen.ui/image-cropper`, `shadcnspace/file-upload-05`); focal point in-house | MediaField |
+| Dropzone | `MediaDropzone` + `useUploadQueue` in-house on react-dropzone 20.1.2, after the 21st.dev `uvain/file-upload` pattern (per-file progress, retry, explained guards; compared with `ephraimduncan/file-upload-01`, `joyco/file-dropzone`, `wensity/file-uploader`); `uvain/file-upload` is a paid marketplace item, so it was not installed (D207) | MediaField, GalleryField, VideoField, media library |
+| ImageCrop + FocalPoint | `ImageCropDialog` on `@origin-space/image-cropper` 0.1.9, the headless package behind 21st.dev `originui/image-crop` (fixed-aspect zoom and pan; compared with `haydenbleasel/image-crop`, `ruixen.ui/image-cropper`, `shadcnspace/file-upload-05`), styled in-house (D207); `FocalPointPicker` in-house (tap, drag or arrow keys, three crop previews) | MediaField, media library |
 | Resizable inbox panes | shadcn **resizable** | inbox (desktop) |
 | Toasts with Undo | shadcn **sonner** | everywhere |
 

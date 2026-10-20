@@ -36,6 +36,7 @@ function CampaignCarousel({ banners, labels }: CampaignCarouselProps) {
             <article className="relative grid min-h-[300px] overflow-hidden bg-navy-900 md:min-h-[360px]">
               <SmartImage
                 src={banner.image.src}
+                focal={banner.image.focal}
                 alt={banner.image.alt}
                 fill
                 preload={index === 0}

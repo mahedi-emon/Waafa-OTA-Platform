@@ -49,6 +49,7 @@ function BannerHero({
         <div aria-hidden="true" className="absolute inset-0 -z-20 overflow-hidden">
           <SmartImage
             src={image.src}
+            focal={image.focal}
             alt=""
             fill
             preload

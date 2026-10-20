@@ -400,6 +400,7 @@ async function PackagePageContent({
                         {hotel.image ? (
                           <SmartImage
                             src={hotel.image.src}
+                            focal={hotel.image.focal}
                             alt={hotel.image.alt}
                             ratio="16/9"
                             sizes="(min-width: 768px) 360px, 100vw"

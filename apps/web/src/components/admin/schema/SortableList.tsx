@@ -16,6 +16,8 @@ export type SortableListProps = {
   nameOf: (index: number) => string;
   /** No reordering (fixed lists). */
   disabled?: boolean;
+  /** "grid": items sit in rows and columns (photo galleries) and move in both directions. */
+  layout?: "list" | "grid";
   className?: string;
   /** Draws one item; `handle` is the drag handle once dragging is ready, null before (and when disabled). */
   renderItem: (index: number, handle: ReactNode) => ReactNode;

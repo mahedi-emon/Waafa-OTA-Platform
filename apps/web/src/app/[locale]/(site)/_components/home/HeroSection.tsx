@@ -129,6 +129,7 @@ async function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectio
           ) : media?.image ? (
             <SmartImage
               src={media.image.src}
+              focal={media.image.focal}
               alt={media.image.alt}
               ratio="16/9"
               sizes={MEDIA_SIZES}

@@ -238,6 +238,7 @@ export default async function ShopPage() {
                   {collection.image ? (
                     <SmartImage
                       src={collection.image.src}
+                      focal={collection.image.focal}
                       alt=""
                       fill
                       sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 100vw"
@@ -388,6 +389,7 @@ export default async function ShopPage() {
                     {image ? (
                       <SmartImage
                         src={image.src}
+                        focal={image.focal}
                         alt={image.alt}
                         ratio="16/10"
                         sizes="(min-width: 640px) 200px, 100vw"

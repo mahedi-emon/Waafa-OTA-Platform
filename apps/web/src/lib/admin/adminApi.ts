@@ -111,13 +111,15 @@ export async function adminDownload(
 }
 
 /**
- * Sends a photo to the media library as the raw body (issue 109): the API checks the bytes, re-encodes and stores it.
+ * Sends a photo or video to the media library as the raw body (issue 109, D0 R3): the API checks the bytes and stores
+ * it. A video arrives as a stream and is passed on as one, so the web server never holds 50 MB at once.
  */
 export async function adminUpload<T>(
   path: string,
-  body: ArrayBuffer,
+  body: ArrayBuffer | ReadableStream<Uint8Array>,
   contentType: string,
   query: Record<string, string>,
+  options: { length?: number; timeoutMs?: number } = {},
 ): Promise<AdminResult<T>> {
   const api = apiConfig();
   if (!api) throw new Error("The admin needs WAAFA_API_URL and WAAFA_INTAKE_KEY");
@@ -125,17 +127,21 @@ export async function adminUpload<T>(
   if (!token) redirect("/secure-admin-control/sign-in");
   const url = new URL(`${api.baseUrl}/api/v1${path}`);
   for (const [key, value] of Object.entries(query)) url.searchParams.set(key, value);
-  const response = await fetch(url, {
+  const init: RequestInit & { duplex?: "half" } = {
     method: "POST",
     headers: {
       authorization: `Bearer ${token}`,
       accept: "application/json",
       "content-type": contentType,
+      ...(options.length ? { "content-length": String(options.length) } : {}),
     },
     body,
     cache: "no-store",
-    signal: AbortSignal.timeout(60_000),
-  });
+    signal: AbortSignal.timeout(options.timeoutMs ?? 60_000),
+    // Node's fetch needs this to send a stream body.
+    ...(body instanceof ReadableStream ? { duplex: "half" as const } : {}),
+  };
+  const response = await fetch(url, init);
   if (response.status === 401) redirect("/secure-admin-control/sign-in");
   if (!response.ok) return { ok: false, problem: await problemOf(response) };
   return { ok: true, data: (await response.json()) as T };

@@ -42,6 +42,12 @@ export function mediaPathOf(src: string): string | null {
   return match?.[1] ?? null;
 }
 
+/** The library file's id behind an address ("/uploads/2026/10/abc12345.webp" → "abc12345"); null for others. */
+export function mediaIdOf(src: string): string | null {
+  const path = mediaPathOf(src);
+  return path ? path.slice(path.lastIndexOf("/") + 1, path.lastIndexOf(".")) : null;
+}
+
 /** A point of a photo staff want kept in view, in percent from the top left. */
 export type FocalPoint = { x: number; y: number };
 

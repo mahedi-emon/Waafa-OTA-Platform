@@ -1,4 +1,5 @@
 import {
+  FRAME,
   faqList,
   keep,
   lines,
@@ -30,7 +31,7 @@ export const airlinesBlueprint = {
     { id: "airline", fields: ["code", "name", "featuredOrder"] },
     { id: "logo", fields: ["logo"] },
   ],
-  fields: { ...photoAt("logo") },
+  fields: { ...photoAt("logo", FRAME.logo) },
 } satisfies Blueprint;
 
 export const groupFaresBlueprint = {
@@ -80,7 +81,7 @@ export const flightRoutesBlueprint = {
     slug: { widget: "slug", prefix: "/flights/" },
     intro: textarea,
     airlineCodes: { widget: "references", ref: { key: "airlines", value: "code" } },
-    ...photoAt("image"),
+    ...photoAt("image", { ...FRAME.wide, minWidth: 1200 }),
     fromPrice: money,
     bestTime: textarea,
     tips: { widget: "repeater", summary: "title", wide: true },
@@ -147,8 +148,8 @@ export const tourPackagesBlueprint = {
     nightsPerCity: { widget: "repeater", summary: "city", wide: true },
     months: { widget: "months" },
     departures: { widget: "repeater", summary: "date", wide: true },
-    ...photoAt("cover"),
-    ...photoList("gallery"),
+    ...photoAt("cover", FRAME.landscape),
+    ...photoList("gallery", FRAME.landscape),
     ...videoAt("video"),
     highlights: { widget: "repeater", summary: "title", wide: true },
     includesShort: lines,
@@ -163,7 +164,7 @@ export const tourPackagesBlueprint = {
     inclusions: lines,
     exclusions: lines,
     hotels: { widget: "repeater", summary: "city", wide: true },
-    ...photoAt("hotels_image"),
+    ...photoAt("hotels_image", { ...FRAME.wide, minWidth: 1000 }),
     visa: { wide: true },
     visa_body: textarea,
     visa_countrySlug: { widget: "reference", ref: { key: "visaCountries", value: "slug" } },

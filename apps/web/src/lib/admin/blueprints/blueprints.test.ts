@@ -90,6 +90,27 @@ describe("form engine v2 blueprints (D0 R2)", () => {
       expect(repeated).toEqual([]);
     });
 
+    it("draws every photo in the frame it shows in on the site (D0 R3)", () => {
+      // The frame gives the editor's shape, the crop and the too-small warning ("16:9, at least 1600 px wide").
+      const unframed = Object.entries(resolved.fields)
+        .filter(
+          ([pattern, field]) =>
+            shown(pattern) && (field.widget === "image" || field.widget === "gallery"),
+        )
+        .filter(([, field]) => !field.frame || field.frame.minWidth < 100)
+        .map(([pattern]) => pattern);
+      expect(unframed).toEqual([]);
+      // A video is a video field (upload, phone versions, poster), never a plain group of addresses.
+      const plainVideos = infos
+        .filter(
+          (info) =>
+            info.kind === "object" && info.node.properties?.mp4 && info.node.properties.poster,
+        )
+        .filter((info) => shown(info.pattern) && resolved.fields[info.pattern]?.widget !== "video")
+        .map((info) => info.pattern);
+      expect(plainVideos).toEqual([]);
+    });
+
     it("lets staff reach every required field (or fills it in)", () => {
       const placed = new Set([
         ...blueprint.sections.flatMap((section) => section.fields),

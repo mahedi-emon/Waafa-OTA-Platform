@@ -26,6 +26,7 @@ async function PackageCard({
         <div className="relative">
           <SmartImage
             src={pkg.cover.src}
+            focal={pkg.cover.focal}
             alt={pkg.cover.alt}
             ratio="4/3"
             sizes={sizes}

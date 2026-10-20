@@ -133,6 +133,7 @@ async function FeedbackContent({
                   {item.photo ? (
                     <SmartImage
                       src={item.photo.src}
+                      focal={item.photo.focal}
                       alt={item.photo.alt}
                       ratio="4/3"
                       sizes="(min-width: 1024px) 380px, 100vw"

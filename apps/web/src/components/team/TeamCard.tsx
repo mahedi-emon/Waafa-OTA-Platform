@@ -26,6 +26,7 @@ function TeamCard({ member, featured = false, badges = [], className }: TeamCard
         {member.photo ? (
           <SmartImage
             src={member.photo.src}
+            focal={member.photo.focal}
             alt={member.photo.alt}
             ratio="4/5"
             sizes={featured ? "(min-width: 768px) 30vw, 80vw" : "(min-width: 768px) 20vw, 70vw"}
