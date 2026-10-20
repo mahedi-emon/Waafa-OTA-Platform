@@ -116,6 +116,7 @@ async function ServicePageView({ page, path, form }: ServicePageViewProps) {
                   ...(header.video.webmMobile ? { webmMobile: header.video.webmMobile } : {}),
                 }}
                 poster={header.video.poster.src}
+                focal={header.video.poster.focal}
                 alt={header.video.poster.alt}
                 sizes="(min-width: 1024px) 560px, 100vw"
                 preloadPoster

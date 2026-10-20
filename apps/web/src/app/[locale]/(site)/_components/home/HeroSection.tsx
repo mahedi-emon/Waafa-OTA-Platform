@@ -121,6 +121,7 @@ async function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectio
             <SmartVideo
               sources={media.video}
               poster={media.video.poster.src}
+              focal={media.video.poster.focal}
               alt={media.video.poster.alt}
               sizes={MEDIA_SIZES}
               preloadPoster

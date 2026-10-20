@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type KeyboardEvent, type PointerEvent } from "react";
+import { useId, useRef, type KeyboardEvent, type PointerEvent } from "react";
 import { objectPositionOf, type FocalPoint } from "@waafa/shared/helpers/media";
 import { cn } from "cn";
 
@@ -31,6 +31,7 @@ const clamp = (value: number) => Math.min(100, Math.max(0, Math.round(value)));
  */
 function FocalPointPicker({ src, alt, value, onChange, strings }: FocalPointPickerProps) {
   const box = useRef<HTMLDivElement>(null);
+  const hintId = useId();
   const point = value ?? { x: 50, y: 50 };
 
   const pick = (event: PointerEvent<HTMLDivElement>) => {
@@ -57,7 +58,9 @@ function FocalPointPicker({ src, alt, value, onChange, strings }: FocalPointPick
 
   return (
     <div className="flex min-w-0 flex-col gap-3">
-      <p className="text-[13.5px] text-mist-600">{strings.hint}</p>
+      <p id={hintId} className="text-[13.5px] text-mist-600">
+        {strings.hint}
+      </p>
       <div
         ref={box}
         onPointerDown={(event) => {
@@ -80,6 +83,7 @@ function FocalPointPicker({ src, alt, value, onChange, strings }: FocalPointPick
         <button
           type="button"
           aria-label={strings.point(point.x, point.y)}
+          aria-describedby={hintId}
           onKeyDown={nudge}
           style={{ left: `${point.x}%`, top: `${point.y}%` }}
           className="absolute size-11 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-[3px] border-white bg-electric-600/35 shadow-[0_0_0_1px_rgb(0_0_0/0.35)] focus-visible:ring-4 focus-visible:ring-ring/60 focus-visible:outline-none active:cursor-grabbing"

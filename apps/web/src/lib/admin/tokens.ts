@@ -71,6 +71,11 @@ export function isSignInPath(pathname: string): boolean {
   return /^\/(?:[a-z]{2}\/)?secure-admin-control\/sign-in\/?$/.test(pathname);
 }
 
+/** The admin's own JSON routes (inbox, pickers, the library): an ended session is a 401 there, never a redirect. */
+export function isAdminApiPath(pathname: string): boolean {
+  return /^\/(?:[a-z]{2}\/)?secure-admin-control\/api\//.test(pathname);
+}
+
 /** Only same-site admin paths may be a post-sign-in destination (no open redirects). */
 export function safeNext(value: unknown): string {
   return typeof value === "string" &&

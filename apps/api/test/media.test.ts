@@ -254,7 +254,15 @@ describe.skipIf(!dbAvailable)("media library v2: uses, replace, crop and video (
       data: {
         data: {
           ...data,
-          photo: { src: first.url, alt: "Rafi at the desk", width: 1600, height: 1200 },
+          photo: {
+            src: first.url,
+            alt: "Rafi at the desk",
+            width: 1600,
+            height: 1200,
+            credit: "Old photographer",
+            creditUrl: "https://unsplash.com/photos/old-desk",
+            focal: { x: 30, y: 40 },
+          },
         },
       },
     });
@@ -292,9 +300,10 @@ describe.skipIf(!dbAvailable)("media library v2: uses, replace, crop and video (
     const after = await prisma.contentDocument.findUniqueOrThrow({
       where: { collection_docId: { collection: "team", docId: member.docId } },
     });
+    // The new photo brings its own words and size; the old credit and focal point don't follow it.
     expect((after.data as { photo: unknown }).photo).toEqual({
       src: second.url,
-      alt: "Rafi at the desk",
+      alt: "Our team at the desk",
       width: 1200,
       height: 1200,
     });
@@ -387,5 +396,18 @@ describe.skipIf(!dbAvailable)("media library v2: uses, replace, crop and video (
       payload: Buffer.concat([Buffer.from([0x1a, 0x45, 0xdf, 0xa3]), Buffer.alloc(64)]),
     });
     expect(webmAsMp4.statusCode).toBe(415);
+
+    // A video slot keeps its format: an MP4 is replaced by an MP4, never by a WebM.
+    const webm = await app.inject({
+      method: "POST",
+      url: `/api/v1/admin/media/video?alt=${encodeURIComponent("Waves at Saint Martin, lighter copy")}`,
+      headers: { ...editor, "content-type": "video/webm" },
+      payload: Buffer.concat([Buffer.from([0x1a, 0x45, 0xdf, 0xa3]), Buffer.alloc(64)]),
+    });
+    expect(webm.statusCode).toBe(201);
+    const swap = await send(editor, "POST", `/${video.id}/replace`, {
+      with: webm.json<Asset>().id,
+    });
+    expect(swap.statusCode).toBe(400);
   });
 });

@@ -14,11 +14,12 @@ import { ChoicesField } from "./ChoicesField";
 import { ColourField } from "./ColourField";
 import { DateField } from "./DateField";
 import { DateTimeField } from "./DateTimeField";
-import { GalleryField } from "./GalleryField";
 import { IconField } from "./IconField";
+import { LazyGalleryField } from "./LazyGalleryField";
+import { LazyMediaField } from "./LazyMediaField";
+import { LazyVideoField } from "./LazyVideoField";
 import { LinesField } from "./LinesField";
 import { MapField } from "./MapField";
-import { MediaField } from "./MediaField";
 import { MoneyField } from "./MoneyField";
 import { MonthsField } from "./MonthsField";
 import { NumberField } from "./NumberField";
@@ -37,7 +38,6 @@ import { TextField } from "./TextField";
 import { TimeOfDayField } from "./TimeOfDayField";
 import { UnionField } from "./UnionField";
 import { VariantField } from "./VariantField";
-import { VideoField } from "./VideoField";
 import { WeekdaysField } from "./WeekdaysField";
 import { useSchemaEditor } from "./useSchemaEditor";
 
@@ -165,17 +165,17 @@ function SchemaField({ schema, path, value, optional, bare = false }: SchemaFiel
       return <WeekdaysField path={path} value={value} />;
     case "image":
       return (
-        <MediaField
+        <LazyMediaField
           {...common}
           node={single ? resolve(single, editor.root) : node}
           nullable={nullable}
         />
       );
     case "gallery":
-      return <GalleryField {...common} node={single ? resolve(single, editor.root) : node} />;
+      return <LazyGalleryField {...common} node={single ? resolve(single, editor.root) : node} />;
     case "video":
       return (
-        <VideoField
+        <LazyVideoField
           {...common}
           node={single ? resolve(single, editor.root) : node}
           nullable={nullable}

@@ -3524,7 +3524,8 @@
         "deleteConfirmBody": "Nothing on the site shows it. This can’t be undone.",
         "deleted": "File deleted",
         "cancel": "Cancel",
-        "failed": "That didn’t work. Try again."
+        "failed": "That didn’t work. Try again.",
+        "usageSetting": "Settings"
       },
       "photo": "Photo",
       "video": "Video",
@@ -3560,7 +3561,8 @@
         },
         "signedOut": "You were signed out. Sign in again, then retry.",
         "server": "The upload didn't finish. Try again.",
-        "offline": "You're offline. Try again when you're back."
+        "offline": "You're offline. Try again when you're back.",
+        "unreadable": "We couldn’t read this file. Choose another photo or video."
       },
       "picker": {
         "title": {
@@ -3600,7 +3602,8 @@
         "page": "Page {page} of {pages}",
         "picked": "{count, plural, one {# chosen} other {# chosen}}",
         "choose": "Choose",
-        "chooseMany": "Choose {count}"
+        "chooseMany": "Choose {count}",
+        "otherFormat": "Other format"
       },
       "focal": {
         "title": "Focal point",
@@ -3638,7 +3641,9 @@
         "credit": "Photo credit",
         "link": "Use a web address instead",
         "address": "Photo address",
-        "linkHint": "A photo already on the web, e.g. from Unsplash. Uploading is better: the library keeps a copy."
+        "linkHint": "An image address from Unsplash or Pexels, or a path on this site. Uploading is better: the library keeps its own copy.",
+        "linkHosts": "Use an image address from Unsplash (images.unsplash.com) or Pexels (images.pexels.com), or upload the photo.",
+        "dismiss": "Dismiss"
       },
       "crop": {
         "title": "Crop photo",
@@ -3685,7 +3690,8 @@
         "cancel": "Cancel {name}",
         "progress": "Uploading {name}",
         "full": "This list is full ({max} photos). Remove one to add another.",
-        "editLead": "Its description, credit, crop and focal point. Changes are saved with the record."
+        "editLead": "Its description, credit, crop and focal point. Changes are saved with the record.",
+        "tooMany": "This list takes up to {max} photos; the rest were left out."
       },
       "video": {
         "drop": "Drop a video here",
@@ -3695,13 +3701,19 @@
         "upload": "Upload",
         "replace": "Replace",
         "link": "Link",
-        "address": "{format} address",
+        "address": {
+          "mp4": "MP4 address",
+          "webm": "WebM address"
+        },
         "none": "No file yet",
         "cancel": "Cancel",
         "retry": "Try again",
         "removeFile": "Remove {label}",
         "progress": "Uploading {name}",
-        "wrongFormat": "Choose a {format} file here.",
+        "wrongFormat": {
+          "mp4": "Choose an MP4 file here.",
+          "webm": "Choose a WebM file here."
+        },
         "needed": "Add this file.",
         "mp4Help": "Plays in every browser.",
         "webmHelp": "Smaller for Chrome, Edge and Firefox; the MP4 plays where it can’t.",
@@ -3711,7 +3723,8 @@
         "posterMaking": "Taking a poster photo from the video…",
         "posterMade": "Poster photo taken from the video",
         "credit": "Video credit",
-        "remove": "Remove video"
+        "remove": "Remove video",
+        "linkHttps": "Use an https address or a path on this site."
       }
     },
     "navHelp": {

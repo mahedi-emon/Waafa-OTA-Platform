@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Clapperboard, Library, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import { VideoFileSlot, type VideoFormat } from "@/components/admin/media/VideoF
 import { Button } from "@/components/ui/button";
 import { headingOf } from "@/lib/admin/blueprints/display";
 import { childPattern, dottedOf } from "@/lib/admin/blueprints/paths";
+import { isLinkableVideo } from "@/lib/admin/mediaAddress";
 import { suggestAlt } from "@/lib/admin/photoFrame";
 import { getAt, resolve, type JsonSchema, type Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
@@ -69,9 +70,12 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
   const posterParts = new Set(Object.keys(posterNode.properties ?? {}));
   const title = headingOf(editor.blueprint, editor.value) || undefined;
   const [wrong, setWrong] = useState<Partial<Record<Part, string>>>({});
-  const [picking, setPicking] = useState<Part | null>(null);
+  // "auto": the empty field's library button; the chosen clip goes where its format belongs.
+  const [picking, setPicking] = useState<Part | "auto" | null>(null);
   const [pickerUsed, setPickerUsed] = useState(false);
   const [posterBusy, setPosterBusy] = useState(false);
+  // One poster at a time, even when the MP4 and the WebM arrive together (read and set in callbacks only).
+  const posterJob = useRef(false);
 
   const setPart = (part: Part, next: string | undefined) =>
     editor.update(path, (current) => {
@@ -87,7 +91,8 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
   // A clip without a poster gets one from its own footage (a frame at one second).
   const makePoster = async (file: File) => {
     const current = getAt(editor.value, [...path, "poster", "src"]);
-    if (typeof current === "string" && current.trim()) return;
+    if ((typeof current === "string" && current.trim()) || posterJob.current) return;
+    posterJob.current = true;
     setPosterBusy(true);
     try {
       const still = await posterFromVideo(file);
@@ -98,13 +103,19 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
         () => undefined,
       );
       if (!outcome.ok) return;
-      editor.update([...path, "poster"], (now) =>
-        now && typeof now === "object" && (now as { src?: string }).src?.trim()
-          ? now
-          : photoFromAsset(outcome.asset, posterParts),
-      );
+      editor.update([...path, "poster"], (now) => {
+        const before = (now && typeof now === "object" ? now : {}) as {
+          src?: string;
+          alt?: string;
+        };
+        if (before.src?.trim()) return now;
+        const poster = photoFromAsset(outcome.asset, posterParts);
+        // Words staff typed for the poster meanwhile stay.
+        return before.alt?.trim() ? { ...poster, alt: before.alt } : poster;
+      });
       toast.success(t("posterMade"));
     } finally {
+      posterJob.current = false;
       setPosterBusy(false);
     }
   };
@@ -128,7 +139,7 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
     if (!fits(part, file.type)) {
       setWrong((now) => ({
         ...now,
-        [part]: t("wrongFormat", { format: FORMAT[part].toUpperCase() }),
+        [part]: t(`wrongFormat.${FORMAT[part]}`),
       }));
       return;
     }
@@ -146,14 +157,14 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
     if (!fits(part, asset.mime)) {
       setWrong((now) => ({
         ...now,
-        [part]: t("wrongFormat", { format: FORMAT[part].toUpperCase() }),
+        [part]: t(`wrongFormat.${FORMAT[part]}`),
       }));
       return;
     }
     setWrong((now) => ({ ...now, [part]: undefined }));
     setPart(part, asset.url);
   };
-  const openLibrary = (part: Part) => {
+  const openLibrary = (part: Part | "auto") => {
     setPickerUsed(true);
     setPicking(part);
   };
@@ -229,9 +240,13 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
           <MediaDropzone
             kind="video"
             onFiles={sendAny}
-            onLink={(address) =>
-              setPart(/\.webm(?:[?#]|$)/i.test(address) ? "webm" : "mp4", address)
-            }
+            onLink={(address) => {
+              if (!isLinkableVideo(address)) {
+                toast.error(t("linkHttps"));
+                return;
+              }
+              setPart(/\.webm(?:[?#]|$)/i.test(address) ? "webm" : "mp4", address.trim());
+            }}
             title={t("drop")}
             hint={t("types")}
             className="max-w-2xl"
@@ -246,7 +261,7 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
                   type="button"
                   variant="secondary"
                   size="sm"
-                  onClick={() => openLibrary("mp4")}
+                  onClick={() => openLibrary("auto")}
                 >
                   <Library aria-hidden="true" className="size-4" />
                   {t("library")}
@@ -323,12 +338,17 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
           open={picking !== null}
           onOpenChange={(next) => (next ? undefined : setPicking(null))}
           kind="video"
+          mime={picking && picking !== "auto" ? `video/${FORMAT[picking]}` : undefined}
           current={MAIN.concat(PHONE)
             .map((part) => video?.[part] ?? "")
             .filter(Boolean)}
           title={title}
           onChoose={([asset]) => {
-            if (asset && picking) choose(picking, asset);
+            if (!asset || !picking) return;
+            choose(
+              picking === "auto" ? (asset.mime === "video/webm" ? "webm" : "mp4") : picking,
+              asset,
+            );
           }}
         />
       ) : null}

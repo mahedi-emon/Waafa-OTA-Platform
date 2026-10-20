@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatBytes } from "@waafa/shared/helpers/media";
@@ -13,7 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MediaDetailsSheet, type LibraryItem } from "./MediaDetailsSheet";
+import type { LibraryItem } from "./MediaDetailsSheet";
+
+// The details sheet loads with the first file opened (D202).
+const MediaDetailsSheet = dynamic(
+  () => import("./MediaDetailsSheet").then((module) => module.MediaDetailsSheet),
+  { ssr: false },
+);
 
 type MediaBrowserProps = {
   items: LibraryItem[];
@@ -144,13 +151,15 @@ function MediaBrowser({ items, view, canDelete, keyNames }: MediaBrowserProps) {
           </Table>
         </div>
       )}
-      <MediaDetailsSheet
-        item={shown}
-        open={isOpen && shown !== null}
-        onOpenChange={setIsOpen}
-        canDelete={canDelete}
-        keyNames={keyNames}
-      />
+      {shown ? (
+        <MediaDetailsSheet
+          item={shown}
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          canDelete={canDelete}
+          keyNames={keyNames}
+        />
+      ) : null}
     </>
   );
 }

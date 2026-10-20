@@ -16,8 +16,9 @@ import { PrismaService } from "../prisma/prisma.service";
 import { AdminContentService } from "./content-admin.service";
 
 /**
- * A copy of a record or setting value with every address of one library file swapped for another; an image object
- * that shows it also takes the new file's width and height.
+ * A copy of a record or setting value with every address of one library file swapped for another. A photo object
+ * that shows it takes the new file's description, size and credit and drops its focal point; a video whose main file
+ * is swapped takes the new clip's credit.
  */
 export function swapMedia(value: unknown, fromPath: string, to: MediaAsset): unknown {
   const url = `/uploads/${to.path}`;
@@ -27,10 +28,24 @@ export function swapMedia(value: unknown, fromPath: string, to: MediaAsset): unk
   const record = value as Record<string, unknown>;
   const next: Record<string, unknown> = {};
   for (const [key, item] of Object.entries(record)) next[key] = swapMedia(item, fromPath, to);
-  const showsIt = typeof record.src === "string" && mediaPathOf(record.src) === fromPath;
-  if (showsIt && to.width > 0 && to.height > 0) {
-    if (typeof record.width === "number") next.width = to.width;
-    if (typeof record.height === "number") next.height = to.height;
+  const shows = (key: string) =>
+    typeof record[key] === "string" && mediaPathOf(record[key] as string) === fromPath;
+  const photo = shows("src");
+  // A different photo or clip brings its own credit; the old one's would credit the wrong person.
+  if (photo || shows("mp4") || shows("webm")) {
+    if (to.credit) next.credit = to.credit;
+    else delete next.credit;
+    if (to.creditUrl) next.creditUrl = to.creditUrl;
+    else delete next.creditUrl;
+  }
+  if (photo) {
+    // The new photo's own description and size; the old focal point belongs to the old photo.
+    if (typeof record.alt === "string" && to.alt.trim()) next.alt = to.alt;
+    delete next.focal;
+    if (to.width > 0 && to.height > 0) {
+      if (typeof record.width === "number") next.width = to.width;
+      if (typeof record.height === "number") next.height = to.height;
+    }
   }
   return next;
 }
@@ -58,6 +73,9 @@ export class MediaReplaceService {
     if (!from || !to) throw problems.notFound("This file is not in the library");
     if (mediaKindOf(from.mime) !== mediaKindOf(to.mime))
       throw problems.badRequest("Replace a photo with a photo, and a video with a video");
+    // A video slot names its format (the MP4 plays everywhere, the WebM is the lighter copy).
+    if (mediaKindOf(from.mime) === "video" && from.mime !== to.mime)
+      throw problems.badRequest("Replace an MP4 with an MP4, and a WebM with a WebM");
 
     const groups = new Map<string, MediaUse[]>();
     for (const use of (await this.media.usageIndex()).get(from.path) ?? []) {

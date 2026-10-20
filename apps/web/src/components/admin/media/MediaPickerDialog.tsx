@@ -46,6 +46,10 @@ export type MediaPickerDialogProps = {
   current?: string[];
   /** New uploads are described with this until staff improve it (the record's title). */
   title?: string | undefined;
+  /** Only files of this type can be chosen (a video slot keeps its format); the rest show as another format. */
+  mime?: string | undefined;
+  /** Where focus goes once a file is chosen (the field's next step), instead of the button that opened the picker. */
+  returnFocus?: () => HTMLElement | null;
   onChoose: (assets: MediaAsset[]) => void;
 };
 
@@ -63,6 +67,8 @@ function MediaPickerDialog({
   minWidth,
   current = [],
   title,
+  mime,
+  returnFocus,
   onChoose,
 }: MediaPickerDialogProps) {
   const t = useTranslations("Admin.media.picker");
@@ -105,8 +111,11 @@ function MediaPickerDialog({
         return now.filter((item) => item.id !== asset.id);
       return multiple ? [...now, asset] : [asset];
     });
+  // Set when a file was chosen, so closing moves focus to the field's next step (read in the close handler).
+  const chose = useRef(false);
   const choose = (assets: MediaAsset[]) => {
     if (assets.length === 0) return;
+    chose.current = true;
     onChoose(assets);
     uploads.clearDone();
     onOpenChange(false);
@@ -118,7 +127,16 @@ function MediaPickerDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex h-[min(92dvh,780px)] max-w-[calc(100%-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl">
+      <DialogContent
+        className="flex h-[min(92dvh,780px)] max-w-[calc(100%-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl"
+        onCloseAutoFocus={(event) => {
+          const target = chose.current ? returnFocus?.() : null;
+          chose.current = false;
+          if (!target) return;
+          event.preventDefault();
+          target.focus();
+        }}
+      >
         <DialogHeader className="gap-1 border-b border-mist-200 px-5 pt-5 pb-4 text-left">
           <DialogTitle>{t(`title.${kind}${multiple ? "Many" : "One"}`)}</DialogTitle>
           <DialogDescription>{t("lead")}</DialogDescription>
@@ -274,11 +292,14 @@ function MediaPickerDialog({
                 const small =
                   minWidth !== undefined && asset.kind === "photo" && asset.width < minWidth;
                 const label = asset.alt || asset.originalName || t("noAlt");
+                // Another format can't go in this slot (an MP4 stays an MP4).
+                const other = mime !== undefined && asset.mime !== mime;
                 return (
                   <li key={asset.id} className="min-w-0">
                     <button
                       type="button"
                       aria-pressed={chosen >= 0}
+                      disabled={other}
                       onClick={() => toggle(asset)}
                       onDoubleClick={() => (multiple ? undefined : choose([asset]))}
                       className={cn(
@@ -286,6 +307,7 @@ function MediaPickerDialog({
                         chosen >= 0
                           ? "border-electric-600 ring-2 ring-electric-600"
                           : "border-mist-200 hover:border-mist-400",
+                        other && "cursor-not-allowed opacity-50 hover:border-mist-200",
                       )}
                     >
                       <span className="relative block aspect-square w-full overflow-hidden">
@@ -312,6 +334,9 @@ function MediaPickerDialog({
                           {asset.kind === "photo"
                             ? `${asset.width} × ${asset.height}`
                             : formatBytes(asset.bytes)}
+                          {other ? (
+                            <span className="font-medium text-mist-700">{t("otherFormat")}</span>
+                          ) : null}
                           {small ? (
                             <span className="inline-flex items-center gap-1 font-medium text-warning-800">
                               <TriangleAlert aria-hidden="true" className="size-3.5" />

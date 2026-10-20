@@ -195,6 +195,7 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
                   ...(product.video.webmMobile ? { webmMobile: product.video.webmMobile } : {}),
                 }}
                 poster={product.video.poster.src}
+                focal={product.video.poster.focal}
                 alt={product.video.poster.alt}
                 sizes="(min-width: 1024px) 560px, 100vw"
                 className="aspect-video overflow-hidden rounded-2xl"

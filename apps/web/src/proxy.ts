@@ -5,6 +5,7 @@ import {
   ACCESS_COOKIE,
   REFRESH_COOKIE,
   REMEMBER_COOKIE,
+  isAdminApiPath,
   isAdminPath,
   isSignInPath,
   secondsLeft,
@@ -53,7 +54,11 @@ export default async function proxy(request: NextRequest) {
     if (!fresh) {
       const signIn = new URL("/secure-admin-control/sign-in", request.url);
       signIn.searchParams.set("next", `${pathname}${search}`);
-      const response = NextResponse.redirect(signIn);
+      // A page goes to the sign-in page; the admin's own JSON routes answer 401, so the screen shows "Your session
+      // has ended" and keeps the work on it (D201) instead of reading the sign-in page as data.
+      const response = isAdminApiPath(pathname)
+        ? NextResponse.json({ status: 401, title: "Signed out" }, { status: 401 })
+        : NextResponse.redirect(signIn);
       response.cookies.delete(ACCESS_COOKIE);
       response.cookies.delete(REFRESH_COOKIE);
       response.cookies.delete(REMEMBER_COOKIE);
@@ -76,6 +81,8 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Every path except API routes, Next.js internals, Vercel internals and files with an extension.
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // Every path except API routes, Next.js internals, Vercel internals, files with an extension and the media uploads:
+  // Next copies the body of every request the proxy sees and keeps only its first 10 MB, so a 12 MB photo or a 50 MB
+  // video must stream past it (D211). The upload routes check the session themselves.
+  matcher: ["/((?!api|_next|_vercel|secure-admin-control/media/upload|.*\\..*).*)"],
 };

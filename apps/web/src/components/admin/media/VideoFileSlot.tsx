@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { isLinkableVideo } from "@/lib/admin/mediaAddress";
 import type { UploadItem } from "./useUploadQueue";
 import { useProblemText } from "./useProblemText";
 
@@ -60,6 +61,14 @@ function VideoFileSlot({
   const labelId = useId();
   const fileInput = useRef<HTMLInputElement>(null);
   const [linking, setLinking] = useState(false);
+  // The address box keeps what staff type; an address the site can't play is never stored.
+  const [address, setAddress] = useState(value ?? "");
+  const [addressOf, setAddressOf] = useState(value);
+  if (value !== addressOf) {
+    setAddressOf(value);
+    setAddress(value ?? "");
+  }
+  const addressProblem = address.trim() && !isLinkableVideo(address) ? t("linkHttps") : undefined;
   const busy = upload?.status === "waiting" || upload?.status === "uploading";
   const failed = upload?.status === "failed" ? upload : undefined;
   const problem = wrong ?? (failed ? problemText(failed.problem, "video") : undefined);
@@ -164,17 +173,33 @@ function VideoFileSlot({
       {linking ? (
         <div className="flex flex-col gap-1">
           <label htmlFor={`${id}-link`} className="text-[13px] font-medium text-navy-900">
-            {t("address", { format: format.toUpperCase() })}
+            {t(`address.${format}`)}
           </label>
           <Input
             id={`${id}-link`}
-            value={value ?? ""}
+            value={address}
+            aria-invalid={addressProblem ? true : undefined}
+            aria-describedby={addressProblem ? `${id}-link-error` : undefined}
             spellCheck={false}
             inputMode="url"
             placeholder={`https://… .${format}`}
-            onChange={(event) => onChange(event.target.value.trim() || undefined)}
+            onChange={(event) => {
+              const next = event.target.value;
+              setAddress(next);
+              if (!next.trim()) onChange(undefined);
+              else if (isLinkableVideo(next)) onChange(next.trim());
+            }}
             className="h-11"
           />
+          {addressProblem ? (
+            <p
+              id={`${id}-link-error`}
+              role="alert"
+              className="text-[13px] font-medium text-danger-700"
+            >
+              {addressProblem}
+            </p>
+          ) : null}
         </div>
       ) : null}
       {problem ? (

@@ -1,6 +1,7 @@
 import path from "node:path";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { PHOTO_HOSTS } from "./src/lib/admin/mediaAddress";
 import { PHOTO_QUALITY } from "./src/lib/media/imageQuality";
 import { securityHeaders } from "./src/lib/security/securityHeaders";
 
@@ -26,6 +27,8 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1440, 1920, 2560],
     // A month: an uploaded photo gets a new name when it changes, and a deploy starts with an empty image cache.
     minimumCacheTTL: 2_678_400,
+    // Photo fields may link a photo on Unsplash or Pexels (D0 R3); every other photo is uploaded to the library.
+    remotePatterns: PHOTO_HOSTS.map((hostname) => ({ protocol: "https" as const, hostname })),
   },
   // Visa moved from /visa-services to /visa (issue 176): old links, bookmarks and search results keep working.
   async redirects() {

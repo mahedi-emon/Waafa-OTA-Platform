@@ -169,10 +169,7 @@ function ImageCropDialog({
           </Button>
         </div>
 
-        <p
-          aria-live="polite"
-          className="flex items-start gap-2 text-[13.5px] text-mist-600 tabular-nums"
-        >
+        <p className="flex items-start gap-2 text-[13.5px] text-mist-600 tabular-nums">
           {crop ? t("size", { width: crop.width, height: crop.height }) : t("loading")}
           {small && minWidth ? (
             <span className="inline-flex items-start gap-1 font-medium text-warning-800">

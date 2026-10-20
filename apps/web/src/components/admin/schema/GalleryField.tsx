@@ -94,6 +94,7 @@ function GalleryField({ path, node, value, optional }: GalleryFieldProps) {
 
   const append = (photos: StoredPhoto[]) => {
     if (photos.length === 0) return;
+    if (items.length + photos.length > max) toast.warning(t("tooMany", { max }));
     editor.update(path, (current) => {
       const list = Array.isArray(current) ? [...current] : [];
       for (const photo of photos) {
@@ -110,8 +111,10 @@ function GalleryField({ path, node, value, optional }: GalleryFieldProps) {
   });
   const pending = uploads.items.filter((item) => item.status !== "done");
   const send = (files: File[]) => {
+    const space = Math.max(0, room - pending.length);
+    if (files.length > space) toast.warning(t("tooMany", { max }));
     uploads.clearDone();
-    uploads.add(files.slice(0, Math.max(0, room - pending.length)));
+    uploads.add(files.slice(0, space));
   };
 
   const move = (from: number, to: number) => {
@@ -126,6 +129,14 @@ function GalleryField({ path, node, value, optional }: GalleryFieldProps) {
   const nameOf = (index: number) => t("photoN", { n: index + 1 });
   const remove = (index: number) => {
     const removed = items[index];
+    const left = items.length - 1;
+    requestAnimationFrame(() =>
+      document
+        .getElementById(
+          left > 0 ? `${meta.id}-${Math.min(index, left - 1)}-edit` : `${meta.id}-add`,
+        )
+        ?.focus(),
+    );
     stable.remove(index);
     editor.change(
       path,
@@ -237,6 +248,7 @@ function GalleryField({ path, node, value, optional }: GalleryFieldProps) {
         </div>
         <button
           type="button"
+          id={`${meta.id}-${index}-edit`}
           onClick={() => setEditing(index)}
           className="flex min-h-11 min-w-0 flex-1 cursor-pointer flex-col items-start gap-0.5 px-2.5 py-2 text-left outline-none hover:bg-mist-50 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:ring-inset"
         >
@@ -374,6 +386,7 @@ function GalleryField({ path, node, value, optional }: GalleryFieldProps) {
 
         {room > 0 ? (
           <MediaDropzone
+            id={`${meta.id}-add`}
             kind="photo"
             multiple
             onFiles={send}

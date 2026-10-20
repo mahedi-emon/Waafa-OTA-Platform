@@ -1,3 +1,4 @@
+import { randomFillSync } from "node:crypto";
 import { deflateSync } from "node:zlib";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -18,8 +19,8 @@ test.describe.configure({ mode: "serial" });
 let signIns = 0;
 const STAMP = String(Date.now()).slice(-6);
 
-/** A solid-colour PNG of the given size (a real photo is not needed to test the library). */
-function png(width: number, height: number, rgb: [number, number, number]): Buffer {
+/** A PNG from raw scanlines (a filter byte, then RGB, per row). */
+function pngOf(width: number, height: number, raw: Buffer, level: number): Buffer {
   const table = Array.from({ length: 256 }, (_, n) => {
     let c = n;
     for (let k = 0; k < 8; k += 1) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
@@ -43,15 +44,42 @@ function png(width: number, height: number, rgb: [number, number, number]): Buff
   header.writeUInt32BE(height, 4);
   header[8] = 8; // bit depth
   header[9] = 2; // RGB
-  const row = Buffer.alloc(1 + width * 3);
-  for (let x = 0; x < width; x += 1) row.set(rgb, 1 + x * 3);
-  const raw = Buffer.concat(Array.from({ length: height }, () => row));
   return Buffer.concat([
     Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
     chunk("IHDR", header),
-    chunk("IDAT", deflateSync(raw, { level: 9 })),
+    chunk("IDAT", deflateSync(raw, { level })),
     chunk("IEND", Buffer.alloc(0)),
   ]);
+}
+
+/** A solid-colour PNG of the given size (a real photo is not needed to test the library). */
+function png(width: number, height: number, rgb: [number, number, number]): Buffer {
+  const row = Buffer.alloc(1 + width * 3);
+  for (let x = 0; x < width; x += 1) row.set(rgb, 1 + x * 3);
+  return pngOf(width, height, Buffer.concat(Array.from({ length: height }, () => row)), 9);
+}
+
+/** A PNG of random pixels: it barely compresses, so 1950 px square is about 11 MB. */
+function noisePng(width: number, height: number): Buffer {
+  const raw = randomFillSync(Buffer.alloc((1 + width * 3) * height));
+  for (let y = 0; y < height; y += 1) raw[y * (1 + width * 3)] = 0;
+  return pngOf(width, height, raw, 1);
+}
+
+/** An MP4 header the library reads (ftyp, then a 1280 x 720 track header) padded to the given size. */
+function mp4(bytes: number): Buffer {
+  const box = Buffer.alloc(92);
+  box.writeUInt32BE(92, 0);
+  box.write("tkhd", 4, "ascii");
+  box.writeUInt32BE(1280 * 65536, 84);
+  box.writeUInt32BE(720 * 65536, 88);
+  const head = Buffer.concat([
+    Buffer.from([0, 0, 0, 16]),
+    Buffer.from("ftypisom", "ascii"),
+    Buffer.alloc(4),
+    box,
+  ]);
+  return Buffer.concat([head, Buffer.alloc(bytes - head.length, 7)]);
 }
 
 const photo = (name: string, rgb: [number, number, number], width = 1800, height = 1200) => ({
@@ -104,6 +132,7 @@ async function uploadToLibrary(page: Page, files: ReturnType<typeof photo>[]) {
   const zone = page.getByRole("group", { name: "Drop photos or videos here, or paste them" });
   await expect(zone).toBeVisible();
   await attach(zone.locator('input[type="file"]'), files, page.getByText(/files? added/).first());
+  await expect(page.getByRole("list", { name: "Uploads" })).toHaveCount(0, { timeout: 90_000 });
   await page.reload();
 }
 
@@ -149,6 +178,24 @@ test("photos uploaded in the library get their own words, and an unused one can 
   expect(errors).toEqual([]);
 });
 
+test("an 11 MB photo and a 12 MB video stream through to the library", async ({ page }) => {
+  test.setTimeout(240_000);
+  const errors = collectErrors(page);
+  await signIn(page);
+  // Next copies the body of requests its proxy sees and keeps only 10 MB: uploads must stream past it.
+  await uploadToLibrary(page, [
+    { name: `e2e-big-${STAMP}.png`, mimeType: "image/png", buffer: noisePng(1950, 1950) },
+    { name: `e2e-clip-${STAMP}.mp4`, mimeType: "video/mp4", buffer: mp4(12 * 1024 * 1024) },
+  ]);
+  await expect(
+    page.getByRole("button", { name: new RegExp(`E2e big ${STAMP}`) }).first(),
+  ).toContainText("1950 × 1950");
+  await expect(
+    page.getByRole("button", { name: new RegExp(`E2e clip ${STAMP}`) }).first(),
+  ).toContainText("12 MB");
+  expect(errors).toEqual([]);
+});
+
 test("a photo chosen from the library shows where it is used, and Replace everywhere swaps it", async ({
   page,
 }) => {
@@ -180,7 +227,8 @@ test("a photo chosen from the library shows where it is used, and Replace everyw
     `E2e first ${STAMP}`,
   );
   await page.getByRole("button", { name: "Create" }).click();
-  await expect(page).toHaveURL(/\/content\/team\/[a-z0-9-]+$/);
+  await expect(page.getByText("Created.").first()).toBeVisible();
+  await expect(page).not.toHaveURL(/\/new$/);
 
   // The library knows where the photo shows, so it can't be deleted from there.
   await page.goto(`/secure-admin-control/media?q=first-${STAMP}`);
@@ -262,7 +310,8 @@ test("a photo uploaded in its field is cropped to the frame and keeps a focal po
   ).toBeVisible();
   await focal.getByRole("button", { name: "Use this point" }).click();
   await page.getByRole("button", { name: "Create" }).click();
-  await expect(page).toHaveURL(/\/content\/team\/[a-z0-9-]+$/);
+  await expect(page.getByText("Created.").first()).toBeVisible();
+  await expect(page).not.toHaveURL(/\/new$/);
 
   // Saved with the record: the point is still there after a reload.
   await page.reload();
@@ -304,7 +353,9 @@ test("a gallery takes several photos at once and any of them can become the cove
     },
   );
   // Square store frame: 1200 px is wide enough, so no warning on the new photos.
-  await expect(gallery.getByText(`Photo ${before + 2}`, { exact: false })).toHaveCount(0);
+  await expect(
+    gallery.getByRole("button", { name: new RegExp(`^Edit: Photo ${before + 2}\\b`) }),
+  ).not.toContainText("Only");
 
   // The last photo becomes the cover.
   await gallery.getByRole("button", { name: `Actions for Photo ${before + 2}` }).click();

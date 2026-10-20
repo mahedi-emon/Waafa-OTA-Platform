@@ -160,10 +160,7 @@ async function MediaLibrary({
               </Button>
             </form>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <nav
-                aria-label={t("filters.label")}
-                className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
-              >
+              <nav aria-label={t("filters.label")} className="flex flex-wrap gap-1.5">
                 {(
                   [
                     ["all", undefined],
@@ -207,7 +204,7 @@ async function MediaLibrary({
                     prefetch={false}
                     aria-current={filters.view === view ? "true" : undefined}
                     className={cn(
-                      "inline-flex min-h-10 items-center gap-1.5 rounded-full px-3.5 text-[14px] font-semibold",
+                      "inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-[14px] font-semibold",
                       filters.view === view
                         ? "bg-white text-navy-900 shadow-sm"
                         : "text-mist-600 hover:text-navy-900",

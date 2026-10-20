@@ -5,7 +5,11 @@ import { checkMediaFile, mediaKindOf, type FileProblem } from "@waafa/shared/hel
 
 export type UploadOutcome =
   | { ok: true; asset: MediaAsset }
-  | { ok: false; reason: FileProblem | "signedOut" | "server" | "offline"; detail?: string };
+  | {
+      ok: false;
+      reason: FileProblem | "unreadable" | "signedOut" | "server" | "offline";
+      detail?: string;
+    };
 
 const ROUTES = {
   photo: "/secure-admin-control/media/upload",
@@ -58,7 +62,9 @@ export function uploadMedia(
             ? "size"
             : request.status === 415
               ? "type"
-              : "server";
+              : request.status === 422
+                ? "unreadable"
+                : "server";
       resolve({ ok: false, reason, ...(body?.detail ? { detail: body.detail } : {}) });
     };
     request.onerror = () => resolve({ ok: false, reason: navigator.onLine ? "server" : "offline" });

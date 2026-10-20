@@ -187,6 +187,7 @@ function MediaDetailsSheet({
       toast.success(t("deleted"));
       onOpenChange(false);
       router.refresh();
+      requestAnimationFrame(() => document.getElementById("media-search")?.focus());
     });
 
   const placeOf = (use: MediaUse) =>
@@ -392,9 +393,13 @@ function MediaDetailsSheet({
                       prefetch={false}
                       className="flex min-h-11 flex-col justify-center gap-0.5 px-3 py-2 hover:bg-mist-50 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
                     >
-                      <span className="text-[14px] font-medium text-navy-900">{use.title}</span>
+                      <span className="text-[14px] font-medium text-navy-900">
+                        {use.area === "setting" ? (keyNames[use.key] ?? use.title) : use.title}
+                      </span>
                       <span className="text-[12.5px] text-mist-600">
-                        {keyNames[use.key] ?? use.key}
+                        {use.area === "setting"
+                          ? t("usageSetting")
+                          : (keyNames[use.key] ?? use.key)}
                       </span>
                     </Link>
                   </li>
@@ -451,8 +456,11 @@ function MediaDetailsSheet({
         {used.picker ? (
           <MediaPickerDialog
             open={dialog === "picker"}
-            onOpenChange={(next) => setDialog(next ? "picker" : null)}
+            onOpenChange={(next) =>
+              setDialog((now) => (next ? "picker" : now === "picker" ? null : now))
+            }
             kind={item.kind}
+            {...(item.kind === "video" ? { mime: item.mime } : {})}
             current={[item.url]}
             onChoose={([asset]) => {
               if (!asset || asset.id === item.id) return;
@@ -464,7 +472,9 @@ function MediaDetailsSheet({
         {used.crop && item.kind === "photo" ? (
           <ImageCropDialog
             open={dialog === "crop"}
-            onOpenChange={(next) => setDialog(next ? "crop" : null)}
+            onOpenChange={(next) =>
+              setDialog((now) => (next ? "crop" : now === "crop" ? null : now))
+            }
             id={item.id}
             src={item.url}
             size={{ width: item.width, height: item.height }}

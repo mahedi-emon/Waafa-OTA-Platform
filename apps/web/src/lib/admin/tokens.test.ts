@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { isAdminPath, isSignInPath, safeNext, secondsLeft, sessionCookies } from "./tokens";
+import {
+  isAdminApiPath,
+  isAdminPath,
+  isSignInPath,
+  safeNext,
+  secondsLeft,
+  sessionCookies,
+} from "./tokens";
 
 const jwt = (payload: object) =>
   `e30.${Buffer.from(JSON.stringify(payload)).toString("base64url")}.signature`;
@@ -19,6 +26,9 @@ describe("admin session tokens (D129)", () => {
     expect(isAdminPath("/secure-admin-controller")).toBe(false);
     // #85: the old guessable path is not an admin path any more.
     expect(isAdminPath("/admin")).toBe(false);
+    expect(isAdminApiPath("/secure-admin-control/api/media")).toBe(true);
+    expect(isAdminApiPath("/en/secure-admin-control/api/inbox")).toBe(true);
+    expect(isAdminApiPath("/secure-admin-control/media")).toBe(false);
     expect(isAdminPath("/en/admin/leads")).toBe(false);
     expect(isSignInPath("/secure-admin-control/sign-in")).toBe(true);
     expect(isSignInPath("/secure-admin-control/sign-in/extra")).toBe(false);
