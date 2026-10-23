@@ -1,6 +1,6 @@
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
-import { parseRange } from "./media.controller";
+import { parseRange, rawBody } from "./media.controller";
 import { MEDIA_PATH, mp4Size, optimisePhoto, sniffImage, sniffVideo } from "./media.service";
 
 async function photo(format: "jpeg" | "png", width = 3200, height = 1800) {
@@ -102,5 +102,15 @@ describe("media library videos (D0 R3)", () => {
     expect(parseRange("bytes=2000-", 1000)).toEqual({ start: 2000, end: 999 });
     expect(parseRange("items=0-1", 1000)).toBeNull();
     expect(parseRange(undefined, 1000)).toBeNull();
+  });
+
+  it("takes only a raw Buffer body as an upload, never a parsed string or array", () => {
+    const bytes = Buffer.from([0x1a, 0x45, 0xdf, 0xa3]);
+    expect(rawBody(bytes)).toBe(bytes);
+    expect(rawBody("tkhd")).toBeNull();
+    expect(rawBody(["tkhd"])).toBeNull();
+    expect(rawBody({ length: 4 })).toBeNull();
+    expect(rawBody(null)).toBeNull();
+    expect(rawBody(undefined)).toBeNull();
   });
 });

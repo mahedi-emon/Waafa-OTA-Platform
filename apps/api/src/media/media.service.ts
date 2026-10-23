@@ -276,7 +276,7 @@ export class MediaService {
         alt: record.alt,
         width: record.width,
         height: record.height,
-        bytes: data.length,
+        bytes: data.byteLength,
         mime: record.mime,
         originalName: record.originalName ?? null,
         uploadedBy: staff.name,
@@ -289,6 +289,7 @@ export class MediaService {
     const relative = `${year}/${month}/${created.id}.${extension}`;
     try {
       await mkdir(path.join(this.root, year, month), { recursive: true });
+      // codeql[js/http-to-file-access] Saving staff uploads is the point: type checked by its bytes, named by its id.
       await writeFile(path.join(this.root, relative), data, { flag: "wx" });
     } catch (error) {
       await this.prisma.mediaAsset.delete({ where: { id: created.id } });

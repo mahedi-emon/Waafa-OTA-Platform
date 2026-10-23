@@ -33,6 +33,15 @@ const ID = /^[a-z0-9]{8,40}$/;
 const typeOf = (request: FastifyRequest) =>
   (request.headers["content-type"] ?? "").split(";")[0]?.trim() ?? "";
 
+/**
+ * The raw upload the content-type parser left in the body, or null. A parsed body can be a string or an array, so
+ * those are refused before the Buffer check (CodeQL js/type-confusion-through-parameter-tampering).
+ */
+export function rawBody(body: unknown): Buffer | null {
+  if (typeof body !== "object" || Array.isArray(body) || !Buffer.isBuffer(body)) return null;
+  return body;
+}
+
 /** "bytes=start-end", "bytes=start-" or "bytes=-suffix" for a file of `size` bytes; null when absent or invalid. */
 export function parseRange(header: unknown, size: number): { start: number; end: number } | null {
   if (typeof header !== "string") return null;
@@ -70,14 +79,15 @@ export class AdminMediaController {
   upload(@Staff() staff: StaffPrincipal, @Req() request: FastifyRequest, @Query() query: unknown) {
     const meta = parseInput(MediaUploadQuerySchema, query);
     const type = typeOf(request);
-    if (!(PHOTO_TYPES as readonly string[]).includes(type) || !Buffer.isBuffer(request.body)) {
+    const body = rawBody(request.body);
+    if (!(PHOTO_TYPES as readonly string[]).includes(type) || !body) {
       throw new ProblemException(
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
         "Unsupported file",
         "Upload a JPEG, PNG, WebP or AVIF photo",
       );
     }
-    return this.media.upload(staff, request.body, type, {
+    return this.media.upload(staff, body, type, {
       alt: meta.alt,
       ...(meta.name ? { originalName: meta.name } : {}),
       ...(meta.credit ? { credit: meta.credit } : {}),
@@ -94,14 +104,15 @@ export class AdminMediaController {
   ) {
     const meta = parseInput(MediaUploadQuerySchema, query);
     const type = typeOf(request);
-    if (!(VIDEO_TYPES as readonly string[]).includes(type) || !Buffer.isBuffer(request.body)) {
+    const body = rawBody(request.body);
+    if (!(VIDEO_TYPES as readonly string[]).includes(type) || !body) {
       throw new ProblemException(
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
         "Unsupported file",
         "Upload an MP4 or WebM video",
       );
     }
-    return this.media.uploadVideo(staff, request.body, type, {
+    return this.media.uploadVideo(staff, body, type, {
       alt: meta.alt,
       ...(meta.name ? { originalName: meta.name } : {}),
       ...(meta.credit ? { credit: meta.credit } : {}),
