@@ -38,6 +38,15 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #213 · Security · Next.js 16.4.2, sanitize-html and fastify patches — ✅ Done
+| Field | Value |
+| --- | --- |
+| Found | 23 Oct: a local `next build` stopped with "Your version of Next.js is affected by a known security vulnerability"; `pnpm audit` showed two critical advisories for `next@16.4.0` (unauthenticated remote code execution in the Image Optimization API with SVG files, GHSA-2464-fhr4-w9xw, and in `use cache` functions returning typed arrays, GHSA-673q-mjm6-r5xr) and a high one (Server Actions denial of service, GHSA-p3m5-59mp-jv5r), all fixed in 16.4.1; plus `sanitize-html` (moderate) and `fastify` (low). The live site runs 16.4.0 |
+| Built | `next` and `eslint-config-next` 16.4.2 (the 16.4.1 security fixes plus Turbopack stability fixes), `sanitize-html` 2.18.1, `fastify` 5.12.7 and a pnpm override for the 5.12.5 copy `@nestjs/platform-fastify` 12.1.2 pins. No code change |
+| Tests | `pnpm audit` critical 0 (left: Prisma CLI's MySQL driver and config helper, unused with PostgreSQL and run only at migrate and seed time; the shadcn CLI's glob and socks helpers, a dev tool) · lint, typecheck · shared 91, fixtures 83, web unit 555, API 155 · fixture build with the styleguide · smoke e2e (fixture mode) 132 passed, 56 API-only skipped, budget included |
+| Decision | D213 |
+| Migration | none; deploy with `sh deploy.sh` once the Docker images workflow is green |
+
 ### #210 · CI · CodeQL on main: developer download scripts — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1454,6 +1463,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D204 | 20 Oct | Duplicate: lists of fixed places or codes (menus, notification templates, home sections, service pages, media slots, store rows, airports, airlines, coupons) can't be copied (`canCopy`, API 409, no button); a copied product gets its own variant ids and SKUs; slug-keyed lists keep inner ids unique (API 409 "exists"); a long title keeps its words when " (copy)" won't fit | Review: a product copy shared variant ids with the original and broke its orders | #192 |
 | D205 | 20 Oct | CodeQL runs on every pull request and push again (replaces D192): on the private repository the analysis keeps its SARIF (`upload: never`, `output: codeql-results`) and `scripts/codeql-findings.mjs` turns each finding into an annotation and a job-summary row and fails the check on any error or warning; the SARIF is kept 7 days as an artifact; on a public repository it uploads as before | Owner, 20 Oct: every CI check must run and pass, nothing skipped. Same queries (security-extended), same path filters, about five minutes a run | #208 |
 | D206 | 20 Oct | `.github/codeql/codeql-config.yml` leaves out two developer download tools (`scripts/fetch-airline-logos.mjs`, `docs/design/photos/get-waafa-photos.mjs`): they save fetched logos and photos under fixed names, are never shipped or run in CI, and `js/http-to-file-access` there is their job. Everything else is analysed. While private, the CodeQL database isn't uploaded (no retries) | Pull request runs report only alerts in changed lines; the first full run on `main` met these two older files | #210 |
+| D213 | 23 Oct | Security patches go out on their own branch and PR ahead of feature work: Next.js to the latest patch of the line in use (16.4.2 over 16.4.1, which adds Turbopack fixes), runtime packages to their patched releases, and a pnpm `overrides` entry only for a copy a framework pins (fastify inside `@nestjs/platform-fastify`), removed once the framework ships the patch | Two critical unauthenticated RCE advisories on the live version; a patch release changes no behaviour, so it ships before the media work and its migration | #213 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1532,6 +1542,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 23 Oct | Security: Next.js 16.4.0 had two critical RCE advisories (a 16.4.0 build now stops on them): Next 16.4.2, sanitize-html 2.18.1, fastify 5.12.7 on their own PR ahead of R3 | #213 | #213 PR | audit critical 0 · unit all · fixture build · smoke e2e |
 | 20 Oct 04:00–04:30 | R2 merged (#207, 69d57f9). The first full CodeQL run on `main` met two developer download scripts: #210 leaves them out with the reason and skips the private database upload | #192, #205, #210 | #207, #210 PR | CI green on #207 (8/8) |
 | 19 Oct 21:40 – 20 Oct 04:00 | R2 form engine v2: blueprints for all 50 content keys; sectioned editor with side panel, sticky action bar, History with restore, drafts on the device, leave guard, conflict and session dialogs; API history, restore, duplicate, picker options and list order (#205); lead facts. Browser review at 320–1440: one name per section, a status with its reason on every record, growing lines, link fields full width, editor first load 364 → 303 KB; independent review fixed (4 P1, 3 P2, 3 P3) | #192, #205 | #207 | shared 91 · web unit 555 · API 155 · e2e API job 23/23 · smoke 132 · budget 6/6 |
 | 20 Oct | Owner: never skip CI. #208 CodeQL runs on the private repository (SARIF read in the job, fails on findings); R2 review fixes verified locally in the CI job order first | #208 | #208 PR | CodeQL green; script on sample SARIF |
