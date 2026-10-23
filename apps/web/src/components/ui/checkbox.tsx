@@ -19,9 +19,12 @@ function Checkbox({ className, ...props }: React.ComponentProps<typeof CheckboxP
       )}
       {...props}
     >
+      {/* Always mounted and hidden by state: Radix's Presence reads computed style on every toggle, which made
+          selecting a 100-row page slow (D0 R5 INP). */}
       <CheckboxPrimitive.Indicator
+        forceMount
         data-slot="checkbox-indicator"
-        className="grid place-content-center text-current [&>svg]:size-3.5"
+        className="grid place-content-center text-current data-[state=unchecked]:invisible [&>svg]:size-3.5"
       >
         <CheckIcon strokeWidth={3} />
       </CheckboxPrimitive.Indicator>

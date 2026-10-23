@@ -69,7 +69,9 @@ export class AdminOrdersService {
       this.prisma.order.count({ where }),
       this.prisma.order.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: query.sort?.startsWith("total")
+          ? { total: query.sort === "total.asc" ? "asc" : "desc" }
+          : { createdAt: query.sort === "created.asc" ? "asc" : "desc" },
         skip: (query.page - 1) * query.pageSize,
         take: query.pageSize,
       }),

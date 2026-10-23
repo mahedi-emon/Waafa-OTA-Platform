@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { csvCell, toCsv } from "../common/csv";
-import { mergeCustomers } from "./customers.service";
+import { mergeCustomers, sortCustomers } from "./customers.service";
 import { dhakaDay, median, topProducts } from "./reports.service";
 
 describe("reports (#111)", () => {
@@ -55,5 +55,20 @@ describe("customers (#111)", () => {
       ["+8801711111111", 2, 1, 4500],
       ["+8801722222222", 1, 0, 0],
     ]);
+  });
+
+  it("sorts customers by what the table asks for (D0 R5)", () => {
+    const at = (day: number) => new Date(Date.UTC(2026, 9, day));
+    const groups = [
+      { phone: "+8801700000001", leads: 1, orders: 3, spent: 900, last: at(2) },
+      { phone: "+8801700000002", leads: 2, orders: 1, spent: 4500, last: at(5) },
+      { phone: "+8801700000003", leads: 0, orders: 1, spent: 0, last: at(1) },
+    ];
+    const phones = (sort: Parameters<typeof sortCustomers>[1]) =>
+      sortCustomers(groups, sort).map((row) => row.phone.slice(-1));
+    expect(phones(undefined)).toEqual(["1", "2", "3"]);
+    expect(phones("spent.desc")).toEqual(["2", "1", "3"]);
+    expect(phones("orders.asc")).toEqual(["2", "3", "1"]);
+    expect(phones("last.asc")).toEqual(["3", "1", "2"]);
   });
 });

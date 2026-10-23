@@ -195,7 +195,7 @@ export class AdminLeadsService {
       this.prisma.lead.count({ where }),
       this.prisma.lead.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: query.sort === "created.asc" ? "asc" : "desc" },
         skip: (query.page - 1) * query.pageSize,
         take: query.pageSize,
       }),

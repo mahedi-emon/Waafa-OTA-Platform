@@ -348,10 +348,7 @@ test("a gallery takes several photos at once and any of them can become the cove
   const errors = collectErrors(page);
   await signIn(page);
   await page.goto("/secure-admin-control/content/products");
-  await page
-    .getByRole("link", { name: /^Edit / })
-    .first()
-    .click();
+  await page.getByRole("table").getByRole("link").first().click();
   const gallery = page.getByRole("group", { name: "Photos", exact: true });
   await expect(gallery).toBeVisible();
   const before = await gallery.getByRole("button", { name: /^Actions for Photo / }).count();

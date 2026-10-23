@@ -2748,7 +2748,9 @@
       "bulkSpam": "Mark as spam",
       "bulkSpamDone": "Marked as spam: {count}",
       "bulkSkipped": "Booked leads were left as they are: {references}",
-      "bulkAssign": "Assign"
+      "bulkAssign": "Assign",
+      "colPhone": "Phone",
+      "colEmail": "Email"
     },
     "lead": {
       "createdFrom": "Created {time} · {channel}",
@@ -3072,7 +3074,8 @@
       "slip": "Slip only",
       "bin": "BIN {bin}",
       "call": "Call",
-      "whatsapp": "WhatsApp"
+      "whatsapp": "WhatsApp",
+      "colPhone": "Phone"
     },
     "feedback": {
       "metaTitle": "Feedback",
@@ -3091,7 +3094,14 @@
       "reference": "Reference {reference}",
       "done": "Feedback updated",
       "emptyTitle": "Nothing to review",
-      "emptyBody": "New feedback from the website appears here."
+      "emptyBody": "New feedback from the website appears here.",
+      "search": "Name, phone, words or reference",
+      "colName": "Customer",
+      "colStatus": "Status",
+      "colComment": "Feedback",
+      "colPhone": "Phone",
+      "colReference": "Reference",
+      "colReceived": "Received"
     },
     "proofs": {
       "metaTitle": "Payment proofs",
@@ -3117,7 +3127,14 @@
       "orderShort": "Order {reference}: {amount} short",
       "noOrder": "No order has this reference",
       "openOrder": "Open order",
-      "decided": "{status} by {name}"
+      "decided": "{status} by {name}",
+      "search": "Reference, name, phone or transaction ID",
+      "colPayer": "Paid by",
+      "colStatus": "Status",
+      "colOrder": "Order",
+      "colReceived": "Received",
+      "colPhone": "Phone",
+      "colSlip": "Slip"
     },
     "subscribers": {
       "metaTitle": "Newsletter",
@@ -3193,7 +3210,11 @@
         "invited": "Added, but hasn't signed in yet.",
         "deactivated": "Can't sign in. Activate to let them back in.",
         "locked": "Sign-in is locked for a while after wrong passwords."
-      }
+      },
+      "colStatus": "Status",
+      "search": "Name or email",
+      "emptyTitle": "No staff here",
+      "emptyBody": "Add a staff member above, or clear the search."
     },
     "account": {
       "metaTitle": "My account",
@@ -3222,13 +3243,6 @@
       "records": "{count} records",
       "setting": "Setting",
       "newRecord": "New record",
-      "search": "Search this list",
-      "moveUp": "Move up",
-      "moveDown": "Move down",
-      "orderSaved": "Order saved",
-      "deleteConfirm": "Move “{title}” to Trash? It leaves the site at once, and you can restore it for 30 days.",
-      "deleted": "Moved to Trash.",
-      "emptyList": "No items yet.",
       "keys": {
         "siteSettings": "Site and SEO",
         "contactSettings": "Contact and office hours",
@@ -3295,6 +3309,25 @@
         "linkPrompt": "Link address (https://…, mailto: or a site path like /contact)",
         "undo": "Undo",
         "redo": "Redo"
+      },
+      "list": {
+        "name": "Name",
+        "status": "Status",
+        "price": "Price",
+        "updated": "Updated",
+        "filter": "Status",
+        "open": "Open",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "archive": "Archive",
+        "trash": "Move to Trash",
+        "trashConfirm": "Move {count} selected to Trash?",
+        "moveEarlier": "Earlier",
+        "moveLater": "Later",
+        "moved": "Order saved",
+        "emptyTitle": "Nothing here yet",
+        "emptyBody": "Add the first one and it shows on the site when it is live.",
+        "changedBy": "Last change by {name}"
       }
     },
     "integrations": {
@@ -3436,7 +3469,8 @@
       "leadsTitle": "Requests",
       "ordersTitle": "Orders",
       "noLeads": "No requests you can see.",
-      "noOrders": "No orders."
+      "noOrders": "No orders.",
+      "colEmail": "Email"
     },
     "leadBoard": {
       "metaTitle": "Lead board",
@@ -6003,6 +6037,35 @@
       "saved": "Saved.",
       "failed": "That didn't work. Try again.",
       "needed": "Fill this in."
+    },
+    "table": {
+      "summary": "Summary",
+      "sample": "Sample",
+      "views": "Saved views",
+      "noViews": "No saved views yet. Set the search and filters, then save them here.",
+      "saveView": "Save this view…",
+      "viewName": "Name this view",
+      "saveViewConfirm": "Save view",
+      "deleteView": "Delete view {name}",
+      "columns": "Columns",
+      "showColumns": "Show columns",
+      "export": "Export CSV",
+      "exportSelected": "Export selected",
+      "all": "All",
+      "selected": "{count, plural, one {# selected} other {# selected}}",
+      "selectAll": "Select all on this page",
+      "selectRow": "Select {name}",
+      "clearSelection": "Clear selection",
+      "cancel": "Cancel",
+      "confirmBody": "You can undo this from the record or from Trash.",
+      "done": "{count, plural, one {# updated} other {# updated}}",
+      "failed": "That didn't work. Try again.",
+      "range": "{from} to {to} of {total}",
+      "pageSize": "Rows per page",
+      "previous": "Previous page",
+      "next": "Next page",
+      "noMatches": "Nothing matches",
+      "noMatchesBody": "Try other words or clear a filter."
     }
   },
   "Consent": {

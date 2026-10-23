@@ -467,6 +467,37 @@ if placed, confirmed) or **Rejected** (reason required; the customer is notified
 - Performance: TanStack Table v9 with only the features used; INP under 200 ms on 500 rows (rows memoised; selection
   without full re-render).
 
+### 10.1 What R5 shipped
+- **One component** `components/admin/table/` (`AdminDataTable` on the server wraps `DataTableView` in a scoped
+  provider with only `Admin.table` and the rows' own words). Pages hand it plain rows the server already put into words
+  (`DataRow`: name, one secondary line, thumbnail or initials, chips with their reasons, facts per column, a summary for
+  the sheet, row actions and phone quick actions), columns, filters and bulk steps. Used by every content list, Leads,
+  Orders, Payment proofs, Customers, Feedback and Users.
+- **Address state**: search `q`, filter chips (one parameter each), `sort=<key>.<asc|desc>`, `page`, `pageSize`
+  (25, 50, 100) live in the URL; pages pass only values the API accepts (`pageSizeOf`, `sortOf`); changing anything but
+  the page goes back to page 1. Lead views (All, Open, Mine…) and the proof and feedback queues stay as tabs above the
+  table and keep the other filters.
+- **Saved views and columns** stay on the device (D227): a view is the list's address without the page, named by the
+  person; hidden columns are remembered per list. The name and the status column can't be hidden.
+- **Server side**: content lists read `GET /admin/content/:key/records` (search over the name and id, a status chip,
+  sort by name or last update, totals); leads, orders, proofs, feedback and customers take the same `q`, `sort`,
+  `page` and `pageSize`; the small staff list is paged on the web. Bulk steps for content go through
+  `POST /admin/content/:key/bulk` (Publish, Unpublish, Archive, Move to Trash, at most 100), each record through the
+  normal save with its rules, History and audit row; a record the step can't take is counted as skipped, never forced.
+  Leads: Assign and Mark as spam; feedback: Approve and Reject (one moderation per item). Export CSV: the list's own
+  export where there is one (leads), otherwise the visible columns of the page or the selection, with formula cells
+  defused.
+- **Rows**: the name links to the editor or detail page; the rest of the row opens the summary sheet (facts, chips,
+  the row's actions such as Verify, Approve, Call, Earlier / Later, and Open). Keyboard: Tab reaches the row, ↑/↓
+  move, Enter opens the sheet, Space selects. Ordered content lists show Earlier / Later in the sheet while no search,
+  filter or sort is on (`POST /admin/content/:key/:id/move`).
+- **Phones** (below 768 px): cards with a checkbox, thumbnail, name, two facts and the chips; a tap opens the sheet;
+  leads add Call and WhatsApp on the card. After hydration only the layout on screen is rendered.
+- **Speed**: rows and cards are memoised with stable handlers, the hidden-columns set is memoised, and the checkbox
+  indicator is always mounted and hidden by state (Radix Presence read computed style on every toggle, D229). INP on
+  the 25-row page of a 500-lead list stays under 200 ms in CI; the 100-row page measured 190–240 ms on the low-memory
+  development machine (style recalculation of the whole page, D228, #219).
+
 ---
 
 ## 11. Media (R3)

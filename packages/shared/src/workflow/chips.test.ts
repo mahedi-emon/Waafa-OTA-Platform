@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { recordChipsOf } from "./recordChips";
+import { recordChipsOf } from "./chips";
 
 const now = new Date("2026-10-23T10:00:00+06:00");
 const later = "2026-10-30T10:00:00+06:00";

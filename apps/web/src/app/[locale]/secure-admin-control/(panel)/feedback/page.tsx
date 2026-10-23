@@ -1,17 +1,16 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Star } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ActionButton } from "@/components/admin/ActionButton";
-import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminPagination } from "@/components/admin/AdminPagination";
 import { StatusTabs } from "@/components/admin/StatusTabs";
-import { Badge } from "@/components/ui/badge";
+import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
+import type { ChipView, ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet } from "@/lib/admin/adminApi";
-import { displayPhone, formatDhakaDateTime, pageParam } from "@/lib/admin/format";
-import { moderateFeedback } from "@/lib/admin/opsActions";
+import { displayPhone, formatDhakaDateTime, initialsOf, pageParam } from "@/lib/admin/format";
+import { moderateFeedback, moderateFeedbackMany } from "@/lib/admin/opsActions";
 import type { FeedbackRow, Paged } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,6 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const STATUSES = ["pending", "approved", "rejected"] as const;
+const SORTS = ["created.asc", "created.desc"] as const;
+const PATH = "/secure-admin-control/feedback";
 const one = (value: string | string[] | undefined) =>
   typeof value === "string" ? value : undefined;
 
@@ -30,12 +31,93 @@ async function Feedback({
 }) {
   const params = await searchParams;
   const status = STATUSES.find((item) => item === one(params.status)) ?? "pending";
-  const page = pageParam(params.page);
+  const q = one(params.q)?.slice(0, 80);
+  const sort = sortOf(params.sort, SORTS);
   const [list, t, tc] = await Promise.all([
-    adminGet<Paged<FeedbackRow>>("/admin/feedback", { status, page, pageSize: 20 }),
+    adminGet<Paged<FeedbackRow>>("/admin/feedback", {
+      status,
+      page: pageParam(params.page),
+      pageSize: pageSizeOf(params.pageSize),
+      ...(q ? { q } : {}),
+      ...(sort ? { sort } : {}),
+    }),
     getTranslations("Admin.feedback"),
     getTranslations("Admin.common"),
   ]);
+
+  const rows: DataRow[] = list.items.map((item) => {
+    const received = formatDhakaDateTime(item.createdAt);
+    const chips: ChipView[] = [
+      {
+        family: "feedback",
+        name: item.status,
+        label: t(`statuses.${item.status}`),
+        ...(item.moderatedBy ? { reason: tc("by", { name: item.moderatedBy }) } : {}),
+      },
+      ...(!item.consentToPublish
+        ? [{ family: "feedback" as const, name: "noConsent", label: t("noConsent") }]
+        : []),
+    ];
+    return {
+      id: item.id,
+      title: item.name,
+      subtitle: [item.service, item.rating ? t("rating", { stars: item.rating }) : ""]
+        .filter(Boolean)
+        .join(" · "),
+      thumb: { initials: initialsOf(item.name) },
+      chips,
+      facts: {
+        comment: { text: item.comment },
+        received: { text: received, kind: "date" },
+      },
+      summary: [
+        { label: t("colComment"), value: item.comment },
+        { label: t("colPhone"), value: displayPhone(item.phone) },
+        ...(item.reference ? [{ label: t("colReference"), value: item.reference }] : []),
+        { label: t("colReceived"), value: received },
+      ],
+      actions: (
+        <div className="flex flex-wrap gap-2">
+          {item.status !== "approved" && item.consentToPublish ? (
+            <ActionButton
+              action={moderateFeedback.bind(null, item.id, { status: "approved" })}
+              success={t("done")}
+              failed={tc("unavailable")}
+              variant="primary"
+            >
+              {t("approve")}
+            </ActionButton>
+          ) : null}
+          {item.status !== "rejected" ? (
+            <ActionButton
+              action={moderateFeedback.bind(null, item.id, { status: "rejected" })}
+              success={t("done")}
+              failed={tc("unavailable")}
+            >
+              {t("reject")}
+            </ActionButton>
+          ) : null}
+          {item.status !== "pending" ? (
+            <ActionButton
+              action={moderateFeedback.bind(null, item.id, { status: "pending" })}
+              success={t("done")}
+              failed={tc("unavailable")}
+              variant="ghost"
+            >
+              {t("backToReview")}
+            </ActionButton>
+          ) : null}
+        </div>
+      ),
+    };
+  });
+
+  const columns: ColumnSpec[] = [
+    { key: "name", label: t("colName"), always: true },
+    { key: "status", label: t("colStatus"), always: true },
+    { key: "comment", label: t("colComment") },
+    { key: "received", label: t("colReceived"), sort: "created" },
+  ];
 
   return (
     <>
@@ -46,101 +128,47 @@ async function Feedback({
         items={STATUSES.map((value) => ({
           value,
           label: t(`statuses.${value}`),
-          href:
-            value === "pending"
-              ? "/secure-admin-control/feedback"
-              : `/secure-admin-control/feedback?status=${value}`,
+          href: value === "pending" ? PATH : `${PATH}?status=${value}`,
         }))}
       />
-      <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-        {list.items.length === 0 ? (
-          <AdminEmpty title={t("emptyTitle")} body={t("emptyBody")} />
-        ) : (
-          <ul className="divide-y divide-mist-100">
-            {list.items.map((item) => (
-              <li
-                key={item.id}
-                className="flex flex-col gap-3 p-5 md:flex-row md:items-start md:justify-between"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold text-navy-900">{item.name}</p>
-                    <Badge variant="outline">{item.service}</Badge>
-                    {item.rating ? (
-                      <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-gold-700">
-                        <Star aria-hidden="true" className="size-3.5 fill-current" />
-                        {t("rating", { stars: item.rating })}
-                      </span>
-                    ) : null}
-                    {!item.consentToPublish ? (
-                      <Badge variant="warning">{t("noConsent")}</Badge>
-                    ) : null}
-                  </div>
-                  <p className="mt-2 text-[15px] whitespace-pre-line text-ink-900">
-                    {item.comment}
-                  </p>
-                  <p className="mt-2 text-[13px] text-mist-600">
-                    {displayPhone(item.phone)} · {formatDhakaDateTime(item.createdAt)}
-                    {item.reference ? ` · ${t("reference", { reference: item.reference })}` : ""}
-                    {item.moderatedBy ? ` · ${tc("by", { name: item.moderatedBy })}` : ""}
-                  </p>
-                </div>
-                <div className="flex shrink-0 gap-2">
-                  {item.status !== "approved" && item.consentToPublish ? (
-                    <ActionButton
-                      action={moderateFeedback.bind(null, item.id, { status: "approved" })}
-                      success={t("done")}
-                      failed={tc("unavailable")}
-                      variant="primary"
-                    >
-                      {t("approve")}
-                    </ActionButton>
-                  ) : null}
-                  {item.status !== "rejected" ? (
-                    <ActionButton
-                      action={moderateFeedback.bind(null, item.id, { status: "rejected" })}
-                      success={t("done")}
-                      failed={tc("unavailable")}
-                    >
-                      {t("reject")}
-                    </ActionButton>
-                  ) : null}
-                  {item.status !== "pending" ? (
-                    <ActionButton
-                      action={moderateFeedback.bind(null, item.id, { status: "pending" })}
-                      success={t("done")}
-                      failed={tc("unavailable")}
-                      variant="ghost"
-                    >
-                      {t("backToReview")}
-                    </ActionButton>
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-        <AdminPagination
-          page={list.page}
-          pageSize={list.pageSize}
-          total={list.total}
-          path="/secure-admin-control/feedback"
-          query={{ status: status === "pending" ? undefined : status }}
-          strings={{
-            previous: tc("previous"),
-            next: tc("next"),
-            summary: tc("showing", { shown: list.items.length, total: list.total }),
-          }}
-        />
-      </section>
+      <AdminDataTable
+        listKey="feedback"
+        path={PATH}
+        rows={rows}
+        columns={columns}
+        page={{ total: list.total, page: list.page, pageSize: list.pageSize }}
+        searchLabel={t("search")}
+        bulk={[
+          ...(status !== "approved"
+            ? [
+                {
+                  id: "approve",
+                  label: t("approve"),
+                  run: moderateFeedbackMany.bind(null, "approved"),
+                },
+              ]
+            : []),
+          ...(status !== "rejected"
+            ? [
+                {
+                  id: "reject",
+                  label: t("reject"),
+                  run: moderateFeedbackMany.bind(null, "rejected"),
+                },
+              ]
+            : []),
+        ]}
+        openLabel={tc("open")}
+        empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
+      />
     </>
   );
 }
 
-/** Feedback moderation (AdminFeedback board). */
+/** Feedback moderation (AdminFeedback board) on the shared DataTable (D0 R5). */
 export default function FeedbackPage(props: PageProps<"/[locale]/secure-admin-control/feedback">) {
   return (
-    <Suspense fallback={<Skeleton className="h-[560px] rounded-2xl" />}>
+    <Suspense fallback={<Skeleton className="h-140 rounded-2xl" />}>
       <Feedback searchParams={props.searchParams} />
     </Suspense>
   );

@@ -192,8 +192,27 @@ export async function purgeTrashItem(id: string): Promise<ActionResult> {
   return result.ok ? { ok: true } : result;
 }
 
-export async function reorderRecords(key: string, ids: string[]): Promise<ActionResult> {
-  if (!KEY.test(key)) return badKey();
-  const result = await adminWrite(`/admin/content/${at(key)}/order`, "PUT", { ids });
+/** The same step for several records of a list (the table's bulk bar, D0 R5). */
+export async function bulkContent(
+  key: string,
+  action: "publish" | "unpublish" | "archive" | "trash",
+  ids: string[],
+): Promise<{ ok: boolean; changed?: number; message?: string }> {
+  if (!KEY.test(key) || ids.length === 0 || ids.some((id) => !ID.test(id))) return { ok: false };
+  const result = await adminWrite<{ changed: number; skipped: string[] }>(
+    `/admin/content/${at(key)}/bulk`,
+    "POST",
+    { ids, action },
+    KEEP,
+  );
+  return result.ok
+    ? { ok: true, changed: result.data.changed }
+    : { ok: false, ...(result.problem.detail ? { message: result.problem.detail } : {}) };
+}
+
+/** One record a place earlier or later in its list (the table's row action, D0 R5). */
+export async function moveRecord(key: string, id: string, by: -1 | 1): Promise<ActionResult> {
+  if (!KEY.test(key) || !ID.test(id)) return badKey();
+  const result = await adminWrite(`/admin/content/${at(key)}/${at(id)}/move`, "POST", { by }, KEEP);
   return result.ok ? { ok: true } : result;
 }

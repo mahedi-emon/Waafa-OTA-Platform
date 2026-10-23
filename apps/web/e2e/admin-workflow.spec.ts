@@ -65,13 +65,20 @@ async function intake<T>(request: APIRequestContext, path: string, data: unknown
 /** Opens a lead by its reference from the list's search. */
 async function openLead(page: Page, reference: string) {
   await page.goto(`/secure-admin-control/leads?q=${reference}`);
-  // A table row links its reference; a phone card has Open.
-  const row = page.getByRole("link", { name: reference }).filter({ visible: true });
-  const card = page
-    .getByRole("listitem")
-    .filter({ hasText: reference })
-    .getByRole("link", { name: "Open" });
-  await row.or(card).first().click();
+  // The table names the customer as a link to the lead; a phone card opens the sheet, whose Open goes there.
+  const row = page.getByRole("row").filter({ hasText: reference }).getByRole("link");
+  const card = page.getByRole("listitem").filter({ hasText: reference });
+  await expect(row.or(card).first()).toBeVisible();
+  if (await row.first().isVisible()) await row.first().click();
+  else {
+    await page
+      .getByRole("listitem")
+      .filter({ hasText: reference })
+      .getByRole("button")
+      .first()
+      .click();
+    await page.getByRole("dialog").getByRole("link", { name: "Open" }).click();
+  }
   await expect(page.getByRole("heading", { level: 1 })).toContainText(reference);
 }
 
@@ -261,15 +268,18 @@ test("a payment proof that matches its order is verified, and the order is confi
   });
   await signIn(page);
   await page.goto("/secure-admin-control/payments");
-  const row = page.getByRole("listitem").filter({ hasText: order.reference }).first();
+  const row = page.getByRole("row").filter({ hasText: order.reference }).first();
   await expect(row.getByText("Matched", { exact: true })).toBeVisible();
   await expect(row.getByText(new RegExp(`Matches order ${order.reference}`))).toBeVisible();
+  // The decision sits in the row's side sheet (D0 R5).
+  const sheet = page.getByRole("dialog");
+  await until(() => row.click(), sheet);
   await until(
-    () => row.getByRole("button", { name: "Verify" }).click(),
+    () => sheet.getByRole("button", { name: "Verify" }).click(),
     page.getByText(new RegExp(`Verified ${order.reference}\\. The order is paid\\.`)).first(),
   );
-  await page.goto("/secure-admin-control/orders");
-  await page.getByRole("link", { name: order.reference }).first().click();
+  await page.goto(`/secure-admin-control/orders?q=${order.reference}`);
+  await page.getByRole("table").getByRole("link").first().click();
   await expect(page.getByText("Confirmed", { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/Payment verified \(TX\d+\), order confirmed/)).toBeVisible();
   expect(errors).toEqual([]);
@@ -294,8 +304,8 @@ test("an order is packed and shipped with its courier and tracking number", asyn
     payment: { method: "cod" },
   });
   await signIn(page);
-  await page.goto("/secure-admin-control/orders");
-  await page.getByRole("link", { name: order.reference }).first().click();
+  await page.goto(`/secure-admin-control/orders?q=${order.reference}`);
+  await page.getByRole("table").getByRole("link").first().click();
   await until(
     () => page.getByRole("button", { name: "Confirmed on call" }).click(),
     page.getByText("Order confirmed.").first(),

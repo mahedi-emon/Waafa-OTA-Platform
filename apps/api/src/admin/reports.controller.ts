@@ -15,6 +15,14 @@ const CustomerQuerySchema = z
   .object({
     q: z.string().trim().max(80).optional(),
     page: z.coerce.number().int().min(1).max(1000).optional(),
+    pageSize: z.coerce
+      .number()
+      .int()
+      .refine((size) => [25, 50, 100].includes(size))
+      .optional(),
+    sort: z
+      .enum(["last.asc", "last.desc", "spent.asc", "spent.desc", "orders.asc", "orders.desc"])
+      .optional(),
   })
   .strict();
 const PHONE = /^\+\d{8,15}$/;

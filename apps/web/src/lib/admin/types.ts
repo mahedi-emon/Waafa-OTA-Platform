@@ -308,6 +308,15 @@ export type ContentCollection = {
   }>;
 };
 
+/** One page of a list's records, searched, filtered and sorted by the API (the DataTable, D0 R5). */
+export type ContentRecordsPage = {
+  key: string;
+  total: number;
+  page: number;
+  pageSize: number;
+  items: ContentCollection["items"];
+};
+
 export type ContentRecordResponse = {
   id: string;
   position: number;

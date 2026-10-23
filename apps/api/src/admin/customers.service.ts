@@ -47,6 +47,17 @@ export function mergeCustomers(
   return [...map.values()].sort((a, b) => b.last.getTime() - a.last.getTime());
 }
 
+export type CustomerSort = `${"last" | "spent" | "orders"}.${"asc" | "desc"}`;
+
+/** The table's sort (D0 R5); the newest activity first when none is asked for. */
+export function sortCustomers(groups: Group[], sort: CustomerSort | undefined): Group[] {
+  if (!sort) return groups;
+  const [field, dir] = sort.split(".") as ["last" | "spent" | "orders", "asc" | "desc"];
+  const sign = dir === "asc" ? 1 : -1;
+  const value = (group: Group) => (field === "last" ? group.last.getTime() : group[field]);
+  return [...groups].sort((a, b) => sign * (value(a) - value(b)) || a.phone.localeCompare(b.phone));
+}
+
 /**
  * Customers (#111): one row per phone number across leads and Waafas World orders, for the modules this person
  * works on; orders only for store and accounts roles. Customer accounts arrive in Phase D, so the phone is the key.
@@ -61,8 +72,12 @@ export class AdminCustomersService {
     );
   }
 
-  async list(staff: StaffPrincipal, query: { q?: string; page?: number }) {
+  async list(
+    staff: StaffPrincipal,
+    query: { q?: string; page?: number; pageSize?: number; sort?: CustomerSort },
+  ) {
     const page = Math.max(1, query.page ?? 1);
+    const pageSize = query.pageSize ?? PAGE_SIZE;
     const q = query.q?.trim();
     const digits = q?.replace(/\D/g, "") ?? "";
     const match = q
@@ -112,7 +127,7 @@ export class AdminCustomersService {
         last: row._max.createdAt,
       })),
     );
-    const slice = merged.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const slice = sortCustomers(merged, query.sort).slice((page - 1) * pageSize, page * pageSize);
     const phones = slice.map((row) => row.phone);
     const [leadNames, orderNames] = await Promise.all([
       this.prisma.lead.findMany({
@@ -146,7 +161,7 @@ export class AdminCustomersService {
       spent: row.spent,
       lastActivityAt: toDhakaIsoString(row.last),
     }));
-    return { items, total: merged.length, page, pageSize: PAGE_SIZE };
+    return { items, total: merged.length, page, pageSize };
   }
 
   async detail(staff: StaffPrincipal, phone: string) {

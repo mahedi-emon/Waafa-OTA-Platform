@@ -11,9 +11,12 @@ import {
   isContentKey,
   isPickerKey,
   parseContent,
+  recordChipsOf,
   type CollectionKey,
   type ContentAction,
+  type ContentBulkInput,
   type ContentKey,
+  type ContentListQuery,
   type TrashListQuery,
 } from "@waafa/shared";
 import { AuditService } from "../audit/audit.service";
@@ -224,6 +227,100 @@ export class AdminContentService {
         ...(uses ? { uses: uses.get(row.docId) ?? 0 } : {}),
       })),
     };
+  }
+
+  /**
+   * One page of a content list (D0 R5): searched by title or address, filtered by the chip the list shows (the same
+   * rules as the admin, `recordChipsOf`), sorted by title or last edit, else in the list's own order.
+   */
+  async records(
+    staff: StaffPrincipal,
+    key: CollectionKey,
+    query: ContentListQuery,
+    now = new Date(),
+  ) {
+    assertContentAccess(staff, key);
+    const entry = CONTENT_MODEL[key];
+    const rows = sortByRecordOrder(
+      key,
+      await this.prisma.contentDocument.findMany({
+        where: { collection: key },
+        orderBy: [{ position: "asc" }, { docId: "asc" }],
+      }),
+    );
+    const uses = key === "coupons" ? await this.couponUses() : null;
+    const needle = query.q?.toLowerCase() ?? "";
+    const titleOf = (data: unknown, id: string) =>
+      String((data as Record<string, unknown>)[entry.titleField] ?? id);
+    let items = rows
+      .map((row) => ({
+        id: row.docId,
+        title: titleOf(row.data, row.docId),
+        position: row.position,
+        version: row.version,
+        updatedAt: row.updatedAt,
+        updatedBy: row.updatedBy,
+        data: row.data,
+        ...(uses ? { uses: uses.get(row.docId) ?? 0 } : {}),
+      }))
+      .filter((item) => !needle || `${item.title} ${item.id}`.toLowerCase().includes(needle));
+    if (query.chip) {
+      const chip = query.chip;
+      items = items.filter((item) =>
+        recordChipsOf(key, item.data, now, item.uses !== undefined ? { uses: item.uses } : {}).some(
+          (found) => found.name === chip,
+        ),
+      );
+    }
+    if (query.sort) {
+      const [field, dir] = query.sort.split(".") as ["title" | "updated", "asc" | "desc"];
+      const sign = dir === "asc" ? 1 : -1;
+      items = [...items].sort((a, b) =>
+        field === "title"
+          ? sign * a.title.localeCompare(b.title)
+          : sign * (a.updatedAt.getTime() - b.updatedAt.getTime()),
+      );
+    }
+    const start = (query.page - 1) * query.pageSize;
+    return {
+      key,
+      total: items.length,
+      page: query.page,
+      pageSize: query.pageSize,
+      items: items.slice(start, start + query.pageSize),
+    };
+  }
+
+  /**
+   * The same step for several records (D0 R5): each goes through the normal save or Trash, so its rules, History and
+   * audit apply; a record the step can't apply to is counted, never forced.
+   */
+  async bulk(staff: StaffPrincipal, key: CollectionKey, input: ContentBulkInput) {
+    assertContentAccess(staff, key);
+    if (input.action !== "trash" && !hasPublishWorkflow(key))
+      throw problems.badRequest("This list has no drafts to publish or archive");
+    let changed = 0;
+    const skipped: string[] = [];
+    for (const id of input.ids) {
+      try {
+        if (input.action === "trash") {
+          await this.remove(staff, key, id);
+        } else {
+          const row = await this.prisma.contentDocument.findUnique({
+            where: { collection_docId: { collection: key, docId: id } },
+          });
+          if (!row) throw problems.notFound();
+          await this.update(staff, key, id, row.data, row.version, {
+            button: { type: input.action },
+            keepSample: true,
+          });
+        }
+        changed += 1;
+      } catch {
+        skipped.push(id);
+      }
+    }
+    return { changed, skipped };
   }
 
   /** Orders that used each coupon code, cancelled ones not counted. */
@@ -852,5 +949,24 @@ export class AdminContentService {
     });
     this.changed(key);
     return this.read(staff, key);
+  }
+
+  /** Moves one record a place earlier or later in its list's own order (the table's row action, D0 R5). */
+  async move(staff: StaffPrincipal, key: CollectionKey, id: string, by: -1 | 1) {
+    const rows = sortByRecordOrder(
+      key,
+      await this.prisma.contentDocument.findMany({
+        where: { collection: key },
+        orderBy: [{ position: "asc" }, { docId: "asc" }],
+        select: { docId: true, data: true, position: true },
+      }),
+    );
+    const ids = rows.map((row) => row.docId);
+    const at = ids.indexOf(id);
+    if (at < 0) throw problems.notFound("Record not found");
+    const target = at + by;
+    if (target < 0 || target >= ids.length) return this.read(staff, key);
+    [ids[at], ids[target]] = [ids[target] as string, ids[at] as string];
+    return this.reorder(staff, key, ids);
   }
 }
