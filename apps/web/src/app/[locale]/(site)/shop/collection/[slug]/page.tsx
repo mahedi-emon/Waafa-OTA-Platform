@@ -7,6 +7,7 @@ import { ListingSkeleton } from "@/components/shop/ListingSkeleton";
 import { ProductListing } from "@/components/shop/ProductListing";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getCollection, listCollections } from "@/lib/data/shop";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
@@ -35,7 +36,11 @@ async function CollectionContent({
 }: PageProps<"/[locale]/shop/collection/[slug]">) {
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const collection = await getCollection(slug);
-  if (!collection) notFound();
+  if (!collection) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("collections", slug, (to) => `/shop/collection/${to}`);
+    notFound();
+  }
   const [site, t] = await Promise.all([getSiteSettings(), getTranslations("Shop.list")]);
 
   return (

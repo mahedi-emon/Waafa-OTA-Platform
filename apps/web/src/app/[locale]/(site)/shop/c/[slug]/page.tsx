@@ -9,6 +9,7 @@ import { ProductListing } from "@/components/shop/ProductListing";
 import { Link } from "@/i18n/navigation";
 import { getShopContent, getSiteSettings } from "@/lib/data/settings";
 import { getAttributeSet, getCategory, listCategories } from "@/lib/data/shop";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
@@ -37,7 +38,11 @@ export async function generateMetadata({
 async function CategoryContent({ params, searchParams }: PageProps<"/[locale]/shop/c/[slug]">) {
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const category = await getCategory(slug);
-  if (!category) notFound();
+  if (!category) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("categories", slug, (to) => `/shop/c/${to}`);
+    notFound();
+  }
   const [categories, site, content, t] = await Promise.all([
     listCategories(),
     getSiteSettings(),

@@ -9,8 +9,11 @@ import { walkSchema } from "./walk";
 /** Looks up a message under Admin ("fieldNames.title"); undefined when there is none. */
 export type Words = (key: string) => string | undefined;
 
-/** Fields the system owns on every record: never drawn in a section. */
-const SYSTEM_FIELDS = new Set(["status", "sample"]);
+/**
+ * Fields the system owns on every record, never drawn in a section: the status and its times are written by the API
+ * from the editor's buttons (D0 R4).
+ */
+const SYSTEM_FIELDS = new Set(["status", "sample", "publishAt", "liveSince"]);
 
 /** Web addresses and site paths are read whole, so these texts take the full row. */
 const ADDRESS_NAMES = new Set(["href", "url", "mapUrl"]);

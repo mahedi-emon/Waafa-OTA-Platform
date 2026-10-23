@@ -23,6 +23,7 @@ import { pickMessages } from "@/i18n/pickMessages";
 import { Link } from "@/i18n/navigation";
 import { getContactSettings, getLeadFormSettings } from "@/lib/data/settings";
 import { getPackage, listPackages, listRelatedPackages } from "@/lib/data/travel";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { ANY_DATE } from "@/lib/leads/packageLeadForm";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { absoluteUrl } from "@/lib/siteUrl";
@@ -80,7 +81,11 @@ async function PackagePageContent({
 }: Pick<PageProps<"/[locale]/tour-packages/[slug]">, "params">) {
   const { slug } = await params;
   const pkg = await getPackage(slug);
-  if (!pkg) notFound();
+  if (!pkg) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("tourPackages", slug, (to) => `/tour-packages/${to}`);
+    notFound();
+  }
 
   const [related, contact, leadForm, messages, t, tList] = await Promise.all([
     listRelatedPackages(slug),

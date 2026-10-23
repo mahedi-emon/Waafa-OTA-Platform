@@ -7,6 +7,7 @@ import { ListingSkeleton } from "@/components/shop/ListingSkeleton";
 import { ProductListing } from "@/components/shop/ProductListing";
 import { getSiteSettings } from "@/lib/data/settings";
 import { getBrand, listBrands } from "@/lib/data/shop";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
@@ -32,7 +33,11 @@ export async function generateMetadata({
 async function BrandContent({ params, searchParams }: PageProps<"/[locale]/shop/brand/[slug]">) {
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const brand = await getBrand(slug);
-  if (!brand) notFound();
+  if (!brand) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("brands", slug, (to) => `/shop/brand/${to}`);
+    notFound();
+  }
   const [site, t] = await Promise.all([getSiteSettings(), getTranslations("Shop.list")]);
 
   return (

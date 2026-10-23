@@ -1,15 +1,19 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import { ActionButton } from "@/components/admin/ActionButton";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { ProofDecision } from "@/components/admin/ProofDecision";
+import { StatusChip } from "@/components/admin/StatusChip";
 import { StatusTabs } from "@/components/admin/StatusTabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { pickMessagePaths } from "@/i18n/pickMessages";
+import { Link } from "@/i18n/navigation";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { displayPhone, formatDhakaDateTime, taka, pageParam } from "@/lib/admin/format";
-import { reviewProof } from "@/lib/admin/opsActions";
+import { PROOF_CHIPS } from "@/lib/admin/statusChips";
 import type { Paged, ProofRow } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -17,7 +21,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
+/** "To verify" holds received and matched proofs (D0 R4). */
 const STATUSES = ["received", "verified", "rejected"] as const;
+/** Only the decision buttons' words reach the browser (scoped provider, D190). */
+const PROOF_MESSAGES = ["Admin.proofDecision"];
 const one = (value: string | string[] | undefined) =>
   typeof value === "string" ? value : undefined;
 
@@ -29,11 +36,12 @@ async function Proofs({
   const params = await searchParams;
   const status = STATUSES.find((item) => item === one(params.status)) ?? "received";
   const page = pageParam(params.page);
-  const [staff, list, t, tc] = await Promise.all([
+  const [staff, list, t, tc, messages] = await Promise.all([
     requireStaff(),
     adminGet<Paged<ProofRow>>("/admin/payment-proofs", { status, page, pageSize: 20 }),
     getTranslations("Admin.proofs"),
     getTranslations("Admin.common"),
+    getMessages(),
   ]);
   const canReview = hasRole(staff, "admin", "accounts");
 
@@ -63,8 +71,24 @@ async function Proofs({
                 className="flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="font-mono text-[13.5px] font-semibold text-navy-900">
-                    {proof.reference}
+                  <p className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-[13.5px] font-semibold text-navy-900">
+                      {proof.reference}
+                    </span>
+                    <StatusChip
+                      size="sm"
+                      tone={PROOF_CHIPS[proof.status].tone}
+                      icon={PROOF_CHIPS[proof.status].icon}
+                      label={t(`statuses.${proof.status}`)}
+                      {...(proof.decidedBy
+                        ? {
+                            reason: t("decided", {
+                              status: t(`statuses.${proof.status}`),
+                              name: proof.decidedBy,
+                            }),
+                          }
+                        : {})}
+                    />
                   </p>
                   <p className="mt-0.5 font-semibold">
                     {proof.name} · <span className="tabular-nums">{displayPhone(proof.phone)}</span>
@@ -89,29 +113,46 @@ async function Proofs({
                       : t("noSlip")}{" "}
                     · {formatDhakaDateTime(proof.createdAt)}
                   </p>
+                  <p className="mt-1.5 text-[13.5px]">
+                    {proof.order ? (
+                      <>
+                        <span
+                          className={
+                            proof.amount >= proof.order.total
+                              ? "font-medium text-success-700"
+                              : "font-medium text-warning-800"
+                          }
+                        >
+                          {proof.amount >= proof.order.total
+                            ? t("matchedOrder", {
+                                reference: proof.order.reference,
+                                amount: taka(proof.order.total),
+                              })
+                            : t("orderShort", {
+                                reference: proof.order.reference,
+                                amount: taka(proof.order.total - proof.amount),
+                              })}
+                        </span>{" "}
+                        <Link
+                          href={`/secure-admin-control/orders/${proof.order.id}`}
+                          prefetch={false}
+                          className="inline-flex min-h-11 items-center font-semibold text-brand-700 hover:underline"
+                        >
+                          {t("openOrder")}
+                        </Link>
+                      </>
+                    ) : (
+                      <span className="text-mist-600">{t("noOrder")}</span>
+                    )}
+                  </p>
+                  {proof.status === "rejected" && proof.note ? (
+                    <p className="mt-1 text-[13.5px] text-danger-700">{proof.note}</p>
+                  ) : null}
                 </div>
-                {canReview ? (
-                  <div className="flex shrink-0 gap-2">
-                    {proof.status !== "verified" ? (
-                      <ActionButton
-                        action={reviewProof.bind(null, proof.id, { status: "verified" })}
-                        success={t("done")}
-                        failed={tc("unavailable")}
-                        variant="primary"
-                      >
-                        {t("verify")}
-                      </ActionButton>
-                    ) : null}
-                    {proof.status !== "rejected" ? (
-                      <ActionButton
-                        action={reviewProof.bind(null, proof.id, { status: "rejected" })}
-                        success={t("done")}
-                        failed={tc("unavailable")}
-                      >
-                        {t("reject")}
-                      </ActionButton>
-                    ) : null}
-                  </div>
+                {canReview && (proof.status === "received" || proof.status === "matched") ? (
+                  <NextIntlClientProvider messages={pickMessagePaths(messages, PROOF_MESSAGES)}>
+                    <ProofDecision id={proof.id} reference={proof.reference} />
+                  </NextIntlClientProvider>
                 ) : null}
               </li>
             ))}

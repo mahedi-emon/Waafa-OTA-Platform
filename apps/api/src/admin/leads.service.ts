@@ -312,6 +312,7 @@ export class AdminLeadsService {
         : null,
       duplicateOf: original,
       repeats,
+      slaMinutes: sla,
       overdue: isOverdueLead(
         {
           status: lead.status,

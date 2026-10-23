@@ -18,8 +18,20 @@ export type ProblemView =
   | { kind: "signedOut" }
   | {
       kind: "message";
-      code: "forbidden" | "notFound" | "exists" | "liveLocked" | "server" | "offline";
+      code: ProblemCode;
     };
+
+/** Plain-word problems the editor names (Admin.editor.errors.<code>). */
+export type ProblemCode =
+  | "forbidden"
+  | "notFound"
+  | "exists"
+  | "liveLocked"
+  | "archived"
+  | "live"
+  | "schedulePast"
+  | "server"
+  | "offline";
 
 /**
  * Turns an API problem into what staff should read and do. Field errors from the API use the form's own wording when
@@ -37,6 +49,11 @@ export function viewOfProblem(
     if (problem.code === "stale")
       return { kind: "stale", ...(problem.current ? { current: problem.current } : {}) };
     if (problem.code === "live-locked") return { kind: "message", code: "liveLocked" };
+    // A button that can't apply to the record as it is now (D0 R4).
+    if (problem.code === "archived") return { kind: "message", code: "archived" };
+    if (problem.code === "live") return { kind: "message", code: "live" };
+    if (problem.code === "past" || problem.code === "invalidDate")
+      return { kind: "message", code: "schedulePast" };
     return { kind: "message", code: "exists" };
   }
   if (problem.fields?.length) {

@@ -1,4 +1,11 @@
-import type { LeadModule, LeadPriority, LeadStatus, OrderStatus, Role } from "@waafa/shared";
+import type {
+  LeadModule,
+  LeadPriority,
+  LeadStatus,
+  OrderStatus,
+  Role,
+  VisaStage,
+} from "@waafa/shared";
 
 /* Shapes the admin API (B4, apps/api/src/admin) answers with. */
 
@@ -75,10 +82,27 @@ export type LeadDetail = {
   assignee: { id: string; name: string } | null;
   duplicateOf: { id: string; reference: string } | null;
   repeats: Array<{ id: string; reference: string }>;
+  /** The reply target in minutes, and whether this new lead is past it (D0 R4). */
+  slaMinutes: number;
+  overdue: boolean;
+  /** Visa leads: the documents checklist and the stage it gives (D0 R4, ADMIN.md §8.3). */
+  visa: VisaApplicationProgress | null;
   firstResponseAt: string | null;
   closedAt: string | null;
   createdAt: string;
   activities: Array<{ id: string; type: string; body: string; actor: string; createdAt: string }>;
+};
+
+export type VisaApplicationProgress = {
+  stage: VisaStage;
+  received: number;
+  required: number;
+  checklist: Array<{ item: string; received: boolean }>;
+  submittedOn?: string;
+  submissionReference?: string;
+  outcome?: "approved" | "rejected";
+  decidedOn?: string;
+  passportReturnedOn?: string;
 };
 
 export type StaffDirectoryEntry = { id: string; name: string; roles: Role[] };
@@ -101,7 +125,8 @@ export type OrderDetail = {
   id: string;
   reference: string;
   status: OrderStatus;
-  next: OrderStatus[];
+  /** Cash on delivery is confirmed on the phone; other methods by a verified payment proof (D0 R4). */
+  cashOnDelivery: boolean;
   items: Array<{
     productId: string;
     variantId: string;
@@ -175,9 +200,23 @@ export type ProofRow = {
   accountId: string;
   transactionId: string | null;
   proof: { fileName?: string } | null;
-  status: "received" | "verified" | "rejected";
+  status: "received" | "matched" | "verified" | "rejected";
   note: string | null;
+  /** The order the reference names (D0 R4): matched when the amount covers its total. */
+  order: { id: string; reference: string; total: number; status: OrderStatus } | null;
+  decidedBy: string | null;
+  decidedAt: string | null;
   createdAt: string;
+};
+
+/** A record in Trash (D0 R4). */
+export type TrashRow = {
+  id: string;
+  collection: string;
+  title: string;
+  deletedAt: string;
+  deletedBy: string;
+  purgeAt: string;
 };
 
 export type SearchActivity = Paged<{
@@ -264,6 +303,8 @@ export type ContentCollection = {
     updatedAt: string;
     updatedBy: string | null;
     data: unknown;
+    /** Coupons: orders that used the code, cancelled ones not counted (D0 R4). */
+    uses?: number;
   }>;
 };
 
@@ -274,4 +315,6 @@ export type ContentRecordResponse = {
   updatedAt: string;
   updatedBy?: string | null;
   data: unknown;
+  /** The first staff save of a Sample record made it the team's own (D0 R4); the editor offers Undo. */
+  sampleCleared?: boolean;
 };

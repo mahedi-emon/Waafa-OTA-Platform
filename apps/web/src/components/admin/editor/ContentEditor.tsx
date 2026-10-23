@@ -20,6 +20,7 @@ import { EditorSectionJump } from "./EditorSectionJump";
 import { EditorSectionRail, type SectionState } from "./EditorSectionRail";
 import { EditorSidePanel } from "./EditorSidePanel";
 import { LeaveDialog } from "./LeaveDialog";
+import { ScheduleDialog } from "./ScheduleDialog";
 import { missingForPublish, useEditorState, type EditorInput } from "./useEditorState";
 
 type ContentEditorProps = EditorInput & {
@@ -27,6 +28,14 @@ type ContentEditorProps = EditorInput & {
   canAdvanced: boolean;
   /** The public site's address, for full links and the Google preview. */
   origin: string;
+};
+
+/** The time a scheduled record goes live, if it is scheduled. */
+const scheduledAt = (value: unknown): string | undefined => {
+  const record = value as { status?: unknown; publishAt?: unknown } | null;
+  return record?.status === "scheduled" && typeof record.publishAt === "string"
+    ? record.publishAt
+    : undefined;
 };
 
 const isEmpty = (value: unknown) =>
@@ -202,6 +211,18 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
         onKeep={() => state.resolveConflict("keep")}
       />
       <LeaveDialog open={state.leaveTo !== null} onStay={state.stay} onLeave={state.leave} />
+      {blueprint.workflow && state.scheduling ? (
+        <ScheduleDialog
+          open
+          onOpenChange={(open) => (open ? null : state.closeSchedule())}
+          current={scheduledAt(state.saved.value)}
+          pending={state.pending}
+          onSchedule={(at) => {
+            state.closeSchedule();
+            state.save("schedule", { at });
+          }}
+        />
+      ) : null}
     </SchemaEditorContext.Provider>
   );
 }

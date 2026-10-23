@@ -2,8 +2,11 @@
 
 import {
   Archive,
+  CalendarClock,
+  CalendarX,
   CircleCheck,
   CircleDashed,
+  Clock,
   Copy,
   ExternalLink,
   Eye,
@@ -30,6 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { StatusChip } from "@/components/admin/StatusChip";
 import { RelativeTime } from "@/components/admin/RelativeTime";
+import { formatDhakaDateTime } from "@/lib/admin/format";
 import { publicPathOf, statusOf } from "@/lib/admin/blueprints/display";
 import type { ResolvedBlueprint } from "@/lib/admin/blueprints/types";
 import type { ChipTone } from "@/lib/admin/statusChips";
@@ -47,6 +51,7 @@ type EditorSidePanelProps = {
 const CHIP = {
   new: { tone: "info", icon: FilePlus2 },
   draft: { tone: "neutral", icon: Pencil },
+  scheduled: { tone: "info", icon: Clock },
   live: { tone: "success", icon: Radio },
   archived: { tone: "neutral", icon: Archive },
   shown: { tone: "success", icon: Eye },
@@ -77,7 +82,11 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
   // Seeded records were "edited by" the setup, which isn't a person.
   const editedBy =
     state.saved.updatedBy && state.saved.updatedBy !== "seed" ? state.saved.updatedBy : null;
-  const reason = t(`status.${status.state}Reason`);
+  // Scheduled and Live name their date (D0 R4): "Goes live on 24 Oct 2026, 10:00 am".
+  const reason =
+    status.at && (status.state === "scheduled" || status.state === "live")
+      ? t(`status.${status.state}ReasonAt`, { date: formatDhakaDateTime(status.at) })
+      : t(`status.${status.state}Reason`);
 
   return (
     <div className="flex flex-col gap-4">
@@ -195,7 +204,31 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
               )}
             </>
           ) : null}
-          {!state.isNew && status.state !== "draft" ? (
+          {status.state === "scheduled" ? (
+            <div className="flex flex-col gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={state.pending}
+                onClick={state.openSchedule}
+              >
+                <CalendarClock aria-hidden="true" className="size-4" />
+                {t("side.changeTime")}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={state.pending}
+                onClick={() => state.save("unpublish")}
+              >
+                <CalendarX aria-hidden="true" className="size-4" />
+                {t("side.cancelSchedule")}
+              </Button>
+            </div>
+          ) : null}
+          {!state.isNew && status.state !== "draft" && status.state !== "scheduled" ? (
             <div className="flex flex-col gap-2">
               {status.state === "live" ? (
                 <Button
@@ -215,7 +248,7 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
                   variant="secondary"
                   size="sm"
                   disabled={state.pending}
-                  onClick={() => state.save("draft")}
+                  onClick={() => state.save("restore")}
                 >
                   <Pencil aria-hidden="true" className="size-4" />
                   {t("side.toDraft")}

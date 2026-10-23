@@ -5,6 +5,7 @@ import type {
   GalleryCategory,
   MediaSlotKey,
   PageBlockPage,
+  RoutedKey,
   ServicePageKey,
 } from "@waafa/shared";
 import { FeedbackCreateInputSchema, type Feedback } from "@waafa/shared";
@@ -141,6 +142,14 @@ export async function listEmiBanks() {
   cacheLife("hours");
   cacheTag(CACHE_TAGS.settings);
   return repositories.content.listEmiBanks();
+}
+
+/** The new address of a record whose link changed (D0 R4): its old page redirects there for good. */
+export async function getMovedSlug(collection: RoutedKey, from: string) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.redirects);
+  return repositories.content.getMovedSlug(collection, from);
 }
 
 export async function getMediaSlot(key: MediaSlotKey) {

@@ -1,18 +1,21 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Mail, Phone } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-import { LeadPrioritySchema, LeadStatusSchema, type ContentOption } from "@waafa/shared";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
+import { LeadPrioritySchema, type ContentOption } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import { LeadActions } from "@/components/admin/LeadActions";
 import { LeadFacts } from "@/components/admin/LeadFacts";
 import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
-import { Button } from "@/components/ui/button";
+import { StatusChip } from "@/components/admin/StatusChip";
+import { VisaProgressPanel } from "@/components/admin/VisaProgressPanel";
 import { Skeleton } from "@/components/ui/skeleton";
+import { pickMessagePaths } from "@/i18n/pickMessages";
 import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
 import { displayPhone, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
+import { OVERDUE_CHIP } from "@/lib/admin/statusChips";
 import { leadFacts } from "@/lib/admin/leadFacts";
 import type { LeadDetail, StaffDirectoryEntry } from "@/lib/admin/types";
 import { LeadControls } from "./_components/LeadControls";
@@ -31,8 +34,14 @@ const ACTIVITY_TYPES = [
   "call",
   "email",
   "whatsapp",
+  "quote",
   "converted",
+  "visa",
+  "overdue",
 ];
+
+/** Only the lead steps' and the visa panel's words reach the browser (scoped provider, D190). */
+const LEAD_MESSAGES = ["Admin.leadActions", "Admin.visaProgress"];
 
 async function Lead({
   params,
@@ -40,7 +49,7 @@ async function Lead({
   params: PageProps<"/[locale]/secure-admin-control/leads/[id]">["params"];
 }) {
   const { id } = await params;
-  const [lead, staff, airports, t, tl, tc, tm, ts, tp] = await Promise.all([
+  const [lead, staff, airports, t, tl, tc, tm, ts, tp, messages] = await Promise.all([
     adminGet<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
     adminGet<StaffDirectoryEntry[]>("/admin/staff"),
     adminGet<{ items: ContentOption[] }>("/admin/content/airports/options").catch(() => ({
@@ -52,6 +61,7 @@ async function Lead({
     getTranslations("Admin.modules"),
     getTranslations("Admin.statuses"),
     getTranslations("Admin.priorities"),
+    getMessages(),
   ]);
   // Fact labels and value words are looked up by computed keys, so this translator is used untyped.
   const tf = t as unknown as ((key: string, values?: Record<string, number>) => string) & {
@@ -72,6 +82,7 @@ async function Lead({
     no: tc("no"),
   });
   const whatsappText = t("whatsappText", { name: lead.contact.name, reference: lead.reference });
+  const tv = await getTranslations("Admin.visaProgress");
 
   return (
     <>
@@ -81,6 +92,15 @@ async function Lead({
           <span className="flex flex-wrap items-center gap-3">
             <span className="font-mono">{lead.reference}</span>
             <LeadStatusBadge status={lead.status} label={ts(lead.status)} />
+            {lead.overdue ? (
+              <StatusChip
+                tone={OVERDUE_CHIP.tone}
+                icon={OVERDUE_CHIP.icon}
+                label={tl("views.overdue")}
+                reason={t("overdue", { minutes: lead.slaMinutes })}
+                focusable
+              />
+            ) : null}
           </span>
         }
         lead={`${tm(lead.module)} · ${lead.summary}`}
@@ -88,29 +108,35 @@ async function Lead({
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex min-w-0 flex-col gap-4">
           <AdminPanel>
-            <LeadControls
-              id={lead.id}
-              status={lead.status}
-              priority={lead.priority}
-              assigneeId={lead.assignee?.id ?? null}
-              statuses={LeadStatusSchema.options.map((value) => ({ value, label: ts(value) }))}
-              priorities={LeadPrioritySchema.options.map((value) => ({ value, label: tp(value) }))}
-              staff={staff.map((person) => ({ value: person.id, label: person.name }))}
-              strings={{
-                status: t("status"),
-                assignee: t("assignee"),
-                priority: t("priority"),
-                unassigned: tl("unassigned"),
-                amount: t("amount"),
-                amountHint: t("amountHint"),
-                reason: t("reason"),
-                reasonHint: t("reasonHint"),
-                confirm: t("confirmStatus", { status: "{status}" }),
-                cancel: tc("cancel"),
-                updated: t("updated"),
-                failed: tc("unavailable"),
-              }}
-            />
+            <NextIntlClientProvider messages={pickMessagePaths(messages, LEAD_MESSAGES)}>
+              <LeadActions
+                id={lead.id}
+                status={lead.status}
+                phone={lead.contact.phone}
+                email={lead.contact.email ?? null}
+                whatsappHref={whatsappHref(lead.contact.phone, whatsappText)}
+                emailSubject={lead.reference}
+              />
+            </NextIntlClientProvider>
+            <div className="mt-5 border-t border-mist-100 pt-4">
+              <LeadControls
+                id={lead.id}
+                priority={lead.priority}
+                assigneeId={lead.assignee?.id ?? null}
+                priorities={LeadPrioritySchema.options.map((value) => ({
+                  value,
+                  label: tp(value),
+                }))}
+                staff={staff.map((person) => ({ value: person.id, label: person.name }))}
+                strings={{
+                  assignee: t("assignee"),
+                  priority: t("priority"),
+                  unassigned: tl("unassigned"),
+                  updated: t("updated"),
+                  failed: tc("unavailable"),
+                }}
+              />
+            </div>
             <dl className="mt-4 grid grid-cols-1 gap-3 border-t border-mist-100 pt-4 text-[14px] sm:grid-cols-3">
               <div>
                 <dt className="text-[12.5px] font-semibold text-mist-600">{t("firstResponse")}</dt>
@@ -151,6 +177,18 @@ async function Lead({
               </p>
             ) : null}
           </AdminPanel>
+
+          {lead.visa ? (
+            <AdminPanel title={tv("title")} lead={tv("lead")}>
+              <NextIntlClientProvider messages={pickMessagePaths(messages, LEAD_MESSAGES)}>
+                <VisaProgressPanel
+                  id={lead.id}
+                  visa={lead.visa}
+                  closed={["booked", "lost", "cancelled", "spam"].includes(lead.status)}
+                />
+              </NextIntlClientProvider>
+            </AdminPanel>
+          ) : null}
 
           <AdminPanel title={t("request")} lead={t("requestLead")}>
             <LeadFacts facts={facts} />
@@ -203,12 +241,26 @@ async function Lead({
             <dl className="mt-3 flex flex-col gap-2.5 text-[14.5px]">
               <div>
                 <dt className="text-[12.5px] font-semibold text-mist-600">{t("phone")}</dt>
-                <dd className="tabular-nums">{displayPhone(lead.contact.phone)}</dd>
+                <dd className="tabular-nums">
+                  <a
+                    href={`tel:${lead.contact.phone}`}
+                    className="font-medium text-brand-700 hover:underline"
+                  >
+                    {displayPhone(lead.contact.phone)}
+                  </a>
+                </dd>
               </div>
               {lead.contact.email ? (
                 <div>
                   <dt className="text-[12.5px] font-semibold text-mist-600">{t("email")}</dt>
-                  <dd className="break-all">{lead.contact.email}</dd>
+                  <dd className="break-all">
+                    <a
+                      href={`mailto:${lead.contact.email}?subject=${encodeURIComponent(lead.reference)}`}
+                      className="font-medium text-brand-700 hover:underline"
+                    >
+                      {lead.contact.email}
+                    </a>
+                  </dd>
                 </div>
               ) : null}
               {lead.contact.preferredContact ? (
@@ -224,34 +276,6 @@ async function Lead({
                 </div>
               ) : null}
             </dl>
-            <div className="mt-4 flex flex-col gap-2">
-              <Button asChild variant="secondary" size="md" className="w-full">
-                <a href={`tel:${lead.contact.phone}`}>
-                  <Phone aria-hidden="true" className="size-4" />
-                  {t("call")}
-                </a>
-              </Button>
-              <Button asChild variant="whatsapp" size="md" className="w-full">
-                <a
-                  href={whatsappHref(lead.contact.phone, whatsappText)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <WhatsAppIcon className="size-4" />
-                  {t("whatsapp")}
-                </a>
-              </Button>
-              {lead.contact.email ? (
-                <Button asChild variant="soft" size="md" className="w-full">
-                  <a
-                    href={`mailto:${lead.contact.email}?subject=${encodeURIComponent(lead.reference)}`}
-                  >
-                    <Mail aria-hidden="true" className="size-4" />
-                    {t("emailWithRef")}
-                  </a>
-                </Button>
-              ) : null}
-            </div>
           </AdminPanel>
           <AdminPanel title={t("source")}>
             <dl className="flex flex-col gap-2.5 text-[14.5px]">

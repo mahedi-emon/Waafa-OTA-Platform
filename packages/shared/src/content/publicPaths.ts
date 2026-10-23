@@ -3,7 +3,8 @@ import type { CollectionKey } from "./registry";
 /*
  * Lists whose records have their own page on the site, addressed by the record's id (its slug or code) (D0 R4): a
  * changed link keeps the old address working through a permanent redirect. Each page knows its own path; the
- * admin's "View on site" link comes from the blueprint's address. No zod here: client code may import it (D202).
+ * admin's "View on site" link comes from the blueprint's address. Pages (About, policies) are not here: each has
+ * a fixed route. No zod here: client code may import it (D202).
  */
 export const ROUTED_KEYS = [
   "tourPackages",
@@ -12,7 +13,6 @@ export const ROUTED_KEYS = [
   "visaGuides",
   "blogPosts",
   "galleryAlbums",
-  "pages",
   "products",
   "categories",
   "brands",

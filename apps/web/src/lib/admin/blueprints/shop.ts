@@ -221,7 +221,9 @@ export const storeRowsBlueprint = {
 
 export const couponsBlueprint = {
   key: "coupons",
-  sections: [{ id: "coupon", fields: ["code", "type", "value", "minOrder", "maxDiscount"] }],
+  sections: [
+    { id: "coupon", fields: ["code", "type", "value", "minOrder", "maxDiscount", "maxUses"] },
+  ],
   visibility: ["enabled", "startsAt", "endsAt"],
   fields: {
     type: { choices: "couponType" },

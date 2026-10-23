@@ -40,6 +40,7 @@ import {
   TicketPercent,
   TicketsPlane,
   ToggleRight,
+  Trash2,
   UserCog,
   UsersRound,
   Wallet,
@@ -93,6 +94,7 @@ const ICONS: Record<AdminIconName, LucideIcon> = {
   general: Settings,
   newsletter: Mail,
   audit: ScrollText,
+  trash: Trash2,
   settings: Settings,
 };
 

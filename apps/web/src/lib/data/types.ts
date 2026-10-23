@@ -147,6 +147,8 @@ export interface ContentRepository {
   getMediaSlot(key: MediaSlotKey): Promise<MediaSlot | null>;
   /** Every filled slot, for the admin media library. */
   listMediaSlots(): Promise<MediaSlot[]>;
+  /** The new address of a record whose link changed (D0 R4), or null. */
+  getMovedSlug(collection: string, from: string): Promise<string | null>;
 }
 
 export type GroupFareQuery = { now: Date; to?: string; month?: string };
