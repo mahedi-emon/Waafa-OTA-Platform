@@ -450,7 +450,8 @@ auto-rotate, at most 2560 px, WebP, metadata stripped, width and height stored);
   Choose from library) with the frame and file rules; an upload shows its local preview with progress and Cancel, a
   failure says why with Try again; a set photo shows Replace (upload or library, or drop a file on the photo), Crop
   (library photos), Focal point, the description (filled from the item's or record's name, a warning while empty), the
-  credit folded and "Use a web address instead" (size measured when it loads). Two columns when the field is at least
+  credit folded and "Use a web address instead" (a path on this site or an Unsplash or Pexels image address, the
+  only hosts the image optimiser fetches; the size is measured when it loads). Two columns when the field is at least
   36 rem wide (container query), one in a side sheet or on a phone.
 - **GalleryField** (many photos): tiles in the frame's shape, the first marked Cover, drag to order (dnd-kit grid
   after hydration; Move earlier / later and Make cover in each tile's menu), several files at once (two upload at a
@@ -467,8 +468,12 @@ auto-rotate, at most 2560 px, WebP, metadata stripped, width and height stored);
   Delete file only when nothing shows it. Site images: one card per fixed place with what shows there and Change.
 - **Public site**: SmartImage takes `focal` and sets `object-position`; every cropping image of a record passes it
   (contained logos and cart thumbnails keep the centre).
-- Heavy parts load on first use (D202): the library picker, the cropper (`@origin-space/image-cropper`), the focal
-  point dialog; react-dropzone sits in the field itself (small). No zod in the browser: media rules come from
+- Heavy parts load on first use (D202): the photo, gallery and video widgets are their own chunks (an editor without
+  photos never loads them), the library picker, the cropper (`@origin-space/image-cropper`), the focal point dialog
+  and the library's details sheet load when opened.
+- Uploads skip the Next proxy (`app/secure-admin-control/media/upload*`, outside the proxy matcher): Next keeps only
+  the first 10 MB of a body the proxy sees, so 12 MB photos and 50 MB videos stream straight to the API; an ended
+  session answers 401 (the session dialog), never a redirect. No zod in the browser: media rules come from
   `@waafa/shared/helpers/media`.
 
 ---

@@ -206,6 +206,8 @@ test("a policy body edited in the rich text editor shows on the site (issue 116)
   page,
 }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  // Typing, saving and the site's refresh after the save take longer than the default 30 s on a busy runner.
+  test.setTimeout(90_000);
   const errors = collectErrors(page);
   const line = `Refund requests are answered within two working days. Checked ${Date.now()}.`;
   await signIn(page);

@@ -96,7 +96,7 @@ function FocalPointPicker({ src, alt, value, onChange, strings }: FocalPointPick
       </div>
       <div>
         <p className="mb-1.5 text-[12.5px] font-semibold text-mist-600">{strings.previews}</p>
-        <ul className="grid grid-cols-3 gap-2">
+        <ul className="flex flex-wrap items-end gap-3">
           {PREVIEWS.map((preview) => (
             <li key={preview.label} className="flex flex-col items-center gap-1">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -105,7 +105,7 @@ function FocalPointPicker({ src, alt, value, onChange, strings }: FocalPointPick
                 alt=""
                 draggable={false}
                 style={{ objectPosition: objectPositionOf(point) }}
-                className={cn("w-full rounded-lg object-cover", preview.className)}
+                className={cn("h-20 w-auto rounded-lg object-cover", preview.className)}
               />
               <span className="text-[12px] text-mist-600 tabular-nums">{preview.label}</span>
             </li>

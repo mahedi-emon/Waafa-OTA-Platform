@@ -139,8 +139,12 @@ async function uploadToLibrary(page: Page, files: ReturnType<typeof photo>[]) {
 /** A team member only this test sees (hidden from the site), to show a library photo somewhere. */
 async function newTeamMember(page: Page, name: string) {
   await page.goto("/secure-admin-control/content/team/new");
-  await expect(page.getByRole("textbox", { name: "Name", exact: true })).toBeEditable();
-  await page.getByRole("textbox", { name: "Name", exact: true }).fill(name);
+  // Words typed before React hydrates the form are lost: retry until the name's counter follows the typing.
+  const nameBox = page.getByRole("textbox", { name: "Name", exact: true });
+  await expect(async () => {
+    await nameBox.fill(name);
+    await expect(page.getByText(`${name.length} of 80`).first()).toBeVisible({ timeout: 1_500 });
+  }).toPass({ timeout: 30_000 });
   await page.getByRole("textbox", { name: "Initials", exact: true }).fill("MT");
   await page.getByRole("textbox", { name: "Job title", exact: true }).fill("Media tester");
   await page.getByRole("textbox", { name: "Department", exact: true }).fill("Quality");
@@ -232,10 +236,15 @@ test("a photo chosen from the library shows where it is used, and Replace everyw
 
   // The library knows where the photo shows, so it can't be deleted from there.
   await page.goto(`/secure-admin-control/media?q=first-${STAMP}`);
-  await page
-    .getByRole("button", { name: new RegExp(`E2e first ${STAMP}`) })
-    .first()
-    .click();
+  // The library page listens once hydrated: open the file's details when it does.
+  await until(
+    () =>
+      page
+        .getByRole("button", { name: new RegExp(`E2e first ${STAMP}`) })
+        .first()
+        .click(),
+    page.getByRole("dialog", { name: `E2e first ${STAMP}` }),
+  );
   const sheet = page.getByRole("dialog", { name: `E2e first ${STAMP}` });
   await expect(sheet.getByRole("link", { name: new RegExp(member) })).toBeVisible();
   await expect(sheet.getByRole("button", { name: "Delete file" })).toBeDisabled();
@@ -259,10 +268,15 @@ test("a photo chosen from the library shows where it is used, and Replace everyw
 
   // The member now shows the second photo, and the first can be deleted.
   await page.goto(`/secure-admin-control/media?q=second-${STAMP}`);
-  await page
-    .getByRole("button", { name: new RegExp(`E2e second ${STAMP}`) })
-    .first()
-    .click();
+  // The library page listens once hydrated: open the file's details when it does.
+  await until(
+    () =>
+      page
+        .getByRole("button", { name: new RegExp(`E2e second ${STAMP}`) })
+        .first()
+        .click(),
+    page.getByRole("dialog", { name: `E2e second ${STAMP}` }),
+  );
   await expect(
     page
       .getByRole("dialog", { name: `E2e second ${STAMP}` })
@@ -315,7 +329,10 @@ test("a photo uploaded in its field is cropped to the frame and keeps a focal po
 
   // Saved with the record: the point is still there after a reload.
   await page.reload();
-  await page.getByRole("button", { name: "Focal point", exact: true }).click();
+  await until(
+    () => page.getByRole("button", { name: "Focal point", exact: true }).click(),
+    page.getByRole("dialog", { name: "Focal point" }),
+  );
   await expect(
     page
       .getByRole("dialog", { name: "Focal point" })
