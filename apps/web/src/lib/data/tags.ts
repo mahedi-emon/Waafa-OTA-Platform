@@ -26,6 +26,8 @@ export const CACHE_TAGS = {
   packages: "packages",
   visa: "visa",
   catalogue: "catalogue",
+  /** Old record addresses that redirect after a link change (D0 R4). */
+  redirects: "redirects",
 } as const;
 
 export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

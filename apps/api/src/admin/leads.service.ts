@@ -1,11 +1,19 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
+  formatDate,
+  formatTaka,
+  isOverdueLead,
+  nextLeadStatus,
   toDhakaIsoString,
+  visaStage,
+  type LeadActionInput,
   type LeadBulkInput,
   type LeadListQuery,
   type LeadNoteInput,
   type LeadStatus,
   type LeadUpdateInput,
+  type VisaProgressFacts,
+  type VisaProgressInput,
 } from "@waafa/shared";
 import { AuditService } from "../audit/audit.service";
 import type { StaffPrincipal } from "../auth/principal";
@@ -13,16 +21,114 @@ import { problems } from "../common/problem";
 import { ContentService } from "../content/content.service";
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { RevalidateService } from "../revalidate/revalidate.service";
 import { assertLeadAccess, dhakaDate, leadModulesFor } from "./access";
 
 const CLOSED: LeadStatus[] = ["booked", "cancelled", "lost", "spam"];
 
 type LeadWithPeople = Prisma.LeadGetPayload<{ include: { activities: true } }>;
 
+const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
+
+/** Why a step can't apply, in plain words with the next step. */
+const LEAD_REFUSALS = {
+  closed: "This lead is closed: reopen it first",
+  open: "This lead is still open",
+  amount: "Enter the booked amount in taka",
+  reason: "Say why in a few words",
+  booked: "A booked lead can't be marked as spam",
+} as const;
+
+/** Status words for the timeline (the stored values stay as they are, D191). */
+const STATUS_WORDS: Record<string, string> = {
+  new: "New",
+  "in-progress": "In progress",
+  quoted: "Quoted",
+  pending: "Waiting for customer",
+  booked: "Booked",
+  lost: "Lost",
+  cancelled: "Cancelled",
+  spam: "Spam",
+};
+
+const CONTACT_WORDS = {
+  call: "Called the customer",
+  whatsapp: "Replied on WhatsApp",
+  email: "Emailed the customer",
+  note: "Contacted the customer",
+} as const;
+
+/** The timeline entry a step writes, with the status it moved to when it moved. */
+function activityFor(
+  input: LeadActionInput,
+  movedTo: string | null,
+): { type: string; body: string } {
+  const moved = movedTo ? ` · Moved to ${STATUS_WORDS[movedTo] ?? movedTo}` : "";
+  const withNote = (words: string, note?: string) => (note ? `${words}: ${note}` : words);
+  switch (input.type) {
+    case "contact":
+      return { type: input.channel, body: `${input.note ?? CONTACT_WORDS[input.channel]}${moved}` };
+    case "quote":
+      return {
+        type: "quote",
+        body: `${withNote(`Quote logged${input.amount ? ` (${formatTaka(input.amount)})` : ""}`, input.note)}${moved}`,
+      };
+    case "askDocuments":
+      return { type: "status", body: `${withNote("Asked for documents", input.note)}${moved}` };
+    case "askPayment":
+      return { type: "status", body: `${withNote("Asked for payment", input.note)}${moved}` };
+    case "customerReplied":
+      return { type: "status", body: `The customer replied${moved}` };
+    case "convert":
+      return { type: "converted", body: `Converted to a booking: ${formatTaka(input.amount)}` };
+    case "close":
+      return {
+        type: "status",
+        body: `Closed as ${input.outcome === "lost" ? "Lost" : "Cancelled"}: ${input.reason}`,
+      };
+    case "markSpam":
+      return { type: "status", body: "Marked as spam" };
+    case "reopen":
+      return { type: "status", body: `Reopened: ${input.reason}` };
+  }
+}
+
+/** What a visa lead stores about its application (D225). */
+type VisaProgress = {
+  received?: string[];
+  submittedOn?: string;
+  submissionReference?: string;
+  outcome?: "approved" | "rejected";
+  decidedOn?: string;
+  passportReturnedOn?: string;
+};
+
+function progressOf(value: unknown): VisaProgress {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? { ...(value as VisaProgress) }
+    : {};
+}
+
+/** The facts `visaStage` reads, from the checklist, the stored progress and the lead's status. */
+function visaFacts(checklist: string[], progress: VisaProgress, status: string): VisaProgressFacts {
+  const received = new Set(progress.received ?? []);
+  return {
+    documents: checklist.map((item) => ({ required: true, received: received.has(item) })),
+    submittedAt: progress.submittedOn ?? null,
+    outcome: progress.outcome ?? null,
+    passportReturnedAt: progress.passportReturnedOn ?? null,
+    cancelled: status === "cancelled" || status === "lost",
+  };
+}
+
+/** Today's date in Asia/Dhaka. */
+const todayInDhaka = (now: Date) =>
+  new Date(now.getTime() + 6 * 3_600_000).toISOString().slice(0, 10);
+
 /**
- * Leads for the admin (FR-ADM-LEAD): list with saved views, filters and search; detail with the timeline; status,
- * priority and assignee changes with the PRD rules; notes, calls and messages; bulk assign. Every change writes a
- * timeline entry and the audit log in the same transaction.
+ * Leads for the admin (FR-ADM-LEAD): list with saved views, filters and search; detail with the timeline; steps
+ * that move the status with the shared rules (D0 R4); priority and assignee; notes, calls and messages; bulk assign
+ * and spam; the visa checklist. Every change writes a timeline entry and the audit log in the same transaction.
  */
 @Injectable()
 export class AdminLeadsService {
@@ -30,6 +136,7 @@ export class AdminLeadsService {
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(AuditService) private readonly audit: AuditService,
     @Inject(ContentService) private readonly content: ContentService,
+    @Inject(RevalidateService) private readonly revalidate: RevalidateService,
   ) {}
 
   private async slaMinutes(): Promise<number> {
@@ -143,9 +250,9 @@ export class AdminLeadsService {
     return lead;
   }
 
-  async detail(staff: StaffPrincipal, id: string) {
+  async detail(staff: StaffPrincipal, id: string, now = new Date()) {
     const lead = await this.load(staff, id);
-    const [names, original, repeats] = await Promise.all([
+    const [names, original, repeats, sla, checklist] = await Promise.all([
       this.staffNames([lead.assigneeId]),
       lead.duplicateOfId
         ? this.prisma.lead.findUnique({
@@ -158,7 +265,34 @@ export class AdminLeadsService {
         select: { id: true, reference: true },
         orderBy: { createdAt: "asc" },
       }),
+      this.slaMinutes(),
+      lead.module === "visa" ? this.visaChecklist(lead) : Promise.resolve(null),
     ]);
+    const progress = progressOf(lead.progress);
+    const visa = checklist
+      ? (() => {
+          const facts = visaFacts(checklist, progress, lead.status);
+          const { stage, received, required } = visaStage(facts);
+          return {
+            stage,
+            received,
+            required,
+            checklist: checklist.map((item) => ({
+              item,
+              received: (progress.received ?? []).includes(item),
+            })),
+            ...(progress.submittedOn ? { submittedOn: progress.submittedOn } : {}),
+            ...(progress.submissionReference
+              ? { submissionReference: progress.submissionReference }
+              : {}),
+            ...(progress.outcome ? { outcome: progress.outcome } : {}),
+            ...(progress.decidedOn ? { decidedOn: progress.decidedOn } : {}),
+            ...(progress.passportReturnedOn
+              ? { passportReturnedOn: progress.passportReturnedOn }
+              : {}),
+          };
+        })()
+      : null;
     return {
       id: lead.id,
       reference: lead.reference,
@@ -178,6 +312,17 @@ export class AdminLeadsService {
         : null,
       duplicateOf: original,
       repeats,
+      slaMinutes: sla,
+      overdue: isOverdueLead(
+        {
+          status: lead.status,
+          firstResponseAt: lead.firstResponseAt?.toISOString() ?? null,
+          createdAt: lead.createdAt.toISOString(),
+        },
+        sla,
+        now,
+      ),
+      visa,
       firstResponseAt: lead.firstResponseAt ? toDhakaIsoString(lead.firstResponseAt) : null,
       closedAt: lead.closedAt ? toDhakaIsoString(lead.closedAt) : null,
       createdAt: toDhakaIsoString(lead.createdAt),
@@ -191,6 +336,7 @@ export class AdminLeadsService {
     };
   }
 
+  /** Priority, assignee and a booked lead's corrected amount; the status only moves through `act` (D0 R4). */
   async update(staff: StaffPrincipal, id: string, input: LeadUpdateInput, now = new Date()) {
     const lead = await this.load(staff, id);
     if (input.assigneeId) {
@@ -200,20 +346,16 @@ export class AdminLeadsService {
     }
     const data: Prisma.LeadUpdateInput = {};
     const notes: Array<{ type: string; body: string }> = [];
-    if (input.status && input.status !== lead.status) {
-      data.status = input.status;
-      if (!lead.firstResponseAt) data.firstResponseAt = now;
-      data.closedAt = CLOSED.includes(input.status) ? now : null;
-      if (input.status === "booked") data.amount = input.amount ?? null;
-      if (input.status === "cancelled" || input.status === "lost")
-        data.reason = input.reason ?? null;
-      notes.push({
-        type: "status",
-        body: `Status ${lead.status} → ${input.status}${input.amount !== undefined && input.status === "booked" ? ` (৳${input.amount})` : ""}${input.reason ? `: ${input.reason}` : ""}`,
-      });
-    } else if (input.amount !== undefined && lead.status === "booked") {
-      data.amount = input.amount;
-      notes.push({ type: "status", body: `Booked amount changed to ৳${input.amount}` });
+    if (input.amount !== undefined) {
+      if (lead.status !== "booked")
+        throw problems.conflict("Only a booked lead has an amount to correct", "notBooked");
+      if (input.amount !== lead.amount) {
+        data.amount = input.amount;
+        notes.push({
+          type: "status",
+          body: `Booked amount changed to ${formatTaka(input.amount)}`,
+        });
+      }
     }
     if (input.priority && input.priority !== lead.priority) {
       data.priority = input.priority;
@@ -251,14 +393,8 @@ export class AdminLeadsService {
           action: "lead.update",
           entity: "lead",
           entityId: lead.reference,
-          before: {
-            status: lead.status,
-            priority: lead.priority,
-            assigneeId: lead.assigneeId,
-            amount: lead.amount,
-          },
+          before: { priority: lead.priority, assigneeId: lead.assigneeId, amount: lead.amount },
           after: input,
-          ...(input.reason ? { reason: input.reason } : {}),
         },
         tx,
       );
@@ -266,23 +402,216 @@ export class AdminLeadsService {
     return this.detail(staff, id);
   }
 
-  async addNote(staff: StaffPrincipal, id: string, input: LeadNoteInput, now = new Date()) {
+  /**
+   * One step on a lead (D0 R4, ADMIN.md §8.2): the status follows from the step with the shared rules, the first
+   * contact stamps the first response, a booking takes its seats off a group fare, and the timeline and the audit
+   * log record it in the same transaction.
+   */
+  async act(staff: StaffPrincipal, id: string, input: LeadActionInput, now = new Date()) {
     const lead = await this.load(staff, id);
+    const move = nextLeadStatus(lead.status, input, {
+      firstResponseAt: lead.firstResponseAt?.toISOString() ?? null,
+    });
+    if (!move.ok) throw problems.conflict(LEAD_REFUSALS[move.reason], move.reason);
+    const moved = move.status !== lead.status;
+    const data: Prisma.LeadUpdateInput = {};
+    if (moved) {
+      data.status = move.status;
+      data.closedAt = move.closed ? now : null;
+    }
+    if (move.firstResponse) data.firstResponseAt = now;
+    if (input.type === "convert") data.amount = input.amount;
+    if (input.type === "close") data.reason = input.reason;
+    if (input.type === "reopen") data.reason = null;
+    const entry = activityFor(input, moved ? move.status : null);
+    let seats = false;
     await this.prisma.$transaction(async (tx) => {
+      if (Object.keys(data).length > 0) await tx.lead.update({ where: { id }, data });
       await tx.leadActivity.create({
         data: {
           leadId: id,
-          type: input.type,
-          body: input.body,
+          type: entry.type,
+          body: entry.body,
           actorId: staff.id,
           actorName: staff.name,
           createdAt: now,
         },
       });
-      // A call, email or WhatsApp message is a first response too.
-      if (!lead.firstResponseAt && input.type !== "note") {
-        await tx.lead.update({ where: { id }, data: { firstResponseAt: now } });
+      if (input.type === "convert") seats = await this.takeSeats(tx, staff, lead);
+      await this.audit.record(
+        {
+          actor: staff,
+          action: `lead.${input.type}`,
+          entity: "lead",
+          entityId: lead.reference,
+          before: { status: lead.status },
+          after: { status: move.status, ...input },
+          ...("reason" in input ? { reason: input.reason } : {}),
+        },
+        tx,
+      );
+    });
+    if (seats) {
+      this.content.invalidate();
+      this.revalidate.request(["groupFares"]);
+    }
+    return this.detail(staff, id);
+  }
+
+  /** A booked group-fare lead takes its travellers off the fare's seats (D224), never below none. */
+  private async takeSeats(
+    tx: Prisma.TransactionClient,
+    staff: StaffPrincipal,
+    lead: LeadWithPeople,
+  ): Promise<boolean> {
+    const fareId = (lead.payload as { groupFareId?: unknown } | null)?.groupFareId;
+    if (typeof fareId !== "string") return false;
+    const fare = await tx.contentDocument.findUnique({
+      where: { collection_docId: { collection: "groupFares", docId: fareId } },
+    });
+    const data = fare?.data as Record<string, unknown> | undefined;
+    if (!fare || !data || typeof data.seatsLeft !== "number") return false;
+    const taken = Math.max(1, lead.travellers ?? 1);
+    const after = { ...data, seatsLeft: Math.max(0, data.seatsLeft - taken) };
+    await tx.contentDocument.update({
+      where: { collection_docId: { collection: "groupFares", docId: fareId } },
+      data: { data: json(after), version: { increment: 1 }, updatedBy: staff.name },
+    });
+    await this.audit.record(
+      {
+        actor: staff,
+        action: "content.update",
+        entity: "groupFares",
+        entityId: fareId,
+        before: data,
+        after,
+        reason: `${taken} ${taken === 1 ? "seat" : "seats"} booked on ${lead.reference}`,
+      },
+      tx,
+    );
+    return true;
+  }
+
+  /**
+   * A visa application's checklist, submission and outcome (D0 R4, D225, ADMIN.md §8.3): stored on the visa lead,
+   * the stage derived from it. Submitting needs every document; an outcome needs the submission.
+   */
+  async visa(staff: StaffPrincipal, id: string, input: VisaProgressInput, now = new Date()) {
+    const lead = await this.load(staff, id);
+    if (lead.module !== "visa")
+      throw problems.badRequest("Only visa requests have a documents checklist");
+    if (["cancelled", "lost", "spam"].includes(lead.status))
+      throw problems.conflict("This application is closed: reopen it first", "closed");
+    const checklist = await this.visaChecklist(lead);
+    const progress = progressOf(lead.progress);
+    const stage = visaStage(visaFacts(checklist, progress, lead.status)).stage;
+    let body: string;
+    switch (input.type) {
+      case "document": {
+        if (!checklist.includes(input.item))
+          throw problems.badRequest("Pick a document from the checklist");
+        if (progress.submittedOn)
+          throw problems.conflict("The application is already submitted", "submitted");
+        const received = new Set(progress.received ?? []);
+        if (input.received) received.add(input.item);
+        else received.delete(input.item);
+        progress.received = checklist.filter((item) => received.has(item));
+        body = input.received ? `${input.item}: received` : `${input.item}: not received yet`;
+        break;
       }
+      case "submit":
+        if (stage !== "readyToSubmit")
+          throw problems.conflict(
+            "Mark every document as received before submitting the application",
+            "documents",
+          );
+        progress.submittedOn = input.on;
+        progress.submissionReference = input.submissionReference;
+        body = `Submitted to the embassy on ${formatDate(input.on)} (reference ${input.submissionReference})`;
+        break;
+      case "outcome":
+        if (stage !== "submitted")
+          throw problems.conflict("Enter the submission before the outcome", "notSubmitted");
+        progress.outcome = input.outcome;
+        progress.decidedOn = todayInDhaka(now);
+        body = input.outcome === "approved" ? "Visa approved" : "Visa rejected";
+        break;
+      case "passportReturned":
+        if (stage !== "approved" && stage !== "rejected")
+          throw problems.conflict("Enter the outcome before returning the passport", "noOutcome");
+        progress.passportReturnedOn = input.on;
+        body = `Passport returned on ${formatDate(input.on)}`;
+        break;
+    }
+    await this.prisma.$transaction(async (tx) => {
+      await tx.lead.update({
+        where: { id },
+        data: {
+          progress: json(progress),
+          ...(lead.firstResponseAt ? {} : { firstResponseAt: now }),
+        },
+      });
+      await tx.leadActivity.create({
+        data: {
+          leadId: id,
+          type: "visa",
+          body,
+          actorId: staff.id,
+          actorName: staff.name,
+          createdAt: now,
+        },
+      });
+      await this.audit.record(
+        {
+          actor: staff,
+          action: "lead.visa",
+          entity: "lead",
+          entityId: lead.reference,
+          before: { progress: lead.progress },
+          after: { progress },
+        },
+        tx,
+      );
+    });
+    return this.detail(staff, id);
+  }
+
+  /** The checklist titles of the lead's country and visa type, from Visa countries. */
+  private async visaChecklist(lead: LeadWithPeople): Promise<string[]> {
+    const payload = lead.payload as { countrySlug?: unknown; visaType?: unknown } | null;
+    if (typeof payload?.countrySlug !== "string") return [];
+    const country = await this.prisma.contentDocument.findUnique({
+      where: { collection_docId: { collection: "visaCountries", docId: payload.countrySlug } },
+      select: { data: true },
+    });
+    const types = (
+      country?.data as { types?: Array<{ type?: unknown; checklist?: unknown }> } | null
+    )?.types;
+    const type = types?.find((item) => item.type === payload.visaType) ?? types?.[0];
+    const items = Array.isArray(type?.checklist)
+      ? (type.checklist as Array<{ title?: unknown }>)
+      : [];
+    return items.flatMap((item) => (typeof item.title === "string" ? [item.title] : []));
+  }
+
+  /**
+   * A timeline entry. A call, email or WhatsApp entry is a contact with the customer, so it moves the lead like the
+   * contact buttons do (D220); an internal note changes nothing else.
+   */
+  async addNote(staff: StaffPrincipal, id: string, input: LeadNoteInput, now = new Date()) {
+    if (input.type !== "note") {
+      return this.act(staff, id, { type: "contact", channel: input.type, note: input.body }, now);
+    }
+    await this.load(staff, id);
+    await this.prisma.leadActivity.create({
+      data: {
+        leadId: id,
+        type: "note",
+        body: input.body,
+        actorId: staff.id,
+        actorName: staff.name,
+        createdAt: now,
+      },
     });
     return this.detail(staff, id);
   }
@@ -293,19 +622,22 @@ export class AdminLeadsService {
       where: { id: { in: input.ids }, module: { in: modules } },
     });
     let changed = 0;
+    const skipped: string[] = [];
     for (const lead of leads) {
-      await this.update(
-        staff,
-        lead.id,
-        {
-          ...(input.status ? { status: input.status } : {}),
-          ...(input.assigneeId !== undefined ? { assigneeId: input.assigneeId } : {}),
-        },
-        now,
-      );
+      if (input.assigneeId !== undefined) {
+        await this.update(staff, lead.id, { assigneeId: input.assigneeId }, now);
+      }
+      if (input.markSpam) {
+        // A booked lead is never spam: it is skipped and named in the answer.
+        if (!nextLeadStatus(lead.status, { type: "markSpam" }).ok) {
+          skipped.push(lead.reference);
+          continue;
+        }
+        if (lead.status !== "spam") await this.act(staff, lead.id, { type: "markSpam" }, now);
+      }
       changed += 1;
     }
-    return { changed };
+    return { changed, skipped };
   }
 
   /** CSV export of the current filter (FR-ADM-LEAD), up to 5,000 rows. */

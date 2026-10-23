@@ -107,7 +107,16 @@ export const SeoSchema = z
   })
   .strict();
 
-export const PublishStatusSchema = z.enum(["draft", "published", "archived"]);
+export const PublishStatusSchema = z.enum(["draft", "scheduled", "published", "archived"]);
+
+/**
+ * When a scheduled record goes live and since when it is live (D0 R4): written by the API from the editor's buttons,
+ * never typed. Records that were live before R4 have neither.
+ */
+export const PublishTimesShape = {
+  publishAt: IsoDateTimeSchema.optional(),
+  liveSince: IsoDateTimeSchema.optional(),
+};
 
 export type Id = z.infer<typeof IdSchema>;
 export type Slug = z.infer<typeof SlugSchema>;

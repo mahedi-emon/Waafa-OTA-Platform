@@ -50,6 +50,7 @@ import {
   TourPackageSchema,
   SearchSettingsSchema,
   ServicePageSchema,
+  SlugRedirectSchema,
   HomeContentSchema,
   ShopContentSchema,
   TrackingSettingsSchema,
@@ -192,6 +193,8 @@ export const fixtureRegistry = {
   searchLogs: entry(z.array(SearchLogSchema), searchLogs),
   staffUsers: entry(z.array(StaffUserSchema), staffUsers),
   auditLog: entry(z.array(AuditEntrySchema), auditLog),
+  // Old record addresses that redirect (D0 R4): none in the fixtures; the API snapshot carries the real ones.
+  slugRedirects: entry(z.array(SlugRedirectSchema), []),
 };
 
 export type FixtureKey = keyof typeof fixtureRegistry;

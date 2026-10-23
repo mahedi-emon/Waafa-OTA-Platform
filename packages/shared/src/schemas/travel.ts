@@ -6,6 +6,7 @@ import {
   IsoDateSchema,
   IsoDateTimeSchema,
   PublishStatusSchema,
+  PublishTimesShape,
   SampleFlagSchema,
   SeoSchema,
   SlugSchema,
@@ -191,6 +192,7 @@ export const TourPackageSchema = z
     popularity: z.number().int().min(0),
     publishedAt: IsoDateSchema,
     status: PublishStatusSchema,
+    ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
   })
@@ -276,6 +278,7 @@ export const FlightRouteSchema = z
     popular: z.boolean().default(false),
     order: z.number().int().min(0).default(0),
     status: PublishStatusSchema,
+    ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
   })

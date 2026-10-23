@@ -44,6 +44,13 @@ async function Users() {
           active: t("active"),
           deactivated: t("deactivated"),
           locked: t("locked"),
+          invited: t("invited"),
+          reasons: {
+            active: t("reasons.active"),
+            invited: t("reasons.invited"),
+            deactivated: t("reasons.deactivated"),
+            locked: t("reasons.locked"),
+          },
           lastLogin: t("lastLogin"),
           never: t("never"),
           deactivate: t("deactivate"),

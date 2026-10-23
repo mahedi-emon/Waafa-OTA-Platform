@@ -24,6 +24,7 @@ import {
   getSiteSettings,
 } from "@/lib/data/settings";
 import { listCategories, listCompatibleModels, getProduct, listProducts } from "@/lib/data/shop";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { brandNames, pricedProduct, pricedProducts } from "@/lib/shop/catalogue";
 import { stockBadge } from "@/lib/shop/variants";
 import { absoluteUrl } from "@/lib/siteUrl";
@@ -66,7 +67,11 @@ const AVAILABILITY = {
 async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug]">, "params">) {
   const { slug } = await params;
   const found = await getProduct(slug);
-  if (!found) notFound();
+  if (!found) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("products", slug, (to) => `/shop/p/${to}`);
+    notFound();
+  }
   const [product, categories, names, shipping, payment, contact, site, messages, t] =
     await Promise.all([
       pricedProduct(found),

@@ -3,6 +3,7 @@ import { IdSchema, IsoDateSchema, IsoDateTimeSchema, SampleFlagSchema, TakaSchem
 import { FeedbackSchema } from "./content";
 import { LeadModuleSchema, LeadPrioritySchema, LeadStatusSchema } from "./leads";
 import { OrderStatusSchema } from "./shop";
+import { ContentActionSchema } from "./workflow";
 
 /** Staff roles (PRD §4); one person can hold several. B2B Agent arrives in Phase 3. */
 export const RoleSchema = z.enum([
@@ -68,25 +69,18 @@ export const LeadListQuerySchema = z
   })
   .strict();
 
-/** Status, priority and assignee changes; Booked needs an amount, Cancelled and Lost need a reason. */
+/**
+ * Priority, assignee and a booked lead's corrected amount. The status is never set here: it follows from the lead's
+ * actions (LeadActionInputSchema, D0 R4).
+ */
 export const LeadUpdateInputSchema = z
   .object({
-    status: LeadStatusSchema.optional(),
     priority: LeadPrioritySchema.optional(),
     assigneeId: IdSchema.nullable().optional(),
-    amount: TakaSchema.optional(),
-    reason: z.string().trim().min(3).max(300).optional(),
+    amount: TakaSchema.positive().optional(),
   })
   .strict()
-  .refine(somethingToChange, { message: "Nothing to change" })
-  .superRefine((value, ctx) => {
-    if (value.status === "booked" && value.amount === undefined) {
-      ctx.addIssue({ code: "custom", path: ["amount"], message: "Enter the booked amount" });
-    }
-    if ((value.status === "cancelled" || value.status === "lost") && !value.reason) {
-      ctx.addIssue({ code: "custom", path: ["reason"], message: "Give the reason" });
-    }
-  });
+  .refine(somethingToChange, { message: "Nothing to change" });
 
 export const LeadNoteInputSchema = z
   .object({
@@ -95,15 +89,15 @@ export const LeadNoteInputSchema = z
   })
   .strict();
 
-/** Bulk assign and status change; statuses that need an amount or a reason are set one by one. */
+/** Bulk assign, or Mark as spam; every other step is taken lead by lead with what it needs (D0 R4). */
 export const LeadBulkInputSchema = z
   .object({
     ids: z.array(IdSchema).min(1).max(100),
-    status: LeadStatusSchema.exclude(["booked", "cancelled", "lost"]).optional(),
+    markSpam: z.literal(true).optional(),
     assigneeId: IdSchema.nullable().optional(),
   })
   .strict()
-  .refine((value) => value.status !== undefined || value.assigneeId !== undefined, {
+  .refine((value) => value.markSpam !== undefined || value.assigneeId !== undefined, {
     message: "Nothing to change",
   });
 
@@ -115,22 +109,10 @@ export const OrderListQuerySchema = z
   })
   .strict();
 
-/** Order workflow (FR-SHOP-09): status with courier and tracking number, payment verified, a note. */
+/** A note on the order's history. Steps (confirm, pack, ship, deliver, cancel, return) are actions (D0 R4). */
 export const OrderUpdateInputSchema = z
-  .object({
-    status: OrderStatusSchema.optional(),
-    note: z.string().trim().min(1).max(300).optional(),
-    courier: z.string().trim().min(2).max(60).optional(),
-    trackingNumber: z.string().trim().min(3).max(60).optional(),
-    paymentVerified: z.boolean().optional(),
-  })
-  .strict()
-  .refine(somethingToChange, { message: "Nothing to change" })
-  .superRefine((value, ctx) => {
-    if (value.status === "shipped" && !value.courier) {
-      ctx.addIssue({ code: "custom", path: ["courier"], message: "Name the courier" });
-    }
-  });
+  .object({ note: z.string().trim().min(1).max(300) })
+  .strict();
 
 export const FeedbackListQuerySchema = z
   .object({ status: FeedbackSchema.shape.status.optional(), ...paging })
@@ -140,16 +122,16 @@ export const FeedbackModerationInputSchema = z
   .object({ status: FeedbackSchema.shape.status })
   .strict();
 
+/** "To verify" lists proofs received and proofs matched to an order (D0 R4). */
 export const PaymentProofListQuerySchema = z
-  .object({ status: z.enum(["received", "verified", "rejected"]).optional(), ...paging })
-  .strict();
-
-export const PaymentProofReviewInputSchema = z
   .object({
-    status: z.enum(["received", "verified", "rejected"]),
-    note: z.string().trim().min(1).max(300).optional(),
+    status: z.enum(["received", "matched", "verified", "rejected"]).optional(),
+    ...paging,
   })
   .strict();
+
+/** Trash (D0 R4): newest first, only the lists this person may edit. */
+export const TrashListQuerySchema = z.object({ ...paging }).strict();
 
 export const SearchLogListQuerySchema = z
   .object({
@@ -196,9 +178,18 @@ export const PasswordChangeInputSchema = z
   .object({ current: z.string().min(1).max(200), next: PasswordSchema })
   .strict();
 
-/** A content record or settings value; the server validates `data` with the CONTENT_MODEL schema of the key. */
+/**
+ * A content record or settings value; the server validates `data` with the CONTENT_MODEL schema of the key.
+ * `action` is the editor's button (D0 R4): the API derives the status from it, and a plain save keeps the stored
+ * one. `keepSample` is the Undo of "no longer Sample" after a record's first staff save.
+ */
 export const ContentWriteInputSchema = z
-  .object({ data: z.unknown(), version: z.number().int().min(1).optional() })
+  .object({
+    data: z.unknown(),
+    version: z.number().int().min(1).optional(),
+    action: ContentActionSchema.optional(),
+    keepSample: z.boolean().optional(),
+  })
   .strict();
 
 export const ContentOrderInputSchema = z
@@ -326,7 +317,7 @@ export type LeadBulkInput = z.infer<typeof LeadBulkInputSchema>;
 export type OrderListQuery = z.infer<typeof OrderListQuerySchema>;
 export type OrderUpdateInput = z.infer<typeof OrderUpdateInputSchema>;
 export type FeedbackModerationInput = z.infer<typeof FeedbackModerationInputSchema>;
-export type PaymentProofReviewInput = z.infer<typeof PaymentProofReviewInputSchema>;
+export type TrashListQuery = z.infer<typeof TrashListQuerySchema>;
 export type StaffCreateInput = z.infer<typeof StaffCreateInputSchema>;
 export type StaffUpdateInput = z.infer<typeof StaffUpdateInputSchema>;
 export type ContentWriteInput = z.infer<typeof ContentWriteInputSchema>;

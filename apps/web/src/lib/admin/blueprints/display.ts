@@ -1,3 +1,4 @@
+import { contentChip } from "@waafa/shared/workflow/content";
 import { getAt } from "../schema";
 import { pathFromDotted } from "./paths";
 import type { ResolvedBlueprint } from "./types";
@@ -59,7 +60,9 @@ export function headingOf(blueprint: ResolvedBlueprint, value: unknown): string 
 
 export type RecordStatus = {
   /** Which StatusChip to show; "direct" is content without drafts, live as soon as it is saved. */
-  state: "new" | "draft" | "live" | "archived" | "shown" | "hidden" | "direct";
+  state: "new" | "draft" | "scheduled" | "live" | "archived" | "shown" | "hidden" | "direct";
+  /** When a scheduled record goes live, or since when a live one is (D0 R4). */
+  at?: string;
 };
 
 /**
@@ -70,12 +73,23 @@ export function statusOf(
   blueprint: ResolvedBlueprint,
   value: unknown,
   isNew: boolean,
+  now: Date = new Date(),
 ): RecordStatus {
   if (isNew) return { state: "new" };
   const record = asRecord(value);
   if (blueprint.workflow) {
-    if (record.status === "published") return { state: "live" };
-    if (record.status === "archived") return { state: "archived" };
+    const chip = contentChip(
+      {
+        status: typeof record.status === "string" ? record.status : undefined,
+        publishAt: typeof record.publishAt === "string" ? record.publishAt : undefined,
+        liveSince: typeof record.liveSince === "string" ? record.liveSince : undefined,
+      },
+      now,
+    );
+    if (chip.state === "scheduled") return { state: "scheduled", at: chip.at };
+    if (chip.state === "live")
+      return chip.since ? { state: "live", at: chip.since } : { state: "live" };
+    if (chip.state === "archived") return { state: "archived" };
     return { state: "draft" };
   }
   const switchName = blueprint.visibility.find((name) => name === "enabled" || name === "visible");

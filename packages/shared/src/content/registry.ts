@@ -200,6 +200,18 @@ export function hasRecordOrder(key: ContentKey): boolean {
 }
 
 /**
+ * Collections whose records have a Draft / Scheduled / Live / Archived status (D0 R4): the editor's buttons move it,
+ * the API writes it, and the site shows only Live records.
+ */
+export function hasPublishWorkflow(key: ContentKey): boolean {
+  const entry = CONTENT_MODEL[key];
+  if (entry.kind !== "collection") return false;
+  const shape = (entry.schema as { shape?: Record<string, unknown> }).shape;
+  const status = shape?.status as { options?: readonly string[] } | undefined;
+  return Boolean(status?.options?.includes("draft") && status.options.includes("published"));
+}
+
+/**
  * Lists that editors elsewhere pick from (a package's destination, a product's brand): any staff member may read
  * their titles and photos as picker choices. Every other list's choices need edit access to it (D0 R2 review).
  */

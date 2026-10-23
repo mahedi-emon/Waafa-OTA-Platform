@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
-import { ageParts } from "@/lib/admin/format";
+import { ageParts, whatsappHref } from "@/lib/admin/format";
 import type { LeadList } from "@/lib/admin/types";
 import { BoardCard } from "./_components/BoardCard";
 
@@ -29,7 +29,7 @@ async function LeadBoard({
   const service = LeadModuleSchema.safeParse(
     typeof params.module === "string" ? params.module : undefined,
   ).data;
-  const [columns, t, tm, ts] = await Promise.all([
+  const [columns, t, tm, ts, ta, tl] = await Promise.all([
     Promise.all(
       STAGES.map((status) =>
         adminGet<LeadList>("/admin/leads", {
@@ -42,6 +42,8 @@ async function LeadBoard({
     getTranslations("Admin.leadBoard"),
     getTranslations("Admin.modules"),
     getTranslations("Admin.statuses"),
+    getTranslations("Admin.leadActions"),
+    getTranslations("Admin.lead"),
   ]);
   const ageLabel = (minutes: number) => {
     const age = ageParts(minutes);
@@ -127,16 +129,20 @@ async function LeadBoard({
                           assignee: lead.assignee?.name ?? null,
                           age: ageLabel(lead.ageMinutes),
                           overdue: lead.overdue,
+                          whatsappHref: whatsappHref(
+                            lead.phone,
+                            tl("whatsappText", { name: lead.name, reference: lead.reference }),
+                          ),
                         }}
-                        stages={STAGES}
-                        stageNames={stageNames}
                         strings={{
-                          moveTo: t("moveTo"),
-                          moveBack: t("moveBack", { stage: "{stage}" }),
-                          moveForward: t("moveForward", { stage: "{stage}" }),
-                          moved: t("moved", { reference: "{reference}", stage: "{stage}" }),
+                          steps: {
+                            reply: ta("contact.whatsapp"),
+                            quote: ta("steps.quote"),
+                            askPayment: ta("steps.askPayment"),
+                            customerReplied: ta("steps.customerReplied"),
+                          },
+                          done: t("stepDone", { reference: "{reference}", step: "{step}" }),
                           open: t("open"),
-                          bookHint: t("bookHint"),
                           overdue: t("overdue"),
                           unassigned: t("unassigned"),
                           failed: t("failed"),

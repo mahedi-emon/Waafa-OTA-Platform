@@ -6,15 +6,20 @@ import {
   CircleCheck,
   CircleDot,
   CircleX,
+  Eye,
+  EyeOff,
   Clock,
   FileText,
   Hourglass,
   Inbox,
+  Link2,
   LockKeyhole,
   PackageCheck,
   PackageOpen,
+  PackageX,
   Pencil,
   PhoneCall,
+  Plane,
   Radio,
   ShieldAlert,
   Truck,
@@ -24,6 +29,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { LeadStatus, OrderStatus } from "@waafa/shared";
+import type { RecordChipName } from "./recordChips";
 
 /** Status families (ADMIN.md §4.1, D185): colour is never the only signal; every chip also has an icon and a word. */
 export type ChipTone = "info" | "progress" | "success" | "warning" | "danger" | "neutral";
@@ -55,6 +61,8 @@ export const ORDER_CHIPS: Record<OrderStatus, ChipSpec> = {
 
 export const PROOF_CHIPS = {
   received: { tone: "warning", icon: Hourglass },
+  /** The reference and amount match an order (D0 R4): ready to verify. */
+  matched: { tone: "info", icon: Link2 },
   verified: { tone: "success", icon: BadgeCheck },
   rejected: { tone: "danger", icon: CircleX },
 } satisfies Record<string, ChipSpec>;
@@ -73,6 +81,27 @@ export const CONTENT_CHIPS = {
   expired: { tone: "warning", icon: CalendarX },
   archived: { tone: "neutral", icon: Archive },
 } satisfies Record<string, ChipSpec>;
+
+/** List chips (D0 R4): from a record's status, dates, limits, seats or stock; see lib/admin/recordChips.ts. */
+export const RECORD_CHIPS = {
+  draft: { tone: "neutral", icon: Pencil },
+  scheduled: { tone: "info", icon: Clock },
+  live: { tone: "success", icon: Radio },
+  expired: { tone: "warning", icon: CalendarX },
+  archived: { tone: "neutral", icon: Archive },
+  off: { tone: "neutral", icon: EyeOff },
+  ended: { tone: "neutral", icon: CalendarX },
+  active: { tone: "success", icon: CircleCheck },
+  usedUp: { tone: "warning", icon: Ban },
+  open: { tone: "success", icon: Plane },
+  fewSeats: { tone: "warning", icon: Hourglass },
+  soldOut: { tone: "danger", icon: Ban },
+  inStock: { tone: "success", icon: PackageCheck },
+  lowStock: { tone: "warning", icon: PackageOpen },
+  outOfStock: { tone: "danger", icon: PackageX },
+  shown: { tone: "success", icon: Eye },
+  hidden: { tone: "neutral", icon: EyeOff },
+} satisfies Record<RecordChipName, ChipSpec>;
 
 export const USER_CHIPS = {
   active: { tone: "success", icon: UserCheck },

@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { getVisaCountry, listVisaCountries } from "@/lib/data/visa";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { schemaId } from "@/lib/seo/schemaIds";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { VisaChecklist } from "./_components/VisaChecklist";
@@ -61,7 +62,11 @@ async function VisaCountryPageContent({
 }: Pick<PageProps<"/[locale]/visa/[country]">, "params">) {
   const { country: slug } = await params;
   const country = await getVisaCountry(slug);
-  if (!country) notFound();
+  if (!country) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("visaCountries", slug, (to) => `/visa/${to}`);
+    notFound();
+  }
   const [contact, site, t, tTypes] = await Promise.all([
     getContactSettings(),
     getSiteSettings(),

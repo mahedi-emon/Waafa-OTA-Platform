@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheck, CircleDot } from "lucide-react";
+import { CalendarClock, CircleCheck, CircleDot } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
@@ -11,14 +11,23 @@ import { missingForPublish, type EditorState } from "./useEditorState";
 type EditorActionBarProps = { state: EditorState; blueprint: ResolvedBlueprint };
 
 /**
- * The sticky action bar (ADMIN.md §5.4): what's unsaved and when it was kept on this device, Discard, Save draft and
- * Publish or Update. Ctrl/Cmd+S presses the button marked editor-save (save, keeping the status).
+ * The sticky action bar (ADMIN.md §5.4, §8.1): what's unsaved and when it was kept on this device, Discard, and the
+ * buttons the record's status allows: Save draft · Schedule… · Publish for drafts, Save · Publish now for scheduled
+ * records, Update for live ones, Save for archived ones (Restore sits in the side panel). Ctrl/Cmd+S presses the
+ * button marked editor-save, which never changes the status.
  */
 function EditorActionBar({ state, blueprint }: EditorActionBarProps) {
   const t = useTranslations("Admin.editor.bar");
   const status = (state.saved.value as { status?: unknown } | null)?.status;
-  const live = blueprint.workflow && !state.isNew && status === "published";
-  const blocked = blueprint.workflow && missingForPublish(blueprint, state.value).length > 0;
+  const workflow = blueprint.workflow;
+  const live = workflow && !state.isNew && status === "published";
+  const scheduled = workflow && !state.isNew && status === "scheduled";
+  const archived = workflow && !state.isNew && status === "archived";
+  const blocked = workflow && missingForPublish(blueprint, state.value).length > 0;
+  const publishBlocked = {
+    disabled: state.pending || blocked,
+    "aria-describedby": blocked ? "side-checklist" : undefined,
+  };
 
   return (
     <div
@@ -69,7 +78,27 @@ function EditorActionBar({ state, blueprint }: EditorActionBarProps) {
               {t("discard")}
             </Button>
           ) : null}
-          {blueprint.workflow && !live ? (
+          {!workflow || archived ? (
+            <Button
+              id="editor-save"
+              type="button"
+              size="md"
+              loading={state.pending}
+              onClick={() => state.save("save")}
+            >
+              {state.isNew ? t("create") : t("save")}
+            </Button>
+          ) : live ? (
+            <Button
+              id="editor-save"
+              type="button"
+              size="md"
+              loading={state.pending}
+              onClick={() => state.save("publish")}
+            >
+              {t("update")}
+            </Button>
+          ) : (
             <>
               <Button
                 id="editor-save"
@@ -79,28 +108,29 @@ function EditorActionBar({ state, blueprint }: EditorActionBarProps) {
                 loading={state.pending}
                 onClick={() => state.save(state.isNew ? "draft" : "save")}
               >
-                {t("saveDraft")}
+                {scheduled ? t("save") : t("saveDraft")}
               </Button>
+              {!scheduled ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="md"
+                  {...publishBlocked}
+                  onClick={state.openSchedule}
+                >
+                  <CalendarClock aria-hidden="true" className="size-4" />
+                  {t("schedule")}
+                </Button>
+              ) : null}
               <Button
                 type="button"
                 size="md"
-                disabled={state.pending || blocked}
-                aria-describedby={blocked ? "side-checklist" : undefined}
+                {...publishBlocked}
                 onClick={() => state.save("publish")}
               >
-                {t("publish")}
+                {scheduled ? t("publishNow") : t("publish")}
               </Button>
             </>
-          ) : (
-            <Button
-              id="editor-save"
-              type="button"
-              size="md"
-              loading={state.pending}
-              onClick={() => state.save(live ? "publish" : "save")}
-            >
-              {live ? t("update") : state.isNew ? t("create") : t("save")}
-            </Button>
           )}
         </div>
       </div>

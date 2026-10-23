@@ -1,12 +1,26 @@
 "use server";
 
+import type { ContentActionInput } from "@waafa/shared";
 import { adminWrite, type AdminProblem } from "./adminApi";
 import type { ActionResult } from "./leadActions";
 import type { ContentRecordResponse, ContentSingleton } from "./types";
 
 export type SaveResult =
-  | { ok: true; id?: string; version: number; updatedAt?: string; updatedBy?: string | null }
+  | {
+      ok: true;
+      id?: string;
+      version: number;
+      updatedAt?: string;
+      updatedBy?: string | null;
+      /** The record as the API saved it: the status and times its button set (D0 R4). */
+      data?: unknown;
+      /** The first staff save made a Sample record the team's own; the editor offers Undo. */
+      sampleCleared?: boolean;
+    }
   | { ok: false; problem: AdminProblem };
+
+/** The editor's button and the Undo of "no longer Sample" (D0 R4). */
+export type SaveOptions = { action?: ContentActionInput; keepSample?: boolean };
 
 const KEY = /^[a-zA-Z]{2,40}$/;
 const ID = /^[\w-]{1,160}$/;
@@ -25,6 +39,8 @@ function savedRecord(result: { ok: true; data: ContentRecordResponse }): SaveRes
     version: result.data.version,
     updatedAt: result.data.updatedAt,
     updatedBy: result.data.updatedBy ?? null,
+    data: result.data.data,
+    sampleCleared: result.data.sampleCleared === true,
   };
 }
 
@@ -56,23 +72,33 @@ export async function saveRecord(
   id: string,
   data: unknown,
   version?: number,
+  options: SaveOptions = {},
 ): Promise<SaveResult> {
   if (!KEY.test(key) || !ID.test(id)) return badKey();
   const result = await adminWrite<ContentRecordResponse>(
     `/admin/content/${at(key)}/${at(id)}`,
     "PUT",
-    { data, ...(version ? { version } : {}) },
+    {
+      data,
+      ...(version ? { version } : {}),
+      ...(options.action ? { action: options.action } : {}),
+      ...(options.keepSample ? { keepSample: true } : {}),
+    },
     KEEP,
   );
   return result.ok ? savedRecord(result) : result;
 }
 
-export async function createRecord(key: string, data: unknown): Promise<SaveResult> {
+export async function createRecord(
+  key: string,
+  data: unknown,
+  options: SaveOptions = {},
+): Promise<SaveResult> {
   if (!KEY.test(key)) return badKey();
   const result = await adminWrite<ContentRecordResponse>(
     `/admin/content/${at(key)}`,
     "POST",
-    { data },
+    { data, ...(options.action ? { action: options.action } : {}) },
     KEEP,
   );
   return result.ok ? savedRecord(result) : result;
@@ -125,9 +151,44 @@ export async function duplicateRecord(key: string, id: string): Promise<SaveResu
   return result.ok ? savedRecord(result) : result;
 }
 
-export async function deleteRecord(key: string, id: string): Promise<ActionResult> {
+/** Moves a record to Trash (D0 R4); the answer names the Trash item, so the toast can undo it. */
+export async function deleteRecord(
+  key: string,
+  id: string,
+): Promise<{ ok: true; trashId?: string } | { ok: false; problem: AdminProblem }> {
   if (!KEY.test(key) || !ID.test(id)) return badKey();
-  const result = await adminWrite(`/admin/content/${at(key)}/${at(id)}`, "DELETE", undefined, KEEP);
+  const result = await adminWrite<{ trashId: string }>(
+    `/admin/content/${at(key)}/${at(id)}`,
+    "DELETE",
+    undefined,
+    KEEP,
+  );
+  return result.ok ? { ok: true, trashId: result.data.trashId } : result;
+}
+
+/** Puts a record back from Trash; the answer says where its editor is. */
+export async function restoreTrashItem(
+  id: string,
+): Promise<{ ok: true; href?: string } | { ok: false; problem: AdminProblem }> {
+  if (!ID.test(id)) return badKey();
+  const result = await adminWrite<{ collection: string; id: string }>(
+    `/admin/trash/${at(id)}/restore`,
+    "POST",
+    undefined,
+    KEEP,
+  );
+  return result.ok
+    ? {
+        ok: true,
+        href: `/secure-admin-control/content/${at(result.data.collection)}/${at(result.data.id)}`,
+      }
+    : result;
+}
+
+/** Deletes a record in Trash for good (Super Admin). */
+export async function purgeTrashItem(id: string): Promise<ActionResult> {
+  if (!ID.test(id)) return badKey();
+  const result = await adminWrite(`/admin/trash/${at(id)}`, "DELETE", undefined, KEEP);
   return result.ok ? { ok: true } : result;
 }
 

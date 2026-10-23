@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { getGalleryAlbum, listGalleryAlbums } from "@/lib/data/content";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { AlbumGrid } from "./_components/AlbumGrid";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
@@ -38,7 +39,11 @@ export async function generateMetadata({
 async function AlbumContent({ params }: Pick<PageProps<"/[locale]/gallery/[slug]">, "params">) {
   const { slug } = await params;
   const album = await getGalleryAlbum(slug);
-  if (!album) notFound();
+  if (!album) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("galleryAlbums", slug, (to) => `/gallery/${to}`);
+    notFound();
+  }
   const t = await getTranslations("Gallery");
 
   return (

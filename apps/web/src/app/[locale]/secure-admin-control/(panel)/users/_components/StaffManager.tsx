@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import type { Role } from "@waafa/shared";
-import { Badge } from "@/components/ui/badge";
+import { staffStatus } from "@waafa/shared/workflow/derived";
+import { StatusChip } from "@/components/admin/StatusChip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +12,7 @@ import { useRouter } from "@/i18n/navigation";
 import { formatDhakaDateTime } from "@/lib/admin/format";
 import type { ActionResult } from "@/lib/admin/leadActions";
 import { createStaff, resetStaffPassword, updateStaff } from "@/lib/admin/opsActions";
+import { USER_CHIPS } from "@/lib/admin/statusChips";
 import type { StaffRow } from "@/lib/admin/types";
 import { RolePicker } from "./RolePicker";
 
@@ -28,6 +30,9 @@ type StaffManagerProps = {
     active: string;
     deactivated: string;
     locked: string;
+    invited: string;
+    /** Why each chip shows (D0 R4). */
+    reasons: { active: string; invited: string; deactivated: string; locked: string };
     lastLogin: string;
     never: string;
     deactivate: string;
@@ -147,10 +152,21 @@ function StaffManager({ rows, selfId, roleNames, strings }: StaffManagerProps) {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-semibold text-navy-900">{row.name}</p>
-                  <Badge variant={row.status === "active" ? "success" : "neutral"}>
-                    {row.status === "active" ? strings.active : strings.deactivated}
-                  </Badge>
-                  {row.locked ? <Badge variant="warning">{strings.locked}</Badge> : null}
+                  {(() => {
+                    // Invited until the first sign-in, Locked while sign-in is locked (ADMIN.md §8.6).
+                    const state = staffStatus(row);
+                    const chip = USER_CHIPS[state === "deactivated" ? "disabled" : state];
+                    return (
+                      <StatusChip
+                        size="sm"
+                        tone={chip.tone}
+                        icon={chip.icon}
+                        label={strings[state]}
+                        reason={strings.reasons[state]}
+                        focusable
+                      />
+                    );
+                  })()}
                 </div>
                 <p className="text-[14px] break-all text-mist-700">{row.email}</p>
                 <p className="mt-1 text-[13px] text-mist-600">

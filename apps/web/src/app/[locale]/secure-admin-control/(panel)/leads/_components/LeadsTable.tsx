@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { Phone } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "cn";
-import type { LeadStatus } from "@waafa/shared";
 import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Badge } from "@/components/ui/badge";
@@ -28,15 +27,6 @@ import {
 import { bulkUpdateLeads } from "@/lib/admin/leadActions";
 import type { LeadRow, StaffDirectoryEntry } from "@/lib/admin/types";
 
-const BULK_STATUSES = [
-  "new",
-  "pending",
-  "in-progress",
-  "quoted",
-  "spam",
-] as const satisfies readonly LeadStatus[];
-type BulkStatus = (typeof BULK_STATUSES)[number];
-
 type LeadsTableProps = {
   rows: LeadRow[];
   staff: StaffDirectoryEntry[];
@@ -56,9 +46,13 @@ type LeadsTableProps = {
     unassigned: string;
     selected: string;
     assignTo: string;
-    changeStatus: string;
     apply: string;
     bulkDone: string;
+    markSpam: string;
+    /** Contains {count}. */
+    spamDone: string;
+    /** Contains {references}. */
+    skipped: string;
     selectAll: string;
     select: string;
     call: string;
@@ -70,12 +64,12 @@ type LeadsTableProps = {
 
 /**
  * The leads table (AdminLeads, AdminLeads-bulk, AdminLeads-m boards): table from 768 px, cards on phones, row selection
- * with a bulk bar (assign, change status), age in red past the reply target.
+ * with a bulk bar (assign, Mark as spam: every other step is taken lead by lead, D0 R4), age in red past the reply
+ * target.
  */
 function LeadsTable({ rows, staff, modules, statuses, ages, strings }: LeadsTableProps) {
   const [selected, setSelected] = useState<string[]>([]);
   const [assignee, setAssignee] = useState("");
-  const [status, setStatus] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -83,22 +77,25 @@ function LeadsTable({ rows, staff, modules, statuses, ages, strings }: LeadsTabl
   const toggle = (id: string) =>
     setSelected((list) => (list.includes(id) ? list.filter((item) => item !== id) : [...list, id]));
 
-  function applyBulk() {
-    if (selected.length === 0 || (!assignee && !status)) return;
+  function applyBulk(spam = false) {
+    if (selected.length === 0 || (!assignee && !spam)) return;
     startTransition(async () => {
       const result = await bulkUpdateLeads({
         ids: selected,
-        ...(assignee ? { assigneeId: assignee === "none" ? null : assignee } : {}),
-        ...(status ? { status: status as BulkStatus } : {}),
+        ...(spam
+          ? { markSpam: true as const }
+          : { assigneeId: assignee === "none" ? null : assignee }),
       });
       if (!result.ok) {
         toast.error(strings.failed);
         return;
       }
-      toast.success(strings.bulkDone.replace("{count}", String(result.changed ?? selected.length)));
+      const count = String(result.changed ?? selected.length);
+      toast.success((spam ? strings.spamDone : strings.bulkDone).replace("{count}", count));
+      if (result.skipped && result.skipped.length > 0)
+        toast.info(strings.skipped.replace("{references}", result.skipped.join(", ")));
       setSelected([]);
       setAssignee("");
-      setStatus("");
       router.refresh();
     });
   }
@@ -128,24 +125,17 @@ function LeadsTable({ rows, staff, modules, statuses, ages, strings }: LeadsTabl
                 </option>
               ))}
             </select>
-            <label className="sr-only" htmlFor="bulk-status">
-              {strings.changeStatus}
-            </label>
-            <select
-              id="bulk-status"
-              value={status}
-              onChange={(event) => setStatus(event.target.value)}
-              className="h-11 rounded-xl border border-mist-300 bg-white px-3 text-[14.5px]"
-            >
-              <option value="">{strings.changeStatus}</option>
-              {BULK_STATUSES.map((value) => (
-                <option key={value} value={value}>
-                  {statuses[value]}
-                </option>
-              ))}
-            </select>
-            <Button size="sm" onClick={applyBulk} loading={pending} disabled={!assignee && !status}>
+            <Button size="sm" onClick={() => applyBulk()} loading={pending} disabled={!assignee}>
               {strings.apply}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={pending}
+              onClick={() => applyBulk(true)}
+              className="text-danger-700"
+            >
+              {strings.markSpam}
             </Button>
           </div>
         </div>

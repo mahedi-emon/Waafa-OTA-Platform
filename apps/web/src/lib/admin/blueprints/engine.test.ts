@@ -271,6 +271,16 @@ describe("problems", () => {
     });
     expect(viewOfProblem({ status: 0 })).toEqual({ kind: "message", code: "offline" });
     expect(viewOfProblem({ status: 500 })).toEqual({ kind: "message", code: "server" });
+    // A button that can't apply to the record as it is now (D0 R4).
+    expect(viewOfProblem({ status: 409, code: "archived" })).toEqual({
+      kind: "message",
+      code: "archived",
+    });
+    expect(viewOfProblem({ status: 409, code: "live" })).toEqual({ kind: "message", code: "live" });
+    expect(viewOfProblem({ status: 409, code: "past" })).toEqual({
+      kind: "message",
+      code: "schedulePast",
+    });
     const view = viewOfProblem(
       {
         status: 422,
@@ -298,6 +308,26 @@ describe("status", () => {
     expect(statusOf(packages, { status: "archived" }, false)).toEqual({ state: "archived" });
     expect(statusOf(packages, { status: "draft" }, false)).toEqual({ state: "draft" });
     expect(statusOf(packages, { status: "published" }, true)).toEqual({ state: "new" });
+  });
+
+  it("names the date a record goes live, or since when it is live (D0 R4)", () => {
+    const packages = resolved("tourPackages");
+    const now = new Date("2026-10-23T10:00:00+06:00");
+    const later = "2026-10-30T04:00:00.000Z";
+    const earlier = "2026-10-20T04:00:00.000Z";
+    expect(statusOf(packages, { status: "scheduled", publishAt: later }, false, now)).toEqual({
+      state: "scheduled",
+      at: later,
+    });
+    // Its time has come: Live already, even before the minute job flips it.
+    expect(statusOf(packages, { status: "scheduled", publishAt: earlier }, false, now)).toEqual({
+      state: "live",
+      at: earlier,
+    });
+    expect(statusOf(packages, { status: "published", liveSince: earlier }, false, now)).toEqual({
+      state: "live",
+      at: earlier,
+    });
   });
 
   it("follows the show switch, else says that every save changes the site", () => {

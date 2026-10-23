@@ -14,6 +14,8 @@ import { pickMessagePaths } from "@/i18n/pickMessages";
 import { adminGet, requireStaff } from "@/lib/admin/adminApi";
 import { EDITOR_MESSAGES } from "@/lib/admin/blueprints/editorMessages";
 import { resolveBlueprint } from "@/lib/admin/blueprints/resolve";
+import { formatDhakaDateTime } from "@/lib/admin/format";
+import { recordChipsOf, type RecordChip } from "@/lib/admin/recordChips";
 import type { ContentCollection, ContentSingleton } from "@/lib/admin/types";
 import { SITE_URL } from "@/lib/siteUrl";
 import { RecordList } from "./_components/RecordList";
@@ -30,15 +32,47 @@ async function ContentKeyView({
 }) {
   const { key } = await params;
   if (!isContentKey(key)) notFound();
-  const [data, staff, t, tc, te, messages, { schema, blueprint }] = await Promise.all([
+  const [data, staff, t, tc, te, tt, tchip, messages, { schema, blueprint }] = await Promise.all([
     adminGet<ContentSingleton | ContentCollection>(`/admin/content/${key}`),
     requireStaff(),
     getTranslations("Admin.content"),
     getTranslations("Admin.common"),
     getTranslations("Admin.editor.new"),
+    getTranslations("Admin.editor.toast"),
+    getTranslations("Admin.chips"),
     getMessages(),
     resolveBlueprint(key),
   ]);
+  const now = new Date();
+  /** Why a row has its chip, with the date or number it names (D0 R4). */
+  const chipReason = (chip: RecordChip): string => {
+    const date = (iso: string) => formatDhakaDateTime(iso);
+    switch (chip.name) {
+      case "scheduled":
+      case "expired":
+      case "ended":
+        return chip.at ? tchip(`reasons.${chip.name}`, { date: date(chip.at) }) : "";
+      case "live":
+        return chip.at
+          ? tchip("reasons.liveSince", { date: date(chip.at) })
+          : chip.until
+            ? tchip("reasons.liveUntil", { date: date(chip.until) })
+            : tchip("reasons.live");
+      case "active":
+        return chip.until
+          ? tchip("reasons.activeUntil", { date: date(chip.until) })
+          : tchip("reasons.active");
+      case "open":
+        return chip.until
+          ? tchip("reasons.openUntil", { date: date(chip.until) })
+          : tchip("reasons.open");
+      case "usedUp":
+      case "fewSeats":
+        return tchip(`reasons.${chip.name}`, { count: chip.count ?? 0 });
+      default:
+        return tchip(`reasons.${chip.name}`);
+    }
+  };
   const title = t(`keys.${key}`);
 
   if (data.kind === "singleton") {
@@ -92,6 +126,13 @@ async function ContentKeyView({
             updatedAt: item.updatedAt,
             updatedBy: item.updatedBy,
             sample: Boolean((item.data as { sample?: unknown } | null)?.sample),
+            chips: recordChipsOf(key, item.data, now, {
+              ...(item.uses !== undefined ? { uses: item.uses } : {}),
+            }).map((chip) => ({
+              name: chip.name,
+              label: tchip(`labels.${chip.name}`),
+              reason: chipReason(chip),
+            })),
           }))}
           strings={{
             search: t("search"),
@@ -106,6 +147,8 @@ async function ContentKeyView({
             sample: tc("sample"),
             empty: t("emptyList"),
             updated: tc("updated", { time: "{time}" }),
+            undo: tt("undo"),
+            restored: tt("backFromTrash"),
           }}
         />
       </section>

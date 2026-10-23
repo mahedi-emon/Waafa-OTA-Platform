@@ -53,6 +53,7 @@ export type AdminIconName =
   | "general"
   | "newsletter"
   | "audit"
+  | "trash"
   | "settings";
 
 export type AdminNavItem = {
@@ -337,6 +338,14 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         icon: "media",
         roles: ["admin", "content-editor", "shop-manager", "travel-sales"],
         also: [content("mediaSlots")],
+      },
+      // Deleted records of the lists this person edits, restorable for 30 days (D0 R4, ADMIN.md §9).
+      {
+        key: "trash",
+        label: "trash",
+        href: `${ADMIN}/trash`,
+        icon: "trash",
+        roles: ["admin", "content-editor", "shop-manager", "travel-sales", "visa-officer"],
       },
     ],
   },

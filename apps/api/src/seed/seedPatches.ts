@@ -152,6 +152,58 @@ async function homeSeo(prisma: PrismaClient): Promise<number> {
   return 1;
 }
 
+/** The emails status automation sends (D0 R4), as the fixtures define them; admin-editable afterwards. */
+export const WORKFLOW_TEMPLATES = [
+  {
+    key: "payment-proof-rejected-customer",
+    audience: "Customer",
+    channel: "email",
+    subject: "We could not confirm your payment for {{reference}}",
+    body: "Dear {{name}},\n\nWe could not confirm the payment of {{amount}} you sent for {{reference}}: {{reason}}\n\nPlease send a new payment proof or call us, and we will confirm your order.",
+    variables: ["{{name}}", "{{reference}}", "{{amount}}", "{{reason}}"],
+    enabled: true,
+  },
+  {
+    key: "lead-overdue-staff",
+    audience: "Managers",
+    channel: "email",
+    subject: "No reply yet: {{reference}}",
+    body: "{{name}}'s request {{reference}} has had no reply for {{minutes}} minutes.\n\nReply now in Admin: {{link}}.",
+    variables: ["{{name}}", "{{reference}}", "{{minutes}}", "{{link}}"],
+    enabled: true,
+  },
+] as const;
+
+/** D0 R4: the two new email templates join the live list; an existing template with the same key is left as it is. */
+async function workflowTemplates(prisma: PrismaClient): Promise<number> {
+  let changed = 0;
+  const last = await prisma.contentDocument.findFirst({
+    where: { collection: "notificationTemplates" },
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+  let position = (last?.position ?? -1) + 1;
+  for (const template of WORKFLOW_TEMPLATES) {
+    const exists = await prisma.contentDocument.findUnique({
+      where: { collection_docId: { collection: "notificationTemplates", docId: template.key } },
+      select: { docId: true },
+    });
+    if (exists) continue;
+    await prisma.contentDocument.create({
+      data: {
+        collection: "notificationTemplates",
+        docId: template.key,
+        data: json(template),
+        position,
+        updatedBy: "seed-patch",
+      },
+    });
+    position += 1;
+    changed += 1;
+  }
+  return changed;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -160,6 +212,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-13-visa-route", apply: visaRoute },
   { id: "2026-10-14-second-phone", apply: secondPhone },
   { id: "2026-10-14-home-seo", apply: homeSeo },
+  { id: "2026-10-24-workflow-templates", apply: workflowTemplates },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

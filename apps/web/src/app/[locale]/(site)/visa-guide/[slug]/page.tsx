@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { getVisaCountry, getVisaGuide, listVisaGuides } from "@/lib/data/visa";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
@@ -61,7 +62,11 @@ async function VisaGuidePostPageContent({
 }: Pick<PageProps<"/[locale]/visa-guide/[slug]">, "params">) {
   const { slug } = await params;
   const guide = await getVisaGuide(slug);
-  if (!guide) notFound();
+  if (!guide) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("visaGuides", slug, (to) => `/visa-guide/${to}`);
+    notFound();
+  }
   const [country, t, tVisa, tTypes] = await Promise.all([
     getVisaCountry(guide.countrySlug),
     getTranslations("Visa.guide"),

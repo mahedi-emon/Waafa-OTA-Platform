@@ -21,6 +21,7 @@ import {
   listRelatedBlogPosts,
 } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
@@ -72,7 +73,11 @@ const initialsOf = (name: string) =>
 async function BlogPostContent({ params }: Pick<PageProps<"/[locale]/blog/[slug]">, "params">) {
   const { slug } = await params;
   const post = await getBlogPost(slug);
-  if (!post) notFound();
+  if (!post) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("blogPosts", slug, (to) => `/blog/${to}`);
+    notFound();
+  }
   const [categories, related, site, t, tBlog] = await Promise.all([
     listBlogCategories(),
     listRelatedBlogPosts(slug, 3),

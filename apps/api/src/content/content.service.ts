@@ -26,8 +26,8 @@ export type Snapshot = { etag: string; body: Record<string, unknown> };
 
 /**
  * Admin-managed content and settings (D125). The public snapshot holds every content key the site renders, under the
- * same names the fixture repositories read, plus approved feedback with consent (never contact details). It is
- * cached in memory and rebuilt after any content write.
+ * same names the fixture repositories read, plus approved feedback with consent (never contact details) and the
+ * slug redirects. It is cached in memory and rebuilt after any content write.
  */
 @Injectable()
 export class ContentService {
@@ -46,7 +46,7 @@ export class ContentService {
   async snapshot(): Promise<Snapshot> {
     if (this.cached) return this.cached;
     const generation = this.generation;
-    const [settings, documents, feedback] = await Promise.all([
+    const [settings, documents, feedback, redirects] = await Promise.all([
       this.prisma.setting.findMany(),
       this.prisma.contentDocument.findMany({
         orderBy: [{ collection: "asc" }, { position: "asc" }, { docId: "asc" }],
@@ -56,6 +56,7 @@ export class ContentService {
         orderBy: { createdAt: "desc" },
         take: 200,
       }),
+      this.prisma.slugRedirect.findMany({ orderBy: [{ collection: "asc" }, { fromId: "asc" }] }),
     ]);
     const body: Record<string, unknown> = {};
     for (const key of CONTENT_KEYS) {
@@ -79,6 +80,12 @@ export class ContentService {
       status: "approved",
       submittedAt: item.createdAt.toISOString(),
       sample: false,
+    }));
+    // Old record addresses keep working (D0 R4): each record page redirects before its 404.
+    body.slugRedirects = redirects.map((row) => ({
+      collection: row.collection,
+      from: row.fromId,
+      to: row.toId,
     }));
     for (const key of PRIVATE_KEYS) body[key] = [];
     const etag = `"${createHash("sha1").update(JSON.stringify(body)).digest("hex")}"`;

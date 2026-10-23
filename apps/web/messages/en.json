@@ -2617,7 +2617,8 @@
       "gallery": "Gallery",
       "team": "Team",
       "mediaLibrary": "Media library",
-      "settings": "Settings"
+      "settings": "Settings",
+      "trash": "Trash"
     },
     "common": {
       "save": "Save",
@@ -2743,7 +2744,11 @@
       "ageMinutes": "{minutes} min",
       "ageHours": "{hours} h",
       "ageDays": "{days} d",
-      "board": "Board"
+      "board": "Board",
+      "bulkSpam": "Mark as spam",
+      "bulkSpamDone": "Marked as spam: {count}",
+      "bulkSkipped": "Booked leads were left as they are: {references}",
+      "bulkAssign": "Assign"
     },
     "lead": {
       "createdFrom": "Created {time} · {channel}",
@@ -2796,7 +2801,10 @@
         "call": "Call",
         "email": "Email",
         "whatsapp": "WhatsApp",
-        "converted": "Booking"
+        "converted": "Booking",
+        "quote": "Quote",
+        "visa": "Visa",
+        "overdue": "Reply alert"
       },
       "factWords": {
         "travellers": "{adults, plural, one {# adult} other {# adults}}{children, plural, =0 {} one {, # child} other {, # children}}{infants, plural, =0 {} one {, # infant} other {, # infants}}",
@@ -2992,7 +3000,8 @@
           "trading": "International Trading",
           "other": "Something else"
         }
-      }
+      },
+      "overdue": "No reply yet: past the {minutes}-minute reply target"
     },
     "search": {
       "metaTitle": "Search activity",
@@ -3091,7 +3100,8 @@
       "statuses": {
         "received": "To verify",
         "verified": "Verified",
-        "rejected": "Rejected"
+        "rejected": "Rejected",
+        "matched": "Matched"
       },
       "verify": "Verify",
       "reject": "Reject",
@@ -3102,7 +3112,12 @@
       "noSlip": "No slip",
       "done": "Payment proof updated",
       "emptyTitle": "Nothing to verify",
-      "emptyBody": "Payment proofs from the website appear here."
+      "emptyBody": "Payment proofs from the website appear here.",
+      "matchedOrder": "Matches order {reference} ({amount})",
+      "orderShort": "Order {reference}: {amount} short",
+      "noOrder": "No order has this reference",
+      "openOrder": "Open order",
+      "decided": "{status} by {name}"
     },
     "subscribers": {
       "metaTitle": "Newsletter",
@@ -3171,6 +3186,13 @@
         "shop-manager": "Shop Manager",
         "content-editor": "Content Editor",
         "accounts": "Accounts"
+      },
+      "invited": "Invited",
+      "reasons": {
+        "active": "Has signed in and can work in Admin.",
+        "invited": "Added, but hasn't signed in yet.",
+        "deactivated": "Can't sign in. Activate to let them back in.",
+        "locked": "Sign-in is locked for a while after wrong passwords."
       }
     },
     "account": {
@@ -3204,8 +3226,8 @@
       "moveUp": "Move up",
       "moveDown": "Move down",
       "orderSaved": "Order saved",
-      "deleteConfirm": "Delete “{title}”? This can’t be undone.",
-      "deleted": "Deleted",
+      "deleteConfirm": "Move “{title}” to Trash? It leaves the site at once, and you can restore it for 30 days.",
+      "deleted": "Moved to Trash.",
       "emptyList": "No items yet.",
       "keys": {
         "siteSettings": "Site and SEO",
@@ -3419,7 +3441,7 @@
     "leadBoard": {
       "metaTitle": "Lead board",
       "title": "Lead board",
-      "lead": "Open requests by stage. Move a card with its arrows; booking, cancelling or losing a lead happens on the lead itself.",
+      "lead": "Open requests by stage. Each card's button takes the lead's next step; booking or closing a lead happens on the lead itself.",
       "listView": "List view",
       "filter": "Service",
       "allServices": "All services",
@@ -3436,7 +3458,8 @@
       "more": "{count} more in the list",
       "ageMinutes": "{count} min",
       "ageHours": "{count} h",
-      "ageDays": "{count, plural, one {# day} other {# days}}"
+      "ageDays": "{count, plural, one {# day} other {# days}}",
+      "stepDone": "{reference}: {step}"
     },
     "mediaLibrary": {
       "metaTitle": "Media library",
@@ -3762,7 +3785,8 @@
       "gallery": "Photo albums on /gallery",
       "team": "Meet our team on Home and About us",
       "mediaLibrary": "Every photo and video, ready to reuse",
-      "settings": "Contact details, payments, booking modes, users and more"
+      "settings": "Contact details, payments, booking modes, users and more",
+      "trash": "Deleted records, restorable for 30 days"
     },
     "newMenu": {
       "travel": "Travel",
@@ -3947,7 +3971,9 @@
         "update": "Update",
         "save": "Save changes",
         "create": "Create",
-        "shortcut": "Ctrl S saves"
+        "shortcut": "Ctrl S saves",
+        "schedule": "Schedule…",
+        "publishNow": "Publish now"
       },
       "status": {
         "draft": "Draft",
@@ -3956,14 +3982,18 @@
         "shown": "Shown",
         "hidden": "Hidden",
         "new": "New",
-        "draftReason": "Only staff can see drafts.",
+        "draftReason": "Not on the site yet. Publish when the checklist is complete.",
         "liveReason": "Live on the site.",
-        "archivedReason": "Hidden from the site and kept for history.",
+        "archivedReason": "Hidden from the site. Restore it to edit or publish again.",
         "shownReason": "Shown on the site.",
         "hiddenReason": "Hidden from the site.",
         "newReason": "Not saved yet.",
         "direct": "Live",
-        "directReason": "Changes show on the site as soon as you save."
+        "directReason": "Changes show on the site as soon as you save.",
+        "scheduled": "Scheduled",
+        "scheduledReason": "Goes live by itself at the time you picked.",
+        "scheduledReasonAt": "Goes live on {date}.",
+        "liveReasonAt": "Live on the site since {date}."
       },
       "side": {
         "status": "Status",
@@ -3983,19 +4013,21 @@
         "duplicate": "Duplicate",
         "duplicated": "A copy was saved as a draft.",
         "duplicateFailed": "A copy of this record couldn't be saved. Nothing changed here; check its details, then try again.",
-        "delete": "Delete",
-        "deleteTitle": "Delete this {thing}?",
-        "deleteBody": "It disappears from the site and from lists. Deleting can't be undone yet.",
-        "deleteConfirm": "Delete",
-        "deleted": "Deleted.",
+        "delete": "Move to Trash",
+        "deleteTitle": "Move this {thing} to Trash?",
+        "deleteBody": "It leaves the site at once. You can restore it from Trash for 30 days.",
+        "deleteConfirm": "Move to Trash",
+        "deleted": "Moved to Trash.",
         "unpublish": "Unpublish",
         "unpublishHint": "Takes it off the site and keeps it as a draft.",
         "archive": "Archive",
         "archiveHint": "Takes it off the site and keeps it for history.",
-        "toDraft": "Move back to drafts",
+        "toDraft": "Restore to drafts",
         "details": "Status and actions",
         "cancel": "Cancel",
-        "publishing": "Publishing"
+        "publishing": "Publishing",
+        "changeTime": "Change time",
+        "cancelSchedule": "Cancel schedule"
       },
       "toast": {
         "saved": "Saved.",
@@ -4005,7 +4037,13 @@
         "unpublished": "Taken off the site. It's a draft now.",
         "archived": "Archived. It's off the site.",
         "view": "View",
-        "nothing": "Nothing to save yet."
+        "nothing": "Nothing to save yet.",
+        "scheduled": "Scheduled. It goes live on {when}.",
+        "restored": "Restored. It's a draft now.",
+        "sampleCleared": "It's no longer marked as sample content.",
+        "sampleKept": "Marked as sample content again.",
+        "undo": "Undo",
+        "backFromTrash": "Back from Trash."
       },
       "history": {
         "title": "History",
@@ -4096,7 +4134,10 @@
         "liveLocked": "Live booking stays locked until a provider and online payment are connected.",
         "server": "The server didn't answer. Your changes are kept on this device. Try again.",
         "offline": "You're offline. Your changes are kept on this device; save again when you're back online.",
-        "retry": "Try again"
+        "retry": "Try again",
+        "archived": "This record is archived. Restore it first, then publish it.",
+        "live": "This record is live. Unpublish it first, or save your changes with Update.",
+        "schedulePast": "Pick a time in the future to schedule it."
       },
       "widgets": {
         "add": "Add {thing}",
@@ -4127,7 +4168,7 @@
           "edit": "Edit link",
           "done": "Done",
           "follows": "Follows the title until you edit it.",
-          "liveWarning": "Old links to this page stop working when you change it."
+          "liveWarning": "Old links keep working: visitors who use one are sent to the new address."
         },
         "money": {
           "vat": "VAT included"
@@ -4249,6 +4290,15 @@
         "lead": "Fill in the sections, then save a draft or publish. Nothing shows on the site until you publish.",
         "leadVisibility": "Fill in the sections, then create it. It is live on the site once created, as set under Visibility.",
         "leadLive": "Fill in the sections, then create it. It is live on the site once created."
+      },
+      "schedule": {
+        "title": "Schedule publishing",
+        "body": "Pick when it goes live. Until then it stays off the site and shows as Scheduled.",
+        "time": "Time",
+        "past": "Pick a time later than now.",
+        "summary": "Goes live on {when} (Dhaka time).",
+        "cancel": "Cancel",
+        "confirm": "Schedule"
       }
     },
     "fieldNames": {
@@ -4571,7 +4621,8 @@
       "width": "Width",
       "zones": "Delivery zones",
       "video_credit": "Video credit",
-      "video_creditUrl": "Credit link"
+      "video_creditUrl": "Credit link",
+      "maxUses": "Use limit"
     },
     "fieldHelp": {
       "alt": "Describe the photo for people who can't see it, like \"Beach at Patong, Phuket\".",
@@ -4599,7 +4650,8 @@
       "readingMinutes": "Worked out from the length of the text.",
       "src": "A photo already on the web. Uploading is better: the library keeps its own copy.",
       "video_credit": "The videographer and where the clip came from, like “Jane Doe · Pexels”.",
-      "video_creditUrl": "The clip’s page on Pexels, Coverr or Mixkit, if it needs a link."
+      "video_creditUrl": "The clip’s page on Pexels, Coverr or Mixkit, if it needs a link.",
+      "maxUses": "How many orders can use this code. Leave it empty for no limit; the list shows Used up when it is reached."
     },
     "choices": {
       "accountKind": {
@@ -4842,6 +4894,8 @@
         "visa-status-customer": "Visa update (to the customer)",
         "feedback-received-staff": "New feedback (to staff)",
         "payment-proof-staff": "Payment proof received (to staff)",
+        "payment-proof-rejected-customer": "Payment proof not accepted (to the customer)",
+        "lead-overdue-staff": "No reply yet (to managers)",
         "sign-in-code-customer": "Sign-in code (to the customer)"
       },
       "tone": {
@@ -5698,6 +5752,257 @@
           "value": "A percent, like 10, or taka, like 500, as the type says."
         }
       }
+    },
+    "trash": {
+      "metaTitle": "Trash",
+      "title": "Trash",
+      "lead": "Deleted records stay here for 30 days. Restore one to put it back as it was.",
+      "emptyTitle": "Trash is empty",
+      "emptyBody": "Deleted packages, products, pages and other records wait here for 30 days before they go for good.",
+      "deleted": "Deleted <when></when> by {name}",
+      "daysLeft": "{count, plural, =0 {goes for good today} one {# day left} other {# days left}}",
+      "restore": "Restore",
+      "restored": "Restored “{title}”.",
+      "purge": "Delete forever",
+      "purgeTitle": "Delete “{title}” forever?",
+      "purgeBody": "It can't be restored after this.",
+      "purgeConfirm": "Delete forever",
+      "purged": "Deleted “{title}” for good."
+    },
+    "leadActions": {
+      "next": "Next step",
+      "replyFirst": "Reply first: the lead moves to In progress as soon as you contact the customer.",
+      "contact": {
+        "whatsapp": "Reply on WhatsApp",
+        "call": "Call",
+        "email": "Email"
+      },
+      "steps": {
+        "quote": "Log quote",
+        "askDocuments": "Ask for documents",
+        "askPayment": "Ask for payment",
+        "customerReplied": "Customer replied",
+        "convert": "Convert to booking",
+        "close": "Close lead",
+        "markSpam": "Mark as spam",
+        "reopen": "Reopen"
+      },
+      "titles": {
+        "quote": "Log a quote",
+        "askDocuments": "Ask for documents",
+        "askPayment": "Ask for payment",
+        "customerReplied": "Customer replied",
+        "convert": "Convert to booking",
+        "close": "Close this lead",
+        "markSpam": "Mark this lead as spam?",
+        "reopen": "Reopen this lead"
+      },
+      "bodies": {
+        "quote": "The lead moves to Quoted. Add the amount if you sent one.",
+        "askDocuments": "The lead waits for the customer until they send them or reply.",
+        "askPayment": "The lead waits for the customer until they pay or reply.",
+        "customerReplied": "The lead moves back to In progress.",
+        "convert": "Enter what the customer is paying. The lead moves to Booked.",
+        "close": "The lead leaves the open list. You can reopen it later.",
+        "markSpam": "It leaves the open list. Use this only for junk, never for a real customer.",
+        "reopen": "The lead moves back to In progress."
+      },
+      "confirm": {
+        "quote": "Log quote",
+        "askDocuments": "Mark as waiting",
+        "askPayment": "Mark as waiting",
+        "customerReplied": "Customer replied",
+        "convert": "Convert to booking",
+        "close": "Close lead",
+        "markSpam": "Mark as spam",
+        "reopen": "Reopen lead"
+      },
+      "done": {
+        "contact": "Contact logged. The lead is in progress.",
+        "quote": "Quote logged.",
+        "askDocuments": "Waiting for the customer's documents.",
+        "askPayment": "Waiting for the customer's payment.",
+        "customerReplied": "Back in progress.",
+        "convert": "Converted to a booking.",
+        "close": "Lead closed.",
+        "markSpam": "Marked as spam.",
+        "reopen": "Lead reopened."
+      },
+      "quotedAmount": "Quoted amount (optional)",
+      "bookedAmount": "Booked amount",
+      "vat": "In taka, VAT included.",
+      "outcome": "Why is it closing?",
+      "outcomes": {
+        "lost": "Lost",
+        "cancelled": "Cancelled"
+      },
+      "outcomeHelp": {
+        "lost": "They didn't book with us.",
+        "cancelled": "The trip was called off."
+      },
+      "reason": "Reason",
+      "note": "Note (optional)",
+      "amountNeeded": "Enter the booked amount in taka.",
+      "reasonNeeded": "Say why in a few words.",
+      "failed": "That didn't work. Try again.",
+      "cancel": "Cancel"
+    },
+    "orderSteps": {
+      "next": "Next step",
+      "finished": "This order is finished.",
+      "waitingProof": "Waiting for the customer's payment proof. Verifying it confirms the order.",
+      "seeProofs": "See payment proofs",
+      "steps": {
+        "confirmCall": "Confirmed on call",
+        "confirmProof": "Confirm order",
+        "startPacking": "Start packing",
+        "ship": "Mark shipped",
+        "deliver": "Mark delivered",
+        "cancel": "Cancel order",
+        "return": "Mark returned"
+      },
+      "titles": {
+        "confirmCall": "Confirmed on call",
+        "confirmProof": "Confirm order",
+        "startPacking": "Start packing",
+        "ship": "Mark as shipped",
+        "deliver": "Mark delivered",
+        "cancel": "Cancel this order",
+        "return": "Mark this order as returned"
+      },
+      "bodies": {
+        "confirmCall": "The customer confirmed on the phone.",
+        "confirmProof": "The payment proof is verified.",
+        "startPacking": "The order is being packed.",
+        "ship": "Enter the courier and the tracking number. The customer can track the order with them.",
+        "deliver": "The customer has the order.",
+        "cancel": "Say why. The order is cancelled and its items go back in stock.",
+        "return": "Say why. The order is marked returned and its items go back in stock."
+      },
+      "confirm": {
+        "confirmCall": "Confirmed on call",
+        "confirmProof": "Confirm order",
+        "startPacking": "Start packing",
+        "ship": "Mark shipped",
+        "deliver": "Mark delivered",
+        "cancel": "Cancel order",
+        "return": "Mark returned"
+      },
+      "courier": "Courier",
+      "tracking": "Tracking number",
+      "reason": "Reason",
+      "restockNote": "Its items go back in stock.",
+      "courierNeeded": "Name the courier and enter the tracking number.",
+      "reasonNeeded": "Say why in a few words.",
+      "cancelDialog": "Keep the order",
+      "done": {
+        "confirmCall": "Order confirmed.",
+        "confirmProof": "Order confirmed.",
+        "startPacking": "Packing started.",
+        "ship": "Marked as shipped.",
+        "deliver": "Marked as delivered.",
+        "cancel": "Order cancelled. Its items are back in stock.",
+        "return": "Marked as returned. Its items are back in stock."
+      },
+      "failed": "That didn't work. Try again.",
+      "addNote": "Add a note",
+      "notePlaceholder": "Something the team should know about this order",
+      "noteAdded": "Note added."
+    },
+    "proofDecision": {
+      "verify": "Verify",
+      "reject": "Reject",
+      "verified": "Verified {reference}. The order is paid.",
+      "rejected": "Rejected {reference}. The customer is told why.",
+      "rejectTitle": "Reject the payment proof for {reference}?",
+      "rejectBody": "Say what's wrong. The customer gets your words by email when the order has an address.",
+      "reason": "What's wrong",
+      "reasonHelp": "For example: the amount is ৳200 short, or the transaction ID doesn't match.",
+      "reasonNeeded": "Say what's wrong in a few words.",
+      "rejectConfirm": "Reject proof",
+      "cancel": "Cancel",
+      "failed": "That didn't work. Try again."
+    },
+    "chips": {
+      "labels": {
+        "draft": "Draft",
+        "scheduled": "Scheduled",
+        "live": "Live",
+        "expired": "Expired",
+        "archived": "Archived",
+        "off": "Off",
+        "ended": "Ended",
+        "active": "Active",
+        "usedUp": "Used up",
+        "open": "Open",
+        "fewSeats": "Few seats",
+        "soldOut": "Sold out",
+        "inStock": "In stock",
+        "lowStock": "Low stock",
+        "outOfStock": "Out of stock",
+        "shown": "Shown",
+        "hidden": "Hidden"
+      },
+      "reasons": {
+        "draft": "Not on the site yet.",
+        "scheduled": "Goes live on {date}.",
+        "live": "Live on the site.",
+        "liveSince": "Live on the site since {date}.",
+        "liveUntil": "On the site until {date}.",
+        "expired": "Ended on {date}.",
+        "archived": "Hidden from the site.",
+        "off": "Switched off: not on the site.",
+        "ended": "Ended on {date}.",
+        "active": "Customers can use it now.",
+        "activeUntil": "Customers can use it until {date}.",
+        "usedUp": "Used {count, plural, one {once} other {# times}}: its limit.",
+        "open": "Open for booking.",
+        "openUntil": "Open for booking until {date}.",
+        "fewSeats": "{count, plural, one {# seat left} other {# seats left}}.",
+        "soldOut": "No seats left.",
+        "inStock": "Every variant is in stock.",
+        "lowStock": "A variant is low or out of stock.",
+        "outOfStock": "Nothing left to sell.",
+        "shown": "Shows on the site.",
+        "hidden": "Hidden from the site."
+      }
+    },
+    "visaProgress": {
+      "title": "Visa application",
+      "lead": "Tick each document as it arrives. The stage follows the checklist.",
+      "stages": {
+        "documentsPending": "Documents pending",
+        "readyToSubmit": "Ready to submit",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "passportReturned": "Passport returned",
+        "cancelled": "Cancelled"
+      },
+      "stageReasons": {
+        "documentsPending": "{received} of {required} documents received.",
+        "readyToSubmit": "Every document is here. Submit it to the embassy.",
+        "submitted": "Submitted on {date}. Waiting for the embassy.",
+        "approved": "The visa is approved. Return the passport.",
+        "rejected": "The visa was refused. Return the passport.",
+        "passportReturned": "The passport went back to the customer on {date}.",
+        "cancelled": "The application was closed."
+      },
+      "progress": "{received} of {required}",
+      "checklist": "Documents",
+      "noChecklist": "This country has no documents checklist yet. Add one in Visa countries.",
+      "submit": "Submit to the embassy",
+      "submittedOn": "Submitted on",
+      "submissionReference": "Submission reference",
+      "submitConfirm": "Mark as submitted",
+      "outcome": "Embassy outcome",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "passportReturnedOn": "Passport returned on",
+      "passportConfirm": "Passport returned",
+      "saved": "Saved.",
+      "failed": "That didn't work. Try again.",
+      "needed": "Fill this in."
     }
   },
   "Consent": {

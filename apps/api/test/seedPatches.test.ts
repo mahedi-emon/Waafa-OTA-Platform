@@ -6,7 +6,12 @@ import { applySeedPatches, PATCH_MARKER } from "../src/seed/seedPatches";
 import { dbAvailable, resetDatabase, testPrisma } from "./helpers";
 
 /** Every shipped patch, in order. */
-const ALL_PATCHES = ["2026-10-13-visa-route", "2026-10-14-second-phone", "2026-10-14-home-seo"];
+const ALL_PATCHES = [
+  "2026-10-13-visa-route",
+  "2026-10-14-second-phone",
+  "2026-10-14-home-seo",
+  "2026-10-24-workflow-templates",
+];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */
 async function storeOld(prisma: PrismaClient) {
@@ -110,7 +115,7 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
     });
     await prisma.setting.update({
       where: { key: PATCH_MARKER },
-      data: { value: ["2026-10-13-visa-route", "2026-10-14-home-seo"] },
+      data: { value: ALL_PATCHES.filter((id) => id !== "2026-10-14-second-phone") },
     });
 
     expect(await applySeedPatches(prisma)).toEqual({
@@ -151,5 +156,39 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
       title: "Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh",
       description: "Our own description",
     });
+  });
+  it("adds the status automation emails to a live list, keeping one an admin already wrote (D0 R4)", async () => {
+    // The live list was seeded before these templates existed; an admin wrote one of them by hand.
+    await prisma.contentDocument.deleteMany({
+      where: { collection: "notificationTemplates", docId: "payment-proof-rejected-customer" },
+    });
+    const own = await prisma.contentDocument.findUniqueOrThrow({
+      where: {
+        collection_docId: { collection: "notificationTemplates", docId: "lead-overdue-staff" },
+      },
+    });
+    await prisma.contentDocument.update({
+      where: { collection_docId: { collection: "notificationTemplates", docId: own.docId } },
+      data: { data: { ...(own.data as object), subject: "Our own subject" } },
+    });
+    await prisma.setting.update({
+      where: { key: PATCH_MARKER },
+      data: { value: ALL_PATCHES.filter((id) => id !== "2026-10-24-workflow-templates") },
+    });
+
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-24-workflow-templates"],
+      changed: 1,
+    });
+    const rows = await prisma.contentDocument.findMany({
+      where: {
+        collection: "notificationTemplates",
+        docId: { in: ["payment-proof-rejected-customer", "lead-overdue-staff"] },
+      },
+    });
+    expect(rows.map((row) => (row.data as { subject: string }).subject).sort()).toEqual([
+      "Our own subject",
+      "We could not confirm your payment for {{reference}}",
+    ]);
   });
 });

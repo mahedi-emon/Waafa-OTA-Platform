@@ -28,6 +28,7 @@ import {
   listGroupFares,
 } from "@/lib/data/travel";
 import { getVisaCountry } from "@/lib/data/visa";
+import { followMovedRecord } from "@/lib/data/movedRecord";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
@@ -65,7 +66,11 @@ async function FlightRouteContent({
 }: Pick<PageProps<"/[locale]/flights/[route]">, "params">) {
   const { route: slug } = await params;
   const route = await getFlightRoute(slug);
-  if (!route) notFound();
+  if (!route) {
+    // A link changed in Admin keeps working (D0 R4).
+    await followMovedRecord("flightRoutes", slug, (to) => `/flights/${to}`);
+    notFound();
+  }
 
   const [from, to, airlines, fares, visa, routes, t, tFlights] = await Promise.all([
     getAirport(route.from),

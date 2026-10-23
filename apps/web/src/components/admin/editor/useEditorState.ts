@@ -6,7 +6,12 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { applyAutomatic } from "@/lib/admin/blueprints/automatic";
 import { dottedOf, pathsMatching } from "@/lib/admin/blueprints/paths";
-import { viewOfProblem, type CurrentVersion } from "@/lib/admin/blueprints/problems";
+import type { ContentActionInput } from "@waafa/shared";
+import {
+  viewOfProblem,
+  type CurrentVersion,
+  type ProblemCode,
+} from "@/lib/admin/blueprints/problems";
 import { slugify } from "@/lib/admin/blueprints/slug";
 import type { ResolvedBlueprint } from "@/lib/admin/blueprints/types";
 import { validateRecord, type FieldError } from "@/lib/admin/blueprints/validate";
@@ -15,10 +20,12 @@ import {
   createRecord,
   deleteRecord,
   duplicateRecord,
+  restoreTrashItem,
   saveRecord,
   saveSetting,
   type SaveResult,
 } from "@/lib/admin/contentActions";
+import { formatDhakaDateTime } from "@/lib/admin/format";
 import { getAt, setAt, type JsonSchema, type Path } from "@/lib/admin/schema";
 import { setNavigationGuard } from "../navigationGuard";
 import { markSignedOut } from "../sessionStore";
@@ -26,8 +33,9 @@ import { useContentOptions } from "../schema/useContentOptions";
 import { clearDraft, draftKey, useDraftAtLoad, writeDraft, type Draft } from "./drafts";
 
 export type EditorMode = "setting" | "record" | "new";
-/** What a save does to a record with a draft / live / archived status. */
-export type SaveIntent = "save" | "draft" | "publish" | "unpublish" | "archive";
+/** The editor's buttons (D0 R4): each one asks the API for a step; the API sets the status. */
+export type SaveIntent =
+  "save" | "draft" | "publish" | "schedule" | "unpublish" | "archive" | "restore";
 
 export type EditorInput = {
   mode: EditorMode;
@@ -44,19 +52,27 @@ export type EditorInput = {
 };
 
 export type EditorNotice =
-  | { kind: "fields"; count: number }
-  | { kind: "publish" }
-  | {
-      kind: "message";
-      code: "forbidden" | "notFound" | "exists" | "liveLocked" | "server" | "offline";
-    };
+  { kind: "fields"; count: number } | { kind: "publish" } | { kind: "message"; code: ProblemCode };
 
-const STATUS: Record<Exclude<SaveIntent, "save">, string> = {
-  draft: "draft",
-  publish: "published",
-  unpublish: "draft",
-  archive: "archived",
-};
+/** The step a button asks for; Save keeps the stored status (a new record starts as a draft). */
+function actionFor(intent: SaveIntent, isNew: boolean, at?: string): ContentActionInput {
+  switch (intent) {
+    case "save":
+      return { type: isNew ? "saveDraft" : "update" };
+    case "draft":
+      return { type: "saveDraft" };
+    case "publish":
+      return { type: "publish" };
+    case "schedule":
+      return { type: "schedule", at: at ?? "" };
+    case "unpublish":
+      return { type: "unpublish" };
+    case "archive":
+      return { type: "archive" };
+    case "restore":
+      return { type: "restore" };
+  }
+}
 
 const AUTOSAVE_AFTER = 1200;
 
@@ -112,8 +128,11 @@ export function useEditorState(input: EditorInput) {
   const [conflict, setConflict] = useState<{
     current: CurrentVersion | null;
     intent: SaveIntent;
+    at?: string;
   } | null>(null);
   const [leaveTo, setLeaveTo] = useState<string | null>(null);
+  /** The Schedule… dialog (D0 R4), opened from the action bar or the side panel. */
+  const [scheduling, setScheduling] = useState(false);
   const [keptAt, setKeptAt] = useState<number | null>(null);
   const [draftHandled, setDraftHandled] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -322,13 +341,13 @@ export function useEditorState(input: EditorInput) {
     };
   }, [dirty]);
 
-  const report = (problem: AdminProblem, intent: SaveIntent) => {
+  const report = (problem: AdminProblem, intent: SaveIntent, at?: string) => {
     const view = viewOfProblem(problem, validateRecord(schema, latest.current, blueprint));
     if (view.kind === "fields") {
       setErrors(view.errors);
       setNotice({ kind: "fields", count: view.errors.size });
     } else if (view.kind === "stale") {
-      setConflict({ current: view.current ?? null, intent });
+      setConflict({ current: view.current ?? null, intent, ...(at ? { at } : {}) });
     } else if (view.kind === "signedOut") {
       markSignedOut();
     } else {
@@ -337,13 +356,34 @@ export function useEditorState(input: EditorInput) {
     }
   };
 
-  const save = (intent: SaveIntent, options: { version?: number } = {}) => {
+  /** Puts the Sample flag back after a first save made the record the team's own (the toast's Undo). */
+  const keepSample = (version: number) =>
+    startTransition(async () => {
+      if (!recordId) return;
+      const value = setAt(latest.current, ["sample"], true);
+      const result = await saveRecord(contentKey, recordId, value, version, {
+        action: { type: "update" },
+        keepSample: true,
+      });
+      if (!result.ok) {
+        toast.error(t("errors.server"));
+        return;
+      }
+      const data = result.data ?? value;
+      show(data);
+      setSaved({
+        value: data,
+        version: result.version,
+        updatedAt: result.updatedAt ?? new Date().toISOString(),
+        updatedBy: result.updatedBy ?? null,
+      });
+      toast.success(t("toast.sampleKept"));
+      router.refresh();
+    });
+
+  const save = (intent: SaveIntent, options: { version?: number; at?: string } = {}) => {
     const startedWith = latest.current;
-    const withStatus =
-      blueprint.workflow && intent !== "save"
-        ? setAt(startedWith, ["status"], STATUS[intent])
-        : startedWith;
-    const prepared = applyAutomatic(trimmed(withStatus), blueprint, {
+    const prepared = applyAutomatic(trimmed(startedWith), blueprint, {
       isNew,
       now: new Date(),
       ...(input.takenIds ? { takenIds: input.takenIds } : {}),
@@ -355,11 +395,16 @@ export function useEditorState(input: EditorInput) {
       setNotice({ kind: "fields", count: found.size });
       return;
     }
-    if (intent === "publish" && missingForPublish(blueprint, prepared).length > 0) {
+    if (
+      (intent === "publish" || intent === "schedule") &&
+      missingForPublish(blueprint, prepared).length > 0
+    ) {
       setNotice({ kind: "publish" });
       return;
     }
     const version = options.version ?? saved.version;
+    // Lists with drafts send the button; the API sets the status from it (D0 R4, D216).
+    const action = blueprint.workflow ? actionFor(intent, isNew, options.at) : undefined;
     startTransition(async () => {
       let result: SaveResult;
       try {
@@ -367,8 +412,14 @@ export function useEditorState(input: EditorInput) {
           mode === "setting"
             ? await saveSetting(contentKey, prepared, version)
             : mode === "new"
-              ? await createRecord(contentKey, prepared)
-              : await saveRecord(contentKey, recordId ?? "", prepared, version);
+              ? await createRecord(contentKey, prepared, action ? { action } : {})
+              : await saveRecord(
+                  contentKey,
+                  recordId ?? "",
+                  prepared,
+                  version,
+                  action ? { action } : {},
+                );
       } catch {
         result = {
           ok: false,
@@ -376,16 +427,18 @@ export function useEditorState(input: EditorInput) {
         };
       }
       if (!result.ok) {
-        report(result.problem, intent);
+        report(result.problem, intent, options.at);
         return;
       }
+      // The record as the API saved it: the status and times its button set, the Sample flag it cleared.
+      const stored = result.data ?? prepared;
       // Words typed while the save was on its way stay on screen, still unsaved (and kept on this device).
       if (JSON.stringify(latest.current) === JSON.stringify(startedWith)) {
         clearDraft(storage);
-        show(prepared);
+        show(stored);
       }
       setSaved({
-        value: prepared,
+        value: stored,
         version: result.version,
         updatedAt: result.updatedAt ?? new Date().toISOString(),
         updatedBy: result.updatedBy ?? null,
@@ -398,14 +451,26 @@ export function useEditorState(input: EditorInput) {
           ? live
             ? t("toast.updated")
             : t("toast.published")
-          : intent === "unpublish"
-            ? t("toast.unpublished")
-            : intent === "archive"
-              ? t("toast.archived")
-              : isNew
-                ? t("toast.created")
-                : t("toast.saved");
-      toast.success(words);
+          : intent === "schedule"
+            ? t("toast.scheduled", { when: formatDhakaDateTime(options.at ?? "") })
+            : intent === "unpublish"
+              ? t("toast.unpublished")
+              : intent === "archive"
+                ? t("toast.archived")
+                : intent === "restore"
+                  ? t("toast.restored")
+                  : isNew
+                    ? t("toast.created")
+                    : t("toast.saved");
+      const savedVersion = result.version;
+      if (result.sampleCleared) {
+        // The first staff save makes a Sample record the team's own; Undo marks it Sample again (ADMIN.md §9).
+        toast.success(`${words} ${t("toast.sampleCleared")}`, {
+          action: { label: t("toast.undo"), onClick: () => keepSample(savedVersion) },
+        });
+      } else {
+        toast.success(words);
+      }
       if (mode !== "setting" && result.id && (isNew || result.id !== recordId)) {
         router.replace(
           `/secure-admin-control/content/${contentKey}/${encodeURIComponent(result.id)}`,
@@ -448,7 +513,10 @@ export function useEditorState(input: EditorInput) {
       window.location.reload();
       return;
     }
-    save(open.intent, open.current ? { version: open.current.version } : {});
+    save(open.intent, {
+      ...(open.current ? { version: open.current.version } : {}),
+      ...(open.at ? { at: open.at } : {}),
+    });
   };
 
   const leave = () => {
@@ -495,7 +563,27 @@ export function useEditorState(input: EditorInput) {
       clearDraft(storage);
       setNavigationGuard(null);
       setSaved((current) => ({ ...current, value: latest.current }));
-      toast.success(t("side.deleted"));
+      const trashId = result.trashId;
+      // Delete moves the record to Trash (D0 R4): Undo brings it straight back.
+      toast.success(t("side.deleted"), {
+        ...(trashId
+          ? {
+              action: {
+                label: t("toast.undo"),
+                onClick: () => {
+                  void restoreTrashItem(trashId).then((back) => {
+                    if (!back.ok) {
+                      toast.error(t("errors.server"));
+                      return;
+                    }
+                    toast.success(t("toast.backFromTrash"));
+                    if (back.href) router.push(back.href);
+                  });
+                },
+              },
+            }
+          : {}),
+      });
       router.push(`/secure-admin-control/content/${contentKey}`);
     });
 
@@ -547,6 +635,9 @@ export function useEditorState(input: EditorInput) {
     leave,
     duplicate,
     remove,
+    scheduling,
+    openSchedule: () => setScheduling(true),
+    closeSchedule: () => setScheduling(false),
     dismissNotice: () => setNotice(null),
   };
 }

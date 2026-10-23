@@ -1,18 +1,24 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Phone } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { OrderStatusChip } from "@/components/admin/OrderStatusChip";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import { OrderSteps } from "@/components/admin/OrderSteps";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { pickMessagePaths } from "@/i18n/pickMessages";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { displayPhone, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
 import type { OrderDetail } from "@/lib/admin/types";
-import { OrderActions } from "./_components/OrderActions";
+import { OrderNote } from "./_components/OrderNote";
+
+/** Only the order steps' words reach the browser (scoped provider, D190). */
+const ORDER_MESSAGES = ["Admin.orderSteps"];
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.orders");
@@ -25,11 +31,13 @@ async function Order({
   params: PageProps<"/[locale]/secure-admin-control/orders/[id]">["params"];
 }) {
   const { id } = await params;
-  const [staff, order, t, tc] = await Promise.all([
+  const [staff, order, t, tc, ts, messages] = await Promise.all([
     requireStaff(),
     adminGet<OrderDetail>(`/admin/orders/${encodeURIComponent(id)}`),
     getTranslations("Admin.orders"),
     getTranslations("Admin.common"),
+    getTranslations("Admin.orderSteps"),
+    getMessages(),
   ]);
   const canMove = hasRole(staff, "admin", "shop-manager");
   const status = (value: string) =>
@@ -119,24 +127,28 @@ async function Order({
 
         <div className="flex flex-col gap-4">
           <AdminPanel>
-            <OrderActions
-              id={order.id}
-              next={order.next.map((value) => ({ value, label: status(value) }))}
-              paymentVerified={order.paymentVerified}
-              canMove={canMove}
-              strings={{
-                moveTo: t("moveTo"),
-                courier: t("courier"),
-                tracking: t("tracking"),
-                note: t("note"),
-                update: t("update"),
-                updated: t("updated"),
-                failed: tc("unavailable"),
-                markVerified: t("markVerified"),
-                markNotVerified: t("markNotVerified"),
-                final: t("final"),
-              }}
-            />
+            {canMove ? (
+              <NextIntlClientProvider messages={pickMessagePaths(messages, ORDER_MESSAGES)}>
+                <OrderSteps
+                  id={order.id}
+                  status={order.status}
+                  cashOnDelivery={order.cashOnDelivery}
+                  paymentVerified={order.paymentVerified}
+                />
+              </NextIntlClientProvider>
+            ) : null}
+            <div className={canMove ? "mt-5 border-t border-mist-100 pt-4" : undefined}>
+              <OrderNote
+                id={order.id}
+                strings={{
+                  label: ts("addNote"),
+                  placeholder: ts("notePlaceholder"),
+                  submit: ts("addNote"),
+                  added: ts("noteAdded"),
+                  failed: tc("unavailable"),
+                }}
+              />
+            </div>
           </AdminPanel>
           <AdminPanel title={t("address")}>
             <address className="flex flex-col gap-0.5 text-[14.5px] not-italic">

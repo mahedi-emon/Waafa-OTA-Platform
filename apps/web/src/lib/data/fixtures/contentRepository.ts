@@ -176,5 +176,12 @@ export function createFixtureContentRepository(data: FixtureData): ContentReposi
     async listMediaSlots() {
       return [...data.mediaSlots];
     },
+
+    async getMovedSlug(collection, from) {
+      return (
+        data.slugRedirects.find((item) => item.collection === collection && item.from === from)
+          ?.to ?? null
+      );
+    },
   };
 }

@@ -1,4 +1,5 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-23 — R3 #193 merged (#216). R4 #194 status automation on feat/194-status-automation: shared workflow rules, API buttons/actions, Trash, slug redirects, minute job, Sample undo, lead/visa/order/proof steps, list chips; PR open. Migration 20261024040000_status_automation.
 - 2026-10-23 Dhaka — Security #213: Next 16.4.0 had two critical RCE advisories (a vulnerable Next build now stops):
   Next 16.4.2, sanitize-html 2.18.1, fastify 5.12.7 + override; PR #214 merged (541bd21), CI 7/7; owner deploys after
   Docker images (no migration). R3 #193 media done on feat/193-media (merged main in, cde1864): API e2e 30/30 fresh DB,

@@ -6,9 +6,12 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { StatusChip } from "@/components/admin/StatusChip";
 import { Link, useRouter } from "@/i18n/navigation";
-import { deleteRecord, reorderRecords } from "@/lib/admin/contentActions";
+import { deleteRecord, reorderRecords, restoreTrashItem } from "@/lib/admin/contentActions";
 import { formatDhakaDateTime } from "@/lib/admin/format";
+import type { RecordChipName } from "@/lib/admin/recordChips";
+import { RECORD_CHIPS } from "@/lib/admin/statusChips";
 
 type RecordListProps = {
   contentKey: string;
@@ -18,6 +21,8 @@ type RecordListProps = {
     updatedAt: string;
     updatedBy: string | null;
     sample: boolean;
+    /** Status chips with their words, worked out on the server (D0 R4). */
+    chips: Array<{ name: RecordChipName; label: string; reason: string }>;
   }>;
   strings: {
     search: string;
@@ -32,6 +37,8 @@ type RecordListProps = {
     sample: string;
     empty: string;
     updated: string;
+    undo: string;
+    restored: string;
   };
 };
 
@@ -80,7 +87,28 @@ function RecordList({ contentKey, items, strings }: RecordListProps) {
         return;
       }
       setOrder((list) => list.filter((item) => item !== id));
-      toast.success(strings.deleted);
+      const trashId = result.trashId;
+      // Delete moves the record to Trash (D0 R4): Undo brings it straight back.
+      toast.success(strings.deleted, {
+        ...(trashId
+          ? {
+              action: {
+                label: strings.undo,
+                onClick: () => {
+                  void restoreTrashItem(trashId).then((back) => {
+                    if (!back.ok) {
+                      toast.error(back.problem.detail ?? strings.failed);
+                      return;
+                    }
+                    setOrder((list) => (list.includes(id) ? list : [...list, id]));
+                    toast.success(strings.restored);
+                    router.refresh();
+                  });
+                },
+              },
+            }
+          : {}),
+      });
       router.refresh();
     });
   }
@@ -121,11 +149,24 @@ function RecordList({ contentKey, items, strings }: RecordListProps) {
                   {item.title}
                 </Link>
                 <p className="truncate text-[12.5px] text-mist-600">
-                  <span className="font-mono">{item.id}</span> ·{" "}
                   {strings.updated.replace("{time}", formatDhakaDateTime(item.updatedAt))}
                   {item.updatedBy ? ` · ${item.updatedBy}` : ""}
                 </p>
               </div>
+              {item.chips.length > 0 ? (
+                <div className="hidden shrink-0 flex-wrap justify-end gap-1.5 md:flex">
+                  {item.chips.map((chip) => (
+                    <StatusChip
+                      key={chip.name}
+                      size="sm"
+                      tone={RECORD_CHIPS[chip.name].tone}
+                      icon={RECORD_CHIPS[chip.name].icon}
+                      label={chip.label}
+                      reason={chip.reason}
+                    />
+                  ))}
+                </div>
+              ) : null}
               {item.sample ? <Badge variant="outline">{strings.sample}</Badge> : null}
               {!needle ? (
                 <div className="hidden shrink-0 gap-1 sm:flex">

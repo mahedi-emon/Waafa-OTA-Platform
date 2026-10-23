@@ -2,15 +2,17 @@
 
 import {
   FeedbackModerationInputSchema,
+  OrderActionInputSchema,
   OrderUpdateInputSchema,
   PasswordChangeInputSchema,
   PasswordSetInputSchema,
-  PaymentProofReviewInputSchema,
+  PaymentProofActionInputSchema,
   StaffCreateInputSchema,
   StaffUpdateInputSchema,
   type FeedbackModerationInput,
+  type OrderActionInput,
   type OrderUpdateInput,
-  type PaymentProofReviewInput,
+  type PaymentProofActionInput,
   type StaffCreateInput,
   type StaffUpdateInput,
 } from "@waafa/shared";
@@ -43,10 +45,18 @@ async function write(
 
 const at = (id: string) => encodeURIComponent(id);
 
+/** A note on the order's history. */
 export async function updateOrder(id: string, input: OrderUpdateInput): Promise<ActionResult> {
   const parsed = OrderUpdateInputSchema.safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
   return write(`/admin/orders/${at(id)}`, "PATCH", parsed.data);
+}
+
+/** One step on an order (confirm, pack, ship, deliver, cancel, return): the status follows (D0 R4). */
+export async function orderAction(id: string, input: OrderActionInput): Promise<ActionResult> {
+  const parsed = OrderActionInputSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+  return write(`/admin/orders/${at(id)}/actions`, "POST", parsed.data);
 }
 
 export async function moderateFeedback(
@@ -58,13 +68,14 @@ export async function moderateFeedback(
   return write(`/admin/feedback/${at(id)}`, "PATCH", parsed.data);
 }
 
-export async function reviewProof(
+/** Verify (the order becomes paid and confirmed) or Reject with a reason (D0 R4). */
+export async function proofAction(
   id: string,
-  input: PaymentProofReviewInput,
+  input: PaymentProofActionInput,
 ): Promise<ActionResult> {
-  const parsed = PaymentProofReviewInputSchema.safeParse(input);
+  const parsed = PaymentProofActionInputSchema.safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
-  return write(`/admin/payment-proofs/${at(id)}`, "PATCH", parsed.data);
+  return write(`/admin/payment-proofs/${at(id)}/actions`, "POST", parsed.data);
 }
 
 export async function removeSubscriber(id: string): Promise<ActionResult> {
