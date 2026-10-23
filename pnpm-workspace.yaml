@@ -13,3 +13,7 @@ allowBuilds:
   unrs-resolver: false
 minimumReleaseAgeExclude:
   - nodemailer@10.1.0
+overrides:
+  # Header validation bypass in fastify 5.12.2–5.12.5 (low, issue 213): @nestjs/platform-fastify 12.1.2 pins 5.12.5.
+  # Drop this once @nestjs/platform-fastify ships a patched fastify in the version we use.
+  "fastify@>=5.12.2 <5.12.6": 5.12.7
