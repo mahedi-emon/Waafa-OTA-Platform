@@ -35,3 +35,5 @@ export * from "./workflow/content";
 export * from "./workflow/leads";
 export * from "./workflow/orders";
 export * from "./workflow/derived";
+export * from "./workflow/chips";
+export * from "./helpers/photo";

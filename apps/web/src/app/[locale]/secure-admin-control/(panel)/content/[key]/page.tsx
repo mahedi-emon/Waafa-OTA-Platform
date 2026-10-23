@@ -4,9 +4,14 @@ import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { isContentKey } from "@waafa/shared";
+import { CONTENT_MODEL, hasPublishWorkflow, isContentKey, type ContentKey } from "@waafa/shared";
+import { listPriceOf, photoOf } from "@waafa/shared/helpers/photo";
+import { recordChipsOf } from "@waafa/shared/workflow/chips";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ContentEditor } from "@/components/admin/editor/ContentEditor";
+import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
+import type { BulkAction, ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
@@ -14,68 +19,53 @@ import { pickMessagePaths } from "@/i18n/pickMessages";
 import { adminGet, requireStaff } from "@/lib/admin/adminApi";
 import { EDITOR_MESSAGES } from "@/lib/admin/blueprints/editorMessages";
 import { resolveBlueprint } from "@/lib/admin/blueprints/resolve";
-import { formatDhakaDateTime } from "@/lib/admin/format";
-import { recordChipsOf, type RecordChip } from "@/lib/admin/recordChips";
-import type { ContentCollection, ContentSingleton } from "@/lib/admin/types";
+import { chipFilterNames, chipReason } from "@/lib/admin/chipWords";
+import { bulkContent } from "@/lib/admin/contentActions";
+import { formatDhakaDateTime, pageParam, taka } from "@/lib/admin/format";
+import type { ContentRecordsPage, ContentSingleton } from "@/lib/admin/types";
 import { SITE_URL } from "@/lib/siteUrl";
-import { RecordList } from "./_components/RecordList";
+import { RecordMoveButtons } from "./_components/RecordMoveButtons";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.content");
   return { title: t("metaTitle") };
 }
 
-async function ContentKeyView({
-  params,
-}: {
-  params: PageProps<"/[locale]/secure-admin-control/content/[key]">["params"];
-}) {
+type Params = PageProps<"/[locale]/secure-admin-control/content/[key]">;
+
+const one = (value: string | string[] | undefined) =>
+  typeof value === "string" ? value : undefined;
+
+const SORTS = ["title.asc", "title.desc", "updated.asc", "updated.desc"] as const;
+
+/** The list query the API reads (ContentListQuerySchema), kept to values it accepts so a typed address never fails. */
+function recordsQuery(search: Record<string, string | string[] | undefined>) {
+  const q = one(search.q)?.trim().slice(0, 80);
+  const chip = one(search.chip);
+  const sort = sortOf(search.sort, SORTS);
+  return {
+    ...(q ? { q } : {}),
+    ...(chip && /^[a-zA-Z]{2,20}$/.test(chip) ? { chip } : {}),
+    ...(sort ? { sort } : {}),
+    page: pageParam(search.page),
+    pageSize: pageSizeOf(search.pageSize),
+  };
+}
+
+async function ContentKeyView({ params, searchParams }: Pick<Params, "params" | "searchParams">) {
   const { key } = await params;
   if (!isContentKey(key)) notFound();
-  const [data, staff, t, tc, te, tt, tchip, messages, { schema, blueprint }] = await Promise.all([
-    adminGet<ContentSingleton | ContentCollection>(`/admin/content/${key}`),
+  const [staff, t, te, messages, { schema, blueprint }] = await Promise.all([
     requireStaff(),
     getTranslations("Admin.content"),
-    getTranslations("Admin.common"),
     getTranslations("Admin.editor.new"),
-    getTranslations("Admin.editor.toast"),
-    getTranslations("Admin.chips"),
     getMessages(),
     resolveBlueprint(key),
   ]);
-  const now = new Date();
-  /** Why a row has its chip, with the date or number it names (D0 R4). */
-  const chipReason = (chip: RecordChip): string => {
-    const date = (iso: string) => formatDhakaDateTime(iso);
-    switch (chip.name) {
-      case "scheduled":
-      case "expired":
-      case "ended":
-        return chip.at ? tchip(`reasons.${chip.name}`, { date: date(chip.at) }) : "";
-      case "live":
-        return chip.at
-          ? tchip("reasons.liveSince", { date: date(chip.at) })
-          : chip.until
-            ? tchip("reasons.liveUntil", { date: date(chip.until) })
-            : tchip("reasons.live");
-      case "active":
-        return chip.until
-          ? tchip("reasons.activeUntil", { date: date(chip.until) })
-          : tchip("reasons.active");
-      case "open":
-        return chip.until
-          ? tchip("reasons.openUntil", { date: date(chip.until) })
-          : tchip("reasons.open");
-      case "usedUp":
-      case "fewSeats":
-        return tchip(`reasons.${chip.name}`, { count: chip.count ?? 0 });
-      default:
-        return tchip(`reasons.${chip.name}`);
-    }
-  };
   const title = t(`keys.${key}`);
 
-  if (data.kind === "singleton") {
+  if (CONTENT_MODEL[key].kind === "singleton") {
+    const data = await adminGet<ContentSingleton>(`/admin/content/${key}`);
     return (
       <>
         <AdminPageHeader
@@ -116,53 +106,135 @@ async function ContentKeyView({
           </Button>
         }
       />
-      <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-        <RecordList
-          key={data.items.map((item) => item.id).join("|")}
-          contentKey={key}
-          items={data.items.map((item) => ({
-            id: item.id,
-            title: item.title,
-            updatedAt: item.updatedAt,
-            updatedBy: item.updatedBy,
-            sample: Boolean((item.data as { sample?: unknown } | null)?.sample),
-            chips: recordChipsOf(key, item.data, now, {
-              ...(item.uses !== undefined ? { uses: item.uses } : {}),
-            }).map((chip) => ({
-              name: chip.name,
-              label: tchip(`labels.${chip.name}`),
-              reason: chipReason(chip),
-            })),
-          }))}
-          strings={{
-            search: t("search"),
-            edit: tc("edit"),
-            delete: tc("delete"),
-            deleteConfirm: t("deleteConfirm", { title: "{title}" }),
-            deleted: t("deleted"),
-            moveUp: t("moveUp"),
-            moveDown: t("moveDown"),
-            orderSaved: t("orderSaved"),
-            failed: tc("unavailable"),
-            sample: tc("sample"),
-            empty: t("emptyList"),
-            updated: tc("updated", { time: "{time}" }),
-            undo: tt("undo"),
-            restored: tt("backFromTrash"),
-          }}
-        />
-      </section>
+      <RecordTable contentKey={key} search={await searchParams} />
     </>
   );
 }
 
-/** One content area: a setting's editor, or the list of records (form engine v2, D0 R2; the list becomes R5's table). */
-export default function ContentKeyPage(
-  props: PageProps<"/[locale]/secure-admin-control/content/[key]">,
-) {
+/** A content list as the shared DataTable (D0 R5): the API searches, filters, sorts and pages it. */
+async function RecordTable({
+  contentKey: key,
+  search,
+}: {
+  contentKey: ContentKey;
+  search: Record<string, string | string[] | undefined>;
+}) {
+  const [data, t, tc, tchip] = await Promise.all([
+    adminGet<ContentRecordsPage>(`/admin/content/${key}/records`, recordsQuery(search)),
+    getTranslations("Admin.content.list"),
+    getTranslations("Admin.common"),
+    getTranslations("Admin.chips"),
+  ]);
+  const now = new Date();
+  const path = `/secure-admin-control/content/${key}`;
+  const workflow = hasPublishWorkflow(key);
+  // Moving a record only makes sense in the order the site uses: no search, filter or other sort.
+  const query = recordsQuery(search);
+  const inSiteOrder = !query.q && !query.chip && !query.sort;
+  const prices = data.items.map((item) => listPriceOf(item.data as Record<string, unknown>));
+  const hasPrice = prices.some((price) => price !== null);
+  const moveStrings = {
+    earlier: t("moveEarlier"),
+    later: t("moveLater"),
+    moved: t("moved"),
+    failed: tc("unavailable"),
+  };
+
+  const rows: DataRow[] = data.items.map((item, index) => {
+    const updated = formatDhakaDateTime(item.updatedAt);
+    const photo = photoOf(item.data as Record<string, unknown>);
+    const price = prices[index] ?? null;
+    return {
+      id: item.id,
+      href: `${path}/${encodeURIComponent(item.id)}`,
+      title: item.title,
+      ...(item.updatedBy ? { subtitle: t("changedBy", { name: item.updatedBy }) } : {}),
+      thumb: photo ? { src: photo, alt: "" } : { initials: item.title.slice(0, 2).toUpperCase() },
+      chips: recordChipsOf(
+        key,
+        item.data,
+        now,
+        item.uses !== undefined ? { uses: item.uses } : {},
+      ).map((chip) => ({
+        family: "record" as const,
+        name: chip.name,
+        label: tchip(`labels.${chip.name}`),
+        reason: chipReason(tchip, chip),
+      })),
+      facts: {
+        price: price !== null ? { text: taka(price), kind: "money" } : undefined,
+        updated: { text: updated, kind: "date" },
+      },
+      sample: Boolean((item.data as { sample?: unknown } | null)?.sample),
+      summary: [
+        ...(price !== null ? [{ label: t("price"), value: taka(price) }] : []),
+        { label: t("updated"), value: updated },
+      ],
+      ...(inSiteOrder
+        ? { actions: <RecordMoveButtons contentKey={key} id={item.id} strings={moveStrings} /> }
+        : {}),
+    };
+  });
+
+  const columns: ColumnSpec[] = [
+    { key: "name", label: t("name"), sort: "title", always: true },
+    { key: "status", label: t("status"), always: true },
+    ...(hasPrice ? [{ key: "price", label: t("price"), align: "end" as const }] : []),
+    { key: "updated", label: t("updated"), sort: "updated" },
+  ];
+  const chipNames = chipFilterNames(
+    key,
+    data.items[0]?.data as Record<string, unknown> | undefined,
+  );
+  const bulk: BulkAction[] = [
+    ...(workflow
+      ? [
+          { id: "publish", label: t("publish"), run: bulkContent.bind(null, key, "publish") },
+          { id: "unpublish", label: t("unpublish"), run: bulkContent.bind(null, key, "unpublish") },
+          { id: "archive", label: t("archive"), run: bulkContent.bind(null, key, "archive") },
+        ]
+      : []),
+    {
+      id: "trash",
+      label: t("trash"),
+      danger: true,
+      // The bulk bar puts the number in: the raw words keep {count}.
+      confirm: t.raw("trashConfirm") as string,
+      run: bulkContent.bind(null, key, "trash"),
+    },
+  ];
+
+  return (
+    <AdminDataTable
+      listKey={`content-${key}`}
+      path={path}
+      rows={rows}
+      columns={columns}
+      page={{ total: data.total, page: data.page, pageSize: data.pageSize }}
+      searchLabel={tc("search")}
+      filters={
+        chipNames.length > 0
+          ? [
+              {
+                param: "chip",
+                label: t("filter"),
+                options: chipNames.map((name) => ({ value: name, label: tchip(`labels.${name}`) })),
+              },
+            ]
+          : []
+      }
+      bulk={bulk}
+      openLabel={t("open")}
+      empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
+    />
+  );
+}
+
+/** One content area: a setting's editor, or its records as the shared DataTable (form engine v2 D0 R2, table R5). */
+export default function ContentKeyPage(props: Params) {
   return (
     <Suspense fallback={<Skeleton className="h-160 rounded-2xl" />}>
-      <ContentKeyView params={props.params} />
+      <ContentKeyView params={props.params} searchParams={props.searchParams} />
     </Suspense>
   );
 }

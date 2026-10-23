@@ -68,6 +68,23 @@ export async function moderateFeedback(
   return write(`/admin/feedback/${at(id)}`, "PATCH", parsed.data);
 }
 
+/**
+ * The feedback table's bulk step (D0 R5): one moderation per item, so each keeps its own audit row; an item the API
+ * refuses (approval without consent to publish) is counted out, never forced.
+ */
+export async function moderateFeedbackMany(
+  status: FeedbackModerationInput["status"],
+  ids: string[],
+): Promise<{ ok: boolean; changed?: number }> {
+  if (ids.length === 0 || ids.length > 100) return { ok: false };
+  let changed = 0;
+  for (const id of ids) {
+    const result = await moderateFeedback(id, { status });
+    if (result.ok) changed += 1;
+  }
+  return { ok: changed > 0, changed };
+}
+
 /** Verify (the order becomes paid and confirmed) or Reject with a reason (D0 R4). */
 export async function proofAction(
   id: string,

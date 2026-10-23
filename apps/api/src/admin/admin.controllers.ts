@@ -17,6 +17,9 @@ import type { FastifyReply } from "fastify";
 import {
   AdminSearchQuerySchema,
   AuditListQuerySchema,
+  ContentBulkInputSchema,
+  ContentListQuerySchema,
+  ContentMoveInputSchema,
   ContentOptionsQuerySchema,
   ContentOrderInputSchema,
   ContentRestoreInputSchema,
@@ -255,6 +258,40 @@ export class AdminContentController {
     return this.content.create(staff, this.content.collectionKey(key), input.data, {
       ...(input.action ? { button: input.action } : {}),
     });
+  }
+
+  /** One page of a list: search, chip, sort (D0 R5). */
+  @Get("content/:key/records")
+  records(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Query() query: unknown) {
+    return this.content.records(
+      staff,
+      this.content.collectionKey(key),
+      parseInput(ContentListQuerySchema, query),
+    );
+  }
+
+  /** Publish, unpublish, archive or move to Trash several records (D0 R5). */
+  @Post("content/:key/bulk")
+  @HttpCode(200)
+  bulk(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Body() body: unknown) {
+    return this.content.bulk(
+      staff,
+      this.content.collectionKey(key),
+      parseInput(ContentBulkInputSchema, body),
+    );
+  }
+
+  /** One record a place earlier or later (D0 R5). */
+  @Post("content/:key/:id/move")
+  @HttpCode(200)
+  move(
+    @Staff() staff: StaffPrincipal,
+    @Param("key") key: string,
+    @Param("id") recordId: string,
+    @Body() body: unknown,
+  ) {
+    const input = parseInput(ContentMoveInputSchema, body);
+    return this.content.move(staff, this.content.collectionKey(key), id(recordId), input.by);
   }
 
   @Put("content/:key/order")

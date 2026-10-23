@@ -65,6 +65,8 @@ export const LeadListQuerySchema = z
     q: z.string().trim().max(80).optional(),
     createdFrom: IsoDateSchema.optional(),
     createdTo: IsoDateSchema.optional(),
+    /** Newest first unless asked (D0 R5). */
+    sort: z.enum(["created.asc", "created.desc"]).optional(),
     ...paging,
   })
   .strict();
@@ -105,6 +107,7 @@ export const OrderListQuerySchema = z
   .object({
     status: OrderStatusSchema.optional(),
     q: z.string().trim().max(80).optional(),
+    sort: z.enum(["created.asc", "created.desc", "total.asc", "total.desc"]).optional(),
     ...paging,
   })
   .strict();
@@ -115,7 +118,12 @@ export const OrderUpdateInputSchema = z
   .strict();
 
 export const FeedbackListQuerySchema = z
-  .object({ status: FeedbackSchema.shape.status.optional(), ...paging })
+  .object({
+    status: FeedbackSchema.shape.status.optional(),
+    q: z.string().trim().max(80).optional(),
+    sort: z.enum(["created.asc", "created.desc"]).optional(),
+    ...paging,
+  })
   .strict();
 
 export const FeedbackModerationInputSchema = z
@@ -126,8 +134,41 @@ export const FeedbackModerationInputSchema = z
 export const PaymentProofListQuerySchema = z
   .object({
     status: z.enum(["received", "matched", "verified", "rejected"]).optional(),
+    q: z.string().trim().max(80).optional(),
+    sort: z.enum(["created.asc", "created.desc", "amount.asc", "amount.desc"]).optional(),
     ...paging,
   })
+  .strict();
+
+/** One page of a content list (D0 R5): words, a status chip, a sort and the page. */
+export const ContentListQuerySchema = z
+  .object({
+    q: z.string().trim().max(80).optional(),
+    chip: z
+      .string()
+      .regex(/^[a-zA-Z]{2,20}$/)
+      .optional(),
+    sort: z.enum(["title.asc", "title.desc", "updated.asc", "updated.desc"]).optional(),
+    page: z.coerce.number().int().min(1).max(10_000).default(1),
+    pageSize: z.coerce
+      .number()
+      .int()
+      .refine((size) => [25, 50, 100].includes(size))
+      .default(25),
+  })
+  .strict();
+
+/** The same step for several records at once (D0 R5); each record follows its own rules. */
+export const ContentBulkInputSchema = z
+  .object({
+    ids: z.array(z.string().min(1).max(160)).min(1).max(100),
+    action: z.enum(["publish", "unpublish", "archive", "trash"]),
+  })
+  .strict();
+
+/** One place earlier (-1) or later (1) in the list's own order (D0 R5). */
+export const ContentMoveInputSchema = z
+  .object({ by: z.union([z.literal(-1), z.literal(1)]) })
   .strict();
 
 /** Trash (D0 R4): newest first, only the lists this person may edit. */
@@ -318,6 +359,8 @@ export type OrderListQuery = z.infer<typeof OrderListQuerySchema>;
 export type OrderUpdateInput = z.infer<typeof OrderUpdateInputSchema>;
 export type FeedbackModerationInput = z.infer<typeof FeedbackModerationInputSchema>;
 export type TrashListQuery = z.infer<typeof TrashListQuerySchema>;
+export type ContentListQuery = z.infer<typeof ContentListQuerySchema>;
+export type ContentBulkInput = z.infer<typeof ContentBulkInputSchema>;
 export type StaffCreateInput = z.infer<typeof StaffCreateInputSchema>;
 export type StaffUpdateInput = z.infer<typeof StaffUpdateInputSchema>;
 export type ContentWriteInput = z.infer<typeof ContentWriteInputSchema>;

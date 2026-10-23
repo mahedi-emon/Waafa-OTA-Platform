@@ -44,10 +44,15 @@ async function openFirstFaq(page: Page, id?: string) {
   if (id) await page.goto(`/secure-admin-control/content/faqs/${id}`);
   else {
     await page.goto("/secure-admin-control/content/faqs");
-    await page
-      .getByRole("link", { name: /^Edit / })
-      .first()
-      .click();
+    // The table names each record as a link to its editor; a phone card opens the sheet, whose Open goes there (D0 R5).
+    const link = page.getByRole("table").getByRole("link").first();
+    const card = page.getByRole("main").getByRole("listitem").getByRole("button").first();
+    await expect(link.or(card)).toBeVisible();
+    if (await link.isVisible()) await link.click();
+    else {
+      await card.click();
+      await page.getByRole("dialog").getByRole("link", { name: "Open" }).click();
+    }
   }
   await expect(page.getByRole("tab", { name: "History" })).toBeVisible();
   // The editor is interactive once its words and widgets are hydrated.
@@ -225,10 +230,7 @@ test("picking an airline fills in its name too, and the version before comes bac
   const errors = collectErrors(page);
   await signIn(page);
   await page.goto("/secure-admin-control/content/baggageRules");
-  await page
-    .getByRole("link", { name: /^Edit / })
-    .first()
-    .click();
+  await page.getByRole("table").getByRole("link").first().click();
   await expect(page.getByRole("tab", { name: "History" })).toBeVisible();
   const heading = page.getByRole("heading", { level: 1 });
   const headingBefore = (await heading.innerText()).trim();
@@ -298,8 +300,8 @@ test("the lead page shows the request as labelled facts, not data", async ({ pag
   const { reference } = (await response.json()) as { reference: string };
 
   await signIn(page);
-  await page.goto("/secure-admin-control/leads");
-  await page.getByRole("link", { name: reference }).first().click();
+  await page.goto(`/secure-admin-control/leads?q=${reference}`);
+  await page.getByRole("table").getByRole("link").first().click();
   await expect(page.getByRole("heading", { name: "What they asked for" })).toBeVisible();
   await expect(page.getByText(/Dhaka \(DAC\)/).first()).toBeVisible();
   await expect(page.getByRole("button", { name: /raw|json/i })).toHaveCount(0);

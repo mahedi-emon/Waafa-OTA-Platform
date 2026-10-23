@@ -58,7 +58,7 @@ test("staff sign in, find the lead and move it to Quoted", async ({ page }) => {
   const errors = collectErrors(page);
   await signIn(page);
   await page.goto(`/secure-admin-control/leads?q=${reference}`);
-  await page.getByRole("link", { name: reference }).first().click();
+  await page.getByRole("table").getByRole("link").first().click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText(reference);
   // Steps move the status (D0 R4): Log quote, with nothing more to fill in.
   await page.getByRole("button", { name: "Log quote" }).click();
@@ -81,7 +81,7 @@ test("an FAQ saved in Admin shows on the public site", async ({ page }) => {
   const answer = `Yes, every price includes VAT. Checked ${Date.now()}.`;
   await signIn(page);
   await page.goto("/secure-admin-control/content/faqs");
-  await page.locator("main ul li a").first().click();
+  await page.getByRole("table").getByRole("link").first().click();
   await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
   await page.locator("#field-answer").fill(answer);
   await page.getByRole("button", { name: "Save" }).click();

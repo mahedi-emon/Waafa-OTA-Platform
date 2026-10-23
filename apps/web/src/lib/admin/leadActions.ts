@@ -12,6 +12,7 @@ import {
   type LeadUpdateInput,
   type VisaProgressInput,
 } from "@waafa/shared";
+import { getTranslations } from "next-intl/server";
 import { adminWrite, type AdminProblem } from "./adminApi";
 
 export type ActionResult = { ok: true } | { ok: false; problem: AdminProblem };
@@ -80,4 +81,39 @@ export async function bulkUpdateLeads(
   return result.ok
     ? { ok: true, changed: result.data.changed, skipped: result.data.skipped }
     : result;
+}
+
+type BulkResult = { ok: boolean; changed?: number; message?: string };
+
+/** The bulk bar's words for a lead step: the count, and the booked leads it left alone (D0 R5). */
+async function bulkWords(
+  result: Awaited<ReturnType<typeof bulkUpdateLeads>>,
+  done: "bulkDone" | "bulkSpamDone",
+): Promise<BulkResult> {
+  if (!result.ok) return { ok: false };
+  const t = await getTranslations("Admin.leads");
+  const count = result.changed ?? 0;
+  const skipped = result.skipped ?? [];
+  return {
+    ok: true,
+    changed: count,
+    message: [
+      t(done, { count }),
+      ...(skipped.length > 0 ? [t("bulkSkipped", { references: skipped.join(", ") })] : []),
+    ].join(" "),
+  };
+}
+
+/** The table's Assign step: `choice` is a staff id, or "none" to leave the leads unassigned. */
+export async function assignLeads(ids: string[], choice?: string): Promise<BulkResult> {
+  if (!choice) return { ok: false };
+  return bulkWords(
+    await bulkUpdateLeads({ ids, assigneeId: choice === "none" ? null : choice }),
+    "bulkDone",
+  );
+}
+
+/** The table's Mark as spam step (booked leads are skipped by the API). */
+export async function markLeadsSpam(ids: string[]): Promise<BulkResult> {
+  return bulkWords(await bulkUpdateLeads({ ids, markSpam: true }), "bulkSpamDone");
 }

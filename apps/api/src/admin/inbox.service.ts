@@ -41,10 +41,27 @@ export class AdminInboxService {
   ) {}
 
   async feedback(query: z.output<typeof FeedbackListQuerySchema>) {
-    const where = query.status ? { status: query.status } : {};
+    const contains = (value: string) => ({ contains: value, mode: "insensitive" as const });
+    const where: Prisma.FeedbackWhereInput = {
+      ...(query.status ? { status: query.status } : {}),
+      ...(query.q
+        ? {
+            OR: [
+              { name: contains(query.q) },
+              { phone: contains(query.q) },
+              { comment: contains(query.q) },
+              { reference: contains(query.q) },
+            ],
+          }
+        : {}),
+    };
     const [total, rows] = await Promise.all([
       this.prisma.feedback.count({ where }),
-      this.prisma.feedback.findMany({ where, orderBy: { createdAt: "desc" }, ...window(query) }),
+      this.prisma.feedback.findMany({
+        where,
+        orderBy: { createdAt: query.sort === "created.asc" ? "asc" : "desc" },
+        ...window(query),
+      }),
     ]);
     return {
       total,
@@ -103,17 +120,36 @@ export class AdminInboxService {
 
   /** Payment proofs by status; "received" is the To verify queue: received and matched proofs (D0 R4). */
   async proofs(query: z.output<typeof PaymentProofListQuerySchema>) {
-    const where: Prisma.PaymentProofWhereInput =
-      query.status === "received"
+    const contains = (value: string) => ({ contains: value, mode: "insensitive" as const });
+    const where: Prisma.PaymentProofWhereInput = {
+      ...(query.status === "received"
         ? { status: { in: ["received", "matched"] } }
         : query.status
           ? { status: query.status }
-          : {};
+          : {}),
+      ...(query.q
+        ? {
+            OR: [
+              { reference: contains(query.q) },
+              { name: contains(query.q) },
+              { phone: contains(query.q) },
+              { transactionId: contains(query.q) },
+            ],
+          }
+        : {}),
+    };
+    const [field, dir] = (query.sort?.split(".") ?? []) as [
+      "created" | "amount" | undefined,
+      "asc" | "desc" | undefined,
+    ];
     const [total, rows] = await Promise.all([
       this.prisma.paymentProof.count({ where }),
       this.prisma.paymentProof.findMany({
         where,
-        orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+        orderBy:
+          field && dir
+            ? [field === "amount" ? { amount: dir } : { createdAt: dir }, { id: "asc" }]
+            : [{ status: "asc" }, { createdAt: "desc" }],
         ...window(query),
       }),
     ]);

@@ -1,19 +1,17 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
-import { AdminEmpty } from "@/components/admin/AdminEmpty";
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminPagination } from "@/components/admin/AdminPagination";
 import { ProofDecision } from "@/components/admin/ProofDecision";
-import { StatusChip } from "@/components/admin/StatusChip";
 import { StatusTabs } from "@/components/admin/StatusTabs";
+import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
+import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { pickMessagePaths } from "@/i18n/pickMessages";
 import { Link } from "@/i18n/navigation";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
-import { displayPhone, formatDhakaDateTime, taka, pageParam } from "@/lib/admin/format";
-import { PROOF_CHIPS } from "@/lib/admin/statusChips";
+import { displayPhone, formatDhakaDateTime, initialsOf, pageParam, taka } from "@/lib/admin/format";
 import type { Paged, ProofRow } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,7 +21,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** "To verify" holds received and matched proofs (D0 R4). */
 const STATUSES = ["received", "verified", "rejected"] as const;
-/** Only the decision buttons' words reach the browser (scoped provider, D190). */
+const SORTS = ["created.asc", "created.desc", "amount.asc", "amount.desc"] as const;
+const PATH = "/secure-admin-control/payments";
+/** Only the decision buttons' words reach the browser with the table's (scoped provider, D190). */
 const PROOF_MESSAGES = ["Admin.proofDecision"];
 const one = (value: string | string[] | undefined) =>
   typeof value === "string" ? value : undefined;
@@ -35,15 +35,94 @@ async function Proofs({
 }) {
   const params = await searchParams;
   const status = STATUSES.find((item) => item === one(params.status)) ?? "received";
-  const page = pageParam(params.page);
-  const [staff, list, t, tc, messages] = await Promise.all([
+  const q = one(params.q)?.slice(0, 80);
+  const sort = sortOf(params.sort, SORTS);
+  const [staff, list, t, tc] = await Promise.all([
     requireStaff(),
-    adminGet<Paged<ProofRow>>("/admin/payment-proofs", { status, page, pageSize: 20 }),
+    adminGet<Paged<ProofRow>>("/admin/payment-proofs", {
+      status,
+      page: pageParam(params.page),
+      pageSize: pageSizeOf(params.pageSize),
+      ...(q ? { q } : {}),
+      ...(sort ? { sort } : {}),
+    }),
     getTranslations("Admin.proofs"),
     getTranslations("Admin.common"),
-    getMessages(),
   ]);
   const canReview = hasRole(staff, "admin", "accounts");
+
+  const rows: DataRow[] = list.items.map((proof) => {
+    const received = formatDhakaDateTime(proof.createdAt);
+    const covers = proof.order ? proof.amount >= proof.order.total : false;
+    const orderWords = proof.order
+      ? covers
+        ? t("matchedOrder", { reference: proof.order.reference, amount: taka(proof.order.total) })
+        : t("orderShort", {
+            reference: proof.order.reference,
+            amount: taka(proof.order.total - proof.amount),
+          })
+      : t("noOrder");
+    const decided = proof.decidedBy
+      ? t("decided", { status: t(`statuses.${proof.status}`), name: proof.decidedBy })
+      : undefined;
+    return {
+      id: proof.id,
+      title: proof.name,
+      subtitle: `${proof.reference} · ${displayPhone(proof.phone)}`,
+      thumb: { initials: initialsOf(proof.name) },
+      chips: [
+        {
+          family: "proof",
+          name: proof.status,
+          label: t(`statuses.${proof.status}`),
+          ...(decided ? { reason: decided } : {}),
+        },
+      ],
+      facts: {
+        amount: { text: taka(proof.amount), kind: "money" },
+        account: { text: proof.accountId, kind: "muted" },
+        order: { text: orderWords, kind: proof.order ? undefined : "muted" },
+        received: { text: received, kind: "date" },
+      },
+      summary: [
+        { label: t("amount"), value: taka(proof.amount) },
+        { label: t("account"), value: proof.accountId },
+        { label: t("transaction"), value: proof.transactionId ?? "-" },
+        { label: t("colOrder"), value: orderWords },
+        {
+          label: t("colSlip"),
+          value: proof.proof?.fileName ? t("slip", { name: proof.proof.fileName }) : t("noSlip"),
+        },
+        { label: t("colReceived"), value: received },
+        ...(proof.status === "rejected" && proof.note
+          ? [{ label: t("statuses.rejected"), value: proof.note }]
+          : []),
+      ],
+      actions: (
+        <div className="flex flex-col gap-3">
+          {canReview && (proof.status === "received" || proof.status === "matched") ? (
+            <ProofDecision id={proof.id} reference={proof.reference} />
+          ) : null}
+          {proof.order ? (
+            <Button asChild variant="secondary" size="md">
+              <Link href={`/secure-admin-control/orders/${proof.order.id}`} prefetch={false}>
+                {t("openOrder")}
+              </Link>
+            </Button>
+          ) : null}
+        </div>
+      ),
+    };
+  });
+
+  const columns: ColumnSpec[] = [
+    { key: "name", label: t("colPayer"), always: true },
+    { key: "status", label: t("colStatus"), always: true },
+    { key: "amount", label: t("amount"), sort: "amount", align: "end" },
+    { key: "account", label: t("account") },
+    { key: "order", label: t("colOrder") },
+    { key: "received", label: t("colReceived"), sort: "created" },
+  ];
 
   return (
     <>
@@ -54,131 +133,28 @@ async function Proofs({
         items={STATUSES.map((value) => ({
           value,
           label: t(`statuses.${value}`),
-          href:
-            value === "received"
-              ? "/secure-admin-control/payments"
-              : `/secure-admin-control/payments?status=${value}`,
+          href: value === "received" ? PATH : `${PATH}?status=${value}`,
         }))}
       />
-      <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-        {list.items.length === 0 ? (
-          <AdminEmpty title={t("emptyTitle")} body={t("emptyBody")} />
-        ) : (
-          <ul className="divide-y divide-mist-100">
-            {list.items.map((proof) => (
-              <li
-                key={proof.id}
-                className="flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between"
-              >
-                <div className="min-w-0">
-                  <p className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-[13.5px] font-semibold text-navy-900">
-                      {proof.reference}
-                    </span>
-                    <StatusChip
-                      size="sm"
-                      tone={PROOF_CHIPS[proof.status].tone}
-                      icon={PROOF_CHIPS[proof.status].icon}
-                      label={t(`statuses.${proof.status}`)}
-                      {...(proof.decidedBy
-                        ? {
-                            reason: t("decided", {
-                              status: t(`statuses.${proof.status}`),
-                              name: proof.decidedBy,
-                            }),
-                          }
-                        : {})}
-                    />
-                  </p>
-                  <p className="mt-0.5 font-semibold">
-                    {proof.name} · <span className="tabular-nums">{displayPhone(proof.phone)}</span>
-                  </p>
-                  <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-[14px]">
-                    <div className="flex gap-1.5">
-                      <dt className="text-mist-600">{t("amount")}</dt>
-                      <dd className="font-semibold tabular-nums">{taka(proof.amount)}</dd>
-                    </div>
-                    <div className="flex gap-1.5">
-                      <dt className="text-mist-600">{t("account")}</dt>
-                      <dd>{proof.accountId}</dd>
-                    </div>
-                    <div className="flex gap-1.5">
-                      <dt className="text-mist-600">{t("transaction")}</dt>
-                      <dd className="font-mono">{proof.transactionId ?? "-"}</dd>
-                    </div>
-                  </dl>
-                  <p className="mt-1 text-[13px] text-mist-600">
-                    {proof.proof?.fileName
-                      ? t("slip", { name: proof.proof.fileName })
-                      : t("noSlip")}{" "}
-                    · {formatDhakaDateTime(proof.createdAt)}
-                  </p>
-                  <p className="mt-1.5 text-[13.5px]">
-                    {proof.order ? (
-                      <>
-                        <span
-                          className={
-                            proof.amount >= proof.order.total
-                              ? "font-medium text-success-700"
-                              : "font-medium text-warning-800"
-                          }
-                        >
-                          {proof.amount >= proof.order.total
-                            ? t("matchedOrder", {
-                                reference: proof.order.reference,
-                                amount: taka(proof.order.total),
-                              })
-                            : t("orderShort", {
-                                reference: proof.order.reference,
-                                amount: taka(proof.order.total - proof.amount),
-                              })}
-                        </span>{" "}
-                        <Link
-                          href={`/secure-admin-control/orders/${proof.order.id}`}
-                          prefetch={false}
-                          className="inline-flex min-h-11 items-center font-semibold text-brand-700 hover:underline"
-                        >
-                          {t("openOrder")}
-                        </Link>
-                      </>
-                    ) : (
-                      <span className="text-mist-600">{t("noOrder")}</span>
-                    )}
-                  </p>
-                  {proof.status === "rejected" && proof.note ? (
-                    <p className="mt-1 text-[13.5px] text-danger-700">{proof.note}</p>
-                  ) : null}
-                </div>
-                {canReview && (proof.status === "received" || proof.status === "matched") ? (
-                  <NextIntlClientProvider messages={pickMessagePaths(messages, PROOF_MESSAGES)}>
-                    <ProofDecision id={proof.id} reference={proof.reference} />
-                  </NextIntlClientProvider>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        )}
-        <AdminPagination
-          page={list.page}
-          pageSize={list.pageSize}
-          total={list.total}
-          path="/secure-admin-control/payments"
-          query={{ status: status === "received" ? undefined : status }}
-          strings={{
-            previous: tc("previous"),
-            next: tc("next"),
-            summary: tc("showing", { shown: list.items.length, total: list.total }),
-          }}
-        />
-      </section>
+      <AdminDataTable
+        listKey="proofs"
+        path={PATH}
+        rows={rows}
+        columns={columns}
+        page={{ total: list.total, page: list.page, pageSize: list.pageSize }}
+        searchLabel={t("search")}
+        openLabel={tc("open")}
+        empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
+        messagePaths={PROOF_MESSAGES}
+      />
     </>
   );
 }
 
-/** Offline payment proofs for Accounts (AdminPayments board, proofs queue). */
+/** Offline payment proofs for Accounts (AdminPayments board, proofs queue) on the DataTable (D0 R5). */
 export default function PaymentsPage(props: PageProps<"/[locale]/secure-admin-control/payments">) {
   return (
-    <Suspense fallback={<Skeleton className="h-[560px] rounded-2xl" />}>
+    <Suspense fallback={<Skeleton className="h-140 rounded-2xl" />}>
       <Proofs searchParams={props.searchParams} />
     </Suspense>
   );

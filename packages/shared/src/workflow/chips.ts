@@ -1,10 +1,5 @@
-import { contentChip } from "@waafa/shared/workflow/content";
-import {
-  couponStatus,
-  groupFareStatus,
-  productStockStatus,
-  windowStatus,
-} from "@waafa/shared/workflow/derived";
+import { contentChip } from "./content";
+import { couponStatus, groupFareStatus, productStockStatus, windowStatus } from "./derived";
 
 /** Every chip a list row can show (ADMIN.md §8): nobody picks these, they follow from status, dates and numbers. */
 export type RecordChipName =

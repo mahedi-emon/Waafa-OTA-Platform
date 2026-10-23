@@ -29,7 +29,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { LeadStatus, OrderStatus } from "@waafa/shared";
-import type { RecordChipName } from "./recordChips";
+import type { RecordChipName } from "@waafa/shared/workflow/chips";
 
 /** Status families (ADMIN.md §4.1, D185): colour is never the only signal; every chip also has an icon and a word. */
 export type ChipTone = "info" | "progress" | "success" | "warning" | "danger" | "neutral";
@@ -71,6 +71,8 @@ export const FEEDBACK_CHIPS = {
   pending: { tone: "warning", icon: Hourglass },
   approved: { tone: "success", icon: CircleCheck },
   rejected: { tone: "neutral", icon: CircleX },
+  /** Private feedback: it can be read and answered, never published. */
+  noConsent: { tone: "warning", icon: EyeOff },
 } satisfies Record<string, ChipSpec>;
 
 /** Content lifecycle (R4 adds Scheduled and Expired from dates). */
