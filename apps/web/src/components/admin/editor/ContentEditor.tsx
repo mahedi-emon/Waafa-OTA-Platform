@@ -157,12 +157,13 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
         <aside className="hidden lg:row-span-2 lg:block">
           <EditorSectionRail sections={blueprint.sections} states={sectionStates} />
         </aside>
-        {/* One side panel: folded above the form below 1280 px, always open at the side from 1280 px. */}
+        {/* One side panel: folded above the form below 1280 px, always open at the side from 1280 px, where it
+            scrolls on its own on short screens so its last buttons never sit under the action bar. */}
         <aside className="min-w-0 lg:col-start-2 xl:col-start-3 xl:row-span-2 xl:row-start-1">
           <Collapsible
             open={wide || sideOpen}
             onOpenChange={setSideOpen}
-            className="xl:sticky xl:top-20"
+            className="xl:sticky xl:top-20 xl:max-h-[calc(100dvh-10.5rem)] xl:overflow-y-auto xl:overscroll-contain"
           >
             <CollapsibleTrigger className="group flex min-h-12 w-full cursor-pointer items-center justify-between rounded-2xl border border-mist-200 bg-white px-4 text-[14.5px] font-semibold text-navy-900 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none xl:hidden">
               {t("side.details")}

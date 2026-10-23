@@ -60,9 +60,14 @@ test("staff sign in, find the lead and move it to Quoted", async ({ page }) => {
   await page.goto(`/secure-admin-control/leads?q=${reference}`);
   await page.getByRole("link", { name: reference }).first().click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText(reference);
-  await page.locator("#lead-status").selectOption("quoted");
-  await expect(page.getByText("Lead updated").first()).toBeVisible();
-  await expect(page.getByText(/Status new → quoted/)).toBeVisible();
+  // Steps move the status (D0 R4): Log quote, with nothing more to fill in.
+  await page.getByRole("button", { name: "Log quote" }).click();
+  await page
+    .getByRole("dialog", { name: "Log a quote" })
+    .getByRole("button", { name: "Log quote" })
+    .click();
+  await expect(page.getByText("Quote logged.").first()).toBeVisible();
+  await expect(page.getByText("Quote logged · Moved to Quoted")).toBeVisible();
   await page
     .getByLabel("What happened? (visible to staff only)")
     .fill("Called, sent the checklist.");

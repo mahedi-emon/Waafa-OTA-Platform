@@ -4168,7 +4168,7 @@
           "edit": "Edit link",
           "done": "Done",
           "follows": "Follows the title until you edit it.",
-          "liveWarning": "Old links to this page stop working when you change it."
+          "liveWarning": "Old links keep working: visitors who use one are sent to the new address."
         },
         "money": {
           "vat": "VAT included"

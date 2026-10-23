@@ -99,6 +99,7 @@ footer's calm. The work surface stays light (mist-50 page, white panels).
 | | Gallery | `/content/galleryAlbums` | — | admin, content-editor |
 | | Team | `/content/team` | — | admin, content-editor |
 | | Media library (Site images tab replaces Media slots) | `/media` | — | admin, content-editor, shop-manager, travel-sales |
+| | Trash (deleted records of the lists this person edits, 30 days; R4) | `/trash` | — | admin, content-editor, shop-manager, travel-sales, visa-officer (Delete forever: Super Admin) |
 | **Settings** (sidebar footer) | One door: `/settings` index of plain sections now (R1), one page with a left sub-navigation in R9 (section 5.6) | `/settings` | setup steps left (R9) | admin, accounts (payments), shop-manager (delivery); Users, Integrations, Advanced: Super Admin |
 
 The sidebar footer holds the account (name, role in plain words, My account, Sign out) and "View site". Content routes
@@ -392,6 +393,45 @@ if placed, confirmed) or **Rejected** (reason required; the customer is notified
 - Feedback: To review → Approved or Rejected (moderation buttons; only approved feedback with consent is public).
 - Users: Invited → Active on first sign-in; Deactivated through an action; Locked while sign-in is locked.
 
+### 8.7 What R4 shipped
+- **Rules in one place**: `packages/shared/src/workflow/` (content, leads, orders, derived) with Vitest; no zod there,
+  so the admin's client code uses the same rules (D202). The API enforces them; each step is audited and written on the
+  record's timeline.
+- **Content** (D216): the editor sends its button (`action`), never a status. Draft: Save draft · Schedule… ·
+  Publish (Publish waits for the checklist). Scheduled: Save · Publish now, and in the side panel the date, Change time
+  and Cancel schedule. Live: Update, Unpublish, Archive; Archived: Restore to drafts. The chip names its date ("Goes
+  live on 24 Oct 2026, 10:00 am.", "Live on the site since 12 Oct 2026, 9:05 am."). A plain save keeps the status; History's
+  restore brings back words and photos, never a status. A record going live dates itself that day (`publishedAt` on
+  blog posts and packages). The minute job publishes scheduled records at their minute and refreshes the site when a
+  banner, announcement, deal or group fare starts or ends (D215).
+- **Sample**: the first staff save of a Sample record makes it the team's own; the toast says so with Undo. New records
+  and copies are never Sample.
+- **Trash** (D217): Delete is "Move to Trash" everywhere, with Undo on the toast; Website › Trash lists the deleted
+  records of the lists this person edits with "Deleted 2 days ago by Rafi · 28 days left", Restore (back as it was, at
+  the end of its list), and Delete forever for the Super Admin. The minute job purges after 30 days.
+- **Links** (D218): changing a live record's link leaves a permanent redirect from the old address; the slug field says
+  "Old links keep working". Chains are flattened; a new record at an old address wins.
+- **Leads** (D220): the lead page opens with Next step: Reply on WhatsApp, Call and Email log the contact as they open
+  it (a new lead moves to In progress), then the steps of its status (Log quote, Ask for documents or payment, Customer
+  replied, Convert to booking with the amount, Close lead with outcome and reason, Mark as spam, Reopen with a reason).
+  Assignee and priority stay as pickers (they are not statuses). The board's cards take the next step in one press;
+  bulk is Assign or Mark as spam. Overdue shows on the lead with the reply target, and the desk gets one email.
+- **Visa applications** (D225): a visa lead shows its country's checklist with a progress ring ("3 of 8"); every
+  document received makes it Ready to submit, then the submission (date and reference), the outcome and the passport
+  going back.
+- **Orders** (D221): Next step shows only what comes next: Confirmed on call (cash on delivery) or Confirm order (proof
+  verified), Start packing, Mark shipped (courier and tracking number), Mark delivered (cash on delivery: cash
+  received), Cancel order and Mark returned (a reason; stock goes back). A note never moves the order.
+- **Payment proofs** (D222): a proof whose reference names an order and whose amount covers it is Matched by itself;
+  the queue shows the order it matches (or how much is short) with Open order; Verify confirms a placed order; Reject
+  asks what's wrong and emails the customer. A decided proof stays decided.
+- **Derived chips** in every content list: content status with dates, banners and announcements (Scheduled, Live, Ended,
+  Off), deals, coupons (Scheduled, Active, Used up at the use limit, Expired), group fares (Open, Few seats, Sold out,
+  Expired; seats drop when a lead on the fare is booked), products (stock across variants), shown or hidden; staff
+  (Invited until the first sign-in, Active, Locked, Deactivated).
+- **Later**: draft preview with Next.js draft mode comes with R7 (D219); the drag board with R6; DataTable columns for
+  the chips with R5.
+
 ---
 
 ## 9. Safety nets (R2, R4)
@@ -544,6 +584,10 @@ grouping. Phone numbers: "+880 1712-345678".
 | ImageCrop + FocalPoint | `ImageCropDialog` on `@origin-space/image-cropper` 0.1.9, the headless package behind 21st.dev `originui/image-crop` (fixed-aspect zoom and pan; compared with `haydenbleasel/image-crop`, `ruixen.ui/image-cropper`, `shadcnspace/file-upload-05`), styled in-house (D207); `FocalPointPicker` in-house (tap, drag or arrow keys, three crop previews) | MediaField, media library |
 | Resizable inbox panes | shadcn **resizable** | inbox (desktop) |
 | Toasts with Undo | shadcn **sonner** | everywhere |
+| Next step cards (R4) | in-house `LeadActions`, `OrderSteps`, `ProofDecision` on shadcn **dialog**, **radio-group**, **textarea**, **input-group** (`TakaInput`) | lead, order and proof screens |
+| ScheduleDialog (R4) | shadcn **dialog** + **calendar** (lazy) + **select** (15-minute times, Asia/Dhaka) | editors with drafts |
+| VisaProgressPanel + ProgressRing (R4) | shadcn **checkbox** with optimistic ticks; the ring is an SVG arc (stroke only, none under reduced motion) | visa leads |
+| Trash (R4) | shadcn **alert-dialog** for Delete forever; Restore on one press | `/trash` |
 
 Admin-only libraries (`@tanstack/react-table`, `@dnd-kit/*`, `react-dropzone`, tiptap, Recharts, the cropper) load
 with dynamic import inside admin routes and never reach public bundles (budget e2e unchanged).
