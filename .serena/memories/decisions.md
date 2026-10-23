@@ -94,3 +94,5 @@
 - D213 (#213) security patches ship on their own PR before feature work: Next 16.4.2 (two critical RCE in 16.4.0;
   a vulnerable Next build now stops), sanitize-html 2.18.1, fastify 5.12.7 + pnpm override (pnpm-workspace.yaml) for
   the copy @nestjs/platform-fastify pins; drop the override when Nest ships the patch.
+
+- D215–D226 (R4, 23 Oct): minute job in the API process with an advisory lock (SCHEDULER_INTERVAL_MS); API alone writes status/publishAt/liveSince from the editor button, restore keeps status; Trash = TrashItem table (30 days, Super Admin purge); SlugRedirect for ROUTED_KEYS, record pages call followMovedRecord before 404 (streamed redirect, static shell); draft preview waits for R7; contact buttons log the contact; Confirmed on call only for COD, proofs confirm prepaid; proofs auto-match, decided stays decided; coupon maxUses; booked group-fare lead takes seats; visa progress on Lead.progress; one overdue alert per lead.
