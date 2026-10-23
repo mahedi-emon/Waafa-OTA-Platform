@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { publicPathOf } from "@/lib/admin/blueprints/display";
 import { resolve, type JsonSchema, type Path } from "@/lib/admin/schema";
 import { FieldShell } from "./FieldShell";
-import { ImageField } from "./ImageField";
+import { LazyMediaField } from "./LazyMediaField";
 import { SwitchField } from "./SwitchField";
 import { useField } from "./useField";
 import { useSchemaEditor } from "./useSchemaEditor";
@@ -118,7 +118,7 @@ function SeoField({ path, node, value }: SeoFieldProps) {
       </FieldShell>
 
       {node.properties?.image ? (
-        <ImageField
+        <LazyMediaField
           path={[...path, "image"]}
           node={child("image")}
           value={seo.image}

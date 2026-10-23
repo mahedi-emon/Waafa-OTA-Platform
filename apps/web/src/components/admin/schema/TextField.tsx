@@ -13,13 +13,23 @@ type TextFieldProps = {
   optional: boolean;
   nullable: boolean;
   multiline?: boolean;
+  /** Another note that describes the box (a photo field's missing-description warning). */
+  describedBy?: string;
 };
 
 /** Counters help where a limit is short enough to matter (titles, summaries), not on long bodies. */
 const COUNTER_LIMIT = 600;
 
 /** One line or several lines of text, with a character counter when the field has a limit. */
-function TextField({ path, node, value, optional, nullable, multiline = false }: TextFieldProps) {
+function TextField({
+  path,
+  node,
+  value,
+  optional,
+  nullable,
+  multiline = false,
+  describedBy,
+}: TextFieldProps) {
   const meta = useField(path);
   const text =
     typeof value === "string" ? value : value === undefined || value === null ? "" : String(value);
@@ -32,7 +42,7 @@ function TextField({ path, node, value, optional, nullable, multiline = false }:
   const shared = {
     id: meta.id,
     value: text,
-    "aria-describedby": meta.describedBy,
+    "aria-describedby": [meta.describedBy, describedBy].filter(Boolean).join(" ") || undefined,
     "aria-invalid": meta.error ? true : undefined,
     onBlur: meta.touch,
   } as const;

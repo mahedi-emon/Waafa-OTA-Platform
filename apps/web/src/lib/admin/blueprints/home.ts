@@ -1,4 +1,4 @@
-import { icon, keep, lines, listOrder, money, photoAt, recordId, textarea } from "./common";
+import { FRAME, icon, keep, lines, listOrder, money, photoAt, recordId, textarea } from "./common";
 import type { Blueprint } from "./types";
 
 /* Home: the page's words, its sections, trust items, values, timeline, destinations and banners. */
@@ -68,7 +68,7 @@ export const destinationsBlueprint = {
     slug: { widget: "slug", source: "name" },
     iata: { widget: "reference", ref: { key: "airports", value: "iata" } },
     tags: { widget: "choices", choices: "destinationTag" },
-    ...photoAt("image"),
+    ...photoAt("image", FRAME.portrait),
     fromPrice: money,
     order: listOrder,
     sample: keep,
@@ -88,7 +88,7 @@ export const bannersBlueprint = {
     id: recordId,
     placement: { choices: "placement" },
     body: textarea,
-    ...photoAt("image"),
+    ...photoAt("image", FRAME.card),
     link: { wide: true },
     order: listOrder,
     sample: keep,

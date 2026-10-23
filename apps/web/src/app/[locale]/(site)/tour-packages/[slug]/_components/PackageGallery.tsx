@@ -58,6 +58,7 @@ function PackageGallery({ images, title, labels }: PackageGalleryProps) {
           >
             <SmartImage
               src={image.src}
+              focal={image.focal}
               alt={image.alt}
               fill
               sizes={index === 0 ? "(min-width: 768px) 50vw, 100vw" : "25vw"}

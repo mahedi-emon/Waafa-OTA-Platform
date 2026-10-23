@@ -57,6 +57,7 @@ export default async function VisaGuidePage() {
         <article className="group relative grid grid-cols-1 overflow-hidden rounded-[24px] border border-mist-200 bg-white md:grid-cols-2">
           <SmartImage
             src={featured.cover.src}
+            focal={featured.cover.focal}
             alt={featured.cover.alt}
             ratio="16/10"
             sizes="(min-width: 768px) 50vw, 100vw"
@@ -106,6 +107,7 @@ export default async function VisaGuidePage() {
                 <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white">
                   <SmartImage
                     src={guide.cover.src}
+                    focal={guide.cover.focal}
                     alt={guide.cover.alt}
                     ratio="16/9"
                     sizes="(min-width: 1024px) 400px, (min-width: 640px) 45vw, 100vw"

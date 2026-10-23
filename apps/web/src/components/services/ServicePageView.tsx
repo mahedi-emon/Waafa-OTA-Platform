@@ -116,6 +116,7 @@ async function ServicePageView({ page, path, form }: ServicePageViewProps) {
                   ...(header.video.webmMobile ? { webmMobile: header.video.webmMobile } : {}),
                 }}
                 poster={header.video.poster.src}
+                focal={header.video.poster.focal}
                 alt={header.video.poster.alt}
                 sizes="(min-width: 1024px) 560px, 100vw"
                 preloadPoster
@@ -124,6 +125,7 @@ async function ServicePageView({ page, path, form }: ServicePageViewProps) {
             ) : headerImage ? (
               <SmartImage
                 src={headerImage.src}
+                focal={headerImage.focal}
                 alt={headerImage.alt}
                 ratio="4/3"
                 sizes="(min-width: 1024px) 560px, 100vw"
@@ -206,6 +208,7 @@ async function ServicePageView({ page, path, form }: ServicePageViewProps) {
           <div className="hidden overflow-hidden rounded-3xl lg:block">
             <SmartImage
               src={sideImage.src}
+              focal={sideImage.focal}
               alt={sideImage.alt}
               ratio="3/4"
               sizes="360px"

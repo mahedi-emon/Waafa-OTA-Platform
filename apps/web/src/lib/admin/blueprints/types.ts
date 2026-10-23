@@ -35,6 +35,8 @@ export type WidgetKind =
   | "timeOfDay"
   | "weekdays"
   | "image"
+  | "gallery"
+  | "video"
   | "seo"
   | "map"
   | "variant"
@@ -86,6 +88,14 @@ export type ReferenceSpec = {
   distinct?: string;
 };
 
+/** Where a photo shows on the site (D0 R3): the frame staff see while editing and the narrowest photo that stays sharp. */
+export type PhotoFrame = {
+  /** Width:height of the main place it shows ("16:9"); "free" keeps the photo's own shape (logos, album photos). */
+  aspect: `${number}:${number}` | "free";
+  /** Narrower photos get a warning: they would look soft there. */
+  minWidth: number;
+};
+
 export type FieldSpec = {
   widget?: WidgetKind;
   auto?: AutoRule;
@@ -108,6 +118,8 @@ export type FieldSpec = {
   from?: { list: string; value: string; label: string };
   /** Variant: the sibling field holding the product whose variants are offered. */
   variantOf?: string;
+  /** Photo, gallery: the frame it shows in on the site. */
+  frame?: PhotoFrame;
 };
 
 export type SectionSpec = {
@@ -151,6 +163,7 @@ export type ResolvedField = {
   order?: string[];
   from?: { list: string; value: string; label: string };
   variantOf?: string;
+  frame?: PhotoFrame;
 };
 
 export type ResolvedSection = {

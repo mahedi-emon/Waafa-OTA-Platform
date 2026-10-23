@@ -111,6 +111,22 @@ server {
         proxy_read_timeout 60s;
     }
 
+    # Admin video uploads (MP4 or WebM up to 50 MB, D0 R3): the only route with this limit.
+    location = /secure-admin-control/media/upload-video {
+        client_max_body_size 51m;
+        limit_req zone=waafa_posts burst=5 nodelay;
+        proxy_pass http://waafa_web;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_request_buffering on;
+        proxy_read_timeout 180s;
+        proxy_send_timeout 180s;
+    }
+
     # Build files are content-hashed: cache them for a month (issue 126).
     location /_next/static/ {
         proxy_pass http://waafa_web;

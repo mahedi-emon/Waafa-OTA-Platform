@@ -27,6 +27,8 @@ import {
   LeadListQuerySchema,
   LeadNoteInputSchema,
   LeadUpdateInputSchema,
+  MediaIdSchema,
+  MediaReplaceInputSchema,
   OrderListQuerySchema,
   OrderUpdateInputSchema,
   PagingQuerySchema,
@@ -45,6 +47,7 @@ import { AdminContentService } from "./content-admin.service";
 import { AdminDashboardService } from "./dashboard.service";
 import { AdminInboxService } from "./inbox.service";
 import { AdminLeadsService } from "./leads.service";
+import { MediaReplaceService } from "./media-replace.service";
 import { AdminOrdersService } from "./orders.service";
 import { AdminUsersService } from "./users.service";
 import { AdminWorkbenchService } from "./workbench.service";
@@ -425,5 +428,20 @@ export class AdminWorkbenchController {
   @Get("search")
   search(@Staff() staff: StaffPrincipal, @Query() query: unknown) {
     return this.workbench.search(staff, parseInput(AdminSearchQuerySchema, query).q);
+  }
+}
+
+/** Admin › Media library: show another file wherever one is shown (D0 R3, ADMIN.md §5.7). */
+@Controller("admin/media")
+@UseGuards(StaffGuard)
+@Roles("admin", "content-editor", "shop-manager", "travel-sales")
+export class AdminMediaReplaceController {
+  constructor(@Inject(MediaReplaceService) private readonly replacer: MediaReplaceService) {}
+
+  @Post(":id/replace")
+  @HttpCode(200)
+  replace(@Staff() staff: StaffPrincipal, @Param("id") id: string, @Body() body: unknown) {
+    if (!MediaIdSchema.safeParse(id).success) throw problems.notFound();
+    return this.replacer.replace(staff, id, parseInput(MediaReplaceInputSchema, body).with);
   }
 }

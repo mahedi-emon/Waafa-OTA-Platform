@@ -134,6 +134,7 @@ async function BlogPostContent({ params }: Pick<PageProps<"/[locale]/blog/[slug]
       <figure className="flex flex-col gap-2">
         <SmartImage
           src={post.cover.src}
+          focal={post.cover.focal}
           alt={post.cover.alt}
           ratio="21/9"
           sizes="(min-width: 1280px) 1200px, 100vw"

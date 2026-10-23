@@ -14,6 +14,7 @@ import {
 } from "@dnd-kit/core";
 import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -24,7 +25,14 @@ import type { SortableListProps } from "./SortableList";
 import { SortableRow } from "./SortableRow";
 
 /** The dnd-kit half of SortableList: pointer, touch and keyboard dragging with spoken positions. */
-function SortableDnd({ keys, onMove, nameOf, className, renderItem }: SortableListProps) {
+function SortableDnd({
+  keys,
+  onMove,
+  nameOf,
+  className,
+  renderItem,
+  layout = "list",
+}: SortableListProps) {
   const t = useTranslations("Admin.editor.widgets");
   const id = useId();
   const reduce = usePrefersReducedMotion();
@@ -58,11 +66,18 @@ function SortableDnd({ keys, onMove, nameOf, className, renderItem }: SortableLi
       id={id}
       sensors={sensors}
       collisionDetection={closestCenter}
-      modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+      modifiers={
+        layout === "grid"
+          ? [restrictToParentElement]
+          : [restrictToVerticalAxis, restrictToParentElement]
+      }
       accessibility={{ announcements }}
       onDragEnd={onDragEnd}
     >
-      <SortableContext items={keys} strategy={verticalListSortingStrategy}>
+      <SortableContext
+        items={keys}
+        strategy={layout === "grid" ? rectSortingStrategy : verticalListSortingStrategy}
+      >
         <ol className={className}>
           {keys.map((key, index) => (
             <SortableRow key={key} id={key} label={nameOf(index)} reduce={reduce}>

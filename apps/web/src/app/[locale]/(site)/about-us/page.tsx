@@ -152,6 +152,7 @@ export default async function AboutPage() {
             {officeImage ? (
               <SmartImage
                 src={officeImage.src}
+                focal={officeImage.focal}
                 alt={officeImage.alt}
                 ratio="4/3"
                 sizes="(min-width: 1024px) 560px, 100vw"

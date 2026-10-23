@@ -2,10 +2,20 @@ import { Module } from "@nestjs/common";
 import { AdminMediaController, PublicMediaController } from "./media.controller";
 import { MediaService } from "./media.service";
 
-/** Media library (#109): uploads, alt text, deletes, and the public file route behind /uploads/. */
+/**
+ * The media service alone, without routes, so the admin's Replace everywhere (D0 R3) can use it too without
+ * registering the library's routes twice.
+ */
 @Module({
-  controllers: [AdminMediaController, PublicMediaController],
   providers: [MediaService],
   exports: [MediaService],
+})
+export class MediaCoreModule {}
+
+/** Media library (#109, D0 R3): uploads, crops, videos, words, uses, deletes, and the public file route behind /uploads/. */
+@Module({
+  imports: [MediaCoreModule],
+  controllers: [AdminMediaController, PublicMediaController],
+  exports: [MediaCoreModule],
 })
 export class MediaModule {}

@@ -81,3 +81,16 @@
   D203 picker options open to all staff only for shared PICKER_KEYS (12 lists); others need edit access. D204 canCopy:
   fixed/code lists can't be copied (API 409 noCopy, no button); product copies get new variant ids + SKUs; slug-keyed
   lists keep data.id unique (API 409 exists); priceCart/placeOrder read published products only.
+- D205 CodeQL runs on every PR/push again (replaces D192): private repo keeps SARIF (upload never), scripts/
+  codeql-findings.mjs fails on error/warning. D206 codeql-config paths-ignore for two dev download scripts.
+- D207 (#193) dropzone (react-dropzone 20.1.2, uvain/file-upload pattern) and cropper (@origin-space/image-cropper
+  0.1.9, originui/image-crop pattern) built in-house; uvain/file-upload is a paid marketplace item. D208 photo frames
+  per field (FRAME in blueprints/common.ts; test fails a photo without one). D209 focal point stored on ImageSchema →
+  object-position in SmartImage/SmartVideo. D210 crop = new library photo; Replace everywhere via normal saves, takes
+  the new file's alt/credit, drops focal, keeps video format; delete only when unused. D211 videos MP4/WebM ≤50 MB on
+  their own route (nginx 51m), stored as-is, byte ranges, poster from the clip at 1 s; uploads live OUTSIDE the Next
+  proxy (it keeps only 10 MB of a body) at app/secure-admin-control/media/upload*, 401 not redirect. D212 words
+  fieldNames.<owner>_<name> before fieldNames.<name> (video_credit).
+- D213 (#213) security patches ship on their own PR before feature work: Next 16.4.2 (two critical RCE in 16.4.0;
+  a vulnerable Next build now stops), sanitize-html 2.18.1, fastify 5.12.7 + pnpm override (pnpm-workspace.yaml) for
+  the copy @nestjs/platform-fastify pins; drop the override when Nest ships the patch.

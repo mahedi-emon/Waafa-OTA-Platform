@@ -62,6 +62,7 @@ async function CtaSection({ cta }: CtaSectionProps) {
             {office?.image ? (
               <SmartImage
                 src={office.image.src}
+                focal={office.image.focal}
                 alt={office.image.alt}
                 ratio="16/9"
                 sizes="(min-width: 1024px) 40vw, 90vw"

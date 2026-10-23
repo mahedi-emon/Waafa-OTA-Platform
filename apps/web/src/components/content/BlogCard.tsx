@@ -20,6 +20,7 @@ function BlogCard({
     <article className="group relative flex h-full flex-col gap-3">
       <SmartImage
         src={post.cover.src}
+        focal={post.cover.focal}
         alt={post.cover.alt}
         ratio="16/10"
         sizes={sizes}

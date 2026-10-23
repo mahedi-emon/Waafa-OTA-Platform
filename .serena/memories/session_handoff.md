@@ -1,34 +1,37 @@
 # Session handoff (update at every session end)
-Updated 2026-10-20 Dhaka.
+Updated 2026-10-23 15:30 Dhaka.
 STATE: site LIVE on https://waafasworld.com (owner deploys `sh deploy.sh` after the Docker images workflow is green;
-never touch the VPS or its .env). Repo is PRIVATE now: Actions minutes limited, keep path filters, no needless reruns.
-CURRENT EPIC: D0 Admin redesign #201 (see `mem:admin_redesign`). R0 #190 and R1 #191 merged; CodeQL skip while
-private merged (#204/#206). R2 #192 (also closes #205 list order) on branch feat/192-form-engine: code done and
-reviewed in the browser at 1440; commits up to ea629dc (remount fix: useEditorState syncs to a new version instead of
-`key={version}` remounts). TRACKER R2 block written (Tests and First-load JS rows still TBD).
-RESUME R2 HERE: (1) rebuild web, rerun `e2e/admin-editor.spec.ts` (7 tests) + admin-shell + admin-screens;
-(2) 390 / 768 screenshots of the editor, rail line-clamp-2 instead of truncate; (3) full suites + lint/typecheck/
-guards, admin first-load JS (scratchpad measure-admin-js.mjs); (4) fill TRACKER tests/JS rows, session log, next
-steps; (5) push, PR "Closes #192, Closes #205", owner COMMENT review (D159), green CI, squash-merge, close-outs (no
-migration). THEN R3 #193 media + owner checkpoint (Banglish summary, screenshots, "test this yourself").
-LOCAL DEV STACK (this Windows machine, ~1 GB free RAM):
-- PostgreSQL: docker container `waafa-dev-pg` (postgres:16, port 5433, waafa/waafa, db waafa_dev; tests use db
-  waafa_test via API_TEST_DATABASE_URL=postgresql://waafa:waafa@localhost:5433/waafa_test), restart unless-stopped.
-  Do NOT touch the owner's local test stack containers (waafa-api-1, …).
-- Env (CI-style test values, nothing secret): DATABASE_URL=postgresql://waafa:waafa@localhost:5433/waafa_dev,
-  JWT_SECRET=dev-jwt-secret-0123456789-0123456789-abcdef, REVALIDATE_SECRET=dev-revalidate-secret-0123456789-abc,
-  INTAKE_KEY=WAAFA_INTAKE_KEY=dev-intake-key-0123456789-abcdef, WEB_ORIGINS=http://localhost:3100,
-  WEB_REVALIDATE_URL=http://localhost:3100/api/revalidate, SEED_ADMIN_EMAIL=owner@example.com,
-  SEED_ADMIN_PASSWORD=dev-owner-password-123, PROVIDER_SECRET_KEY=dev-provider-secret-key-0123456789-abcdef,
-  WAAFA_API_URL=http://localhost:4000, NEXT_PUBLIC_SITE_URL=http://localhost:3100, MEDIA_DIR=H:/Waafa-OTA-Platform/.media.
-- API: `pnpm --filter @waafa/api migrate && seed && start` (port 4000). Web: `next build` (7–15 min here) then
-  `next start -p 3100`; never edit apps/web or packages/shared while a build runs (its type check reads them).
-  next dev reloads in a loop on H: and is very slow. Stop servers by port (Get-NetTCPConnection → Stop-Process).
-- Sample inbox data in waafa_dev (≈16 leads, 5 orders, 4 proofs, 3 feedback). Screenshots in test-results/admin-audit/
-  (before/ = R0, r1/ = R1, r2/ = R2; gitignored). e2e locally: export the env + SEED_ADMIN_PASSWORD, `pnpm exec
-  playwright test e2e/admin-editor.spec.ts --workers=1` (reuses the running server).
-OWNER TODO (unchanged): Search Console requests, Google Business Profile, Bing, Facebook link, replace Sample records.
-Gotchas: auto-mode classifier blocks creating staff users in other databases, broad rm and `git config` reads; Bash
-heredocs/backticks in `node -e` break (use Write or Serena replace_content); gh needs PATH += /c/Program Files/GitHub
-CLI; 21st.dev free tier = 2 component retrievals per day (resets 00:00 UTC); guards read "#205" in apps/web/src as a
-hex colour (write "issue 205"); CRLF stat-dirty files block switch/rebase (refresh with `git add <file>`).
+never touch the VPS or its .env). Repo PRIVATE: Actions minutes limited, keep path filters, no needless reruns, but
+NEVER cancel or skip CI (owner, 20 Oct): every push's CI runs to green; verify locally first.
+URGENT FIRST: #213 security (Next 16.4.0 had two critical unauthenticated RCE advisories; a 16.4.0 build now STOPS
+with SecurityFatalError, so every CI build needs 16.4.2). Branch fix/213-security-deps, PR #214 (next +
+eslint-config-next 16.4.2, sanitize-html 2.18.1, fastify 5.12.7 + pnpm override in pnpm-workspace.yaml for the copy
+@nestjs/platform-fastify 12.1.2 pins). Local: audit critical 0, unit all, fixture build, smoke 132/56 skipped. When CI
+is green: squash-merge, check the merge author, wait for Docker images green, tell the owner to `sh deploy.sh` (no
+migration). Close #213 with a comment, Project status Done.
+THEN R3 #193 (branch feat/193-media, pushed at d879cad; commits 08a4721 API, 4524de1 web, e77ca47 review fixes,
+d879cad e2e/docs): merge origin/main into it (merge commit, NO force push; resolve TRACKER, package.json, lockfile;
+pnpm install), insert the R3 TRACKER block from scratchpad tracker-r3-block.md ({SMOKE} = smoke result) at the top of
+the issue log, components inventory/decisions D207–D212 are already in the branch's TRACKER, commit the .serena
+memory edits, push, open the PR with scratchpad pr-193.md ({TESTS} filled), CI green, merge. Close-out MUST say the
+migration `20261020050000_media_credit` → owner runs `sh backup.sh` before `sh deploy.sh`. Then the owner checkpoint
+(Banglish summary + screenshot paths test-results/admin-audit/r3/final-*.png + "test this yourself").
+R3 verified locally: API-job e2e 30/30 on a fresh DB (CI order) and media spec 7/7 on a used DB; web unit 617, API 163.
+Unverified visually: FocalPointPicker previews now h-20 row (d879cad) — check on the next API-mode build.
+NEXT AFTER R3: R4 #194 status automation (ADMIN.md §8, §9).
+LOCAL DEV STACK (this Windows machine, ~0.7–1 GB free RAM; the owner's Docker stack also runs, don't touch it):
+- Docker Desktop must be running (start it if the machine rebooted). PostgreSQL container `waafa-dev-pg` (mine; port
+  5433, waafa/waafa). DBs: waafa_dev, waafa_test (API tests: API_TEST_DATABASE_URL=postgresql://waafa:waafa@localhost:5433/waafa_test),
+  waafa_ci (recreate: docker exec waafa-dev-pg psql -U waafa -d postgres -c "DROP DATABASE IF EXISTS waafa_ci WITH (FORCE);" -c "CREATE DATABASE waafa_ci;", then migrate + seed), waafa_ci2.
+- Env: scratchpad dev-env.sh (CI-style values, SEED_ADMIN_PASSWORD dev-owner-password-123). API: `pnpm --filter @waafa/api start`
+  on 4000 with DATABASE_URL and MEDIA_DIR in the scratchpad (not inside the repo). Web: `pnpm build` (API-mode needs the
+  API running; fixture mode: STYLEGUIDE=1 without WAAFA_* envs), then Playwright starts `next start` itself.
+- e2e: Playwright runs spec files in name order; e2e create their own data; clicks/typing right after goto need
+  hydration-safe retries (until(), counters). Measure admin JS with scratchpad measure-admin-js.mjs (MSYS_NO_PATHCONV=1
+  and a Windows script path).
+Gotchas: after switching branches run `pnpm --filter @waafa/api generate` (the generated Prisma client is gitignored and
+can be from the other branch's schema: "Unknown argument credit"); Git Bash converts leading-slash args (MSYS_NO_PATHCONV=1); write node scripts with Write (shell quoting
+breaks backticks/regex); pnpm auto-installs when switching to a branch with another lockfile; gh needs
+PATH += /c/Program Files/GitHub CLI; 21st.dev free tier: 2 retrievals/day, a refused install still uses one, and
+uvain/file-upload is a paid marketplace item; guards read "#205" in apps/web/src as hex; Next's proxy keeps only 10 MB
+of a body (uploads live outside it).

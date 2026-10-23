@@ -15,7 +15,9 @@ import { ColourField } from "./ColourField";
 import { DateField } from "./DateField";
 import { DateTimeField } from "./DateTimeField";
 import { IconField } from "./IconField";
-import { ImageField } from "./ImageField";
+import { LazyGalleryField } from "./LazyGalleryField";
+import { LazyMediaField } from "./LazyMediaField";
+import { LazyVideoField } from "./LazyVideoField";
 import { LinesField } from "./LinesField";
 import { MapField } from "./MapField";
 import { MoneyField } from "./MoneyField";
@@ -91,6 +93,8 @@ function SchemaField({ schema, path, value, optional, bare = false }: SchemaFiel
     union &&
     !(single && VALUE_WIDGETS.has(widget)) &&
     widget !== "image" &&
+    widget !== "video" &&
+    widget !== "gallery" &&
     widget !== "repeater"
   ) {
     return <UnionField options={union.options} nullable={union.nullable} {...common} />;
@@ -161,7 +165,17 @@ function SchemaField({ schema, path, value, optional, bare = false }: SchemaFiel
       return <WeekdaysField path={path} value={value} />;
     case "image":
       return (
-        <ImageField
+        <LazyMediaField
+          {...common}
+          node={single ? resolve(single, editor.root) : node}
+          nullable={nullable}
+        />
+      );
+    case "gallery":
+      return <LazyGalleryField {...common} node={single ? resolve(single, editor.root) : node} />;
+    case "video":
+      return (
+        <LazyVideoField
           {...common}
           node={single ? resolve(single, editor.root) : node}
           nullable={nullable}

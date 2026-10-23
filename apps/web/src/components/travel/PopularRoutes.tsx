@@ -36,6 +36,7 @@ async function PopularRoutes() {
               <article className="group relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-xs transition-shadow duration-200 hover:shadow-md">
                 <SmartImage
                   src={route.image.src}
+                  focal={route.image.focal}
                   alt={route.image.alt}
                   ratio="16/9"
                   sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 92vw"

@@ -1,4 +1,5 @@
 import Image, { type ImageProps } from "next/image";
+import { objectPositionOf, type FocalPoint } from "@waafa/shared/helpers/media";
 import { cn } from "cn";
 import { PHOTO_QUALITY } from "@/lib/media/imageQuality";
 
@@ -14,6 +15,8 @@ type SmartImageProps = Omit<ImageProps, "alt" | "placeholder"> & {
   zoomOnHover?: boolean;
   /** Classes for the frame (only with `ratio`). */
   frameClassName?: string;
+  /** The part staff keep in view wherever the photo is cropped to fit (admin focal point, D0 R3). */
+  focal?: FocalPoint | undefined;
 };
 
 /**
@@ -32,12 +35,17 @@ function SmartImage({
   preload,
   fetchPriority,
   quality = PHOTO_QUALITY,
+  focal,
+  style,
   ...props
 }: SmartImageProps) {
   const priority = {
     ...(preload ? { preload } : {}),
     ...(fetchPriority || preload ? { fetchPriority: fetchPriority ?? "high" } : {}),
   };
+  // A dynamic value from the data layer, so it is the one inline style here.
+  const position = objectPositionOf(focal);
+  const placed = position ? { ...style, objectPosition: position } : style;
   const hasBlur = typeof src === "object" && "blurDataURL" in src && Boolean(src.blurDataURL);
   const zoom =
     zoomOnHover &&
@@ -51,6 +59,7 @@ function SmartImage({
         sizes={sizes}
         quality={quality}
         placeholder={hasBlur ? "blur" : "empty"}
+        style={placed}
         className={cn(zoom, className)}
         {...priority}
         {...props}
@@ -70,6 +79,7 @@ function SmartImage({
         sizes={sizes ?? "100vw"}
         quality={quality}
         placeholder={hasBlur ? "blur" : "empty"}
+        style={placed}
         className={cn("object-cover", zoom, className)}
         {...priority}
         {...props}

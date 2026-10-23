@@ -1,4 +1,11 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-23 Dhaka — Security #213: Next 16.4.0 had two critical RCE advisories (a vulnerable Next build now stops):
+  Next 16.4.2, sanitize-html 2.18.1, fastify 5.12.7 + override; PR #214 merged (541bd21), CI 7/7; owner deploys after
+  Docker images (no migration). R3 #193 media done on feat/193-media (merged main in, cde1864): API e2e 30/30 fresh DB,
+  web unit 617, API 163; PR next (migration media_credit → owner `sh backup.sh` first). Next: R4 #194.
+- 2026-10-20 04:40 Dhaka — R2 merged (PR #207, 69d57f9; Docker images green) after an independent review (4 P1 fixed)
+  and CI fixes (e2e create their own data). #208 CodeQL runs on the private repo (PR #209); #210 leaves two dev download
+  scripts out of it (PR #211). Next: R3 #193 media.
 - 2026-10-20 01:30 Dhaka — R2 #192 form engine v2 (+ #205 list order): blueprints for all 50 keys, sectioned editor,
   side panel, action bar, History/restore, drafts, leave guard, conflict + session dialogs, API history/restore/
   duplicate/options, lead facts. Tests: shared 90, web 555, API 152, admin e2e 15/15; editors 303 KB gzip (D202).

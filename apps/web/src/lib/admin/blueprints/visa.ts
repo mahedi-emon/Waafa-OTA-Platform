@@ -1,4 +1,5 @@
 import {
+  FRAME,
   faqList,
   lines,
   money,
@@ -28,7 +29,7 @@ export const visaCountriesBlueprint = {
     slug: { widget: "slug", prefix: "/visa/", source: "name" },
     region: { choices: "region" },
     submission: { choices: "submission" },
-    ...photoAt("cover"),
+    ...photoAt("cover", FRAME.wide),
     types: { widget: "repeater", summary: "type", wide: true },
     types_type: { choices: "visaType" },
     types_checklist: { widget: "repeater", summary: "title", wide: true },
@@ -62,7 +63,7 @@ export const visaGuidesBlueprint = {
     slug: { widget: "slug", prefix: "/visa-guide/" },
     countrySlug: { widget: "reference", ref: { key: "visaCountries", value: "slug" } },
     summary: textarea,
-    ...photoAt("cover"),
+    ...photoAt("cover", FRAME.wide),
     ...sectionsList,
     tips: lines,
     updatedAt: { auto: "todayOnSave" },

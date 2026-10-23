@@ -116,6 +116,7 @@ async function VisaGuidePostPageContent({
 
       <SmartImage
         src={guide.cover.src}
+        focal={guide.cover.focal}
         alt={guide.cover.alt}
         ratio="21/9"
         sizes="(min-width: 1280px) 1200px, 100vw"

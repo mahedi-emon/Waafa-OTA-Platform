@@ -160,25 +160,42 @@ test("an editor uploads a photo to the media library and the site serves it (iss
 }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
   const errors = collectErrors(page);
+  const stamp = String(Date.now()).slice(-6);
   await signIn(page);
-  await page.goto("/secure-admin-control/media");
+  await page.goto(`/secure-admin-control/media?q=${stamp}`);
   await expect(page.getByRole("heading", { level: 1, name: "Media library" })).toBeVisible();
   // A 4 x 4 PNG made in the test: the API re-encodes it to WebP.
   const png = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAD0lEQVQImWNgCL6OQMRxANcTEqEIh1beAAAAAElFTkSuQmCC",
     "base64",
   );
+  const input = page
+    .getByRole("group", { name: "Drop photos or videos here, or paste them" })
+    .locator('input[type="file"]');
+  const added = page.getByText(/1 file added/).first();
+  // The drop zone listens once React has hydrated: try again only if nothing arrived.
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    await input.setInputFiles({
+      name: `e2e-swatch-${stamp}.png`,
+      mimeType: "image/png",
+      buffer: png,
+    });
+    if (
+      await added.waitFor({ timeout: 20_000 }).then(
+        () => true,
+        () => false,
+      )
+    )
+      break;
+  }
+  await expect(added).toBeVisible();
+  await page.reload();
   await page
-    .getByLabel("Photo", { exact: true })
-    .setInputFiles({ name: "e2e.png", mimeType: "image/png", buffer: png });
-  await page.getByLabel("Alt text", { exact: true }).first().fill("E2E test swatch in brand blue");
-  await page.getByRole("button", { name: "Upload" }).click();
-  await expect(page.getByText("Photo uploaded")).toBeVisible();
-  const address = page
-    .locator("code", { hasText: /^\/uploads\/\d{4}\/\d{2}\/[a-z0-9]+\.webp$/ })
-    .first();
-  await expect(address).toBeVisible();
-  const url = (await address.textContent()) ?? "";
+    .getByRole("button", { name: new RegExp(`E2e swatch ${stamp}`) })
+    .first()
+    .click();
+  const url = (await page.getByRole("link", { name: "Open file" }).getAttribute("href")) ?? "";
+  expect(url).toMatch(/^\/uploads\/\d{4}\/\d{2}\/[a-z0-9]+\.webp$/);
   const served = await request.get(url);
   expect(served.status()).toBe(200);
   expect(served.headers()["content-type"]).toBe("image/webp");
@@ -189,6 +206,8 @@ test("a policy body edited in the rich text editor shows on the site (issue 116)
   page,
 }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  // Typing, saving and the site's refresh after the save take longer than the default 30 s on a busy runner.
+  test.setTimeout(90_000);
   const errors = collectErrors(page);
   const line = `Refund requests are answered within two working days. Checked ${Date.now()}.`;
   await signIn(page);

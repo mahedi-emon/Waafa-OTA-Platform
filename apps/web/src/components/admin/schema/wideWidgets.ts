@@ -15,6 +15,8 @@ const WIDE = new Set<ResolvedField["widget"]>([
   "months",
   "references",
   "image",
+  "gallery",
+  "video",
   "seo",
   "map",
   "json",

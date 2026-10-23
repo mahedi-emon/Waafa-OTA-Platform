@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image, { type StaticImageData } from "next/image";
+import { objectPositionOf, type FocalPoint } from "@waafa/shared/helpers/media";
 import { cn } from "cn";
 import { PHOTO_QUALITY } from "@/lib/media/imageQuality";
 import { usePrefersReducedMotion } from "@/components/motion/reducedMotion";
@@ -51,6 +52,8 @@ type SmartVideoProps = {
    * the poster as the page's LCP (issue 170).
    */
   preloadPoster?: boolean;
+  /** The poster's focal point (admin, D0 R3): the poster and the clip keep that part in view when cropped. */
+  focal?: FocalPoint | undefined;
   className?: string;
 };
 
@@ -65,6 +68,7 @@ function SmartVideo({
   alt,
   sizes,
   preloadPoster = false,
+  focal,
   className,
 }: SmartVideoProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,6 +81,9 @@ function SmartVideo({
   );
   const [playing, setPlaying] = useState(false);
   const [engaged, setEngaged] = useState(!preloadPoster);
+  // A dynamic value from the data layer, so it is the one inline style here.
+  const position = objectPositionOf(focal);
+  const placed = position ? { objectPosition: position } : undefined;
 
   useEffect(() => {
     if (engaged || !allowed) return;
@@ -119,6 +126,7 @@ function SmartVideo({
         preload={preloadPoster}
         fetchPriority={preloadPoster ? "high" : undefined}
         className="object-cover"
+        style={placed}
       />
       {allowed && engaged ? (
         <video
@@ -131,6 +139,7 @@ function SmartVideo({
           tabIndex={-1}
           onPlaying={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
+          style={placed}
           className={cn(
             "absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 ease-out",
             playing && "opacity-100",

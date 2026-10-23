@@ -26,6 +26,7 @@ function DestinationCard({
       <article className="group relative isolate overflow-hidden rounded-2xl bg-navy-900">
         <SmartImage
           src={destination.image.src}
+          focal={destination.image.focal}
           alt={destination.image.alt}
           ratio="3/4"
           sizes={sizes}

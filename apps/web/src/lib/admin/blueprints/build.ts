@@ -38,13 +38,20 @@ export function buildResolvedBlueprint(
     if (info.pattern === "" && info.kind === "object") continue;
     const spec = blueprint.fields?.[info.pattern];
     const widget = inferWidget(info, spec);
+    // A part named for what it belongs to ("video_credit" is a video's credit, not a photo's) before the plain name.
+    const owner = info.parent ? info.parent.slice(info.parent.lastIndexOf("_") + 1) : "";
+    const inOwner = owner && owner !== "item" ? `${owner}_${info.name}` : undefined;
     // A list item is named like its list ("Prices"), unless the blueprint names one item ("Price").
     const label =
       words(`${base}.fields.${info.pattern}`) ??
       (info.name === "item" && info.parent !== null ? fields[info.parent]?.label : undefined) ??
+      (inOwner ? words(`fieldNames.${inOwner}`) : undefined) ??
       words(`fieldNames.${info.name}`) ??
       humanize(info.name || key);
-    const help = words(`${base}.help.${info.pattern}`) ?? words(`fieldHelp.${info.name}`);
+    const help =
+      words(`${base}.help.${info.pattern}`) ??
+      (inOwner ? words(`fieldHelp.${inOwner}`) : undefined) ??
+      words(`fieldHelp.${info.name}`);
     const system = info.parent === "" && SYSTEM_FIELDS.has(info.name);
     const hidden = Boolean(spec?.auto) || (system && (info.name === "sample" || workflow));
     const set = spec?.choices ?? info.name;
@@ -77,6 +84,7 @@ export function buildResolvedBlueprint(
       ...(spec?.order ? { order: spec.order } : {}),
       ...(spec?.from ? { from: spec.from } : {}),
       ...(spec?.variantOf ? { variantOf: spec.variantOf } : {}),
+      ...(spec?.frame ? { frame: spec.frame } : {}),
     };
   }
 

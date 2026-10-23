@@ -336,6 +336,9 @@ model MediaAsset {
   mime         String
   originalName String?
   uploadedBy   String?
+  /// Photo credit offered to every field that uses the file (D0 R3).
+  credit       String?
+  creditUrl    String?
   createdAt    DateTime @default(now()) @db.Timestamptz(3)
   updatedAt    DateTime @updatedAt @db.Timestamptz(3)
 

@@ -12,6 +12,7 @@ function OfferCard({ offer, viewLabel }: OfferCardProps) {
       <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-xs transition-shadow duration-200 hover:shadow-md">
         <SmartImage
           src={offer.image.src}
+          focal={offer.image.focal}
           alt={offer.image.alt}
           ratio="16/10"
           sizes="(min-width: 1024px) 400px, 82vw"

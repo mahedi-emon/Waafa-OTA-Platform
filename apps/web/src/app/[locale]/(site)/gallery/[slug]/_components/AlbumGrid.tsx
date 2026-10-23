@@ -51,6 +51,7 @@ function AlbumGrid({ title, items, labels }: AlbumGridProps) {
                 >
                   <SmartImage
                     src={item.poster.src}
+                    focal={item.poster.focal}
                     alt={item.poster.alt}
                     ratio="16/9"
                     sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
@@ -84,6 +85,7 @@ function AlbumGrid({ title, items, labels }: AlbumGridProps) {
               >
                 <SmartImage
                   src={item.image.src}
+                  focal={item.image.focal}
                   alt={item.image.alt}
                   ratio={width && height ? `${width}/${height}` : "4/3"}
                   sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"

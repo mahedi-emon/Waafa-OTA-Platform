@@ -93,6 +93,7 @@ async function GalleryContent({
         <article className="group relative overflow-hidden rounded-[24px] bg-navy-900">
           <SmartImage
             src={latest.cover.src}
+            focal={latest.cover.focal}
             alt={latest.cover.alt}
             ratio="21/9"
             sizes="(min-width: 1280px) 1200px, 100vw"
@@ -164,6 +165,7 @@ async function GalleryContent({
                   <div className="relative">
                     <SmartImage
                       src={album.cover.src}
+                      focal={album.cover.focal}
                       alt={album.cover.alt}
                       ratio="4/3"
                       sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"

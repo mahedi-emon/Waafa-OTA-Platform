@@ -86,6 +86,7 @@ async function BlogContent({ searchParams }: Pick<PageProps<"/[locale]/blog">, "
         <article className="group relative grid grid-cols-1 overflow-hidden rounded-[24px] border border-mist-200 bg-white lg:grid-cols-[1.25fr_1fr]">
           <SmartImage
             src={featured.cover.src}
+            focal={featured.cover.focal}
             alt={featured.cover.alt}
             ratio="16/10"
             sizes="(min-width: 1024px) 700px, 100vw"

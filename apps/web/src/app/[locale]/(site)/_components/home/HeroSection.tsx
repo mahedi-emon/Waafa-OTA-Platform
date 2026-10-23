@@ -121,6 +121,7 @@ async function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectio
             <SmartVideo
               sources={media.video}
               poster={media.video.poster.src}
+              focal={media.video.poster.focal}
               alt={media.video.poster.alt}
               sizes={MEDIA_SIZES}
               preloadPoster
@@ -129,6 +130,7 @@ async function HeroSection({ hero, media, eyebrow, contact, search }: HeroSectio
           ) : media?.image ? (
             <SmartImage
               src={media.image.src}
+              focal={media.image.focal}
               alt={media.image.alt}
               ratio="16/9"
               sizes={MEDIA_SIZES}
