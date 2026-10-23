@@ -21,6 +21,7 @@ import { MediaReplaceService } from "./media-replace.service";
 import { AdminOrdersService } from "./orders.service";
 import { AdminCustomersController, AdminReportsController } from "./reports.controller";
 import { AdminReportsService } from "./reports.service";
+import { ContentScheduler } from "./scheduler.service";
 import { AdminUsersService } from "./users.service";
 import { AdminWorkbenchService } from "./workbench.service";
 
@@ -53,6 +54,8 @@ import { AdminWorkbenchService } from "./workbench.service";
     AdminReportsService,
     AdminCustomersService,
     AdminWorkbenchService,
+    // The minute job: scheduled publishing, window refreshes, Trash purge, overdue alerts (D0 R4).
+    ContentScheduler,
   ],
 })
 export class AdminModule {}

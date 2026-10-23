@@ -5,6 +5,7 @@ import {
   IsoDateSchema,
   IsoDateTimeSchema,
   PublishStatusSchema,
+  PublishTimesShape,
   SampleFlagSchema,
   SeoSchema,
   SlugSchema,
@@ -74,6 +75,7 @@ export const VisaCountrySchema = z
       .default([]),
     guideSlug: SlugSchema.optional(),
     status: PublishStatusSchema,
+    ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
   })
@@ -101,6 +103,7 @@ export const VisaGuideSchema = z
     updatedAt: IsoDateSchema,
     readingMinutes: z.number().int().positive(),
     status: PublishStatusSchema,
+    ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
   })

@@ -90,6 +90,8 @@ model Lead {
   amount          Int?
   reason          String?
   duplicateOfId   String?
+  /// Visa application progress (D0 R4, D225): checklist items received, submission, outcome, passport returned.
+  progress        Json?
   firstResponseAt DateTime?      @db.Timestamptz(3)
   closedAt        DateTime?      @db.Timestamptz(3)
   createdAt       DateTime       @default(now()) @db.Timestamptz(3)
@@ -196,7 +198,7 @@ model Feedback {
 }
 
 model PaymentProof {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   reference     String
   name          String
   phone         String
@@ -204,12 +206,17 @@ model PaymentProof {
   accountId     String
   transactionId String?
   proof         Json?
-  status        String   @default("received")
+  status        String    @default("received")
   note          String?
-  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  /// The order it pays for, once matched by reference and amount (D0 R4, D222).
+  orderId       String?
+  decidedAt     DateTime? @db.Timestamptz(3)
+  decidedBy     String?
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
 
   @@index([reference])
   @@index([status, createdAt])
+  @@index([orderId])
 }
 
 model Subscriber {
@@ -237,6 +244,32 @@ model ContentDocument {
 
   @@id([collection, docId])
   @@index([collection, position])
+}
+
+/// Deleted content records (D0 R4, D217): off the site at once, restorable for 30 days, then purged.
+model TrashItem {
+  id         String   @id @default(cuid())
+  collection String
+  docId      String
+  data       Json
+  position   Int      @default(0)
+  version    Int      @default(1)
+  deletedBy  String
+  deletedAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([deletedAt])
+  @@index([collection, docId])
+}
+
+/// Old record addresses that redirect to the record's new one (D0 R4, D218).
+model SlugRedirect {
+  collection String
+  fromId     String
+  toId       String
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@id([collection, fromId])
+  @@index([collection, toId])
 }
 
 model Setting {

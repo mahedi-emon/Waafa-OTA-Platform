@@ -43,6 +43,11 @@ export const EnvSchema = z
     /** Encrypts external API secrets at rest (#82). Without it, provider secrets cannot be saved. */
     /** Where uploaded photos are written (#109): the `mediadata` volume in Docker. */
     MEDIA_DIR: z.string().min(1).default("./.media"),
+    /**
+     * How often the minute job runs (D0 R4, D215): scheduled records go live, window lists refresh, Trash is purged.
+     * Default 60 s; 0 turns it off (API tests call it themselves).
+     */
+    SCHEDULER_INTERVAL_MS: z.coerce.number().int().min(0).max(3_600_000).optional(),
     PROVIDER_SECRET_KEY: optional.refine((value) => value === undefined || value.length >= 32, {
       message: "PROVIDER_SECRET_KEY must be at least 32 characters",
     }),

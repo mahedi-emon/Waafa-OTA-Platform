@@ -293,6 +293,8 @@ export const NotificationTemplateSchema = z
       "visa-status-customer",
       "feedback-received-staff",
       "payment-proof-staff",
+      "payment-proof-rejected-customer",
+      "lead-overdue-staff",
       "sign-in-code-customer",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */

@@ -26,19 +26,23 @@ import {
   LeadBulkInputSchema,
   LeadListQuerySchema,
   LeadNoteInputSchema,
+  LeadActionInputSchema,
   LeadUpdateInputSchema,
   MediaIdSchema,
   MediaReplaceInputSchema,
   OrderListQuerySchema,
+  OrderActionInputSchema,
   OrderUpdateInputSchema,
   PagingQuerySchema,
   PasswordChangeInputSchema,
   PasswordSetInputSchema,
   PaymentProofListQuerySchema,
-  PaymentProofReviewInputSchema,
+  PaymentProofActionInputSchema,
   SearchLogListQuerySchema,
   StaffCreateInputSchema,
   StaffUpdateInputSchema,
+  TrashListQuerySchema,
+  VisaProgressInputSchema,
 } from "@waafa/shared";
 import { Roles, Staff, StaffGuard } from "../auth/auth.guard";
 import type { StaffPrincipal } from "../auth/principal";
@@ -97,6 +101,20 @@ export class AdminLeadsController {
     return this.leads.update(staff, id(leadId), parseInput(LeadUpdateInputSchema, body));
   }
 
+  /** One step (contact, quote, convert, close…): the status follows (D0 R4). */
+  @Post(":id/actions")
+  @HttpCode(200)
+  act(@Staff() staff: StaffPrincipal, @Param("id") leadId: string, @Body() body: unknown) {
+    return this.leads.act(staff, id(leadId), parseInput(LeadActionInputSchema, body));
+  }
+
+  /** A visa application's checklist, submission and outcome (D0 R4). */
+  @Post(":id/visa")
+  @HttpCode(200)
+  visa(@Staff() staff: StaffPrincipal, @Param("id") leadId: string, @Body() body: unknown) {
+    return this.leads.visa(staff, id(leadId), parseInput(VisaProgressInputSchema, body));
+  }
+
   @Post(":id/activities")
   @HttpCode(201)
   note(@Staff() staff: StaffPrincipal, @Param("id") leadId: string, @Body() body: unknown) {
@@ -123,15 +141,15 @@ export class AdminOrdersController {
 
   @Patch(":id")
   update(@Staff() staff: StaffPrincipal, @Param("id") orderId: string, @Body() body: unknown) {
-    const input = parseInput(OrderUpdateInputSchema, body);
-    const onlyPayment = input.status === undefined && !input.courier && !input.trackingNumber;
-    if (
-      !onlyPayment &&
-      !staff.roles.some((role) => ["super-admin", "admin", "shop-manager"].includes(role))
-    ) {
-      throw problems.forbidden("Accounts can verify payments only");
-    }
-    return this.orders.update(staff, id(orderId), input);
+    return this.orders.update(staff, id(orderId), parseInput(OrderUpdateInputSchema, body));
+  }
+
+  /** One step (confirm, pack, ship, deliver, cancel, return): the status follows (D0 R4). */
+  @Post(":id/actions")
+  @HttpCode(200)
+  @Roles("admin", "shop-manager")
+  act(@Staff() staff: StaffPrincipal, @Param("id") orderId: string, @Body() body: unknown) {
+    return this.orders.act(staff, id(orderId), parseInput(OrderActionInputSchema, body));
   }
 }
 
@@ -169,13 +187,15 @@ export class AdminPaymentProofsController {
     return this.inbox.proofs(parseInput(PaymentProofListQuerySchema, query));
   }
 
-  @Patch(":id")
+  /** Verify (the order becomes paid and confirmed) or Reject with a reason (D0 R4). */
+  @Post(":id/actions")
+  @HttpCode(200)
   @Roles("admin", "accounts")
-  review(@Staff() staff: StaffPrincipal, @Param("id") proofId: string, @Body() body: unknown) {
-    return this.inbox.reviewProof(
+  act(@Staff() staff: StaffPrincipal, @Param("id") proofId: string, @Body() body: unknown) {
+    return this.inbox.actOnProof(
       staff,
       id(proofId),
-      parseInput(PaymentProofReviewInputSchema, body),
+      parseInput(PaymentProofActionInputSchema, body),
     );
   }
 }
@@ -232,7 +252,9 @@ export class AdminContentController {
   @HttpCode(201)
   create(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Body() body: unknown) {
     const input = parseInput(ContentWriteInputSchema, body);
-    return this.content.create(staff, this.content.collectionKey(key), input.data);
+    return this.content.create(staff, this.content.collectionKey(key), input.data, {
+      ...(input.action ? { button: input.action } : {}),
+    });
   }
 
   @Put("content/:key/order")
@@ -309,17 +331,37 @@ export class AdminContentController {
       id(recordId),
       input.data,
       input.version,
+      {
+        ...(input.action ? { button: input.action } : {}),
+        ...(input.keepSample ? { keepSample: true } : {}),
+      },
     );
   }
 
+  /** Moves the record to Trash (D0 R4); the answer names the Trash item, so the toast can undo it. */
   @Delete("content/:key/:id")
+  @HttpCode(200)
+  remove(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Param("id") recordId: string) {
+    return this.content.remove(staff, this.content.collectionKey(key), id(recordId));
+  }
+
+  @Get("trash")
+  trash(@Staff() staff: StaffPrincipal, @Query() query: unknown) {
+    return this.content.trash(staff, parseInput(TrashListQuerySchema, query));
+  }
+
+  @Post("trash/:id/restore")
+  @HttpCode(200)
+  untrash(@Staff() staff: StaffPrincipal, @Param("id") trashId: string) {
+    return this.content.untrash(staff, id(trashId));
+  }
+
+  /** Delete forever: Super Admin only (ADMIN.md §9). */
+  @Delete("trash/:id")
   @HttpCode(204)
-  async remove(
-    @Staff() staff: StaffPrincipal,
-    @Param("key") key: string,
-    @Param("id") recordId: string,
-  ) {
-    await this.content.remove(staff, this.content.collectionKey(key), id(recordId));
+  @Roles("super-admin")
+  async purge(@Staff() staff: StaffPrincipal, @Param("id") trashId: string) {
+    await this.content.purge(staff, id(trashId));
   }
 
   @Put("settings/:key")

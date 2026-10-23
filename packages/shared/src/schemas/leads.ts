@@ -321,7 +321,19 @@ export const LeadCreatedSchema = z
 export const LeadActivitySchema = z
   .object({
     id: IdSchema,
-    type: z.enum(["created", "note", "status", "assign", "call", "email", "whatsapp", "converted"]),
+    type: z.enum([
+      "created",
+      "note",
+      "status",
+      "assign",
+      "call",
+      "email",
+      "whatsapp",
+      "quote",
+      "converted",
+      "visa",
+      "overdue",
+    ]),
     body: z.string().min(1).max(2000),
     actor: z.string().min(1).max(80),
     createdAt: IsoDateTimeSchema,
@@ -422,7 +434,7 @@ export const PaymentProofSchema = z
     accountId: IdSchema,
     transactionId: z.string().max(40).optional(),
     proof: PrivateFileSchema.optional(),
-    status: z.enum(["received", "matched", "rejected"]),
+    status: z.enum(["received", "matched", "verified", "rejected"]),
     createdAt: IsoDateTimeSchema,
     sample: SampleFlagSchema,
   })

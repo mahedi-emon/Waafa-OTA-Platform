@@ -4,12 +4,17 @@ import {
   CONTENT_KEYS,
   CONTENT_MODEL,
   contentRecordId,
+  formatDate,
+  formatTime,
+  hasPublishWorkflow,
   hasRecordOrder,
   isContentKey,
   isPickerKey,
   parseContent,
   type CollectionKey,
+  type ContentAction,
   type ContentKey,
+  type TrashListQuery,
 } from "@waafa/shared";
 import { AuditService } from "../audit/audit.service";
 import type { StaffPrincipal } from "../auth/principal";
@@ -20,16 +25,46 @@ import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { assertContentAccess, canEditContent } from "./access";
+import { clearRedirectFrom, recordMove } from "./redirects";
+import { TRASH_DAYS } from "./scheduler.service";
+import { withWorkflow } from "./workflow";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 
 /** Audit actions that save a whole record; their `after` is a version that can be restored. */
-const RECORD_ACTIONS = ["content.create", "content.update", "content.restore", "content.duplicate"];
+const RECORD_ACTIONS = [
+  "content.create",
+  "content.update",
+  "content.restore",
+  "content.duplicate",
+  "content.untrash",
+];
 const BORN_ACTIONS = new Set(["content.create", "content.duplicate"]);
 const RESTORABLE_ACTIONS = [...RECORD_ACTIONS, "settings.update", "settings.restore"];
 const HISTORY_LIMIT = 60;
 /** Record fields other records point at (a package's destination slug, an airline's code, a category's level). */
 const OPTION_VALUE_FIELDS = ["id", "slug", "code", "key", "iata", "level", "destinationSlug"];
+
+/** What the audit log keeps about a button, in plain words (History and the audit log show it). */
+function stepReason(step: ContentAction["type"] | null, record: unknown): { reason?: string } {
+  const at = (record as { publishAt?: unknown } | null)?.publishAt;
+  switch (step) {
+    case "publish":
+      return { reason: "Published" };
+    case "schedule":
+      return typeof at === "string"
+        ? { reason: `Scheduled to go live on ${formatDate(at)}, ${formatTime(at)}` }
+        : {};
+    case "unpublish":
+      return { reason: "Unpublished" };
+    case "archive":
+      return { reason: "Archived" };
+    case "restore":
+      return { reason: "Restored from the archive" };
+    default:
+      return {};
+  }
+}
 
 const orderOf = (data: unknown): number | undefined => {
   const value = (data as { order?: unknown } | null)?.order;
@@ -171,6 +206,8 @@ export class AdminContentService {
         orderBy: [{ position: "asc" }, { docId: "asc" }],
       }),
     );
+    // Coupons show Used up from their orders (D223).
+    const uses = key === "coupons" ? await this.couponUses() : null;
     return {
       key,
       kind: "collection",
@@ -184,8 +221,21 @@ export class AdminContentService {
         updatedAt: row.updatedAt,
         updatedBy: row.updatedBy,
         data: row.data,
+        ...(uses ? { uses: uses.get(row.docId) ?? 0 } : {}),
       })),
     };
+  }
+
+  /** Orders that used each coupon code, cancelled ones not counted. */
+  private async couponUses(): Promise<Map<string, number>> {
+    const rows = await this.prisma.order.groupBy({
+      by: ["couponCode"],
+      where: { couponCode: { not: null }, status: { not: "cancelled" } },
+      _count: { _all: true },
+    });
+    return new Map(
+      rows.flatMap((row) => (row.couponCode ? [[row.couponCode, row._count._all] as const] : [])),
+    );
   }
 
   async readOne(staff: StaffPrincipal, key: CollectionKey, id: string) {
@@ -258,10 +308,20 @@ export class AdminContentService {
     staff: StaffPrincipal,
     key: CollectionKey,
     data: unknown,
-    action = "content.create",
+    options: { audit?: string; button?: ContentAction } = {},
+    now = new Date(),
   ) {
     assertContentAccess(staff, key);
-    const record = this.validate(key, data);
+    const { record, step } = withWorkflow(
+      key,
+      this.validate(key, data),
+      undefined,
+      options.button,
+      now,
+    );
+    // Only the seed writes Sample content: anything staff create is their own.
+    if (record && typeof record === "object" && (record as { sample?: unknown }).sample === true)
+      (record as { sample: boolean }).sample = false;
     const id = contentRecordId(key, record);
     await this.assertInnerIdFree(key, record);
     const last = await this.prisma.contentDocument.findFirst({
@@ -289,8 +349,17 @@ export class AdminContentService {
             updatedBy: staff.name,
           },
         });
+        // A real record lives at this address now: an old redirect from it would hide it.
+        await clearRedirectFrom(tx, key, id);
         await this.audit.record(
-          { actor: staff, action, entity: key, entityId: id, after: record },
+          {
+            actor: staff,
+            action: options.audit ?? "content.create",
+            entity: key,
+            entityId: id,
+            after: record,
+            ...stepReason(step, record),
+          },
           tx,
         );
       });
@@ -304,36 +373,49 @@ export class AdminContentService {
       throw error;
     }
     this.changed(key);
-    return this.readOne(staff, key, id);
+    return { ...(await this.readOne(staff, key, id)), sampleCleared: false };
   }
 
-  /** Saves a record; a new id (for example a new slug) moves it, keeping its place in the list. */
+  /**
+   * Saves a record; a new id (for example a new slug) moves it, keeping its place in the list, and a live record's
+   * old address redirects to the new one (D218). The status follows the button, never the data (D216); the first
+   * staff save of a Sample record makes it the team's own (`sampleCleared`, which the editor can undo).
+   */
   async update(
     staff: StaffPrincipal,
     key: CollectionKey,
     id: string,
     data: unknown,
     version?: number,
-    action = "content.update",
+    options: { audit?: string; button?: ContentAction; keepSample?: boolean } = {},
+    now = new Date(),
   ) {
     assertContentAccess(staff, key);
-    const record = this.validate(key, data);
-    const nextId = contentRecordId(key, record);
+    const validated = this.validate(key, data);
     const before = await this.prisma.contentDocument.findUnique({
       where: { collection_docId: { collection: key, docId: id } },
     });
     if (!before) throw problems.notFound("Record not found");
+    const { record, step } = withWorkflow(key, validated, before.data, options.button, now);
+    const nextId = contentRecordId(key, record);
     await this.assertInnerIdFree(key, record, id);
     // The list owns the order: a save (or a restore of an old version) never moves the record (#205).
     const kept = hasRecordOrder(key) ? orderOf(before.data) : undefined;
     if (kept !== undefined && record && typeof record === "object")
       (record as { order: number }).order = kept;
+    const wasSample = (before.data as { sample?: unknown } | null)?.sample === true;
+    const sampleCleared =
+      wasSample && !options.keepSample && record !== null && typeof record === "object";
+    if (sampleCleared) (record as { sample: boolean }).sample = false;
     const current = {
       version: before.version,
       updatedBy: before.updatedBy,
       updatedAt: before.updatedAt.toISOString(),
     };
     if (version && before.version !== version) throw problems.stale(current);
+    const wasLive =
+      !hasPublishWorkflow(key) ||
+      (before.data as { status?: unknown } | null)?.status === "published";
     try {
       await this.prisma.$transaction(async (tx) => {
         const updated = await tx.contentDocument.updateMany({
@@ -346,14 +428,17 @@ export class AdminContentService {
           },
         });
         if (updated.count === 0) throw problems.stale(current);
+        if (nextId !== id && wasLive) await recordMove(tx, key, id, nextId);
+        else if (nextId !== id) await clearRedirectFrom(tx, key, nextId);
         await this.audit.record(
           {
             actor: staff,
-            action,
+            action: options.audit ?? "content.update",
             entity: key,
             entityId: nextId,
             before: before.data,
             after: record,
+            ...stepReason(step, record),
           },
           tx,
         );
@@ -368,25 +453,163 @@ export class AdminContentService {
       throw error;
     }
     this.changed(key);
-    return this.readOne(staff, key, nextId);
+    return { ...(await this.readOne(staff, key, nextId)), sampleCleared };
   }
 
+  /** Delete moves the record to Trash (D217): gone from the site at once, restorable for 30 days. */
   async remove(staff: StaffPrincipal, key: CollectionKey, id: string) {
     assertContentAccess(staff, key);
     const before = await this.prisma.contentDocument.findUnique({
       where: { collection_docId: { collection: key, docId: id } },
     });
     if (!before) throw problems.notFound("Record not found");
-    await this.prisma.$transaction(async (tx) => {
+    const item = await this.prisma.$transaction(async (tx) => {
+      const trashed = await tx.trashItem.create({
+        data: {
+          collection: key,
+          docId: id,
+          data: json(before.data),
+          position: before.position,
+          version: before.version,
+          deletedBy: staff.name,
+        },
+      });
       await tx.contentDocument.delete({
         where: { collection_docId: { collection: key, docId: id } },
       });
       await this.audit.record(
-        { actor: staff, action: "content.delete", entity: key, entityId: id, before: before.data },
+        {
+          actor: staff,
+          action: "content.delete",
+          entity: key,
+          entityId: id,
+          before: before.data,
+          after: { trash: trashed.id },
+        },
+        tx,
+      );
+      return trashed;
+    });
+    this.changed(key);
+    return { trashId: item.id };
+  }
+
+  /** Trash, newest first: only the lists this person may edit (ADMIN.md §9). */
+  async trash(staff: StaffPrincipal, query: TrashListQuery) {
+    const keys = CONTENT_KEYS.filter(
+      (key) => CONTENT_MODEL[key].kind === "collection" && canEditContent(staff, key),
+    );
+    const where = { collection: { in: keys } };
+    const [total, rows] = await Promise.all([
+      this.prisma.trashItem.count({ where }),
+      this.prisma.trashItem.findMany({
+        where,
+        orderBy: { deletedAt: "desc" },
+        skip: (query.page - 1) * query.pageSize,
+        take: query.pageSize,
+      }),
+    ]);
+    return {
+      total,
+      page: query.page,
+      pageSize: query.pageSize,
+      items: rows.map((row) => {
+        const entry = CONTENT_MODEL[row.collection as CollectionKey];
+        const data = row.data as Record<string, unknown>;
+        return {
+          id: row.id,
+          collection: row.collection,
+          title: String(data[entry.kind === "collection" ? entry.titleField : "id"] ?? row.docId),
+          deletedAt: row.deletedAt.toISOString(),
+          deletedBy: row.deletedBy,
+          purgeAt: new Date(row.deletedAt.getTime() + TRASH_DAYS * 86_400_000).toISOString(),
+        };
+      }),
+    };
+  }
+
+  /**
+   * Puts a record back from Trash as it was (live again if it was live), at the end of its list. Its address must
+   * still be free; the record must still fit today's form.
+   */
+  async untrash(staff: StaffPrincipal, trashId: string) {
+    const item = await this.prisma.trashItem.findUnique({ where: { id: trashId } });
+    if (!item || !isContentKey(item.collection))
+      throw problems.notFound("This record is no longer in Trash");
+    const key = this.collectionKey(item.collection);
+    assertContentAccess(staff, key);
+    const parsed = parseContent(key, item.data);
+    if (!parsed.success)
+      throw problems.conflict(
+        "This record no longer fits its form, so it can't be restored. Ask a Super Admin to restore it in Advanced",
+        "invalid",
+      );
+    const record = parsed.data as Record<string, unknown>;
+    const taken = await this.prisma.contentDocument.findUnique({
+      where: { collection_docId: { collection: key, docId: item.docId } },
+      select: { docId: true },
+    });
+    if (taken)
+      throw problems.conflict(
+        "Another record uses this link now. Change that record's link first, then restore this one",
+        "exists",
+      );
+    await this.assertInnerIdFree(key, record);
+    const rows = await this.prisma.contentDocument.findMany({
+      where: { collection: key },
+      select: { data: true, position: true },
+    });
+    if (hasRecordOrder(key)) {
+      record.order = Math.max(-1, ...rows.map((row) => orderOf(row.data) ?? -1)) + 1;
+    }
+    const position = Math.max(-1, ...rows.map((row) => row.position)) + 1;
+    await this.prisma.$transaction(async (tx) => {
+      await tx.contentDocument.create({
+        data: {
+          collection: key,
+          docId: item.docId,
+          data: json(record),
+          position,
+          version: item.version + 1,
+          updatedBy: staff.name,
+        },
+      });
+      await tx.trashItem.delete({ where: { id: item.id } });
+      await clearRedirectFrom(tx, key, item.docId);
+      await this.audit.record(
+        {
+          actor: staff,
+          action: "content.untrash",
+          entity: key,
+          entityId: item.docId,
+          after: record,
+          reason: "Restored from Trash",
+        },
         tx,
       );
     });
     this.changed(key);
+    return { collection: key, id: item.docId };
+  }
+
+  /** Deletes a record in Trash for good (Super Admin only, checked by the route). */
+  async purge(staff: StaffPrincipal, trashId: string) {
+    const item = await this.prisma.trashItem.findUnique({ where: { id: trashId } });
+    if (!item) throw problems.notFound("This record is no longer in Trash");
+    await this.prisma.$transaction(async (tx) => {
+      await tx.trashItem.delete({ where: { id: item.id } });
+      await this.audit.record(
+        {
+          actor: staff,
+          action: "trash.delete",
+          entity: item.collection,
+          entityId: item.docId,
+          before: item.data,
+          reason: "Deleted for good from Trash",
+        },
+        tx,
+      );
+    });
   }
 
   /** The record's id inside an audit snapshot, if the snapshot is a record. */
@@ -476,7 +699,8 @@ export class AdminContentService {
       return this.writeSetting(staff, key, data, version, "settings.restore");
     const collection = key as CollectionKey;
     if (!this.idIn(collection, data)) throw problems.notFound("That version is not available");
-    return this.update(staff, collection, id, data, version, "content.restore");
+    // A restored version brings back its words and photos; the status stays as it is today (D216).
+    return this.update(staff, collection, id, data, version, { audit: "content.restore" });
   }
 
   /** A copy with "(copy)" in its title and a free id, saved as a hidden draft and never Sample. */
@@ -520,7 +744,7 @@ export class AdminContentService {
     if (typeof data.status === "string" && parseContent(key, { ...data, status: "draft" }).success)
       data.status = "draft";
     if (key === "products") renewVariants(data, suffix, await this.variantIdsInUse());
-    return this.create(staff, key, data, "content.duplicate");
+    return this.create(staff, key, data, { audit: "content.duplicate" });
   }
 
   /** Every variant id the store uses, so a copy's new ones are free. */

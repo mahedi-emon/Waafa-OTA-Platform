@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, type OnModuleDestroy } from "@nestjs/common";
 import { Queue } from "bullmq";
-import type { NotificationTemplate } from "@waafa/shared";
+import { ADMIN_BASE_PATH, type NotificationTemplate } from "@waafa/shared";
 import { ENV, type Env } from "../config/env";
 import { ContentService } from "../content/content.service";
 import { PrismaService } from "../prisma/prisma.service";
@@ -75,6 +75,11 @@ export class NotificationService implements OnModuleDestroy {
   /** The address staff alerts go to (Settings › Notifications recipients come later; env for launch). */
   get staffAddress(): string | undefined {
     return this.env.STAFF_ALERT_EMAIL;
+  }
+
+  /** A link into the admin for staff emails, on the first web origin. */
+  adminLink(path: string): string {
+    return `${this.env.WEB_ORIGINS[0] ?? ""}${ADMIN_BASE_PATH}${path}`;
   }
 
   async notify(

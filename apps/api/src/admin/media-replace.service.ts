@@ -108,6 +108,8 @@ export class MediaReplaceService {
             first.recordId,
             swapMedia(current.data, from.path, to),
             current.version,
+            // Swapping a file is not an edit of the record: a Sample record stays Sample.
+            { keepSample: true },
           );
         }
         replaced += group.length;

@@ -1,11 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
-  ADMIN_BASE_PATH,
   LEAD_PREFIX,
   formatTaka,
   isScheduledNow,
   leadDigest,
   priceCart,
+  proofMatches,
   toDhakaIsoString,
   withDeals,
   zoneForArea,
@@ -23,7 +23,6 @@ import {
   type Quote,
   type SearchLogInput,
 } from "@waafa/shared";
-import { ENV, type Env } from "../config/env";
 import { nextReference } from "../common/references";
 import { ContentService } from "../content/content.service";
 import type { Prisma } from "../generated/prisma/client";
@@ -53,12 +52,10 @@ export class IntakeService {
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(NotificationService) private readonly notifications: NotificationService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
-    @Inject(ENV) private readonly env: Env,
   ) {}
 
   private adminLink(path: string): string {
-    const origin = this.env.WEB_ORIGINS[0] ?? "";
-    return `${origin}${ADMIN_BASE_PATH}${path}`;
+    return this.notifications.adminLink(path);
   }
 
   async createLead(input: LeadCreateInput, now = new Date()): Promise<LeadCreated> {
@@ -149,12 +146,21 @@ export class IntakeService {
         .map((row) => row.data as Deal)
         .filter((deal) => Date.parse(deal.endsAt) > now.getTime());
       const code = input.couponCode?.trim().toUpperCase();
-      const coupon = code
+      const found = code
         ? (coupons
             .map((row) => row.data as Coupon)
             .find((item) => item.code === code && item.enabled && isScheduledNow(item, now)) ??
           null)
         : null;
+      // A code with a use limit stops at it (D223); orders are taken one at a time (the product lock above).
+      const coupon =
+        found && found.maxUses !== undefined
+          ? (await tx.order.count({
+              where: { couponCode: found.code, status: { not: "cancelled" } },
+            })) < found.maxUses
+            ? found
+            : null
+          : found;
       const quote = priceCart({
         lines: input.lines,
         products: products.map((product) => withDeals(product, activeDeals)),
@@ -319,7 +325,15 @@ export class IntakeService {
   }
 
   async createPaymentProof(input: PaymentProofInput, now = new Date()) {
-    const payment = await this.content.setting("paymentSettings");
+    const [payment, order] = await Promise.all([
+      this.content.setting("paymentSettings"),
+      this.prisma.order.findUnique({
+        where: { reference: input.reference.trim().toUpperCase() },
+        select: { id: true, reference: true, total: true },
+      }),
+    ]);
+    // Matched by itself when the reference names an order and the amount covers its total (D0 R4, D222).
+    const matched = order !== null && proofMatches(input, order);
     const stored = await this.prisma.paymentProof.create({
       data: {
         reference: input.reference,
@@ -329,6 +343,8 @@ export class IntakeService {
         accountId: input.accountId,
         transactionId: input.transactionId ?? null,
         ...(input.proof ? { proof: json(input.proof) } : {}),
+        status: matched ? "matched" : "received",
+        orderId: order?.id ?? null,
         createdAt: now,
       },
     });

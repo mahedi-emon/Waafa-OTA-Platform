@@ -4,6 +4,7 @@ import {
   ImageSchema,
   IsoDateTimeSchema,
   PublishStatusSchema,
+  PublishTimesShape,
   SampleFlagSchema,
   SeoSchema,
   SlugSchema,
@@ -162,6 +163,7 @@ export const ProductSchema = z
     popularity: z.number().int().min(0),
     createdAt: IsoDateTimeSchema,
     status: PublishStatusSchema,
+    ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
   })
@@ -271,6 +273,8 @@ export const CouponSchema = z
     value: z.number().positive(),
     minOrder: TakaSchema.default(0),
     maxDiscount: TakaSchema.optional(),
+    /** How many orders may use the code; empty means no limit (D0 R4: "Used up"). */
+    maxUses: z.number().int().positive().optional(),
     startsAt: IsoDateTimeSchema,
     endsAt: IsoDateTimeSchema.optional(),
     enabled: z.boolean(),

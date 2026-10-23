@@ -1,11 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { z } from "zod";
 import {
+  formatTaka,
+  nextProofStatus,
   toDhakaIsoString,
   type FeedbackListQuerySchema,
   type FeedbackModerationInput,
+  type PaymentProofActionInput,
   type PaymentProofListQuerySchema,
-  type PaymentProofReviewInput,
   type SearchLogListQuerySchema,
 } from "@waafa/shared";
 import { AuditService } from "../audit/audit.service";
@@ -13,6 +15,7 @@ import type { StaffPrincipal } from "../auth/principal";
 import { problems } from "../common/problem";
 import { ContentService } from "../content/content.service";
 import type { Prisma } from "../generated/prisma/client";
+import { NotificationService } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { dhakaDate } from "./access";
@@ -34,6 +37,7 @@ export class AdminInboxService {
     @Inject(AuditService) private readonly audit: AuditService,
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
+    @Inject(NotificationService) private readonly notifier: NotificationService,
   ) {}
 
   async feedback(query: z.output<typeof FeedbackListQuerySchema>) {
@@ -97,96 +101,134 @@ export class AdminInboxService {
     return { id, status: input.status };
   }
 
+  /** Payment proofs by status; "received" is the To verify queue: received and matched proofs (D0 R4). */
   async proofs(query: z.output<typeof PaymentProofListQuerySchema>) {
-    const where = query.status ? { status: query.status } : {};
+    const where: Prisma.PaymentProofWhereInput =
+      query.status === "received"
+        ? { status: { in: ["received", "matched"] } }
+        : query.status
+          ? { status: query.status }
+          : {};
     const [total, rows] = await Promise.all([
       this.prisma.paymentProof.count({ where }),
       this.prisma.paymentProof.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ status: "asc" }, { createdAt: "desc" }],
         ...window(query),
       }),
     ]);
+    const orderIds = [...new Set(rows.flatMap((row) => (row.orderId ? [row.orderId] : [])))];
+    const orders = new Map(
+      (
+        await this.prisma.order.findMany({
+          where: { id: { in: orderIds } },
+          select: { id: true, reference: true, total: true, status: true },
+        })
+      ).map((order) => [order.id, order]),
+    );
     return {
       total,
       page: query.page,
       pageSize: query.pageSize,
-      items: rows.map((row) => ({
-        id: row.id,
-        reference: row.reference,
-        name: row.name,
-        phone: row.phone,
-        amount: row.amount,
-        accountId: row.accountId,
-        transactionId: row.transactionId,
-        proof: row.proof,
-        status: row.status,
-        note: row.note,
-        createdAt: toDhakaIsoString(row.createdAt),
-      })),
+      items: rows.map((row) => {
+        const order = row.orderId ? orders.get(row.orderId) : undefined;
+        return {
+          id: row.id,
+          reference: row.reference,
+          name: row.name,
+          phone: row.phone,
+          amount: row.amount,
+          accountId: row.accountId,
+          transactionId: row.transactionId,
+          proof: row.proof,
+          status: row.status,
+          note: row.note,
+          order: order
+            ? { id: order.id, reference: order.reference, total: order.total, status: order.status }
+            : null,
+          decidedBy: row.decidedBy,
+          decidedAt: row.decidedAt ? toDhakaIsoString(row.decidedAt) : null,
+          createdAt: toDhakaIsoString(row.createdAt),
+        };
+      }),
     };
   }
 
   /** Verifying a proof for an order marks the order's payment verified, with a history entry. */
-  async reviewProof(
+  /**
+   * Verify or Reject a payment proof (D0 R4, ADMIN.md §8.5). Verify marks the order paid and confirms a placed one;
+   * Reject keeps the reason and emails the customer when the order has an address. A decided proof stays decided.
+   */
+  async actOnProof(
     staff: StaffPrincipal,
     id: string,
-    input: PaymentProofReviewInput,
+    input: PaymentProofActionInput,
     now = new Date(),
   ) {
     const proof = await this.prisma.paymentProof.findUnique({ where: { id } });
     if (!proof) throw problems.notFound("Payment proof not found");
+    const move = nextProofStatus(proof.status, input);
+    if (!move.ok)
+      throw problems.conflict(
+        move.reason === "decided"
+          ? "This payment proof is already decided"
+          : "Say why in a few words",
+        move.reason,
+      );
+    const order = proof.orderId
+      ? await this.prisma.order.findUnique({ where: { id: proof.orderId } })
+      : await this.prisma.order.findUnique({
+          where: { reference: proof.reference.trim().toUpperCase() },
+        });
     await this.prisma.$transaction(async (tx) => {
       await tx.paymentProof.update({
         where: { id },
-        data: { status: input.status, note: input.note ?? proof.note },
+        data: {
+          status: move.status,
+          note: input.type === "reject" ? input.reason : proof.note,
+          decidedAt: now,
+          decidedBy: staff.name,
+          ...(order ? { orderId: order.id } : {}),
+        },
       });
-      if (input.status === "verified") {
-        const order = await tx.order.findUnique({ where: { reference: proof.reference } });
-        if (order && !order.paymentVerified) {
-          await tx.order.update({ where: { id: order.id }, data: { paymentVerified: true } });
-          await tx.orderEvent.create({
-            data: {
-              orderId: order.id,
-              status: order.status,
-              note: `Payment verified (${proof.transactionId ?? "slip"})`,
-              actorName: staff.name,
-              at: now,
-            },
-          });
-        }
-      } else if (proof.status === "verified") {
-        // Taking back a verification: the order is unpaid again unless another proof for it is verified (#78).
-        const order = await tx.order.findUnique({ where: { reference: proof.reference } });
-        const others = await tx.paymentProof.count({
-          where: { reference: proof.reference, status: "verified", id: { not: id } },
+      if (input.type === "verify" && order && !order.paymentVerified) {
+        const confirm = order.status === "placed";
+        await tx.order.update({
+          where: { id: order.id },
+          data: { paymentVerified: true, ...(confirm ? { status: "confirmed" } : {}) },
         });
-        if (order?.paymentVerified && others === 0) {
-          await tx.order.update({ where: { id: order.id }, data: { paymentVerified: false } });
-          await tx.orderEvent.create({
-            data: {
-              orderId: order.id,
-              status: order.status,
-              note: "Payment verification withdrawn",
-              actorName: staff.name,
-              at: now,
-            },
-          });
-        }
+        await tx.orderEvent.create({
+          data: {
+            orderId: order.id,
+            status: confirm ? "confirmed" : order.status,
+            note: `Payment verified (${proof.transactionId ?? "slip"})${confirm ? ", order confirmed" : ""}`,
+            actorName: staff.name,
+            at: now,
+          },
+        });
       }
       await this.audit.record(
         {
           actor: staff,
-          action: "payment-proof.review",
+          action: `payment-proof.${input.type}`,
           entity: "payment-proof",
           entityId: proof.reference,
           before: { status: proof.status },
-          after: input,
+          after: { status: move.status },
+          ...(input.type === "reject" ? { reason: input.reason } : {}),
         },
         tx,
       );
     });
-    return { id, status: input.status };
+    if (input.type === "reject") {
+      void this.notifier.notify("payment-proof-rejected-customer", order?.email ?? undefined, {
+        name: proof.name,
+        reference: proof.reference,
+        amount: formatTaka(proof.amount),
+        reason: input.reason,
+      });
+    }
+    return { id, status: move.status };
   }
 
   async searchLogs(query: z.output<typeof SearchLogListQuerySchema>) {

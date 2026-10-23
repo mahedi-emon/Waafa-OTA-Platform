@@ -1,8 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
+  nextOrderStatus,
   toDhakaIsoString,
+  type OrderActionInput,
   type OrderListQuery,
-  type OrderStatus,
   type OrderUpdateInput,
   type Product,
 } from "@waafa/shared";
@@ -14,24 +15,33 @@ import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 
-/** Allowed next statuses (FR-SHOP-09). Cancelled and returned are final. */
-const NEXT: Record<OrderStatus, OrderStatus[]> = {
-  placed: ["confirmed", "cancelled"],
-  confirmed: ["processing", "shipped", "cancelled"],
-  processing: ["shipped", "cancelled"],
-  shipped: ["delivered", "returned"],
-  delivered: ["returned"],
-  cancelled: [],
-  returned: [],
-};
-
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 
 type OrderItem = { productId: string; variantId: string; quantity: number };
 
+/** Why a step can't apply, in plain words with the next step. */
+const ORDER_REFUSALS = {
+  order: "That step doesn't come next for this order",
+  courier: "Name the courier and enter the tracking number",
+  reason: "Say why in a few words",
+  finished: "This order is finished",
+  proof: "Verify the payment proof first: that confirms the order",
+  call: "Only cash on delivery orders are confirmed on the phone",
+} as const;
+
+/** What each step writes on the order's history. */
+const STEP_NOTES: Record<OrderActionInput["type"], string> = {
+  confirm: "Order confirmed",
+  startPacking: "Packing started",
+  ship: "Handed to the courier",
+  deliver: "Delivered",
+  cancel: "Cancelled",
+  return: "Returned",
+};
+
 /**
- * Orders for the Waafas World team: list and search, detail with the history, status changes along the workflow
- * with courier and tracking number, payment verified. A cancelled order puts its stock back.
+ * Orders for the Waafas World team: list and search, detail with the history, steps along the workflow with what
+ * each needs (D0 R4, ADMIN.md §8.4), notes. A cancelled or returned order puts its stock back.
  */
 @Injectable()
 export class AdminOrdersService {
@@ -98,7 +108,7 @@ export class AdminOrdersService {
       id: order.id,
       reference: order.reference,
       status: order.status,
-      next: NEXT[order.status as OrderStatus],
+      cashOnDelivery: (order.payment as { method?: string } | null)?.method === "cod",
       items: order.items,
       subtotal: order.subtotal,
       discount: order.discount,
@@ -130,71 +140,92 @@ export class AdminOrdersService {
     };
   }
 
+  /** A note on the order's history; the status moves only through `act`. */
   async update(staff: StaffPrincipal, id: string, input: OrderUpdateInput, now = new Date()) {
     const order = await this.prisma.order.findUnique({ where: { id } });
     if (!order) throw problems.notFound("Order not found");
-    const current = order.status as OrderStatus;
-    const moving = input.status !== undefined && input.status !== current;
-    if (moving && !NEXT[current].includes(input.status as OrderStatus)) {
-      throw problems.conflict(
-        `An order that is ${current} can't become ${input.status}`,
-        "transition",
-      );
-    }
-    const restock = moving && input.status === "cancelled";
     await this.prisma.$transaction(async (tx) => {
-      // Only from the status read above: two staff cancelling at once restock once (#78).
-      const changed = await tx.order.updateMany({
-        where: { id, status: current },
+      await tx.orderEvent.create({
         data: {
-          ...(moving ? { status: input.status } : {}),
-          ...(input.paymentVerified !== undefined
-            ? { paymentVerified: input.paymentVerified }
-            : {}),
+          orderId: id,
+          status: order.status,
+          note: input.note,
+          actorName: staff.name,
+          at: now,
         },
       });
-      if (changed.count === 0) {
-        throw problems.conflict("Someone else changed this order first; reload to see it", "stale");
-      }
-      if (
-        moving ||
-        input.note ||
-        input.courier ||
-        input.trackingNumber ||
-        input.paymentVerified !== undefined
-      ) {
-        await tx.orderEvent.create({
-          data: {
-            orderId: id,
-            status: moving ? (input.status as string) : current,
-            note:
-              input.note ??
-              (input.paymentVerified === true
-                ? "Payment verified"
-                : input.paymentVerified === false
-                  ? "Payment marked not verified"
-                  : null),
-            courier: input.courier ?? null,
-            trackingNumber: input.trackingNumber ?? null,
-            actorName: staff.name,
-            at: now,
-          },
-        });
-      }
-      if (restock) await this.restock(tx, order.items as OrderItem[]);
       await this.audit.record(
         {
           actor: staff,
-          action: "order.update",
+          action: "order.note",
           entity: "order",
           entityId: order.reference,
-          before: { status: current, paymentVerified: order.paymentVerified },
           after: input,
         },
         tx,
       );
     });
-    if (restock) {
+    return this.detail(id);
+  }
+
+  /**
+   * One step on an order (D0 R4): the status follows with the shared rules. Confirming needs a verified payment
+   * proof, or a phone call for cash on delivery; shipping needs the courier and tracking number; cancelling and
+   * returning need a reason and put the stock back; delivering cash on delivery records the cash as received.
+   */
+  async act(staff: StaffPrincipal, id: string, input: OrderActionInput, now = new Date()) {
+    const order = await this.prisma.order.findUnique({ where: { id } });
+    if (!order) throw problems.notFound("Order not found");
+    const cash = (order.payment as { method?: string } | null)?.method === "cod";
+    if (input.type === "confirm" && input.by === "proof" && !order.paymentVerified)
+      throw problems.conflict(ORDER_REFUSALS.proof, "proof");
+    if (input.type === "confirm" && input.by === "call" && !cash)
+      throw problems.conflict(ORDER_REFUSALS.call, "call");
+    const move = nextOrderStatus(order.status, input);
+    if (!move.ok) throw problems.conflict(ORDER_REFUSALS[move.reason], move.reason);
+    const paid = input.type === "deliver" && cash && !order.paymentVerified;
+    await this.prisma.$transaction(async (tx) => {
+      // Only from the status read above: two staff pressing at once move the order (and restock) once (#78).
+      const changed = await tx.order.updateMany({
+        where: { id, status: order.status },
+        data: { status: move.status, ...(paid ? { paymentVerified: true } : {}) },
+      });
+      if (changed.count === 0)
+        throw problems.conflict("Someone else changed this order first; reload to see it", "stale");
+      const note =
+        input.type === "confirm" && input.by === "call"
+          ? "Confirmed on the phone"
+          : "reason" in input
+            ? `${STEP_NOTES[input.type]}: ${input.reason}`
+            : paid
+              ? "Delivered, cash received"
+              : STEP_NOTES[input.type];
+      await tx.orderEvent.create({
+        data: {
+          orderId: id,
+          status: move.status,
+          note,
+          courier: input.type === "ship" ? input.courier : null,
+          trackingNumber: input.type === "ship" ? input.trackingNumber : null,
+          actorName: staff.name,
+          at: now,
+        },
+      });
+      if (move.restock) await this.restock(tx, order.items as OrderItem[]);
+      await this.audit.record(
+        {
+          actor: staff,
+          action: `order.${input.type}`,
+          entity: "order",
+          entityId: order.reference,
+          before: { status: order.status, paymentVerified: order.paymentVerified },
+          after: { status: move.status, ...input },
+          ...("reason" in input ? { reason: input.reason } : {}),
+        },
+        tx,
+      );
+    });
+    if (move.restock) {
       this.content.invalidate();
       this.revalidate.request(["products"]);
     }

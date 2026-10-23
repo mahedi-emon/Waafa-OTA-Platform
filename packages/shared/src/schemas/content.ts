@@ -6,6 +6,7 @@ import {
   IsoDateTimeSchema,
   LinkSchema,
   PublishStatusSchema,
+  PublishTimesShape,
   SampleFlagSchema,
   SeoSchema,
   SlugSchema,
@@ -42,6 +43,7 @@ export const PageSchema = z
     sections: z.array(PageSectionSchema).min(1),
     lastUpdated: IsoDateSchema,
     status: PublishStatusSchema,
+    ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
   })
@@ -77,6 +79,7 @@ export const BlogPostSchema = z
     /** Service the post leads to, for the call-to-action at its end. */
     cta: z.enum(["flights", "packages", "visa", "shop", "contact"]).default("contact"),
     status: PublishStatusSchema,
+    ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
   })

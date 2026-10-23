@@ -184,49 +184,148 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
     expect((await call(owner, "GET", "/leads?status=nope")).statusCode).toBe(422);
   });
 
-  it("applies the status rules, stamps the first response and keeps the timeline and audit", async () => {
+  it("moves a lead by its steps, stamps the first response and keeps the timeline and audit (D0 R4)", async () => {
     const id = await submitLead(flight);
-    const noAmount = await call(agent, "PATCH", `/leads/${id}`, { status: "booked" });
-    expect(noAmount.statusCode).toBe(422);
-    const noReason = await call(agent, "PATCH", `/leads/${id}`, { status: "lost" });
-    expect(noReason.statusCode).toBe(422);
+    const step = (who: Person, input: Record<string, unknown>) =>
+      call(who, "POST", `/leads/${id}/actions`, input);
+    // The status is never sent on its own any more.
+    expect((await call(agent, "PATCH", `/leads/${id}`, { status: "quoted" })).statusCode).toBe(422);
+    expect((await step(agent, { type: "convert" })).statusCode).toBe(422);
+    expect((await step(agent, { type: "close", outcome: "lost", reason: "" })).statusCode).toBe(
+      422,
+    );
 
-    const quoted = await call(agent, "PATCH", `/leads/${id}`, {
+    const replied = await step(agent, { type: "contact", channel: "whatsapp" });
+    expect(replied.statusCode).toBe(200);
+    const contacted = replied.json<{ status: string; firstResponseAt: string | null }>();
+    expect(contacted.status).toBe("in-progress");
+    expect(contacted.firstResponseAt).not.toBeNull();
+
+    await call(agent, "PATCH", `/leads/${id}`, { assigneeId: agent.id });
+    const quoted = await step(agent, { type: "quote", amount: 58500 });
+    expect(quoted.json<{ status: string; assignee: { name: string } }>()).toMatchObject({
       status: "quoted",
-      assigneeId: agent.id,
+      assignee: { name: "Sample Agent" },
     });
-    expect(quoted.statusCode).toBe(200);
-    const detail = quoted.json<{
-      status: string;
-      firstResponseAt: string | null;
-      assignee: { name: string };
-    }>();
-    expect(detail).toMatchObject({ status: "quoted", assignee: { name: "Sample Agent" } });
-    expect(detail.firstResponseAt).not.toBeNull();
+    expect((await step(agent, { type: "askPayment" })).json<{ status: string }>().status).toBe(
+      "pending",
+    );
+    expect((await step(agent, { type: "customerReplied" })).json<{ status: string }>().status).toBe(
+      "in-progress",
+    );
 
-    const booked = await call(agent, "PATCH", `/leads/${id}`, { status: "booked", amount: 58500 });
-    expect(booked.json<{ amount: number; closedAt: string | null }>()).toMatchObject({
+    const booked = await step(agent, { type: "convert", amount: 58500 });
+    expect(booked.json<{ status: string; amount: number }>()).toMatchObject({
+      status: "booked",
       amount: 58500,
+    });
+    expect(booked.json<{ closedAt: string | null }>().closedAt).not.toBeNull();
+    // A closed lead takes notes, never another booking or spam.
+    expect((await step(agent, { type: "convert", amount: 1 })).statusCode).toBe(409);
+    expect((await step(agent, { type: "markSpam" })).statusCode).toBe(409);
+    const corrected = await call(agent, "PATCH", `/leads/${id}`, { amount: 59000 });
+    expect(corrected.json<{ amount: number }>().amount).toBe(59000);
+    const reopened = await step(agent, { type: "reopen", reason: "Changed the dates" });
+    expect(reopened.json<{ status: string; closedAt: string | null }>()).toMatchObject({
+      status: "in-progress",
+      closedAt: null,
     });
 
     const noted = await call(agent, "POST", `/leads/${id}/activities`, {
-      type: "call",
-      body: "Called, sent the fare.",
+      type: "note",
+      body: "Prefers a window seat.",
     });
     expect(noted.statusCode).toBe(201);
-    const activities = noted.json<{ activities: Array<{ type: string; actor: string }> }>()
+    const activities = noted.json<{ activities: Array<{ type: string; body: string }> }>()
       .activities;
     expect(activities.map((item) => item.type)).toEqual([
       "created",
-      "status",
+      "whatsapp",
       "assign",
+      "quote",
       "status",
-      "call",
+      "status",
+      "converted",
+      "status",
+      "status",
+      "note",
     ]);
-    expect(await prisma.auditLog.count({ where: { action: "lead.update" } })).toBe(2);
+    expect(activities[1]?.body).toBe("Replied on WhatsApp · Moved to In progress");
+    expect(activities[3]?.body).toContain("৳58,500");
+    expect(
+      await prisma.auditLog.count({ where: { entity: "lead", action: { startsWith: "lead." } } }),
+    ).toBe(8);
 
     // A visa officer can't open a flight lead.
     expect((await call(visaOfficer, "GET", `/leads/${id}`)).statusCode).toBe(404);
+  });
+
+  it("takes a booked group-fare lead's seats off the fare (D0 R4)", async () => {
+    const fare = await prisma.contentDocument.findFirstOrThrow({
+      where: { collection: "groupFares" },
+    });
+    const seats = Math.max((fare.data as { seatsLeft?: number }).seatsLeft ?? 0, 5);
+    await prisma.contentDocument.update({
+      where: { collection_docId: { collection: "groupFares", docId: fare.docId } },
+      data: { data: { ...(fare.data as object), seatsLeft: seats } },
+    });
+    const id = await submitLead({ ...flight, groupFareId: fare.docId });
+    await prisma.lead.update({ where: { id }, data: { travellers: 2 } });
+    await call(agent, "POST", `/leads/${id}/actions`, { type: "contact", channel: "call" });
+    const booked = await call(agent, "POST", `/leads/${id}/actions`, {
+      type: "convert",
+      amount: 120000,
+    });
+    expect(booked.statusCode).toBe(200);
+    const after = await prisma.contentDocument.findUniqueOrThrow({
+      where: { collection_docId: { collection: "groupFares", docId: fare.docId } },
+    });
+    expect((after.data as { seatsLeft: number }).seatsLeft).toBe(seats - 2);
+    const history = await prisma.auditLog.findFirstOrThrow({
+      where: { entity: "groupFares", entityId: fare.docId, action: "content.update" },
+    });
+    expect(history.reason).toContain("2 seats booked");
+  });
+
+  it("walks a visa application through its checklist, submission and outcome (D0 R4)", async () => {
+    const id = await submitLead(visa);
+    const visaStep = (input: Record<string, unknown>) =>
+      call(visaOfficer, "POST", `/leads/${id}/visa`, input);
+    const first = await call(visaOfficer, "GET", `/leads/${id}`);
+    const start = first.json<{ visa: { stage: string; checklist: Array<{ item: string }> } }>()
+      .visa;
+    expect(start.stage).toBe("documentsPending");
+    expect(start.checklist.length).toBeGreaterThan(0);
+    const submit = { type: "submit", on: "2026-10-25", submissionReference: "VFS-1234" };
+    expect((await visaStep(submit)).statusCode).toBe(409);
+    let last = first;
+    for (const { item } of start.checklist) {
+      last = await visaStep({ type: "document", item, received: true });
+    }
+    expect(
+      last.json<{ visa: { stage: string; received: number; required: number } }>().visa,
+    ).toMatchObject({
+      stage: "readyToSubmit",
+      received: start.checklist.length,
+      required: start.checklist.length,
+    });
+    expect((await visaStep(submit)).json<{ visa: { stage: string } }>().visa.stage).toBe(
+      "submitted",
+    );
+    const approved = await visaStep({ type: "outcome", outcome: "approved" });
+    expect(approved.json<{ visa: { stage: string } }>().visa.stage).toBe("approved");
+    const returned = await visaStep({ type: "passportReturned", on: "2026-11-02" });
+    expect(returned.json<{ visa: { stage: string } }>().visa.stage).toBe("passportReturned");
+    const flightLead = await submitLead(flight);
+    expect(
+      (
+        await call(agent, "POST", `/leads/${flightLead}/visa`, {
+          type: "document",
+          item: "Passport",
+          received: true,
+        })
+      ).statusCode,
+    ).toBe(400);
   });
 
   it("bulk assigns and exports CSV without spreadsheet formulas", async () => {
@@ -236,7 +335,7 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
       search: { ...flight.search, legs: [{ from: "DAC", to: "BKK", date: "2026-11-20" }] },
     });
     const bulk = await call(owner, "POST", "/leads/bulk", { ids: [a, b], assigneeId: agent.id });
-    expect(bulk.json()).toEqual({ changed: 2 });
+    expect(bulk.json()).toEqual({ changed: 2, skipped: [] });
     expect(
       (await call(owner, "GET", "/leads?view=unassigned")).json<{ total: number }>().total,
     ).toBe(0);
@@ -248,32 +347,31 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
     expect(csv.body).toContain(`"'=HYPERLINK(1)"`);
   });
 
-  it("moves an order along the workflow and puts stock back when it is cancelled", async () => {
+  it("moves an order by its steps and puts stock back when it is cancelled (D0 R4)", async () => {
     const order = await placeOrder();
     expect(await stockOf("better-day-hp-151a-w1510a-black-toner", "bd-w1510a")).toBe(1);
+    const step = (who: Person, input: Record<string, unknown>) =>
+      call(who, "POST", `/orders/${order.id}/actions`, input);
 
-    const jump = await call(shop, "PATCH", `/orders/${order.id}`, { status: "delivered" });
-    expect(jump.statusCode).toBe(409);
-    const noCourier = await call(shop, "PATCH", `/orders/${order.id}`, { status: "confirmed" });
-    expect(noCourier.statusCode).toBe(200);
     expect(
-      (await call(shop, "PATCH", `/orders/${order.id}`, { status: "shipped" })).statusCode,
+      (await call(shop, "PATCH", `/orders/${order.id}`, { status: "delivered" })).statusCode,
     ).toBe(422);
-    expect(
-      (await call(accounts, "PATCH", `/orders/${order.id}`, { status: "cancelled" })).statusCode,
-    ).toBe(403);
-    const paid = await call(accounts, "PATCH", `/orders/${order.id}`, { paymentVerified: true });
-    expect(paid.json<{ paymentVerified: boolean }>().paymentVerified).toBe(true);
+    expect((await step(shop, { type: "deliver" })).statusCode).toBe(409);
+    // Cash on delivery is confirmed on the phone; there is no proof to verify.
+    expect((await step(shop, { type: "confirm", by: "proof" })).statusCode).toBe(409);
+    expect((await step(accounts, { type: "confirm", by: "call" })).statusCode).toBe(403);
+    const confirmed = await step(shop, { type: "confirm", by: "call" });
+    expect(confirmed.json<{ status: string }>().status).toBe("confirmed");
+    expect((await step(shop, { type: "ship", courier: "Pathao" })).statusCode).toBe(422);
+    const packing = await step(shop, { type: "startPacking" });
+    expect(packing.json<{ status: string }>().status).toBe("processing");
+    const noted = await call(accounts, "PATCH", `/orders/${order.id}`, { note: "Called twice" });
+    expect(noted.statusCode).toBe(200);
 
-    const cancelled = await call(shop, "PATCH", `/orders/${order.id}`, {
-      status: "cancelled",
-      note: "Customer asked",
-    });
-    expect(cancelled.json<{ status: string; next: string[] }>()).toMatchObject({
-      status: "cancelled",
-      next: [],
-    });
+    const cancelled = await step(shop, { type: "cancel", reason: "Customer asked" });
+    expect(cancelled.json<{ status: string }>().status).toBe("cancelled");
     expect(await stockOf("better-day-hp-151a-w1510a-black-toner", "bd-w1510a")).toBe(3);
+    expect((await step(shop, { type: "return", reason: "Twice" })).statusCode).toBe(409);
 
     const tracked = await app.inject({
       method: "POST",
@@ -285,14 +383,38 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
       tracked
         .json<{ status: string; history: Array<{ status: string }> }>()
         .history.map((e) => e.status),
-    ).toEqual(["placed", "confirmed", "confirmed", "cancelled"]);
+    ).toEqual(["placed", "confirmed", "processing", "processing", "cancelled"]);
   });
 
-  it("verifies a payment proof and marks the order paid", async () => {
+  it("delivers cash on delivery as paid, and a return puts the stock back (D0 R4)", async () => {
     const order = await placeOrder();
-    const proof = await prisma.paymentProof.create({
-      data: {
-        reference: order.reference,
+    const step = (input: Record<string, unknown>) =>
+      call(shop, "POST", `/orders/${order.id}/actions`, input);
+    await step({ type: "confirm", by: "call" });
+    await step({ type: "ship", courier: "Pathao", trackingNumber: "PA123456" });
+    const delivered = await step({ type: "deliver" });
+    expect(delivered.json<{ status: string; paymentVerified: boolean }>()).toMatchObject({
+      status: "delivered",
+      paymentVerified: true,
+    });
+    const returned = await step({ type: "return", reason: "Wrong model" });
+    expect(returned.json<{ status: string }>().status).toBe("returned");
+    expect(await stockOf("better-day-hp-151a-w1510a-black-toner", "bd-w1510a")).toBe(3);
+  });
+
+  it("matches a payment proof to its order, verifies it once and confirms the order (D0 R4)", async () => {
+    const order = await placeOrder();
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { payment: { method: "bkash", accountId: "acc-bkash" } },
+    });
+    ip += 1;
+    const sent = await app.inject({
+      method: "POST",
+      url: "/api/v1/public/payment-proofs",
+      headers: { ...INTAKE, "x-client-ip": `10.2.0.${ip}`, "idempotency-key": randomUUID() },
+      payload: {
+        reference: order.reference.toLowerCase(),
         name: "Sample Rahim",
         phone: "+8801712345678",
         amount: order.total,
@@ -300,21 +422,70 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
         transactionId: "8N7A6B5C4D",
       },
     });
+    expect(sent.statusCode).toBe(201);
+    const proof = await prisma.paymentProof.findFirstOrThrow({
+      where: { transactionId: "8N7A6B5C4D" },
+    });
+    expect(proof).toMatchObject({ status: "matched", orderId: order.id });
+    const queue = await call(accounts, "GET", "/payment-proofs?status=received");
     expect(
-      (await call(shop, "PATCH", `/payment-proofs/${proof.id}`, { status: "verified" })).statusCode,
+      queue.json<{ items: Array<{ id: string; order: { reference: string } | null }> }>().items,
+    ).toContainEqual(
+      expect.objectContaining({
+        id: proof.id,
+        order: expect.objectContaining({ reference: order.reference }),
+      }),
+    );
+
+    expect(
+      (await call(shop, "POST", `/payment-proofs/${proof.id}/actions`, { type: "verify" }))
+        .statusCode,
     ).toBe(403);
-    const verified = await call(accounts, "PATCH", `/payment-proofs/${proof.id}`, {
-      status: "verified",
+    const verified = await call(accounts, "POST", `/payment-proofs/${proof.id}/actions`, {
+      type: "verify",
     });
-    expect(verified.statusCode).toBe(200);
+    expect(verified.json()).toEqual({ id: proof.id, status: "verified" });
+    expect(await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).toMatchObject({
+      paymentVerified: true,
+      status: "confirmed",
+    });
+    // A decided proof stays decided (D222).
     expect(
-      (await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).paymentVerified,
-    ).toBe(true);
-    // Rejecting it afterwards withdraws the verification (#78).
-    const rejected = await call(accounts, "PATCH", `/payment-proofs/${proof.id}`, {
-      status: "rejected",
+      (
+        await call(accounts, "POST", `/payment-proofs/${proof.id}/actions`, {
+          type: "reject",
+          reason: "Changed my mind",
+        })
+      ).statusCode,
+    ).toBe(409);
+  });
+
+  it("rejects a short payment proof with a reason (D0 R4)", async () => {
+    const order = await placeOrder();
+    const proof = await prisma.paymentProof.create({
+      data: {
+        reference: order.reference,
+        name: "Sample Rahim",
+        phone: "+8801712345678",
+        amount: order.total - 100,
+        accountId: "acc-bkash",
+        orderId: order.id,
+      },
     });
-    expect(rejected.statusCode).toBe(200);
+    expect(
+      (await call(accounts, "POST", `/payment-proofs/${proof.id}/actions`, { type: "reject" }))
+        .statusCode,
+    ).toBe(422);
+    const rejected = await call(accounts, "POST", `/payment-proofs/${proof.id}/actions`, {
+      type: "reject",
+      reason: "The amount is ৳100 short",
+    });
+    expect(rejected.json()).toEqual({ id: proof.id, status: "rejected" });
+    expect(await prisma.paymentProof.findUniqueOrThrow({ where: { id: proof.id } })).toMatchObject({
+      status: "rejected",
+      note: "The amount is ৳100 short",
+      decidedBy: "Sample Accounts",
+    });
     expect(
       (await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).paymentVerified,
     ).toBe(false);
@@ -403,7 +574,10 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
       (await call(editor, "PUT", "/content/faqs/order", { ids: ids.slice(1) })).statusCode,
     ).toBe(400);
 
-    expect((await call(editor, "DELETE", `/content/faqs/${first.id}`)).statusCode).toBe(204);
+    // Delete moves the record to Trash (D0 R4).
+    const removed = await call(editor, "DELETE", `/content/faqs/${first.id}`);
+    expect(removed.statusCode).toBe(200);
+    expect(removed.json<{ trashId: string }>().trashId).toBeTruthy();
     expect((await call(editor, "GET", `/content/faqs/${first.id}`)).statusCode).toBe(404);
     expect(await prisma.auditLog.count({ where: { entity: "faqs" } })).toBe(3);
   });
