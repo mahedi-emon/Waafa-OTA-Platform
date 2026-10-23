@@ -30,6 +30,22 @@ R2 independent review (20 Oct) rules: useEditorState builds every change on `lat
 render's `value`; drafts are cleared only by save success, Discard, Drop, Delete or editing back (never because the
 form looks clean); category level top = 1; touch areas use invisible ::after (bordered chips need 3px; flush stacks of
 38 px buttons need gap-1.5). Do not cancel CI runs (owner, 20 Oct): let every push's CI finish and fix to green.
+e2e gotchas: Playwright runs spec FILES in name order whatever the CLI order, so in CI's API job admin-editor runs
+first on a fresh seed (no leads, nothing edited): every test creates its own data (public API with the intake key)
+and History tests use a record no other spec edits (faq-change-cancel). Verify locally on a fresh DB: `waafa_ci` in
+waafa-dev-pg (createdb, migrate, seed, API with DATABASE_URL=…/waafa_ci). The API sign-in limiter is in memory:
+restart the API between repeated local runs.
+R3 notes (branch feat/193-media): API foundation in 08a4721 (uses index, replace everywhere, crop to a new asset,
+video MP4/WebM ≤50 MB with ranges, credit columns = DB MIGRATION → remind owner `sh backup.sh`). Web: photo frames in
+blueprints (`FRAME` in blueprints/common.ts; photoAt(field, frame), photoList → widget "gallery", videoAt → widget
+"video"; blueprints.test fails a photo without a frame), widgets MediaField / GalleryField / VideoField (+ media/
+MediaDropzone on react-dropzone 20.1.2, ImageCropDialog on @origin-space/image-cropper 0.1.9, FocalPointPicker/Dialog,
+MediaPickerDialog, useUploadQueue (2 at a time; rules in uploadQueue.ts), posterFromVideo), library page v2 (tabs
+Library · Site images, filters, grid/list, MediaDetailsSheet with usage, Replace everywhere, delete guard), SmartImage
+`focal` → object-position on public pages. 21st.dev uvain/file-upload is a PAID marketplace item ("Marketplace
+membership required") and a refused install still uses a retrieval (D207). Client media code imports values from
+`@waafa/shared/helpers/media` (no zod in the browser). Words: `Admin.media` (in EDITOR_MESSAGES) and
+`Admin.mediaLibrary`; `fieldNames.<owner>_<name>` beats `fieldNames.<name>` (video_credit). e2e: admin-media.spec.ts.
 Key decisions: D184 sidebar stays midnight-950; D185 status families info/progress/success/warning/danger/neutral,
 new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D;
 D186 21st.dev picks (ADMIN.md §14; free tier = 2 installs/day); D187 SchemaEditor stays the engine (no fork),

@@ -78,7 +78,7 @@ function FocalPointPicker({ src, alt, value, onChange, strings }: FocalPointPick
           src={src}
           alt={alt}
           draggable={false}
-          className="block h-auto max-h-[min(48dvh,26rem)] w-auto max-w-full"
+          className="block h-auto max-h-[min(38dvh,26rem)] w-auto max-w-full"
         />
         <button
           type="button"
