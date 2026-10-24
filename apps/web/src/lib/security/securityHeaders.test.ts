@@ -33,6 +33,29 @@ describe("security headers (issue 102)", () => {
     expect(dev).toContain("ws:");
   });
 
+  it("lets only the site itself frame public pages (D0 R7 previews), and nobody frame the rest", () => {
+    const publicPage = securityHeaders({ development: false, https: true, framing: "self" });
+    const value = (key: string) => publicPage.find((header) => header.key === key)?.value ?? "";
+    expect(value("Content-Security-Policy")).toContain("frame-ancestors 'self'");
+    expect(value("X-Frame-Options")).toBe("SAMEORIGIN");
+    const locked = securityHeaders({ development: false, https: true });
+    expect(locked.find((header) => header.key === "X-Frame-Options")?.value).toBe("DENY");
+  });
+
+  it("lets only the admin show the site in a frame, and never be framed itself", () => {
+    const admin = contentSecurityPolicy({ development: false, https: true, framesSite: true });
+    const frames = admin.split("; ").find((part) => part.startsWith("frame-src")) ?? "";
+    expect(frames.split(" ").slice(1)).toEqual([
+      "'self'",
+      "https://challenges.cloudflare.com",
+      "https://www.googletagmanager.com",
+    ]);
+    expect(admin).toContain("frame-ancestors 'none'");
+    expect(contentSecurityPolicy({ development: false, https: true })).not.toContain(
+      "frame-src 'self'",
+    );
+  });
+
   it("sends the standard hardening headers", () => {
     const keys = securityHeaders({ development: false, https: true }).map((header) => header.key);
     expect(keys).toEqual([

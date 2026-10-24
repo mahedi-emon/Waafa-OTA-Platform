@@ -21,9 +21,21 @@ type HeaderOptions = {
   development: boolean;
   /** Upgrade insecure requests only when the site itself is served over https. */
   https: boolean;
+  /**
+   * Who may show the page in a frame: nobody (the admin), or only the site itself (public pages, which the admin's
+   * live previews show, D243). Other sites can never frame either.
+   */
+  framing?: "none" | "self";
+  /** The page shows the site itself in a frame (the admin's live previews, D243): frame-src allows 'self'. */
+  framesSite?: boolean;
 };
 
-export function contentSecurityPolicy({ development, https }: HeaderOptions): string {
+export function contentSecurityPolicy({
+  development,
+  https,
+  framing = "none",
+  framesSite = false,
+}: HeaderOptions): string {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
     "script-src": [
@@ -44,13 +56,13 @@ export function contentSecurityPolicy({ development, https }: HeaderOptions): st
       ...ANALYTICS_CONNECT,
       ...(development ? ["ws:", "wss:"] : []),
     ],
-    "frame-src": [TURNSTILE, "https://www.googletagmanager.com"],
+    "frame-src": [...(framesSite ? ["'self'"] : []), TURNSTILE, "https://www.googletagmanager.com"],
     "worker-src": ["'self'", "blob:"],
     "manifest-src": ["'self'"],
     "object-src": ["'none'"],
     "base-uri": ["'self'"],
     "form-action": ["'self'"],
-    "frame-ancestors": ["'none'"],
+    "frame-ancestors": [framing === "self" ? "'self'" : "'none'"],
   };
   const policy = Object.entries(directives).map(([name, values]) => `${name} ${values.join(" ")}`);
   if (https && !development) policy.push("upgrade-insecure-requests");
@@ -61,7 +73,7 @@ export function securityHeaders(options: HeaderOptions): Array<{ key: string; va
   return [
     { key: "Content-Security-Policy", value: contentSecurityPolicy(options) },
     { key: "X-Content-Type-Options", value: "nosniff" },
-    { key: "X-Frame-Options", value: "DENY" },
+    { key: "X-Frame-Options", value: options.framing === "self" ? "SAMEORIGIN" : "DENY" },
     { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
     {
       key: "Permissions-Policy",

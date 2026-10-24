@@ -12,8 +12,12 @@ import {
   sessionCookies,
   type SessionTokens,
 } from "./lib/admin/tokens";
+import { PREVIEW_HINT_COOKIE, STAFF_HINT_COOKIE } from "./lib/staffHint";
 
 const intl = createMiddleware(routing);
+
+/** Next.js keeps draft mode in this cookie (`draftMode().enable()`). */
+const DRAFT_MODE_COOKIE = "__prerender_bypass";
 
 /** Refreshes a staff session that is about to expire (rotating refresh token, D129); null when it can't. */
 async function refreshSession(refreshToken: string): Promise<SessionTokens | null> {
@@ -33,15 +37,29 @@ async function refreshSession(refreshToken: string): Promise<SessionTokens | nul
   }
 }
 
+/** Ends Preview of unpublished changes in this browser (D0 R7): no drafts once the staff session is gone. */
+function endPreview(response: NextResponse) {
+  response.cookies.delete(DRAFT_MODE_COOKIE);
+  response.cookies.delete(PREVIEW_HINT_COOKIE);
+}
+
 /**
  * Resolves the locale for every page request (unprefixed English paths are served from `/[locale]`). On admin pages
  * it also keeps the staff session fresh: an access token with less than a minute left is exchanged with the refresh
- * cookie before the page renders, and a session that can't be refreshed goes to the sign-in page.
+ * cookie before the page renders, and a session that can't be refreshed goes to the sign-in page. A preview left on
+ * after the session ended is switched off before a public page renders.
  */
 export default async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   if (!isAdminPath(pathname) || isSignInPath(pathname)) {
+    // Drafts show only while a staff session may still be alive (a refresh cookie, or an access token in date).
+    const stalePreview =
+      request.cookies.has(DRAFT_MODE_COOKIE) &&
+      !request.cookies.has(REFRESH_COOKIE) &&
+      secondsLeft(request.cookies.get(ACCESS_COOKIE)?.value) <= 0;
+    if (stalePreview) request.cookies.delete(DRAFT_MODE_COOKIE);
     const response = intl(request);
+    if (stalePreview) endPreview(response);
     if (isAdminPath(pathname)) response.headers.set("x-robots-tag", "noindex, nofollow");
     return response;
   }
@@ -62,6 +80,8 @@ export default async function proxy(request: NextRequest) {
       response.cookies.delete(ACCESS_COOKIE);
       response.cookies.delete(REFRESH_COOKIE);
       response.cookies.delete(REMEMBER_COOKIE);
+      response.cookies.delete(STAFF_HINT_COOKIE);
+      endPreview(response);
       return response;
     }
     // The page renders with the new tokens; the browser stores them from the response.
@@ -70,9 +90,20 @@ export default async function proxy(request: NextRequest) {
   }
   const response = intl(request);
   response.headers.set("x-robots-tag", "noindex, nofollow");
+  // A refresh cookie set without "Keep me signed in" has no expiry; keep it that way unless it was persistent.
+  const remember = request.cookies.has(REMEMBER_COOKIE);
+  // Staff signed in before the hint existed get it on their next admin page (D0 R7): the site's staff tools follow
+  // it. It grants nothing (the session cookies stay httpOnly) and lives as long as the session can.
+  if (!request.cookies.has(STAFF_HINT_COOKIE)) {
+    response.cookies.set(STAFF_HINT_COOKIE, "1", {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      ...(fresh && remember ? { expires: new Date(fresh.refreshExpiresAt) } : {}),
+    });
+  }
   if (fresh) {
-    // A refresh cookie set without "Keep me signed in" has no expiry; keep it that way unless it was persistent.
-    const remember = request.cookies.has(REMEMBER_COOKIE);
     for (const cookie of sessionCookies(fresh, remember)) {
       response.cookies.set(cookie.name, cookie.value, cookie.options);
     }

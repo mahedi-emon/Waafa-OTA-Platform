@@ -89,8 +89,8 @@ footer's calm. The work surface stays light (mist-50 page, white panels).
 | | Coupons | `/content/coupons` | — | admin, shop-manager |
 | | Product attributes | `/content/attributeSets` | — | admin, shop-manager |
 | | Compatible models | `/content/compatibleModels` | — | admin, shop-manager |
-| **Website** | Home page (section manager, hero) | `/content?group=home` now, `/website/home` in R7 | — | admin, content-editor |
-| | Menus and footer (header, footer, phone) | `/content/menus` now, `/website/menus` in R7 | — | admin (menus are settings documents) |
+| **Website** | Home page (section manager, hero) | `/website/home` (R7) | — | admin, content-editor |
+| | Menus and footer (header, footer, phone) | `/website/menus` (R7); footer settings `/content/footerSettings` | — | admin (menus are settings documents) |
 | | Announcement bar | `/content/announcements` | — | admin, content-editor |
 | | Banners and offers | `/content/banners` | — | admin, content-editor |
 | | Pages (About, policies, service pages, page blocks) | `/content/pages` | — | admin, content-editor |
@@ -120,7 +120,7 @@ keep the stable `/content/[key]` addresses; staff never read them (breadcrumbs a
 Every Website and record editor shows a one-line *where it appears* under its title ("Shown on the home page under
 Popular packages and on /tour-packages"). Staff signed in see a small **Edit this page** button on the public site
 (loaded only when the staff hint cookie exists) that opens the right editor; **Edit sections** outlines each section
-with a link to its editor (R7).
+with a link to its editor (shipped in R7, §5.8.1).
 
 ---
 
@@ -281,6 +281,64 @@ Grid (default) and list views; search; filters Photos, Videos, Unused; multi-upl
   places) with preview.
 - **Menus**: a drag-and-drop tree per menu (header, footer columns, phone menu) with a link picker for any page or record.
 - Preview of unpublished changes through Next.js draft mode with a banner "Preview of unpublished changes".
+
+### 5.8.1 What R7 shipped
+- **Website › Home page** (`/website/home`, D244):
+  - the 13 sections in page order; each row has a thumbnail (the section's own photo, else its icon), the name with a
+    Shown or Hidden chip, one line on what it holds, a Show switch that saves at once, and Edit
+  - reorder by dragging the handle (mouse), a long press (touch), or Move up and Move down in every row; the new
+    order saves at once (`PUT /admin/content/homeSections/order`), one save after another, and the moved row keeps
+    keyboard focus
+  - Website › Home page is the sidebar's Home page item; the content lists behind it stay one click away
+- **Section sheet**: the small line, the heading and the line under it (an empty box keeps the standard words, shown
+  in grey), the Show switch, links to where its content is edited (packages, banners, team…), and a live preview: the
+  home page at phone width in a frame (out of the tab order), scrolled to the section and reloaded after each save,
+  which this server shows at once (D249). Every opening starts from the saved words; a change made elsewhere
+  meanwhile is a conflict, never overwritten.
+- **Hero sheet**: the headline and its second line, the line under it, the label and the places that turn (one per
+  line, up to 8), which photo or video it uses and whether phones get a lighter version, with Change photo or video
+  (its media slot), and the same preview.
+- **Website › Menus** (`/website/menus`, D245):
+  - the ten menus grouped the way the site shows them:
+    - Header: links, the More panel and the Waafas World panel cards
+    - Phone: the menu, the tab bar and the More sheet
+    - Footer: three columns and the policy links, with a link to the footer settings
+  - each item says where it goes in words and has a Show switch, Edit, and a menu with Move up, Move down and
+    Remove (Undo puts it back where it was); Add an item; drag to reorder; every change saves at once, one after
+    another
+  - the item sheet shows only what that menu uses (icon, one line under it, card link words)
+  - the tab bar keeps its five tabs in fixed places, always on show; the middle one (Waafas World) is locked
+- **Link picker** (`components/admin/schema/LinkPicker`, D246): every link field in every editor, and every menu item,
+  picks where it goes by name:
+  - a site page
+  - any record with a page (packages, visa countries and guides, flight routes, posts, albums, products, categories,
+    brands, collections)
+  - something else: another website, a phone number or an email, each checked as it is typed
+  - lists say where a link goes in words ("Page · Group fares", "Tour package · Bali Escape"); a record that is gone
+    says "No longer on the site"
+- **Preview of unpublished changes** (D219, D247):
+  - the editor's status panel offers Preview on site for a Draft or Scheduled record
+  - `/secure-admin-control/preview?path=` checks the staff session, turns Next.js draft mode on and opens the page
+  - in draft mode the snapshot reader reads a fresh snapshot with drafts and scheduled records shown as Live, and
+    banners and announcements whose start is still to come started (`previewDrafts`; archived and switched-off
+    records stay hidden), shared by the page's reads for 1 s
+  - the preview ends at Exit preview, at sign-out, and on the next public page once no staff session can be alive
+  - a banner "Preview of unpublished changes" with Exit preview (`/api/preview/exit`) sits above the announcement
+  - visitors' pages are unchanged: draft mode reads as off while the site is built, so every page stays static
+- **Edit on site** (D243, D248):
+  - the sign-in leaves a readable `waafa_staff=1` hint that grants nothing
+  - the public layout's `StaffToolsLoader` (a few hundred bytes) loads the staff tools only where the hint is set,
+    never inside an admin preview frame
+  - the tools ask `/secure-admin-control/api/staff-tools` for this page's admin link and words; that answers only a
+    valid session (a stale hint is cleared, the tools stop asking and a preview left on ends)
+  - **Edit this page** goes to the page's screen or the record's editor, only when the person's role can edit it
+  - **Edit sections** outlines each home section with a dashed line and a link ("Edit Hero") that opens its sheet;
+    the first link takes focus and Escape ends the outlines
+  - **Exit preview** ends the preview; **Hide** keeps the tools away until the tab closes
+- **Framing** (D243): public pages may be framed by the site itself only (`frame-ancestors 'self'`, X-Frame-Options
+  SAMEORIGIN), so the admin previews work; admin pages are never framed and may frame the site (`frame-src 'self'`).
+- **Scheduling**: banners and announcements follow their start and end dates on the site, checked again every few
+  minutes; their chips say Scheduled, Live or Expired with the date.
 
 ### 5.9 States
 - **Empty**: icon, what will appear here, what to do next, a primary action ("No packages yet · Add your first
@@ -473,8 +531,8 @@ if placed, confirmed) or **Rejected** (reason required; the customer is notified
   Off), deals, coupons (Scheduled, Active, Used up at the use limit, Expired), group fares (Open, Few seats, Sold out,
   Expired; seats drop when a lead on the fare is booked), products (stock across variants), shown or hidden; staff
   (Invited until the first sign-in, Active, Locked, Deactivated).
-- **Later**: draft preview with Next.js draft mode comes with R7 (D219); the drag board with R6; DataTable columns for
-  the chips with R5.
+- **Later**: draft preview with Next.js draft mode shipped with R7 (D219, §5.8.1); the drag board with R6; DataTable
+  columns for the chips with R5.
 
 ---
 

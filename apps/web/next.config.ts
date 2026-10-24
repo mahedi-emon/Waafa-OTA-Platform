@@ -45,14 +45,21 @@ const nextConfig: NextConfig = {
   },
   // CSP and hardening headers on every route (issue 102); https upgrades follow NEXT_PUBLIC_SITE_URL.
   async headers() {
+    const base = {
+      development: process.env.NODE_ENV === "development",
+      https: (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://"),
+    };
     return [
-      {
-        source: "/:path*",
-        headers: securityHeaders({
-          development: process.env.NODE_ENV === "development",
-          https: (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://"),
+      // Public pages may be framed by the site itself only: the admin's live previews (D0 R7, D243).
+      { source: "/:path*", headers: securityHeaders({ ...base, framing: "self" }) },
+      // The admin shows the site in its previews and is never framed itself. The later entry wins for the same
+      // header names.
+      ...["/secure-admin-control/:path*", "/:locale(en|bn)/secure-admin-control/:path*"].map(
+        (source) => ({
+          source,
+          headers: securityHeaders({ ...base, framing: "none", framesSite: true }),
         }),
-      },
+      ),
     ];
   },
   ...(standalone

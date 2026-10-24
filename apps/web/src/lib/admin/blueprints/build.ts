@@ -37,6 +37,9 @@ export function buildResolvedBlueprint(
   const workflow = statusValues.includes("draft") && statusValues.includes("published");
 
   const fields: Record<string, ResolvedField> = {};
+  const linkParents = new Set(
+    infos.filter((info) => info.name === "href").map((info) => info.parent),
+  );
   for (const info of infos) {
     if (info.pattern === "" && info.kind === "object") continue;
     const spec = blueprint.fields?.[info.pattern];
@@ -56,7 +59,10 @@ export function buildResolvedBlueprint(
       (inOwner ? words(`fieldHelp.${inOwner}`) : undefined) ??
       words(`fieldHelp.${info.name}`);
     const system = info.parent === "" && SYSTEM_FIELDS.has(info.name);
-    const hidden = Boolean(spec?.auto) || (system && (info.name === "sample" || workflow));
+    // A link's "opens in a new tab" follows from where it goes; the link picker sets it (D0 R7).
+    const linkFlag = info.name === "external" && linkParents.has(info.parent);
+    const hidden =
+      Boolean(spec?.auto) || linkFlag || (system && (info.name === "sample" || workflow));
     const set = spec?.choices ?? info.name;
     const choices = info.values?.map((value) => ({
       value,
@@ -83,7 +89,9 @@ export function buildResolvedBlueprint(
       ...(spec?.fixed ? { fixed: true } : {}),
       ...(spec?.prefix ? { prefix: spec.prefix } : {}),
       ...(spec?.source ? { source: spec.source } : {}),
-      ...(spec?.wide || (widget === "text" && ADDRESS_NAMES.has(info.name)) ? { wide: true } : {}),
+      ...(spec?.wide || widget === "link" || (widget === "text" && ADDRESS_NAMES.has(info.name))
+        ? { wide: true }
+        : {}),
       ...(spec?.order ? { order: spec.order } : {}),
       ...(spec?.from ? { from: spec.from } : {}),
       ...(spec?.variantOf ? { variantOf: spec.variantOf } : {}),

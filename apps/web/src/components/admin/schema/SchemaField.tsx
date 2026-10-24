@@ -15,6 +15,7 @@ import { ColourField } from "./ColourField";
 import { DateField } from "./DateField";
 import { DateTimeField } from "./DateTimeField";
 import { IconField } from "./IconField";
+import { LinkField } from "./LinkField";
 import { LazyGalleryField } from "./LazyGalleryField";
 import { LazyMediaField } from "./LazyMediaField";
 import { LazyVideoField } from "./LazyVideoField";
@@ -68,6 +69,7 @@ const VALUE_WIDGETS = new Set([
   "phone",
   "timeOfDay",
   "variant",
+  "link",
   "readOnly",
 ]);
 
@@ -187,6 +189,8 @@ function SchemaField({ schema, path, value, optional, bare = false }: SchemaFiel
       return <MapField path={path} value={value} />;
     case "variant":
       return <VariantField {...common} />;
+    case "link":
+      return <LinkField {...common} />;
     case "readOnly":
       return <ReadOnlyField path={path} value={value} />;
     case "group":

@@ -35,6 +35,7 @@ import { StatusChip } from "@/components/admin/StatusChip";
 import { RelativeTime } from "@/components/admin/RelativeTime";
 import { formatDhakaDateTime } from "@/lib/admin/format";
 import { publicPathOf, statusOf } from "@/lib/admin/blueprints/display";
+import { previewHref } from "@/lib/previewLinks";
 import type { ResolvedBlueprint } from "@/lib/admin/blueprints/types";
 import type { ChipTone } from "@/lib/admin/statusChips";
 import { SchemaField } from "../schema/SchemaField";
@@ -77,6 +78,9 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
   const where = publicPathOf(blueprint, savedRecord);
   const showView =
     where && (status.state === "live" || status.state === "shown" || status.state === "direct");
+  // Not live yet: Preview of unpublished changes opens the saved version as it will look (D0 R7).
+  const showPreview =
+    where && !state.isNew && (status.state === "draft" || status.state === "scheduled");
   const missing = blueprint.workflow ? missingForPublish(blueprint, record) : [];
   const required = new Set(editor.root.required ?? []);
   // Seeded records were "edited by" the setup, which isn't a person.
@@ -120,6 +124,23 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
             {t("side.viewOnSite")}
             <ExternalLink aria-hidden="true" className="size-3.5" />
           </a>
+        ) : null}
+        {showPreview ? (
+          <div className="mt-3 flex flex-col gap-1">
+            <a
+              href={previewHref(where)}
+              target="_blank"
+              rel="noopener"
+              aria-describedby="side-preview-help"
+              className="inline-flex min-h-11 items-center gap-1.5 self-start rounded-lg text-[14px] font-semibold text-brand-700 hover:underline focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+            >
+              {t("side.preview")}
+              <ExternalLink aria-hidden="true" className="size-3.5" />
+            </a>
+            <p id="side-preview-help" className="text-[13px] text-mist-600">
+              {t("side.previewHelp")}
+            </p>
+          </div>
         ) : null}
         {/* A new record's chip already says it isn't saved. */}
         {!state.isNew ? (

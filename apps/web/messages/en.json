@@ -208,7 +208,12 @@
     "copyEmail": "Copy email address",
     "emailCopied": "Email address copied",
     "current": "current page",
-    "sample": "Sample"
+    "sample": "Sample",
+    "preview": {
+      "title": "Preview of unpublished changes",
+      "body": "Drafts and scheduled changes show here as if they were live. Visitors don't see them.",
+      "exit": "Exit preview"
+    }
   },
   "Footer": {
     "nav": "Footer",
@@ -4125,7 +4130,9 @@
         "cancel": "Cancel",
         "publishing": "Publishing",
         "changeTime": "Change time",
-        "cancelSchedule": "Cancel schedule"
+        "cancelSchedule": "Cancel schedule",
+        "preview": "Preview on site",
+        "previewHelp": "Opens the last saved version as it will look once it is live. Visitors don't see it."
       },
       "toast": {
         "saved": "Saved.",
@@ -6171,6 +6178,337 @@
       "stageCount": "{stage} ({count})",
       "emptyTitle": "No visa applications here",
       "emptyBody": "Visa requests from the website appear here with their documents checklist."
+    },
+    "link": {
+      "choose": "Choose where it goes",
+      "search": "Search pages, packages, visas, products…",
+      "none": "Nothing matches. Try other words.",
+      "loading": "Loading more pages…",
+      "missing": "No longer on the site",
+      "remove": "Remove link",
+      "back": "Back to the list",
+      "use": "Use this",
+      "kinds": {
+        "page": "Page",
+        "web": "Another website",
+        "phone": "Phone number",
+        "email": "Email",
+        "path": "Page on this site"
+      },
+      "groups": {
+        "pages": "Site pages",
+        "other": "Something else",
+        "tourPackages": {
+          "one": "Tour package",
+          "other": "Tour packages"
+        },
+        "visaCountries": {
+          "one": "Visa country",
+          "other": "Visa countries"
+        },
+        "visaGuides": {
+          "one": "Visa guide",
+          "other": "Visa guides"
+        },
+        "flightRoutes": {
+          "one": "Flight route",
+          "other": "Flight routes"
+        },
+        "blogPosts": {
+          "one": "Blog post",
+          "other": "Blog posts"
+        },
+        "galleryAlbums": {
+          "one": "Gallery album",
+          "other": "Gallery albums"
+        },
+        "products": {
+          "one": "Product",
+          "other": "Products"
+        },
+        "categories": {
+          "one": "Store category",
+          "other": "Store categories"
+        },
+        "brands": {
+          "one": "Brand",
+          "other": "Brands"
+        },
+        "collections": {
+          "one": "Collection",
+          "other": "Collections"
+        }
+      },
+      "other": {
+        "web": "Another website…",
+        "phone": "A phone number…",
+        "email": "An email address…"
+      },
+      "typed": {
+        "web": "Website address",
+        "phone": "Phone number",
+        "email": "Email address"
+      },
+      "placeholders": {
+        "web": "facebook.com/waafa",
+        "phone": "01712 345678",
+        "email": "name@example.com"
+      },
+      "invalid": {
+        "web": "That doesn't look like a website address. Try something like facebook.com/waafa.",
+        "phone": "Enter a phone number with 10 or 11 digits, like 01712 345678.",
+        "email": "Enter an email address like name@example.com."
+      },
+      "pages": {
+        "home": "Home",
+        "flights": "Flights",
+        "groupFares": "Group fares",
+        "hotels": "Hotels",
+        "packages": "Tour packages",
+        "planTrip": "Plan my trip",
+        "visa": "Visa",
+        "visaGuide": "Visa guide",
+        "shop": "Waafas World",
+        "shopCategories": "All store categories",
+        "deals": "Deals",
+        "finder": "Find by printer model",
+        "track": "Track an order",
+        "printing": "Printing Solutions",
+        "trading": "International Trading",
+        "blog": "Blog",
+        "gallery": "Gallery",
+        "faqs": "FAQs",
+        "about": "About us",
+        "contact": "Contact",
+        "feedback": "Feedback",
+        "offlinePayment": "Offline payment",
+        "baggage": "Baggage information",
+        "emi": "EMI",
+        "privacy": "Privacy policy",
+        "refund": "Refund policy",
+        "terms": "Terms and conditions"
+      }
+    },
+    "website": {
+      "failed": "That didn't save. Try again.",
+      "saved": "Saved. The home page shows it within a few seconds.",
+      "home": {
+        "metaTitle": "Home page",
+        "title": "Home page",
+        "lead": "The sections of the home page in the order visitors see them. Drag to change the order, switch a section off, or edit what it says.",
+        "view": "View home page",
+        "sectionsTitle": "Sections, in page order",
+        "sectionsLead": "Drag a section by its handle, or use its arrows. A hidden section keeps its words for later.",
+        "shown": "Shown",
+        "hidden": "Hidden",
+        "show": "Show",
+        "showFor": "Show {name} on the website",
+        "edit": "Edit",
+        "editSection": "Edit {name}",
+        "moveUp": "Move {name} up",
+        "moveDown": "Move {name} down",
+        "orderSaved": "Order saved. The home page follows within a few seconds.",
+        "shownSaved": "{name} is on the home page again.",
+        "hiddenSaved": "{name} is hidden from the home page."
+      },
+      "sections": {
+        "hero": {
+          "name": "Hero",
+          "lead": "The big photo or video at the top with the headline, the search card and the office hours."
+        },
+        "trust": {
+          "name": "Trust strip",
+          "lead": "Four short reasons to book with us, under the hero."
+        },
+        "offers": {
+          "name": "Offers and banners",
+          "lead": "Banners and offers that are live today."
+        },
+        "groupFares": {
+          "name": "Group fares",
+          "lead": "Seats on group fares that are still open, with what is left."
+        },
+        "destinations": {
+          "name": "Destinations",
+          "lead": "Popular places with a photo each."
+        },
+        "packages": {
+          "name": "Tour packages",
+          "lead": "Featured tour packages with their price from."
+        },
+        "visa": {
+          "name": "Visa",
+          "lead": "Popular visa countries with what each costs."
+        },
+        "why": {
+          "name": "Why Waafa",
+          "lead": "The big figure, a short story and the company's values."
+        },
+        "store": {
+          "name": "Waafas World",
+          "lead": "The store's pitch with a few products."
+        },
+        "testimonials": {
+          "name": "Customer feedback",
+          "lead": "Approved feedback from customers who agreed to show it."
+        },
+        "galleryBlogFaq": {
+          "name": "Gallery, blog and FAQs",
+          "lead": "Recent albums and posts, common questions and the review links."
+        },
+        "team": {
+          "name": "Meet our team",
+          "lead": "The people customers talk to, with their photos or initials."
+        },
+        "cta": {
+          "name": "Closing call to action",
+          "lead": "The last band of the page with the contact buttons."
+        }
+      },
+      "sheet": {
+        "show": "Show on the home page",
+        "defaultsHelp": "Leave a box empty to use the standard words, shown in grey. A box without grey words is left out when empty.",
+        "kicker": "Small line above the heading",
+        "heading": "Heading",
+        "line": "Line under the heading",
+        "noHeadings": "This section has no heading of its own. Its content is edited where it comes from.",
+        "contentTitle": "What it shows is edited in",
+        "preview": "Preview at phone width",
+        "previewNote": "This is the live site. It shows a save as soon as it is made.",
+        "previewTitle": "Home page preview: {name}",
+        "save": "Save",
+        "close": "Close"
+      },
+      "hero": {
+        "title": "Hero",
+        "lead": "The first thing visitors see: the photo or video, the headline and the places that turn in it.",
+        "photo": "Photo",
+        "video": "Video",
+        "noMedia": "No photo or video yet",
+        "phoneVersion": "With a lighter version for phones.",
+        "noPhoneVersion": "No lighter version for phones yet: phones load the full video.",
+        "changeMedia": "Change photo or video",
+        "needed": "Fill in the headline, its second line, the line under it and the label for the places.",
+        "placesNeeded": "Add at least one place.",
+        "fields": {
+          "title": "Headline",
+          "titleAccent": "Headline, second line",
+          "titleAccentHelp": "Shown in blue under the headline.",
+          "lead": "Line under the headline",
+          "rotatingLabel": "Label before the places",
+          "rotating": "Places that turn",
+          "rotatingHelp": "One place per line, up to 8. They take turns after the label."
+        }
+      }
+    },
+    "menus": {
+      "metaTitle": "Menus",
+      "title": "Menus",
+      "lead": "Every menu of the site: the header, the phone menus and the footer. Drag items into order, pick where each one goes, switch one off.",
+      "failed": "That didn't save. Try again.",
+      "saved": "Saved. The site follows within a few seconds.",
+      "orderSaved": "Order saved.",
+      "added": "{label} added.",
+      "removed": "{label} removed.",
+      "restored": "Put back.",
+      "undo": "Undo",
+      "shown": "{label} shows again.",
+      "hidden": "{label} is hidden.",
+      "add": "Add an item",
+      "empty": "No items yet. Add the first one.",
+      "noLink": "No link yet",
+      "opensMore": "Opens the More panel",
+      "showItem": "Show {label}",
+      "editItem": "Edit {label}",
+      "groups": {
+        "header": {
+          "title": "Header",
+          "lead": "The bar across the top of every page on a computer."
+        },
+        "phone": {
+          "title": "Phone",
+          "lead": "The menu and the tab bar visitors use on a phone."
+        },
+        "footer": {
+          "title": "Footer",
+          "lead": "The columns and the policy links at the bottom of every page.",
+          "settings": "Footer column titles, payment badges and the note"
+        }
+      },
+      "menus": {
+        "header": {
+          "name": "Header links",
+          "lead": "The main links in the top bar."
+        },
+        "more": {
+          "name": "More panel",
+          "lead": "The panel that opens from More in the top bar: an icon, a title and one line each."
+        },
+        "shop-panel": {
+          "name": "Waafas World panel cards",
+          "lead": "The service cards in the Waafas World panel of the top bar."
+        },
+        "drawer": {
+          "name": "Phone menu",
+          "lead": "The main links at the top of the phone menu."
+        },
+        "tabbar": {
+          "name": "Phone tab bar",
+          "lead": "The five tabs at the bottom of the phone screen, in fixed places. Waafas World stays in the middle and More last."
+        },
+        "more-phone": {
+          "name": "Phone More sheet",
+          "lead": "Extra links in the phone's More sheet, after the More panel's links."
+        },
+        "footer-travel": {
+          "name": "Footer: travel",
+          "lead": "The travel column of the footer."
+        },
+        "footer-shop": {
+          "name": "Footer: Waafas World",
+          "lead": "The store column of the footer."
+        },
+        "footer-help": {
+          "name": "Footer: help",
+          "lead": "The help column of the footer."
+        },
+        "legal": {
+          "name": "Policy links",
+          "lead": "The small links at the very bottom: privacy, refunds, terms."
+        }
+      },
+      "item": {
+        "editTitle": "Edit menu item",
+        "addTitle": "Add a menu item",
+        "lead": "In {menu}.",
+        "label": "Words on the menu",
+        "link": "Where it goes",
+        "description": "One line under it",
+        "icon": "Icon",
+        "cta": "Link words on the card",
+        "visible": "Show on the site",
+        "morePanel": "This item opens the More panel, so it has no link of its own.",
+        "labelNeeded": "Write the words the menu shows.",
+        "linkNeeded": "Choose where the item goes.",
+        "cancel": "Cancel",
+        "save": "Save",
+        "add": "Add item"
+      },
+      "moreFor": "More for {label}",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove",
+      "centreTab": "Always Waafas World, in the middle"
+    },
+    "staffTools": {
+      "region": "Staff tools",
+      "edit": "Edit this page",
+      "admin": "Open the admin",
+      "more": "More staff tools",
+      "editSections": "Edit sections",
+      "editSection": "Edit {name}",
+      "exitPreview": "Exit preview",
+      "hide": "Hide staff tools until this tab closes"
     }
   },
   "Consent": {

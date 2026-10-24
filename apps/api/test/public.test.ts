@@ -1,11 +1,12 @@
 import { randomUUID } from "node:crypto";
 import type { NestFastifyApplication } from "@nestjs/platform-fastify";
 import { loadFixtures } from "@waafa/fixtures";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { ContentService } from "../src/content/content.service";
 import { featureModules } from "../src/features";
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { MemoryMailer } from "../src/notifications/mailer";
+import { NotificationService } from "../src/notifications/notification.service";
 import { seedDatabase } from "../src/seed/seedDatabase";
 import { dbAvailable, resetDatabase, testApp, testPrisma } from "./helpers";
 
@@ -60,6 +61,8 @@ describe.skipIf(!dbAvailable)("public intake (B3)", () => {
     await app.close();
     await prisma.$disconnect();
   });
+  // Emails leave after the response: the last test's ones land before the next test counts its own (#222).
+  afterEach(() => app.get(NotificationService).idle());
   beforeEach(async () => {
     ip += 1;
     mailer.sent.length = 0;

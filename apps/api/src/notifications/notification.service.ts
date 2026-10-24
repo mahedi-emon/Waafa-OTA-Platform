@@ -53,6 +53,8 @@ export async function deliverEmail(
 export class NotificationService implements OnModuleDestroy {
   private readonly logger = new Logger("Notifications");
   private readonly queue: Queue | null;
+  /** Emails on their way: being queued, or being sent in-process. */
+  private readonly inFlight = new Set<Promise<unknown>>();
 
   constructor(
     @Inject(ENV) private readonly env: Env,
@@ -82,11 +84,35 @@ export class NotificationService implements OnModuleDestroy {
     return `${this.env.WEB_ORIGINS[0] ?? ""}${ADMIN_BASE_PATH}${path}`;
   }
 
-  async notify(
+  /** One template email; callers fire and forget it (`void notify(...)`), so a slow provider never slows a submit. */
+  notify(
     key: NotificationTemplate["key"],
     to: string | undefined,
     vars: Record<string, string>,
-  ) {
+  ): Promise<void> {
+    return this.track(this.queueEmail(key, to, vars));
+  }
+
+  /**
+   * Resolves once every email started in this process so far has been handled (queued in Redis, or sent in-process).
+   * Callers never wait for emails; tests do, so each test counts only its own (#222).
+   */
+  async idle(): Promise<void> {
+    while (this.inFlight.size > 0) await Promise.allSettled([...this.inFlight]);
+  }
+
+  private track<T>(work: Promise<T>): Promise<T> {
+    this.inFlight.add(work);
+    const done = () => this.inFlight.delete(work);
+    work.then(done, done);
+    return work;
+  }
+
+  private async queueEmail(
+    key: NotificationTemplate["key"],
+    to: string | undefined,
+    vars: Record<string, string>,
+  ): Promise<void> {
     if (!to) return;
     let logId: string | null = null;
     try {
@@ -120,11 +146,17 @@ export class NotificationService implements OnModuleDestroy {
         });
       } else {
         // In-process without Redis: never block the request, never throw into it.
-        setImmediate(() => {
-          deliverEmail(this.prisma, this.mailer, job).catch((error: unknown) =>
-            this.logger.warn(`Email ${key} to ${to} failed: ${String(error)}`),
-          );
-        });
+        void this.track(
+          new Promise<void>((resolve) => {
+            setImmediate(() => {
+              deliverEmail(this.prisma, this.mailer, job)
+                .catch((error: unknown) =>
+                  this.logger.warn(`Email ${key} to ${to} failed: ${String(error)}`),
+                )
+                .finally(resolve);
+            });
+          }),
+        );
       }
     } catch (error) {
       this.logger.warn(`Could not queue ${key}: ${String(error)}`);

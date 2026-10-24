@@ -75,6 +75,8 @@ export function inferWidget(
       if (node.format === "date") return "date";
       if (node.format === "date-time") return "dateTime";
       if (info.values) return "choice";
+      // A link's address is picked, never typed (D0 R7).
+      if (name === "href") return "link";
       if (typeof node.maxLength === "number" ? node.maxLength > 200 : LONG_TEXT.test(name))
         return "textarea";
       return "text";
