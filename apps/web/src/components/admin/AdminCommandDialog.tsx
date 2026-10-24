@@ -175,7 +175,7 @@ function AdminCommandDialog({ open, onOpenChange }: AdminCommandDialogProps) {
           {
             id: "home",
             label: t("command.editHome"),
-            href: `${ADMIN}/content?group=home`,
+            href: `${ADMIN}/website/home`,
             icon: "home" as const,
           },
         ]

@@ -1,9 +1,10 @@
 "use server";
 
-import { cookies, headers } from "next/headers";
+import { cookies, draftMode, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { apiConfig } from "@/lib/data/api/apiClient";
 import { clientKey } from "@/lib/rateLimit";
+import { PREVIEW_HINT_COOKIE, STAFF_HINT_COOKIE } from "@/lib/staffHint";
 import {
   ACCESS_COOKIE,
   REFRESH_COOKIE,
@@ -68,6 +69,14 @@ export async function signIn(_previous: SignInState, form: FormData): Promise<Si
   } else {
     store.delete(REMEMBER_COOKIE);
   }
+  // Lets the public site load "Edit this page" for staff; a readable hint that grants nothing (D0 R7).
+  store.set(STAFF_HINT_COOKIE, "1", {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    expires: new Date(tokens.refreshExpiresAt),
+  });
   redirect(safeNext(form.get("next")));
 }
 
@@ -88,5 +97,8 @@ export async function signOut(): Promise<void> {
   store.delete(ACCESS_COOKIE);
   store.delete(REFRESH_COOKIE);
   store.delete(REMEMBER_COOKIE);
+  store.delete(STAFF_HINT_COOKIE);
+  store.delete(PREVIEW_HINT_COOKIE);
+  (await draftMode()).disable();
   redirect("/secure-admin-control/sign-in");
 }

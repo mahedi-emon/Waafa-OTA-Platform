@@ -6,14 +6,16 @@ NEVER cancel or skip CI: every push's CI runs to green; verify locally first. CI
 PR run to finish before pushing again.
 DONE: R4 #194 merged (#218, ce05c1b; migration 20261024040000_status_automation → owner runs backup.sh before deploy).
 DONE: R5 #195 merged (#220 squash 763f58d, CI 8/8, no migration), issue closed, Project Done, close-out posted.
-NOW: R6 #196 inbox on branch feat/196-inbox, committed and pushed; PR opening (title "feat(admin): inbox with queue
-panes, lead board moves and visa applications (R6)"). No migration. Local: shared 144, web 623, API 184, API-job e2e 52/52
-on a fresh DB; independent review's 10 findings fixed (D242); InboxSplit is one grid + own separator (D241, shadcn
-resizable removed). TRACKER R6 block filled (still 🟡 until merge), D232–D242, ADMIN.md §5.5.1.
-NEXT STEPS: 1) PR → owner COMMENT review with inline comments (D159) → CI green (no reruns) → squash-merge
-`gh pr merge <n> --squash --delete-branch --subject "feat(admin): inbox … (R6) (#<n>)"` → check merge author →
-close-out on #196 → Project Done → TRACKER R6 ✅ + session log PR number (in R7's branch). 2) OWNER CHECKPOINT
-(Banglish summary + screenshot paths scratchpad/r6/*.png + "test this yourself"). 3) R7 #197 website builder.
+DONE: R6 #196 merged (#221 squash b25e1b2, CI 8/8, no migration), closed, Project Done, close-out posted, owner
+checkpoint posted in chat (screenshots scratchpad/r6/).
+NOW: R7 #197 website builder on branch feat/197-website-builder (uncommitted until the PR): Website › Home page
+(website/home), Website › Menus (website/menus), LinkPicker for every href, draft preview (/secure-admin-control/preview,
+/api/preview/exit, previewDrafts in lib/data/api), staff tools (components/staff/*, api/staff-tools), framing rules
+in next.config (D243). Docs: ADMIN.md §5.8.1 and TRACKER D243–D248 written; R6 marked ✅ (#221). Remaining: e2e
+admin-website.spec.ts green, editLinks feedback roles, tab bar without Show switch, screenshots + review, TRACKER R7
+block + matrix rows, PR.
+NEXT STEPS: 1) R7: finish, PR, owner COMMENT review, CI, merge, close-out.
+2) R8 #198 purpose-built editors, then OWNER CHECKPOINT. 3) R9 #199, R10 #200 (+ ADMIN_GUIDE.md).
 GOTCHA (R6): an sr-only span inside an overflow-x-auto row whose children are not positioned widens the whole page
 (absolute containing block outside the scroller): StatusChip and module tab links are now `relative`.
 DATATABLE NOTES: components/admin/table/* (AdminDataTable server wrapper with scoped messages; DataRow with

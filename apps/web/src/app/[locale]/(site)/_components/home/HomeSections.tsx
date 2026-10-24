@@ -89,7 +89,16 @@ async function HomeSections() {
     <>
       {/* The hero carries the page h1; if an admin turns it off, Home still has one heading for its title. */}
       {heroShown ? null : <h1 className="sr-only">{site.travelBrand}</h1>}
-      {sections.map(render)}
+      {/* Each section is marked for staff tools (Edit sections, admin previews); `contents` adds no box (D0 R7). */}
+      {sections.map((section) => (
+        <div
+          key={section.key}
+          data-edit={section.key === "hero" ? "hero" : `homeSections:${section.key}`}
+          className="contents"
+        >
+          {render(section)}
+        </div>
+      ))}
     </>
   );
 }

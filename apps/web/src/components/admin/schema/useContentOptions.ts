@@ -16,7 +16,11 @@ const cache = new Map<string, OptionsState & { at: number }>();
 const pending = new Map<string, Promise<void>>();
 const listeners = new Set<() => void>();
 
+/** Moves on every change, so a picker reading several lists re-renders once something arrives. */
+let version = 0;
+
 function emit() {
+  version += 1;
   for (const listener of listeners) listener();
 }
 
@@ -56,6 +60,24 @@ export function loadOptions(key: string, force = false): Promise<void> {
 function subscribe(listener: () => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
+}
+
+/** One list's choices as loaded so far (read during a render that uses `useOptionsOf`). */
+export function readOptions(key: string): OptionsState {
+  return cache.get(key) ?? IDLE;
+}
+
+/** Loads several lists (the link picker's groups) and re-renders as each arrives; read them with `readOptions`. */
+export function useOptionsOf(keys: readonly string[]): number {
+  const joined = keys.join("|");
+  useEffect(() => {
+    for (const key of joined ? joined.split("|") : []) void loadOptions(key);
+  }, [joined]);
+  return useSyncExternalStore(
+    subscribe,
+    () => version,
+    () => 0,
+  );
 }
 
 /** The choices of one list for a picker, loading them on first use. */

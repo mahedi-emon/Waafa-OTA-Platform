@@ -40,6 +40,8 @@ export type WidgetKind =
   | "seo"
   | "map"
   | "variant"
+  /** Where a link goes: a page or record by name, or a web address, phone or email (D0 R7). */
+  | "link"
   | "readOnly";
 
 /** What the editor fills in by itself; staff never type these. */

@@ -273,10 +273,11 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       {
         key: "homePage",
         label: "homePage",
-        href: `${ADMIN}/content?group=home`,
+        href: `${ADMIN}/website/home`,
         icon: "home",
         roles: CONTENT,
         also: [
+          `${ADMIN}/content?group=home`,
           content("homeContent"),
           content("homeSections"),
           content("trustItems"),
@@ -288,11 +289,11 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       {
         key: "menus",
         label: "menus",
-        href: content("menus"),
+        href: `${ADMIN}/website/menus`,
         icon: "menus",
         // Menus and the footer are settings documents: managers edit them (packages/shared access rules).
         roles: ["admin"],
-        also: [content("footerSettings")],
+        also: [content("menus"), content("footerSettings")],
       },
       {
         key: "announcements",

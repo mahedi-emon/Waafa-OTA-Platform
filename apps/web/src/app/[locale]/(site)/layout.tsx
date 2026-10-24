@@ -9,16 +9,18 @@ import { LazyToaster } from "@/components/feedback/LazyToaster";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { MoreSheetBody } from "@/components/layout/MoreSheetBody";
+import { PreviewBanner } from "@/components/layout/PreviewBanner";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { TabBar } from "@/components/layout/TabBar";
+import { StaffToolsLoader } from "@/components/staff/StaffToolsLoader";
 import { pickMessages } from "@/i18n/pickMessages";
 import { getContactSettings, getMenu, getPublicConfig } from "@/lib/data/settings";
 
 /**
  * Public site frame (A6): announcement, sticky header, page, footer, phone tab bar and the floating WhatsApp button.
  * Pages render their own <main id="main"> (the skip link's target). The bottom padding keeps the footer clear of the
- * tab bar on phones.
+ * tab bar on phones. For staff only: the preview banner (draft mode) and the staff tools (D0 R7).
  */
 export default async function SiteLayout({ children }: LayoutProps<"/[locale]">) {
   const [contact, config, tabbar, more, morePhone, messages, t, tErrors] = await Promise.all([
@@ -45,6 +47,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
 
   return (
     <div className="flex min-h-dvh flex-col pb-(--tab-space) lg:pb-0">
+      <PreviewBanner />
       <AnnouncementBar />
       <SiteHeader />
       <SupportContactProvider
@@ -93,6 +96,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
         }}
       />
       <LazyToaster />
+      <StaffToolsLoader />
       <Analytics />
     </div>
   );

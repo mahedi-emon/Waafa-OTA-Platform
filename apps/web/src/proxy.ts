@@ -12,6 +12,7 @@ import {
   sessionCookies,
   type SessionTokens,
 } from "./lib/admin/tokens";
+import { STAFF_HINT_COOKIE } from "./lib/staffHint";
 
 const intl = createMiddleware(routing);
 
@@ -70,6 +71,17 @@ export default async function proxy(request: NextRequest) {
   }
   const response = intl(request);
   response.headers.set("x-robots-tag", "noindex, nofollow");
+  // Staff signed in before the hint existed get it on their next admin page (D0 R7): the site's staff tools and the
+  // admin's previews follow it. It grants nothing; the session cookies stay httpOnly.
+  if (!request.cookies.has(STAFF_HINT_COOKIE)) {
+    response.cookies.set(STAFF_HINT_COOKIE, "1", {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      ...(fresh ? { expires: new Date(fresh.refreshExpiresAt) } : {}),
+    });
+  }
   if (fresh) {
     // A refresh cookie set without "Keep me signed in" has no expiry; keep it that way unless it was persistent.
     const remember = request.cookies.has(REMEMBER_COOKIE);

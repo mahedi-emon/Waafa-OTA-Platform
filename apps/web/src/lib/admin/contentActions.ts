@@ -216,3 +216,10 @@ export async function moveRecord(key: string, id: string, by: -1 | 1): Promise<A
   const result = await adminWrite(`/admin/content/${at(key)}/${at(id)}/move`, "POST", { by }, KEEP);
   return result.ok ? { ok: true } : result;
 }
+
+/** A whole list in a new order (the home page manager's drag and Move up / down, D0 R7). */
+export async function reorderContent(key: string, ids: string[]): Promise<ActionResult> {
+  if (!KEY.test(key) || ids.length === 0 || ids.some((id) => !ID.test(id))) return badKey();
+  const result = await adminWrite(`/admin/content/${at(key)}/order`, "PUT", { ids }, KEEP);
+  return result.ok ? { ok: true } : result;
+}

@@ -96,6 +96,11 @@ describe("admin navigation (ADMIN.md §3.1)", () => {
     expect(activeKey("/en/secure-admin-control/content/products/x", "", items)).toBe("products");
     expect(activeKey("/secure-admin-control/content/airports/DAC", "", items)).toBe("airlines");
     expect(activeKey("/secure-admin-control/content/homeSections", "", items)).toBe("homePage");
+    expect(activeKey("/secure-admin-control/website/home", "?section=team", items)).toBe(
+      "homePage",
+    );
+    expect(activeKey("/secure-admin-control/website/menus", "", items)).toBe("menus");
+    expect(activeKey("/secure-admin-control/content/menus/header", "", items)).toBe("menus");
     expect(activeKey("/secure-admin-control/content/contactSettings", "", items)).toBe("settings");
     expect(activeKey("/secure-admin-control/users", "", items)).toBe("settings");
     expect(activeKey("/secure-admin-control/search", "", items)).toBe("reports");
