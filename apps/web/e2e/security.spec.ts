@@ -3,16 +3,28 @@ import { collectErrors } from "./errors";
 
 /* Security headers and analytics consent (issue 102). */
 test("every page sends the CSP and hardening headers", async ({ request }) => {
-  for (const path of ["/", "/flights", "/shop", "/secure-admin-control/sign-in"]) {
+  // Public pages may be framed by the site itself only (the admin's live previews, D243); the admin by nobody.
+  const framing: Record<string, { ancestors: string; frameOptions: string }> = {
+    "/": { ancestors: "frame-ancestors 'self'", frameOptions: "SAMEORIGIN" },
+    "/flights": { ancestors: "frame-ancestors 'self'", frameOptions: "SAMEORIGIN" },
+    "/shop": { ancestors: "frame-ancestors 'self'", frameOptions: "SAMEORIGIN" },
+    "/secure-admin-control/sign-in": {
+      ancestors: "frame-ancestors 'none'",
+      frameOptions: "DENY",
+    },
+  };
+  for (const [path, want] of Object.entries(framing)) {
     const response = await request.get(path);
     const headers = response.headers();
-    expect(headers["content-security-policy"], path).toContain("frame-ancestors 'none'");
+    expect(headers["content-security-policy"], path).toContain(want.ancestors);
     expect(headers["content-security-policy"], path).toContain("object-src 'none'");
     expect(headers["x-content-type-options"], path).toBe("nosniff");
-    expect(headers["x-frame-options"], path).toBe("DENY");
+    expect(headers["x-frame-options"], path).toBe(want.frameOptions);
     expect(headers["referrer-policy"], path).toBe("strict-origin-when-cross-origin");
     expect(headers["x-powered-by"], path).toBeUndefined();
   }
+  const admin = (await request.get("/secure-admin-control/sign-in")).headers();
+  expect(admin["content-security-policy"]).toContain("frame-src 'self'");
 });
 
 test("the site runs under its CSP without violations and loads no tracker by default", async ({

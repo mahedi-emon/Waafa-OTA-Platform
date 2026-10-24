@@ -37,6 +37,11 @@ describe("editTargetFor (D0 R7)", () => {
     expect(editTargetFor("/bn", ["en", "bn"])?.href).toBe("/secure-admin-control/website/home");
     expect(editTargetFor("/visa/thailand/apply")).toBeNull();
     expect(editTargetFor("/account")).toBeNull();
+    expect(editTargetFor("/visa///")?.href).toBe("/secure-admin-control/content/visaCountries");
+    // A path made of slashes stays cheap (no backtracking regex on what a browser sends).
+    const started = performance.now();
+    expect(editTargetFor(`/${"/".repeat(50_000)}x`)).toBeNull();
+    expect(performance.now() - started).toBeLessThan(200);
   });
 });
 

@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
     getTranslations({ locale, namespace: "Admin.staffTools" }),
     getTranslations({ locale, namespace: "Admin.website.sections" }),
   ]);
-  const target = editTargetFor(request.nextUrl.searchParams.get("path") ?? "/", routing.locales);
+  const path = (request.nextUrl.searchParams.get("path") ?? "/").slice(0, 512);
+  const target = editTargetFor(path, routing.locales);
   const mayEdit =
     target &&
     ("key" in target

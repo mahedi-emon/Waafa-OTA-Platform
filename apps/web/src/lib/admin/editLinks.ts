@@ -55,10 +55,17 @@ export function editTargetFor(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
   );
   const path = (prefix ? pathname.slice(prefix.length + 1) : pathname) || "/";
-  const target = describeHref(path.length > 1 ? path.replace(/\/+$/, "") : path);
+  const target = describeHref(withoutTrailingSlashes(path));
   if (target?.kind === "page") return PAGE_EDITORS[target.page];
   if (target?.kind === "record") return content(target.key, target.id);
   return null;
+}
+
+/** "/shop/p/hp-26a/" → "/shop/p/hp-26a"; a loop, not a regex, so a path made of slashes stays cheap. */
+function withoutTrailingSlashes(path: string): string {
+  let end = path.length;
+  while (end > 1 && path[end - 1] === "/") end -= 1;
+  return path.slice(0, end);
 }
 
 /** "Edit sections": the home page manager with one section's sheet open. */

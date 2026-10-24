@@ -28,7 +28,8 @@ const EXPECTED_ORDER = [
 ];
 
 async function sectionOrder(page: Page): Promise<string[]> {
-  return page.$$eval("main > section[aria-labelledby]", (sections) =>
+  // Each home section sits in a `display: contents` mark for the staff tools (D0 R7), so it is a grandchild of main.
+  return page.$$eval("main > [data-edit] > section[aria-labelledby]", (sections) =>
     sections.map((section) => section.getAttribute("aria-labelledby") ?? ""),
   );
 }
