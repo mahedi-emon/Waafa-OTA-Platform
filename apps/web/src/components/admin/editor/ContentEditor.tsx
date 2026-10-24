@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -53,6 +54,7 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
   const t = useTranslations("Admin.editor");
   const state = useEditorState(input);
   const { blueprint, schema } = input;
+  const writing = blueprint.layout === "writing";
   const [tab, setTab] = useState("edit");
   const [sideOpen, setSideOpen] = useState(false);
   // From 1280 px the side panel is a column of its own and always open.
@@ -144,8 +146,8 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
         />
       ) : null}
       <EditorSectionJump sections={blueprint.sections} />
-      {blueprint.sections.map((section) => (
-        <EditorSection key={section.id} section={section} />
+      {blueprint.sections.map((section, index) => (
+        <EditorSection key={section.id} section={section} next={blueprint.sections[index + 1]} />
       ))}
       {canAdvanced ? <EditorAdvanced fields={blueprint.advanced} /> : null}
     </div>
@@ -153,13 +155,28 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
 
   return (
     <SchemaEditorContext.Provider value={context}>
-      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[13rem_minmax(0,1fr)] xl:grid-cols-[13rem_minmax(0,1fr)_20rem]">
-        <aside className="hidden lg:row-span-2 lg:block">
-          <EditorSectionRail sections={blueprint.sections} states={sectionStates} />
-        </aside>
+      {/* A writing view (a blog post) gives the text the room the section list would take (D0 R8). */}
+      <div
+        className={cn(
+          "grid min-w-0 grid-cols-1 gap-6",
+          writing
+            ? "xl:grid-cols-[minmax(0,1fr)_20rem]"
+            : "lg:grid-cols-[13rem_minmax(0,1fr)] xl:grid-cols-[13rem_minmax(0,1fr)_20rem]",
+        )}
+      >
+        {writing ? null : (
+          <aside className="hidden lg:row-span-2 lg:block">
+            <EditorSectionRail sections={blueprint.sections} states={sectionStates} />
+          </aside>
+        )}
         {/* One side panel: folded above the form below 1280 px, always open at the side from 1280 px, where it
             scrolls on its own on short screens so its last buttons never sit under the action bar. */}
-        <aside className="min-w-0 lg:col-start-2 xl:col-start-3 xl:row-span-2 xl:row-start-1">
+        <aside
+          className={cn(
+            "min-w-0 xl:row-span-2 xl:row-start-1",
+            writing ? "xl:col-start-2" : "lg:col-start-2 xl:col-start-3",
+          )}
+        >
           <Collapsible
             open={wide || sideOpen}
             onOpenChange={setSideOpen}
@@ -175,7 +192,12 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
             <CollapsibleContent className="pt-3 xl:pt-0">{side}</CollapsibleContent>
           </Collapsible>
         </aside>
-        <div className="min-w-0 lg:col-start-2 xl:row-start-1">
+        <div
+          className={cn(
+            "min-w-0 xl:row-start-1",
+            writing ? "mx-auto w-full max-w-3xl xl:col-start-1" : "lg:col-start-2",
+          )}
+        >
           {state.isNew ? (
             form
           ) : (

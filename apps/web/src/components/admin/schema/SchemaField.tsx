@@ -39,6 +39,7 @@ import { TextField } from "./TextField";
 import { TimeOfDayField } from "./TimeOfDayField";
 import { UnionField } from "./UnionField";
 import { VariantField } from "./VariantField";
+import { VariantsMatrixField } from "./VariantsMatrixField";
 import { WeekdaysField } from "./WeekdaysField";
 import { useSchemaEditor } from "./useSchemaEditor";
 
@@ -189,6 +190,8 @@ function SchemaField({ schema, path, value, optional, bare = false }: SchemaFiel
       return <MapField path={path} value={value} />;
     case "variant":
       return <VariantField {...common} />;
+    case "variantsMatrix":
+      return <VariantsMatrixField {...common} />;
     case "link":
       return <LinkField {...common} />;
     case "readOnly":

@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, type ReactNode } from "react";
 import { ArrowDown, ArrowUp, ChevronDown, Copy, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -15,12 +16,19 @@ import {
 import { valueWords } from "@/lib/admin/blueprints/historyText";
 import { childPattern, dottedOf } from "@/lib/admin/blueprints/paths";
 import { defaultFor, resolve, type JsonSchema, type Path } from "@/lib/admin/schema";
+import { headingOf } from "@/lib/admin/blueprints/display";
 import { FieldShell } from "./FieldShell";
 import { SchemaField } from "./SchemaField";
 import { SortableList } from "./SortableList";
 import { useField } from "./useField";
 import { useSchemaEditor } from "./useSchemaEditor";
 import { useStableKeys } from "./useStableKeys";
+
+// The upload queue loads only where a list takes photos.
+const BulkPhotoDrop = dynamic(
+  () => import("./BulkPhotoDrop").then((module) => module.BulkPhotoDrop),
+  { ssr: false },
+);
 
 type RepeaterFieldProps = {
   path: Path;
@@ -46,6 +54,8 @@ function RepeaterField({ path, node, value, optional }: RepeaterFieldProps) {
   // The item's own name ("Day", "Price") when the blueprint gives one, else the list's.
   const thing = editor.blueprint.fields[childPattern(meta.pattern, "item")]?.label ?? meta.label;
   const fixed = Boolean(meta.field.fixed);
+  // Photo items (a gallery album) also take several photos at once, each its own item (D0 R8).
+  const bulk = meta.field.bulkPhotos;
   const max = typeof node.maxItems === "number" ? node.maxItems : Number.POSITIVE_INFINITY;
   const [open, setOpen] = useState<ReadonlySet<string>>(
     () => new Set(items.length > 4 ? [] : stable.keys),
@@ -85,7 +95,9 @@ function RepeaterField({ path, node, value, optional }: RepeaterFieldProps) {
     setList(next);
   };
   const add = () => {
-    stable.insert(items.length);
+    // A new card opens at once, ready to fill in.
+    const key = stable.insert(items.length);
+    setOpen((current) => new Set(current).add(key));
     setList([...items, defaultFor(itemSchema, editor.root)]);
   };
   const duplicate = (index: number) => {
@@ -248,6 +260,22 @@ function RepeaterField({ path, node, value, optional }: RepeaterFieldProps) {
             </Button>
           </div>
         )}
+        {bulk && !fixed ? (
+          <BulkPhotoDrop
+            id={`${meta.id}-photos`}
+            title={headingOf(editor.blueprint, editor.value) || undefined}
+            onPhoto={(photo) =>
+              editor.update(path, (current) => {
+                const list = Array.isArray(current) ? [...current] : [];
+                if (list.length >= max) return list;
+                stable.insert(list.length);
+                // The id is filled in on save (itemId); the caption waits for staff.
+                list.push({ ...bulk.with, [bulk.image]: photo });
+                return list;
+              })
+            }
+          />
+        ) : null}
       </div>
     </FieldShell>
   );

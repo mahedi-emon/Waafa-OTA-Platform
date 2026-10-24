@@ -3385,7 +3385,8 @@
         "emptyTitle": "Nothing here yet",
         "emptyBody": "Add the first one and it shows on the site when it is live.",
         "changedBy": "Last change by {name}"
-      }
+      },
+      "newRecordOf": "New {thing}"
     },
     "integrations": {
       "metaTitle": "Integrations",
@@ -4384,7 +4385,27 @@
           "invalid": "This isn't valid JSON. Check the brackets and quotes.",
           "apply": "Use this JSON"
         },
-        "itemActions": "Actions for {thing}"
+        "itemActions": "Actions for {thing}",
+        "matrix": {
+          "help": "Tick each mix you sell, then give it a stock code, a price and the stock you have.",
+          "single": "No options: the product sells as one item. Add options like Colour to sell more than one.",
+          "waiting": "An option has no values yet. Add its values to see its rows.",
+          "standard": "Standard",
+          "sellFor": "Sell {name}",
+          "defaultGroup": "Variant shown first",
+          "default": "Shown first",
+          "defaultFor": "Show {name} first",
+          "sku": "Stock code",
+          "price": "Price",
+          "mrp": "Price before discount",
+          "stock": "In stock",
+          "stray": "{count, plural, one {# variant no longer matches} other {# variants no longer match}} the options. Remove it or change the options back.",
+          "remove": "Remove"
+        },
+        "bulkPhotos": {
+          "drop": "Drop several photos here or paste them. Each one becomes its own item.",
+          "upload": "Upload photos"
+        }
       },
       "advanced": {
         "title": "Advanced",
@@ -4404,7 +4425,8 @@
         "summary": "Goes live on {when} (Dhaka time).",
         "cancel": "Cancel",
         "confirm": "Schedule"
-      }
+      },
+      "nextSection": "Next: {section}"
     },
     "fieldNames": {
       "abroad": "Places abroad",
@@ -5432,9 +5454,9 @@
         "other": "blog posts",
         "intro": "Articles on the blog, with a cover photo and sections.",
         "sections": {
-          "post": "Post",
-          "photo": "Cover photo",
-          "content": "Content",
+          "post": "Title and cover",
+          "content": "Article",
+          "details": "Category, author and link",
           "seo": "Search engines"
         },
         "fields": {
@@ -5481,9 +5503,8 @@
         "other": "team members",
         "intro": "People in Meet our team on the home page and About us. Their initials show until a photo is added.",
         "sections": {
-          "person": "Person",
-          "photo": "Photo",
-          "contact": "Contact"
+          "person": "Person and photo",
+          "contact": "How to reach them"
         },
         "fields": {
           "featured": "Show first"
@@ -5561,8 +5582,7 @@
         "other": "group fares",
         "intro": "Seats bought in advance, on Group fares and the home page.",
         "sections": {
-          "flight": "Flight",
-          "seat": "Seats and price"
+          "flight": "Flight, fare and seats"
         }
       },
       "flightRoutes": {
@@ -5594,16 +5614,12 @@
         "intro": "Holiday packages on Tour packages and the home page.",
         "sections": {
           "basics": "Basics",
-          "trip": "Trip",
           "photos": "Photos and video",
-          "highlights": "Highlights",
           "itinerary": "Day by day",
-          "prices": "Prices",
-          "included": "Included and not included",
-          "hotels": "Hotels",
-          "visa": "Visa",
-          "terms": "Terms, questions and related packages",
-          "seo": "Search engines"
+          "prices": "Prices and dates",
+          "included": "Included, terms and questions",
+          "hotels": "Hotels and visa notes",
+          "seo": "Search engines and related packages"
         },
         "fields": {
           "title": "Package name",
@@ -5633,7 +5649,6 @@
         },
         "help": {
           "placesLabel": "As shown on cards, like Bangkok, Pattaya.",
-          "fromPrice": "The lowest price per person, in taka, VAT included.",
           "includesShort": "Up to four short points for the card.",
           "anyDate": "Turn off when customers can only travel on the fixed departures."
         }
@@ -5655,9 +5670,8 @@
         "intro": "Countries on the Visa pages, with their visa types, documents and prices.",
         "sections": {
           "country": "Basics",
-          "photo": "Photo",
-          "types": "Visa types",
-          "forms": "Forms, questions and guide",
+          "types": "Visa types, fees and documents",
+          "forms": "Questions, forms and guide",
           "seo": "Search engines"
         },
         "fields": {
@@ -5774,10 +5788,9 @@
         "sections": {
           "basics": "Basics",
           "photos": "Photos and video",
-          "details": "Details",
-          "warranty": "Warranty",
-          "options": "Options, variants and stock",
-          "selling": "Selling",
+          "variants": "Options and variants",
+          "selling": "Price and selling",
+          "specs": "Specs and compatibility",
           "seo": "Search engines"
         },
         "fields": {
@@ -5797,12 +5810,14 @@
           "specs_item": "Specification",
           "highlights_item": "Highlight",
           "warranty_items_item": "Warranty point",
-          "variants_images_item": "Photo"
+          "variants_images_item": "Photo",
+          "variants": "Variants you sell"
         },
         "help": {
           "showPrice": "When it's off, customers ask for a quote.",
           "bulkFrom": "Orders of this many pieces or more ask for a quote.",
-          "cardSpec": "A short line under the name on product cards."
+          "cardSpec": "A short line under the name on product cards.",
+          "options": "Add an option like Colour or Pack, then its values. Every mix of values becomes a row below."
         }
       },
       "collections": {

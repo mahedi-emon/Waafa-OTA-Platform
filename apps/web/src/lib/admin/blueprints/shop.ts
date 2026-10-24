@@ -115,19 +115,26 @@ export const compatibleModelsBlueprint = {
 
 export const productsBlueprint = {
   key: "products",
+  // Basics → Photos → Variants → Price and selling → Specs and compatibility → SEO (ADMIN.md §7, D0 R8).
   sections: [
     {
       id: "basics",
-      fields: ["title", "shortTitle", "slug", "brandId", "categoryId", "badges", "cardSpec"],
+      fields: [
+        "title",
+        "shortTitle",
+        "slug",
+        "brandId",
+        "categoryId",
+        "badges",
+        "cardSpec",
+        "highlights",
+        "description",
+      ],
     },
     { id: "photos", fields: ["images", "video"] },
-    { id: "details", fields: ["highlights", "description", "specs"] },
-    { id: "warranty", fields: ["warranty"] },
-    { id: "options", fields: ["options", "variants", "defaultVariantId"] },
-    {
-      id: "selling",
-      fields: ["codEligible", "showPrice", "bulkFrom", "compatibleModelIds", "collectionIds"],
-    },
+    { id: "variants", fields: ["options", "variants"] },
+    { id: "selling", fields: ["showPrice", "codEligible", "bulkFrom", "collectionIds"] },
+    { id: "specs", fields: ["specs", "compatibleModelIds", "warranty"] },
     { id: "seo", fields: ["seo"] },
   ],
   fields: {
@@ -151,13 +158,14 @@ export const productsBlueprint = {
     options_display: { choices: "optionDisplay" },
     options_values: { widget: "repeater", summary: "value", wide: true },
     options_values_swatch: { widget: "colour" },
-    variants: { widget: "repeater", summary: "sku", wide: true },
+    variants: { widget: "variantsMatrix", wide: true },
     variants_id: { auto: "itemId" },
     variants_options: { widget: "map" },
     variants_price: money,
     variants_mrp: money,
     ...photoList("variants_images", FRAME.square),
-    defaultVariantId: { widget: "choice", from: { list: "variants", value: "id", label: "sku" } },
+    // Chosen by the radio in the variants matrix.
+    defaultVariantId: keep,
     compatibleModelIds: { widget: "references", ref: { key: "compatibleModels", value: "id" } },
     collectionIds: { widget: "references", ref: { key: "collections", value: "id" } },
     popularity: keep,

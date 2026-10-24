@@ -32,13 +32,13 @@ Serena memory `audit_findings`.
 | B · Backend | 12 Oct · epic #29 | 5 (#54 – #57, #82 providers) + bugs #60, #61, #66, #72, #78 | 5 | 0 | 0 | ✅ 100% |
 | C · Integration & Launch | 13 Oct · epic #30 | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (live 13 Oct) | 7 | 0 | 0 | ✅ 100% |
 | D · P1 completion | 13 Nov · epic #31 | #71 admin editors, #91 performance (more with PROMPT 5) | 0 | 0 | 0 | 0% |
-| D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 7 | 1 | 0 | 64% |
+| D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 8 | 0 | 0 | 73% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
 
-### #197 · D0 R7 · Website builder: home page, menus, link picker, preview, edit on site — 🟡 In progress
+### #197 · D0 R7 · Website builder: home page, menus, link picker, preview, edit on site — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Epic #201 / ADMIN.md §5.8: home sections in order with drag, a Show switch, thumbnails and Edit in a side sheet with a live preview; the hero editor with a preview; menus as drag-and-drop lists with a link picker for any page or record; banner and announcement scheduling from dates; Preview of unpublished changes on Next.js draft mode with its banner; Edit on site (a hint cookie at sign-in, a lazy Edit this page at no cost to visitors, Edit sections outlines); public budgets unchanged |
@@ -1682,7 +1682,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
-| 24–25 Oct | R7 website builder: Website › Home page (sections in order, Show, arrows and drag, sheets with the live phone preview, hero sheet), Website › Menus (ten menus, link picker, Undo, fixed tab bar), Preview of unpublished changes on draft mode, Edit on site staff tools, framing for the previews; independent review (2 P1, 7 P2, 11 P3) fixed; #222 flaky intake test on main fixed | #197, #222 | R7 PR | shared 144 · web unit 643 · API 186 · e2e API job 61 |
+| 24–25 Oct | R7 website builder: Website › Home page (sections in order, Show, arrows and drag, sheets with the live phone preview, hero sheet), Website › Menus (ten menus, link picker, Undo, fixed tab bar), Preview of unpublished changes on draft mode, Edit on site staff tools, framing for the previews; independent review (2 P1, 7 P2, 11 P3) fixed; #222 flaky intake test on main fixed | #197, #222, #224 | #223 (9b0b5cb) | shared 144 · web unit 643 · API 186 · e2e API job 61 |
 | 24 Oct | R6 inbox: queue panes beside leads and orders, lead page with reply timer, customer card and timeline, phone bottom bar, service tabs, board moves through the lead page's dialog, Visa applications by stage | #196 | #221 (b25e1b2) | shared 144 · web unit 623 · API 184 · e2e API job 52 |
 | 24 Oct | R4 merged (#218, ce05c1b). R5 merged (#220, 763f58d). R5 DataTable v2: one table for every content list, leads, orders, proofs, customers, feedback and users; records, bulk and move endpoints; search and sort on the queues; saved views and columns on the device; INP checked on 500 leads; perf bug #219 opened for the 100-row page | #195, #219 | #220 | shared 137 · web unit 622 · API 181 · e2e API job 42 |
 | 23 Oct | R3 merged (#216, 31e798e; CodeQL fix: raw upload bodies, D214), owner checkpoint. R4 status automation: shared rules, API buttons and actions, Trash, slug redirects, the minute job, Sample undo, lead / visa / order / proof steps, list chips | #193, #194 | #216, R4 PR | shared 131 · web unit 622 · API 176 · e2e API job 32 + workflow 8 |
@@ -1735,9 +1735,9 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. R7 #197 (and #222): PR, owner COMMENT review, CI, merge, close-out; no migration.
-2. R8 #198 purpose-built editors, then the owner checkpoint (Banglish summary, screenshots, "test this yourself").
-3. R9 #199 settings, R10 #200 dashboard and the admin guide; #219 the 100-row page.
+1. R8 #198 purpose-built editors (then the owner checkpoint).
+2. R9 #199 settings, R10 #200 dashboard and the admin guide (docs/ADMIN_GUIDE.md).
+3. #224 budget e2e cold-start flake and #219 the 100-row page, between the R issues.
 
 Earlier (24 Oct, R6):
 1. R6 #196: PR, CI, merge, then the owner checkpoint (Banglish summary, screenshots, "test this yourself").

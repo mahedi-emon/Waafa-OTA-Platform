@@ -97,10 +97,12 @@ export const blogCategoriesBlueprint = {
 
 export const blogPostsBlueprint = {
   key: "blogPosts",
+  // A writing view: the title and cover first, then the article, then the details (D0 R8).
+  layout: "writing",
   sections: [
-    { id: "post", fields: ["title", "slug", "category", "author", "excerpt", "intro"] },
-    { id: "photo", fields: ["cover"] },
+    { id: "post", fields: ["title", "cover", "excerpt", "intro"] },
     { id: "content", fields: ["sections", "cta"] },
+    { id: "details", fields: ["category", "author", "slug"] },
     { id: "seo", fields: ["seo"] },
   ],
   visibility: ["featured"],
@@ -151,7 +153,12 @@ export const galleryAlbumsBlueprint = {
     slug: { widget: "slug", prefix: "/gallery/" },
     category: { choices: "galleryCategory" },
     ...photoAt("cover", FRAME.landscape),
-    items: { widget: "repeater", summary: "caption", wide: true },
+    items: {
+      widget: "repeater",
+      summary: "caption",
+      wide: true,
+      bulkPhotos: { image: "image", with: { kind: "photo" } },
+    },
     items_id: itemId,
     items_kind: { choices: "galleryItemKind" },
     items_provider: { choices: "videoProvider" },
@@ -166,14 +173,16 @@ export const galleryAlbumsBlueprint = {
 
 export const teamBlueprint = {
   key: "team",
+  // One screen for the person and their photo, then how to reach them (D0 R8).
   sections: [
-    { id: "person", fields: ["name", "initials", "designation", "department", "bio"] },
-    { id: "photo", fields: ["photo"] },
+    { id: "person", fields: ["name", "designation", "department", "photo", "bio"] },
     { id: "contact", fields: ["whatsappE164", "email", "linkedinUrl"] },
   ],
   visibility: ["visible", "showOnHome", "showOnAbout", "featured"],
   fields: {
     id: recordId,
+    // Shown until a real photo is uploaded; always the name's first letters.
+    initials: { auto: "initialsFromName" },
     bio: textarea,
     ...photoAt("photo", FRAME.person),
     whatsappE164: phone,

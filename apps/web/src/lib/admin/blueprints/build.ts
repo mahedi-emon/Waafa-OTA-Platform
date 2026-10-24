@@ -96,6 +96,7 @@ export function buildResolvedBlueprint(
       ...(spec?.from ? { from: spec.from } : {}),
       ...(spec?.variantOf ? { variantOf: spec.variantOf } : {}),
       ...(spec?.frame ? { frame: spec.frame } : {}),
+      ...(spec?.bulkPhotos ? { bulkPhotos: spec.bulkPhotos } : {}),
     };
   }
 
@@ -144,6 +145,7 @@ export function buildResolvedBlueprint(
     visibility: blueprint.visibility ?? [],
     ...(blueprint.url ? { url: blueprint.url } : {}),
     ...(blueprint.heading ? { heading: blueprint.heading } : {}),
+    ...(blueprint.layout ? { layout: blueprint.layout } : {}),
     publish,
     workflow,
     duplicable: canCopy(key),
