@@ -19,7 +19,10 @@ test.describe.configure({ mode: "serial" });
 let signIns = 0;
 const STAMP = String(Date.now()).slice(-6);
 
-/** Clicks only work once React has hydrated the page: retry the gesture until its result shows. */
+/**
+ * Clicks only work once React has hydrated the page: retry the gesture until its result shows. Only for gestures
+ * that can safely run twice (opening a sheet or a menu, or one that checks it is still needed).
+ */
 async function until(gesture: () => Promise<unknown>, shown: Locator) {
   await expect(async () => {
     await gesture();
@@ -39,7 +42,7 @@ async function signIn(page: Page) {
   await expect(page.getByRole("heading", { level: 1, name: /^Hello, / })).toBeVisible();
 }
 
-/** The public site follows an admin save within seconds (revalidation): reload until it shows. */
+/** The public site follows an admin save at once on this server: reload until it shows. */
 async function eventually(page: Page, path: string, check: () => Promise<void>) {
   await expect(async () => {
     await page.goto(path);
@@ -55,23 +58,50 @@ async function visitor(browser: Browser): Promise<Page> {
   return page;
 }
 
+/** The home page manager, hydrated: its drag handles appear only once React and the drag code have loaded. */
 async function openHomeManager(page: Page) {
   await page.goto("/secure-admin-control/website/home");
   await expect(page.getByRole("heading", { level: 1, name: "Home page" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Drag to reorder: Hero" })).toBeVisible();
+}
+
+/** The menus page, hydrated (its drag handles are there). */
+async function openMenus(page: Page) {
+  await page.goto("/secure-admin-control/website/menus");
+  await expect(page.getByRole("heading", { level: 1, name: "Menus" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Drag to reorder: Home" }).first()).toBeVisible();
 }
 
 /** The hero sheet's "Line under the headline", set and saved. */
 async function saveHeroLead(page: Page, lead: string) {
   await openHomeManager(page);
   const sheet = page.getByRole("dialog", { name: "Hero" });
-  await until(() => page.getByRole("button", { name: "Edit Hero" }).click(), sheet);
+  await page.getByRole("button", { name: "Edit Hero" }).click();
+  await expect(sheet).toBeVisible();
   const field = sheet.getByRole("textbox", { name: "Line under the headline" });
   await expect(field).toBeEditable();
   const before = await field.inputValue();
   await field.fill(lead);
   await sheet.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Saved. The home page shows it within a few seconds.")).toBeVisible();
+  await expect(
+    page.getByText("Saved. The home page shows it within a few seconds.").first(),
+  ).toBeVisible();
   return before;
+}
+
+/** Turns a home section's Show switch to the wanted state and waits for the save. */
+async function showSection(page: Page, name: string, on: boolean) {
+  await openHomeManager(page);
+  const toggle = page.getByRole("switch", { name: `Show ${name} on the website` });
+  if ((await toggle.isChecked()) !== on) await toggle.click();
+  await expect(toggle).toBeChecked({ checked: on });
+  await expect(
+    page
+      .getByText(
+        on ? `${name} is on the home page again.` : `${name} is hidden from the home page.`,
+      )
+      .first(),
+  ).toBeVisible();
 }
 
 test("the hero's words change in a side sheet with a preview, and the home page shows them", async ({
@@ -81,17 +111,22 @@ test("the hero's words change in a side sheet with a preview, and the home page 
   const errors = collectErrors(page);
   await signIn(page);
   await openHomeManager(page);
-  // Every section is a row with its thumbnail, name, state and Edit.
+  // Every section is a row with its thumbnail, name, state, arrows and Edit.
   const rows = page.getByRole("main").getByRole("listitem");
   await expect(rows.filter({ hasText: "Meet our team" })).toBeVisible();
   await expect(
     page.getByRole("switch", { name: "Show Meet our team on the website" }),
   ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Move Meet our team up" })).toBeVisible();
 
   const sheet = page.getByRole("dialog", { name: "Hero" });
-  await until(() => page.getByRole("button", { name: "Edit Hero" }).click(), sheet);
-  // The preview is the live home page at phone width, inside the sheet (staff may frame their own site).
+  await page.getByRole("button", { name: "Edit Hero" }).click();
+  await expect(sheet).toBeVisible();
+  // The preview is the live home page at phone width, inside the sheet, and out of the tab order.
   await expect(sheet.locator("iframe")).toBeVisible();
+  await expect(sheet.locator("iframe")).toHaveAttribute("tabindex", "-1");
+  // Opening the sheet leaves it at its top: the words come first.
+  await expect(sheet.getByRole("textbox", { name: "Headline", exact: true })).toBeInViewport();
   await sheet.getByRole("button", { name: "Close" }).first().click();
 
   const lead = `Fares checked by a real person before you pay ${STAMP}.`;
@@ -106,12 +141,34 @@ test("the hero's words change in a side sheet with a preview, and the home page 
   expect(errors).toEqual([]);
 });
 
+test("a section's standard words show in grey, and a reopened sheet starts from what is saved", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  const errors = collectErrors(page);
+  await signIn(page);
+  await openHomeManager(page);
+  const sheet = page.getByRole("dialog", { name: "Tour packages" });
+  await page.getByRole("button", { name: "Edit Tour packages" }).click();
+  await expect(sheet).toBeVisible();
+  const heading = sheet.getByRole("textbox", { name: "Heading", exact: true });
+  const saved = await heading.inputValue();
+  await heading.fill("");
+  await expect(heading).toHaveAttribute("placeholder", "Trips planned day by day");
+  // Typed and closed without Save: the next opening shows the saved words again.
+  await heading.fill(`Not saved ${STAMP}`);
+  await sheet.getByRole("button", { name: "Close" }).first().click();
+  await expect(sheet).toBeHidden();
+  await page.getByRole("button", { name: "Edit Tour packages" }).click();
+  await expect(sheet.getByRole("textbox", { name: "Heading", exact: true })).toHaveValue(saved);
+  expect(errors).toEqual([]);
+});
+
 test("a section is hidden and moved on a phone, and the home page follows", async ({ page }) => {
   test.setTimeout(180_000);
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await signIn(page);
-  await openHomeManager(page);
   const marks = () =>
     page.evaluate(() =>
       Array.from(document.querySelectorAll<HTMLElement>("[data-edit]")).map(
@@ -119,30 +176,26 @@ test("a section is hidden and moved on a phone, and the home page follows", asyn
       ),
     );
 
-  const team = page.getByRole("switch", { name: "Show Meet our team on the website" });
-  await expect(team).toBeChecked();
-  await until(
-    () => team.click(),
-    page.getByText("Meet our team is hidden from the home page.").first(),
-  );
+  await showSection(page, "Meet our team", false);
   try {
     await eventually(page, "/", async () => {
       expect(await marks()).not.toContain("homeSections:team");
     });
   } finally {
-    await openHomeManager(page);
-    await until(
-      () => page.getByRole("switch", { name: "Show Meet our team on the website" }).click(),
-      page.getByText("Meet our team is on the home page again.").first(),
-    );
+    await showSection(page, "Meet our team", true);
   }
 
-  // Phones move a section with its arrows (drag needs a long press there).
+  // Move up and down sit in every row; the moved row keeps keyboard focus.
   await openHomeManager(page);
-  await until(
-    () => page.getByRole("button", { name: "Move Closing call to action up" }).click(),
+  const up = page.getByRole("button", { name: "Move Closing call to action up" });
+  const down = page.getByRole("button", { name: "Move Closing call to action down" });
+  await expect(down).toBeDisabled();
+  await up.click();
+  await expect(down).toBeEnabled();
+  await expect(up).toBeFocused();
+  await expect(
     page.getByText("Order saved. The home page follows within a few seconds.").first(),
-  );
+  ).toBeVisible();
   try {
     await eventually(page, "/", async () => {
       const order = await marks();
@@ -150,27 +203,31 @@ test("a section is hidden and moved on a phone, and the home page follows", asyn
     });
   } finally {
     await openHomeManager(page);
-    await until(
-      () => page.getByRole("button", { name: "Move Closing call to action down" }).click(),
+    const back = page.getByRole("button", { name: "Move Closing call to action down" });
+    if (await back.isEnabled()) await back.click();
+    await expect(back).toBeDisabled();
+    await expect(
       page.getByText("Order saved. The home page follows within a few seconds.").first(),
-    );
+    ).toBeVisible();
   }
   expect(errors).toEqual([]);
 });
 
-test("a menu item is added with the link picker, shows in the footer and is removed with Undo on offer", async ({
+test("a menu item is picked by name, then sent to a typed website, and removed with Undo on offer", async ({
   page,
 }) => {
-  test.setTimeout(150_000);
+  test.setTimeout(180_000);
   const errors = collectErrors(page);
   await signIn(page);
-  await page.goto("/secure-admin-control/website/menus");
-  await expect(page.getByRole("heading", { level: 1, name: "Menus" })).toBeVisible();
+  await openMenus(page);
   const card = page.getByRole("region", { name: "Footer: help" });
   const label = `Group seats ${STAMP}`;
+  const footerLink = () =>
+    page.getByRole("contentinfo").getByRole("link", { name: label, exact: true });
 
   const sheet = page.getByRole("dialog", { name: "Add a menu item" });
-  await until(() => card.getByRole("button", { name: "Add an item" }).click(), sheet);
+  await card.getByRole("button", { name: "Add an item" }).click();
+  await expect(sheet).toBeVisible();
   // Nothing typed yet: the sheet says what it needs.
   await sheet.getByRole("button", { name: "Add item" }).click();
   await expect(sheet.getByRole("alert")).toHaveText("Write the words the menu shows.");
@@ -178,9 +235,12 @@ test("a menu item is added with the link picker, shows in the footer and is remo
   await sheet.getByRole("button", { name: "Add item" }).click();
   await expect(sheet.getByRole("alert")).toHaveText("Choose where the item goes.");
 
-  // Where it goes is picked by name, never typed as a path.
+  // Where it goes is picked by name, never typed as a path; letters spread over words don't match.
   await sheet.getByRole("combobox", { name: "Where it goes" }).click();
-  await page.getByPlaceholder("Search pages, packages, visas, products…").fill("group fares");
+  const search = page.getByPlaceholder("Search pages, packages, visas, products…");
+  await search.fill("thai");
+  await expect(page.getByRole("option", { name: "International Trading" })).toHaveCount(0);
+  await search.fill("group fares");
   await page.getByRole("option", { name: "Group fares", exact: true }).click();
   await expect(sheet.getByRole("combobox", { name: "Where it goes" })).toContainText("Group fares");
   await sheet.getByRole("button", { name: "Add item" }).click();
@@ -189,24 +249,68 @@ test("a menu item is added with the link picker, shows in the footer and is remo
 
   try {
     await eventually(page, "/", async () => {
-      await expect(
-        page.getByRole("contentinfo").getByRole("link", { name: label, exact: true }),
-      ).toHaveAttribute("href", "/flights/group-fares", { timeout: 2_000 });
+      await expect(footerLink()).toHaveAttribute("href", "/flights/group-fares", {
+        timeout: 2_000,
+      });
+    });
+
+    // A website typed in the picker fills the link; Enter there doesn't save or close the item's sheet.
+    await openMenus(page);
+    const edit = page.getByRole("dialog", { name: "Edit menu item" });
+    await page
+      .getByRole("region", { name: "Footer: help" })
+      .getByRole("button", { name: `Edit ${label}` })
+      .click();
+    await expect(edit).toBeVisible();
+    await edit.getByRole("combobox", { name: "Where it goes" }).click();
+    await page.getByRole("option", { name: "Another website…" }).click();
+    const address = page.getByRole("textbox", { name: "Website address" });
+    await address.fill("facebook.com/waafa");
+    await address.press("Enter");
+    await expect(edit).toBeVisible();
+    await expect(edit.getByRole("combobox", { name: "Where it goes" })).toContainText(
+      "https://facebook.com/waafa",
+    );
+    await expect(page.getByText("Saved. The site follows within a few seconds.")).toHaveCount(0);
+    await edit.getByRole("button", { name: "Save" }).click();
+    await expect(
+      page.getByText("Saved. The site follows within a few seconds.").first(),
+    ).toBeVisible();
+    await eventually(page, "/", async () => {
+      await expect(footerLink()).toHaveAttribute("href", "https://facebook.com/waafa", {
+        timeout: 2_000,
+      });
     });
   } finally {
-    await page.goto("/secure-admin-control/website/menus");
-    const remove = page
+    await openMenus(page);
+    const more = page
       .getByRole("region", { name: "Footer: help" })
-      .getByRole("button", { name: `Remove ${label}` });
-    await until(() => remove.click(), page.getByText(`${label} removed.`).first());
+      .getByRole("button", { name: `More for ${label}` });
+    const remove = page.getByRole("menuitem", { name: "Remove" });
+    await until(() => more.click(), remove);
+    await remove.click();
+    await expect(page.getByText(`${label} removed.`).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Undo" }).first()).toBeVisible();
   }
   await eventually(page, "/", async () => {
-    await expect(
-      page.getByRole("contentinfo").getByRole("link", { name: label, exact: true }),
-    ).toHaveCount(0, { timeout: 2_000 });
+    await expect(footerLink()).toHaveCount(0, { timeout: 2_000 });
   });
   expect(errors).toEqual([]);
+});
+
+test("the phone tab bar keeps its five tabs in place, with the middle one locked", async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  await signIn(page);
+  await page.goto("/secure-admin-control/website/menus");
+  const tabs = page.getByRole("region", { name: "Phone tab bar" });
+  await expect(tabs.getByRole("listitem")).toHaveCount(5);
+  await expect(tabs.getByText("Always Waafas World, in the middle")).toBeVisible();
+  await expect(tabs.getByRole("button", { name: "Edit Waafas World" })).toHaveCount(0);
+  await expect(tabs.getByRole("button", { name: /^Drag to reorder/ })).toHaveCount(0);
+  await expect(tabs.getByRole("switch")).toHaveCount(0);
+  await expect(tabs.getByRole("button", { name: "Add an item" })).toHaveCount(0);
 });
 
 test("Preview of unpublished changes shows a draft to staff only, and Exit preview ends it", async ({
@@ -221,13 +325,10 @@ test("Preview of unpublished changes shows a draft to staff only, and Exit previ
   const unpublish = page.getByRole("button", { name: "Unpublish" });
   const publish = page.getByRole("button", { name: "Publish", exact: true });
   await expect(unpublish.or(publish)).toBeVisible();
-  // A run that stopped half way left it a draft already.
-  if (await unpublish.isVisible()) {
-    await until(
-      () => unpublish.click(),
-      page.getByText("Taken off the site. It's a draft now.").first(),
-    );
-  }
+  // Clicks only while still needed: a click before hydration does nothing, one after it changes the button.
+  await until(async () => {
+    if (await unpublish.isVisible()) await unpublish.click({ timeout: 2_000 });
+  }, publish);
   try {
     const preview = page.getByRole("link", { name: "Preview on site" });
     await expect(preview).toHaveAttribute(
@@ -255,12 +356,17 @@ test("Preview of unpublished changes shows a draft to staff only, and Exit previ
     await expect(page).toHaveURL(new RegExp(`/blog/${slug}$`));
     await expect(banner).toHaveCount(0);
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(title);
+
+    // A preview link that tries to leave the site stays on it.
+    const response = await page.request.get("/api/preview/exit?path=%2F.%2F%2Fevil.example", {
+      maxRedirects: 0,
+    });
+    expect(response.headers().location).toBe("/");
   } finally {
     await page.goto(`/secure-admin-control/content/blogPosts/${slug}`);
-    await until(
-      () => page.getByRole("button", { name: "Publish", exact: true }).click(),
-      page.getByText("Published. It's live on the site.").first(),
-    );
+    await until(async () => {
+      if (await publish.isVisible()) await publish.click({ timeout: 2_000 });
+    }, unpublish);
   }
   // After Exit preview the draft's page is "not found" again: that answer is expected, nothing else.
   expect(errors.filter((line) => !line.endsWith(`/blog/${slug}`))).toEqual([]);
@@ -298,8 +404,16 @@ test("staff get Edit this page and Edit sections on the site; visitors never loa
   await page.getByRole("menuitemcheckbox", { name: "Edit sections" }).click();
   const hero = page.getByRole("link", { name: "Edit Hero" });
   await expect(hero).toHaveAttribute("href", "/secure-admin-control/website/home?section=hero");
+  // Keyboards reach the outlines at once: the first link takes focus; Escape ends them.
+  await expect(hero).toBeFocused();
   await expect(page.getByRole("link", { name: "Edit Meet our team" })).toBeAttached();
-  await hero.click();
+  await page.keyboard.press("Escape");
+  await expect(hero).toHaveCount(0);
+  await expect(tools.getByRole("button", { name: "More staff tools" })).toBeFocused();
+
+  await tools.getByRole("button", { name: "More staff tools" }).click();
+  await page.getByRole("menuitemcheckbox", { name: "Edit sections" }).click();
+  await page.getByRole("link", { name: "Edit Hero" }).click();
   await expect(page.getByRole("dialog", { name: "Hero" })).toBeVisible();
 
   // A record's page opens that record's editor.

@@ -6298,7 +6298,7 @@
         "lead": "The sections of the home page in the order visitors see them. Drag to change the order, switch a section off, or edit what it says.",
         "view": "View home page",
         "sectionsTitle": "Sections, in page order",
-        "sectionsLead": "Drag a section by its handle, or use the arrows on a phone. A hidden section keeps its words for later.",
+        "sectionsLead": "Drag a section by its handle, or use its arrows. A hidden section keeps its words for later.",
         "shown": "Shown",
         "hidden": "Hidden",
         "show": "Show",
@@ -6374,7 +6374,7 @@
         "noHeadings": "This section has no heading of its own. Its content is edited where it comes from.",
         "contentTitle": "What it shows is edited in",
         "preview": "Preview at phone width",
-        "previewNote": "This is the live site. Saved changes show here within a few seconds.",
+        "previewNote": "This is the live site. It shows a save as soon as it is made.",
         "previewTitle": "Home page preview: {name}",
         "save": "Save",
         "close": "Close"
@@ -6420,7 +6420,6 @@
       "opensMore": "Opens the More panel",
       "showItem": "Show {label}",
       "editItem": "Edit {label}",
-      "removeItem": "Remove {label}",
       "groups": {
         "header": {
           "title": "Header",
@@ -6455,7 +6454,7 @@
         },
         "tabbar": {
           "name": "Phone tab bar",
-          "lead": "The five tabs at the bottom of the phone screen. Waafas World stays in the middle and More last."
+          "lead": "The five tabs at the bottom of the phone screen, in fixed places. Waafas World stays in the middle and More last."
         },
         "more-phone": {
           "name": "Phone More sheet",
@@ -6494,7 +6493,12 @@
         "cancel": "Cancel",
         "save": "Save",
         "add": "Add item"
-      }
+      },
+      "moreFor": "More for {label}",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove",
+      "centreTab": "Always Waafas World, in the middle"
     },
     "staffTools": {
       "region": "Staff tools",

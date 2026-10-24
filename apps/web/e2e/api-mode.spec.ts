@@ -258,6 +258,8 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   request,
 }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  // Three saves and a wait of up to 30 s for the site to follow: more than the default 30 s test time.
+  test.setTimeout(90_000);
   const errors = collectErrors(page);
   await signIn(page);
 

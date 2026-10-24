@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { canEditContentKey, hasAnyRole } from "@waafa/shared";
 import { routing } from "@/i18n/routing";
-import { getStaffSession } from "@/lib/admin/adminApi";
+import { adminDownload, type StaffSession } from "@/lib/admin/adminApi";
 import { editTargetFor } from "@/lib/admin/editLinks";
 import { HOME_SECTIONS } from "@/lib/admin/homeSections";
 import type { StaffToolsData } from "@/components/staff/staffToolsTypes";
@@ -14,8 +14,18 @@ const NO_STORE = { "cache-control": "no-store" };
  * they may edit the home sections, and the words. The public pages carry none of it; only a signed-in browser asks.
  */
 export async function GET(request: NextRequest) {
-  const staff = await getStaffSession();
-  if (!staff) return NextResponse.json({ error: "signed-out" }, { status: 401, headers: NO_STORE });
+  // Signed out is a 401 (the tools drop their hint); the API being briefly away is a 503 (the hint stays).
+  let staff: StaffSession;
+  try {
+    const me = await adminDownload("/auth/me");
+    if (me.status === 401) {
+      return NextResponse.json({ error: "signed-out" }, { status: 401, headers: NO_STORE });
+    }
+    if (!me.ok) throw new Error(`auth/me answered ${me.status}`);
+    staff = (await me.json()) as StaffSession;
+  } catch {
+    return NextResponse.json({ error: "unavailable" }, { status: 503, headers: NO_STORE });
+  }
   const locale = routing.defaultLocale;
   const [t, tSections] = await Promise.all([
     getTranslations({ locale, namespace: "Admin.staffTools" }),

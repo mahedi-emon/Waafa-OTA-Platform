@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { Ellipsis, EyeOff, LayoutDashboard, LogOut, Pencil, SquareDashed } from "lucide-react";
 import {
@@ -10,13 +10,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { exitPreviewHref } from "@/lib/admin/preview";
+import { exitPreviewHref } from "@/lib/previewLinks";
 import { STAFF_HINT_COOKIE } from "@/lib/staffHint";
 import { SectionOutlines } from "./SectionOutlines";
 import type { StaffToolsData } from "./staffToolsTypes";
 
 const HIDDEN_KEY = "waafa:staff-tools-hidden";
 const listeners = new Set<() => void>();
+/** Once the session is known to be over, no page asks again until the next sign-in reloads the site. */
+let signedOut = false;
 
 function subscribe(onChange: () => void): () => void {
   listeners.add(onChange);
@@ -50,8 +52,10 @@ function StaffTools() {
   const [hasSections, setHasSections] = useState(false);
   const hidden = useSyncExternalStore(subscribe, readHidden, () => true);
   const preview = useSyncExternalStore(subscribe, readPreview, () => false);
+  const trigger = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    if (hidden || signedOut) return;
     const controller = new AbortController();
     fetch(`/secure-admin-control/api/staff-tools?path=${encodeURIComponent(pathname)}`, {
       headers: { accept: "application/json" },
@@ -60,26 +64,24 @@ function StaffTools() {
     })
       .then(async (response) => {
         if (response.status === 401) {
-          // The session has ended: the next pages stop loading the tools.
+          // The session has ended: the next pages stop loading the tools, and a preview left on ends here.
+          signedOut = true;
           document.cookie = `${STAFF_HINT_COOKIE}=; Max-Age=0; path=/`;
+          if (readPreview()) window.location.assign(exitPreviewHref(pathname));
         }
         const data = response.ok ? ((await response.json()) as StaffToolsData) : null;
         setLoaded({ path: pathname, data });
       })
       .catch(() => {
-        // Offline or aborted: no tools on this page.
+        // Offline, the API briefly away, or aborted: no tools on this page.
       });
     return () => controller.abort();
-  }, [pathname]);
+  }, [pathname, hidden]);
 
-  useEffect(() => {
-    if (!outlines) return;
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOutlines(false);
-    };
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [outlines]);
+  const closeOutlines = () => {
+    setOutlines(false);
+    trigger.current?.focus();
+  };
 
   const data = loaded?.path === pathname ? loaded.data : null;
   if (hidden || !data) return null;
@@ -119,7 +121,11 @@ function StaffTools() {
             if (open) setHasSections(document.querySelector("[data-edit]") !== null);
           }}
         >
-          <DropdownMenuTrigger aria-label={labels.more} className={`${BUTTON} size-11`}>
+          <DropdownMenuTrigger
+            ref={trigger}
+            aria-label={labels.more}
+            className={`${BUTTON} size-11`}
+          >
             <Ellipsis aria-hidden="true" className="size-5" />
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="start" className="w-auto min-w-56">
@@ -127,28 +133,30 @@ function StaffTools() {
               <DropdownMenuCheckboxItem
                 checked={outlines}
                 onCheckedChange={(checked) => setOutlines(checked === true)}
-                className="min-h-11"
+                className="min-h-11 text-[15px]"
               >
                 <SquareDashed aria-hidden="true" className="size-4" />
                 {labels.editSections}
               </DropdownMenuCheckboxItem>
             ) : null}
             {preview ? (
-              <DropdownMenuItem asChild className="min-h-11">
+              <DropdownMenuItem asChild className="min-h-11 text-[15px]">
                 <a href={exitPreviewHref(pathname)}>
                   <LogOut aria-hidden="true" className="size-4" />
                   {labels.exitPreview}
                 </a>
               </DropdownMenuItem>
             ) : null}
-            <DropdownMenuItem onSelect={hide} className="min-h-11">
+            <DropdownMenuItem onSelect={hide} className="min-h-11 text-[15px]">
               <EyeOff aria-hidden="true" className="size-4" />
               {labels.hide}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      {outlines && canOutline ? <SectionOutlines labels={data.sections} /> : null}
+      {outlines && canOutline ? (
+        <SectionOutlines labels={data.sections} onClose={closeOutlines} />
+      ) : null}
     </>
   );
 }

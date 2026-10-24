@@ -30,26 +30,20 @@ type SectionSheetProps = {
 /**
  * One home section in a side sheet (ADMIN.md §5.8): whether it shows, its heading words (empty uses the standard
  * words), where its content is edited, and the home page at phone width scrolled to it, reloaded after each save.
+ * The manager mounts it afresh for every opening, so it always starts from the saved words; saves build on the
+ * version it opened with (or its own last save), so a change made elsewhere meanwhile is a conflict, not lost.
  */
 function SectionSheet({ section, onOpenChange }: SectionSheetProps) {
   const t = useTranslations("Admin.website");
   const router = useRouter();
   const uid = useId();
   const [pending, startTransition] = useTransition();
-  const [shown, setShown] = useState<ManagedSection | null>(section);
   const [enabled, setEnabled] = useState(section?.enabled ?? true);
   const [kicker, setKicker] = useState(section?.kicker ?? "");
   const [title, setTitle] = useState(section?.title ?? "");
   const [subtitle, setSubtitle] = useState(section?.subtitle ?? "");
+  const [version, setVersion] = useState(section?.version ?? 0);
   const [reloadKey, setReloadKey] = useState(0);
-  // Another section opens with its own words (state follows the prop without an effect).
-  if (section && section.key !== shown?.key) {
-    setShown(section);
-    setEnabled(section.enabled);
-    setKicker(section.kicker);
-    setTitle(section.title);
-    setSubtitle(section.subtitle);
-  }
 
   const save = () => {
     if (!section) return;
@@ -65,11 +59,12 @@ function SectionSheet({ section, onOpenChange }: SectionSheetProps) {
       else data[name] = next;
     }
     startTransition(async () => {
-      const result = await saveRecord("homeSections", section.key, data, section.version);
+      const result = await saveRecord("homeSections", section.key, data, version);
       if (!result.ok) {
         toast.error(result.problem.fields?.[0]?.message ?? result.problem.detail ?? t("failed"));
         return;
       }
+      setVersion(result.version);
       toast.success(t("saved"));
       setReloadKey((key) => key + 1);
       router.refresh();

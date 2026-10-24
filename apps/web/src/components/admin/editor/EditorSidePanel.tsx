@@ -35,7 +35,7 @@ import { StatusChip } from "@/components/admin/StatusChip";
 import { RelativeTime } from "@/components/admin/RelativeTime";
 import { formatDhakaDateTime } from "@/lib/admin/format";
 import { publicPathOf, statusOf } from "@/lib/admin/blueprints/display";
-import { previewHref } from "@/lib/admin/preview";
+import { previewHref } from "@/lib/previewLinks";
 import type { ResolvedBlueprint } from "@/lib/admin/blueprints/types";
 import type { ChipTone } from "@/lib/admin/statusChips";
 import { SchemaField } from "../schema/SchemaField";

@@ -69,13 +69,14 @@ export async function signIn(_previous: SignInState, form: FormData): Promise<Si
   } else {
     store.delete(REMEMBER_COOKIE);
   }
-  // Lets the public site load "Edit this page" for staff; a readable hint that grants nothing (D0 R7).
+  // Lets the public site load "Edit this page" for staff; a readable hint that grants nothing (D0 R7). It lives as
+  // long as the session can: past the browser session only with "Keep me signed in".
   store.set(STAFF_HINT_COOKIE, "1", {
     httpOnly: false,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    expires: new Date(tokens.refreshExpiresAt),
+    ...(remember ? { expires: new Date(tokens.refreshExpiresAt) } : {}),
   });
   redirect(safeNext(form.get("next")));
 }

@@ -4,7 +4,8 @@ const BASE = "https://preview.invalid";
 
 /**
  * Where Preview of unpublished changes may open (D0 R7): a page of this site, never the admin, an API route or
- * another site (no open redirects). Anything else opens the home page.
+ * another site (no open redirects). The path is checked again after the URL parser has collapsed it, so dot
+ * segments can't turn it into "//other.site". Anything else opens the home page.
  */
 export function previewPath(value: unknown): string {
   if (
@@ -22,18 +23,14 @@ export function previewPath(value: unknown): string {
   } catch {
     return "/";
   }
-  if (url.origin !== BASE || isAdminPath(url.pathname) || /^\/api(?:\/|$)/.test(url.pathname)) {
+  const path = url.pathname;
+  if (
+    url.origin !== BASE ||
+    path.startsWith("//") ||
+    isAdminPath(path) ||
+    /^\/api(?:\/|$)/.test(path)
+  ) {
     return "/";
   }
-  return `${url.pathname}${url.search}${url.hash}`;
-}
-
-/** Turns the preview on and opens the page (staff only: the route checks the session). */
-export function previewHref(path: string): string {
-  return `/secure-admin-control/preview?path=${encodeURIComponent(path)}`;
-}
-
-/** Turns the preview off and stays on the page. */
-export function exitPreviewHref(path: string): string {
-  return `/api/preview/exit?path=${encodeURIComponent(path)}`;
+  return `${path}${url.search}${url.hash}`;
 }

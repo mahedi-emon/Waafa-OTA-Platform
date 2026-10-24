@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Pencil } from "lucide-react";
 import { sectionEditHref } from "@/lib/admin/editLinks";
@@ -39,12 +39,36 @@ function measure(labels: Record<string, string>): Box[] {
   return boxes;
 }
 
+type SectionOutlinesProps = {
+  /** "Edit Hero" and so on, by section key. */
+  labels: Record<string, string>;
+  /** Escape turns the outlines off (focus goes back to the staff tools). */
+  onClose: () => void;
+};
+
 /**
  * "Edit sections" (D0 R7): a dashed outline around each home section with a link that opens its sheet in the admin.
- * Measured again whenever the page changes size.
+ * The links come in page order and the first takes focus, so keyboards reach them at once. Measured again whenever
+ * the page changes size.
  */
-function SectionOutlines({ labels }: { labels: Record<string, string> }) {
+function SectionOutlines({ labels, onClose }: SectionOutlinesProps) {
   const [boxes, setBoxes] = useState<Box[]>([]);
+  const first = useRef<HTMLAnchorElement>(null);
+  const focused = useRef(false);
+
+  useEffect(() => {
+    if (focused.current || boxes.length === 0) return;
+    focused.current = true;
+    first.current?.focus();
+  }, [boxes]);
+
+  useEffect(() => {
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [onClose]);
 
   useEffect(() => {
     let frame = 0;
@@ -65,13 +89,14 @@ function SectionOutlines({ labels }: { labels: Record<string, string> }) {
 
   return createPortal(
     <div data-staff-outlines="" className="pointer-events-none absolute top-0 left-0 z-20">
-      {boxes.map((box) => (
+      {boxes.map((box, index) => (
         <div
           key={box.mark}
           className="absolute outline-2 -outline-offset-2 outline-electric-600 outline-dashed"
           style={{ top: box.top, left: box.left, width: box.width, height: box.height }}
         >
           <a
+            ref={index === 0 ? first : undefined}
             href={box.href}
             className="pointer-events-auto absolute top-3 left-3 inline-flex min-h-11 items-center gap-2 rounded-full bg-electric-600 px-4 text-[14px] font-semibold text-white shadow-[0_10px_24px_-12px_rgb(10_37_64/0.7)] transition-colors duration-150 hover:bg-brand-700 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
           >

@@ -35,12 +35,14 @@ function SitePreview({ path, focus, reloadKey, title }: SitePreviewProps) {
   };
   return (
     <div className="overflow-hidden rounded-xl border border-mist-200 bg-mist-50">
+      {/* A picture to look at and scroll, not a second page to tab through before Save. */}
       <iframe
         key={reloadKey}
         ref={frame}
         src={path}
         title={title}
         loading="lazy"
+        tabIndex={-1}
         onLoad={scrollToPart}
         className="block h-[min(70vh,640px)] w-full bg-white"
       />

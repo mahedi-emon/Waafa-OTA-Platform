@@ -80,7 +80,10 @@ export function describeHref(href: string, siteUrl = ""): LinkTarget | null {
   const site = siteUrl.replace(/\/+$/, "");
   const own = site && (value === site || value.startsWith(`${site}/`));
   if (value.startsWith("http") && !own) return { kind: "web", url: value };
-  const path = (own ? value.slice(site.length) : value).split(/[?#]/)[0] || "/";
+  const relative = (own ? value.slice(site.length) : value) || "/";
+  // A filtered link ("/tour-packages?destination=bali") is shown as it is, so its filter isn't hidden or lost.
+  if (/[?#]/.test(relative)) return { kind: "path", path: relative };
+  const path = relative;
   const page = SITE_PAGES.find((item) => item.path === path);
   if (page) return { kind: "page", page: page.id, path };
   for (const link of RECORD_LINKS) {
@@ -88,9 +91,18 @@ export function describeHref(href: string, siteUrl = ""): LinkTarget | null {
     const rest = path.slice(link.prefix.length);
     // One more part only: "/visa/thailand/apply" is not the Thailand page itself.
     if (rest && !rest.includes("/"))
-      return { kind: "record", key: link.key, id: decodeURIComponent(rest), path };
+      return { kind: "record", key: link.key, id: decoded(rest), path };
   }
   return { kind: "path", path };
+}
+
+/** A record id from its address; a stray "%" in a stored link keeps the id as written instead of failing. */
+function decoded(part: string): string {
+  try {
+    return decodeURIComponent(part);
+  } catch {
+    return part;
+  }
 }
 
 /** A web address staff typed, made a link: "waafasworld.com/visa" → "/visa" on this site, "example.com" → https. */

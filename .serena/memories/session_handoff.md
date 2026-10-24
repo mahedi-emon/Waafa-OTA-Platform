@@ -8,13 +8,14 @@ DONE: R4 #194 merged (#218, ce05c1b; migration 20261024040000_status_automation 
 DONE: R5 #195 merged (#220 squash 763f58d, CI 8/8, no migration), issue closed, Project Done, close-out posted.
 DONE: R6 #196 merged (#221 squash b25e1b2, CI 8/8, no migration), closed, Project Done, close-out posted, owner
 checkpoint posted in chat (screenshots scratchpad/r6/).
-NOW: R7 #197 website builder on branch feat/197-website-builder (uncommitted until the PR): Website › Home page
-(website/home), Website › Menus (website/menus), LinkPicker for every href, draft preview (/secure-admin-control/preview,
-/api/preview/exit, previewDrafts in lib/data/api), staff tools (components/staff/*, api/staff-tools), framing rules
-in next.config (D243). Docs: ADMIN.md §5.8.1 and TRACKER D243–D248 written; R6 marked ✅ (#221). Remaining: e2e
-admin-website.spec.ts green, editLinks feedback roles, tab bar without Show switch, screenshots + review, TRACKER R7
-block + matrix rows, PR.
-NEXT STEPS: 1) R7: finish, PR, owner COMMENT review, CI, merge, close-out.
+NOW: R7 #197 website builder + #222 (flaky intake email test on main) on branch feat/197-website-builder, pushed;
+PR next. Built: Website › Home page, Website › Menus, LinkPicker (wordFilter), draft preview (previewDrafts,
+/secure-admin-control/preview, /api/preview/exit, proxy ends stale preview), staff tools (components/staff/*,
+api/staff-tools), framing (public 'self', admin none + frame-src self), updateTag on saves (D249), #222 idle() (D250).
+Independent review 2 P1/7 P2/11 P3 all fixed. Local: web unit 643, API 186, e2e API job 61 (website 9/9), budget OK.
+Screens: .playwright-mcp/r7/ (gitignored). design-superpowers skill NOT installed this session (told owner).
+NEXT STEPS: 1) R7: PR (Closes #197, #222), owner COMMENT review, CI, merge, close-out (no migration), TRACKER D0 row
+8 done 73%, issues Done.
 2) R8 #198 purpose-built editors, then OWNER CHECKPOINT. 3) R9 #199, R10 #200 (+ ADMIN_GUIDE.md).
 GOTCHA (R6): an sr-only span inside an overflow-x-auto row whose children are not positioned widens the whole page
 (absolute containing block outside the scroller): StatusChip and module tab links are now `relative`.

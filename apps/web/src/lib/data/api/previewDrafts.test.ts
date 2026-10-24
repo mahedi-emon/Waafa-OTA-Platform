@@ -34,6 +34,27 @@ describe("previewDrafts (D0 R7)", () => {
     expect(await live.content.getBlogPost(String(scheduled.slug))).toBeNull();
   });
 
+  it("starts a banner whose start is still to come, and keeps switched-off ones off", async () => {
+    const now = new Date("2026-10-24T12:00:00+06:00");
+    const body = wire() as ReturnType<typeof wire> & { banners: Array<Record<string, unknown>> };
+    const offers = body.banners.filter((banner) => banner.placement === "home-offers");
+    const [later, off] = offers;
+    if (!later || !off) throw new Error("fixtures changed");
+    later.startsAt = "2099-01-01T10:00:00+06:00";
+    later.enabled = true;
+    off.startsAt = "2099-01-01T10:00:00+06:00";
+    off.enabled = false;
+
+    const titles = async (data: Record<string, unknown>) =>
+      (
+        await createFixtureRepositories(parseSnapshot(data)).content.listBanners("home-offers", now)
+      ).map((banner) => banner.title);
+    expect(await titles(body)).not.toContain(later.title);
+    const preview = await titles(previewDrafts(body, now));
+    expect(preview).toContain(later.title);
+    expect(preview).not.toContain(off.title);
+  });
+
   it("drops the publish time and leaves other keys and the input untouched", () => {
     const body = wire();
     const [scheduled] = body.blogPosts;

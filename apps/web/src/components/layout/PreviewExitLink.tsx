@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
-import { exitPreviewHref } from "@/lib/admin/preview";
+import { exitPreviewHref } from "@/lib/previewLinks";
 
 /** Ends the preview and stays on the page it was on (a plain link: never prefetched). */
 function PreviewExitLink({ label }: { label: string }) {

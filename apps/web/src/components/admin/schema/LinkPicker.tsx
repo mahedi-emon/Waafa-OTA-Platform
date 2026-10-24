@@ -85,6 +85,8 @@ function LinkPicker({
 
   const submitTyped = (event: FormEvent) => {
     event.preventDefault();
+    // The popover is portaled, but React still bubbles the submit to a form around the picker (a sheet, the editor).
+    event.stopPropagation();
     const text = draft.trim();
     if (mode === "web") {
       const url = normaliseWebAddress(text, SITE_URL);
@@ -255,12 +257,17 @@ function LinkPicker({
                 type={mode === "email" ? "email" : mode === "phone" ? "tel" : "text"}
                 placeholder={t(`placeholders.${mode}`)}
                 aria-invalid={problem ? true : undefined}
+                aria-describedby={problem ? `${id}-typed-problem` : undefined}
                 onChange={(event) => setDraft(event.target.value)}
                 className="h-11"
               />
             </label>
             {problem ? (
-              <p role="alert" className="text-[13.5px] font-medium text-danger-700">
+              <p
+                id={`${id}-typed-problem`}
+                role="alert"
+                className="text-[13.5px] font-medium text-danger-700"
+              >
                 {problem}
               </p>
             ) : null}

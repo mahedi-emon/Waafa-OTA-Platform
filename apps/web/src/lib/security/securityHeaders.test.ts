@@ -33,13 +33,13 @@ describe("security headers (issue 102)", () => {
     expect(dev).toContain("ws:");
   });
 
-  it("lets only the site itself frame pages for staff browsers (D0 R7 previews)", () => {
-    const staff = securityHeaders({ development: false, https: true, framing: "self" });
-    const value = (key: string) => staff.find((header) => header.key === key)?.value ?? "";
+  it("lets only the site itself frame public pages (D0 R7 previews), and nobody frame the rest", () => {
+    const publicPage = securityHeaders({ development: false, https: true, framing: "self" });
+    const value = (key: string) => publicPage.find((header) => header.key === key)?.value ?? "";
     expect(value("Content-Security-Policy")).toContain("frame-ancestors 'self'");
     expect(value("X-Frame-Options")).toBe("SAMEORIGIN");
-    const visitor = securityHeaders({ development: false, https: true });
-    expect(visitor.find((header) => header.key === "X-Frame-Options")?.value).toBe("DENY");
+    const locked = securityHeaders({ development: false, https: true });
+    expect(locked.find((header) => header.key === "X-Frame-Options")?.value).toBe("DENY");
   });
 
   it("lets only the admin show the site in a frame, and never be framed itself", () => {

@@ -40,7 +40,24 @@ describe("link targets (D0 R7)", () => {
       kind: "path",
       path: "/visa/thailand/apply",
     });
-    expect(describeHref("/shop?sort=new")).toEqual({ kind: "page", page: "shop", path: "/shop" });
+  });
+
+  it("shows a filtered link as it is, and never fails on a stray percent sign", () => {
+    expect(describeHref("/shop?sort=new")).toEqual({ kind: "path", path: "/shop?sort=new" });
+    expect(describeHref("/tour-packages?destination=bali")).toEqual({
+      kind: "path",
+      path: "/tour-packages?destination=bali",
+    });
+    expect(describeHref(`${SITE}/flights?to=KUL#fares`, SITE)).toEqual({
+      kind: "path",
+      path: "/flights?to=KUL#fares",
+    });
+    expect(describeHref("/tour-packages/50%off")).toEqual({
+      kind: "record",
+      key: "tourPackages",
+      id: "50%off",
+      path: "/tour-packages/50%off",
+    });
   });
 
   it("writes a record's page and cleans typed web addresses", () => {

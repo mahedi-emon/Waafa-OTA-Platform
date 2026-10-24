@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
+import { forgetPreviewSnapshot } from "@/lib/data/api/snapshot";
 import { CACHE_TAGS } from "@/lib/data/tags";
 import { readCappedBody } from "@/lib/http/readCappedBody";
 import { verifySignature } from "@/lib/http/signature";
@@ -40,5 +41,7 @@ export async function POST(request: Request) {
     ? [CACHE_TAGS.snapshot, CACHE_TAGS.catalogue]
     : Object.values(CACHE_TAGS);
   for (const tag of tags) revalidateTag(tag, { expire: 0 });
+  // A staff preview reads the API again too (D0 R7).
+  forgetPreviewSnapshot();
   return NextResponse.json({ revalidated: tags, keys: parsed.keys });
 }

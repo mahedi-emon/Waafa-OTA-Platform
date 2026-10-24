@@ -1,6 +1,9 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import type { ContentActionInput } from "@waafa/shared";
+import { forgetPreviewSnapshot } from "@/lib/data/api/snapshot";
+import { CACHE_TAGS } from "@/lib/data/tags";
 import { adminWrite, type AdminProblem } from "./adminApi";
 import type { ActionResult } from "./leadActions";
 import type { ContentRecordResponse, ContentSingleton } from "./types";
@@ -44,6 +47,15 @@ function savedRecord(result: { ok: true; data: ContentRecordResponse }): SaveRes
   };
 }
 
+/**
+ * This server shows a save at once (read your own writes, D0 R7): the website builder's preview reloads right after
+ * Save and must see it. The API's revalidation call still follows for the site as a whole.
+ */
+function showOnSite() {
+  for (const tag of Object.values(CACHE_TAGS)) updateTag(tag);
+  forgetPreviewSnapshot();
+}
+
 /** Saves a settings value (validated by the API with its CONTENT_MODEL schema; `version` guards concurrent edits). */
 export async function saveSetting(
   key: string,
@@ -57,14 +69,14 @@ export async function saveSetting(
     { data, ...(version ? { version } : {}) },
     KEEP,
   );
-  return result.ok
-    ? {
-        ok: true,
-        version: result.data.version,
-        updatedAt: result.data.updatedAt,
-        updatedBy: result.data.updatedBy,
-      }
-    : result;
+  if (!result.ok) return result;
+  showOnSite();
+  return {
+    ok: true,
+    version: result.data.version,
+    updatedAt: result.data.updatedAt,
+    updatedBy: result.data.updatedBy,
+  };
 }
 
 export async function saveRecord(
@@ -86,7 +98,9 @@ export async function saveRecord(
     },
     KEEP,
   );
-  return result.ok ? savedRecord(result) : result;
+  if (!result.ok) return result;
+  showOnSite();
+  return savedRecord(result);
 }
 
 export async function createRecord(
@@ -221,5 +235,7 @@ export async function moveRecord(key: string, id: string, by: -1 | 1): Promise<A
 export async function reorderContent(key: string, ids: string[]): Promise<ActionResult> {
   if (!KEY.test(key) || ids.length === 0 || ids.some((id) => !ID.test(id))) return badKey();
   const result = await adminWrite(`/admin/content/${at(key)}/order`, "PUT", { ids }, KEEP);
-  return result.ok ? { ok: true } : result;
+  if (!result.ok) return result;
+  showOnSite();
+  return { ok: true };
 }

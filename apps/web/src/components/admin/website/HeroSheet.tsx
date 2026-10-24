@@ -39,6 +39,7 @@ const placesOf = (text: string) =>
 /**
  * The hero editor (ADMIN.md §5.8): the headline, its blue second line, the line under it and the places that turn
  * in it, the photo or video (with its phone version) in Site images, and the top of the home page as a preview.
+ * Mounted afresh for every opening; saves build on the version it opened with (or its own last save).
  */
 function HeroSheet({ hero, open, onOpenChange }: HeroSheetProps) {
   const t = useTranslations("Admin.website");
@@ -51,6 +52,7 @@ function HeroSheet({ hero, open, onOpenChange }: HeroSheetProps) {
   const [label, setLabel] = useState(hero.rotatingLabel);
   const [places, setPlaces] = useState(hero.rotating.join("\n"));
   const [problem, setProblem] = useState<string | null>(null);
+  const [version, setVersion] = useState(hero.version);
   const [reloadKey, setReloadKey] = useState(0);
 
   const save = () => {
@@ -70,13 +72,14 @@ function HeroSheet({ hero, open, onOpenChange }: HeroSheetProps) {
       },
     };
     startTransition(async () => {
-      const result = await saveSetting("homeContent", next, hero.version);
+      const result = await saveSetting("homeContent", next, version);
       if (!result.ok) {
         const message = result.problem.fields?.[0]?.message ?? result.problem.detail ?? t("failed");
         setProblem(message);
         toast.error(message);
         return;
       }
+      setVersion(result.version);
       toast.success(t("saved"));
       setReloadKey((key) => key + 1);
       router.refresh();

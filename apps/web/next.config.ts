@@ -50,17 +50,15 @@ const nextConfig: NextConfig = {
       https: (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://"),
     };
     return [
-      { source: "/:path*", headers: securityHeaders(base) },
-      // Staff browsers (the readable hint set at sign-in) may frame the site from itself: the admin's live previews
-      // (D0 R7, D243). The later entry wins for the same header names.
-      {
-        source: "/:path*",
-        has: [{ type: "cookie", key: "waafa_staff", value: "1" }],
-        headers: securityHeaders({ ...base, framing: "self" }),
-      },
-      // The admin shows the site in its previews and is never framed itself, whatever the cookies say.
+      // Public pages may be framed by the site itself only: the admin's live previews (D0 R7, D243).
+      { source: "/:path*", headers: securityHeaders({ ...base, framing: "self" }) },
+      // The admin shows the site in its previews and is never framed itself. The later entry wins for the same
+      // header names.
       ...["/secure-admin-control/:path*", "/:locale(en|bn)/secure-admin-control/:path*"].map(
-        (source) => ({ source, headers: securityHeaders({ ...base, framesSite: true }) }),
+        (source) => ({
+          source,
+          headers: securityHeaders({ ...base, framing: "none", framesSite: true }),
+        }),
       ),
     ];
   },

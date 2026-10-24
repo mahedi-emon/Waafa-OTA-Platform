@@ -169,9 +169,12 @@ test("photos uploaded in the library get their own words, and an unused one can 
   await sheet.getByLabel("Description").fill(`Blue test photo ${STAMP}`);
   await sheet.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("Saved", { exact: true }).first()).toBeVisible();
+  // The sheet takes the new description as its title once the save comes back.
+  const saved = page.getByRole("dialog", { name: `Blue test photo ${STAMP}` });
+  await expect(saved).toBeVisible();
 
   // A file nothing shows can go; the list no longer has it.
-  await sheet.getByRole("button", { name: "Delete file" }).click();
+  await saved.getByRole("button", { name: "Delete file" }).click();
   const confirm = page.getByRole("alertdialog", { name: "Delete this file?" });
   await confirm.getByRole("button", { name: "Delete file" }).click();
   await expect(page.getByText("File deleted").first()).toBeVisible();

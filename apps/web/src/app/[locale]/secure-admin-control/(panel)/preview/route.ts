@@ -2,7 +2,8 @@ import { cookies, draftMode } from "next/headers";
 import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { getStaffSession } from "@/lib/admin/adminApi";
-import { previewHref, previewPath } from "@/lib/admin/preview";
+import { previewPath } from "@/lib/admin/preview";
+import { previewHref } from "@/lib/previewLinks";
 import { PREVIEW_HINT_COOKIE } from "@/lib/staffHint";
 
 /**

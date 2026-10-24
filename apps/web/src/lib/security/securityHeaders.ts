@@ -22,8 +22,8 @@ type HeaderOptions = {
   /** Upgrade insecure requests only when the site itself is served over https. */
   https: boolean;
   /**
-   * Who may show the site in a frame: nobody, or only the site itself, which the admin's live previews need. "self"
-   * is sent only to browsers with the staff hint (D243); visitors keep "none".
+   * Who may show the page in a frame: nobody (the admin), or only the site itself (public pages, which the admin's
+   * live previews show, D243). Other sites can never frame either.
    */
   framing?: "none" | "self";
   /** The page shows the site itself in a frame (the admin's live previews, D243): frame-src allows 'self'. */

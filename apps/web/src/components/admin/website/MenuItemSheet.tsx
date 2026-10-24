@@ -56,7 +56,8 @@ function MenuItemSheet({ menu, item, pending, onSave, onClose }: MenuItemSheetPr
   const panelOnly = item?.panel === "more";
 
   const save = () => {
-    if (!item) return;
+    // A second Enter while the first save is on its way adds nothing twice.
+    if (!item || pending) return;
     if (!label.trim()) return setProblem(t("item.labelNeeded"));
     if (!href && !panelOnly) return setProblem(t("item.linkNeeded"));
     const next: MenuItemValue = { ...item, label: label.trim(), visible };
