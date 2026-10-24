@@ -5,7 +5,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import type { ChipTone } from "@/lib/admin/statusChips";
 
 const chipVariants = cva(
-  "inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full border leading-none font-semibold whitespace-nowrap transition-colors duration-150 [&>svg]:shrink-0",
+  // relative: the reason's screen-reader words stay inside the chip, even in a scrolling row or table.
+  "relative inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full border leading-none font-semibold whitespace-nowrap transition-colors duration-150 [&>svg]:shrink-0",
   {
     variants: {
       tone: {

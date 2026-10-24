@@ -12,6 +12,7 @@ import {
   type LeadNoteInput,
   type LeadStatus,
   type LeadUpdateInput,
+  type VisaApplicationListQuery,
   type VisaProgressFacts,
   type VisaProgressInput,
 } from "@waafa/shared";
@@ -22,7 +23,7 @@ import { ContentService } from "../content/content.service";
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
-import { assertLeadAccess, dhakaDate, leadModulesFor } from "./access";
+import { assertLeadAccess, canSeeOrders, dhakaDate, leadModulesFor } from "./access";
 
 const CLOSED: LeadStatus[] = ["booked", "cancelled", "lost", "spam"];
 
@@ -121,6 +122,39 @@ function visaFacts(checklist: string[], progress: VisaProgress, status: string):
   };
 }
 
+/** The checklist titles for a visa type of one Visa countries record (its first type when the request names none). */
+function checklistOf(country: unknown, visaType: unknown): string[] {
+  const types = (country as { types?: Array<{ type?: unknown; checklist?: unknown }> } | null)
+    ?.types;
+  const type = types?.find((item) => item.type === visaType) ?? types?.[0];
+  const items = Array.isArray(type?.checklist)
+    ? (type.checklist as Array<{ title?: unknown }>)
+    : [];
+  return items.flatMap((item) => (typeof item.title === "string" ? [item.title] : []));
+}
+
+const VISA_STAGES = [
+  "documentsPending",
+  "readyToSubmit",
+  "submitted",
+  "approved",
+  "rejected",
+  "passportReturned",
+  "cancelled",
+] as const;
+
+/** The search box: a reference, a name, an email or the last digits of a phone number. */
+function searchLeads(words: string): Prisma.LeadWhereInput[] {
+  const q = words.trim();
+  const digits = q.replace(/\D/g, "");
+  return [
+    { reference: { contains: q.toUpperCase() } },
+    { name: { contains: q, mode: "insensitive" } },
+    { email: { contains: q, mode: "insensitive" } },
+    ...(digits.length >= 4 ? [{ phone: { contains: digits.slice(-10) } }] : []),
+  ];
+}
+
 /** Today's date in Asia/Dhaka. */
 const todayInDhaka = (now: Date) =>
   new Date(now.getTime() + 6 * 3_600_000).toISOString().slice(0, 10);
@@ -174,6 +208,11 @@ export class AdminLeadsService {
       where.status = "new";
       where.createdAt = { lt: new Date(now.getTime() - sla * 60_000) };
     }
+    if (query.view === "closed")
+      where.status =
+        query.status === "lost" || query.status === "cancelled"
+          ? query.status
+          : { in: ["lost", "cancelled"] };
     if (query.createdFrom || query.createdTo) {
       where.createdAt = {
         ...(typeof where.createdAt === "object" ? where.createdAt : {}),
@@ -181,17 +220,8 @@ export class AdminLeadsService {
         ...(query.createdTo ? { lt: dhakaDate(query.createdTo, true) } : {}),
       };
     }
-    if (query.q) {
-      const q = query.q.trim();
-      const digits = q.replace(/\D/g, "");
-      where.OR = [
-        { reference: { contains: q.toUpperCase() } },
-        { name: { contains: q, mode: "insensitive" } },
-        { email: { contains: q, mode: "insensitive" } },
-        ...(digits.length >= 4 ? [{ phone: { contains: digits.slice(-10) } }] : []),
-      ];
-    }
-    const [total, rows] = await Promise.all([
+    if (query.q) where.OR = searchLeads(query.q);
+    const [total, rows, open] = await Promise.all([
       this.prisma.lead.count({ where }),
       this.prisma.lead.findMany({
         where,
@@ -199,7 +229,16 @@ export class AdminLeadsService {
         skip: (query.page - 1) * query.pageSize,
         take: query.pageSize,
       }),
+      // Open leads per module this person works on, when the page shows the module tabs (D0 R6).
+      query.counts === "1"
+        ? this.prisma.lead.groupBy({
+            by: ["module"],
+            where: { module: { in: modules }, status: { notIn: CLOSED } },
+            _count: { _all: true },
+          })
+        : Promise.resolve([]),
     ]);
+    const openBy = new Map(open.map((group) => [group.module, group._count._all]));
     const names = await this.staffNames(rows.map((row) => row.assigneeId));
     const duplicates = await this.prisma.lead.findMany({
       where: {
@@ -213,6 +252,11 @@ export class AdminLeadsService {
       page: query.page,
       pageSize: query.pageSize,
       slaMinutes: sla,
+      // Empty unless asked for (counts=1): the tabs show the modules this person works on.
+      modules:
+        query.counts === "1"
+          ? modules.map((module) => ({ module, open: openBy.get(module) ?? 0 }))
+          : [],
       items: rows.map((row) => {
         const ageMinutes = Math.floor((now.getTime() - row.createdAt.getTime()) / 60_000);
         return {
@@ -252,6 +296,38 @@ export class AdminLeadsService {
 
   async detail(staff: StaffPrincipal, id: string, now = new Date()) {
     const lead = await this.load(staff, id);
+    // The customer card (D0 R6): other requests and orders from the same phone, as far as this role may see.
+    const sameLead = {
+      phone: lead.phone,
+      id: { not: lead.id },
+      module: { in: leadModulesFor(staff) },
+    };
+    const orders = canSeeOrders(staff);
+    const [otherLeads, leadCount, otherOrders, orderCount] = await Promise.all([
+      this.prisma.lead.findMany({
+        where: sameLead,
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          reference: true,
+          module: true,
+          status: true,
+          summary: true,
+          createdAt: true,
+        },
+      }),
+      this.prisma.lead.count({ where: sameLead }),
+      orders
+        ? this.prisma.order.findMany({
+            where: { phone: lead.phone },
+            orderBy: { createdAt: "desc" },
+            take: 5,
+            select: { id: true, reference: true, status: true, total: true, createdAt: true },
+          })
+        : Promise.resolve([]),
+      orders ? this.prisma.order.count({ where: { phone: lead.phone } }) : Promise.resolve(0),
+    ]);
     const [names, original, repeats, sla, checklist] = await Promise.all([
       this.staffNames([lead.assigneeId]),
       lead.duplicateOfId
@@ -323,6 +399,16 @@ export class AdminLeadsService {
         now,
       ),
       visa,
+      customer: {
+        phone: lead.phone,
+        leadCount,
+        leads: otherLeads.map((item) => ({ ...item, createdAt: toDhakaIsoString(item.createdAt) })),
+        orderCount,
+        // Null when this role doesn't see orders, so the card says nothing about them.
+        orders: orders
+          ? otherOrders.map((item) => ({ ...item, createdAt: toDhakaIsoString(item.createdAt) }))
+          : null,
+      },
       firstResponseAt: lead.firstResponseAt ? toDhakaIsoString(lead.firstResponseAt) : null,
       closedAt: lead.closedAt ? toDhakaIsoString(lead.closedAt) : null,
       createdAt: toDhakaIsoString(lead.createdAt),
@@ -543,19 +629,27 @@ export class AdminLeadsService {
         body = `Passport returned on ${formatDate(input.on)}`;
         break;
     }
+    // Working a new application is the first reply: it moves to In progress. A lead waiting for the customer moves only
+    // when a document arrives (they replied); unticking or an outcome never moves it (D0 R6).
+    const moved =
+      lead.status === "new" ||
+      (lead.status === "pending" && input.type === "document" && input.received)
+        ? "in-progress"
+        : null;
     await this.prisma.$transaction(async (tx) => {
       await tx.lead.update({
         where: { id },
         data: {
           progress: json(progress),
           ...(lead.firstResponseAt ? {} : { firstResponseAt: now }),
+          ...(moved ? { status: moved } : {}),
         },
       });
       await tx.leadActivity.create({
         data: {
           leadId: id,
           type: "visa",
-          body,
+          body: moved ? `${body} · Moved to ${STATUS_WORDS[moved] ?? moved}` : body,
           actorId: staff.id,
           actorName: staff.name,
           createdAt: now,
@@ -567,8 +661,8 @@ export class AdminLeadsService {
           action: "lead.visa",
           entity: "lead",
           entityId: lead.reference,
-          before: { progress: lead.progress },
-          after: { progress },
+          before: { progress: lead.progress, status: lead.status },
+          after: { progress, status: moved ?? lead.status },
         },
         tx,
       );
@@ -584,14 +678,112 @@ export class AdminLeadsService {
       where: { collection_docId: { collection: "visaCountries", docId: payload.countrySlug } },
       select: { data: true },
     });
-    const types = (
-      country?.data as { types?: Array<{ type?: unknown; checklist?: unknown }> } | null
-    )?.types;
-    const type = types?.find((item) => item.type === payload.visaType) ?? types?.[0];
-    const items = Array.isArray(type?.checklist)
-      ? (type.checklist as Array<{ title?: unknown }>)
-      : [];
-    return items.flatMap((item) => (typeof item.title === "string" ? [item.title] : []));
+    return checklistOf(country?.data, payload.visaType);
+  }
+
+  /**
+   * Visa applications (D0 R6, ADMIN.md §8.3): visa leads with the stage their checklist gives, newest first. The
+   * stage comes from each country's checklist, so the stage filter and its counts are worked out here.
+   */
+  async visaApplications(staff: StaffPrincipal, query: VisaApplicationListQuery, now = new Date()) {
+    assertLeadAccess(staff, "visa");
+    // A spam request was never an application.
+    const where: Prisma.LeadWhereInput = { module: "visa", status: { not: "spam" } };
+    if (query.view === "open") where.status = { notIn: CLOSED };
+    if (query.view === "mine") where.assigneeId = staff.id;
+    if (query.view === "unassigned") where.assigneeId = null;
+    if (query.q) where.OR = searchLeads(query.q);
+    // The newest 2,000 applications, only the columns the list needs (the stage is worked out per row below).
+    const [rows, sla] = await Promise.all([
+      this.prisma.lead.findMany({
+        where,
+        orderBy: { createdAt: query.sort === "created.asc" ? "asc" : "desc" },
+        take: 2_000,
+        select: {
+          id: true,
+          reference: true,
+          status: true,
+          name: true,
+          phone: true,
+          summary: true,
+          travelDate: true,
+          assigneeId: true,
+          payload: true,
+          progress: true,
+          firstResponseAt: true,
+          createdAt: true,
+        },
+      }),
+      this.slaMinutes(),
+    ]);
+    // Only the countries these applications name.
+    const slugs = [
+      ...new Set(
+        rows.flatMap((row) => {
+          const slug = (row.payload as { countrySlug?: unknown } | null)?.countrySlug;
+          return typeof slug === "string" ? [slug] : [];
+        }),
+      ),
+    ];
+    const countries = await this.prisma.contentDocument.findMany({
+      where: { collection: "visaCountries", docId: { in: slugs } },
+      select: { docId: true, data: true },
+    });
+    const countryBy = new Map(countries.map((country) => [country.docId, country.data]));
+    const applications = rows.map((row) => {
+      const payload = row.payload as { countrySlug?: unknown; visaType?: unknown } | null;
+      const country =
+        typeof payload?.countrySlug === "string" ? countryBy.get(payload.countrySlug) : undefined;
+      const progress = progressOf(row.progress);
+      const checklist = checklistOf(country, payload?.visaType);
+      return {
+        row,
+        progress,
+        country: (country as { name?: unknown } | undefined)?.name,
+        ...visaStage(visaFacts(checklist, progress, row.status)),
+      };
+    });
+    const stages = Object.fromEntries(
+      VISA_STAGES.map((stage) => [
+        stage,
+        applications.filter((application) => application.stage === stage).length,
+      ]),
+    );
+    const matching = query.stage
+      ? applications.filter((application) => application.stage === query.stage)
+      : applications;
+    const page = matching.slice((query.page - 1) * query.pageSize, query.page * query.pageSize);
+    const names = await this.staffNames(page.map((application) => application.row.assigneeId));
+    return {
+      total: matching.length,
+      page: query.page,
+      pageSize: query.pageSize,
+      slaMinutes: sla,
+      stages,
+      items: page.map(({ row, progress, country, stage, received, required }) => {
+        const ageMinutes = Math.floor((now.getTime() - row.createdAt.getTime()) / 60_000);
+        return {
+          id: row.id,
+          reference: row.reference,
+          status: row.status,
+          name: row.name,
+          phone: row.phone,
+          summary: row.summary,
+          country: typeof country === "string" ? country : null,
+          travelDate: row.travelDate,
+          assignee: row.assigneeId
+            ? { id: row.assigneeId, name: names.get(row.assigneeId) ?? "Former staff" }
+            : null,
+          stage,
+          received,
+          required,
+          submittedOn: progress.submittedOn ?? null,
+          createdAt: toDhakaIsoString(row.createdAt),
+          ageMinutes,
+          overdue: row.status === "new" && !row.firstResponseAt && ageMinutes > sla,
+        };
+      }),
+    };
   }
 
   /**

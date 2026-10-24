@@ -46,6 +46,28 @@ export function formatDhakaDateTime(iso: string): string {
   return `${day}, ${time}`;
 }
 
+/** "7:18 pm" in Asia/Dhaka (timelines put the date in the day's heading). */
+export function formatDhakaTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: DHAKA,
+  })
+    .format(date)
+    .toLowerCase();
+}
+
+/** The Asia/Dhaka calendar day (YYYY-MM-DD) of an ISO time with any offset. */
+export function dhakaDay(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso.slice(0, 10);
+  // Dhaka is UTC+6 all year.
+  return new Date(date.getTime() + 6 * 3_600_000).toISOString().slice(0, 10);
+}
+
 /** "12 Oct 2026" from YYYY-MM-DD (dates without a time are calendar dates, shown as they are). */
 export function formatPlainDate(value: string | null | undefined): string {
   if (!value) return "";

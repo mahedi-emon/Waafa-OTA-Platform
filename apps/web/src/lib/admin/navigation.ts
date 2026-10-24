@@ -118,7 +118,9 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       {
         key: "visaApplications",
         label: "visaApplications",
-        href: `${ADMIN}/leads?module=visa`,
+        href: `${ADMIN}/visa-applications`,
+        // A visa lead opened from this list stays under it (D0 R6).
+        also: [`${ADMIN}/leads?queue=visa`],
         icon: "passport",
         roles: ["admin", "visa-officer"],
         badge: "visaWaiting",
@@ -445,7 +447,13 @@ export function newRecordsFor(roles: readonly Role[]): NewRecordGroup[] {
 /** How well `href` matches the current page: its length when it matches, else 0 (query hrefs need their query). */
 function matchLength(href: string, path: string, here: string): number {
   const [hrefPath = "", hrefQuery] = href.split("?");
-  if (hrefQuery) return here.startsWith(href) ? href.length : 0;
+  if (hrefQuery) {
+    // A page under the path whose address carries these parameters, in any order.
+    const present = new URLSearchParams(here.split("?")[1] ?? "");
+    const wanted = [...new URLSearchParams(hrefQuery)];
+    const under = path === hrefPath || path.startsWith(`${hrefPath}/`);
+    return under && wanted.every(([key, value]) => present.get(key) === value) ? href.length : 0;
+  }
   if (path === hrefPath) return href.length;
   // The admin root and the content overview only match exactly; everything lives under them.
   if (hrefPath === ADMIN || hrefPath === `${ADMIN}/content`) return 0;

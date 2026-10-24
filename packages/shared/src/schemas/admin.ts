@@ -58,7 +58,8 @@ const somethingToChange = (value: object) =>
 /** Lead list filters (FR-ADM-LEAD): saved views, module, status, agent, created dates and a search box. */
 export const LeadListQuerySchema = z
   .object({
-    view: z.enum(["all", "open", "mine", "unassigned", "overdue"]).default("all"),
+    /** closed: lost and cancelled, the board's last column (D0 R6). */
+    view: z.enum(["all", "open", "mine", "unassigned", "overdue", "closed"]).default("all"),
     module: LeadModuleSchema.optional(),
     status: LeadStatusSchema.optional(),
     assigneeId: IdSchema.optional(),
@@ -66,6 +67,29 @@ export const LeadListQuerySchema = z
     createdFrom: IsoDateSchema.optional(),
     createdTo: IsoDateSchema.optional(),
     /** Newest first unless asked (D0 R5). */
+    sort: z.enum(["created.asc", "created.desc"]).optional(),
+    /** "1": also count open leads per module, for the service tabs (D0 R6). */
+    counts: z.literal("1").optional(),
+    ...paging,
+  })
+  .strict();
+
+/** Visa applications (D0 R6, ADMIN.md §8.3): visa leads by their checklist stage, a view, words and the page. */
+export const VisaApplicationListQuerySchema = z
+  .object({
+    view: z.enum(["all", "open", "mine", "unassigned"]).default("all"),
+    stage: z
+      .enum([
+        "documentsPending",
+        "readyToSubmit",
+        "submitted",
+        "approved",
+        "rejected",
+        "passportReturned",
+        "cancelled",
+      ])
+      .optional(),
+    q: z.string().trim().max(80).optional(),
     sort: z.enum(["created.asc", "created.desc"]).optional(),
     ...paging,
   })
@@ -352,6 +376,7 @@ export type Role = z.infer<typeof RoleSchema>;
 export type StaffUser = z.infer<typeof StaffUserSchema>;
 export type AuditEntry = z.infer<typeof AuditEntrySchema>;
 export type LeadListQuery = z.infer<typeof LeadListQuerySchema>;
+export type VisaApplicationListQuery = z.infer<typeof VisaApplicationListQuerySchema>;
 export type LeadUpdateInput = z.infer<typeof LeadUpdateInputSchema>;
 export type LeadNoteInput = z.infer<typeof LeadNoteInputSchema>;
 export type LeadBulkInput = z.infer<typeof LeadBulkInputSchema>;

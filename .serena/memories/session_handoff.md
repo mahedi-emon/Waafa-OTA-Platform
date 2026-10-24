@@ -1,31 +1,32 @@
 # Session handoff (update at every session end)
-Updated 2026-10-23 19:00 Dhaka.
+Updated 2026-10-24 Dhaka.
 STATE: site LIVE on https://waafasworld.com (owner deploys `sh deploy.sh` after the Docker images workflow is green;
 never touch the VPS or its .env). Repo PRIVATE: Actions minutes limited, keep path filters, no needless reruns, but
-NEVER cancel or skip CI (owner, 20 Oct): every push's CI runs to green; verify locally first. Pushing a branch without
-a PR runs nothing; CI has cancel-in-progress, so wait for a PR run to finish before pushing again.
-DONE TODAY: R3 #193 merged (#216 squash 31e798e; CodeQL fix rawBody + accepted comment D214), Docker images green,
-owner checkpoint posted (migration 20261020050000_media_credit → backup.sh before deploy.sh).
-NOW: R4 #194 on branch feat/194-status-automation (pushed 7faea4b API+shared, 0cde7a1 web; later commits local).
-Project #194 In progress, plan comment posted. Built: shared workflow rules + tests (shared 131), API actions/Trash/
-redirects/scheduler (API 176 tests), web editor buttons + ScheduleDialog, LeadActions, VisaProgressPanel, OrderSteps,
-ProofDecision, Trash page + nav, list chips (recordChips), staff chips, public redirects (followMovedRecord), messages,
-e2e/admin-workflow.spec.ts (added to CI API job), TRACKER R4 block (placeholders {TESTS} {WIDTHS} {REVIEW}
-{SESSION_TESTS} to fill), D215–D226, AC-135..143, ADMIN.md §8.7.
-NEXT STEPS (R4): 1) local API-mode build (scratchpad build-r4.log) + API on waafa_ci (SCHEDULER_INTERVAL_MS=3000)
-then run e2e in CI order: api-mode, admin-shell, admin-screens, admin-editor, admin-media, admin-workflow
-(--workers=1); fix failures. 2) Playwright MCP screenshots 390/768/1024/1440 of editor (scheduled), lead Next step,
-visa panel, order steps, proofs, Trash, lists with chips → test-results/admin-audit/r4/; design review; fill TRACKER
-placeholders; commit; open PR "Closes #194" with migration note; owner COMMENT review with inline comments (D159);
-CI green; squash-merge; close-out (migration 20261024040000_status_automation → backup.sh); Project Done. 3) R5 #195.
-LOCAL DEV STACK (this Windows machine, ~0.7–1 GB free RAM; the owner's Docker stack also runs, don't touch it):
-- Docker Desktop must be running. PostgreSQL container `waafa-dev-pg` (mine; port 5433, waafa/waafa). DBs: waafa_dev,
-  waafa_test (API tests: API_TEST_DATABASE_URL=postgresql://waafa:waafa@localhost:5433/waafa_test; migrate it after a
-  new migration), waafa_ci (recreate: docker exec waafa-dev-pg psql -U waafa -d postgres -c "DROP DATABASE IF EXISTS
-  waafa_ci WITH (FORCE);" -c "CREATE DATABASE waafa_ci;", then migrate + seed), waafa_r4diff (scratch for migrate diff).
-- Env: scratchpad dev-env.sh. API: `pnpm --filter @waafa/api start` on 4000. Leftover node servers on 4000/3100 from
-  older sessions block new ones: find with Get-NetTCPConnection and stop only node.exe processes that are mine.
+NEVER cancel or skip CI: every push's CI runs to green; verify locally first. CI has cancel-in-progress, so wait for a
+PR run to finish before pushing again.
+DONE: R4 #194 merged (#218, ce05c1b; migration 20261024040000_status_automation → owner runs backup.sh before deploy).
+DONE: R5 #195 merged (#220 squash 763f58d, CI 8/8, no migration), issue closed, Project Done, close-out posted.
+NOW: R6 #196 inbox on branch feat/196-inbox, committed and pushed; PR opening (title "feat(admin): inbox with queue
+panes, lead board moves and visa applications (R6)"). No migration. Local: shared 144, web 623, API 184, API-job e2e 52/52
+on a fresh DB; independent review's 10 findings fixed (D242); InboxSplit is one grid + own separator (D241, shadcn
+resizable removed). TRACKER R6 block filled (still 🟡 until merge), D232–D242, ADMIN.md §5.5.1.
+NEXT STEPS: 1) PR → owner COMMENT review with inline comments (D159) → CI green (no reruns) → squash-merge
+`gh pr merge <n> --squash --delete-branch --subject "feat(admin): inbox … (R6) (#<n>)"` → check merge author →
+close-out on #196 → Project Done → TRACKER R6 ✅ + session log PR number (in R7's branch). 2) OWNER CHECKPOINT
+(Banglish summary + screenshot paths scratchpad/r6/*.png + "test this yourself"). 3) R7 #197 website builder.
+GOTCHA (R6): an sr-only span inside an overflow-x-auto row whose children are not positioned widens the whole page
+(absolute containing block outside the scroller): StatusChip and module tab links are now `relative`.
+DATATABLE NOTES: components/admin/table/* (AdminDataTable server wrapper with scoped messages; DataRow with
+actions (sheet) and quick (phone card)); pages pass only allowed pageSize/sort (pageSizeOf, sortOf in listQuery);
+name links to editor (e2e: `page.getByRole("table").getByRole("link").first()`; at 390 the card button opens the sheet,
+then "Open"). Checkbox indicator forceMount (D229).
+LOCAL DEV STACK (~1 GB free RAM; owner's Docker stack also runs, don't touch it):
+- PostgreSQL container `waafa-dev-pg` (port 5433, waafa/waafa). DBs waafa_dev, waafa_test (API tests:
+  API_TEST_DATABASE_URL=postgresql://waafa:waafa@localhost:5433/waafa_test), waafa_ci (reset: DROP SCHEMA public
+  CASCADE; CREATE SCHEMA public; then prisma migrate deploy + tsx prisma/seed.ts with DATABASE_URL=.../waafa_ci).
+- Env: scratchpad dev-env.sh (session-specific scratchpad; recreate from CI env values if missing). API `npx tsx
+  src/main.ts` on 4000; web `next build` then `next start -p 3100`. Stop only my own next/tsx processes on 3100/4000.
 - Web typecheck needs NODE_OPTIONS=--max-old-space-size=3584 (`npx next typegen` first).
-Gotchas: write node edit scripts with the Write tool (bash heredocs with backticks/quotes break); Python writes CRLF on
-Windows unless newline='\n'; after switching branches run `pnpm --filter @waafa/api generate`; gh needs
-PATH += /c/Program Files/GitHub CLI; react-hooks/purity flags Date.now() in render (read time once in useState).
+- Playwright sign-in is rate-limited per x-forwarded-for: probes should use a random IP.
+Gotchas: write edit scripts with the Write tool (bash heredocs/node -e with backticks break); `pnpm guards` flags
+"#205"-like text as hex; Python writes CRLF unless newline='\n'; gh needs PATH += /c/Program Files/GitHub CLI.

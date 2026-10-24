@@ -4,7 +4,7 @@ import type { StaffPrincipal } from "../auth/principal";
 import { toCsv } from "../common/csv";
 import { problems } from "../common/problem";
 import { PrismaService } from "../prisma/prisma.service";
-import { dhakaDate, leadModulesFor } from "./access";
+import { canSeeOrders, dhakaDate, leadModulesFor } from "./access";
 
 const NOT_SOLD = ["cancelled", "returned"];
 const DAY = 24 * 60 * 60_000;
@@ -73,17 +73,11 @@ export class AdminReportsService {
     return { start, end };
   }
 
-  private canSeeOrders(staff: StaffPrincipal) {
-    return staff.roles.some((role) =>
-      ["super-admin", "admin", "shop-manager", "accounts"].includes(role),
-    );
-  }
-
   async summary(staff: StaffPrincipal, range: ReportRange) {
     const { start, end } = this.window(range);
     const modules = leadModulesFor(staff);
     const leadWhere = { module: { in: modules }, createdAt: { gte: start, lt: end } };
-    const orders = this.canSeeOrders(staff);
+    const orders = canSeeOrders(staff);
     const [leads, orderRows, feedback, signUps] = await Promise.all([
       this.prisma.lead.findMany({
         where: leadWhere,
@@ -218,7 +212,7 @@ export class AdminReportsService {
         );
       }
       case "orders": {
-        if (!this.canSeeOrders(staff)) throw problems.forbidden();
+        if (!canSeeOrders(staff)) throw problems.forbidden();
         const rows = await this.prisma.order.findMany({
           where: created,
           orderBy: { createdAt: "asc" },

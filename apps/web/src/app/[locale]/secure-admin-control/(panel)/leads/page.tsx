@@ -1,14 +1,13 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Columns3, Phone } from "lucide-react";
+import { Columns3 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { LeadModuleSchema, LeadStatusSchema } from "@waafa/shared";
-import { cn } from "cn";
+import { LeadModuleSchema, LeadStatusSchema, type LeadModule } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { LeadContactButtons } from "@/components/admin/inbox/LeadContactButtons";
+import { LeadModuleTabs } from "@/components/admin/inbox/LeadModuleTabs";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
-import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { ChipView, ColumnSpec, DataRow } from "@/components/admin/table/types";
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
@@ -19,10 +18,10 @@ import {
   formatDhakaDateTime,
   formatPlainDate,
   initialsOf,
-  pageParam,
   whatsappHref,
 } from "@/lib/admin/format";
 import { assignLeads, markLeadsSpam } from "@/lib/admin/leadActions";
+import { LEAD_VIEWS, leadListQuery, queueSearch, withSearch } from "@/lib/admin/queues";
 import type { LeadList, LeadRow, StaffDirectoryEntry } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -30,58 +29,37 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
-const VIEWS = ["all", "open", "mine", "unassigned", "overdue"] as const;
-type View = (typeof VIEWS)[number];
-const SORTS = ["created.asc", "created.desc"] as const;
 const PATH = "/secure-admin-control/leads";
-
-const one = (value: string | string[] | undefined) =>
-  typeof value === "string" ? value : undefined;
-
-/** Call and WhatsApp, the first step with almost every lead. */
-function ContactButtons({ row, call, whatsapp }: { row: LeadRow; call: string; whatsapp: string }) {
-  return (
-    <>
-      <Button asChild variant="secondary" size="sm">
-        <a href={`tel:${row.phone}`}>
-          <Phone aria-hidden="true" className="size-4" />
-          {call}
-        </a>
-      </Button>
-      <Button asChild variant="whatsapp" size="sm">
-        <a href={whatsappHref(row.phone, row.reference)} target="_blank" rel="noopener noreferrer">
-          <WhatsAppIcon className="size-4" />
-          {whatsapp}
-        </a>
-      </Button>
-    </>
-  );
-}
 
 async function Leads({
   searchParams,
 }: {
   searchParams: PageProps<"/[locale]/secure-admin-control/leads">["searchParams"];
 }) {
-  const params = await searchParams;
-  const view: View = VIEWS.find((item) => item === one(params.view)) ?? "all";
-  const query = {
-    view,
-    module: LeadModuleSchema.safeParse(one(params.module)).data,
-    status: LeadStatusSchema.safeParse(one(params.status)).data,
-    q: one(params.q)?.slice(0, 80),
-    sort: sortOf(params.sort, SORTS),
-    page: pageParam(params.page),
-    pageSize: pageSizeOf(params.pageSize),
-  };
-  const [list, staff, t, tc, tm, ts] = await Promise.all([
-    adminGet<LeadList>("/admin/leads", query),
+  const query = leadListQuery(await searchParams);
+  const [list, staff, t, tc, tm, ts, tl, ta] = await Promise.all([
+    // counts=1: open leads per module for the service tabs.
+    adminGet<LeadList>("/admin/leads", { ...query, counts: "1" }),
     adminGet<StaffDirectoryEntry[]>("/admin/staff"),
     getTranslations("Admin.leads"),
     getTranslations("Admin.common"),
     getTranslations("Admin.modules"),
     getTranslations("Admin.statuses"),
+    getTranslations("Admin.lead"),
+    getTranslations("Admin.leadActions"),
   ]);
+  // Each lead opens with this list beside it and Back to it (D0 R6).
+  const search = queueSearch(query);
+  const channel = (value: string) =>
+    tl.has(`channels.${value}` as "channels.web")
+      ? tl(`channels.${value}` as "channels.web")
+      : value;
+  const contactStrings = {
+    call: t("call"),
+    whatsapp: t("whatsapp"),
+    logged: ta("done.contact"),
+    failed: tc("unavailable"),
+  };
 
   const ageOf = (row: LeadRow) => {
     const age = ageParts(row.ageMinutes);
@@ -106,9 +84,20 @@ async function Leads({
         : []),
     ];
     const travel = row.travelDate ? formatPlainDate(row.travelDate) : "";
+    const contact = (
+      <LeadContactButtons
+        leadId={row.id}
+        phone={row.phone}
+        whatsappHref={whatsappHref(
+          row.phone,
+          tl("whatsappText", { name: row.name, reference: row.reference }),
+        )}
+        strings={contactStrings}
+      />
+    );
     return {
       id: row.id,
-      href: `${PATH}/${row.id}`,
+      href: withSearch(`${PATH}/${row.id}`, search),
       title: row.name,
       subtitle: [row.reference, tm(row.module), row.duplicateOf ? t("duplicate") : ""]
         .filter(Boolean)
@@ -123,7 +112,7 @@ async function Leads({
           kind: row.assignee ? undefined : "muted",
         },
         age: { text: ageOf(row), kind: "date" },
-        source: { text: row.source, kind: "muted" },
+        source: { text: channel(row.source), kind: "muted" },
       },
       summary: [
         { label: t("colReference"), value: row.reference },
@@ -134,14 +123,10 @@ async function Leads({
         ...(travel ? [{ label: t("colDate"), value: travel }] : []),
         { label: t("colAssignee"), value: row.assignee?.name ?? t("unassigned") },
         { label: t("colAge"), value: `${ageOf(row)} (${formatDhakaDateTime(row.createdAt)})` },
-        { label: t("colSource"), value: row.source },
+        { label: t("colSource"), value: channel(row.source) },
       ],
-      actions: (
-        <div className="flex flex-wrap gap-2">
-          <ContactButtons row={row} call={t("call")} whatsapp={t("whatsapp")} />
-        </div>
-      ),
-      quick: <ContactButtons row={row} call={t("call")} whatsapp={t("whatsapp")} />,
+      actions: <div className="flex flex-wrap gap-2">{contact}</div>,
+      quick: contact,
     };
   });
 
@@ -154,21 +139,18 @@ async function Leads({
     { key: "age", label: t("colAge"), sort: "created" },
     { key: "source", label: t("colSource") },
   ];
-  const exportQuery = new URLSearchParams(
-    Object.entries({
-      view: view === "all" ? undefined : view,
-      module: query.module,
-      status: query.status,
-      q: query.q,
-    }).filter((entry): entry is [string, string] => Boolean(entry[1])),
-  ).toString();
-  const viewHref = (item: View) => {
-    const next = new URLSearchParams(exportQuery);
-    if (item === "all") next.delete("view");
-    else next.set("view", item);
-    const search = next.toString();
-    return search ? `${PATH}?${search}` : PATH;
-  };
+  const exportSearch = queueSearch({
+    view: query.view,
+    module: query.module,
+    status: query.status,
+    q: query.q,
+  });
+  const tabLabels = {
+    all: t("tabs.all"),
+    ...Object.fromEntries(
+      LeadModuleSchema.options.map((key) => [key, t(`tabs.${key}` as "tabs.all")]),
+    ),
+  } as Record<LeadModule, string> & { all: string };
 
   return (
     <>
@@ -177,31 +159,22 @@ async function Leads({
         lead={t("lead", { sla: list.slaMinutes })}
         actions={
           <Button asChild variant="secondary" size="sm">
-            <Link href={`${PATH}/board`}>
+            <Link href={withSearch(`${PATH}/board`, queueSearch({ module: query.module }))}>
               <Columns3 aria-hidden="true" className="size-4" />
               {t("board")}
             </Link>
           </Button>
         }
       />
-      <nav aria-label={t("title")} className="-mx-1 mb-4 flex gap-1 overflow-x-auto px-1 pb-1">
-        {VIEWS.map((item) => (
-          <Link
-            key={item}
-            href={viewHref(item)}
-            prefetch={false}
-            aria-current={item === view ? "page" : undefined}
-            className={cn(
-              "flex min-h-11 shrink-0 items-center rounded-full px-4 text-[14.5px] font-semibold transition-colors duration-150",
-              item === view
-                ? "bg-navy-900 text-white"
-                : "bg-white text-navy-900 ring-1 ring-mist-200 hover:bg-mist-50",
-            )}
-          >
-            {t(`views.${item}`)}
-          </Link>
-        ))}
-      </nav>
+      <LeadModuleTabs
+        path={PATH}
+        current={query.module}
+        modules={list.modules}
+        keep={{ view: query.view === "all" ? undefined : query.view, q: query.q }}
+        labels={tabLabels}
+        openLabel={t("openCount", { count: "{count}" })}
+        label={t("tabsLabel")}
+      />
       <AdminDataTable
         listKey="leads"
         path={PATH}
@@ -211,9 +184,12 @@ async function Leads({
         searchLabel={t("searchPlaceholder")}
         filters={[
           {
-            param: "module",
-            label: t("module"),
-            options: LeadModuleSchema.options.map((key) => ({ value: key, label: tm(key) })),
+            param: "view",
+            label: t("show"),
+            options: LEAD_VIEWS.filter((view) => view !== "all").map((view) => ({
+              value: view,
+              label: t(`views.${view}`),
+            })),
           },
           {
             param: "status",
@@ -236,7 +212,7 @@ async function Leads({
           },
           { id: "spam", label: t("bulkSpam"), danger: true, run: markLeadsSpam },
         ]}
-        exportHref={`${PATH}/export${exportQuery ? `?${exportQuery}` : ""}`}
+        exportHref={withSearch(`${PATH}/export`, exportSearch)}
         openLabel={tc("open")}
         empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
       />
@@ -244,7 +220,7 @@ async function Leads({
   );
 }
 
-/** Leads (AdminLeads, AdminLeads-bulk, AdminLeads-m boards) on the shared DataTable (D0 R5). */
+/** Leads (ADMIN.md §5.5): service tabs, the shared DataTable (D0 R5), each lead opening beside its list (R6). */
 export default function LeadsPage(props: PageProps<"/[locale]/secure-admin-control/leads">) {
   return (
     <Suspense fallback={<Skeleton className="h-160 rounded-2xl" />}>

@@ -7,6 +7,7 @@ import {
   PROOF_CHIPS,
   RECORD_CHIPS,
   USER_CHIPS,
+  VISA_CHIPS,
   type ChipSpec,
 } from "@/lib/admin/statusChips";
 import type { ChipView } from "./types";
@@ -19,6 +20,7 @@ const SETS: Record<ChipView["family"], Record<string, ChipSpec>> = {
   feedback: FEEDBACK_CHIPS,
   user: USER_CHIPS,
   overdue: { overdue: OVERDUE_CHIP },
+  visa: VISA_CHIPS,
 };
 
 const FALLBACK: ChipSpec = { tone: "neutral", icon: CircleDot };

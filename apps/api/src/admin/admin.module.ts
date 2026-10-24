@@ -9,6 +9,7 @@ import {
   AdminOrdersController,
   AdminPaymentProofsController,
   AdminUsersController,
+  AdminVisaApplicationsController,
   AdminWorkbenchController,
 } from "./admin.controllers";
 import { AdminContentService } from "./content-admin.service";
@@ -31,6 +32,7 @@ import { AdminWorkbenchService } from "./workbench.service";
   imports: [MediaCoreModule],
   controllers: [
     AdminLeadsController,
+    AdminVisaApplicationsController,
     AdminMediaReplaceController,
     AdminOrdersController,
     AdminFeedbackController,

@@ -2,13 +2,16 @@ import {
   Archive,
   BadgeCheck,
   Ban,
+  BookCheck,
   CalendarX,
+  ClipboardCheck,
   CircleCheck,
   CircleDot,
   CircleX,
   Eye,
   EyeOff,
   Clock,
+  FileClock,
   FileText,
   Hourglass,
   Inbox,
@@ -21,6 +24,7 @@ import {
   PhoneCall,
   Plane,
   Radio,
+  Send,
   ShieldAlert,
   Truck,
   Undo2,
@@ -28,7 +32,7 @@ import {
   UserMinus,
   type LucideIcon,
 } from "lucide-react";
-import type { LeadStatus, OrderStatus } from "@waafa/shared";
+import type { LeadStatus, OrderStatus, VisaStage } from "@waafa/shared";
 import type { RecordChipName } from "@waafa/shared/workflow/chips";
 
 /** Status families (ADMIN.md §4.1, D185): colour is never the only signal; every chip also has an icon and a word. */
@@ -111,3 +115,14 @@ export const USER_CHIPS = {
   disabled: { tone: "neutral", icon: UserMinus },
   locked: { tone: "danger", icon: LockKeyhole },
 } satisfies Record<string, ChipSpec>;
+
+/** Visa applications by checklist stage (ADMIN.md §8.3, D0 R6). */
+export const VISA_CHIPS = {
+  documentsPending: { tone: "warning", icon: FileClock },
+  readyToSubmit: { tone: "info", icon: ClipboardCheck },
+  submitted: { tone: "progress", icon: Send },
+  approved: { tone: "success", icon: BadgeCheck },
+  rejected: { tone: "danger", icon: CircleX },
+  passportReturned: { tone: "success", icon: BookCheck },
+  cancelled: { tone: "neutral", icon: Ban },
+} satisfies Record<VisaStage, ChipSpec>;

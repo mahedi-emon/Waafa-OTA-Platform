@@ -4,11 +4,11 @@ import { getTranslations } from "next-intl/server";
 import { OrderStatusSchema } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
-import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet } from "@/lib/admin/adminApi";
-import { displayPhone, formatDhakaDateTime, initialsOf, pageParam, taka } from "@/lib/admin/format";
+import { displayPhone, formatDhakaDateTime, initialsOf, taka } from "@/lib/admin/format";
+import { orderListQuery, queueSearch, withSearch } from "@/lib/admin/queues";
 import type { OrderRow, Paged } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,25 +16,16 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
-const SORTS = ["created.asc", "created.desc", "total.asc", "total.desc"] as const;
 const PATH = "/secure-admin-control/orders";
-
-const one = (value: string | string[] | undefined) =>
-  typeof value === "string" ? value : undefined;
 
 async function Orders({
   searchParams,
 }: {
   searchParams: PageProps<"/[locale]/secure-admin-control/orders">["searchParams"];
 }) {
-  const params = await searchParams;
-  const query = {
-    status: OrderStatusSchema.safeParse(one(params.status)).data,
-    q: one(params.q)?.slice(0, 80),
-    sort: sortOf(params.sort, SORTS),
-    page: pageParam(params.page),
-    pageSize: pageSizeOf(params.pageSize),
-  };
+  const query = orderListQuery(await searchParams);
+  // Each order opens with this list beside it and Back to it (D0 R6).
+  const search = queueSearch(query);
   const [list, t, tc] = await Promise.all([
     adminGet<Paged<OrderRow>>("/admin/orders", query),
     getTranslations("Admin.orders"),
@@ -46,7 +37,7 @@ async function Orders({
     const placed = formatDhakaDateTime(order.createdAt);
     return {
       id: order.id,
-      href: `${PATH}/${order.id}`,
+      href: withSearch(`${PATH}/${order.id}`, search),
       title: order.name,
       subtitle: [order.reference, order.pickup ? t("pickup") : ""].filter(Boolean).join(" · "),
       thumb: { initials: initialsOf(order.name) },

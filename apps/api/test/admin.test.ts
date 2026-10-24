@@ -301,6 +301,8 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
     let last = first;
     for (const { item } of start.checklist) {
       last = await visaStep({ type: "document", item, received: true });
+      // The first document received is a reply: the new lead moves to In progress (D0 R6).
+      expect(last.json<{ status: string }>().status).toBe("in-progress");
     }
     expect(
       last.json<{ visa: { stage: string; received: number; required: number } }>().visa,

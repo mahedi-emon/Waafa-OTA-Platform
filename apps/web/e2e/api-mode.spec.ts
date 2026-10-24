@@ -59,7 +59,10 @@ test("staff sign in, find the lead and move it to Quoted", async ({ page }) => {
   await signIn(page);
   await page.goto(`/secure-admin-control/leads?q=${reference}`);
   await page.getByRole("table").getByRole("link").first().click();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(reference);
+  // The title is the customer's name; the reference is in the line under it (D0 R6).
+  await expect(page.getByRole("heading", { level: 1 }).locator("xpath=../..")).toContainText(
+    reference,
+  );
   // Steps move the status (D0 R4): Log quote, with nothing more to fill in.
   await page.getByRole("button", { name: "Log quote" }).click();
   await page
