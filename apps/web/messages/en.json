@@ -2713,7 +2713,8 @@
         "open": "Open",
         "mine": "My leads",
         "unassigned": "Unassigned",
-        "overdue": "Overdue"
+        "overdue": "Overdue",
+        "closed": "Lost or cancelled"
       },
       "searchPlaceholder": "Reference, name, phone or email",
       "module": "Module",
@@ -2750,7 +2751,23 @@
       "bulkSkipped": "Booked leads were left as they are: {references}",
       "bulkAssign": "Assign",
       "colPhone": "Phone",
-      "colEmail": "Email"
+      "colEmail": "Email",
+      "tabsLabel": "Services",
+      "tabs": {
+        "all": "All",
+        "flights": "Flights",
+        "hotels": "Hotels",
+        "packages": "Packages",
+        "plan-trip": "Plan my trip",
+        "visa": "Visa",
+        "printing": "Printing",
+        "trading": "Trading",
+        "bulk": "Bulk quotes",
+        "emi": "EMI",
+        "contact": "Contact"
+      },
+      "openCount": "{count} open",
+      "show": "Show"
     },
     "lead": {
       "createdFrom": "Created {time} · {channel}",
@@ -3003,7 +3020,41 @@
           "other": "Something else"
         }
       },
-      "overdue": "No reply yet: past the {minutes}-minute reply target"
+      "overdue": "No reply yet: past the {minutes}-minute reply target",
+      "channels": {
+        "web": "Website form",
+        "whatsapp": "WhatsApp",
+        "phone": "Phone call",
+        "walk-in": "Walk-in",
+        "facebook": "Facebook"
+      },
+      "contactWays": {
+        "call": "a phone call",
+        "whatsapp": "WhatsApp",
+        "email": "email"
+      },
+      "prefers": "Prefers {channel}",
+      "bestTimeLine": "Best time: {time}",
+      "cameIn": "Came in",
+      "cameInLine": "{channel} · {time}",
+      "fromPage": "See the page",
+      "otherRequests": "Other requests ({count})",
+      "noOtherRequests": "No other requests from this phone.",
+      "ordersCount": "Orders ({count})",
+      "noOrders": "No orders from this phone.",
+      "more": "{count} more on the profile",
+      "profile": "Open customer profile",
+      "replyLeft": "Reply within {time}",
+      "replyOver": "No reply, {time} past the target",
+      "replyReason": "Reply target: {minutes} minutes after a request arrives. The timer stops at the first reply.",
+      "durMinutes": "{count} min",
+      "durHours": "{count} h",
+      "durDays": "{count} d",
+      "resize": "Resize the list",
+      "queueCount": "{shown} of {total}",
+      "queueEmpty": "Nothing else in this list.",
+      "paneAll": "Full list",
+      "visaApplications": "Visa applications"
     },
     "search": {
       "metaTitle": "Search activity",
@@ -3134,7 +3185,8 @@
       "colOrder": "Order",
       "colReceived": "Received",
       "colPhone": "Phone",
-      "colSlip": "Slip"
+      "colSlip": "Slip",
+      "unknownAccount": "An account no longer in Settings"
     },
     "subscribers": {
       "metaTitle": "Newsletter",
@@ -3475,16 +3527,11 @@
     "leadBoard": {
       "metaTitle": "Lead board",
       "title": "Lead board",
-      "lead": "Open requests by stage. Each card's button takes the lead's next step; booking or closing a lead happens on the lead itself.",
+      "lead": "Open requests by stage. Drag a card to the next stage, or use Move to…: each move asks for what the lead page asks.",
       "listView": "List view",
       "filter": "Service",
       "allServices": "All services",
-      "moveTo": "Move between stages",
-      "moveBack": "Move back to {stage}",
-      "moveForward": "Move to {stage}",
-      "moved": "{reference} moved to {stage}",
       "open": "Open to book",
-      "bookHint": "Booking needs the amount, so it happens on the lead.",
       "overdue": "Overdue",
       "unassigned": "Unassigned",
       "failed": "That didn’t move. Try again.",
@@ -3493,7 +3540,24 @@
       "ageMinutes": "{count} min",
       "ageHours": "{count} h",
       "ageDays": "{count, plural, one {# day} other {# days}}",
-      "stepDone": "{reference}: {step}"
+      "stepDone": "{reference}: {step}",
+      "closed": "Lost or cancelled",
+      "moveMenu": "Move to…",
+      "moveMenuFor": "Move {reference} to",
+      "refused": {
+        "backToNew": "A lead can't go back to New.",
+        "reopenFirst": "Reopen it first: move it to In progress.",
+        "quotedBack": "A quoted lead moves on by asking for payment, booking or closing it.",
+        "notOnBoard": "Spam stays off the board."
+      },
+      "announce": {
+        "picked": "Picked up {reference}.",
+        "over": "{reference} is over {stage}.",
+        "outside": "{reference} is outside the stages.",
+        "dropped": "{reference} dropped on {stage}.",
+        "cancelled": "Moving {reference} was cancelled."
+      },
+      "dragInstructions": "Press and hold a card, move it over a stage and let go. With a keyboard, open Move to… on the card instead."
     },
     "mediaLibrary": {
       "metaTitle": "Media library",
@@ -5809,7 +5873,8 @@
       "contact": {
         "whatsapp": "Reply on WhatsApp",
         "call": "Call",
-        "email": "Email"
+        "email": "Email",
+        "whatsappShort": "WhatsApp"
       },
       "steps": {
         "quote": "Log quote",
@@ -5829,7 +5894,9 @@
         "convert": "Convert to booking",
         "close": "Close this lead",
         "markSpam": "Mark this lead as spam?",
-        "reopen": "Reopen this lead"
+        "reopen": "Reopen this lead",
+        "contact": "Log the reply",
+        "ask": "Waiting for the customer"
       },
       "bodies": {
         "quote": "The lead moves to Quoted. Add the amount if you sent one.",
@@ -5839,7 +5906,9 @@
         "convert": "Enter what the customer is paying. The lead moves to Booked.",
         "close": "The lead leaves the open list. You can reopen it later.",
         "markSpam": "It leaves the open list. Use this only for junk, never for a real customer.",
-        "reopen": "The lead moves back to In progress."
+        "reopen": "The lead moves back to In progress.",
+        "contact": "Say how you reached the customer. The lead moves to In progress and the reply timer stops.",
+        "ask": "Say what you're waiting for. The lead moves to Waiting for customer."
       },
       "confirm": {
         "quote": "Log quote",
@@ -5849,7 +5918,9 @@
         "convert": "Convert to booking",
         "close": "Close lead",
         "markSpam": "Mark as spam",
-        "reopen": "Reopen lead"
+        "reopen": "Reopen lead",
+        "contact": "Log reply",
+        "ask": "Mark as waiting"
       },
       "done": {
         "contact": "Contact logged. The lead is in progress.",
@@ -5879,7 +5950,21 @@
       "amountNeeded": "Enter the booked amount in taka.",
       "reasonNeeded": "Say why in a few words.",
       "failed": "That didn't work. Try again.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "titleFor": "{step}: {subject}",
+      "channel": "How did you reach them?",
+      "channels": {
+        "call": "Phone call",
+        "whatsapp": "WhatsApp",
+        "email": "Email",
+        "note": "Another way"
+      },
+      "waitFor": "What are you waiting for?",
+      "waits": {
+        "askDocuments": "Documents",
+        "askPayment": "Payment"
+      },
+      "phoneBar": "Quick steps"
     },
     "orderSteps": {
       "next": "Next step",
@@ -5941,7 +6026,10 @@
       "failed": "That didn't work. Try again.",
       "addNote": "Add a note",
       "notePlaceholder": "Something the team should know about this order",
-      "noteAdded": "Note added."
+      "noteAdded": "Note added.",
+      "phoneBar": "Quick steps",
+      "call": "Call",
+      "whatsapp": "WhatsApp"
     },
     "proofDecision": {
       "verify": "Verify",
@@ -6066,6 +6154,23 @@
       "next": "Next page",
       "noMatches": "Nothing matches",
       "noMatchesBody": "Try other words or clear a filter."
+    },
+    "visaApplications": {
+      "metaTitle": "Visa applications",
+      "title": "Visa applications",
+      "lead": "Visa requests by stage: documents, submission to the embassy, the outcome and the passport going back.",
+      "search": "Name, reference or phone",
+      "colApplicant": "Applicant",
+      "colStage": "Stage",
+      "colDocuments": "Documents",
+      "colCountry": "Country",
+      "colTravel": "Travel date",
+      "colAssignee": "Assignee",
+      "colReceived": "Received",
+      "colSubmitted": "Submitted",
+      "stageCount": "{stage} ({count})",
+      "emptyTitle": "No visa applications here",
+      "emptyBody": "Visa requests from the website appear here with their documents checklist."
     }
   },
   "Consent": {

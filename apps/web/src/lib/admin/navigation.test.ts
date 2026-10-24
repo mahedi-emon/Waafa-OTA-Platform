@@ -86,7 +86,11 @@ describe("admin navigation (ADMIN.md §3.1)", () => {
     const items = allItems(navFor(["super-admin"]), ["super-admin"]);
     expect(activeKey("/secure-admin-control", "", items)).toBe("dashboard");
     expect(activeKey("/secure-admin-control/leads/abc", "", items)).toBe("leads");
-    expect(activeKey("/secure-admin-control/leads", "?module=visa", items)).toBe(
+    expect(activeKey("/secure-admin-control/leads", "?module=visa", items)).toBe("leads");
+    expect(activeKey("/secure-admin-control/visa-applications", "", items)).toBe(
+      "visaApplications",
+    );
+    expect(activeKey("/secure-admin-control/leads/abc", "?stage=submitted&queue=visa", items)).toBe(
       "visaApplications",
     );
     expect(activeKey("/en/secure-admin-control/content/products/x", "", items)).toBe("products");

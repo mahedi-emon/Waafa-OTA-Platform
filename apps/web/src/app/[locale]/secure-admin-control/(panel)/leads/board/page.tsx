@@ -1,24 +1,36 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import { LeadModuleSchema, type LeadStatus } from "@waafa/shared";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
+import { LeadModuleSchema, type LeadModule } from "@waafa/shared";
+import { LEAD_BOARD_COLUMNS, type LeadBoardColumn } from "@waafa/shared/workflow/leads";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { LeadBoardView } from "@/components/admin/board/LeadBoardView";
+import type { BoardColumnData } from "@/components/admin/board/types";
+import { LeadModuleTabs } from "@/components/admin/inbox/LeadModuleTabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { pickMessagePaths } from "@/i18n/pickMessages";
 import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
 import { ageParts, whatsappHref } from "@/lib/admin/format";
+import { queueSearch, withSearch } from "@/lib/admin/queues";
 import type { LeadList } from "@/lib/admin/types";
-import { BoardCard } from "./_components/BoardCard";
 
-/** The stages a lead moves through on the board; closed stages stay on the list view. */
-const STAGES: LeadStatus[] = ["new", "pending", "in-progress", "quoted", "booked"];
-const PER_STAGE = 30;
+const PER_COLUMN = 30;
+const LEADS = "/secure-admin-control/leads";
+const BOARD = `${LEADS}/board`;
+/** Only the board's and the lead steps' words reach the browser (scoped provider, D190). */
+const BOARD_MESSAGES = ["Admin.leadBoard", "Admin.leadActions"];
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.leadBoard");
   return { title: t("metaTitle") };
 }
+
+/** Each column's slice of the list: one status, or lost and cancelled together for Closed. */
+const columnQuery = (column: LeadBoardColumn) =>
+  column === "closed" ? { view: "closed" } : { status: column };
 
 async function LeadBoard({
   searchParams,
@@ -29,21 +41,24 @@ async function LeadBoard({
   const service = LeadModuleSchema.safeParse(
     typeof params.module === "string" ? params.module : undefined,
   ).data;
-  const [columns, t, tm, ts, ta, tl] = await Promise.all([
+  const [lists, t, tl, tm, ts, tlead, messages] = await Promise.all([
     Promise.all(
-      STAGES.map((status) =>
+      LEAD_BOARD_COLUMNS.map((column, index) =>
         adminGet<LeadList>("/admin/leads", {
-          status,
+          ...columnQuery(column),
           ...(service ? { module: service } : {}),
-          pageSize: PER_STAGE,
+          pageSize: PER_COLUMN,
+          // The service tabs' counts come once, with the first column.
+          ...(index === 0 ? { counts: "1" } : {}),
         }),
       ),
     ),
     getTranslations("Admin.leadBoard"),
+    getTranslations("Admin.leads"),
     getTranslations("Admin.modules"),
     getTranslations("Admin.statuses"),
-    getTranslations("Admin.leadActions"),
     getTranslations("Admin.lead"),
+    getMessages(),
   ]);
   const ageLabel = (minutes: number) => {
     const age = ageParts(minutes);
@@ -53,129 +68,74 @@ async function LeadBoard({
         ? t("ageHours", { count: age.value })
         : t("ageDays", { count: age.value });
   };
-  const stageNames = Object.fromEntries(STAGES.map((stage) => [stage, ts(stage)])) as Record<
-    LeadStatus,
-    string
-  >;
+  const columns: BoardColumnData[] = LEAD_BOARD_COLUMNS.map((column, index) => {
+    const list = lists[index];
+    const listSearch = queueSearch({ ...columnQuery(column), module: service });
+    return {
+      id: column,
+      title: column === "closed" ? t("closed") : ts(column),
+      total: list?.total ?? 0,
+      moreHref: withSearch(LEADS, listSearch),
+      cards: (list?.items ?? []).map((lead) => ({
+        id: lead.id,
+        href: withSearch(`${LEADS}/${lead.id}`, listSearch),
+        reference: lead.reference,
+        name: lead.name,
+        summary: lead.summary,
+        module: tm(lead.module),
+        status: lead.status,
+        assignee: lead.assignee?.name ?? null,
+        age: ageLabel(lead.ageMinutes),
+        overdue: lead.overdue,
+        phone: lead.phone,
+        whatsappHref: whatsappHref(
+          lead.phone,
+          tlead("whatsappText", { name: lead.name, reference: lead.reference }),
+        ),
+      })),
+    };
+  });
+  const tabLabels = {
+    all: tl("tabs.all"),
+    ...Object.fromEntries(
+      LeadModuleSchema.options.map((key) => [key, tl(`tabs.${key}` as "tabs.all")]),
+    ),
+  } as Record<LeadModule, string> & { all: string };
 
   return (
     <>
       <AdminPageHeader
+        back={{ href: LEADS, label: tl("title") }}
         title={t("title")}
         lead={t("lead")}
         actions={
           <Button asChild variant="secondary" size="sm">
-            <Link href="/secure-admin-control/leads">{t("listView")}</Link>
+            <Link href={withSearch(LEADS, queueSearch({ module: service }))}>{t("listView")}</Link>
           </Button>
         }
       />
-      <nav aria-label={t("filter")} className="flex flex-wrap gap-2">
-        <Button asChild size="sm" variant={service ? "ghost" : "secondary"}>
-          <Link
-            href="/secure-admin-control/leads/board"
-            aria-current={service ? undefined : "page"}
-          >
-            {t("allServices")}
-          </Link>
-        </Button>
-        {LeadModuleSchema.options.map((key) => (
-          <Button key={key} asChild size="sm" variant={service === key ? "secondary" : "ghost"}>
-            <Link
-              href={`/secure-admin-control/leads/board?module=${key}`}
-              aria-current={service === key ? "page" : undefined}
-            >
-              {tm(key)}
-            </Link>
-          </Button>
-        ))}
-      </nav>
-      {/* Scrolls sideways on narrow screens; focusable so keyboard users can scroll it too. */}
-      <div
-        role="region"
-        aria-label={t("title")}
-        tabIndex={0}
-        className="-mx-4 overflow-x-auto px-4 pb-2 outline-none focus-visible:ring-3 focus-visible:ring-ring/40 md:mx-0 md:px-0"
-      >
-        <ol className="grid min-w-[1100px] grid-cols-5 gap-3">
-          {STAGES.map((stage, index) => {
-            const column = columns[index];
-            return (
-              <li
-                key={stage}
-                aria-labelledby={`stage-${stage}`}
-                className="flex min-w-0 flex-col gap-2 rounded-2xl bg-mist-50 p-3"
-              >
-                <h2
-                  id={`stage-${stage}`}
-                  className="flex items-center justify-between gap-2 px-1 text-sm font-bold text-navy-900"
-                >
-                  {stageNames[stage]}
-                  <span className="rounded-full bg-white px-2 py-0.5 text-[12px] text-mist-700 tabular-nums">
-                    {column?.total ?? 0}
-                  </span>
-                </h2>
-                {column && column.items.length > 0 ? (
-                  <ul className="flex flex-col gap-2">
-                    {column.items.map((lead) => (
-                      <BoardCard
-                        key={lead.id}
-                        lead={{
-                          id: lead.id,
-                          reference: lead.reference,
-                          name: lead.name,
-                          summary: lead.summary,
-                          module: tm(lead.module),
-                          status: lead.status,
-                          assignee: lead.assignee?.name ?? null,
-                          age: ageLabel(lead.ageMinutes),
-                          overdue: lead.overdue,
-                          whatsappHref: whatsappHref(
-                            lead.phone,
-                            tl("whatsappText", { name: lead.name, reference: lead.reference }),
-                          ),
-                        }}
-                        strings={{
-                          steps: {
-                            reply: ta("contact.whatsapp"),
-                            quote: ta("steps.quote"),
-                            askPayment: ta("steps.askPayment"),
-                            customerReplied: ta("steps.customerReplied"),
-                          },
-                          done: t("stepDone", { reference: "{reference}", step: "{step}" }),
-                          open: t("open"),
-                          overdue: t("overdue"),
-                          unassigned: t("unassigned"),
-                          failed: t("failed"),
-                        }}
-                      />
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="px-1 py-6 text-center text-[13px] text-mist-600">{t("empty")}</p>
-                )}
-                {column && column.total > column.items.length ? (
-                  <Link
-                    href={`/secure-admin-control/leads?status=${stage}${service ? `&module=${service}` : ""}`}
-                    className="px-1 text-[13px] font-semibold text-brand-700 hover:underline"
-                  >
-                    {t("more", { count: column.total - column.items.length })}
-                  </Link>
-                ) : null}
-              </li>
-            );
-          })}
-        </ol>
-      </div>
+      <LeadModuleTabs
+        path={BOARD}
+        current={service}
+        modules={lists[0]?.modules ?? []}
+        keep={{}}
+        labels={tabLabels}
+        openLabel={tl("openCount", { count: "{count}" })}
+        label={tl("tabsLabel")}
+      />
+      <NextIntlClientProvider messages={pickMessagePaths(messages, BOARD_MESSAGES)}>
+        <LeadBoardView columns={columns} label={t("title")} />
+      </NextIntlClientProvider>
     </>
   );
 }
 
-/** Admin › Leads › Board (issue 113): open leads by stage with quick moves. */
+/** Admin › Leads › Board (ADMIN.md §5.5, D0 R6): drag or Move to… between stages, asking what the lead page asks. */
 export default function LeadBoardPage(
   props: PageProps<"/[locale]/secure-admin-control/leads/board">,
 ) {
   return (
-    <Suspense fallback={<Skeleton className="h-[480px] rounded-2xl" />}>
+    <Suspense fallback={<Skeleton className="h-120 rounded-2xl" />}>
       <LeadBoard searchParams={props.searchParams} />
     </Suspense>
   );

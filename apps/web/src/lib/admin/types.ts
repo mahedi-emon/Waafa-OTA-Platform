@@ -57,7 +57,37 @@ export type LeadRow = {
   overdue: boolean;
 };
 
-export type LeadList = Paged<LeadRow> & { slaMinutes: number };
+export type LeadList = Paged<LeadRow> & {
+  slaMinutes: number;
+  /** Open leads per module this person works on: the module tabs (D0 R6). */
+  modules: Array<{ module: LeadModule; open: number }>;
+};
+
+/** One visa application in the list (D0 R6): a visa lead with the stage its checklist gives. */
+export type VisaApplicationRow = {
+  id: string;
+  reference: string;
+  status: LeadStatus;
+  name: string;
+  phone: string;
+  summary: string;
+  country: string | null;
+  travelDate: string | null;
+  assignee: { id: string; name: string } | null;
+  stage: VisaStage;
+  received: number;
+  required: number;
+  submittedOn: string | null;
+  createdAt: string;
+  ageMinutes: number;
+  overdue: boolean;
+};
+
+export type VisaApplicationList = Paged<VisaApplicationRow> & {
+  slaMinutes: number;
+  /** How many applications sit at each stage (the stage chips). */
+  stages: Record<VisaStage, number>;
+};
 
 export type LeadDetail = {
   id: string;
@@ -87,6 +117,27 @@ export type LeadDetail = {
   overdue: boolean;
   /** Visa leads: the documents checklist and the stage it gives (D0 R4, ADMIN.md §8.3). */
   visa: VisaApplicationProgress | null;
+  /** Other requests and orders from the same phone (D0 R6); orders null when this role does not see them. */
+  customer: {
+    phone: string;
+    leadCount: number;
+    leads: Array<{
+      id: string;
+      reference: string;
+      module: LeadModule;
+      status: LeadStatus;
+      summary: string;
+      createdAt: string;
+    }>;
+    orderCount: number;
+    orders: Array<{
+      id: string;
+      reference: string;
+      status: OrderStatus;
+      total: number;
+      createdAt: string;
+    }> | null;
+  };
   firstResponseAt: string | null;
   closedAt: string | null;
   createdAt: string;

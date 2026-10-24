@@ -46,6 +46,13 @@ Library · Site images, filters, grid/list, MediaDetailsSheet with usage, Replac
 membership required") and a refused install still uses a retrieval (D207). Client media code imports values from
 `@waafa/shared/helpers/media` (no zod in the browser). Words: `Admin.media` (in EDITOR_MESSAGES) and
 `Admin.mediaLibrary`; `fieldNames.<owner>_<name>` beats `fieldNames.<name>` (video_credit). e2e: admin-media.spec.ts.
+R5 notes: one DataTable in components/admin/table (AdminDataTable server wrapper, DataRow with actions for the sheet
+and quick for phone cards); name links to the editor; saved views/columns on the device (D227).
+R6 notes (feat/196-inbox): queues travel in the address (lib/admin/queues.ts: leadListQuery/visaListQuery/
+orderListQuery + queueSearch/withSearch); lead and order pages wrap in InboxSplit (pane from 1280 px, panes lazy after
+hydration, `xl:h-[calc(100dvh-8rem)]`); board moves = shared leadStepForMove + LeadStepDialog (same dialog as the lead
+page); 21st.dev install of diceui/kanban failed in the shadcn CLI (radix-nova registry path) and burned both free
+retrievals (D235): check `get_usage` before any install and expect the CLI to fail on this style.
 Key decisions: D184 sidebar stays midnight-950; D185 status families info/progress/success/warning/danger/neutral,
 new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D;
 D186 21st.dev picks (ADMIN.md §14; free tier = 2 installs/day); D187 SchemaEditor stays the engine (no fork),

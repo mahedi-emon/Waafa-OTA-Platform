@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import {
   BadgeCheck,
   CircleX,
@@ -18,20 +18,10 @@ import { toast } from "sonner";
 import type { LeadActionInput, LeadStatus } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "@/i18n/navigation";
 import { leadAction } from "@/lib/admin/leadActions";
-import { TakaInput } from "./TakaInput";
+import { PhoneActionBar } from "./inbox/PhoneActionBar";
+import { LeadStepDialog } from "./LeadStepDialog";
 
 type Step =
   | "quote"
@@ -81,18 +71,14 @@ type LeadActionsProps = {
 
 /**
  * The next steps for one lead (D0 R4): replying on WhatsApp, by phone or by email logs the contact and moves a new
- * lead to In progress; every other button is an action with what it needs (an amount to convert, a reason to close
- * or reopen). The status follows; nobody picks it.
+ * lead to In progress; every other button opens the step with what it needs (LeadStepDialog). The status follows;
+ * nobody picks it. On phones the reply buttons and the main step also sit in a bottom bar (D0 R6).
  */
 function LeadActions({ id, status, phone, email, whatsappHref, emailSubject }: LeadActionsProps) {
   const t = useTranslations("Admin.leadActions");
   const router = useRouter();
-  const uid = useId();
   const [pending, startTransition] = useTransition();
   const [step, setStep] = useState<Step | null>(null);
-  const [amount, setAmount] = useState<number | undefined>(undefined);
-  const [note, setNote] = useState("");
-  const [outcome, setOutcome] = useState<"lost" | "cancelled">("lost");
   const [error, setError] = useState<string | null>(null);
   const steps = NEXT[status] ?? [];
   const working = OPEN.has(status);
@@ -102,8 +88,8 @@ function LeadActions({ id, status, phone, email, whatsappHref, emailSubject }: L
   const main = working && status === "new" ? null : (steps[0] ?? null);
   const more = main ? steps.slice(1) : steps;
 
-  function run(input: LeadActionInput | null, quiet = false) {
-    if (!input) return;
+  /** Steps without questions run at once: a contact, or "Customer replied". */
+  function run(input: LeadActionInput) {
     startTransition(async () => {
       const result = await leadAction(id, input);
       if (!result.ok) {
@@ -112,49 +98,12 @@ function LeadActions({ id, status, phone, email, whatsappHref, emailSubject }: L
         toast.error(message);
         return;
       }
-      if (!quiet) toast.success(t(`done.${input.type}`));
-      setStep(null);
+      toast.success(t(`done.${input.type}`));
       router.refresh();
     });
   }
 
-  function inputFor(current: Step): LeadActionInput | null {
-    const text = note.trim();
-    switch (current) {
-      case "quote":
-        return { type: "quote", ...(amount ? { amount } : {}), ...(text ? { note: text } : {}) };
-      case "askDocuments":
-      case "askPayment":
-        return { type: current, ...(text ? { note: text } : {}) };
-      case "customerReplied":
-        return { type: "customerReplied" };
-      case "convert":
-        if (!amount) {
-          setError(t("amountNeeded"));
-          return null;
-        }
-        return { type: "convert", amount };
-      case "close":
-        if (text.length < 3) {
-          setError(t("reasonNeeded"));
-          return null;
-        }
-        return { type: "close", outcome, reason: text };
-      case "reopen":
-        if (text.length < 3) {
-          setError(t("reasonNeeded"));
-          return null;
-        }
-        return { type: "reopen", reason: text };
-      case "markSpam":
-        return { type: "markSpam" };
-    }
-  }
-
   const open = (next: Step) => {
-    setAmount(undefined);
-    setNote("");
-    setOutcome("lost");
     setError(null);
     if (next === "customerReplied") run({ type: "customerReplied" });
     else setStep(next);
@@ -163,34 +112,39 @@ function LeadActions({ id, status, phone, email, whatsappHref, emailSubject }: L
   /** The link opens as usual; the contact is logged on the way (first response, New → In progress). */
   const contact = (channel: "call" | "whatsapp" | "email") => {
     setError(null);
-    run({ type: "contact", channel }, false);
+    run({ type: "contact", channel });
   };
 
   const MainIcon = main ? ICONS[main] : null;
-  const reasonStep = step === "close" || step === "reopen";
+  const whatsappButton = (
+    <Button asChild variant="whatsapp" size="md">
+      <a
+        href={whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => contact("whatsapp")}
+      >
+        <WhatsAppIcon className="size-4" />
+        {t("contact.whatsapp")}
+      </a>
+    </Button>
+  );
+  const callButton = (
+    <Button asChild variant="secondary" size="md">
+      <a href={`tel:${phone}`} onClick={() => contact("call")}>
+        <Phone aria-hidden="true" className="size-4" />
+        {t("contact.call")}
+      </a>
+    </Button>
+  );
 
   return (
     <div className="flex flex-col gap-3">
       <p className="text-[13px] font-semibold tracking-wide text-mist-500 uppercase">{t("next")}</p>
       {contactable ? (
         <div className="flex flex-wrap gap-2">
-          <Button asChild variant="whatsapp" size="md">
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => contact("whatsapp")}
-            >
-              <WhatsAppIcon className="size-4" />
-              {t("contact.whatsapp")}
-            </a>
-          </Button>
-          <Button asChild variant="secondary" size="md">
-            <a href={`tel:${phone}`} onClick={() => contact("call")}>
-              <Phone aria-hidden="true" className="size-4" />
-              {t("contact.call")}
-            </a>
-          </Button>
+          {whatsappButton}
+          {callButton}
           {email ? (
             <Button asChild variant="secondary" size="md">
               <a
@@ -232,109 +186,68 @@ function LeadActions({ id, status, phone, email, whatsappHref, emailSubject }: L
           );
         })}
       </div>
-      {error && step === null ? (
+      {error ? (
         <p role="alert" className="text-[13.5px] font-medium text-danger-700">
           {error}
         </p>
       ) : null}
 
-      <Dialog open={step !== null} onOpenChange={(next) => (next ? null : setStep(null))}>
-        {step ? (
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>{t(`titles.${step}`)}</DialogTitle>
-              <DialogDescription>{t(`bodies.${step}`)}</DialogDescription>
-            </DialogHeader>
-            <form
-              className="flex flex-col gap-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                run(inputFor(step));
-              }}
+      <PhoneActionBar label={t("phoneBar")}>
+        {contactable ? (
+          <Button
+            asChild
+            variant="whatsapp"
+            size={main ? "icon" : "md"}
+            className={main ? "shrink-0" : "min-w-0 flex-1"}
+          >
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={main ? t("contact.whatsapp") : undefined}
+              onClick={() => contact("whatsapp")}
             >
-              {step === "quote" || step === "convert" ? (
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor={`${uid}-amount`}>
-                    {t(step === "convert" ? "bookedAmount" : "quotedAmount")}
-                  </Label>
-                  <TakaInput
-                    id={`${uid}-amount`}
-                    value={amount}
-                    onChange={setAmount}
-                    describedBy={`${uid}-amount-help`}
-                    invalid={Boolean(error) && step === "convert"}
-                  />
-                  <p id={`${uid}-amount-help`} className="text-[13px] text-mist-600">
-                    {t("vat")}
-                  </p>
-                </div>
-              ) : null}
-              {step === "close" ? (
-                <div className="flex flex-col gap-2">
-                  <p id={`${uid}-outcome`} className="text-[14px] font-medium text-ink-900">
-                    {t("outcome")}
-                  </p>
-                  <RadioGroup
-                    aria-labelledby={`${uid}-outcome`}
-                    value={outcome}
-                    onValueChange={(value) =>
-                      setOutcome(value === "cancelled" ? "cancelled" : "lost")
-                    }
-                  >
-                    {(["lost", "cancelled"] as const).map((value) => (
-                      <label
-                        key={value}
-                        htmlFor={`${uid}-${value}`}
-                        className="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-mist-200 p-3 has-data-checked:border-electric-600 has-data-checked:bg-electric-50"
-                      >
-                        <RadioGroupItem id={`${uid}-${value}`} value={value} className="mt-0.5" />
-                        <span className="flex flex-col">
-                          <span className="text-[14.5px] font-semibold text-navy-900">
-                            {t(`outcomes.${value}`)}
-                          </span>
-                          <span className="text-[13px] text-mist-600">
-                            {t(`outcomeHelp.${value}`)}
-                          </span>
-                        </span>
-                      </label>
-                    ))}
-                  </RadioGroup>
-                </div>
-              ) : null}
-              {step !== "convert" && step !== "markSpam" ? (
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor={`${uid}-note`}>{t(reasonStep ? "reason" : "note")}</Label>
-                  <Textarea
-                    id={`${uid}-note`}
-                    value={note}
-                    maxLength={reasonStep ? 300 : 1000}
-                    rows={3}
-                    onChange={(event) => setNote(event.target.value)}
-                    aria-invalid={Boolean(error) && reasonStep ? true : undefined}
-                  />
-                </div>
-              ) : null}
-              {error ? (
-                <p role="alert" className="text-[13.5px] font-medium text-danger-700">
-                  {error}
-                </p>
-              ) : null}
-              <DialogFooter>
-                <Button type="button" variant="ghost" onClick={() => setStep(null)}>
-                  {t("cancel")}
-                </Button>
-                <Button
-                  type="submit"
-                  variant={step === "markSpam" ? "danger" : "primary"}
-                  loading={pending}
-                >
-                  {t(`confirm.${step}`)}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
+              <WhatsAppIcon className="size-4" />
+              {main ? null : t("contact.whatsappShort")}
+            </a>
+          </Button>
         ) : null}
-      </Dialog>
+        {contactable ? (
+          <Button
+            asChild
+            variant="secondary"
+            size={main ? "icon" : "md"}
+            className={main ? "shrink-0" : "min-w-0 flex-1"}
+          >
+            <a
+              href={`tel:${phone}`}
+              aria-label={main ? t("contact.call") : undefined}
+              onClick={() => contact("call")}
+            >
+              <Phone aria-hidden="true" className="size-4" />
+              {main ? null : t("contact.call")}
+            </a>
+          </Button>
+        ) : null}
+        {main && MainIcon ? (
+          <Button
+            type="button"
+            size="md"
+            disabled={pending}
+            onClick={() => open(main)}
+            className="min-w-0 flex-1"
+          >
+            <MainIcon aria-hidden="true" className="size-4" />
+            <span className="truncate">{t(`steps.${main}`)}</span>
+          </Button>
+        ) : null}
+      </PhoneActionBar>
+
+      <LeadStepDialog
+        leadId={id}
+        step={step === "customerReplied" ? null : step}
+        onClose={() => setStep(null)}
+      />
     </div>
   );
 }

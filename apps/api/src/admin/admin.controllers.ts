@@ -28,6 +28,7 @@ import {
   FeedbackModerationInputSchema,
   LeadBulkInputSchema,
   LeadListQuerySchema,
+  VisaApplicationListQuerySchema,
   LeadNoteInputSchema,
   LeadActionInputSchema,
   LeadUpdateInputSchema,
@@ -122,6 +123,19 @@ export class AdminLeadsController {
   @HttpCode(201)
   note(@Staff() staff: StaffPrincipal, @Param("id") leadId: string, @Body() body: unknown) {
     return this.leads.addNote(staff, id(leadId), parseInput(LeadNoteInputSchema, body));
+  }
+}
+
+/** Visa applications (D0 R6): visa leads by checklist stage, for the people who work on visas. */
+@Controller("admin/visa-applications")
+@UseGuards(StaffGuard)
+@Roles("admin", "visa-officer")
+export class AdminVisaApplicationsController {
+  constructor(@Inject(AdminLeadsService) private readonly leads: AdminLeadsService) {}
+
+  @Get()
+  list(@Staff() staff: StaffPrincipal, @Query() query: unknown) {
+    return this.leads.visaApplications(staff, parseInput(VisaApplicationListQuerySchema, query));
   }
 }
 

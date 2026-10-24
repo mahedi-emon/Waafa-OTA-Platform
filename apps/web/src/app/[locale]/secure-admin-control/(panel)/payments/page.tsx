@@ -13,6 +13,7 @@ import { Link } from "@/i18n/navigation";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { displayPhone, formatDhakaDateTime, initialsOf, pageParam, taka } from "@/lib/admin/format";
 import type { Paged, ProofRow } from "@/lib/admin/types";
+import { getPaymentSettings } from "@/lib/data/settings";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.proofs");
@@ -37,7 +38,7 @@ async function Proofs({
   const status = STATUSES.find((item) => item === one(params.status)) ?? "received";
   const q = one(params.q)?.slice(0, 80);
   const sort = sortOf(params.sort, SORTS);
-  const [staff, list, t, tc] = await Promise.all([
+  const [staff, list, payment, t, tc] = await Promise.all([
     requireStaff(),
     adminGet<Paged<ProofRow>>("/admin/payment-proofs", {
       status,
@@ -46,10 +47,14 @@ async function Proofs({
       ...(q ? { q } : {}),
       ...(sort ? { sort } : {}),
     }),
+    getPaymentSettings(),
     getTranslations("Admin.proofs"),
     getTranslations("Admin.common"),
   ]);
   const canReview = hasRole(staff, "admin", "accounts");
+  // The account's name as set in Settings, never its internal key.
+  const accountTitle = (id: string) =>
+    payment.offlineAccounts.find((account) => account.id === id)?.title ?? t("unknownAccount");
 
   const rows: DataRow[] = list.items.map((proof) => {
     const received = formatDhakaDateTime(proof.createdAt);
@@ -80,13 +85,13 @@ async function Proofs({
       ],
       facts: {
         amount: { text: taka(proof.amount), kind: "money" },
-        account: { text: proof.accountId, kind: "muted" },
+        account: { text: accountTitle(proof.accountId), kind: "muted" },
         order: { text: orderWords, kind: proof.order ? undefined : "muted" },
         received: { text: received, kind: "date" },
       },
       summary: [
         { label: t("amount"), value: taka(proof.amount) },
-        { label: t("account"), value: proof.accountId },
+        { label: t("account"), value: accountTitle(proof.accountId) },
         { label: t("transaction"), value: proof.transactionId ?? "-" },
         { label: t("colOrder"), value: orderWords },
         {

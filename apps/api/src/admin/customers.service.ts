@@ -3,7 +3,7 @@ import { toDhakaIsoString } from "@waafa/shared";
 import type { StaffPrincipal } from "../auth/principal";
 import { problems } from "../common/problem";
 import { PrismaService } from "../prisma/prisma.service";
-import { leadModulesFor } from "./access";
+import { canSeeOrders, leadModulesFor } from "./access";
 
 const NOT_SOLD = ["cancelled", "returned"];
 const PAGE_SIZE = 50;
@@ -66,12 +66,6 @@ export function sortCustomers(groups: Group[], sort: CustomerSort | undefined): 
 export class AdminCustomersService {
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
-  private canSeeOrders(staff: StaffPrincipal) {
-    return staff.roles.some((role) =>
-      ["super-admin", "admin", "shop-manager", "accounts"].includes(role),
-    );
-  }
-
   async list(
     staff: StaffPrincipal,
     query: { q?: string; page?: number; pageSize?: number; sort?: CustomerSort },
@@ -89,7 +83,7 @@ export class AdminCustomersService {
           ],
         }
       : {};
-    const orders = this.canSeeOrders(staff);
+    const orders = canSeeOrders(staff);
     const [leadGroups, orderGroups] = await Promise.all([
       this.prisma.lead.groupBy({
         by: ["phone"],
@@ -165,7 +159,7 @@ export class AdminCustomersService {
   }
 
   async detail(staff: StaffPrincipal, phone: string) {
-    const orders = this.canSeeOrders(staff);
+    const orders = canSeeOrders(staff);
     const [leads, orderRows] = await Promise.all([
       this.prisma.lead.findMany({
         where: { phone, module: { in: leadModulesFor(staff) } },

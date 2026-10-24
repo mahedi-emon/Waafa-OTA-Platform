@@ -5,6 +5,7 @@ import {
   CircleCheck,
   PackageCheck,
   PackageOpen,
+  Phone,
   PhoneCall,
   Truck,
   Undo2,
@@ -25,8 +26,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Link, useRouter } from "@/i18n/navigation";
 import { orderAction } from "@/lib/admin/opsActions";
+import { PhoneActionBar } from "./inbox/PhoneActionBar";
 
 type Step =
   "confirmCall" | "confirmProof" | "startPacking" | "ship" | "deliver" | "cancel" | "return";
@@ -50,6 +53,10 @@ type OrderStepsProps = {
   /** Cash on delivery is confirmed on the phone; other methods by a verified payment proof. */
   cashOnDelivery: boolean;
   paymentVerified: boolean;
+  /** The customer, for the phone bar's Call and WhatsApp (D0 R6). */
+  phone?: string;
+  /** wa.me link with the order reference written. */
+  whatsappHref?: string;
 };
 
 /** What an order offers next (ADMIN.md §8.4), the main step first. */
@@ -75,7 +82,14 @@ function stepsFor(status: OrderStatus, cash: boolean, paid: boolean): Step[] {
  * verified), Start packing, Mark shipped with the courier and tracking number, Mark delivered; Cancel and Return ask
  * for a reason and put the items back in stock. The status follows; nobody picks it.
  */
-function OrderSteps({ id, status, cashOnDelivery, paymentVerified }: OrderStepsProps) {
+function OrderSteps({
+  id,
+  status,
+  cashOnDelivery,
+  paymentVerified,
+  phone,
+  whatsappHref,
+}: OrderStepsProps) {
   const t = useTranslations("Admin.orderSteps");
   const router = useRouter();
   const uid = useId();
@@ -87,6 +101,8 @@ function OrderSteps({ id, status, cashOnDelivery, paymentVerified }: OrderStepsP
   const [error, setError] = useState<string | null>(null);
   const steps = stepsFor(status, cashOnDelivery, paymentVerified);
   const waiting = status === "placed" && !cashOnDelivery && !paymentVerified;
+  // The phone bar's step: what moves the order on, never Cancel or Return.
+  const main = steps.find((name) => name !== "cancel" && name !== "return") ?? null;
 
   function inputFor(current: Step): OrderActionInput | null {
     switch (current) {
@@ -183,6 +199,55 @@ function OrderSteps({ id, status, cashOnDelivery, paymentVerified }: OrderStepsP
         <p role="alert" className="text-[13.5px] font-medium text-danger-700">
           {error}
         </p>
+      ) : null}
+
+      {phone ? (
+        <PhoneActionBar label={t("phoneBar")}>
+          {whatsappHref ? (
+            <Button
+              asChild
+              variant="whatsapp"
+              size={main ? "icon" : "md"}
+              className={main ? "shrink-0" : "min-w-0 flex-1"}
+            >
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={main ? t("whatsapp") : undefined}
+              >
+                <WhatsAppIcon className="size-4" />
+                {main ? null : t("whatsapp")}
+              </a>
+            </Button>
+          ) : null}
+          <Button
+            asChild
+            variant="secondary"
+            size={main ? "icon" : "md"}
+            className={main ? "shrink-0" : "min-w-0 flex-1"}
+          >
+            <a href={`tel:${phone}`} aria-label={main ? t("call") : undefined}>
+              <Phone aria-hidden="true" className="size-4" />
+              {main ? null : t("call")}
+            </a>
+          </Button>
+          {main ? (
+            <Button
+              type="button"
+              size="md"
+              disabled={pending}
+              onClick={() => open(main)}
+              className="min-w-0 flex-1"
+            >
+              {(() => {
+                const Icon = ICONS[main];
+                return <Icon aria-hidden="true" className="size-4" />;
+              })()}
+              <span className="truncate">{t(`steps.${main}`)}</span>
+            </Button>
+          ) : null}
+        </PhoneActionBar>
       ) : null}
 
       <Dialog open={step !== null} onOpenChange={(next) => (next ? null : setStep(null))}>

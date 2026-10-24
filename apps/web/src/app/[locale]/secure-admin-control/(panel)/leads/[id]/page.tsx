@@ -5,19 +5,35 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { LeadPrioritySchema, type ContentOption } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import { CustomerCard } from "@/components/admin/inbox/CustomerCard";
+import { InboxListPane, type InboxPaneItem } from "@/components/admin/inbox/InboxListPane";
+import { InboxSplit } from "@/components/admin/inbox/InboxSplit";
+import { ReplyTimer } from "@/components/admin/inbox/ReplyTimer";
+import { Timeline } from "@/components/admin/inbox/Timeline";
 import { LeadActions } from "@/components/admin/LeadActions";
 import { LeadFacts } from "@/components/admin/LeadFacts";
 import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
-import { StatusChip } from "@/components/admin/StatusChip";
 import { VisaProgressPanel } from "@/components/admin/VisaProgressPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessagePaths } from "@/i18n/pickMessages";
 import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
-import { displayPhone, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
-import { OVERDUE_CHIP } from "@/lib/admin/statusChips";
+import { ageParts, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
 import { leadFacts } from "@/lib/admin/leadFacts";
-import type { LeadDetail, StaffDirectoryEntry } from "@/lib/admin/types";
+import {
+  leadListQuery,
+  queueSearch,
+  visaListQuery,
+  withSearch,
+  type SearchParams,
+} from "@/lib/admin/queues";
+import type {
+  LeadDetail,
+  LeadList,
+  StaffDirectoryEntry,
+  VisaApplicationList,
+} from "@/lib/admin/types";
+import { SITE_URL } from "@/lib/siteUrl";
 import { LeadControls } from "./_components/LeadControls";
 import { NoteForm } from "./_components/NoteForm";
 
@@ -42,31 +58,69 @@ const ACTIVITY_TYPES = [
 
 /** Only the lead steps' and the visa panel's words reach the browser (scoped provider, D190). */
 const LEAD_MESSAGES = ["Admin.leadActions", "Admin.visaProgress"];
+const LEADS = "/secure-admin-control/leads";
+const VISA = "/secure-admin-control/visa-applications";
 
-async function Lead({
-  params,
-}: {
-  params: PageProps<"/[locale]/secure-admin-control/leads/[id]">["params"];
-}) {
-  const { id } = await params;
-  const [lead, staff, airports, t, tl, tc, tm, ts, tp, messages] = await Promise.all([
-    adminGet<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
-    adminGet<StaffDirectoryEntry[]>("/admin/staff"),
-    adminGet<{ items: ContentOption[] }>("/admin/content/airports/options").catch(() => ({
-      items: [] as ContentOption[],
-    })),
-    getTranslations("Admin.lead"),
-    getTranslations("Admin.leads"),
-    getTranslations("Admin.common"),
-    getTranslations("Admin.modules"),
-    getTranslations("Admin.statuses"),
-    getTranslations("Admin.priorities"),
-    getMessages(),
-  ]);
+type Params = PageProps<"/[locale]/secure-admin-control/leads/[id]">;
+
+/**
+ * The queue beside the lead (D0 R6): the leads list, or Visa applications when the lead was opened from there, with
+ * the same filters and page. Null when this role can't read that queue.
+ */
+async function queueFor(search: SearchParams) {
+  if (search.queue === "visa") {
+    const query = visaListQuery(search);
+    const list = await adminGet<VisaApplicationList>("/admin/visa-applications", query).catch(
+      () => null,
+    );
+    return list
+      ? {
+          kind: "visa" as const,
+          list,
+          search: queueSearch({ queue: "visa", ...query }),
+          back: withSearch(VISA, queueSearch(query)),
+        }
+      : null;
+  }
+  const query = leadListQuery(search);
+  const list = await adminGet<LeadList>("/admin/leads", query).catch(() => null);
+  return list
+    ? {
+        kind: "leads" as const,
+        list,
+        search: queueSearch(query),
+        back: withSearch(LEADS, queueSearch(query)),
+      }
+    : null;
+}
+
+async function Lead({ params, searchParams }: Pick<Params, "params" | "searchParams">) {
+  const [{ id }, search] = await Promise.all([params, searchParams]);
+  const [lead, staff, airports, queue, t, tl, tc, tm, ts, tp, tv, to, messages] = await Promise.all(
+    [
+      adminGet<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
+      adminGet<StaffDirectoryEntry[]>("/admin/staff"),
+      adminGet<{ items: ContentOption[] }>("/admin/content/airports/options").catch(() => ({
+        items: [] as ContentOption[],
+      })),
+      queueFor(search),
+      getTranslations("Admin.lead"),
+      getTranslations("Admin.leads"),
+      getTranslations("Admin.common"),
+      getTranslations("Admin.modules"),
+      getTranslations("Admin.statuses"),
+      getTranslations("Admin.priorities"),
+      getTranslations("Admin.visaProgress"),
+      getTranslations("Admin.orders"),
+      getMessages(),
+    ],
+  );
   // Fact labels and value words are looked up by computed keys, so this translator is used untyped.
   const tf = t as unknown as ((key: string, values?: Record<string, number>) => string) & {
     has: (key: string) => boolean;
   };
+  const words = (group: string, value: string | undefined) =>
+    value && tf.has(`${group}.${value}`) ? tf(`${group}.${value}`) : value;
   const cityOf = new Map(airports.items.map((airport) => [airport.id, airport.title]));
   const facts = leadFacts(lead.payload, {
     label: (key) => (tf.has(`facts.${key}`) ? tf(`facts.${key}`) : key),
@@ -82,32 +136,91 @@ async function Lead({
     no: tc("no"),
   });
   const whatsappText = t("whatsappText", { name: lead.contact.name, reference: lead.reference });
-  const tv = await getTranslations("Admin.visaProgress");
+  const ageOf = (minutes: number) => {
+    const age = ageParts(minutes);
+    return age.unit === "minutes"
+      ? tl("ageMinutes", { minutes: age.value })
+      : age.unit === "hours"
+        ? tl("ageHours", { hours: age.value })
+        : tl("ageDays", { days: age.value });
+  };
+  const preference = [
+    lead.contact.preferredContact
+      ? t("prefers", { channel: words("contactWays", lead.contact.preferredContact) ?? "" })
+      : "",
+    lead.contact.bestTime ? t("bestTimeLine", { time: lead.contact.bestTime }) : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const page = lead.source.page;
+  const pageHref =
+    page && page.startsWith("/") && !page.startsWith("//") ? `${SITE_URL}${page}` : undefined;
 
-  return (
+  const items: InboxPaneItem[] = !queue
+    ? []
+    : queue.kind === "visa"
+      ? queue.list.items.map((item) => ({
+          id: item.id,
+          href: withSearch(`${LEADS}/${item.id}`, queue.search),
+          title: item.name,
+          subtitle: [item.reference, item.country ?? ""].filter(Boolean).join(" · "),
+          chips: [
+            {
+              family: "visa",
+              name: item.stage,
+              label:
+                item.stage === "documentsPending"
+                  ? tv("progress", { received: item.received, required: item.required })
+                  : tv(`stages.${item.stage}`),
+            },
+          ],
+          meta: ageOf(item.ageMinutes),
+        }))
+      : queue.list.items.map((item) => ({
+          id: item.id,
+          href: withSearch(`${LEADS}/${item.id}`, queue.search),
+          title: item.name,
+          subtitle: `${item.reference} · ${tm(item.module)}`,
+          chips: [
+            { family: "lead", name: item.status, label: ts(item.status) },
+            ...(item.overdue
+              ? [{ family: "overdue" as const, name: "overdue", label: tl("views.overdue") }]
+              : []),
+          ],
+          meta: ageOf(item.ageMinutes),
+        }));
+  const queueTitle = queue?.kind === "visa" ? t("visaApplications") : tl("title");
+
+  const detail = (
     <>
       <AdminPageHeader
-        back={{ href: "/secure-admin-control/leads", label: tl("title") }}
-        title={
-          <span className="flex flex-wrap items-center gap-3">
-            <span className="font-mono">{lead.reference}</span>
+        back={{ href: queue?.back ?? LEADS, label: queueTitle }}
+        title={lead.contact.name}
+        status={
+          <span className="flex flex-wrap items-center gap-2">
             <LeadStatusBadge status={lead.status} label={ts(lead.status)} />
-            {lead.overdue ? (
-              <StatusChip
-                tone={OVERDUE_CHIP.tone}
-                icon={OVERDUE_CHIP.icon}
-                label={tl("views.overdue")}
-                reason={t("overdue", { minutes: lead.slaMinutes })}
-                focusable
-              />
-            ) : null}
+            <ReplyTimer
+              status={lead.status}
+              firstResponseAt={lead.firstResponseAt}
+              createdAt={lead.createdAt}
+              slaMinutes={lead.slaMinutes}
+              strings={{
+                left: t("replyLeft", { time: "{time}" }),
+                over: t("replyOver", { time: "{time}" }),
+                reason: t("replyReason", { minutes: lead.slaMinutes }),
+                minutes: t("durMinutes", { count: "{count}" }),
+                hours: t("durHours", { count: "{count}" }),
+                days: t("durDays", { count: "{count}" }),
+              }}
+            />
           </span>
         }
-        lead={`${tm(lead.module)} · ${lead.summary}`}
+        lead={`${lead.reference} · ${tm(lead.module)} · ${lead.summary}`}
       />
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="flex min-w-0 flex-col gap-4">
-          <AdminPanel>
+      {/* Room for the phone's bottom bar; two columns when the detail itself is wide. */}
+      <div className="@container pb-24 md:pb-0">
+        <div className="grid grid-cols-1 gap-4 @4xl:grid-cols-[minmax(0,1fr)_320px]">
+          <AdminPanel className="@4xl:col-start-1">
             <NextIntlClientProvider messages={pickMessagePaths(messages, LEAD_MESSAGES)}>
               <LeadActions
                 id={lead.id}
@@ -158,10 +271,10 @@ async function Lead({
               ) : null}
             </dl>
             {lead.duplicateOf ? (
-              <p className="mt-4 rounded-xl bg-warning-50 p-3 text-[14px] text-warning-700">
+              <p className="mt-4 rounded-xl bg-warning-50 p-3 text-[14px] text-warning-800">
                 {t("duplicateOf", { reference: lead.duplicateOf.reference })}{" "}
                 <Link
-                  href={`/secure-admin-control/leads/${lead.duplicateOf.id}`}
+                  href={`${LEADS}/${lead.duplicateOf.id}`}
                   prefetch={false}
                   className="font-semibold underline"
                 >
@@ -179,7 +292,7 @@ async function Lead({
           </AdminPanel>
 
           {lead.visa ? (
-            <AdminPanel title={tv("title")} lead={tv("lead")}>
+            <AdminPanel title={tv("title")} lead={tv("lead")} className="@4xl:col-start-1">
               <NextIntlClientProvider messages={pickMessagePaths(messages, LEAD_MESSAGES)}>
                 <VisaProgressPanel
                   id={lead.id}
@@ -190,11 +303,58 @@ async function Lead({
             </AdminPanel>
           ) : null}
 
-          <AdminPanel title={t("request")} lead={t("requestLead")}>
+          <AdminPanel title={t("request")} lead={t("requestLead")} className="@4xl:col-start-1">
             <LeadFacts facts={facts} />
           </AdminPanel>
 
-          <AdminPanel title={t("timeline")} lead={t("timelineLead")}>
+          <AdminPanel
+            title={t("customer")}
+            className="@4xl:col-start-2 @4xl:row-span-4 @4xl:row-start-1 @4xl:self-start"
+          >
+            <CustomerCard
+              name={lead.contact.name}
+              phone={lead.contact.phone}
+              email={lead.contact.email}
+              preference={preference || undefined}
+              cameIn={t("cameInLine", {
+                channel: words("channels", lead.source.channel ?? "web") ?? "",
+                time: formatDhakaDateTime(lead.createdAt),
+              })}
+              pageHref={pageHref}
+              others={{
+                leadCount: lead.customer.leadCount,
+                leads: lead.customer.leads.map((item) => ({
+                  id: item.id,
+                  reference: item.reference,
+                  label: `${tm(item.module)} · ${ts(item.status)}`,
+                  createdAt: item.createdAt,
+                })),
+                orderCount: lead.customer.orderCount,
+                orders: lead.customer.orders
+                  ? lead.customer.orders.map((item) => ({
+                      id: item.id,
+                      reference: item.reference,
+                      label: `${to(`statuses.${item.status}`)} · ${formatDhakaDateTime(item.createdAt)}`,
+                      total: item.total,
+                    }))
+                  : null,
+              }}
+              strings={{
+                phone: t("phone"),
+                email: t("email"),
+                cameIn: t("cameIn"),
+                page: t("fromPage"),
+                otherRequests: t("otherRequests", { count: "{count}" }),
+                noOtherRequests: t("noOtherRequests"),
+                orders: t("ordersCount", { count: "{count}" }),
+                noOrders: t("noOrders"),
+                more: t("more", { count: "{count}" }),
+                profile: t("profile"),
+              }}
+            />
+          </AdminPanel>
+
+          <AdminPanel title={t("timeline")} lead={t("timelineLead")} className="@4xl:col-start-1">
             <NoteForm
               id={lead.id}
               types={(["note", "call", "email", "whatsapp"] as const).map((value) => ({
@@ -209,103 +369,56 @@ async function Lead({
                 failed: tc("unavailable"),
               }}
             />
-            <ol className="mt-5 flex flex-col gap-4 border-l-2 border-mist-200 pl-4">
-              {lead.activities.toReversed().map((activity) => (
-                <li key={activity.id} className="relative">
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-1.5 -left-[23px] size-3 rounded-full bg-electric-600 ring-4 ring-white"
-                  />
-                  <p className="text-[13px] text-mist-600">
-                    <span className="font-semibold text-navy-900">{activity.actor}</span> ·{" "}
-                    {ACTIVITY_TYPES.includes(activity.type)
-                      ? t(`activityTypes.${activity.type}` as "activityTypes.note")
-                      : activity.type}{" "}
-                    ·{" "}
-                    <time dateTime={activity.createdAt}>
-                      {formatDhakaDateTime(activity.createdAt)}
-                    </time>
-                  </p>
-                  <p className="mt-0.5 text-[14.5px] whitespace-pre-line text-ink-900">
-                    {activity.body}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </AdminPanel>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <AdminPanel title={t("customer")}>
-            <p className="font-display text-[18px] font-bold text-navy-900">{lead.contact.name}</p>
-            <dl className="mt-3 flex flex-col gap-2.5 text-[14.5px]">
-              <div>
-                <dt className="text-[12.5px] font-semibold text-mist-600">{t("phone")}</dt>
-                <dd className="tabular-nums">
-                  <a
-                    href={`tel:${lead.contact.phone}`}
-                    className="font-medium text-brand-700 hover:underline"
-                  >
-                    {displayPhone(lead.contact.phone)}
-                  </a>
-                </dd>
-              </div>
-              {lead.contact.email ? (
-                <div>
-                  <dt className="text-[12.5px] font-semibold text-mist-600">{t("email")}</dt>
-                  <dd className="break-all">
-                    <a
-                      href={`mailto:${lead.contact.email}?subject=${encodeURIComponent(lead.reference)}`}
-                      className="font-medium text-brand-700 hover:underline"
-                    >
-                      {lead.contact.email}
-                    </a>
-                  </dd>
-                </div>
-              ) : null}
-              {lead.contact.preferredContact ? (
-                <div>
-                  <dt className="text-[12.5px] font-semibold text-mist-600">{t("contactBy")}</dt>
-                  <dd>{lead.contact.preferredContact}</dd>
-                </div>
-              ) : null}
-              {lead.contact.bestTime ? (
-                <div>
-                  <dt className="text-[12.5px] font-semibold text-mist-600">{t("bestTime")}</dt>
-                  <dd>{lead.contact.bestTime}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </AdminPanel>
-          <AdminPanel title={t("source")}>
-            <dl className="flex flex-col gap-2.5 text-[14.5px]">
-              <div>
-                <dt className="text-[12.5px] font-semibold text-mist-600">{t("channel")}</dt>
-                <dd>{lead.source.channel ?? "web"}</dd>
-              </div>
-              {lead.source.page ? (
-                <div>
-                  <dt className="text-[12.5px] font-semibold text-mist-600">{t("page")}</dt>
-                  <dd className="break-all">{lead.source.page}</dd>
-                </div>
-              ) : null}
-              <div>
-                <dt className="text-[12.5px] font-semibold text-mist-600">{tl("colAge")}</dt>
-                <dd>{formatDhakaDateTime(lead.createdAt)}</dd>
-              </div>
-            </dl>
+            <div className="mt-5">
+              <Timeline
+                label={t("timeline")}
+                entries={lead.activities.map((activity) => ({
+                  id: activity.id,
+                  type: activity.type,
+                  text: activity.body,
+                  actor: activity.actor,
+                  at: activity.createdAt,
+                }))}
+                typeLabel={(type) =>
+                  ACTIVITY_TYPES.includes(type)
+                    ? t(`activityTypes.${type}` as "activityTypes.note")
+                    : t("activityTypes.status")
+                }
+              />
+            </div>
           </AdminPanel>
         </div>
       </div>
     </>
   );
+
+  if (!queue) return detail;
+  return (
+    <InboxSplit
+      id={queue.kind}
+      resizeLabel={t("resize")}
+      list={
+        <InboxListPane
+          title={queueTitle}
+          allHref={queue.back}
+          allLabel={t("paneAll")}
+          count={t("queueCount", { shown: items.length, total: queue.list.total })}
+          items={items}
+          activeId={lead.id}
+          empty={t("queueEmpty")}
+        />
+      }
+    >
+      {detail}
+    </InboxSplit>
+  );
 }
 
-/** Lead detail (AdminLead, AdminLead-lost, AdminLead-m boards). */
-export default function LeadPage(props: PageProps<"/[locale]/secure-admin-control/leads/[id]">) {
+/** One lead in the inbox (ADMIN.md §5.5, D0 R6): next steps, facts, the customer, the timeline, its queue beside it. */
+export default function LeadPage(props: Params) {
   return (
-    <Suspense fallback={<Skeleton className="h-[720px] rounded-2xl" />}>
-      <Lead params={props.params} />
+    <Suspense fallback={<Skeleton className="h-180 rounded-2xl" />}>
+      <Lead params={props.params} searchParams={props.searchParams} />
     </Suspense>
   );
 }

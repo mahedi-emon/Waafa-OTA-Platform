@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   ageParts,
+  dhakaDay,
   displayPhone,
   formatDhakaDateTime,
+  formatDhakaTime,
   formatPlainDate,
   humanize,
   initialsOf,
@@ -43,5 +45,12 @@ describe("admin formatting", () => {
     expect(humanize("seo")).toBe("SEO");
     expect(humanize("codLimit")).toBe("COD limit");
     expect(humanize("price-from")).toBe("Price from");
+  });
+
+  it("gives the Dhaka time and calendar day of any instant (timelines, D0 R6)", () => {
+    expect(formatDhakaTime("2026-10-24T13:18:00.000Z")).toBe("7:18 pm");
+    // 23:30 UTC is already the next morning in Dhaka.
+    expect(dhakaDay("2026-10-23T23:30:00.000Z")).toBe("2026-10-24");
+    expect(dhakaDay("2026-10-24T05:30:00.000+06:00")).toBe("2026-10-24");
   });
 });

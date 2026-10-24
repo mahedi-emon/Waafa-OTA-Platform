@@ -68,7 +68,7 @@ footer's calm. The work surface stays light (mist-50 page, white panels).
 | **Home** | Dashboard (today's work) | `/secure-admin-control` | — | everyone |
 | | Reports (includes search activity) | `/reports` | — | admin, accounts, shop-manager, travel-sales, visa-officer |
 | **Inbox** | Leads (tabs: All, Flights, Hotels, Packages, Plan my trip, Visa, Printing, Trading, Bulk quotes, EMI, Contact) | `/leads` | new + overdue | admin, travel-sales, visa-officer, shop-manager |
-| | Visa applications (checklist stage) | `/leads?module=visa` now, `/visa-applications` in R6 | open visa applications | admin, visa-officer |
+| | Visa applications (checklist stage) | `/visa-applications` (R6) | open visa applications | admin, visa-officer |
 | | Orders | `/orders` | to confirm | admin, shop-manager, accounts |
 | | Payment proofs | `/payments` | to verify | admin, accounts, shop-manager |
 | | Customers (newsletter as a tab) | `/customers` | — | admin, accounts, shop-manager, travel-sales, visa-officer |
@@ -218,6 +218,50 @@ link opens the full editor. Below 768 px rows become cards.
   (DAC) to Bangkok (BKK) · One way · 2 Dec 2026 · 1 adult · Economy"), customer card (other leads and orders by the
   same phone), and the **timeline** (received, contacts, notes, status changes, assignments, all as sentences).
 - Leads also have a **board** (kanban by status); dragging runs the same transitions and asks for the same inputs.
+
+### 5.5.1 What R6 shipped
+- **Queues in the address** (D232): a list's search, filters, sort and page travel with every row link
+  (`/leads/{id}?view=open&q=…`, `?queue=visa&stage=…` from Visa applications, `/orders/{id}?status=…`), so the work item
+  knows which list it came from: Back and the pane's **Full list** return to it as the person left it.
+- **Inbox panes** (`components/admin/inbox/InboxSplit`, D241): from 1280 px the queue stays on the left (320 to 560 px,
+  400 by default, the width remembered on the device) and the work item on the right, each scrolling on its own; the
+  open item is marked and scrolled into view in the queue, and the next one is a click away. One CSS grid at every
+  width with an in-house handle (drag, or the arrow keys, Home and End), so the work item never remounts: a half-typed
+  reason survives turning a tablet. Narrower screens show the work item alone.
+- **Lead page**:
+  - the header is the customer's name with the status chip and a live **reply timer** ("Reply within 18 min", then
+    "No reply, 12 min past the target", every 30 s in the browser, D238), and the reference, service and request
+    under it
+  - then the next steps, the visa checklist, the request's facts, the **customer card** and the **timeline**
+  - the customer card shows how to reach them, how the request came in ("Website form · 24 Oct 2026, 9:05 am", a link
+    to the page it was sent from), their other requests and orders by the same phone (five each, with counts), and
+    the customer profile (D240)
+  - the timeline is grouped by day: an icon per kind, the sentence the step wrote, then who and when
+  - two columns when the detail itself is wide (container query), one otherwise
+- **Phones** (D239): a bottom bar on the lead and order pages keeps WhatsApp, Call and the main step in thumb reach;
+  with a main step the contact buttons are icons so everything fits at 320 px. Pages leave room for it, and toasts sit
+  above it.
+- **Leads list**: the service tabs (All, Flights, Hotels, Packages, Plan my trip, Visa, Printing, Trading, Bulk quotes,
+  EMI, Contact) show each module this person works on with its open count. Open, Mine, Unassigned and Overdue became
+  the table's **Show** chips (D233). Call and WhatsApp in rows, sheets and cards log the contact like the lead page
+  (D237).
+- **Board** (`components/admin/board/`, D234):
+  - columns New · In progress · Quoted · Waiting for customer · Booked · Lost or cancelled
+  - a move asks for exactly what the lead page asks, through the same dialog (`LeadStepDialog`): how the customer was
+    reached (New to In progress), the quote's amount, documents or payment (Waiting), the booked amount, the outcome
+    and reason, a reason to reopen. Customer replied runs at once.
+  - `leadStepForMove` in `packages/shared/src/workflow/leads.ts` decides; a move the rules don't have is refused in
+    words ("Reopen it first: move it to In progress.") and the card stays
+  - drag with a mouse, or a long press on touch screens (dnd-kit mouse and touch sensors in the board's own admin chunk, rendered from the first paint so an open menu never closes under the person; focus returns to the moved card; stages that can't take the card fade while it moves;
+    every pick-up and drop is spoken); each card has its stage's next step and **Move to…** for keyboards and single
+    pointers
+- **Visa applications** (`/visa-applications`, D236): visa leads by checklist stage with a stage chip and "3 of 8"
+  documents; stage chips with counts; Open, Mine and Unassigned; bulk Assign. The API works out each stage from the
+  lead's country checklist and leaves spam out. An application opens on its lead page with the visa queue beside it,
+  and the sidebar stays on Visa applications.
+- **Orders**: the order page has its queue, the phone bar and plain words for its payment proofs. Payment proofs and
+  feedback keep R5's row sheet as their detail panel.
+- **Later**: SMS and the courier API (Phase D); the 100-row table page (#219).
 
 ### 5.6 Settings
 One page, left sub-navigation (phone: a list that opens each section): Business and contact · Office hours · Booking
@@ -605,15 +649,15 @@ grouping. Phone numbers: "+880 1712-345678".
 | IconPicker | shadcn **popover** + **command** over the site's own icon set (compared with `sirwhod/icon-picker-3`, `oldkong88/lucide-icon-drawer`, `ddoemonn/filter-grid`) | trust items, menus, categories |
 | ColourField | system colour picker + code + the product's own colours (compared with `arikchakma/cromia-swatches`, `micka_design/color-picker`, `wensity/color-picker`; no colours written in code, guards) | product option values |
 | Unsaved-changes bar | in-house sticky action bar and leave dialog (compared with `stvenchg/unsaved-changes`, `yadwinder/toast-save`, `KarrixLee/unsave-popup`) | editors |
-| LeadBoard | 21st.dev `diceui/kanban` (compared with `uvain/kanban-board`, `adrielzimbril/kanban`, `cult-ui/kanban-board`) + a "Move to…" menu after `rmahammad/kanban-card-movement` | leads board |
-| Timeline | 21st.dev `olewandowski1/timeline-3` (compared with `kuratlielia/timeline`, `felipemenezes098/item-19`, `cubby-ui/timeline`) | inbox detail, History |
+| LeadBoard | 21st.dev `diceui/kanban` (compared with `uvain/kanban-board`, `adrielzimbril/kanban`, `cult-ui/kanban-board`) + a "Move to…" menu after `rmahammad/kanban-card-movement`; built in-house on `@dnd-kit/core` (`LeadBoardView`, `LeadBoardDnd`, `LeadBoardCard`) because the 21st.dev install stopped in the shadcn CLI and used the day's free retrievals (D235) | leads board |
+| Timeline | 21st.dev `olewandowski1/timeline-3` (compared with `kuratlielia/timeline`, `felipemenezes098/item-19`, `cubby-ui/timeline`); `components/admin/inbox/Timeline` built in-house after it (D235) | inbox detail, History |
 | TagCombobox | 21st.dev `cnippet-dev/v-combobox-13` (compared with `coss.com/combobox`, `geekles007/multiple-select`, `shugar/combobox`) on shadcn **popover** + **command** | ReferencePicker (multi) |
 | DateField, DateRangeField | shadcn **calendar** (react-day-picker 10) + **popover** with month and year dropdowns and Today / Now / Clear (R2; compared again with `wensity/date-picker`, `ai2/date-picker-preset`, `originui/calendar`, `shadcn/calendar-picker-in-a-drawer`); range presets from `sean0205/c-calendar-16` for reports (R9) | editors, reports |
 | KpiCard + Sparkline | 21st.dev `uvain/revenue-charts-kpi` (compared with `makviesainte/progress-metric-card`, `appica-dev/sparkline`, `wensity/card`); sparkline as inline SVG | dashboard |
 | Charts | shadcn **chart** (Recharts, dynamic import) | dashboard, reports |
 | Dropzone | `MediaDropzone` + `useUploadQueue` in-house on react-dropzone 20.1.2, after the 21st.dev `uvain/file-upload` pattern (per-file progress, retry, explained guards; compared with `ephraimduncan/file-upload-01`, `joyco/file-dropzone`, `wensity/file-uploader`); `uvain/file-upload` is a paid marketplace item, so it was not installed (D207) | MediaField, GalleryField, VideoField, media library |
 | ImageCrop + FocalPoint | `ImageCropDialog` on `@origin-space/image-cropper` 0.1.9, the headless package behind 21st.dev `originui/image-crop` (fixed-aspect zoom and pan; compared with `haydenbleasel/image-crop`, `ruixen.ui/image-cropper`, `shadcnspace/file-upload-05`), styled in-house (D207); `FocalPointPicker` in-house (tap, drag or arrow keys, three crop previews) | MediaField, media library |
-| Resizable inbox panes | shadcn **resizable** | inbox (desktop) |
+| Resizable inbox panes | in-house `InboxSplit`: one CSS grid with the list width as a variable and a separator (pointer drag, arrow keys); shadcn **resizable** was tried and dropped because swapping trees remounted the work item (D241) | lead, visa and order pages from 1280 px |
 | Toasts with Undo | shadcn **sonner** | everywhere |
 | Next step cards (R4) | in-house `LeadActions`, `OrderSteps`, `ProofDecision` on shadcn **dialog**, **radio-group**, **textarea**, **input-group** (`TakaInput`) | lead, order and proof screens |
 | ScheduleDialog (R4) | shadcn **dialog** + **calendar** (lazy) + **select** (15-minute times, Asia/Dhaka) | editors with drafts |

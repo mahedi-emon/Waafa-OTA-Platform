@@ -79,7 +79,10 @@ async function openLead(page: Page, reference: string) {
       .click();
     await page.getByRole("dialog").getByRole("link", { name: "Open" }).click();
   }
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(reference);
+  // The title is the customer's name; the reference is in the line under it (D0 R6).
+  await expect(page.getByRole("heading", { level: 1 }).locator("xpath=../..")).toContainText(
+    reference,
+  );
 }
 
 /** A tour package's editor, once it can be used. */
@@ -214,7 +217,8 @@ test("a WhatsApp reply moves a new lead to In progress, and Convert to booking b
   });
   await signIn(page);
   await openLead(page, reference);
-  const heading = page.getByRole("heading", { level: 1 });
+  // The status chip sits beside the title (D0 R6).
+  const heading = page.getByRole("heading", { level: 1 }).locator("xpath=../..");
   await expect(heading).toContainText("New");
 
   const popup = page.waitForEvent("popup");

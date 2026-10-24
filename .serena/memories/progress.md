@@ -1,4 +1,6 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-24 — R5 merged (#220, 763f58d). R6 #196 inbox on feat/196-inbox: queue panes beside leads and orders (InboxSplit grid), lead page with reply timer, customer card and timeline, phone bottom bar, service tabs, board moves through the lead page's dialog (dnd-kit mouse + touch, Move to…), Visa applications by stage. Tests shared 144, web 623, API 184, API-job e2e 52. No migration.
+- 2026-10-24 — R4 merged (#218, ce05c1b). R5 #195 DataTable v2 on every list (content, leads, orders, proofs, customers, feedback, users; records/bulk/move endpoints; saved views on device; INP on 500 leads) → PR #220, no migration. Tests shared 137, web 622, API 181, API-job e2e 42. Bug #219 (100-row page INP).
 - 2026-10-23 — R3 #193 merged (#216). R4 #194 status automation on feat/194-status-automation: shared workflow rules, API buttons/actions, Trash, slug redirects, minute job, Sample undo, lead/visa/order/proof steps, list chips; PR open. Migration 20261024040000_status_automation.
 - 2026-10-23 Dhaka — Security #213: Next 16.4.0 had two critical RCE advisories (a vulnerable Next build now stops):
   Next 16.4.2, sanitize-html 2.18.1, fastify 5.12.7 + override; PR #214 merged (541bd21), CI 7/7; owner deploys after

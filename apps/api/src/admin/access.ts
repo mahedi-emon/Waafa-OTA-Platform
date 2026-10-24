@@ -22,6 +22,13 @@ export function assertLeadAccess(staff: StaffPrincipal, module: string): void {
     throw problems.notFound("Lead not found");
 }
 
+/** Orders and what customers spent: store and accounts roles (customer cards, reports). */
+export function canSeeOrders(staff: StaffPrincipal): boolean {
+  return staff.roles.some((role) =>
+    ["super-admin", "admin", "shop-manager", "accounts"].includes(role),
+  );
+}
+
 export function canEditContent(staff: StaffPrincipal, key: ContentKey): boolean {
   return canEditContentKey(staff.roles, key);
 }
