@@ -36,7 +36,8 @@ export type PaymentProofFormValues = z.infer<typeof paymentProofFormSchema>;
 export type SlipFile = {
   fileName: string;
   mimeType: "image/jpeg" | "image/png" | "application/pdf";
-  sizeBytes: number;
+  sizeBytes: number; /** The claim from POST /api/uploads (issue 232). */
+  storageKey?: string;
 };
 
 /** True when the form has what the accounts team needs to match the payment. */

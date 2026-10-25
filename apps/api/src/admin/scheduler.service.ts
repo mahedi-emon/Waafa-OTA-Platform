@@ -12,6 +12,7 @@ import {
   isOverdueLead,
   type CollectionKey,
 } from "@waafa/shared";
+import { CustomerFilesService } from "../files/customer-files.service";
 import { withWorkflow } from "./workflow";
 import { AuditService } from "../audit/audit.service";
 import { ENV, type Env } from "../config/env";
@@ -44,9 +45,11 @@ export type TickResult = {
   windows: string[];
   purged: number;
   overdue: number;
+  /** Customer files deleted: unclaimed uploads and visa documents past retention (issue 232). */
+  files: number;
 };
 
-const EMPTY: TickResult = { published: [], windows: [], purged: 0, overdue: 0 };
+const EMPTY: TickResult = { published: [], windows: [], purged: 0, overdue: 0, files: 0 };
 
 const isCollectionKey = (key: string): key is CollectionKey =>
   isContentKey(key) && CONTENT_MODEL[key].kind === "collection";
@@ -54,7 +57,7 @@ const isCollectionKey = (key: string): key is CollectionKey =>
 /**
  * The minute job (D0 R4, D215): publishes scheduled records whose time has come, refreshes the site when a banner,
  * announcement, deal or group fare starts or ends, deletes Trash older than 30 days, and alerts the desk once about
- * each lead still unanswered past the reply target. It runs in the API process because the public snapshot cache
+ * each lead still unanswered past the reply target, and deletes customer files past their time (issue 232). It runs in the API process because the public snapshot cache
  * and the web revalidation live here; a Postgres advisory lock keeps it to one instance at a time.
  */
 @Injectable()
@@ -71,6 +74,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
     @Inject(NotificationService) private readonly notifications: NotificationService,
+    @Inject(CustomerFilesService) private readonly files: CustomerFilesService,
   ) {}
 
   onModuleInit(): void {
@@ -109,7 +113,8 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
       if (result.published.length > 0) this.content.invalidate();
       if (keys.size > 0) this.revalidate.request([...keys]);
       const overdue = await this.alertOverdue(now);
-      return { published: result.published, windows, purged: result.purged, overdue };
+      const files = await this.files.purge(now);
+      return { published: result.published, windows, purged: result.purged, overdue, files };
     } finally {
       this.running = false;
     }

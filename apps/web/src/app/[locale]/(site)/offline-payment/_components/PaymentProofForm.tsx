@@ -19,6 +19,7 @@ import {
   paymentProofFormSchema,
   type PaymentProofFormValues,
 } from "@/lib/leads/paymentProofForm";
+import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
 
 type PaymentProofFormProps = {
   accounts: Array<{ id: string; title: string }>;
@@ -27,7 +28,7 @@ type PaymentProofFormProps = {
 
 /**
  * "Send us the proof" (OfflinePay, OfflinePay-sent): one step to POST /api/payment-proof with one idempotency key.
- * Phase A keeps the slip in the browser; its name, type and size go with the proof (D87).
+ * The slip uploads to private storage when picked; the proof carries its claim (issue 232).
  */
 function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
   const t = useTranslations("OfflinePay");
@@ -50,7 +51,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
   const [slip, setSlip] = useState<SlotFile | null>(null);
   const [missingProof, setMissingProof] = useState(false);
   const [sending, setSending] = useState(false);
-  const [failure, setFailure] = useState<"retry" | "rate" | null>(null);
+  const [failure, setFailure] = useState<"retry" | "rate" | "uploading" | null>(null);
   const [sent, setSent] = useState<string | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
   const turnstile = useTurnstile();
@@ -61,6 +62,11 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
   };
 
   const submit = form.handleSubmit(async (values) => {
+    // A file still uploading would be left out (issue 232).
+    if (uploadsInFlight()) {
+      setFailure("uploading");
+      return;
+    }
     if (sending) return;
     if (!hasTransactionOrSlip(values, slip)) {
       setMissingProof(true);
@@ -269,6 +275,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
 
       <DocumentSlot
         title={t("proof.slip")}
+        kind={"payment-proof"}
         sub={t("proof.slipSub")}
         file={slip}
         onChange={(file) => {
@@ -281,10 +288,12 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
           rule: t("proof.slipHint"),
           remove: t("proof.slipRemove", { file: "{file}" }),
           added: t("proof.slipAdded"),
+          uploading: t("proof.slipUploading"),
           errors: {
             fileType: t("proof.slipBad"),
             fileSize: t("proof.slipBad"),
             fileEmpty: t("proof.slipBad"),
+            upload: t("proof.slipUploadFailed"),
           },
         }}
       />
@@ -295,7 +304,11 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
           className="flex items-start gap-2 rounded-xl bg-danger-25 p-3 text-[13.5px] text-danger-600"
         >
           <CircleAlert aria-hidden="true" className="mt-px size-4 shrink-0" />
-          {failure === "rate" ? t("proof.rate") : t("proof.failed")}
+          {failure === "uploading"
+            ? t("proof.waitUpload")
+            : failure === "rate"
+              ? t("proof.rate")
+              : t("proof.failed")}
         </p>
       ) : null}
       <p aria-live="polite" className="sr-only">

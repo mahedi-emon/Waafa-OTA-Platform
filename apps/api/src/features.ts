@@ -5,6 +5,7 @@ import { OpenApiModule } from "./docs/openapi";
 import type { GoogleFetch } from "./customers/googleOAuth";
 import type { Mailer } from "./notifications/mailer";
 import type { Fetcher } from "./providers/catalogAdapters";
+import { FilesModule } from "./files/files.module";
 import { MediaModule } from "./media/media.module";
 import { ProvidersModule } from "./providers/providers.module";
 import { PublicModule } from "./public/public.module";
@@ -21,6 +22,7 @@ export function featureModules(
     { module: AdminModule },
     ProvidersModule.register({ fetcher: options.fetcher, googleFetch: options.googleFetch }),
     { module: MediaModule },
+    { module: FilesModule },
     ...(env.NODE_ENV === "production" ? [] : [{ module: OpenApiModule }]),
   ];
 }

@@ -7,6 +7,7 @@ import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter, type NestFastifyApplication } from "@nestjs/platform-fastify";
 import type { IncomingMessage } from "node:http";
 import type { Env } from "./config/env";
+import { redactToken } from "./common/redact";
 import { CoreModule } from "./core.module";
 import { HealthController } from "./health/health.controller";
 import { ProblemFilter } from "./common/problem";
@@ -44,6 +45,22 @@ export async function createApp(
               "req.headers.cookie",
               'req.headers["x-intake-key"]',
             ],
+            serializers: {
+              // Signed file links carry their token in the query (issue 232): never write it to the log.
+              req: (request: {
+                method?: string;
+                url?: string;
+                host?: string;
+                ip?: string;
+                socket?: { remotePort?: number };
+              }) => ({
+                method: request.method,
+                url: redactToken(request.url ?? ""),
+                host: request.host,
+                remoteAddress: request.ip,
+                remotePort: request.socket?.remotePort,
+              }),
+            },
           },
     genReqId: (request: IncomingMessage) => {
       const incoming = request.headers["x-request-id"];
@@ -73,6 +90,15 @@ export async function createApp(
     .addContentTypeParser(
       /^image\/(jpeg|png|webp|avif)$/,
       { parseAs: "buffer", bodyLimit: 12 * 1024 * 1024 + 1024 },
+      (_request, body, done) => done(null, body),
+    );
+  // Customer PDFs (issue 232, up to 5 MB); customer JPEG and PNG files use the photo parser above.
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .addContentTypeParser(
+      "application/pdf",
+      { parseAs: "buffer", bodyLimit: 5 * 1024 * 1024 + 1024 },
       (_request, body, done) => done(null, body),
     );
   // Videos too (MP4 or WebM up to 50 MB, D0 R3); only the video upload route reads them.

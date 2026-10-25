@@ -13,6 +13,7 @@ import type { ContactStepValues } from "@/lib/leads/contactForm";
 import { ContactStep } from "./ContactStep";
 import { LeadCardHeader } from "./LeadCardHeader";
 import { LeadSuccess } from "./LeadSuccess";
+import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
 
 type LeadRequestCardProps<T> = {
   /** id of the card heading (names the region). */
@@ -68,7 +69,7 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
     email: "",
   });
   const [sending, setSending] = useState(false);
-  const [failure, setFailure] = useState<"retry" | "rate" | null>(null);
+  const [failure, setFailure] = useState<"retry" | "rate" | "uploading" | null>(null);
   const [created, setCreated] = useState<LeadCreated | null>(null);
   // One key per request: a double tap or a retry reuses it; a new key is made after a success.
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
@@ -85,6 +86,11 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
 
   const submit = async (values: T) => {
     if (sending) return;
+    // A file still uploading would be left out of the request (issue 232).
+    if (uploadsInFlight()) {
+      setFailure("uploading");
+      return;
+    }
     setSending(true);
     setFailure(null);
     const key = idempotencyKey ?? crypto.randomUUID();
@@ -208,11 +214,15 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
             >
               <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-danger-600" />
               <div>
-                <p className="text-[15px] font-semibold text-navy-900">{t("failure.title")}</p>
+                <p className="text-[15px] font-semibold text-navy-900">
+                  {failure === "uploading" ? t("failure.waitTitle") : t("failure.title")}
+                </p>
                 <p className="text-[14px] text-mist-700">
-                  {failure === "rate"
-                    ? t("failure.tooMany")
-                    : t("failure.body", { phone: props.phoneDisplay })}
+                  {failure === "uploading"
+                    ? t("failure.waitBody")
+                    : failure === "rate"
+                      ? t("failure.tooMany")
+                      : t("failure.body", { phone: props.phoneDisplay })}
                 </p>
               </div>
             </div>

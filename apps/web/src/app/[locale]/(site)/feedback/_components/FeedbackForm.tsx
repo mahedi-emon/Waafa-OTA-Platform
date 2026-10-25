@@ -23,6 +23,7 @@ import {
   feedbackFormSchema,
   type FeedbackFormValues,
 } from "@/lib/content/feedbackForm";
+import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
 
 type FeedbackFormProps = {
   countries: Array<{ code: string; name: string; dial: string }>;
@@ -55,7 +56,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
   const phoneCountry = useWatch({ control: form.control, name: "phoneCountry" });
   const [photo, setPhoto] = useState<SlotFile | null>(null);
   const [sending, setSending] = useState(false);
-  const [failure, setFailure] = useState<"retry" | "rate" | null>(null);
+  const [failure, setFailure] = useState<"retry" | "rate" | "uploading" | null>(null);
   const [sentName, setSentName] = useState<string | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
   const turnstile = useTurnstile();
@@ -66,6 +67,11 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
   };
 
   const submit = form.handleSubmit(async (values) => {
+    // A file still uploading would be left out (issue 232).
+    if (uploadsInFlight()) {
+      setFailure("uploading");
+      return;
+    }
     if (sending) return;
     setSending(true);
     setFailure(null);
@@ -74,7 +80,12 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
     try {
       const image =
         photo && (photo.mimeType === "image/jpeg" || photo.mimeType === "image/png")
-          ? { fileName: photo.fileName, mimeType: photo.mimeType, sizeBytes: photo.sizeBytes }
+          ? {
+              fileName: photo.fileName,
+              mimeType: photo.mimeType,
+              sizeBytes: photo.sizeBytes,
+              ...(photo.storageKey ? { storageKey: photo.storageKey } : {}),
+            }
           : null;
       const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/feedback", {
@@ -283,6 +294,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
 
       <DocumentSlot
         title={t("form.photo")}
+        kind={"photo"}
         sub={t("form.photoSub")}
         file={photo}
         onChange={setPhoto}
@@ -293,10 +305,12 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
           rule: t("form.photoHint"),
           remove: t("form.photoRemove", { file: "{file}" }),
           added: t("form.photoAdded"),
+          uploading: t("form.photoUploading"),
           errors: {
             fileType: t("form.photoBad"),
             fileSize: t("form.photoBad"),
             fileEmpty: t("form.photoBad"),
+            upload: t("form.photoUploadFailed"),
           },
         }}
       />
@@ -321,7 +335,11 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
           className="flex items-start gap-2 rounded-xl bg-danger-25 p-3 text-[13.5px] text-danger-600"
         >
           <CircleAlert aria-hidden="true" className="mt-px size-4 shrink-0" />
-          {failure === "rate" ? t("form.rate") : t("form.failed")}
+          {failure === "uploading"
+            ? t("form.waitUpload")
+            : failure === "rate"
+              ? t("form.rate")
+              : t("form.failed")}
         </p>
       ) : null}
       {turnstile.field}

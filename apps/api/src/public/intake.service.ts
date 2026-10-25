@@ -25,6 +25,7 @@ import {
 } from "@waafa/shared";
 import { nextReference } from "../common/references";
 import { ContentService } from "../content/content.service";
+import { CustomerFilesService, type FileRef } from "../files/customer-files.service";
 import type { Prisma } from "../generated/prisma/client";
 import { NotificationService } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
@@ -36,6 +37,19 @@ const DUPLICATE_WINDOW_MS = 24 * 60 * 60_000;
 export type PlaceOrderResult =
   | { ok: true; order: OrderCreated }
   | { ok: false; reason: "changed" | "cod" | "minimum" | "pickup"; quote?: Quote };
+
+/** The files a lead's form sent: visa documents, printing and trading attachments (issue 232). */
+function leadFileRefs(payload: LeadCreateInput["payload"]): FileRef[] {
+  const refs: FileRef[] = [];
+  if ("documents" in payload && Array.isArray(payload.documents)) refs.push(...payload.documents);
+  if ("attachments" in payload && Array.isArray(payload.attachments))
+    refs.push(...payload.attachments);
+  return refs;
+}
+
+/** Staff-facing note when some files of a form never arrived (expired or failed uploads). */
+const missingNote = (names: string[]) =>
+  `${names.length === 1 ? "1 file" : `${names.length} files`} did not arrive (${names.join(", ")}); ask the customer to send ${names.length === 1 ? "it" : "them"} again.`;
 
 /** Last ten digits, so +8801712345678 and 01712-345678 match (Track order). */
 const phoneTail = (value: string) => value.replace(/\D/g, "").slice(-10);
@@ -52,6 +66,7 @@ export class IntakeService {
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(NotificationService) private readonly notifications: NotificationService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
+    @Inject(CustomerFilesService) private readonly files: CustomerFilesService,
   ) {}
 
   private adminLink(path: string): string {
@@ -100,6 +115,21 @@ export class IntakeService {
           createdAt: now,
         },
       });
+      const refs = leadFileRefs(input.payload);
+      if (refs.length > 0) {
+        const files = await this.files.claim(tx, refs, "lead", lead.id, now);
+        if (files.missing.length > 0) {
+          await tx.leadActivity.create({
+            data: {
+              leadId: lead.id,
+              type: "note",
+              body: missingNote(files.missing),
+              actorName: "Website",
+              createdAt: now,
+            },
+          });
+        }
+      }
       return { id: lead.id, reference };
     });
 
@@ -231,6 +261,10 @@ export class IntakeService {
           history: { create: { status: "placed", at: now, actorName: "Website" } },
         },
       });
+      // A missing slip shows as "not received" in the admin's file list; order history is what customers see.
+      if (input.payment.method === "offline" && input.payment.proof) {
+        await this.files.claim(tx, [input.payment.proof], "order", order.id, now);
+      }
       return {
         ok: true as const,
         order: { reference, total: order.total, createdAt: toDhakaIsoString(now) },
@@ -302,18 +336,21 @@ export class IntakeService {
     input: FeedbackCreateInput,
     now = new Date(),
   ): Promise<{ firstName: string }> {
-    await this.prisma.feedback.create({
-      data: {
-        name: input.name,
-        phone: input.phone,
-        service: input.service,
-        reference: input.reference ?? null,
-        rating: input.rating ?? null,
-        comment: input.comment,
-        ...(input.photo ? { photo: json(input.photo) } : {}),
-        consentToPublish: input.consentToPublish,
-        createdAt: now,
-      },
+    await this.prisma.$transaction(async (tx) => {
+      const feedback = await tx.feedback.create({
+        data: {
+          name: input.name,
+          phone: input.phone,
+          service: input.service,
+          reference: input.reference ?? null,
+          rating: input.rating ?? null,
+          comment: input.comment,
+          ...(input.photo ? { photo: json(input.photo) } : {}),
+          consentToPublish: input.consentToPublish,
+          createdAt: now,
+        },
+      });
+      if (input.photo) await this.files.claim(tx, [input.photo], "feedback", feedback.id, now);
     });
     void this.notifications.notify("feedback-received-staff", this.notifications.staffAddress, {
       name: input.name,
@@ -334,19 +371,23 @@ export class IntakeService {
     ]);
     // Matched by itself when the reference names an order and the amount covers its total (D0 R4, D222).
     const matched = order !== null && proofMatches(input, order);
-    const stored = await this.prisma.paymentProof.create({
-      data: {
-        reference: input.reference,
-        name: input.name,
-        phone: input.phone,
-        amount: input.amount,
-        accountId: input.accountId,
-        transactionId: input.transactionId ?? null,
-        ...(input.proof ? { proof: json(input.proof) } : {}),
-        status: matched ? "matched" : "received",
-        orderId: order?.id ?? null,
-        createdAt: now,
-      },
+    const stored = await this.prisma.$transaction(async (tx) => {
+      const proof = await tx.paymentProof.create({
+        data: {
+          reference: input.reference,
+          name: input.name,
+          phone: input.phone,
+          amount: input.amount,
+          accountId: input.accountId,
+          transactionId: input.transactionId ?? null,
+          ...(input.proof ? { proof: json(input.proof) } : {}),
+          status: matched ? "matched" : "received",
+          orderId: order?.id ?? null,
+          createdAt: now,
+        },
+      });
+      if (input.proof) await this.files.claim(tx, [input.proof], "payment-proof", proof.id, now);
+      return proof;
     });
     void this.notifications.notify("payment-proof-staff", this.notifications.staffAddress, {
       name: input.name,

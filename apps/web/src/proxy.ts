@@ -114,6 +114,9 @@ export default async function proxy(request: NextRequest) {
 export const config = {
   // Every path except API routes, Next.js internals, Vercel internals, files with an extension and the media uploads:
   // Next copies the body of every request the proxy sees and keeps only its first 10 MB, so a 12 MB photo or a 50 MB
-  // video must stream past it (D211). The upload routes check the session themselves.
-  matcher: ["/((?!api|_next|_vercel|secure-admin-control/media/upload|.*\\..*).*)"],
+  // video must stream past it (D211). Customer files stream out past it too (issue 232). These routes check the
+  // session themselves.
+  matcher: [
+    "/((?!api|_next|_vercel|secure-admin-control/media/upload|secure-admin-control/files/|.*\\..*).*)",
+  ],
 };

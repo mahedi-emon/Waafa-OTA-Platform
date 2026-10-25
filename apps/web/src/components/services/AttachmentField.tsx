@@ -11,6 +11,7 @@ function AttachmentField({ file, onChange }: AttachmentFieldProps) {
   return (
     <DocumentSlot
       title={t("title")}
+      kind="other"
       sub={t("sub")}
       file={file}
       onChange={onChange}
@@ -20,7 +21,13 @@ function AttachmentField({ file, onChange }: AttachmentFieldProps) {
         rule: t("rule"),
         remove: t("remove", { file: "{file}" }),
         added: t("added"),
-        errors: { fileType: t("fileType"), fileSize: t("fileSize"), fileEmpty: t("fileEmpty") },
+        uploading: t("uploading"),
+        errors: {
+          fileType: t("fileType"),
+          fileSize: t("fileSize"),
+          fileEmpty: t("fileEmpty"),
+          upload: t("uploadFailed"),
+        },
       }}
     />
   );

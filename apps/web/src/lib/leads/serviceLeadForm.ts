@@ -21,7 +21,8 @@ export const DELIVERY_TERMS = ["exw", "fob", "cif", "ddp", "other"] as const;
 export type ProofFile = {
   fileName: string;
   mimeType: "image/jpeg" | "image/png" | "application/pdf";
-  sizeBytes: number;
+  sizeBytes: number; /** The claim from POST /api/uploads (issue 232). */
+  storageKey?: string;
 };
 
 export const printingStepSchema = z

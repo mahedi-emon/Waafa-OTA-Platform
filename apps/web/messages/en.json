@@ -694,7 +694,9 @@
       "title": "We couldn’t send your request",
       "body": "Your details are still here. Please try again; if it keeps happening, call or WhatsApp {phone} and we’ll take it from there.",
       "retry": "Try again",
-      "tooMany": "Too many requests from this connection. Please wait a minute and try again."
+      "tooMany": "Too many requests from this connection. Please wait a minute and try again.",
+      "waitTitle": "A file is still uploading",
+      "waitBody": "Send again when it shows Added. It only takes a moment."
     },
     "errors": {
       "nameRequired": "Enter your full name",
@@ -1233,7 +1235,7 @@
       "documents": "Upload documents",
       "documentsLead": "Clear photos are fine. We tell you if anything needs to be redone.",
       "private": "Private by design. Only our visa team can open these files. We delete them 90 days after your case closes.",
-      "phaseNote": "For now your files stay on this device; our visa desk collects them from you after you send this request.",
+      "storedNote": "Each file goes to our secure storage as soon as you add it.",
       "applicant": "Applicant 1",
       "uploaded": "{count} of {total} added",
       "slots": {
@@ -1283,7 +1285,8 @@
         "whatsappMessage": "Hi Waafa, my visa application reference is {reference}",
         "again": "All visa countries"
       },
-      "notChosen": "Not chosen yet"
+      "notChosen": "Not chosen yet",
+      "uploading": "Uploading…"
     },
     "errors": {
       "travelDateRequired": "Choose your travel date",
@@ -1292,7 +1295,8 @@
       "visitAfterTravel": "Visit us before your travel date",
       "fileType": "Use a JPG, PNG or PDF file",
       "fileSize": "This file is over 5 MB. Try a smaller photo or scan.",
-      "fileEmpty": "This file is empty. Choose it again."
+      "fileEmpty": "This file is empty. Choose it again.",
+      "upload": "The file didn't upload. Check your connection and choose it again."
     },
     "guide": {
       "metaTitle": "Visa guides: documents, fees and timing by country",
@@ -1699,7 +1703,9 @@
       "proofBad": "Use a JPG, PNG or PDF up to 5 MB.",
       "none": "No payment method is available right now. Message us to order.",
       "proofRule": "JPG, PNG or PDF, up to 5 MB",
-      "proofAdded": "Added"
+      "proofAdded": "Added",
+      "proofUploading": "Uploading…",
+      "proofUploadFailed": "The file didn't upload. Check your connection and choose it again."
     },
     "summary": {
       "title": "Your order",
@@ -1732,7 +1738,8 @@
       "changed": "Prices or stock changed while you were checking out.",
       "changedCta": "Review cart",
       "cod": "Cash on delivery isn’t available for this order. Choose another payment.",
-      "minimum": "The order is below the minimum. Add more items."
+      "minimum": "The order is below the minimum. Add more items.",
+      "waitUpload": "One moment: a file is still uploading. Send again when it shows Added."
     },
     "done": {
       "title": "Order placed",
@@ -1815,7 +1822,9 @@
       "rule": "JPG, PNG or PDF, up to 5 MB",
       "fileType": "Use a JPG, PNG or PDF.",
       "fileSize": "The file is over 5 MB.",
-      "fileEmpty": "The file is empty."
+      "fileEmpty": "The file is empty.",
+      "uploading": "Uploading…",
+      "uploadFailed": "The file didn't upload. Check your connection and choose it again."
     },
     "errors": {
       "companyRequired": "Enter your company name.",
@@ -2310,7 +2319,10 @@
       },
       "failed": "We couldn’t send your feedback. Try again in a moment.",
       "rate": "Too many messages from this connection. Wait a minute and try again.",
-      "photoSub": "A photo from your trip, shown with your review only if you agree below."
+      "photoSub": "A photo from your trip, shown with your review only if you agree below.",
+      "photoUploading": "Uploading…",
+      "photoUploadFailed": "The file didn't upload. Check your connection and choose it again.",
+      "waitUpload": "One moment: a file is still uploading. Send again when it shows Added."
     },
     "sent": {
       "title": "Thank you, {name}",
@@ -2454,7 +2466,10 @@
       },
       "failed": "We couldn’t send the proof. Try again, or send it on WhatsApp.",
       "rate": "Too many tries from this connection. Wait a minute and try again.",
-      "slipSub": "A screenshot of the confirmation, or a photo of the deposit slip."
+      "slipSub": "A screenshot of the confirmation, or a photo of the deposit slip.",
+      "slipUploading": "Uploading…",
+      "slipUploadFailed": "The file didn't upload. Check your connection and choose it again.",
+      "waitUpload": "One moment: a file is still uploading. Send again when it shows Added."
     },
     "sent": {
       "title": "Proof received for {reference}",
@@ -6881,6 +6896,25 @@
       "unavailable": "Admin isn't answering right now. Try again in a minute.",
       "badLinkTitle": "This link doesn't work",
       "toSignIn": "Go to sign-in"
+    },
+    "files": {
+      "title": "Files",
+      "lead": "What the customer sent. Files open in a new tab, and every open is logged.",
+      "open": "Open",
+      "openLabel": "Open {name} in a new tab",
+      "notReceived": "Not received. Ask the customer to send it again.",
+      "nameOnly": "Only the name arrived (sent before the site stored files). Ask the customer to send it again.",
+      "openSlip": "Open the slip",
+      "openPhoto": "Open the photo",
+      "kinds": {
+        "passport-bio": "Passport bio page",
+        "photo": "Photo",
+        "bank-statement": "Bank statement",
+        "invitation": "Invitation letter",
+        "payment-proof": "Payment slip",
+        "other": "Document"
+      },
+      "deleted": "Deleted {date}: visa documents are kept for 90 days after the case closes"
     }
   },
   "Consent": {

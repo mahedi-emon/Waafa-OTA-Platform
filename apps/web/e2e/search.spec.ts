@@ -191,9 +191,13 @@ test.describe("desktop (1440)", () => {
     await expect(stay).toBeVisible();
     const checkin = dhakaDate(5);
     await pickDay(page, checkin);
-    await expect(
-      page.locator(`td[data-day="${dhakaDate(36)}"]:not([data-outside]) button`),
-    ).toBeDisabled();
+    // 31 nights on is refused. The desktop calendar shows two months, so near a month's end that day sits in the
+    // month after them: go there, check it, and come back (the test failed on 26 Oct, check-in 31 Oct).
+    const tooLong = page.locator(`td[data-day="${dhakaDate(36)}"]:not([data-outside]) button`);
+    const moved = (await tooLong.count()) === 0;
+    if (moved) await stay.getByRole("button", { name: "Next month" }).click();
+    await expect(tooLong).toBeDisabled();
+    if (moved) await stay.getByRole("button", { name: "Previous month" }).click();
     await pickDay(page, dhakaDate(8));
     await stay.getByRole("button", { name: "Done" }).click();
     await page.getByRole("button", { name: "Search hotels" }).click();

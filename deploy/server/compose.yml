@@ -25,6 +25,8 @@ x-api-env: &api-env
   SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
   PROVIDER_SECRET_KEY: ${PROVIDER_SECRET_KEY:-}
   MEDIA_DIR: /data/media
+  # Customer files (issue 232): visa documents, payment slips, attachments; never served by nginx.
+  PRIVATE_FILES_DIR: /data/private
   NODE_OPTIONS: --max-old-space-size=384
 
 services:
@@ -66,7 +68,7 @@ services:
     restart: unless-stopped
     environment: *api-env
     # Uploaded photos (Admin › Media library); backed up by backup.sh.
-    volumes: [mediadata:/data/media]
+    volumes: [mediadata:/data/media, privatedata:/data/private]
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -141,6 +143,7 @@ volumes:
   pgdata:
   redisdata:
   mediadata:
+  privatedata:
   nginxcache:
   letsencrypt:
   certbot_www:

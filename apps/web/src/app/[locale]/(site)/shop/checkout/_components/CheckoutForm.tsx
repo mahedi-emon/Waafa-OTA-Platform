@@ -39,6 +39,7 @@ import {
   type CheckoutValues,
 } from "@/lib/shop/checkoutForm";
 import { useHydrated } from "@/lib/useHydrated";
+import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
 
 type CheckoutFormProps = {
   countries: Array<{ code: string; name: string; dial: string }>;
@@ -60,7 +61,7 @@ type Placed = {
   phoneDisplay: string;
 };
 
-type Failure = "retry" | "rate" | "changed" | "cod" | "minimum" | null;
+type Failure = "retry" | "rate" | "changed" | "cod" | "minimum" | "uploading" | null;
 
 const DEFAULTS: CheckoutValues = {
   name: "",
@@ -190,6 +191,11 @@ function CheckoutForm({
 
   const submit = form.handleSubmit(async (values) => {
     if (sending || !quote || !quote.ready) return;
+    // A payment slip still uploading would be left out (issue 232).
+    if (uploadsInFlight()) {
+      setFailure("uploading");
+      return;
+    }
     setSending(true);
     setFailure(null);
     const key = idempotencyKey ?? crypto.randomUUID();
@@ -645,15 +651,17 @@ function CheckoutForm({
           >
             <CircleAlert aria-hidden="true" className="mt-px size-4 shrink-0" />
             <span>
-              {failure === "rate"
-                ? t("errors.rate")
-                : failure === "changed"
-                  ? t("errors.changed")
-                  : failure === "cod"
-                    ? t("errors.cod")
-                    : failure === "minimum"
-                      ? t("errors.minimum")
-                      : t("errors.failed")}
+              {failure === "uploading"
+                ? t("errors.waitUpload")
+                : failure === "rate"
+                  ? t("errors.rate")
+                  : failure === "changed"
+                    ? t("errors.changed")
+                    : failure === "cod"
+                      ? t("errors.cod")
+                      : failure === "minimum"
+                        ? t("errors.minimum")
+                        : t("errors.failed")}
               {failure === "changed" || failure === "minimum" ? (
                 <>
                   {" "}

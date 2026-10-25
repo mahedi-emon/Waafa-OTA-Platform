@@ -133,6 +133,7 @@ function PaymentOptions({
           </FormField>
           <DocumentSlot
             title={t("proof")}
+            kind={"payment-proof"}
             sub={t("proofHint")}
             file={proof}
             onChange={onProof}
@@ -142,10 +143,12 @@ function PaymentOptions({
               rule: t("proofRule"),
               remove: t("proofRemove"),
               added: t("proofAdded"),
+              uploading: t("proofUploading"),
               errors: {
                 fileType: t("proofBad"),
                 fileSize: t("proofBad"),
                 fileEmpty: t("proofBad"),
+                upload: t("proofUploadFailed"),
               },
             }}
           />

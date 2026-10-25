@@ -1,3 +1,4 @@
+import { STORAGE_KEY_PATTERN } from "../helpers/customerFiles";
 import { z } from "zod";
 import {
   EmailSchema,
@@ -168,7 +169,7 @@ export const PlanTripLeadPayloadSchema = z
     path: ["month"],
   });
 
-/** Uploaded document reference. Files live in a private bucket; only signed links reach staff (FR-VISA-05). */
+/** Uploaded document reference. Files live on the private volume; only signed links reach staff (FR-VISA-05). */
 export const PrivateFileSchema = z
   .object({
     kind: z.enum([
@@ -186,7 +187,8 @@ export const PrivateFileSchema = z
       .int()
       .positive()
       .max(5 * 1024 * 1024, "Files can be up to 5 MB"),
-    storageKey: z.string().min(1).optional(),
+    /** The claim from POST /api/uploads (issue 232); without it only the name, type and size arrived. */
+    storageKey: z.string().regex(STORAGE_KEY_PATTERN).optional(),
   })
   .strict();
 

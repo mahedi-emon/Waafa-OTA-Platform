@@ -362,3 +362,55 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   }).toPass({ timeout: 30_000 });
   expect(errors).toEqual([]);
 });
+
+test("a visa application's passport reaches staff through a logged link (issue 232)", async ({
+  page,
+}) => {
+  test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  const errors = collectErrors(page);
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Dhaka" }).format(new Date());
+  const travel = new Date(`${today}T00:00:00Z`);
+  travel.setUTCDate(travel.getUTCDate() + 30);
+  const jpeg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(4096, 9)]);
+
+  await page.goto("/visa/nepal/apply?applicants=1");
+  await page.getByLabel("Full name").fill("Sample Passport Upload");
+  await page.getByLabel("Mobile number").fill("01712-000232");
+  await page.getByRole("button", { name: "Continue" }).click();
+  const uploaded = page.waitForResponse((response) => response.url().includes("/api/uploads"));
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({ name: "passport-232.jpg", mimeType: "image/jpeg", buffer: jpeg });
+  expect((await uploaded).status()).toBe(201);
+  await expect(page.getByText("1 of 4 added")).toBeVisible();
+  await page.getByLabel("Travel date").fill(travel.toISOString().slice(0, 10));
+  await page.getByLabel(/I agree that Waafa Tours and Travel may contact me/).check();
+  await page.getByRole("button", { name: "Send to a travel expert" }).click();
+  await expect(page.getByRole("heading", { name: "Application received" })).toBeFocused();
+  const visaReference = (await page.getByText(/^VSA-\d{6}-\d{4}$/).textContent()) ?? "";
+
+  await signIn(page);
+  await page.goto(`/secure-admin-control/leads?q=${visaReference}`);
+  await page.getByRole("table").getByRole("link").first().click();
+  const files = page.getByRole("region", { name: "Files" });
+  await expect(files.getByText("passport-232.jpg")).toBeVisible();
+  await expect(files.getByText(/Passport bio page/)).toBeVisible();
+  const href = await files
+    .getByRole("link", { name: "Open passport-232.jpg in a new tab" })
+    .getAttribute("href");
+  expect(href).toMatch(/^\/secure-admin-control\/files\/cf_[A-Za-z0-9_-]{32}$/);
+  const response = await page.request.get(href ?? "");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toBe("image/jpeg");
+  expect(response.headers()["cache-control"]).toBe("private, no-store");
+  expect(Buffer.from(await response.body()).equals(jpeg)).toBe(true);
+  // Signed out, the same address opens nothing.
+  const anonymous = await page.context().browser()?.newContext();
+  const outside = await anonymous?.request.get(new URL(href ?? "", page.url()).toString(), {
+    maxRedirects: 0,
+  });
+  expect(outside?.status()).toBe(303);
+  await anonymous?.close();
+  expect(errors).toEqual([]);
+});

@@ -12,6 +12,7 @@ export * from "./helpers/markup";
 export * from "./helpers/visaPrice";
 export * from "./helpers/access";
 export * from "./helpers/media";
+export * from "./helpers/customerFiles";
 
 export * from "./constants";
 export * from "./schemas/common";
@@ -26,6 +27,7 @@ export * from "./schemas/admin";
 export * from "./schemas/providers";
 export * from "./schemas/customers";
 export * from "./schemas/media";
+export * from "./schemas/files";
 export * from "./schemas/workflow";
 
 export * from "./content/registry";

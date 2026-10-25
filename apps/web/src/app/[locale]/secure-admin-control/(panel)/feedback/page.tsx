@@ -7,6 +7,8 @@ import { StatusTabs } from "@/components/admin/StatusTabs";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
 import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { ChipView, ColumnSpec, DataRow } from "@/components/admin/table/types";
+import { customerFileHref } from "@/components/admin/files/CustomerFiles";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet } from "@/lib/admin/adminApi";
 import { displayPhone, formatDhakaDateTime, initialsOf, pageParam } from "@/lib/admin/format";
@@ -33,7 +35,7 @@ async function Feedback({
   const status = STATUSES.find((item) => item === one(params.status)) ?? "pending";
   const q = one(params.q)?.slice(0, 80);
   const sort = sortOf(params.sort, SORTS);
-  const [list, t, tc] = await Promise.all([
+  const [list, t, tc, tf] = await Promise.all([
     adminGet<Paged<FeedbackRow>>("/admin/feedback", {
       status,
       page: pageParam(params.page),
@@ -43,6 +45,7 @@ async function Feedback({
     }),
     getTranslations("Admin.feedback"),
     getTranslations("Admin.common"),
+    getTranslations("Admin.files"),
   ]);
 
   const rows: DataRow[] = list.items.map((item) => {
@@ -78,6 +81,17 @@ async function Feedback({
       ],
       actions: (
         <div className="flex flex-wrap gap-2">
+          {item.photo?.storageKey ? (
+            <Button asChild variant="secondary" size="md">
+              <a
+                href={customerFileHref(item.photo.storageKey)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {tf("openPhoto")}
+              </a>
+            </Button>
+          ) : null}
           {item.status !== "approved" && item.consentToPublish ? (
             <ActionButton
               action={moderateFeedback.bind(null, item.id, { status: "approved" })}

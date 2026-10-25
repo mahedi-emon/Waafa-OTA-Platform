@@ -84,11 +84,23 @@ test.describe("visa at 390", () => {
     await expect(
       page.getByRole("alert").filter({ hasText: "Use a JPG, PNG or PDF file" }),
     ).toBeVisible();
+    // A file whose bytes aren't a JPEG is refused even with a .jpg name (issue 232).
     await passport.setInputFiles({
-      name: "passport.jpg",
+      name: "fake.jpg",
       mimeType: "image/jpeg",
       buffer: Buffer.alloc(2048, 1),
     });
+    await expect(
+      page.getByRole("alert").filter({ hasText: "Use a JPG, PNG or PDF file" }),
+    ).toBeVisible();
+    // A real JPEG uploads at once and the slot keeps its storage key.
+    const uploaded = page.waitForResponse((response) => response.url().includes("/api/uploads"));
+    await passport.setInputFiles({
+      name: "passport.jpg",
+      mimeType: "image/jpeg",
+      buffer: Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(2048, 1)]),
+    });
+    expect((await uploaded).status()).toBe(201);
     await expect(page.getByText("passport.jpg")).toBeVisible();
     await expect(page.getByText("1 of 4 added")).toBeVisible();
 
@@ -100,10 +112,15 @@ test.describe("visa at 390", () => {
     await page.getByRole("switch", { name: "Visit our office? (optional)" }).click();
     await page.getByRole("radiogroup", { name: "Choose a day" }).getByRole("radio").first().check();
     await page.getByLabel(/I agree that Waafa Tours and Travel may contact me/).check();
+    const sent = page.waitForRequest(
+      (request) => request.url().endsWith("/api/leads") && request.method() === "POST",
+    );
     await page.getByRole("button", { name: "Send to a travel expert" }).click();
+    expect((await sent).postData()).toMatch(/"storageKey":"cf_[A-Za-z0-9_-]{32}"/);
     await expect(page.getByRole("heading", { name: "Application received" })).toBeFocused();
     await expect(page.getByText(/^VSA-\d{6}-\d{4}$/)).toBeVisible();
-    expect(errors).toEqual([]);
+    // The fake JPEG's refusal (415) is the one failed request this test makes on purpose.
+    expect(errors.filter((error) => !/status of 415/.test(error))).toEqual([]);
   });
 });
 

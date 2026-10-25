@@ -7,7 +7,7 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 | `nginx` | `deploy/nginx` (nginx 1.27): reverse proxy, HTTPS, www → apex, rate limit on form posts | 80 and 443 | 96 MB |
 | `certbot` | `certbot/certbot`: gets and renews the Let's Encrypt certificate | no | 128 MB |
 | `web` | `apps/web/Dockerfile` (Next.js standalone) | through nginx only | 1 GB |
-| `api` | `apps/api/Dockerfile` (compiled JavaScript only; runs migrations and the idempotent seed, then starts) | no (127.0.0.1:4000 for the web build) | 640 MB |
+| `api` | `apps/api/Dockerfile` (compiled JavaScript only; runs migrations and the idempotent seed, then starts; volumes `mediadata` and `privatedata`) | no (127.0.0.1:4000 for the web build) | 640 MB |
 | `worker` | same image as the API, command `node dist/worker.js` | no | 384 MB |
 | `postgres` | `postgres:16`, volume `pgdata` | no | 640 MB |
 | `redis` | `redis:7`, append-only, `noeviction` (BullMQ) | no | 160 MB |
@@ -111,6 +111,7 @@ change the password, delete both lines from `/opt/waafa/.env`, and follow the la
 
 | Release | What changed in `deploy/server` | What to do |
 | --- | --- | --- |
+| Issue 232 (Oct 2026) | `compose.yml`: a `privatedata` volume for customer files (visa documents, payment slips) and `PRIVATE_FILES_DIR`; `backup.sh` also keeps `waafa-<time>.private.tar.gz` (readable by the server owner only) | **Copy the bundle before this deploy** (step 1), then `sh backup.sh` (migration) and `sh deploy.sh`. With the old bundle the site works, but file uploads pause and the forms send only file names |
 | Issue 231 (Oct 2026) | `compose.yml`: the worker runs `node dist/worker.js` (the image no longer has TypeScript or tsx) | Copy the bundle again (step 1) when convenient. Until then the old `tsx src/worker.ts` command still works through a stand-in inside the image, kept for one more release |
 
 ### Deploy from a clone (the earlier way)

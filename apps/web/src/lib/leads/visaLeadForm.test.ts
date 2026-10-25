@@ -47,7 +47,7 @@ describe("visa application", () => {
     expect(messages(late)).toEqual({ appointmentDate: "visitAfterTravel" });
   });
 
-  it("builds a valid visa lead with document metadata only", () => {
+  it("builds a valid visa lead; documents without an upload keep only their name, type and size", () => {
     const values = visaFileSchema(TODAY).parse({
       ...visaFileDefaults({ visaType: "business", applicants: 2 }),
       travelDate: "2026-12-10",

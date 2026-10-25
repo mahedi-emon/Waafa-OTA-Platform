@@ -1,4 +1,9 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-25 — R10 merged (#230). PROMPT 10 (v5) started. Step 0 #231 on chore/231-audit-ci-docs → PR #260 (full-ci):
+  docs/PRD_COVERAGE.md (142 rows; P0 88 done/26 partial/2 missing; P1 1/7/7/2 waiting), CI budget (quick set vs full,
+  full-ci label + re-run workflow, nightly, CodeQL in ci.yml), esbuild-compiled API image (1.7 GB, no src/tests), Docker
+  Hub clean-up (15 releases), CLAUDE.md/DEPLOY.md/TRACKER live-site docs, epic #30 closed. NEW P0: customer files never
+  leave the browser → #232. Work order issues #232–#259 filed (D268 order). Baseline PR #230 = 60 billed minutes.
 - 2026-10-25 — R9 merged (#228, 951080b; MIGRATION staff_invites → owner runs backup.sh first). R10 #200 on
   chore/200-usability-qa: staff tasks 2/8/12/13 spec (all 14 covered), every-route axe in admin-screens, independent
   review fixed (list names via headingOf, empty columns, editors in words, banner window states, group fares Ends

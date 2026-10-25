@@ -7,6 +7,7 @@ import { StatusTabs } from "@/components/admin/StatusTabs";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
 import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
+import { customerFileHref } from "@/components/admin/files/CustomerFiles";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
@@ -38,7 +39,7 @@ async function Proofs({
   const status = STATUSES.find((item) => item === one(params.status)) ?? "received";
   const q = one(params.q)?.slice(0, 80);
   const sort = sortOf(params.sort, SORTS);
-  const [staff, list, payment, t, tc] = await Promise.all([
+  const [staff, list, payment, t, tc, tf] = await Promise.all([
     requireStaff(),
     adminGet<Paged<ProofRow>>("/admin/payment-proofs", {
       status,
@@ -50,6 +51,7 @@ async function Proofs({
     getPaymentSettings(),
     getTranslations("Admin.proofs"),
     getTranslations("Admin.common"),
+    getTranslations("Admin.files"),
   ]);
   const canReview = hasRole(staff, "admin", "accounts");
   // The account's name as set in Settings, never its internal key.
@@ -107,6 +109,17 @@ async function Proofs({
         <div className="flex flex-col gap-3">
           {canReview && (proof.status === "received" || proof.status === "matched") ? (
             <ProofDecision id={proof.id} reference={proof.reference} />
+          ) : null}
+          {proof.proof?.storageKey ? (
+            <Button asChild variant="secondary" size="md">
+              <a
+                href={customerFileHref(proof.proof.storageKey)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {tf("openSlip")}
+              </a>
+            </Button>
           ) : null}
           {proof.order ? (
             <Button asChild variant="secondary" size="md">

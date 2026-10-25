@@ -19,15 +19,15 @@ Paths: `web/` = `apps/web/src/`, `site/` = `apps/web/src/app/[locale]/(site)/`, 
 `apps/web/src/app/[locale]/secure-admin-control/(panel)/`, `api/` = `apps/api/src/`, `shared/` = `packages/shared/src/`,
 `e2e/` = `apps/web/e2e/`.
 
-## Summary (25 Oct 2026)
+## Summary (updated 26 Oct 2026, after #232)
 
 | Priority | Rows | Status |
 | --- | --- | --- |
-| P0 (launch) | 116 | done 88 · partial 26 · missing 2 |
+| P0 (launch) | 116 | done 93 · partial 22 · missing 1 |
 | P1 (Phase D, due 13 Nov) | 17 | done 1 · partial 7 · missing 7 · waiting for owner account 2 |
 | P2 (Phase E, live booking) | 8 | missing 8 |
 | P3 (scale) | 1 | missing 1 |
-| All | 142 | done 89 · partial 33 · missing 18 · waiting for owner account 2 |
+| All | 142 | done 94 · partial 29 · missing 17 · waiting for owner account 2 |
 
 **P0 not done (fixed first):** customer files never leave the browser (visa documents, payment proof, printing and
 trading attachments, feedback photo: the Phase A rule D87/D106/D109 was never lifted) → #232; visa status email never
@@ -101,9 +101,9 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-VISA-01 | P0 | Country list: search, region filter, cards with flag, fee, time | done | site/visa; components/visa/VisaCountryCard.tsx; e2e/visa.spec.ts | — | — |
 | FR-VISA-02 | P0 | Country page tab per type: checklist, fees split, forms, FAQs | done | site/visa/[country]; shared/schemas/visa.ts (embassyFee, serviceCharge, forms) | — | — |
 | FR-VISA-02a | P0 | Price range per visa type ("৳7,500 – ৳9,500" / "From …") | done | shared/schemas/visa.ts; #179 | — | — |
-| FR-VISA-03 | P0 | Apply form with document uploads (≤5 MB), appointment; VSA-… | partial | site/visa/[country]/apply/_components/VisaFileStep.tsx; lib/leads/visaLeadForm.ts | Files never leave the browser: only name/type/size sent (D87, `storageKey` never set); no upload endpoint | #232 |
+| FR-VISA-03 | P0 | Apply form with document uploads (≤5 MB), appointment; VSA-… | done | site/visa/[country]/apply/_components/VisaFileStep.tsx; web/components/forms/DocumentSlot.tsx; app/api/uploads; api/files/*; apps/api/test/files.test.ts; e2e/api-mode.spec.ts (issue 232) | — | #232 |
 | FR-VISA-04 | P0 | Application statuses; customer email on each change | partial | adm/visa-applications; components/admin/VisaProgressPanel.tsx; api/admin/leads.service.ts | `visa-status-customer` template exists but is never sent; stages are derived, not the PRD's 8 named statuses | #233 |
-| FR-VISA-05 | P0 | Private bucket, 10-min signed links, 90-day deletion, logged downloads | missing | — (no private file storage at all) | Whole requirement | #232 |
+| FR-VISA-05 | P0 | Private bucket, 10-min signed links, 90-day deletion, logged downloads | done | api/files/customer-files.service.ts (private volume, 10-min signed links, audit file.link and file.download, purge); app/secure-admin-control/files/[key]; apps/api/test/files.test.ts | — | #232 |
 | FR-VISA-06 | P1 | Track application by reference + phone; malware scan | missing | — | Whole feature | #240, #235 |
 | FR-VGD-01 | P0 | Visa Guide per country, linked both ways with visa page | done | site/visa-guide, site/visa-guide/[slug] | — | — |
 
@@ -124,12 +124,12 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-SHOP-04 | P0 | Product page: zoom gallery, variants, delivery by zone, bulk quote… | done | site/shop/p/[slug]/_components/ProductView.tsx; BulkQuote*.tsx | — | — |
 | FR-SHOP-05 | P0 | Find by model + part-code search | done | site/shop/finder/page.tsx | — | — |
 | FR-SHOP-06 | P0 | Cart: qty, coupon, zone delivery, minimum, free-delivery bar, mini-cart | done | site/shop/cart; CartSummary.tsx; FreeDeliveryBar.tsx; useCart.ts | — | — |
-| FR-SHOP-07 | P0 (online pay P1) | One-page checkout; COD with cap; offline payment with txn ID + proof | partial | site/shop/checkout/_components/CheckoutForm.tsx; PaymentOptions.tsx | Proof "upload" is metadata only (D106); online payment waiting-owner | #232, #251 |
+| FR-SHOP-07 | P0 (online pay P1) | One-page checkout; COD with cap; offline payment with txn ID + proof | partial | site/shop/checkout/_components/CheckoutForm.tsx; PaymentOptions.tsx | Online payment waiting for owner account | #251 |
 | FR-SHOP-08 | P0 | Order success ORD-…, instructions, WhatsApp, emails, staff alert | done | components/shop/OrderDone.tsx; intake.service (order-placed-*) | — | — |
 | FR-SHOP-09 | P0 | Track order by number + phone with 7 statuses | done | site/shop/track; OrderTimeline.tsx; e2e/orders.spec.ts | — | — |
 | FR-SHOP-10 | P0 | Stock per variant drops on order, returns on cancel; low-stock alerts | partial | intake.service.ts (take stock); admin/orders.service.ts (restock) | Low stock only listed in admin workbench; no alert sent to the shop manager | #233 |
-| FR-SHOP-11 | P0 | Printing Solutions page + quote form PRN-… with attachment | partial | site/shop/printing-solutions; components/services/PrintingRequest.tsx | Attachment metadata only (D109) | #232 |
-| FR-SHOP-12 | P0 | Trading page + RFQ form TRD-… with attachments | partial | site/shop/international-trading; TradingRequest.tsx | Attachments metadata only (D109) | #232 |
+| FR-SHOP-11 | P0 | Printing Solutions page + quote form PRN-… with attachment | done | site/shop/printing-solutions; components/services/PrintingRequest.tsx | — | #232 |
+| FR-SHOP-12 | P0 | Trading page + RFQ form TRD-… with attachments | done | site/shop/international-trading; TradingRequest.tsx | — | #232 |
 | FR-SHOP-13 | P1 | Reviews, wishlist, save for later, campaign pages, flash sales, Q&A, Buy again, online pay | missing | product page has only a WhatsApp "ask a question" link | All of it; SSLCommerz/bKash = waiting-owner (stubs only) | #245, #246, #247, #251 |
 | FR-SHOP-14 | P1 | Courier booking/tracking (Steadfast/Pathao/RedX) + SMS on dispatch | waiting for owner account | manual courier + tracking fields in admin/orders.service.ts | No courier adapter code at all; needs courier account | #253 |
 | FR-SHOP-15 | P3 | Corporate accounts, negotiated price lists, VAT invoices | missing | — | Phase 3 | Phase 3 (later) |
@@ -139,13 +139,13 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
 | FR-GAL | P0 | Albums, masonry, lightbox, video embeds, admin bulk upload → WebP/AVIF | done | site/gallery, site/gallery/[slug]; media/PhotoLightbox.tsx; admin/media/MediaDropzone.tsx | — | — |
-| FR-FDB | P0 | Approved-only wall, rating summary, Turnstile submit, moderation | partial | site/feedback/_components/FeedbackForm.tsx; adm/feedback | Optional photo is metadata only (not stored) | #232 |
+| FR-FDB | P0 | Approved-only wall, rating summary, Turnstile submit, moderation | partial | site/feedback/_components/FeedbackForm.tsx; adm/feedback | Photo now stored privately (#232); an approved photo is not yet shown on the wall | #245 |
 | FR-TEAM | P0 | Team section/grid, initials, bento/carousel, admin order/featured/3:4 crop | done | components/team/TeamCard.tsx; content `team` (showOnHome/About, featured); ImageCropDialog 3:4 | — | — |
 | FR-PAGE Refund/Privacy/Terms | P0 | Rich-text policy pages with last-updated date | done | site/{refund-policy,privacy-policy,terms-and-conditions}; PolicyPage.tsx | — | — |
 | FR-PAGE Baggage | P0 | Searchable admin baggage table with disclaimer | done | site/baggage-information/_components/BaggageTable.tsx | — | — |
 | FR-PAGE EMI | P0 | How EMI works, banks/tenures, "Request EMI plan" form | partial | site/emi/page.tsx | Request form missing: only a WhatsApp link (`emi` lead schema unused) | #233 |
 | FR-PAGE EMI calculator | P1 | EMI calculator | done | site/emi/_components/EmiCalculator.tsx; lib/shop/emi.test.ts | — | — |
-| FR-PAGE Offline Payment | P0 | Accounts from settings; proof form → Accounts verification queue | partial | site/offline-payment/_components/PaymentProofForm.tsx; adm/payments | Screenshot is metadata only (D106) | #232 |
+| FR-PAGE Offline Payment | P0 | Accounts from settings; proof form → Accounts verification queue | done | site/offline-payment/_components/PaymentProofForm.tsx; adm/payments | — | #232 |
 | FR-PAGE Blogs | P0 | List with categories, search, featured; post with TOC, share, related | done | site/blog, site/blog/[slug]; ArticleContents.tsx | — | — |
 | FR-PAGE FAQs | P0 | Categories, accordion, search, help block, FAQPage markup | done | site/faqs/_components/FaqBrowser.tsx | — | — |
 | FR-PAGE About | P0 | Story, mission, values, timeline, brands, team grid | done | site/about-us | — | — |
@@ -190,7 +190,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM Bookings | P0 | Booking records from converted leads, with documents and payments | missing | — (no bookings screen or model) | Whole module | #242 |
 | FR-ADM Group fares | P0 | Create, edit, auto-expire | done | content `groupFares`; scheduler.service.ts expiresAt | P1 bulk CSV import missing | #248 (P1 CSV) |
 | FR-ADM Tour packages | P0 | Rich editor, day builder, price table, departures, SEO, draft/publish, duplicate | done | adm/content/[key]/[id] package editor (#198); e2e/admin-editors.spec.ts | — (P1 scheduled publishing done, #194) | — |
-| FR-ADM Visa | P0 | Countries/types/checklist/fees; pipeline with document viewer, notifying statuses | partial | adm/visa-applications; VisaProgressPanel.tsx | No document viewer (no files); status changes don't email the customer | #232, #233 |
+| FR-ADM Visa | P0 | Countries/types/checklist/fees; pipeline with document viewer, notifying statuses | partial | adm/visa-applications; VisaProgressPanel.tsx | Document viewer done (#232); status changes do not email the customer yet | #233 |
 | FR-ADM Shop | P0 | Products/variants/attributes/tree/brands/collections, compat CSV, orders, zones, coupons | partial | adm/orders, adm/content/{products,categories,…}; admin/orders.service.ts | Compatibility CSV import missing | #248 |
 | FR-ADM Content | P0 | Pages, blog, FAQs, banners, home order, gallery, team, menus, baggage, EMI banks | done | adm/content/*, adm/website/{home,menus}, adm/feedback | P1 redirect manager: automatic slug redirects only (#194) | — |
 | FR-ADM Media | P0 | Uploads with required alt text and optimisation | done | adm/media; api/media/media.service.ts (sharp); e2e/admin-media.spec.ts | — (P1 usage tracking done) | — |
@@ -241,9 +241,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 
 ### Other findings
 
-- **Customer file uploads are metadata only**: visa documents, payment-proof screenshots, printing/trading attachments
-  and the feedback photo (D87, D106, D109, Phase A rule never lifted). This breaks P0 FR-VISA-03/05 and parts of
-  FR-SHOP-07/11/12, FR-FDB and the Offline Payment page.
+- **Customer file uploads were metadata only** (found in this audit): fixed in #232 (private storage, signed staff links, e2e).
 - **The visa status email is never sent** (`visa-status-customer` template is seeded but has no caller).
 - **Staff alerts go to one env address** (`STAFF_ALERT_EMAIL`); there are no module routing and no Settings › Notifications recipients.
 - **There is no Bookings module**: convert-to-booking stores only an amount.
