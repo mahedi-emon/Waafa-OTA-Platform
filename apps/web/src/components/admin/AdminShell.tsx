@@ -76,7 +76,12 @@ async function AdminShell({ staff, children }: AdminShellProps) {
       >
         {children}
       </AdminFrame>
-      <Toaster />
+      {/* Toasts sit above the editors' sticky action bar, so a toast never covers Save, Schedule or Publish. */}
+      <Toaster
+        aboveTabBar={false}
+        offset={{ bottom: 96, right: 24 }}
+        mobileOffset={{ bottom: 92, left: 16, right: 16 }}
+      />
     </NextIntlClientProvider>
   );
 }

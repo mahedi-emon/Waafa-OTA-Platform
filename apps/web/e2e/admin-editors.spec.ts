@@ -339,6 +339,14 @@ test("task 11: a Sample visa country gets real fees and documents", async ({ pag
   await page.getByRole("button", { name: "Update" }).click();
   await expect(page.getByText("It's no longer marked as sample content.").first()).toBeVisible();
   await expect(page.getByText("Updated on the site.").first()).toBeVisible();
+  // The toast sits above the action bar, so Save, Schedule and Publish stay clickable.
+  const toast = await page
+    .getByRole("region", { name: /^Notifications/ })
+    .getByRole("listitem")
+    .first()
+    .boundingBox();
+  const bar = await page.getByRole("region", { name: "Save changes" }).boundingBox();
+  expect(toast && bar && toast.y + toast.height <= bar.y).toBe(true);
 
   await expect(async () => {
     await page.goto("/visa/malaysia");
