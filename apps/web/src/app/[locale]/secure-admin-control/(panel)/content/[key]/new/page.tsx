@@ -58,9 +58,10 @@ async function NewRecord({
     ),
   ];
   const initial = defaultFor(schema, schema);
-  // New records are real content, not Sample data.
-  if (initial && typeof initial === "object" && "sample" in (schema.properties ?? {})) {
-    (initial as Record<string, unknown>).sample = false;
+  // New records are real content, not Sample data, and start the way the blueprint says (D0 R8).
+  if (initial && typeof initial === "object") {
+    if ("sample" in (schema.properties ?? {})) (initial as Record<string, unknown>).sample = false;
+    Object.assign(initial, blueprint.startWith ?? {});
   }
 
   return (

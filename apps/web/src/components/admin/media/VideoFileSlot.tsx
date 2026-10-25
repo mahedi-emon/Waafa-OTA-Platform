@@ -78,7 +78,12 @@ function VideoFileSlot({
       <span id={labelId} className="text-[14px] leading-tight font-semibold text-navy-900">
         {label}
         {required ? null : (
-          <span className="ml-1.5 text-[12.5px] font-normal text-mist-500">{tw("optional")}</span>
+          <>
+            <span aria-hidden="true" className="ml-1.5 text-[12.5px] font-normal text-mist-500">
+              {tw("optional")}
+            </span>
+            <span className="sr-only"> ({tw("optional").toLowerCase()})</span>
+          </>
         )}
       </span>
       {help ? <p className="-mt-0.5 text-[13.5px] leading-snug text-mist-600">{help}</p> : null}

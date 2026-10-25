@@ -39,11 +39,18 @@ const scheduledAt = (value: unknown): string | undefined => {
     : undefined;
 };
 
-const isEmpty = (value: unknown) =>
-  value === undefined ||
-  value === null ||
-  (typeof value === "string" && value.trim() === "") ||
-  (Array.isArray(value) && value.length === 0);
+/** Empty for a section tick: nothing typed, an empty list, or a group with nothing in it (a photo without a file). */
+const isEmpty = (value: unknown): boolean => {
+  if (value === undefined || value === null) return true;
+  if (typeof value === "string") return value.trim() === "";
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    if ("src" in record) return isEmpty(record.src);
+    return Object.values(record).every(isEmpty);
+  }
+  return false;
+};
 
 /**
  * The sectioned record and settings editor (form engine v2, ADMIN.md §5.4): section list, one column of sections,

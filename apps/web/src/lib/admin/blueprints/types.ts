@@ -160,6 +160,8 @@ export type Blueprint = {
   heading?: string;
   /** "writing": a wide column for long text, without the section list beside it (a blog post, D0 R8). */
   layout?: "writing";
+  /** Values a new record starts with instead of the schema's empty ones (a new team member shows, D0 R8). */
+  startWith?: Record<string, unknown>;
   /** What Publish needs besides valid fields: patterns that must not be empty ("cover_src", "prices"). */
   publish?: string[];
 };
@@ -210,6 +212,7 @@ export type ResolvedBlueprint = {
   url?: string | Record<string, string>;
   heading?: string;
   layout?: "writing";
+  startWith?: Record<string, unknown>;
   publish: Array<{ path: string; label: string }>;
   /** The record has a draft / published / archived status, set by Save draft, Publish and Unpublish. */
   workflow: boolean;

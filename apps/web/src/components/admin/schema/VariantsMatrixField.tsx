@@ -60,7 +60,8 @@ function VariantsMatrixField({ path, value, optional }: VariantsMatrixFieldProps
   /** One labelled input of a row, with its problem under it. */
   const cell = (id: string, label: string, error: string | undefined, control: ReactNode) => (
     <div className="flex min-w-0 flex-col gap-1.5">
-      <label htmlFor={id} className="text-[13.5px] font-medium text-ink-900">
+      {/* A label that wraps (Price before discount) still leaves its box in line with the others. */}
+      <label htmlFor={id} className="flex flex-1 items-end text-[13.5px] font-medium text-ink-900">
         {label}
       </label>
       {control}

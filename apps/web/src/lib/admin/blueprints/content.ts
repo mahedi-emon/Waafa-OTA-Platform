@@ -173,6 +173,8 @@ export const galleryAlbumsBlueprint = {
 
 export const teamBlueprint = {
   key: "team",
+  // A new person shows on the site unless staff switch it off.
+  startWith: { visible: true },
   // One screen for the person and their photo, then how to reach them (D0 R8).
   sections: [
     { id: "person", fields: ["name", "designation", "department", "photo", "bio"] },

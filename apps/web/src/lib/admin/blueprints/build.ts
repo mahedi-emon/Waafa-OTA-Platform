@@ -146,6 +146,7 @@ export function buildResolvedBlueprint(
     ...(blueprint.url ? { url: blueprint.url } : {}),
     ...(blueprint.heading ? { heading: blueprint.heading } : {}),
     ...(blueprint.layout ? { layout: blueprint.layout } : {}),
+    ...(blueprint.startWith ? { startWith: blueprint.startWith } : {}),
     publish,
     workflow,
     duplicable: canCopy(key),

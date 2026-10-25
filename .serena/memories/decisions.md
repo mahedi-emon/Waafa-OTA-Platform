@@ -108,3 +108,7 @@
   popover as wide as the field). Draft preview in the web only: draft mode → readSnapshot fresh + previewDrafts (2 s
   shared read), /secure-admin-control/preview + /api/preview/exit, previewPath blocks admin/API/other sites. Staff tools
   behind the hint via next/dynamic, words + links from /secure-admin-control/api/staff-tools (session + role checked).
+- D251–D253 (R8, 25 Oct): purpose-built editors are blueprint data (section order, layout "writing", startWith,
+  bulkPhotos, auto lowestPrice/itineraryDays/initialsFromName), never forks; variants as a matrix of option values
+  with "Variant shown first" by radio and stray variants listed with Remove; Optional chip aria-hidden + sr-only
+  " (optional)"; empty-group Add names its group.

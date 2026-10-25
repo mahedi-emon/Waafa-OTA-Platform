@@ -51,7 +51,13 @@ function FieldShell({
     <>
       {label}
       {optional ? (
-        <span className="ml-1.5 text-[12.5px] font-normal text-mist-500">{t("optional")}</span>
+        <>
+          {/* Read as "Up to (optional)", not run together with the label. */}
+          <span aria-hidden="true" className="ml-1.5 text-[12.5px] font-normal text-mist-500">
+            {t("optional")}
+          </span>
+          <span className="sr-only"> ({t("optional").toLowerCase()})</span>
+        </>
       ) : null}
     </>
   );

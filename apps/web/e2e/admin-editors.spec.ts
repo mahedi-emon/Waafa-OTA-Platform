@@ -290,13 +290,13 @@ test("task 11: a Sample visa country gets real fees and documents", async ({ pag
   test.setTimeout(180_000);
   const errors = collectErrors(page);
   await signIn(page);
-  await page.goto("/secure-admin-control/content/visaCountries?q=Thailand");
+  await page.goto("/secure-admin-control/content/visaCountries?q=Malaysia");
   await page
     .getByRole("table")
-    .getByRole("link", { name: /Thailand/ })
+    .getByRole("link", { name: /Malaysia/ })
     .first()
     .click();
-  await expect(page.getByRole("heading", { level: 1, name: /Thailand/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /Malaysia/ })).toBeVisible();
   await expect(page.getByText("Sample", { exact: true }).first()).toBeVisible();
 
   const types = page.getByRole("group", { name: "Visa types" });
@@ -313,31 +313,35 @@ test("task 11: a Sample visa country gets real fees and documents", async ({ pag
       .click();
   const fees = `${STAMP}`.slice(-3);
   await expect(async () => {
-    await first.getByRole("textbox", { name: "Embassy fee" }).fill(`4${fees}`);
-    await expect(first.getByRole("textbox", { name: "Embassy fee" })).toHaveValue(
+    await first.getByRole("textbox", { name: "Embassy fee", exact: true }).fill(`4${fees}`);
+    await expect(first.getByRole("textbox", { name: "Embassy fee", exact: true })).toHaveValue(
       new RegExp(`^4,?${fees}$`),
       {
         timeout: 1_500,
       },
     );
   }).toPass({ timeout: 30_000 });
-  await first.getByRole("textbox", { name: "Our service charge" }).fill("1500");
+  await first.getByRole("textbox", { name: "Our service charge", exact: true }).fill("1500");
+  // Malaysia has no price range yet: staff add one.
+  await first.getByRole("button", { name: "Add Total price range" }).click();
   await first.getByRole("textbox", { name: "From", exact: true }).fill("6500");
-  await first.getByRole("textbox", { name: "Up to", exact: true }).fill("8500");
+  await first.getByRole("textbox", { name: /^Up to/ }).fill("8500");
   const documents = first.getByRole("group", { name: "Documents" });
   await documents.getByRole("button", { name: "Add document" }).click();
-  await documents
-    .getByRole("listitem")
-    .last()
+  const added = documents.getByRole("listitem").last();
+  await added
     .getByRole("textbox", { name: "Document" })
     .fill(`Bank statement, last 6 months ${STAMP}`);
+  await added
+    .getByRole("textbox", { name: "Detail" })
+    .fill("Stamped by the bank, with a balance of at least ৳1,50,000.");
 
   await page.getByRole("button", { name: "Update" }).click();
   await expect(page.getByText("It's no longer marked as sample content.").first()).toBeVisible();
   await expect(page.getByText("Updated on the site.").first()).toBeVisible();
 
   await expect(async () => {
-    await page.goto("/visa/thailand");
+    await page.goto("/visa/malaysia");
     await expect(page.getByText(`Bank statement, last 6 months ${STAMP}`).first()).toBeAttached({
       timeout: 2_000,
     });
@@ -346,7 +350,7 @@ test("task 11: a Sample visa country gets real fees and documents", async ({ pag
 });
 
 for (const width of [768, 1440]) {
-  test(`the package, product and visa editors pass axe at ${width} px`, async ({ page }) => {
+  test(`the six new editors pass axe and ask for every choice at ${width} px`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width, height: 900 });
     await signIn(page);
@@ -364,6 +368,8 @@ for (const width of [768, 1440]) {
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       );
       expect(scroll, `${key} scrolls sideways at ${width} px`).toBeLessThanOrEqual(0);
+      // Empty pickers ask for a choice; they never say a pick was not found.
+      await expect(page.getByText(/^Not found:/)).toHaveCount(0);
       const results = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
         .analyze();
