@@ -2,7 +2,7 @@
 
 One mobile-first website for two brands: **Waafa Tours and Travel** (flights, hotels, tour packages, visa) and
 **Waafas World** by Waafa International (store at `/shop`, Printing Solutions, International Trading), plus the admin
-panel and the API. Go-live Tue 13 Oct 2026 (hard deadline before 14 Oct). Mission: ship everything in `docs/PRD.md`
+panel and the API. Live at https://waafasworld.com since 13 Oct 2026; Phase D (PRD P1) is due 13 Nov 2026. Mission: ship everything in `docs/PRD.md`
 as the best-designed and fastest OTA in Bangladesh, visibly better in design, motion and speed than gozayaan.com,
 sharetrip.net, akijair.com and obokash.com, and 100% original.
 
@@ -23,7 +23,10 @@ screenshots: source real, free-licence media yourself.
    `-m`). The prototype is a reference and the floor, never source.
 6. `docs/design/DESIGN.md`, `docs/design/MOTION.md`, `docs/design/COMPETITOR_BENCHMARK.md`,
    `docs/design/web-interface-guidelines.md`, `docs/design/handoff/tokens.css` (already in `app/globals.css`).
-7. `docs/claude-code-prompts.md`: the owner's prompts (PROMPT 2 continues a session; 3 to 8 for later phases).
+7. `docs/claude-code-prompts.md` (v5): the owner's prompts. PROMPT 10 is the main prompt (Phase D and the best-OTA
+   bar, its work order A to M); PROMPT 2 continues a session; 6 bug, 7 change request, 8 status, 11 Phase E, 12 Phase F,
+   13 monthly health check.
+8. `docs/PRD_COVERAGE.md`: every FR-ID with its status, evidence and the issue that finishes it.
 Conflicts: log under Decisions and fix the losing document in the same PR.
 
 ## Corrections already decided (apply everywhere: docs, code, copy, fixtures)
@@ -120,6 +123,33 @@ Conflicts: log under Decisions and fix the losing document in the same PR.
   where a skill disagrees (Inter + Plus Jakarta Sans, lucide, light-only public site).
 - **Subagents** for read-heavy or parallel work (competitor captures, Lighthouse runs, an independent review of the
   diff and screenshots before big UI PRs). The machine has little free memory: run one Next build or e2e at a time.
+
+## Live site (since 13 Oct 2026)
+- The site runs on the owner's VPS from Docker Hub images (`emon6107/waafa-ota-platform`, D161). Never touch the
+  server, its `.env` or production data. The owner deploys after the "Docker images" workflow is green:
+  `cd /opt/waafa && sh backup.sh` first when a PR has a database migration, then `sh deploy.sh`. Every close-out of a
+  PR with a migration says so in Banglish.
+- Migrations are additive and backward compatible (expand, migrate, contract over two releases). Live data changes
+  only through one-time seed patches (`_seedPatches`, D176) that never overwrite staff edits.
+- A feature that needs an outside account (payments, SMS, courier, Telegram, error tracking, off-site backup) ships
+  switched off and turns on only when the owner saves the keys in Admin › Integrations (or a named line in the server
+  `.env` where a key must live there). Keys never go in code, chat, logs or the repo.
+- New admin screens follow `docs/design/ADMIN.md` (DataTable, sectioned editors with blueprints, the inbox pattern,
+  status automation, safety nets, plain words).
+- At every session start compare progress with the plan in TRACKER; if behind, say so first and propose cuts by
+  impact. Never cut security, lead capture, payment safety, accessibility or compliance.
+- When `deploy/server` changes, the close-out tells the owner which files to copy to `/opt/waafa` (docs/DEPLOY.md).
+
+## CI budget (private repository, about 2,000 Actions minutes a month)
+- A normal PR costs 15 minutes or less: guards, attribution, format, lint, typecheck, unit tests, build and the smoke
+  e2e (`e2e/smoke.spec.ts`).
+- The full suite (all e2e, public screens, API-mode e2e on the compiled API, VPS deploy smoke, Lighthouse, CodeQL)
+  runs on `main`, nightly (skipped when main already passed) and on PRs labelled `full-ci`.
+- The `full-ci` label is required for PRs that touch `apps/api/prisma`, `deploy/`, the API Dockerfile, sign-in,
+  payments, checkout or lead intake (CI fails without it). Adding the label re-runs CI in full.
+- Superseded runs cancel themselves; pnpm, Turborepo, Next.js and Playwright are cached. Verify locally first so CI
+  runs once. Never cancel or skip a check by hand.
+- Record each PR's billed minutes in its TRACKER issue block: `node scripts/ci-minutes.mjs <pr>`.
 
 ## Git and GitHub (owner is the only author)
 - Start of every session: `git var GIT_AUTHOR_IDENT` must be `Mahedi Hasan Emon <mahedi.emon62@gmail.com>`; if not,

@@ -1,13 +1,28 @@
 name: CI
 
+# CI budget (issue 231): the repository is private, so every job minute is billed against the monthly allowance.
+# - A normal pull request runs the quick set: guards, attribution, format, lint, typecheck, unit tests, build and one
+#   smoke e2e (about 10 minutes).
+# - The full suite (all e2e, public screens at five widths, API-mode e2e on the compiled API, VPS deploy smoke,
+#   Lighthouse and CodeQL) runs on pushes to main, nightly, by hand, and on pull requests labelled `full-ci`.
+# - Pull requests that touch the database schema, deploy/, sign-in, payments, checkout or lead intake must carry the
+#   `full-ci` label; adding the label re-runs CI in full (.github/workflows/full-ci-label.yml).
+# - On main, the "Docker images" workflow builds and checks the same Compose stack, so the VPS smoke here runs only on
+#   labelled pull requests and at night.
+# - The nightly run skips itself when main's latest commit already passed a push run.
+
 on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    # 02:30 Asia/Dhaka.
+    - cron: "30 20 * * *"
   workflow_dispatch:
 
+# A newer push to the same branch cancels the run it replaces; the nightly run has its own group.
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.event_name == 'schedule' && 'nightly' || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -20,19 +35,23 @@ env:
   HUSKY: "0"
 
 jobs:
-  # Docs-only changes skip the app jobs (they report "skipped", which branch protection accepts).
+  # What changed, and whether this run is the quick set or the full suite.
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: read
+      actions: read
     outputs:
-      code: ${{ steps.filter.outputs.code }}
+      run: ${{ steps.mode.outputs.run }}
+      full: ${{ steps.mode.outputs.full }}
+      risky: ${{ steps.filter.outputs.risky }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
         id: filter
+        if: github.event_name == 'pull_request'
         with:
           filters: |
             code:
@@ -48,8 +67,61 @@ jobs:
               - "commitlint.config.mjs"
               - "lint-staged.config.mjs"
               - ".github/workflows/ci.yml"
+              - ".github/codeql/**"
               - "deploy/**"
               - ".dockerignore"
+            risky:
+              - "apps/api/prisma/**"
+              - "deploy/**"
+              - "apps/api/Dockerfile"
+              - "apps/api/src/auth/**"
+              - "apps/api/src/customers/**"
+              - "apps/api/src/public/**"
+              - "apps/api/src/payments/**"
+              - "apps/web/src/proxy.ts"
+              - "apps/web/src/app/api/**"
+              - "apps/web/src/app/*/[(]site[)]/login/**"
+              - "apps/web/src/app/*/[(]site[)]/account/**"
+              - "apps/web/src/app/*/[(]site[)]/shop/checkout/**"
+              - "apps/web/src/app/*/[(]site[)]/offline-payment/**"
+              - "apps/web/src/app/*/secure-admin-control/sign-in/**"
+              - "apps/web/src/lib/account/**"
+              - "apps/web/src/lib/leads/**"
+              - "apps/web/src/lib/security/**"
+              - "apps/web/src/components/leads/**"
+              - "apps/web/src/components/shop/Checkout*"
+              - "apps/web/src/components/shop/Payment*"
+      - name: Quick set or full suite
+        id: mode
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          CODE: ${{ steps.filter.outputs.code }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          run=true
+          full=false
+          case "$EVENT" in
+            pull_request)
+              run=$CODE
+              # Read the labels now, not from the event: a re-run after the label was added must see it.
+              if gh api "repos/$REPO/issues/$PR/labels" --jq '.[].name' | grep -qx 'full-ci'; then full=true; fi
+              ;;
+            schedule)
+              full=true
+              passed=$(gh api "repos/$REPO/actions/workflows/ci.yml/runs?head_sha=$SHA&event=push&status=success" --jq '.total_count')
+              if [ "${passed:-0}" -gt 0 ]; then
+                run=false
+                echo "::notice title=Nightly skipped::main's latest commit already passed CI."
+              fi
+              ;;
+            *) full=true ;;
+          esac
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+          echo "full=$full" >> "$GITHUB_OUTPUT"
+          echo "Run: $run · full suite: $full"
 
   # The owner is the only author: no co-author trailer or AI attribution in commits, PR title or body.
   attribution:
@@ -76,6 +148,7 @@ jobs:
   # Component rules and compliance (scripts/guards.mjs): no install needed, runs on every change.
   guards:
     name: Guards
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -87,7 +160,7 @@ jobs:
   verify:
     name: Lint, typecheck, test, build, e2e smoke
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
+    if: needs.changes.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     # The API tests run against a real PostgreSQL (B1).
@@ -105,7 +178,16 @@ jobs:
       # Builds include the dev-only /styleguide so e2e can check every component (CI builds are never deployed).
       STYLEGUIDE: "1"
       API_TEST_DATABASE_URL: postgresql://waafa:waafa@localhost:5432/waafa_test
+      FULL: ${{ needs.changes.outputs.full }}
+      # The full suite never replays cached task results.
+      TURBO_FORCE: ${{ needs.changes.outputs.full == 'true' && 'true' || '' }}
     steps:
+      - name: full-ci label (schema, deploy, sign-in, payments, checkout, lead intake)
+        if: github.event_name == 'pull_request' && needs.changes.outputs.risky == 'true' && needs.changes.outputs.full != 'true'
+        run: |
+          echo "::error title=full-ci label required::This pull request touches the database schema, deploy/, sign-in, payments, checkout or lead intake. Add the full-ci label; CI then runs in full."
+          exit 1
+
       - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v6
@@ -117,6 +199,15 @@ jobs:
 
       - name: Install
         run: pnpm install --frozen-lockfile
+
+      # Turborepo replays lint, typecheck and test results for packages whose inputs did not change.
+      - name: Turborepo cache
+        uses: actions/cache@v6
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
 
       - name: Format check
         run: pnpm format:check
@@ -154,18 +245,26 @@ jobs:
       - name: Install Playwright browser
         run: pnpm --filter @waafa/web exec playwright install --with-deps chromium
 
-      - name: E2E smoke tests (390 and 1440 px, axe)
-        run: pnpm e2e
+      - name: E2E smoke (home at five widths, axe, keyboard)
+        if: env.FULL != 'true'
+        working-directory: apps/web
+        run: pnpm exec playwright test e2e/smoke.spec.ts
+
+      - name: E2E full (390 and 1440 px, axe)
+        if: env.FULL == 'true'
+        working-directory: apps/web
+        run: pnpm exec playwright test
 
       # A22 QA (#22): every public route at five widths; screenshots at 390 and 1440 for the design review.
       - name: Public screens at five widths
+        if: env.FULL == 'true'
         working-directory: apps/web
         env:
           PUBLIC_SHOTS: "1"
         run: pnpm exec playwright test e2e/public-screens.spec.ts --workers=3
 
       - name: Upload public screenshots
-        if: always()
+        if: always() && env.FULL == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: public-screens
@@ -181,11 +280,11 @@ jobs:
           path: apps/web/playwright-report
           retention-days: 7
 
-  # API mode end to end: PostgreSQL, the API (migrate, seed, start), the web built against it, admin flows (C1, A18).
+  # API mode end to end: PostgreSQL, the compiled API (migrate, seed, start), the web built against it, admin flows.
   integration:
     name: API mode e2e (web on the API, admin)
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
+    if: needs.changes.outputs.run == 'true' && needs.changes.outputs.full == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:
@@ -224,20 +323,27 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Database (migrate and seed)
+      # The same compiled files the production image runs (issue 231).
+      - name: Compile the API
         run: |
           pnpm --filter @waafa/api generate
-          pnpm --filter @waafa/api migrate
-          pnpm --filter @waafa/api seed
+          node apps/api/scripts/build.mjs
+
+      - name: Database (migrate and seed)
+        working-directory: apps/api
+        run: |
+          node_modules/.bin/prisma migrate deploy
+          node dist/seed.js
 
       - name: Start the API
+        working-directory: apps/api
         run: |
-          nohup pnpm --filter @waafa/api start > api.log 2>&1 &
+          nohup node dist/main.js > ../../api.log 2>&1 &
           for attempt in $(seq 1 60); do
             if curl -sf http://localhost:4000/ready > /dev/null; then echo "API ready"; exit 0; fi
             sleep 2
           done
-          cat api.log
+          cat ../../api.log
           exit 1
 
       - name: Build the web on the API
@@ -282,10 +388,11 @@ jobs:
           retention-days: 7
 
   # The VPS stack exactly as deploy/deploy.sh runs it: images built, PostgreSQL, Redis, API, worker, web, nginx (C3).
+  # On main the "Docker images" workflow does the same build and checks, so this job runs on labelled PRs and nightly.
   vps:
     name: VPS deploy smoke (Docker Compose)
     needs: changes
-    if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
+    if: needs.changes.outputs.run == 'true' && needs.changes.outputs.full == 'true' && github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -334,7 +441,9 @@ jobs:
           curl -s http://localhost/ | grep -q "Waafa"
           # #85: the old admin path is a 404 behind nginx too.
           [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost/admin)" = "404" ]
+          # The worker runs the compiled file (issue 231).
           docker compose -f deploy/compose.yml ps
+          [ "$(docker compose -f deploy/compose.yml ps -q worker | xargs docker inspect -f '{{.State.Running}}')" = "true" ]
 
       - name: Logs
         if: failure()
@@ -343,56 +452,76 @@ jobs:
   lighthouse:
     name: Lighthouse CI (mobile)
     needs: [changes, verify]
-    if: needs.changes.outputs.code == 'true' || github.event_name != 'pull_request'
+    if: needs.changes.outputs.run == 'true' && needs.changes.outputs.full == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
 
-      # Runs once the home page exists (A7 adds apps/web/lighthouserc.json).
-      - name: Detect Lighthouse config
-        id: lh
-        run: |
-          if [ -f apps/web/lighthouserc.json ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=Lighthouse skipped::apps/web/lighthouserc.json not present yet."
-          fi
-
       - uses: pnpm/action-setup@v6
-        if: steps.lh.outputs.ready == 'true'
 
       - uses: actions/setup-node@v7
-        if: steps.lh.outputs.ready == 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
       - name: Install
-        if: steps.lh.outputs.ready == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Build web
-        if: steps.lh.outputs.ready == 'true'
         run: pnpm --filter @waafa/web... build
 
       # Mobile (Lighthouse default), one run per route; budgets warn for now and the scores land in the summary (#22).
       - name: Lighthouse CI
-        if: steps.lh.outputs.ready == 'true'
         working-directory: apps/web
         run: npx --yes @lhci/cli@0.14.0 autorun
 
       - name: Lighthouse scores
-        if: always() && steps.lh.outputs.ready == 'true'
+        if: always()
         working-directory: apps/web
         run: node ../../scripts/lighthouse-summary.mjs lhci-report
 
       - name: Upload Lighthouse reports
-        if: always() && steps.lh.outputs.ready == 'true'
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: lighthouse
           path: apps/web/lhci-report
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # CodeQL (security-extended) with the full suite. The repository is private, so results are read here instead of
+  # uploaded and a finding fails the check (D205).
+  codeql:
+    name: CodeQL (JavaScript and TypeScript)
+    needs: changes
+    if: needs.changes.outputs.run == 'true' && needs.changes.outputs.full == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+          config-file: ./.github/codeql/codeql-config.yml
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:javascript-typescript"
+          upload: ${{ github.event.repository.private && 'never' || 'always' }}
+          upload-database: ${{ github.event.repository.private && 'false' || 'true' }}
+          output: codeql-results
+      - name: Findings
+        run: node scripts/codeql-findings.mjs codeql-results
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: codeql-results
+          path: codeql-results
           retention-days: 7
           if-no-files-found: ignore
