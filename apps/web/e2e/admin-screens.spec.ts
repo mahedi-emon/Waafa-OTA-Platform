@@ -20,13 +20,16 @@ const SCREENS = [
   { name: "feedback", path: "/secure-admin-control/feedback" },
   { name: "content", path: "/secure-admin-control/content" },
   { name: "content-faqs", path: "/secure-admin-control/content/faqs" },
-  { name: "settings-contact", path: "/secure-admin-control/content/contactSettings" },
+  { name: "settings-contact", path: "/secure-admin-control/settings/business" },
   { name: "users", path: "/secure-admin-control/users" },
   { name: "integrations", path: "/secure-admin-control/integrations" },
   { name: "reports", path: "/secure-admin-control/reports" },
   { name: "customers", path: "/secure-admin-control/customers" },
   { name: "media", path: "/secure-admin-control/media" },
   { name: "settings", path: "/secure-admin-control/settings" },
+  { name: "settings-payments", path: "/secure-admin-control/settings/payments" },
+  { name: "settings-messages", path: "/secure-admin-control/settings/forms?tab=messages" },
+  { name: "audit", path: "/secure-admin-control/audit" },
 ] as const;
 
 test.skip(!apiMode || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");

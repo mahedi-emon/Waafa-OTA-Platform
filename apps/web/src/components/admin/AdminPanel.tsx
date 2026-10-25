@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { cn } from "cn";
 
 type AdminPanelProps = {
+  /** Names the section by its heading for screen readers (a landmark), when the panel stands on its own. */
+  id?: string;
   title?: ReactNode;
   lead?: ReactNode;
   action?: ReactNode;
@@ -12,15 +14,31 @@ type AdminPanelProps = {
 };
 
 /** A white admin card with an optional heading row (dashboard blocks, detail sections, tables). */
-function AdminPanel({ title, lead, action, flush = false, className, children }: AdminPanelProps) {
+function AdminPanel({
+  id,
+  title,
+  lead,
+  action,
+  flush = false,
+  className,
+  children,
+}: AdminPanelProps) {
   return (
-    <section className={cn("rounded-2xl border border-mist-200 bg-white", className)}>
+    <section
+      aria-labelledby={id && title ? `${id}-title` : undefined}
+      className={cn("rounded-2xl border border-mist-200 bg-white", className)}
+    >
       {title ? (
         <div
           className={cn("flex items-start justify-between gap-3 px-5 pt-5", flush ? "pb-3" : "")}
         >
           <div className="min-w-0">
-            <h2 className="font-display text-[17px] font-bold text-navy-900">{title}</h2>
+            <h2
+              id={id ? `${id}-title` : undefined}
+              className="font-display text-[17px] font-bold text-navy-900"
+            >
+              {title}
+            </h2>
             {lead ? <p className="mt-0.5 text-[13.5px] text-mist-600">{lead}</p> : null}
           </div>
           {action ? <div className="shrink-0">{action}</div> : null}

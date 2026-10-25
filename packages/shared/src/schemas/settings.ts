@@ -296,6 +296,7 @@ export const NotificationTemplateSchema = z
       "payment-proof-rejected-customer",
       "lead-overdue-staff",
       "sign-in-code-customer",
+      "staff-invite",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */
     audience: z.string().min(1).max(40),

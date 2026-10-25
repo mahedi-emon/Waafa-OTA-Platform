@@ -2555,7 +2555,8 @@
         "website": "Change the website section by section, with a preview",
         "store": "Confirm, pack and ship Waafas World orders"
       },
-      "noindex": "This page is private and never shown in search engines."
+      "noindex": "This page is private and never shown in search engines.",
+      "welcome": "Your password is set. Sign in with your work email and the new password."
     },
     "shell": {
       "menu": "Open menu",
@@ -2660,26 +2661,49 @@
       "metaTitle": "Dashboard",
       "greeting": "Hello, {name}",
       "lead": "Every website search and form lands here as a lead. Reply within {sla} minutes.",
-      "kpiNewToday": "New leads today",
-      "kpiOpen": "Open leads",
-      "kpiOverdue": "Past the reply target",
-      "kpiBooked": "Booked this month",
-      "kpiOrdersToday": "Orders today",
-      "kpiRevenue": "Store sales this month",
-      "kpiFeedback": "Feedback to review",
-      "kpiProofs": "Payments to verify",
-      "byModule": "Leads by module",
-      "byModuleLead": "This month",
-      "byStatus": "Leads by status",
-      "byStatusLead": "All time",
-      "topRoutes": "Top searched routes",
-      "topRoutesLead": "Last 30 days",
-      "activity": "Activity",
-      "activityLead": "Latest notes and changes on leads",
       "openLeads": "Open leads",
-      "overdueView": "Overdue view",
-      "searchActivity": "Search activity",
-      "noData": "No data yet."
+      "today": {
+        "title": "Today",
+        "clear": "Nothing waiting",
+        "oldest": "Oldest waiting since",
+        "target": "The reply target is {sla} minutes",
+        "sample": "Replace them with real details and photos",
+        "titles": {
+          "newLeads": "New leads",
+          "overdueLeads": "Past the reply target",
+          "visaWaiting": "Visa applications",
+          "ordersToConfirm": "Orders to confirm",
+          "proofsToVerify": "Payment proofs",
+          "feedbackToReview": "Feedback to review",
+          "lowStock": "Low stock",
+          "groupFaresEnding": "Group fares ending",
+          "sampleLeft": "Sample content"
+        }
+      },
+      "kpis": "This week",
+      "kpiLeads": "New leads",
+      "kpiBooked": "Booked value",
+      "bookedLine": "{count, plural, one {# booking} other {# bookings}} this week",
+      "kpiOrders": "Store orders",
+      "kpiRate": "Booking rate",
+      "rateLine": "{booked} of {leads} requests booked in 14 days",
+      "change": {
+        "up": "{count} more than last week",
+        "down": "{count} fewer than last week",
+        "same": "Same as last week"
+      },
+      "byDay": "Leads by day",
+      "byDayLead": "Last 14 days",
+      "byDayLabel": "New leads per day over the last 14 days",
+      "asTable": "Show as a table",
+      "day": "Day",
+      "leadsWord": "Leads",
+      "byModule": "Leads by service",
+      "byModuleLead": "This month",
+      "activity": "Recent activity",
+      "activityLead": "Latest notes and steps on leads",
+      "activityLine": "{actor} on",
+      "noData": "Nothing yet."
     },
     "modules": {
       "flights": "Flight",
@@ -3208,14 +3232,152 @@
     "audit": {
       "metaTitle": "Audit log",
       "title": "Audit log",
-      "lead": "Every admin change, with who made it and when.",
-      "colWhen": "When",
-      "colWho": "Who",
-      "colAction": "Action",
-      "colWhat": "What",
-      "showChange": "Show the change",
-      "before": "Before",
-      "after": "After"
+      "lead": "Every change in Admin, who made it and when.",
+      "showChange": "Show what changed",
+      "moreChanges": "and {count} more",
+      "empty": "Nothing matches these filters.",
+      "emptyAll": "No changes yet.",
+      "filters": {
+        "label": "Filter the audit log",
+        "person": "Person",
+        "anyone": "Anyone",
+        "area": "Area",
+        "everywhere": "Everywhere",
+        "from": "From",
+        "to": "To",
+        "apply": "Show",
+        "clear": "Clear filters"
+      },
+      "areas": {
+        "content": "Content and pages",
+        "settings": "Settings",
+        "leads": "Leads and visa",
+        "orders": "Orders and payments",
+        "team": "Team",
+        "media": "Media",
+        "integrations": "Integrations",
+        "feedback": "Feedback and newsletter"
+      },
+      "targets": {
+        "record": "the {thing} “{name}”",
+        "recordUnnamed": "a {thing}",
+        "setting": "the {setting} settings",
+        "list": "the order of {list}",
+        "lead": "lead {name}",
+        "leadUnnamed": "a lead",
+        "order": "order {name}",
+        "orderUnnamed": "an order",
+        "proof": "the payment proof for {name}",
+        "proofUnnamed": "a payment proof",
+        "staff": "{name}",
+        "staffUnnamed": "a team member",
+        "media": "the file “{name}”",
+        "mediaUnnamed": "a file",
+        "integration": "{name}",
+        "integrationUnnamed": "a connection",
+        "feedback": "feedback from {name}",
+        "feedbackUnnamed": "a feedback entry",
+        "subscriber": "{name}",
+        "subscriberUnnamed": "a subscriber",
+        "other": "something",
+        "update": "{count, plural, =0 {no records} one {# record} other {# records}}"
+      },
+      "verbs": {
+        "content": {
+          "create": "{actor} added {target}",
+          "update": "{actor} saved {target}",
+          "delete": "{actor} moved {target} to Trash",
+          "untrash": "{actor} brought back {target} from Trash",
+          "restore": "{actor} restored an earlier version of {target}",
+          "duplicate": "{actor} made a copy: {target}",
+          "reorder": "{actor} changed {target}",
+          "other": "{actor} changed {target}"
+        },
+        "trash": {
+          "delete": "{actor} deleted {target} for good",
+          "purge": "{target} left Trash after 30 days",
+          "other": "{actor} changed {target} in Trash"
+        },
+        "settings": {
+          "update": "{actor} saved {target}",
+          "restore": "{actor} restored an earlier version of {target}",
+          "other": "{actor} changed {target}"
+        },
+        "lead": {
+          "contact": "{actor} contacted the customer on {target}",
+          "quote": "{actor} sent a quote on {target}",
+          "askDocuments": "{actor} asked for documents on {target}",
+          "askPayment": "{actor} asked for payment on {target}",
+          "customerReplied": "{actor} noted that the customer replied on {target}",
+          "convert": "{actor} turned {target} into a booking",
+          "close": "{actor} closed {target}",
+          "markSpam": "{actor} marked {target} as spam",
+          "reopen": "{actor} reopened {target}",
+          "document": "{actor} updated a document on {target}",
+          "submit": "{actor} marked {target} as submitted",
+          "outcome": "{actor} recorded the visa decision on {target}",
+          "passportReturned": "{actor} marked the passport returned on {target}",
+          "visa": "{actor} updated the visa checklist on {target}",
+          "update": "{actor} updated {target}",
+          "other": "{actor} updated {target}"
+        },
+        "order": {
+          "confirm": "{actor} confirmed {target}",
+          "startPacking": "{actor} started packing {target}",
+          "ship": "{actor} shipped {target}",
+          "deliver": "{actor} marked {target} delivered",
+          "cancel": "{actor} cancelled {target}",
+          "return": "{actor} recorded a return of {target}",
+          "note": "{actor} added a note to {target}",
+          "other": "{actor} updated {target}"
+        },
+        "payment-proof": {
+          "verify": "{actor} verified {target}",
+          "reject": "{actor} rejected {target}",
+          "other": "{actor} checked {target}"
+        },
+        "staff": {
+          "create": "{actor} added {target} to Admin",
+          "update": "{actor} changed the role or status of {target}",
+          "password-reset": "{actor} reset the password of {target}",
+          "password-change": "{target} changed their password",
+          "locked": "{target} was locked after too many wrong passwords",
+          "other": "{actor} changed {target}",
+          "invite": "{actor} sent an invite to {target}",
+          "invite-accepted": "{target} chose a password and joined Admin"
+        },
+        "media": {
+          "update": "{actor} edited {target}",
+          "replace": "{actor} replaced {target} everywhere it shows",
+          "remove": "{actor} deleted {target}",
+          "other": "{actor} changed {target}"
+        },
+        "integration": {
+          "add": "{actor} connected {target}",
+          "update": "{actor} changed the settings of {target}",
+          "remove": "{actor} removed {target}",
+          "other": "{actor} changed {target}"
+        },
+        "provider": {
+          "test": "{actor} tested {target}",
+          "reveal": "{actor} looked at a saved secret of {target}",
+          "remove": "{actor} removed {target}",
+          "other": "{actor} changed {target}"
+        },
+        "feedback": {
+          "moderate": "{actor} reviewed {target}",
+          "other": "{actor} changed {target}"
+        },
+        "subscriber": {
+          "remove": "{actor} removed {target} from the newsletter",
+          "other": "{actor} changed {target}"
+        },
+        "other": "{actor} made a change to {target}",
+        "seed": {
+          "patch": "A site update changed {target}",
+          "other": "A site update changed {target}"
+        }
+      }
     },
     "notifications": {
       "metaTitle": "Email log",
@@ -3264,14 +3426,30 @@
       "invited": "Invited",
       "reasons": {
         "active": "Has signed in and can work in Admin.",
-        "invited": "Added, but hasn't signed in yet.",
+        "invited": "Added, but hasn't chosen a password or signed in yet.",
         "deactivated": "Can't sign in. Activate to let them back in.",
         "locked": "Sign-in is locked for a while after wrong passwords."
       },
       "colStatus": "Status",
       "search": "Name or email",
       "emptyTitle": "No staff here",
-      "emptyBody": "Add a staff member above, or clear the search."
+      "emptyBody": "Add a staff member above, or clear the search.",
+      "matrix": {
+        "title": "What each role can open",
+        "lead": "Read only. It follows the same rules as the sidebar and the server, so it always matches what people see.",
+        "caption": "Screens and settings each role can open",
+        "screen": "Screen",
+        "yes": "Can open",
+        "no": "Can't open"
+      },
+      "signIn": "How they sign in",
+      "inviteOption": "Send an invite email",
+      "inviteHelp": "They choose their own password from the link. It works for 7 days.",
+      "passwordOption": "Set a first password now",
+      "inviteSentTo": "Invite sent to {email}",
+      "sendInvite": "Send invite",
+      "resendInvite": "Send the invite again",
+      "inviteSent": "A new invite is on its way"
     },
     "account": {
       "metaTitle": "My account",
@@ -3314,7 +3492,7 @@
         "searchSettings": "Search defaults",
         "menus": "Menus",
         "announcements": "Announcement bar",
-        "notificationTemplates": "Notification templates",
+        "notificationTemplates": "Email and SMS messages",
         "homeContent": "Home copy",
         "homeSections": "Home sections",
         "trustItems": "Trust strip",
@@ -3477,10 +3655,10 @@
     "reports": {
       "metaTitle": "Reports",
       "title": "Reports",
-      "lead": "How the business did in a date range (Bangladesh time), with CSV downloads for spreadsheets.",
+      "lead": "How the business did in a date range (Bangladesh time), with downloads for Excel and Google Sheets.",
       "from": "From",
       "to": "To",
-      "show": "Show report",
+      "show": "Show",
       "kpis": "Key numbers",
       "leads": "Leads",
       "won": "Booked",
@@ -3499,14 +3677,32 @@
       "topProducts": "Best sellers (units)",
       "feedback": "Feedback by status",
       "empty": "Nothing in this range.",
-      "downloads": "Download CSV",
-      "downloadsHint": "Opens in Excel or Google Sheets. Up to 10,000 rows per file.",
+      "downloads": "Downloads",
+      "downloadsHint": "Excel files open straight in Excel; CSV files open anywhere, including Google Sheets. Up to 10,000 rows per file.",
       "datasets": {
         "leads": "Leads",
         "orders": "Orders",
         "feedback": "Feedback",
         "subscribers": "Newsletter sign-ups"
-      }
+      },
+      "range": "Date range",
+      "presets": {
+        "last7": "Last 7 days",
+        "last30": "Last 30 days",
+        "thisMonth": "This month",
+        "lastMonth": "Last month"
+      },
+      "formats": {
+        "xlsx": "Excel",
+        "csv": "CSV"
+      },
+      "downloadAs": {
+        "xlsx": "Download {report} as Excel",
+        "csv": "Download {report} as CSV"
+      },
+      "searches": "What people searched",
+      "searchesLead": "{total, plural, one {# search} other {# searches}} on the site; {rate}% became a request.",
+      "allSearches": "All searches"
     },
     "customers": {
       "metaTitle": "Customers",
@@ -3968,80 +4164,84 @@
     "settingsIndex": {
       "metaTitle": "Settings",
       "title": "Settings",
-      "lead": "How the business runs on the website: contact details, payments, booking modes, messages and who can sign in.",
-      "groups": {
-        "business": "Business",
-        "selling": "Selling and payments",
-        "messages": "Forms and messages",
-        "website": "Website and search",
-        "team": "Team and security",
-        "advanced": "Advanced"
-      },
-      "items": {
-        "contact": {
-          "title": "Business, contact and office hours",
-          "body": "Phone numbers, WhatsApp, email, address, social links and the opening hours behind the Open now chip."
+      "lead": "How the business runs on the website: contact details, office hours, payments, messages and who can sign in.",
+      "navLabel": "Settings sections",
+      "partsOf": "Parts of {section}",
+      "pick": "Pick a section on the left. Each one saves on its own.",
+      "add": "Add {thing}",
+      "emptyTitle": "No {things} yet",
+      "off": "Off",
+      "sections": {
+        "business": {
+          "title": "Business and contact",
+          "body": "Phone numbers, WhatsApp, email, address, social links and the brand names."
         },
-        "site": {
-          "title": "Site name and search engines",
-          "body": "The site title, the text Google shows and the Search Console code."
-        },
-        "tracking": {
-          "title": "Tracking",
-          "body": "Google Analytics, Tag Manager and Meta Pixel IDs (they run after cookie consent)."
+        "hours": {
+          "title": "Office hours",
+          "body": "The days and times behind the Open now chip, and the words shown when the office is closed."
         },
         "modes": {
           "title": "Booking modes",
           "body": "Manual request or Live booking for each service. Live stays locked until Phase E."
         },
         "payments": {
-          "title": "Payment accounts and cash on delivery",
-          "body": "Bank, bKash and Nagad accounts for transfers, and the cash on delivery limit."
+          "title": "Payments and delivery",
+          "body": "Bank and mobile wallet accounts, cash on delivery, delivery zones, EMI and partner banks."
         },
-        "shipping": {
-          "title": "Delivery zones and charges",
-          "body": "Where Waafas World delivers, the charge and the delivery time."
+        "forms": {
+          "title": "Forms and messages",
+          "body": "The request forms, the emails and SMS people receive, and every message sent."
         },
-        "emi": {
-          "title": "EMI and partner banks",
-          "body": "Instalment plans and the banks that offer them."
-        },
-        "leadForms": {
-          "title": "Request forms",
-          "body": "The reply target, required details and the consent text on every form."
-        },
-        "templates": {
-          "title": "Email and SMS messages",
-          "body": "What customers and staff receive after a request, an order or a change."
-        },
-        "sent": {
-          "title": "Sent messages",
-          "body": "Every email the system sent, with its delivery status."
+        "seo": {
+          "title": "SEO and tracking",
+          "body": "Google Analytics, Tag Manager, Meta Pixel, Search Console, the words search engines show by default, the reviews link and customer accounts."
         },
         "search": {
-          "title": "Search defaults",
+          "title": "Search",
           "body": "The options the website's search card starts with."
-        },
-        "maintenance": {
-          "title": "Maintenance mode",
-          "body": "Show a short notice to visitors while the site is being updated."
-        },
-        "users": {
-          "title": "Users and roles",
-          "body": "Who can sign in to Admin and what each person can see and do."
         },
         "integrations": {
           "title": "Integrations",
           "body": "Connections to airlines, hotels, payments, email and sign-in providers."
         },
+        "users": {
+          "title": "Users and roles",
+          "body": "Who can sign in to Admin and what each person can see and do."
+        },
         "audit": {
           "title": "Audit log",
           "body": "Every change in Admin, who made it and when."
         },
-        "allContent": {
-          "title": "All content (advanced)",
+        "maintenance": {
+          "title": "Maintenance",
+          "body": "Show a short notice to visitors while the site is being updated."
+        },
+        "advanced": {
+          "title": "Advanced",
           "body": "Every content list in one place, for Super Admins only."
         }
+      },
+      "tabs": {
+        "contact": "Contact and address",
+        "brand": "Brand names and footer",
+        "hours": "Office hours",
+        "modes": "Booking modes",
+        "accounts": "Payment accounts",
+        "delivery": "Delivery",
+        "emi": "EMI",
+        "banks": "EMI banks",
+        "forms": "Request forms",
+        "messages": "Email and SMS",
+        "sent": "Sent messages",
+        "tracking": "Tracking and Search Console",
+        "defaults": "Default search words",
+        "search": "Search",
+        "integrations": "Integrations",
+        "users": "Users and roles",
+        "audit": "Audit log",
+        "maintenance": "Maintenance",
+        "content": "All content",
+        "connections": "Verification, reviews and accounts"
       }
     },
     "states": {
@@ -4408,6 +4608,85 @@
         "bulkPhotos": {
           "drop": "Drop several photos here or paste them. Each one becomes its own item.",
           "upload": "Upload photos"
+        },
+        "template": {
+          "insert": "Insert:",
+          "insertLabel": "Insert {detail}",
+          "preview": "Preview",
+          "previewNote": "With sample details",
+          "subject": "Subject",
+          "from": "From Waafa Tours and Travel",
+          "smsLength": "{count, plural, one {# character} other {# characters}}",
+          "vars": {
+            "reference": {
+              "label": "Reference",
+              "sample": "FLT-261025-0001"
+            },
+            "name": {
+              "label": "Customer name",
+              "sample": "Sample Customer"
+            },
+            "link": {
+              "label": "Link",
+              "sample": "waafasworld.com/track"
+            },
+            "order_number": {
+              "label": "Order number",
+              "sample": "WW-261025-0007"
+            },
+            "amount": {
+              "label": "Amount",
+              "sample": "৳12,500"
+            },
+            "total": {
+              "label": "Order total",
+              "sample": "৳12,500"
+            },
+            "summary": {
+              "label": "Request summary",
+              "sample": "Dhaka to Dubai, 12 Nov 2026, 2 adults"
+            },
+            "reason": {
+              "label": "Reason",
+              "sample": "The amount does not match the order."
+            },
+            "minutes": {
+              "label": "Minutes waiting",
+              "sample": "45"
+            },
+            "method": {
+              "label": "Payment method",
+              "sample": "bKash"
+            },
+            "status": {
+              "label": "Status",
+              "sample": "Documents received"
+            },
+            "module": {
+              "label": "Service",
+              "sample": "Flights"
+            },
+            "trx_id": {
+              "label": "Transaction number",
+              "sample": "9C7XK2LMQ"
+            },
+            "stars": {
+              "label": "Rating",
+              "sample": "5"
+            },
+            "service": {
+              "label": "Service",
+              "sample": "Visa"
+            },
+            "country": {
+              "label": "Country",
+              "sample": "Thailand"
+            },
+            "code": {
+              "label": "Sign-in code",
+              "sample": "482913"
+            }
+          }
         }
       },
       "advanced": {
@@ -5026,7 +5305,8 @@
         "payment-proof-staff": "Payment proof received (to staff)",
         "payment-proof-rejected-customer": "Payment proof not accepted (to the customer)",
         "lead-overdue-staff": "No reply yet (to managers)",
-        "sign-in-code-customer": "Sign-in code (to the customer)"
+        "sign-in-code-customer": "Sign-in code (to the customer)",
+        "staff-invite": "Invite to Admin"
       },
       "tone": {
         "default": "Normal",
@@ -5278,7 +5558,7 @@
           "enabled": "Send this message"
         },
         "help": {
-          "body": "Words in curly brackets are filled in when it is sent, like '{name}'."
+          "body": "Use the Insert buttons for details like the customer's name; the preview below shows the message as it will arrive."
         }
       },
       "homeContent": {
@@ -6527,6 +6807,58 @@
       "editSection": "Edit {name}",
       "exitPreview": "Exit preview",
       "hide": "Hide staff tools until this tab closes"
+    },
+    "setup": {
+      "title": "Get the site ready",
+      "lead": "Each step ticks itself once it is done.",
+      "allDone": "Everything is set up.",
+      "progress": "{done} of {total} steps done",
+      "doneWord": "done",
+      "openWord": "not done yet",
+      "steps": {
+        "searchConsole": {
+          "title": "Connect Google Search Console",
+          "body": "Paste the Search Console code so Google confirms the site is yours."
+        },
+        "analytics": {
+          "title": "Add the Google Analytics ID",
+          "body": "Visits are counted only after a G- ID is added (and after cookie consent)."
+        },
+        "turnstile": {
+          "title": "Turn on the bot check on forms",
+          "body": "The Turnstile keys go into the server settings. Ask the developer to add them."
+        },
+        "realContent": {
+          "title": "Replace Sample content with real details",
+          "body": "Records marked Sample still show sample words and photos."
+        },
+        "officeHours": {
+          "title": "Check the office hours and contact details",
+          "body": "Open them once and save, so the Open now chip and phone numbers are confirmed."
+        },
+        "payments": {
+          "title": "Add the real payment accounts",
+          "body": "Customers pay by transfer to these accounts until online payment is live."
+        }
+      }
+    },
+    "welcome": {
+      "metaTitle": "Welcome to Waafa Admin",
+      "title": "Welcome to Waafa Admin",
+      "lead": "Choose the password you'll use to sign in. Only you will know it.",
+      "password": "New password",
+      "passwordHint": "At least 12 characters. A short sentence is easy to remember and hard to guess.",
+      "again": "The same password again",
+      "show": "Show password",
+      "hide": "Hide password",
+      "submit": "Set password",
+      "short": "Use at least 12 characters.",
+      "different": "The two passwords are different. Type the same one twice.",
+      "expired": "This invite link has expired or was already used. Ask your admin to send the invite again.",
+      "tooMany": "Too many tries. Wait 15 minutes, then try again.",
+      "unavailable": "Admin isn't answering right now. Try again in a minute.",
+      "badLinkTitle": "This link doesn't work",
+      "toSignIn": "Go to sign-in"
     }
   },
   "Consent": {

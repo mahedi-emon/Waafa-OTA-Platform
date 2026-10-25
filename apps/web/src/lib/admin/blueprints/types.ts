@@ -42,6 +42,8 @@ export type WidgetKind =
   | "variant"
   /** A product's variants as a matrix of its option values, with the default by radio (D0 R8). */
   | "variantsMatrix"
+  | "template"
+  | "templateBody"
   /** Where a link goes: a page or record by name, or a web address, phone or email (D0 R7). */
   | "link"
   | "readOnly";
@@ -211,7 +213,9 @@ export type ResolvedBlueprint = {
   visibility: string[];
   url?: string | Record<string, string>;
   heading?: string;
-  layout?: "writing";
+  /** "embedded" (set by the page, not the blueprint): inside the settings frame, without the section list and with
+   * the side panel folded above the form at every width (D0 R9). */
+  layout?: "writing" | "embedded";
   startWith?: Record<string, unknown>;
   publish: Array<{ path: string; label: string }>;
   /** The record has a draft / published / archived status, set by Save draft, Publish and Unpublish. */

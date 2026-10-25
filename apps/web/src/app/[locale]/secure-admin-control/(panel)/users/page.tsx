@@ -13,6 +13,8 @@ import { formatDhakaDateTime, initialsOf, pageParam } from "@/lib/admin/format";
 import type { StaffRow } from "@/lib/admin/types";
 import { StaffAddForm } from "./_components/StaffAddForm";
 import { StaffRowActions } from "./_components/StaffRowActions";
+import { PermissionMatrix } from "@/components/admin/settings/PermissionMatrix";
+import { SettingsFrame } from "@/components/admin/settings/SettingsFrame";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.users");
@@ -84,6 +86,8 @@ async function Users({
     activate: t("activate"),
     updated: t("updated"),
     passwordReset: t("passwordReset"),
+    resendInvite: t("resendInvite"),
+    inviteSent: t("inviteSent"),
     cancel: tc("cancel"),
     failed: tc("unavailable"),
   };
@@ -134,7 +138,7 @@ async function Users({
   ];
 
   return (
-    <>
+    <SettingsFrame current="users">
       <AdminPageHeader title={t("title")} lead={t("lead")} />
       <StaffAddForm
         roleNames={roleNames}
@@ -143,9 +147,15 @@ async function Users({
           name: t("name"),
           email: t("email"),
           roles: t("roles"),
+          signIn: t("signIn"),
+          inviteOption: t("inviteOption"),
+          inviteHelp: t("inviteHelp"),
+          passwordOption: t("passwordOption"),
           password: t("password"),
           passwordHint: t("passwordHint"),
           created: t("created"),
+          invited: t("inviteSentTo", { email: "{email}" }),
+          sendInvite: t("sendInvite"),
           cancel: tc("cancel"),
           save: tc("save"),
           failed: tc("unavailable"),
@@ -168,7 +178,8 @@ async function Users({
         openLabel={tc("open")}
         empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
       />
-    </>
+      <PermissionMatrix roleNames={roleNames} />
+    </SettingsFrame>
   );
 }
 

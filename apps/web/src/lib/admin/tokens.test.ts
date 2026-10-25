@@ -32,6 +32,9 @@ describe("admin session tokens (D129)", () => {
     expect(isAdminPath("/en/admin/leads")).toBe(false);
     expect(isSignInPath("/secure-admin-control/sign-in")).toBe(true);
     expect(isSignInPath("/secure-admin-control/sign-in/extra")).toBe(false);
+    // The welcome page from an invite email works signed out too, and is never a place to return to.
+    expect(isSignInPath("/en/secure-admin-control/welcome")).toBe(true);
+    expect(safeNext("/secure-admin-control/welcome")).toBe("/secure-admin-control");
   });
 
   it("only sends people back to admin pages after signing in", () => {

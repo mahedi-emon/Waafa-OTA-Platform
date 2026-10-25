@@ -1,4 +1,9 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-25 — R8 merged (#226, 137428f), #225 not-found merged (#227, 81d4e04). R9 #199 on
+  feat/199-dashboard-settings: dashboard v2 (Today cards, week KPIs with sparklines, server SVG line, setup checklist),
+  Settings one page (SettingsFrame, /settings/[section], embedded editor, redirects), invite by email + welcome page
+  (MIGRATION 20261025090000_staff_invites + seed patch staff-invite), permission matrix, audit sentences + filters,
+  template Insert + preview, reports ranges + Excel (API xlsx writer). Tests web 663, API 192, e2e API job 71.
 - 2026-10-25 — R7 merged (#223, 9b0b5cb). R8 #198 purpose-built editors on feat/198-purpose-built-editors: section
   order for package/product/visa/blog (writing view)/group fare/banner/team, variants matrix, bulk photos for gallery
   albums, auto Price from / days / initials, startWith, Next: section, design-review fixes. e2e admin-editors 6/6

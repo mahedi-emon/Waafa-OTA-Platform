@@ -204,6 +204,43 @@ async function workflowTemplates(prisma: PrismaClient): Promise<number> {
   return changed;
 }
 
+/** D0 R9: staff added without a password get an invite email to choose one. */
+const INVITE_TEMPLATE = {
+  key: "staff-invite",
+  audience: "Staff, when added",
+  channel: "email",
+  subject: "You're invited to Waafa Admin",
+  body: "Hello {{name}},\n\n{{inviter}} added you to Waafa Admin. Choose your password here: {{link}}\n\nThe link works for 7 days. If you weren't expecting this, you can ignore this email.",
+  variables: ["{{name}}", "{{inviter}}", "{{link}}"],
+  enabled: true,
+} as const;
+
+/** The invite template joins the live list at its end; an existing template with the same key is left as it is. */
+async function staffInviteTemplate(prisma: PrismaClient): Promise<number> {
+  const exists = await prisma.contentDocument.findUnique({
+    where: {
+      collection_docId: { collection: "notificationTemplates", docId: INVITE_TEMPLATE.key },
+    },
+    select: { docId: true },
+  });
+  if (exists) return 0;
+  const last = await prisma.contentDocument.findFirst({
+    where: { collection: "notificationTemplates" },
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+  await prisma.contentDocument.create({
+    data: {
+      collection: "notificationTemplates",
+      docId: INVITE_TEMPLATE.key,
+      data: json(INVITE_TEMPLATE),
+      position: (last?.position ?? -1) + 1,
+      updatedBy: "seed-patch",
+    },
+  });
+  return 1;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -213,6 +250,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-14-second-phone", apply: secondPhone },
   { id: "2026-10-14-home-seo", apply: homeSeo },
   { id: "2026-10-24-workflow-templates", apply: workflowTemplates },
+  { id: "2026-10-25-staff-invite-template", apply: staffInviteTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

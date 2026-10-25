@@ -3,7 +3,12 @@ import { toDhakaIsoString } from "@waafa/shared";
 import type { StaffPrincipal } from "../auth/principal";
 import { ContentService } from "../content/content.service";
 import { PrismaService } from "../prisma/prisma.service";
-import { dhakaStart, leadModulesFor } from "./access";
+import { canSeeOrders, dhakaStart, leadModulesFor } from "./access";
+import { dhakaDay } from "./reports.service";
+
+const DAY = 24 * 60 * 60_000;
+/** Days in the KPI sparklines and the leads-by-day chart; two weeks back give "vs last week". */
+const SERIES_DAYS = 14;
 
 const CLOSED = ["booked", "cancelled", "lost", "spam"];
 const NOT_SOLD = ["cancelled", "returned"];
@@ -30,6 +35,7 @@ export class AdminDashboardService {
       // keep the PRD default
     }
     const scope = { module: { in: modules } };
+    const seriesStart = new Date(today.getTime() - (SERIES_DAYS - 1) * DAY);
     const [
       newToday,
       open,
@@ -44,6 +50,9 @@ export class AdminDashboardService {
       proofsPending,
       topRoutes,
       activity,
+      recentLeads,
+      recentOrders,
+      oldestNew,
     ] = await Promise.all([
       this.prisma.lead.count({ where: { ...scope, createdAt: { gte: today } } }),
       this.prisma.lead.count({ where: { ...scope, status: { notIn: CLOSED } } }),
@@ -85,10 +94,74 @@ export class AdminDashboardService {
         take: 12,
         include: { lead: { select: { id: true, reference: true } } },
       }),
+      // The last 14 days of leads (and bookings closed in them) for sparklines, the chart and week-on-week words.
+      this.prisma.lead.findMany({
+        where: {
+          ...scope,
+          OR: [{ createdAt: { gte: seriesStart } }, { closedAt: { gte: seriesStart } }],
+        },
+        select: { createdAt: true, status: true, closedAt: true, amount: true },
+      }),
+      canSeeOrders(staff)
+        ? this.prisma.order.findMany({
+            where: { createdAt: { gte: seriesStart }, status: { notIn: NOT_SOLD } },
+            select: { createdAt: true, total: true },
+          })
+        : Promise.resolve(null),
+      // The longest wait for a first reply, for the New leads card's timer.
+      this.prisma.lead.findFirst({
+        where: { ...scope, status: "new" },
+        orderBy: { createdAt: "asc" },
+        select: { createdAt: true },
+      }),
     ]);
+    const days = Array.from({ length: SERIES_DAYS }, (_, index) =>
+      dhakaDay(new Date(today.getTime() - (SERIES_DAYS - 1 - index) * DAY)),
+    );
+    const series = new Map(
+      days.map((day) => [day, { day, leads: 0, booked: 0, bookedValue: 0, orders: 0, revenue: 0 }]),
+    );
+    for (const lead of recentLeads) {
+      const created = series.get(dhakaDay(lead.createdAt));
+      if (created) created.leads += 1;
+      if (lead.status === "booked" && lead.closedAt) {
+        const closed = series.get(dhakaDay(lead.closedAt));
+        if (closed) {
+          closed.booked += 1;
+          closed.bookedValue += lead.amount ?? 0;
+        }
+      }
+    }
+    for (const order of recentOrders ?? []) {
+      const day = series.get(dhakaDay(order.createdAt));
+      if (day) {
+        day.orders += 1;
+        day.revenue += order.total;
+      }
+    }
+    const points = [...series.values()];
+    const week = (pick: (point: (typeof points)[number]) => number, from: number, to: number) =>
+      points.slice(from, to).reduce((sum, point) => sum + pick(point), 0);
+    const weeks = Object.fromEntries(
+      (["leads", "booked", "bookedValue", "orders", "revenue"] as const).map((key) => [
+        key,
+        {
+          thisWeek: week((point) => point[key], 7, 14),
+          lastWeek: week((point) => point[key], 0, 7),
+        },
+      ]),
+    ) as Record<
+      "leads" | "booked" | "bookedValue" | "orders" | "revenue",
+      { thisWeek: number; lastWeek: number }
+    >;
     return {
       generatedAt: toDhakaIsoString(now),
       slaMinutes: sla,
+      oldestNewAt: oldestNew ? toDhakaIsoString(oldestNew.createdAt) : null,
+      series: recentOrders ? points : points.map(({ orders: _o, revenue: _r, ...rest }) => rest),
+      weeks: recentOrders
+        ? weeks
+        : { leads: weeks.leads, booked: weeks.booked, bookedValue: weeks.bookedValue },
       leads: {
         newToday,
         open,

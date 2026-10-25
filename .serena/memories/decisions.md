@@ -112,3 +112,11 @@
   bulkPhotos, auto lowestPrice/itineraryDays/initialsFromName), never forks; variants as a matrix of option values
   with "Variant shown first" by radio and stray variants listed with Remove; Optional chip aria-hidden + sr-only
   " (optional)"; empty-group Add names its group.
+- D254 (#225): record pages read with adminFind (null on 404) and render AdminNotFound in place; adminGet 404 →
+  notFound() + (panel)/not-found.tsx (a notFound thrown inside a streamed Suspense logs React #419).
+- D255–D261 (R9, 25 Oct): SETTINGS_SECTIONS + /settings/[section] (embedded editor, split documents by blueprint
+  section, old /content/<setting> redirect, screens keep addresses inside SettingsFrame); setup checklist computed
+  (setupSteps; Search Console = site code or tracking token; Turnstile from web env, managers); invite by email
+  (sha256 token 7 days, POST /auth/invite 5/15 min, welcome page; reset password closes invite); audit sentences
+  (auditText, AUDIT_AREAS prefixes, Dhaka days); template Insert + preview (variables keep); Excel via own xlsx
+  writer; dashboard charts server SVG, AdminPanel id names its section.

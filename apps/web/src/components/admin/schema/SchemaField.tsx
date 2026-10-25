@@ -35,6 +35,7 @@ import { SeoField } from "./SeoField";
 import { SlugField } from "./SlugField";
 import { SwitchField } from "./SwitchField";
 import { TagsField } from "./TagsField";
+import { TemplateTextField } from "./TemplateTextField";
 import { TextField } from "./TextField";
 import { TimeOfDayField } from "./TimeOfDayField";
 import { UnionField } from "./UnionField";
@@ -192,6 +193,10 @@ function SchemaField({ schema, path, value, optional, bare = false }: SchemaFiel
       return <VariantField {...common} />;
     case "variantsMatrix":
       return <VariantsMatrixField {...common} />;
+    case "template":
+      return <TemplateTextField {...common} />;
+    case "templateBody":
+      return <TemplateTextField {...common} body />;
     case "link":
       return <LinkField {...common} />;
     case "readOnly":

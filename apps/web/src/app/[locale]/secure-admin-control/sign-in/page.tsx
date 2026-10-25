@@ -76,6 +76,7 @@ export default async function SignInPage() {
                 lockedBody: t("lockedBody"),
                 unavailable: t("unavailable"),
                 missing: t("missing"),
+                welcome: t("welcome"),
               }}
             />
           </Suspense>

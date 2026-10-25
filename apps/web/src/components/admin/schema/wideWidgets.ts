@@ -22,6 +22,7 @@ const WIDE = new Set<ResolvedField["widget"]>([
   "json",
   "weekdays",
   "variantsMatrix",
+  "templateBody",
 ]);
 
 /** Text longer than this gets the full width (titles, summaries); shorter ones (names, codes) half. */

@@ -149,13 +149,13 @@ function AdminCommandDialog({ open, onOpenChange }: AdminCommandDialogProps) {
           {
             id: "hours",
             label: t("command.officeHours"),
-            href: `${ADMIN}/content/contactSettings`,
+            href: `${ADMIN}/settings/hours`,
             icon: "settings" as const,
           },
           {
             id: "modes",
             label: t("command.bookingModes"),
-            href: `${ADMIN}/content/bookingModes`,
+            href: `${ADMIN}/settings/modes`,
             icon: "modes" as const,
           },
         ]

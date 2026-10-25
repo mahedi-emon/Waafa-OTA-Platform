@@ -6,12 +6,20 @@ import { Download } from "lucide-react";
 import { formatTaka } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { adminGet } from "@/lib/admin/adminApi";
+import { Link } from "@/i18n/navigation";
+import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
+import { dhakaToday, rangePresets } from "@/lib/admin/dateRanges";
 import { ReportBars } from "./_components/ReportBars";
 import { ReportList } from "./_components/ReportList";
+import { ReportRange } from "./_components/ReportRange";
+
+type SearchActivity = {
+  total: number;
+  leads: number;
+  searchToLeadRate: number;
+  topRoutes: Array<{ module: string; summary: string; count: number }>;
+};
 
 type Summary = {
   range: { from: string; to: string };
@@ -38,13 +46,6 @@ type Summary = {
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
-/** Today in Asia/Dhaka as YYYY-MM-DD, and the same date `days` earlier. */
-function defaultRange(days = 29) {
-  const today = new Date(Date.now() + 6 * 60 * 60_000);
-  const from = new Date(today.getTime() - days * 24 * 60 * 60_000);
-  return { from: from.toISOString().slice(0, 10), to: today.toISOString().slice(0, 10) };
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.reports");
   return { title: t("metaTitle") };
@@ -58,17 +59,26 @@ async function Reports({
   const params = await searchParams;
   // The default range reads today's date: render at request time, never while prerendering (issue 119).
   await connection();
-  const fallback = defaultRange();
+  const today = dhakaToday();
+  const fallback = rangePresets(today).last30;
   const from =
     typeof params.from === "string" && DAY.test(params.from) ? params.from : fallback.from;
   const to = typeof params.to === "string" && DAY.test(params.to) ? params.to : fallback.to;
-  const [t, tm, ts, to2] = await Promise.all([
+  const [t, tm, ts, to2, staff] = await Promise.all([
     getTranslations("Admin.reports"),
     getTranslations("Admin.modules"),
     getTranslations("Admin.statuses"),
     getTranslations("Admin.orders.statuses"),
+    requireStaff(),
   ]);
-  const summary = await adminGet<Summary>("/admin/reports", { from, to });
+  // What people searched on the site in the same days (search activity, D0 R9).
+  const searches = hasRole(staff, "admin", "travel-sales");
+  const [summary, activity] = await Promise.all([
+    adminGet<Summary>("/admin/reports", { from, to }),
+    searches
+      ? adminGet<SearchActivity>("/admin/search-logs", { from, to, pageSize: 1 }).catch(() => null)
+      : null,
+  ]);
   const label = (bag: typeof tm, key: string) => (bag.has(key as never) ? bag(key as never) : key);
   const downloads = (["leads", "orders", "feedback", "subscribers"] as const).filter(
     (dataset) => dataset !== "orders" || summary.orders,
@@ -96,20 +106,21 @@ async function Reports({
   return (
     <>
       <AdminPageHeader title={t("title")} lead={t("lead")} />
-      <form
-        action="/secure-admin-control/reports"
-        className="flex flex-wrap items-end gap-3 rounded-2xl border border-mist-200 bg-white p-4"
-      >
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="report-from">{t("from")}</Label>
-          <Input id="report-from" type="date" name="from" defaultValue={from} required />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="report-to">{t("to")}</Label>
-          <Input id="report-to" type="date" name="to" defaultValue={to} required />
-        </div>
-        <Button type="submit">{t("show")}</Button>
-      </form>
+      <ReportRange
+        range={{ from, to }}
+        today={today}
+        path="/secure-admin-control/reports"
+        strings={{
+          label: t("range"),
+          from: t("from"),
+          to: t("to"),
+          show: t("show"),
+          last7: t("presets.last7"),
+          last30: t("presets.last30"),
+          thisMonth: t("presets.thisMonth"),
+          lastMonth: t("presets.lastMonth"),
+        }}
+      />
 
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label={t("kpis")}>
         {cards.map((card) => (
@@ -167,6 +178,53 @@ async function Reports({
             />
           </>
         ) : null}
+        {activity ? (
+          <section
+            aria-labelledby="report-searches"
+            className="flex min-w-0 flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-5"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <h2 id="report-searches" className="font-display text-lg font-bold text-navy-900">
+                  {t("searches")}
+                </h2>
+                <p className="text-[13.5px] text-mist-600">
+                  {t("searchesLead", {
+                    total: activity.total,
+                    rate: activity.searchToLeadRate,
+                  })}
+                </p>
+              </div>
+              <Link
+                href={`/secure-admin-control/search?from=${from}&to=${to}`}
+                prefetch={false}
+                className="text-[13.5px] font-semibold text-brand-700 hover:underline"
+              >
+                {t("allSearches")}
+              </Link>
+            </div>
+            {activity.topRoutes.length === 0 ? (
+              <p className="text-[14px] text-mist-600">{t("empty")}</p>
+            ) : (
+              <ol className="flex flex-col divide-y divide-mist-100">
+                {activity.topRoutes.map((row) => (
+                  <li
+                    key={`${row.module}-${row.summary}`}
+                    className="flex items-center justify-between gap-3 py-2 text-[14px]"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium text-ink-900">{row.summary}</span>
+                      <span className="text-[12.5px] text-mist-600">{label(tm, row.module)}</span>
+                    </span>
+                    <span className="shrink-0 font-semibold text-navy-900 tabular-nums">
+                      {row.count}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+        ) : null}
         <ReportList
           title={t("feedback")}
           rows={summary.feedback.map((row) => ({ label: row.status, value: row.count }))}
@@ -182,19 +240,30 @@ async function Reports({
           {t("downloads")}
         </h2>
         <p className="text-sm text-mist-600">{t("downloadsHint")}</p>
-        <div className="flex flex-wrap gap-2">
+        <ul className="flex flex-col divide-y divide-mist-100">
           {downloads.map((dataset) => (
-            <Button key={dataset} asChild variant="secondary" size="sm">
-              <a
-                href={`/secure-admin-control/reports/download?dataset=${dataset}&from=${from}&to=${to}`}
-                download
-              >
-                <Download aria-hidden="true" />
-                {t(`datasets.${dataset}`)}
-              </a>
-            </Button>
+            <li
+              key={dataset}
+              className="flex flex-wrap items-center justify-between gap-2 py-2.5 first:pt-0 last:pb-0"
+            >
+              <span className="font-medium text-navy-900">{t(`datasets.${dataset}`)}</span>
+              <span className="flex gap-2">
+                {(["xlsx", "csv"] as const).map((format) => (
+                  <Button key={format} asChild variant="secondary" size="sm">
+                    <a
+                      href={`/secure-admin-control/reports/download?dataset=${dataset}&format=${format}&from=${from}&to=${to}`}
+                      download
+                      aria-label={t(`downloadAs.${format}`, { report: t(`datasets.${dataset}`) })}
+                    >
+                      <Download aria-hidden="true" />
+                      {t(`formats.${format}`)}
+                    </a>
+                  </Button>
+                ))}
+              </span>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     </>
   );

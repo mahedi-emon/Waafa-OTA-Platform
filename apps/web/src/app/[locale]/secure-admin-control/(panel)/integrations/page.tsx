@@ -18,6 +18,7 @@ import { absoluteUrl } from "@/lib/siteUrl";
 import { AddProviderForm } from "./_components/AddProviderForm";
 import type { IntegrationStrings } from "./_components/integrationStrings";
 import { ProviderCard } from "./_components/ProviderCard";
+import { SettingsFrame } from "@/components/admin/settings/SettingsFrame";
 
 type ProvidersList = {
   encryptionReady: boolean;
@@ -136,7 +137,7 @@ async function Integrations() {
     };
 
   return (
-    <>
+    <SettingsFrame current="integrations">
       <AdminPageHeader title={t("title")} lead={t("lead")} />
       <div className="flex flex-col gap-3">
         {data.encryptionReady ? null : (
@@ -213,7 +214,7 @@ async function Integrations() {
           </TabsContent>
         ))}
       </Tabs>
-    </>
+    </SettingsFrame>
   );
 }
 

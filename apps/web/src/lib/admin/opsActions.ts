@@ -99,10 +99,17 @@ export async function removeSubscriber(id: string): Promise<ActionResult> {
   return write(`/admin/subscribers/${at(id)}`, "DELETE");
 }
 
+/** Adds a staff member: with a password now, or (empty password) an invite email to choose one (D0 R9). */
 export async function createStaff(input: StaffCreateInput): Promise<ActionResult> {
-  const parsed = StaffCreateInputSchema.safeParse(input);
+  const { password, ...rest } = input;
+  const parsed = StaffCreateInputSchema.safeParse(password ? { ...rest, password } : rest);
   if (!parsed.success) return invalid(parsed.error);
   return write("/admin/users", "POST", parsed.data);
+}
+
+/** Sends a new invite email to someone who hasn't chosen a password yet. */
+export async function resendStaffInvite(id: string): Promise<ActionResult> {
+  return write(`/admin/users/${at(id)}/invite`, "POST");
 }
 
 export async function updateStaff(id: string, input: StaffUpdateInput): Promise<ActionResult> {

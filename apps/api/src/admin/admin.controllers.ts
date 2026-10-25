@@ -461,6 +461,13 @@ export class AdminUsersController {
     return this.users.update(staff, id(userId), parseInput(StaffUpdateInputSchema, body));
   }
 
+  @Post("users/:id/invite")
+  @Roles("super-admin")
+  @HttpCode(200)
+  resendInvite(@Staff() staff: StaffPrincipal, @Param("id") userId: string) {
+    return this.users.resendInvite(staff, id(userId));
+  }
+
   @Post("users/:id/password")
   @Roles("super-admin")
   @HttpCode(204)

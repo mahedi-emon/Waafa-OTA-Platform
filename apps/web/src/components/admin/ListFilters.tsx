@@ -19,6 +19,8 @@ type ListFiltersProps = {
   query: Record<string, string | undefined>;
   search?: { name: string; label: string; placeholder: string; value: string };
   selects?: FilterSelect[];
+  /** Days (YYYY-MM-DD) with the phone's own date picker, applied as soon as one is picked (the audit log's range). */
+  dates?: Array<{ name: string; label: string; value: string }>;
   strings: { apply: string; reset: string };
 };
 
@@ -26,7 +28,7 @@ type ListFiltersProps = {
  * Filters for admin lists, kept in the URL so views can be shared and reloaded: a search box and native selects (a
  * phone's own picker), applied on change or Enter.
  */
-function ListFilters({ query, search, selects = [], strings }: ListFiltersProps) {
+function ListFilters({ query, search, selects = [], dates = [], strings }: ListFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [text, setText] = useState(search?.value ?? "");
@@ -89,6 +91,20 @@ function ListFilters({ query, search, selects = [], strings }: ListFiltersProps)
               </option>
             ))}
           </select>
+        </div>
+      ))}
+      {dates.map((date) => (
+        <div key={date.name} className="flex flex-col gap-1.5">
+          <Label htmlFor={`filter-${date.name}`} className="text-[12.5px] text-mist-600">
+            {date.label}
+          </Label>
+          <Input
+            id={`filter-${date.name}`}
+            type="date"
+            value={date.value}
+            onChange={(event) => go({ [date.name]: event.target.value })}
+            className="min-w-[160px]"
+          />
         </div>
       ))}
       <div className="flex gap-2">

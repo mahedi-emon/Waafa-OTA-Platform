@@ -11,9 +11,29 @@ import type {
 
 export type Paged<T> = { total: number; page: number; pageSize: number; items: T[] };
 
+type WeekPair = { thisWeek: number; lastWeek: number };
+
 export type DashboardSummary = {
   generatedAt: string;
   slaMinutes: number;
+  /** When the longest-waiting new lead came in (the New leads card's timer). */
+  oldestNewAt: string | null;
+  /** The last 14 Dhaka days, today last; orders and revenue only for people who see orders. */
+  series: Array<{
+    day: string;
+    leads: number;
+    booked: number;
+    bookedValue: number;
+    orders?: number;
+    revenue?: number;
+  }>;
+  weeks: {
+    leads: WeekPair;
+    booked: WeekPair;
+    bookedValue: WeekPair;
+    orders?: WeekPair;
+    revenue?: WeekPair;
+  };
   leads: {
     newToday: number;
     open: number;
@@ -321,6 +341,8 @@ export type StaffRow = {
   locked: boolean;
   lastLoginAt: string | null;
   createdAt: string;
+  /** An invite email still waiting to be used (D0 R9); expired ones can be sent again. */
+  invite: { expiresAt: string | null; expired: boolean } | null;
 };
 
 export type ContentOverviewItem = {

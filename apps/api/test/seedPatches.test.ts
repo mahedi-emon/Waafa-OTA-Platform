@@ -11,6 +11,7 @@ const ALL_PATCHES = [
   "2026-10-14-second-phone",
   "2026-10-14-home-seo",
   "2026-10-24-workflow-templates",
+  "2026-10-25-staff-invite-template",
 ];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */
@@ -190,5 +191,37 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
       "Our own subject",
       "We could not confirm your payment for {{reference}}",
     ]);
+  });
+  it("adds the staff invite email to a live list once, keeping one an admin already wrote (D0 R9)", async () => {
+    await prisma.contentDocument.deleteMany({
+      where: { collection: "notificationTemplates", docId: "staff-invite" },
+    });
+    const others = ALL_PATCHES.filter((id) => id !== "2026-10-25-staff-invite-template");
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-25-staff-invite-template"],
+      changed: 1,
+    });
+    const added = await prisma.contentDocument.findUniqueOrThrow({
+      where: { collection_docId: { collection: "notificationTemplates", docId: "staff-invite" } },
+    });
+    expect(added.data).toMatchObject({ channel: "email", enabled: true });
+    expect(added.updatedBy).toBe("seed-patch");
+
+    // Run again on a list that already has it (say an admin's own wording): nothing changes.
+    await prisma.contentDocument.update({
+      where: { collection_docId: { collection: "notificationTemplates", docId: "staff-invite" } },
+      data: { data: { ...(added.data as object), subject: "Welcome aboard" } },
+    });
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-25-staff-invite-template"],
+      changed: 0,
+    });
+    const kept = await prisma.contentDocument.findUniqueOrThrow({
+      where: { collection_docId: { collection: "notificationTemplates", docId: "staff-invite" } },
+    });
+    expect((kept.data as { subject: string }).subject).toBe("Welcome aboard");
   });
 });
