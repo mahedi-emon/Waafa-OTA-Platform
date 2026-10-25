@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 /*
- * First-load JavaScript per public route (#39, CLAUDE.md budgets): every script the page downloads until the load
- * event, counted as transferred (gzip) bytes from the production server. `nomodule` polyfills are skipped by modern
+ * First-load JavaScript per public route (#39, CLAUDE.md budgets): the scripts the page's HTML references, counted as
+ * transferred (gzip) bytes from the production server (issue 224: not later prefetches). `nomodule` polyfills are skipped by modern
  * browsers and never requested here. The ceilings guard against regressions; the target stays 200 KB.
  */
 const TARGET_KB = 200;
@@ -24,20 +24,42 @@ const ROUTES = Object.keys(CEILING_KB);
 
 test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
+/**
+ * The scripts a page's own HTML asks for: `<script src>` and `<link rel="preload|modulepreload" as="script">`
+ * (issue 224). Scripts fetched later (idle-time prefetches of linked routes, code loaded on a tap) are not first-load
+ * JS, and counting them made the number depend on timing.
+ */
+function referencedScripts(html: string, base: string): Set<string> {
+  const urls = new Set<string>();
+  const add = (src: string) => urls.add(new URL(src.replaceAll("&amp;", "&"), base).pathname);
+  for (const match of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)) add(match[1] ?? "");
+  for (const match of html.matchAll(/<link\b[^>]*>/g)) {
+    const tag = match[0];
+    if (!/\brel="(?:preload|modulepreload)"/.test(tag) || !/\bas="script"/.test(tag)) continue;
+    const href = /\bhref="([^"]+)"/.exec(tag)?.[1];
+    if (href) add(href);
+  }
+  return urls;
+}
+
 for (const route of ROUTES) {
   test(`first-load JS on ${route}`, async ({ page }, testInfo) => {
-    const sizes: Array<Promise<number>> = [];
+    const sizes = new Map<string, Promise<number>>();
     page.on("requestfinished", (request) => {
       if (request.resourceType() !== "script") return;
-      sizes.push(
+      sizes.set(
+        new URL(request.url()).pathname,
         request
           .sizes()
           .then((size) => size.responseBodySize)
           .catch(() => 0),
       );
     });
-    await page.goto(route, { waitUntil: "load" });
-    const total = (await Promise.all(sizes)).reduce((sum, size) => sum + size, 0);
+    const response = await page.goto(route, { waitUntil: "load" });
+    const wanted = referencedScripts((await response?.text()) ?? "", page.url());
+    expect(wanted.size, `${route} references its scripts`).toBeGreaterThan(0);
+    let total = 0;
+    for (const path of wanted) total += (await sizes.get(path)) ?? 0;
     const kb = Math.round(total / 1024);
     testInfo.annotations.push({
       type: "first-load-js",

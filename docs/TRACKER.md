@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 25 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 #231 audit, CI budget and docs 🟡 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), next B #234 two-step sign-in 🟡 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,29 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #229 · D A · Admin polish from the R10 review — 🟡 In progress
+### #219 · D A · Admin lists stay fast on a 100-row page — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Bug from R5: on the 100-row leads page, Select all and closing the row sheet took 190 to 240 ms to paint on the low-memory machine |
+| Built | Table rows no longer animate their background colour (every row restyled at once was the slow frame); dialog, sheet and alert overlays and the admin top bar and editor action bar lose backdrop blur (a solid scrim and white bars; glass stays only on the search card). The INP e2e now checks the 25-row and the 100-row page after the page settles, and runs with Playwright tracing off in that one file (tracing snapshots the DOM around every action and added 150 ms or more) |
+| Files | `apps/web/src/components/ui/{table,sheet,dialog,alert-dialog}.tsx`, `apps/web/src/components/admin/{AdminTopBar,editor/EditorActionBar}.tsx`, `apps/web/e2e/admin-datatable.spec.ts`, `docs/design/DESIGN.md` |
+| Tests | web 670 · admin-datatable e2e 4/4 locally (API mode, 500 tagged leads): Select all 96/80 → 64/48 ms, closing a sheet 128–192 → 56–88 ms; every interaction on 100 rows 40–112 ms |
+| Tools and skills | Serena; Playwright MCP (Event Timing and long-task observers at 1440, sheet screenshot without blur); design-superpowers review of the scrim; ui-ux-pro-max checklist |
+| Decision | D283 |
+| Migration | none |
+
+### #224 · D A · First-load JS budget counts the page's own scripts — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | The budget e2e flaked by up to 56 KB between runs |
+| Built | `budget.spec.ts` counts only the scripts the HTML references (`<script src>`, script preloads and modulepreloads) as transferred gzip bytes; idle-time prefetches of linked routes and on-tap code no longer count |
+| Files | `apps/web/e2e/budget.spec.ts` |
+| Tests | budget e2e stable across repeated local runs |
+| CI minutes | PR #266: 8 billed minutes (quick set) |
+| Decision | D282 |
+| Migration | none |
+
+### #229 · D A · Admin polish from the R10 review — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | The R10 independent review's larger items: lists outside the DataTable (Trash, Newsletter, Sent messages, Search activity, Audit log), Booking modes as read-only grey fields, integrations jargon, phone numbers asked twice and ISO codes for the phone picker, native US-format date inputs, template status words and Trash on fixed records, group fare thumbnails, Add staff outside the page header |
@@ -46,6 +68,7 @@ Serena memory `audit_findings`.
 | Files | `apps/api/src/admin/{admin.controllers,inbox.service,content-admin.service,users.service}.ts`, `packages/shared/src/{schemas/admin.ts,content/registry.ts,workflow/chips.ts}`, `apps/web/src/app/[locale]/secure-admin-control/(panel)/{trash,subscribers,notifications,search,audit,customers,reports,users,content/[key],integrations}/…`, `apps/web/src/components/admin/{AdminDateRange,AdminDateRangePanel,CustomerTabs}.tsx`, `apps/web/src/components/admin/schema/{BookingModesField,CountriesField}.tsx`, `apps/web/src/lib/admin/{dateRangeStrings,statusChips}.ts`, blueprints (types, build, automatic, settings), `apps/web/messages/en.json`, `apps/api/test/adminLists.test.ts`, `apps/web/src/lib/admin/blueprints/engine.test.ts` |
 | Tests | shared 148 · web 670 (phone shown from the number with country code) · API 206 (fixed lists answer 409, search in subscribers, sent emails, search activity, audit, trash) · API-mode e2e locally on a fresh database: every admin spec passes (task 10 now types the number with country code, Trash restores from the row sheet, newsletter row), admin routes at 390 and 1440 with axe and no sideways scroll; three timing flakes passed on retry (sign-in on the low-memory machine) |
 | Tools and skills | Serena; magic (21st.dev: compared sean0205 range calendar with presets, originui range calendar with presets, kuratlielia two-month range picker; picked originui for no new dependency and our Calendar primitives, D197); Playwright MCP (390 and 1440); ui-ux-pro-max checklist |
+| CI minutes | PR #265: 9 billed minutes (quick set) |
 | Decision | D278–D281 |
 | Migration | none |
 
@@ -1739,6 +1762,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D279 | 26 Oct | Fixed lists (message templates, home sections, page images, store rows, service pages, menus) can't be moved to Trash: shared `canDelete`, the editor and bulk bar hide it, the API answers 409 `fixed` | The site's code expects every record in them; staff switch one off instead | #229 |
 | D280 | 26 Oct | Office phone numbers are typed once with the country code; the number as shown follows (`phoneDisplay` auto rule, libphonenumber national format, e.g. 01712-345678); the phone picker's countries are picked by name and the first is the default | The review found each number asked twice and ISO codes staff don't know | #229 |
 | D281 | 26 Oct | Newsletter is a tab beside Customers (ADMIN.md §3.1) shown to roles that may open it; Sent messages, Search activity and the Audit log join the DataTable with a search box; the Audit log keeps its sentences and shows the changes in the side sheet instead of day groups | One list pattern everywhere (ADMIN.md §10) | #229 |
+| D282 | 26 Oct | First-load JS = the scripts a page's HTML references (`<script src>`, script preloads), counted as transferred gzip bytes; later prefetches and on-tap code are not counted | The old count (every script until load) varied by up to 56 KB with idle-time prefetch timing | #224 |
 | D283 | 26 Oct | Admin lists on 100 rows (issue 219): table rows lose their colour transition and overlays and admin bars lose backdrop blur; the INP e2e checks the 100-row page too | Headless measurements: Select all 96/80 → 64/48 ms without row transitions; closing a sheet 128–192 → 56–88 ms without blur | #219 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
@@ -1753,7 +1777,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | --- | --- | --- | --- |
 | #263 Hotel stay e2e checked a day the desktop calendar did not show when check-in fell near a month's end (CI on 26 Oct, check-in 31 Oct) | P2 (test only) | apps/web/e2e/search.spec.ts | ✅ Fixed in #232 (goes to the next month to check it) |
 | #232 Customer files (visa documents, payment slips, attachments, feedback photo) never left the browser; staff got only the file names (Phase A rule D87/D106/D109 never lifted). Found in the #231 audit | P0 | forms, API | Fixed in #232 (private storage, signed links, e2e) |
-| #224 Budget e2e: the first attempt on /tour-packages, /visa and /shop counts about 100 KB more first-load JS on a freshly started CI server; the retry passes (seen on #221 and #223) | P2 (test only) | apps/web/e2e/budget.spec.ts | Open |
+| #224 Budget e2e: the first attempt on /tour-packages, /visa and /shop counts about 100 KB more first-load JS on a freshly started CI server; the retry passes (seen on #221 and #223) | P2 (test only) | apps/web/e2e/budget.spec.ts | ✅ Fixed in #224: the spec counts only the scripts the page HTML references (idle-time prefetches made it racy, cold or warm); stable over cold and warm runs |
 | #225 Admin: opening a record that does not exist shows "This page didn't load" (adminGet throws on the API's 404; no not-found screen in the panel) | P2 | apps/web/src/lib/admin/adminApi.ts | Fixed (adminGet → notFound, panel not-found screen, e2e in admin-shell) |
 | Main CI after #223 (9b0b5cb): the workflow spec could not click Schedule because a toast lay over the sticky action bar and hovering kept it open | P2 (test and staff) | components/admin/AdminShell.tsx | Fixed in #226 (toasts above the action bar, regression check in admin-editors task 11); main CI green on 137428f |
 | #222 Intake tests counted emails from the test before (fire-and-forget emails landed after the next test emptied the list); main's CI failed after #221 | P1 (test only) | apps/api/test/public.test.ts | ✅ Fixed in the #197 PR: `NotificationService.idle()` and an afterEach wait, with a unit test (D250) |
