@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "typecheck": "prisma generate && tsc --noEmit",
     "test": "prisma generate && vitest run",
-    "build": "prisma generate && tsc --noEmit"
+    "build": "prisma generate && tsc --noEmit && node scripts/build.mjs",
+    "start:dist": "node dist/main.js"
   },
   "dependencies": {
     "@fastify/cors": "11.3.1",
@@ -25,8 +26,6 @@
     "@nestjs/platform-fastify": "12.1.2",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
-    "@waafa/fixtures": "workspace:*",
-    "@waafa/shared": "workspace:*",
     "argon2": "0.45.1",
     "bullmq": "6.3.12",
     "dotenv": "^17.2.3",
@@ -40,7 +39,6 @@
     "resend": "6.32.1",
     "rxjs": "^7.8.2",
     "sharp": "0.35.5",
-    "tsx": "^4.20.6",
     "zod": "4.6.5"
   },
   "devDependencies": {
@@ -48,7 +46,11 @@
     "@types/nodemailer": "^7.0.2",
     "@types/pg": "^8.15.5",
     "@waafa/config": "workspace:*",
+    "@waafa/fixtures": "workspace:*",
+    "@waafa/shared": "workspace:*",
+    "esbuild": "0.28.2",
     "eslint": "^9",
+    "tsx": "^4.20.6",
     "typescript": "6.0.3",
     "vitest": "5.0.3"
   }

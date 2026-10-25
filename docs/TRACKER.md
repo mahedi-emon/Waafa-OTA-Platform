@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 25 Oct Asia/Dhaka · Phase: A ✅, B ✅, C: C1 ✅ C2 ✅ C3 ✅ C4 ✅ C5 ✅ (analytics wait for IDs) C6 ✅ (#91 done, home 64 / visa 91 in CI) C7 ✅ code + local rehearsal, C8 ✅ live on https://waafasworld.com (13 Oct, VPS, HTTPS) · SEO after go-live: Sample records noindex (#168), Lighthouse performance (#170), nav label Visa (#172), on-page SEO and brand names (#173) · D (#71) partly: integrations manager, media library, reports, customers, lead board, rich text · SEO structured data (#125) and nginx compression + cache (#126) · Docker Hub images, server pulls (#130) · Google sign-in, keys in the server env (#134, #149) · Log in visible, real country flags, larger hero (#146–#148) · airline logos, VPS runbook (#156–#158) · image-only server bundle (#164), hero card removed (#163) · Current: D0 Admin redesign (epic #201): R0 #190 ✅, R1 #191 shell and design system ✅, R2 #192 form engine v2 ✅, R3 #193 media ✅, R4 #194 status automation ✅ (PR in CI), next R5 #195 DataTable v2 · Security: Next.js 16.4.2 (#213) ✅ · Launch: 13 Oct 2026 ✅ · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 25 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 #231 audit, CI budget and docs 🟡 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -30,13 +30,25 @@ Serena memory `audit_findings`.
 | --- | --- | --- | --- | --- | --- | --- |
 | A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + #39, #52, #89 | 24 | 0 | 0 | ✅ 100% |
 | B · Backend | 12 Oct · epic #29 | 5 (#54 – #57, #82 providers) + bugs #60, #61, #66, #72, #78 | 5 | 0 | 0 | ✅ 100% |
-| C · Integration & Launch | 13 Oct · epic #30 | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (live 13 Oct) | 7 | 0 | 0 | ✅ 100% |
-| D · P1 completion | 13 Nov · epic #31 | #71 admin editors, #91 performance (more with PROMPT 5) | 0 | 0 | 0 | 0% |
+| C · Integration & Launch | 13 Oct · epic #30 (closed 25 Oct) | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (live 13 Oct) | 7 | 0 | 0 | ✅ 100% |
+| D · P1 completion | 13 Nov · epic #31 | PROMPT 10 work order A–M (issues from #231; docs/PRD_COVERAGE.md) | 0 | 1 | 0 | 0% |
 | D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 11 | 0 | 0 | ✅ 100% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #231 · D Step 0 · Audit, CI budget and docs after D0 — 🟡 In progress
+| Field | Value |
+| --- | --- |
+| Asked | PROMPT 10 Step 0: docs/PRD_COVERAGE.md for every FR-ID checked in code and on the live site; a normal PR at 15 CI minutes or less with the full suite on main, nightly and the `full-ci` label; the API image without source or tests and a Docker Hub clean-up; TRACKER, CLAUDE.md and DEPLOY.md for the live site; prompts v5 committed |
+| Built | **Coverage**: docs/PRD_COVERAGE.md, 142 rows (P0 88 done, 26 partial, 2 missing; P1 1 done, 7 partial, 7 missing, 2 waiting for owner account), each gap with its issue; live checks on waafasworld.com (no /track, no /bn or hreflang, Google-only sign-in, no analytics IDs). New P0 finding: customer files never leave the browser (#232). 28 work-order issues #232–#259 under epic #31. **CI**: quick set vs full suite (D266), `full-ci` label + re-run workflow, nightly, CodeQL folded in, Turborepo cache, `scripts/ci-minutes.mjs`. **Image**: esbuild-compiled API (D267), multi-stage Dockerfile, compat stand-in, image check in Docker images, `scripts/dockerhub-cleanup.mjs` (15 releases). **Docs**: CLAUDE.md live-site and CI budget rules, DEPLOY.md private Docker Hub steps and bundle changes table, TRACKER header, section 11 for the VPS and Phase D accounts, section 14, fixed bug rows; epic #30 closed |
+| Files | `.github/workflows/{ci,docker,full-ci-label}.yml` (codeql.yml removed), `apps/api/{Dockerfile,package.json,scripts/build.mjs,scripts/tsx-compat.sh}`, `deploy/{compose.yml,server/compose.yml}`, `scripts/{ci-minutes,dockerhub-cleanup}.mjs`, `CLAUDE.md`, `docs/{PRD_COVERAGE,DEPLOY,TRACKER,claude-code-prompts}.md`, `pnpm-lock.yaml` |
+| Tests | Compiled API vs tsx on the same database: identical snapshot; the production image locally: migrations, seed, API ready, worker through the old command; guards, format, API lint and typecheck |
+| CI minutes | baseline PR #230: 60 billed minutes; this PR: see the close-out |
+| Tools and skills | Serena (memories), Context7 (Prisma 7 config, Docker Hub API), Playwright MCP (live-site checks), a general-purpose subagent for the FR-ID audit (spot-checked: visa files, visa status email, staff alert address) |
+| Decision | D266–D269 |
+| Migration | none (owner: copy the deploy/server bundle when convenient; Docker Hub private steps in DEPLOY.md) |
 
 ### #200 · D0 R10 · Usability QA, 14 staff tasks and the staff guide — ✅ Done
 | Field | Value |
@@ -1673,6 +1685,10 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D263 | 25 Oct | Records with a start and end date (banners, deals, announcements) get their own editor states, Scheduled (shows from …) and Ended, apart from publish scheduling; group fares closing within a week read "Ends soon" | The editor said "Shown" for a banner that starts next Friday; the sidebar counted fares ending this week that every row called Open | #200 |
 | D264 | 25 Oct | System saves are named in words wherever a person's name would show ("the sample data", "a site update", "a store order") | "Last change by seed" and "Edited by order" meant nothing to staff | #200 |
 | D265 | 25 Oct | Admin chrome is sentence case: table headers, rail labels and the Sample badge; a table that can scroll gets `scrollLabel` and becomes a named, focusable region; tab rows wrap or fade at the edge | ADMIN.md §4.2 and §13; axe scrollable-region-focusable; nothing cut off on a 390 px phone | #200 |
+| D266 | 25 Oct | CI budget (#231): a normal PR runs guards, attribution, format, lint, typecheck, unit tests, build and `e2e/smoke.spec.ts`; the full suite (all e2e, public screens, API-mode e2e, VPS smoke, Lighthouse, CodeQL) runs on main, nightly (skipped when main's head already passed) and on PRs labelled `full-ci`; PRs touching the schema, deploy/, the API Dockerfile, sign-in, payments, checkout or lead intake fail without the label; adding it re-runs CI (`full-ci-label.yml`, labels read live); CodeQL moves into ci.yml (the D205 check stays, its own workflow goes); the VPS smoke skips main pushes because Docker images builds and checks the same stack there; Turborepo cache on PRs, forced off in the full suite | PR #230 cost 60 billed minutes; the private repo used about 1,870 of 2,000 free minutes in a week | #231 |
+| D267 | 25 Oct | API image compiled with esbuild (`apps/api/scripts/build.mjs`): main, worker and seed bundled with the workspace packages, npm dependencies external, no source maps, names kept; the runtime stage holds dist, production dependencies, schema, migrations and prisma.config.ts only (@waafa/* and tsx move to devDependencies); a `tsx` stand-in maps the old worker command for one release; Docker Hub keeps the newest 15 releases (`scripts/dockerhub-cleanup.mjs`, warns without delete rights) | The public Docker Hub image exposed the backend source; workspace packages export TypeScript, so tsc alone cannot run them; image 2.07 → 1.7 GB | #231 |
+| D268 | 25 Oct | Phase D order: #232 customer files (P0) and #233 P0 notification gaps first, then A (#229, #219, #224), B (#234, #235), C #236, D #237, E (#238, #239), F (#240, #241), J (#251–#253), K (#254, #255), G (#242–#244), H (#245, #246, #248, #247), I (#249, #250), L (#256, #258, #257), M #259 | The audit found P0 gaps (files never stored); J before K and G because OTP sign-in and online payment are PRD 1B headlines and SMS sender approval takes days; K before G and H so later screens ship with Bangla; inside H the PRD's reviews first | #231 |
+| D269 | 25 Oct | The provider markup (FR-GS-07) applies to Live prices only and moves to Phase E; staging stays a local Docker rehearsal plus the CI deploy smoke (one VPS) unless the owner asks for a second server | Manual mode has no provider prices to mark up; a staging VPS costs money | #231 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1698,25 +1714,30 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | #138 With Accounts live on, the desktop Log in button pushed the header 40 px past a 1024 px screen; deleting an account ended on the error page (server action redirect into the streaming /login, React error 412); sign-in redirects sent local runs to the production domain | P1 | header, /account, sign-in routes | Fixed in the #138 PR with unit, fixture e2e and API-mode e2e regression tests and a local run on the Docker stack |
 | #119 First lead after an API restart failed (5 s transaction timeout on a cold start); reports prerender log | P1 | API intake, admin reports | Fixed in #120 with a regression test |
 | #89 Product page photo had zero width (zoom button without width) | P0 | /shop/p/* | Fixed in #90 with an e2e size check |
-| Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | Fixed by #5 (PR pending) |
+| Fixture images point at `/media/...` files that only land on `main` with A5 | P1 | fixtures, every image | ✅ Fixed in #5 |
 | Boards disagree on two shop numbers: COD cap ৳20,000 (FAQ, Terms) vs ৳25,000 (admin sample); free delivery over ৳3,000 (admin) vs ৳5,000 (product page). Fixtures use ৳20,000 and ৳3,000 until the owner confirms | P2 | fixtures (shop settings) | Owner question |
 | Phase A references restart at 0001 whenever the dev server restarts (no storage before the API) | P2 | lead intake | By design until Phase C |
 | Visitors who dismissed the announcement may see it collapse right after hydration on their next visit | P2 | announcement bar | Accepted (D50); revisit if field CLS shows it |
-| #39 / #91 Home first-load JS over budget | P1 | `/`, search pickers | Improved in #106: home 215 KB, packages and visa under 200 KB; home and flights stay above 200 KB (React plus the search card) |
+| #39 / #91 Home first-load JS over budget | P1 | `/`, search pickers | Issues closed (#106: home 318 → 215 KB); still over 200 KB on Home 217, Flights 258, Shop 215: PROMPT 10 letter C |
 | #51 Lead steps lost travellers and rooms without a search; broken deep links; footer second logo; SEO gaps | P1 | flights, hotels, store bar, footer, SEO | Fixed in #51 |
 | #60 VAT invoice BIN accepted only the letter d (regex lost its backslash), so every VAT-invoice order failed | P0 | checkout, shared contract | Fixed in #56 with a regression test |
 | #61 After a refused order the checkout kept the idempotency key and the web cached the refusal, so fixing the cart did not help for 10 minutes | P0 | checkout | Fixed in #56 with a regression test |
-| #52 Signature motion moments missing (flight path, results morph, route arc, add-to-cart arc, magnetic buttons) | P1 | home, flights, store | Open |
+| #52 Signature motion moments missing (flight path, results morph, route arc, add-to-cart arc, magnetic buttons) | P1 | home, flights, store | ✅ Fixed in #52 (flight path, route arc, add-to-cart arc, magnetic buttons, boarding pass, visa ticks); the search → results morph and the card → detail transition (D140) are PROMPT 10 letter L |
 | Hotel stay picks past 30 nights reset the check-in | P2 | search card | Fixed in #8 with a regression test |
 | Chip radios in the flights and hotels second steps were off-centre (the hidden radio stayed in the flow) | P2 | `/flights`, `/hotels` | Fixed in #11; e2e covers the steps |
-| Package detail first-load JS about 440 KB, Lighthouse mobile 68 | P1 | `/tour-packages/[slug]`, `/plan-my-trip` | Tracked in #39 |
-| Header links to routes not built yet (`/gallery`, `/feedback`) 404 on prefetch | P2 | header | `/visa-services` shipped in #12; the rest close with A17 |
+| Package detail first-load JS about 440 KB, Lighthouse mobile 68 | P1 | `/tour-packages/[slug]`, `/plan-my-trip` | Improved in #39/#106/#170; re-measured in PROMPT 10 letter C |
+| Header links to routes not built yet (`/gallery`, `/feedback`) 404 on prefetch | P2 | header | ✅ Fixed (every linked route exists since A17) |
 | Dev error "URL data during prerendering" on package detail and other param pages | P2 | dynamic param pages | Fixed in #12 (D85) |
 
 ## 10. Cut list
 
 If time runs out, cut in this order (PRD §17). Never cut security, lead capture, the admin leads module, compliance
 or accessibility.
+Proposed 25 Oct for Phase D (lowest impact first; applied only if progress falls behind at a checkpoint): 1) admin dark
+mode #257; 2) custom roles, search funnel, scheduled reports and merge customers #244; 3) campaign pages and flash
+sales #247; 4) benchmark extras beyond fixes #258; 5) Buy again and save for later (wishlist stays) #246. Never cut:
+#232 files, #233, security #234 #235, payments #251, accessibility, compliance.
+
 1. Gallery video embeds
 2. Blog extras (related posts, contents list)
 3. Part-code search in Find by model
@@ -1726,22 +1747,31 @@ or accessibility.
 
 ## 11. Blockers and owner actions
 
-Hosting is the owner's VPS with Docker (D141); the steps, settings and launch checks are in `docs/DEPLOY.md` (#74). To go live on 13 Oct: SSH access to the VPS (sudo + docker group), the domain's A records (apex and www) on the VPS IP, an email sender (Resend with the domain verified, or SMTP), an email for Let's Encrypt notices, the first Super Admin email, and optionally Turnstile keys. Rows below for Vercel, Railway and managed databases are replaced by the VPS.
+Hosting today: the owner's VPS (D141) runs the Docker Compose stack from images that GitHub Actions pushes to Docker
+Hub (`emon6107/waafa-ota-platform`, D161, D171); email goes out through Resend (D155); photos live on the VPS media
+volume (D156). Steps: `docs/DEPLOY.md`. Keys go into Admin › Integrations (or the named line of the server `.env`),
+never into chat, code or the repository. Each Phase D adapter ships switched off until its keys are saved.
 
-| Item | What I need from the owner | Exact steps | Needed by |
+| Item | What I need from the owner | Exact steps | Needed for |
 | --- | --- | --- | --- |
-| Vercel (web hosting, preview per PR) | An account and a logged-in CLI | `npm i -g vercel` → `vercel login` → tell me; I run `vercel link` in `apps/web` and connect the GitHub repo | 11 Oct |
-| API hosting | Railway project or a small VPS | Railway: create a project and an API token (`railway login`); VPS: Ubuntu 24.04, 2 GB RAM, SSH key access | 11 Oct |
-| PostgreSQL 16 + Redis | Managed instances (Railway, Neon or Supabase for Postgres; Railway or Upstash for Redis) | Create both; put the URLs in the host's env settings (never in chat or the repo) | 11 Oct |
-| Cloudflare R2 + Turnstile | R2 buckets (public media, private documents) and a Turnstile site | Cloudflare dashboard → R2 → two buckets + an API token (Object Read & Write); Turnstile → add site → site key + secret | 12 Oct |
-| Email (Resend) + DNS | Resend account and DNS access for the sending domain | Resend → add domain → add the SPF, DKIM and DMARC records it shows at the DNS host | 12 Oct |
-| Domain | Production domain (waafasworld.com?) and DNS access | Confirm the domain; give DNS access or add the Vercel records I send | 12 Oct |
-| Sentry | Project DSNs for web and API | sentry.io → new projects (Next.js, Node) → copy the DSNs into the host env | 13 Oct |
-| GA4, GTM, Meta Pixel | Measurement IDs | GA4 property → web stream ID; GTM container ID; Meta Events Manager → Pixel ID | 13 Oct |
-| 21st.dev key name (optional) | Nothing required | Works through `TWENTY_FIRST_API_KEY`; to use `API_KEY_21ST` set it as a Windows user variable and restart VS Code | — |
-| Context7 key (optional) | Higher rate limits | context7.com → API key → set `CONTEXT7_API_KEY` as a Windows user variable | — |
-| Branch protection | — | Applied by me in A0 (public repo) | done in #27 |
-| Content (PRD §17) | Domain; office floor (4th vs 5th; site shows 4th); hotline and WhatsApp numbers; Waafas World launch categories, products, prices, stock, photos, delivery areas, charges, COD limit; offline payment accounts (bank, bKash, Nagad); launch packages, visa countries with fees and times, group fares; refund, privacy and terms text or approval of drafts; logo vector files; About mission and vision; EMI banks and tenures; Better Day toner prices and compatible models; staff names, roles and team members who agree to appear; SSLCommerz status; email provider for info@ | Send what is ready; drafts stay marked Sample until replaced | 11 Oct |
+| GitHub Actions minutes | A decision: the private repository used about 1,870 of 2,000 free minutes between 19 and 25 Oct | github.com/settings/billing → check usage; either add a payment method with a small Actions budget, or make the repository public again (minutes free). #231 cuts a normal PR from about 60 to about 10 minutes, but each merge to main still runs the full suite | every PR |
+| Docker Hub private | Read-only access token on the server, then the repository private | `docs/DEPLOY.md` → Private repositories (token → `docker login -u emon6107` on the server → Make private → `sh deploy.sh`) | now (#231) |
+| Docker Hub token for clean-up | The GitHub secret `DOCKERHUB_TOKEN` with Read, Write and Delete access | Docker Hub → Personal access tokens → new token (Read, Write, Delete) → GitHub repo → Settings → Secrets → Actions → `DOCKERHUB_TOKEN` | keeping 15 releases (#231) |
+| Deploy R9 and R10 | Backup first (R9 has a migration) | `cd /opt/waafa && sh backup.sh && sh deploy.sh` | now |
+| Dependabot alerts | Turn on alerts and security updates | GitHub repo → Settings → Code security → Dependabot alerts → Enable; Dependabot security updates → Enable | now |
+| SSLCommerz | Sandbox store now, live merchant later | developer.sslcommerz.com → sandbox store ID + password → Admin › Integrations › SSLCommerz | letter J |
+| bKash payment gateway | Merchant account with the PGW (tokenized checkout) | Talk to bKash merchant sales → sandbox app key, secret, username, password → Admin › Integrations › bKash | letter J |
+| SMS gateway | BulkSMSBD or SSL Wireless account and an approved sender ID (takes days: start early) | Sign up → API key + sender ID → Admin › Integrations › SMS | letters F (phone OTP), J |
+| Courier | Steadfast merchant account (then Pathao or RedX) | Steadfast panel → API key + secret → Admin › Integrations › Courier | letter J |
+| Telegram alerts | A bot and the sales group | @BotFather → /newbot → token; add the bot to the sales group; send me nothing, paste the token and group into Admin › Integrations › Telegram | letter J |
+| Error tracking | sentry.io free account (or self-hosted GlitchTip) | New projects for Next.js and Node → DSNs → Admin › Integrations (or the server `.env` line named in the issue) | letter E |
+| Off-site backup | Cloudflare R2 bucket (10 GB free) or Backblaze B2 | Create a bucket + an access key limited to it → server `.env` lines named in the issue | letter E |
+| Uptime monitor | UptimeRobot or Better Stack (free) | Steps in `docs/DEPLOY.md` (letter E) | letter E |
+| GA4, GTM, Meta Pixel | Measurement IDs | GA4 → web stream ID; GTM container ID; Meta Events Manager → Pixel ID → Admin › Settings › Analytics | letter D |
+| Turnstile | Site key + secret | Cloudflare → Turnstile → add site → GitHub variable `TURNSTILE_SITE_KEY` + server `.env` `TURNSTILE_SECRET_KEY` | forms |
+| Real content | Staff replace Sample packages, visas and products in Admin | docs/ADMIN_GUIDE.md | ongoing |
+| Open content questions | COD cap (৳20,000 vs ৳25,000), free delivery threshold (৳3,000 vs ৳5,000), office floor (4th vs 5th), EMI banks and tenures, About mission and vision | Edit in Admin or tell me | ongoing |
+| 21st.dev / Context7 keys (optional) | Nothing required | `TWENTY_FIRST_API_KEY` / `CONTEXT7_API_KEY` as Windows user variables | — |
 
 ## 12. Later phases (E live booking · F licensed modules)
 
@@ -1758,6 +1788,7 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 25 Oct | Step 0 of PROMPT 10: PRD coverage audit (142 rows, P0 file uploads gap found), CI budget (quick set, full-ci label, nightly), compiled API image, Docker Hub clean-up, live-site docs; 28 Phase D issues filed; epic #30 closed | #231, #232–#259 | PR for #231 | local image run |
 | 25 Oct | R10: staff tasks 2, 8, 12 and 13 as e2e (all 14 covered), axe on every admin route, the independent review fixed (names, columns, editors in words, dated chips, sentence case, phone layout), #229 filed, the Banglish staff guide | #200, #229 | PR for #200 | web 664 · e2e API job 79 |
 | 25 Oct | R9: dashboard v2, Settings as one page, invite by email with the welcome page, permission matrix, audit log in sentences, template Insert and preview, reports with ranges and Excel | #199 | #228 (951080b) | shared 144 · web 663 · API 192 · e2e API job 71 |
 | 25 Oct | #225: a missing admin record shows the panel's not-found screen (Open Trash, dashboard) instead of the error page | #225 | #227 (81d4e04) | e2e admin-shell + not-found case |
@@ -1815,132 +1846,6 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. R10 #200: PR, CI, merge; tell the owner in Banglish what the redesign changed; close epic #201 and #71 (replaced by the epic).
-2. Phase D (#31): #229 admin polish from the review, #219 the 100-row page, #224 the budget flake; then the PRD P1 list (Bangla at /bn and the rest) as new issues.
-3. Deploy notes for the owner: R9's migration needs `sh backup.sh` first; R10 has none.
-
-Earlier (25 Oct, R9):
-1. R9 #199: merge, then remind the owner: migration, so `sh backup.sh` before deploying.
-2. R10 #200 usability QA (14 staff tasks as e2e, axe, screenshots, independent review) and the admin guide (docs/ADMIN_GUIDE.md), then Phase D.
-3. #224 budget e2e cold-start flake and #219 the 100-row page, between the R issues.
-
-Earlier (24 Oct, R7):
-1. R8 #198 purpose-built editors (then the owner checkpoint).
-2. R9 #199 settings, R10 #200 dashboard and the admin guide (docs/ADMIN_GUIDE.md).
-3. #224 budget e2e cold-start flake and #219 the 100-row page, between the R issues.
-
-Earlier (24 Oct, R6):
-1. R6 #196: PR, CI, merge, then the owner checkpoint (Banglish summary, screenshots, "test this yourself").
-2. R7 #197 website builder, with the draft preview (D219).
-3. #219 the 100-row page style recalculation.
-
-Earlier (24 Oct, R5):
-1. R6 #196 inbox: leads list on the R5 table, drag board on the R4 steps, detail with timeline; visa applications on `Lead.progress`; orders; proofs (then the owner checkpoint).
-2. R7 #197 website builder, with the draft preview (D219).
-3. #219 the 100-row page style recalculation, when R6 is done.
-
-Earlier (24 Oct 00:00):
-1. R5 #195 DataTable v2 on every list (the R4 chips move into its status column; bulk publish, archive, assign and export).
-2. R6 #196 inbox: leads list, drag board on the R4 steps, detail with timeline; visa applications on `Lead.progress`; orders; proofs (then the owner checkpoint).
-3. R7 #197 website builder, with the draft preview (D219).
-
-Earlier (23 Oct 15:30):
-1. R4 #194 status automation: shared state machines (content, leads, visa applications, orders, payment proofs, derived statuses), API actions and enforcement, scheduled publish and expiry in the worker, Trash with 30-day restore and purge, redirects after slug changes, Sample auto-clear (ADMIN.md §8, §9).
-2. R5 #195 DataTable v2 on every list.
-3. R6 #196 inbox (then the owner checkpoint).
-
-Earlier (20 Oct 04:40):
-1. R3 #193 media: upload on every photo and video field (replaces the interim address boxes, D200), crop and focal point, library v2, video route; heavy parts load on first use (D202).
-2. Checkpoint for the owner after R3 (Banglish summary + screenshots + "test this yourself").
-3. R4 #194 status automation: scheduling and expiry with the worker, Trash, redirects after slug changes, Sample auto-clear.
-
-Earlier (19 Oct 21:30):
-1. R2 #192 form engine v2: blueprints for every content key, widgets (except media), sticky action bar, right rail, unsaved guard, autosave, History with restore, Duplicate, edit-conflict check, plain errors, session warning; lead page labelled facts.
-2. R3 #193 media (upload everywhere, crop and focal point, library v2, video route).
-3. Checkpoint for the owner after R3 (Banglish summary + screenshots + "test this yourself").
-
-Earlier (19 Oct 18:15):
-1. R1 #191: admin shell and design system (grouped sidebar with role filtering and count badges, top bar with Ctrl+K, + New and notifications, breadcrumbs, page header, admin tokens and StatusChip, empty/loading/error states, offline banner, sign-in page).
-2. R2 #192 form engine v2 (blueprints for every content key, widgets, action bar, right rail, autosave, History, Duplicate, conflict check), then R3 #193 media.
-3. Checkpoints for the owner after R1, R3, R6 and R8 (Banglish summary + screenshots + "test this yourself").
-
-Earlier (14 Oct):
-1. Owner: Admin › Content › Menus › header → label "Visa"; Search Console (verify with the HTML tag in Settings › General, submit /sitemap.xml); Google Business Profile; socials in Settings › Contact; turn Sample off on each real record (About and policies too); PageSpeed Insights on the live site after `sh deploy.sh`.
-2. Performance follow-up (P1): Home and Flights below 85 in CI. Home: fewer nodes before the fold (1,900 now, admin item counts per section) and lighter hydration; Flights: the lead card and preferences rail hydration.
-3. #71 rest, Bangla (P1).
-
-Earlier (13 Oct 19:30):
-1. SEO part 3 (P1): one H1, unique title (≤ 60) and description (≤ 155), alt text and internal links on every public page; brand names (Waafa, Waafa International, Waafa Tours and Travel) in Home title, H1, description and Organization alternateName.
-2. Owner: Search Console (verify with the HTML tag in Settings › General, submit /sitemap.xml), Google Business Profile, socials in Settings › Contact, Sample off on each real record; PageSpeed Insights on the live site after `sh deploy.sh`.
-3. Performance follow-up: Flights TBT (hydration of the lead card and preferences rail) if CI stays below 85.
-
-Earlier (13 Oct 16:30):
-1. SEO part 2 (P1): Lighthouse mobile 85+ on Home, Flights, Packages, Visa, Shop (LCP: hero poster, priority image, fonts; first-load JS; CLS 0); before/after here.
-2. SEO part 3 (P1): one H1, unique title (≤ 60) and description (≤ 155), alt text and internal links on every public page.
-3. Owner: turn Sample off on each record as real content replaces it (Admin record editor); Search Console → resubmit /sitemap.xml.
-
-Earlier (13 Oct 09:30):
-1. Owner (14 Oct): DNS A records → on the PC `tar -czf waafa-server.tgz -C deploy/server .` (already packed) → `scp` → on the server unpack to /opt/waafa → `sh setup-server.sh root` → `sh deploy.sh` → backups cron (docs/DEPLOY.md quick start).
-2. Owner: GitHub → private (Settings › General › Danger Zone); optional Docker Hub private + `docker login` on the server; Google Cloud redirect URI + Publish app; first admin sign-in, change password, remove SEED_ADMIN_* from /opt/waafa/.env.
-3. After go-live: Search Console, Rich Results, Sample content, Tracking IDs, Turnstile, uptime; #71 rest, Bangla (P1).
-
-Earlier (13 Oct 04:30):
-1. Owner (14 Oct): VPS (Ubuntu 24.04, x86_64, 2 vCPU / 4 GB) → DNS A records → docs/DEPLOY.md quick start (bootstrap-server.sh, clone, scp deploy/.env.production, check.sh, deploy.sh, backups cron).
-2. Owner: Google Cloud → web client origins/redirect URI for https://waafasworld.com, Publish app; first admin sign-in, change password, remove SEED_ADMIN_* from the server env.
-3. After go-live: Search Console, Rich Results, replace Sample content (fares, destinations), Tracking IDs, Turnstile, uptime; #71 rest, Bangla (P1).
-
-Earlier (13 Oct 01:00):
-1. Owner (13 Oct): Google Cloud → Clients → add the redirect URIs `https://waafasworld.com/api/auth/google/callback` and `http://localhost/api/auth/google/callback` (origins too), then Audience → Publish app (DEPLOY.md 5b).
-2. Owner: VPS (2 vCPU / 4 GB + 4 GB swap) and DNS → copy deploy/.env.production to /opt/waafa/deploy/.env → `sh deploy/check.sh` → `sh deploy/deploy.sh`. Email and Google keys are already in that file.
-3. After go-live: Search Console, Rich Results, Sample content, Tracking IDs, Turnstile, uptime; then #71 rest and Bangla (P1).
-
-Earlier (12 Oct 21:30):
-0. Google sign-in (optional, any time after go-live): docs/DEPLOY.md 5b (Google Cloud OAuth client, redirect URI, Integrations › Sign-in, Accounts live).
-1. Owner (13 Oct): buy the VPS (x86_64, 2 vCPU / 4 GB minimum, 4 vCPU / 8 GB recommended, Ubuntu 24.04, Singapore), point waafasworld.com and www at it, create a Resend account (verify the domain) and put RESEND_API_KEY in the production settings; then DEPLOY.md quick start with the prepared `deploy/.env.production` copied to `/opt/waafa/deploy/.env`.
-2. Right after: change the admin password, remove SEED_ADMIN_* from the server env, Search Console + sitemap, Rich Results test, replace Sample content, Tracking IDs, uptime monitor; Turnstile = GitHub variable TURNSTILE_SITE_KEY + re-run Docker images + server secret.
-3. After launch: #71 rest, Bangla (P1).
-
-Earlier (12 Oct 10:30):
-1. Owner go-live (manual, 13 Oct): VPS → docs/DEPLOY.md quick start; `deploy.sh` now also clears the nginx cache on every release.
-2. Right after: Search Console → submit /sitemap.xml and run the Rich Results test on /, /shop, /about-us, /visa-services/thailand, /tour-packages; replace Sample content; IDs in Settings › Tracking; Turnstile keys; uptime monitor.
-3. After launch: #71 rest (itinerary drag builder, variants grid, category tree drag, TOTP, media picker), Bangla (P1).
-
-Earlier (12 Oct 01:30):
-1. Owner go-live (manual): VPS → docs/DEPLOY.md quick start (`init-env.sh`, fill email sender and first admin, `check.sh`, `deploy.sh`), DNS A records first.
-2. Right after: sign in at /secure-admin-control, change the password, upload real photos in Media library and paste their addresses into the image fields, replace Sample content, Search Console and analytics IDs in Settings › Tracking, Turnstile keys, uptime monitor; email provider can now be set in Settings › Integrations (SMS and email tab).
-3. After launch (#71 rest): itinerary day builder with drag, product variants grid, category tree drag, TOTP sign-in, bookings and convert to booking (Phase D/E), a media picker inside the content editor.
-
-Earlier (11 Oct 19:30):
-1. Owner go-live (manual): VPS → docs/DEPLOY.md quick start (`init-env.sh`, fill email sender and first admin, `check.sh`, `deploy.sh`), DNS A records first.
-2. Right after: sign in at /secure-admin-control, change the password, replace Sample content, add Search Console and analytics IDs in Settings › Tracking, uptime monitor, Turnstile keys.
-3. First 48 hours: watch `docker compose logs`, Admin › Notifications and Leads; then #91 (performance), #71 (admin editors).
-
-Earlier (11 Oct 17:30):
-1. Owner (manual deploy): VPS → `sh deploy/init-env.sh <domain> <email>` → fill the email sender and first admin → `sh deploy/check.sh` → `sh deploy/deploy.sh` (docs/DEPLOY.md quick start).
-2. After go-live: add the Search Console code in Admin › Settings › General, submit /sitemap.xml, check shares in the Facebook Sharing Debugger; a travel expert reviews the six Sample flight routes and adds more.
-3. After launch: #91 performance, #71 admin editors, Bangla (P1).
-
-Earlier (11 Oct 15:30):
-1. Owner: VPS SSH access, DNS A records, email sender (Resend or SMTP), ACME email, first Super Admin email → `sh deploy/deploy.sh` (#74) → launch checks; replace Sample content in Admin.
-2. Before announcing: Lighthouse on the live domain (real network) and an admin walk-through with the owner's staff.
-3. After launch: #91 performance (home TBT, 200 KB), #71 bespoke admin editors and media uploads, Phase D.
-
-Earlier (11 Oct 14:00):
-1. Merge #87 and #88 when green; download the `public-screens` artifact again and compare with `docs/design/thumbs`; close #22.
-2. Owner: VPS SSH access, DNS A records, email sender, ACME email, Super Admin email → `sh deploy/deploy.sh` (#74) → launch checks; replace Sample content in Admin.
-3. After launch: #91 (200 KB first load), #71 (bespoke admin editors, media uploads), Phase D.
-
-Earlier (11 Oct 06:00):
-1. Owner: Railway (PostgreSQL + Redis), Vercel import, Resend domain records, Turnstile keys, DNS, first Super Admin email; then deploy per `docs/DEPLOY.md` (#74) and run the launch checks.
-2. #39 performance: move zod out of the client search card, defer Motion chunks, re-measure (budget 200 KB).
-3. #22 QA: public routes at 768 and 1024, Lighthouse mobile once deployed; replace Sample content in Admin before announcing.
-
-Earlier (11 Oct 01:40):
-1. Merge #68 when CI is green (fix the API-mode e2e if it fails); close A19 – A21 with what the generic editor covers and a follow-up issue for the bespoke editors (D138).
-2. Turnstile browser widget on every public form (a secret without the widget would refuse every form), then the deploy runbook (Railway API + PostgreSQL + Redis, Vercel web, env list, DNS, Resend) and staging on 12 Oct.
-3. Polish on the way: #52 signature motion, #39 performance, #22 QA at 768 / 1024; admin screenshots and axe at 320 / 390 / 1440 once Playwright MCP is back.
-
-Earlier list (10 Oct):
-1. A17 (#17): branded 404 (catch-all under [locale]), error and global-error pages, offline and maintenance pages, loading patterns, LiveBody placeholder.
-2. Review-fix issue (from the 10 Oct reviews): flights step 2 travellers, hotels rooms and guests, visa list actions, store category row and Track order link, home metadata and h1 fallback, per-country visa descriptions, collection description fallback, service pages noIndex, broken deep links (/tour-packages?q=, /flights?to=…&fare=), empty office-and-stationery links, siteUrl production guard; signature moments (hero flight path, route arc, add-to-cart arc, magnetic buttons).
-3. Launch-critical backend (Phase B lean): API with PostgreSQL for leads, orders, feedback, proofs and content, staff auth, email; then admin A18 – A21 on one list + form pattern; deploy staging 12 Oct, production 13 Oct (needs the owner accounts in section 11).
+1. #231 Step 0: PR with the full-ci label, CI, merge; Banglish summary with the issue order and the owner's actions.
+2. #232 customer files reach private storage (P0: visa documents, payment proof, attachments), then #233 the P0 notification gaps.
+3. Letter A: #229 admin polish, #219 the 100-row page, #224 the budget e2e flake; then B (#234 two-factor, #235 ClamAV).

@@ -1,0 +1,50 @@
+name: full-ci label
+
+# Adding the `full-ci` label to a pull request re-runs its CI so the run reads the label and goes in full (issue 231).
+# Other labels start nothing (the job is skipped, which costs no minutes).
+
+on:
+  pull_request:
+    types: [labeled]
+
+permissions: {}
+
+jobs:
+  rerun:
+    name: Re-run CI in full
+    if: github.event.label.name == 'full-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      SHA: ${{ github.event.pull_request.head.sha }}
+      LABELLED_AT: ${{ github.event.pull_request.updated_at }}
+    steps:
+      - name: Re-run the pull request's CI
+        run: |
+          run=$(gh run list -R "$REPO" --workflow ci.yml --commit "$SHA" --event pull_request --limit 1 \
+            --json databaseId,status,createdAt --jq '.[0] // empty | "\(.databaseId) \(.status) \(.createdAt)"')
+          if [ -z "$run" ]; then
+            echo "No CI run for $SHA yet; when it starts it reads the label itself."
+            exit 0
+          fi
+          set -- $run
+          id=$1 status=$2 created=$3
+          # A run that started after the label was added has already seen it.
+          if [ "$(date -d "$created" +%s)" -gt "$(date -d "$LABELLED_AT" +%s)" ]; then
+            echo "CI run $id started after the label; nothing to do."
+            exit 0
+          fi
+          if [ "$status" != "completed" ]; then
+            gh run cancel "$id" -R "$REPO"
+            for attempt in $(seq 1 30); do
+              [ "$(gh run view "$id" -R "$REPO" --json status --jq .status)" = "completed" ] && break
+              sleep 4
+            done
+          fi
+          gh run rerun "$id" -R "$REPO"
+          echo "CI run $id re-runs in full."

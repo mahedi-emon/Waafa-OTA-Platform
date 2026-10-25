@@ -1,4 +1,4 @@
-# WAAFA deploy runbook (go-live 14 Oct 2026)
+# WAAFA deploy runbook (live since 13 Oct 2026)
 
 Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `deploy/compose.yml`.
 
@@ -7,8 +7,8 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 | `nginx` | `deploy/nginx` (nginx 1.27): reverse proxy, HTTPS, www → apex, rate limit on form posts | 80 and 443 | 96 MB |
 | `certbot` | `certbot/certbot`: gets and renews the Let's Encrypt certificate | no | 128 MB |
 | `web` | `apps/web/Dockerfile` (Next.js standalone) | through nginx only | 1 GB |
-| `api` | `apps/api/Dockerfile` (runs migrations and the idempotent seed, then starts) | no (127.0.0.1:4000 for the web build) | 640 MB |
-| `worker` | same image as the API, command `tsx src/worker.ts` | no | 384 MB |
+| `api` | `apps/api/Dockerfile` (compiled JavaScript only; runs migrations and the idempotent seed, then starts) | no (127.0.0.1:4000 for the web build) | 640 MB |
+| `worker` | same image as the API, command `node dist/worker.js` | no | 384 MB |
 | `postgres` | `postgres:16`, volume `pgdata` | no | 640 MB |
 | `redis` | `redis:7`, append-only, `noeviction` (BullMQ) | no | 160 MB |
 
@@ -91,11 +91,27 @@ change the password, delete both lines from `/opt/waafa/.env`, and follow the la
 
 ### Private repositories
 
-- GitHub: Settings → General → Danger Zone → Change visibility → Private. Actions keep building images (private
-  repositories have a monthly minutes allowance on the free plan; the image build is the job that matters for the
-  server). The server needs no GitHub access.
-- Docker Hub (optional): Repositories → `waafa-ota-platform` → Settings → Make private; then create an access token
-  (Account settings → Personal access tokens, read-only) and run `docker login -u emon6107` once on the server.
+- GitHub: the repository is private. Actions minutes are counted against the monthly allowance (about 2,000 on the
+  free plan); CLAUDE.md "CI budget" keeps a normal pull request at 15 minutes or less. The server needs no GitHub
+  access.
+- **Docker Hub: make the repository private, in this order** (otherwise the next deploy cannot pull). Since issue 231
+  the API image holds compiled JavaScript only, but the images are still the business's code and settings shape:
+  1. Docker Hub → Account settings → Personal access tokens → Generate new token, access **Read-only**, name
+     `waafa-server`. Copy it (it is shown once).
+  2. On the server: `docker login -u emon6107` and paste the token as the password. Check: `cd /opt/waafa && sh deploy.sh`
+     still pulls.
+  3. Docker Hub → Repositories → `waafa-ota-platform` → Settings → Visibility → **Make private**.
+  4. Run `sh deploy.sh` once more to confirm the pull works with the repository private.
+- **The GitHub secret `DOCKERHUB_TOKEN`** (used by the "Docker images" workflow) needs **Read, Write and Delete**
+  access: the workflow keeps the newest 15 releases on Docker Hub and deletes older `api-`, `web-` and `nginx-<sha>`
+  tags (`scripts/dockerhub-cleanup.mjs`). With a read-write token the clean-up only warns. Rolling back works to any of
+  the 15 kept releases: `IMAGE_TAG=<7-character sha> sh deploy.sh`.
+
+### Bundle changes by release
+
+| Release | What changed in `deploy/server` | What to do |
+| --- | --- | --- |
+| Issue 231 (Oct 2026) | `compose.yml`: the worker runs `node dist/worker.js` (the image no longer has TypeScript or tsx) | Copy the bundle again (step 1) when convenient. Until then the old `tsx src/worker.ts` command still works through a stand-in inside the image, kept for one more release |
 
 ### Deploy from a clone (the earlier way)
 

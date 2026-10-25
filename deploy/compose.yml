@@ -91,7 +91,7 @@ services:
   worker:
     image: ${IMAGE_REPO:-waafa}:api-${IMAGE_TAG:-latest}
     restart: unless-stopped
-    command: ["node_modules/.bin/tsx", "src/worker.ts"]
+    command: ["node", "dist/worker.js"]
     environment:
       <<: *api-env
       NODE_OPTIONS: --max-old-space-size=256

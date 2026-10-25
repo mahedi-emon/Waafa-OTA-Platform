@@ -19,11 +19,14 @@ on:
       - "pnpm-workspace.yaml"
       - ".dockerignore"
       - ".github/workflows/docker.yml"
+      - "scripts/dockerhub-cleanup.mjs"
   # Pull requests that touch the image recipe build and check the images without pushing them.
   pull_request:
     paths:
       - "deploy/**"
       - "apps/api/Dockerfile"
+      - "apps/api/scripts/**"
+      - "apps/api/package.json"
       - "apps/web/Dockerfile"
       - ".dockerignore"
       - ".github/workflows/docker.yml"
@@ -92,6 +95,19 @@ jobs:
           label=$(docker image inspect -f '{{ index .Config.Labels "org.waafa.site-url" }}' "$IMAGE_REPO:web-$TAG")
           [ "$label" = "$SITE_URL" ]
 
+      # Issue 231: the API image runs compiled JavaScript only (no TypeScript source, tests or workspace packages).
+      - name: API image holds no source or tests
+        run: |
+          image="$IMAGE_REPO:api-$TAG"
+          found=$(docker run --rm --entrypoint sh "$image" -c 'cd /app && find . -path ./node_modules -prune -o -path "*/node_modules" -prune -o -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.test.*" -o -name "*.spec.*" \) -print | grep -v "^./apps/api/prisma.config.ts$" || true')
+          if [ -n "$found" ]; then
+            echo "Source or test files in $image:" >&2
+            echo "$found" >&2
+            exit 1
+          fi
+          docker run --rm --entrypoint sh "$image" -c 'test -f dist/main.js && test -f dist/worker.js && test -f dist/seed.js && test ! -e src && test ! -e test && test ! -e /app/packages/shared/src && test ! -e /app/fixtures/src'
+          echo "API image: compiled dist only"
+
       - name: No secrets in the images
         run: |
           for service in api web nginx; do
@@ -130,6 +146,15 @@ jobs:
             echo "Tag \`$TAG\` (and \`latest\`) for api, web and nginx in \`$IMAGE_REPO\`, built for $SITE_URL."
             echo "On the server: \`git pull && sh deploy/deploy.sh\` (IMAGE_TAG=latest) or pin IMAGE_TAG=$TAG."
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # Keep the newest 15 releases on Docker Hub (rollback targets); older sha tags go (issue 231).
+      - name: Docker Hub clean-up
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: node scripts/dockerhub-cleanup.mjs "$IMAGE_REPO" --keep 15
 
       - name: Logs
         if: failure()
