@@ -66,18 +66,24 @@ export class PublicFilesController {
       typeof token === "string" && token.length <= 300 ? await this.files.open(token) : null;
     if (!file)
       throw problems.notFound("This link has expired. Open the file again from the admin.");
-    return reply
-      .header("content-type", file.mimeType)
-      .header("content-length", String(file.size))
-      .header("content-disposition", dispositionName(file.fileName))
-      .header("cache-control", "private, no-store")
-      .header("x-content-type-options", "nosniff")
-      .header(
-        "content-security-policy",
-        "sandbox; default-src 'none'; img-src 'self'; style-src 'unsafe-inline'",
-      )
-      .header("referrer-policy", "no-referrer")
-      .send(file.stream);
+    return (
+      reply
+        .header("content-type", file.mimeType)
+        .header("content-length", String(file.size))
+        .header("content-disposition", dispositionName(file.fileName))
+        .header("cache-control", "private, no-store")
+        .header("x-content-type-options", "nosniff")
+        // Images open sandboxed; Chrome's PDF viewer refuses a sandboxed or object-src 'none' page, so a PDF only
+        // gets the framing and form limits (its scripts run inside the viewer, never in the site's origin).
+        .header(
+          "content-security-policy",
+          file.mimeType === "application/pdf"
+            ? "frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+            : "sandbox; default-src 'none'; img-src 'self'; style-src 'unsafe-inline'",
+        )
+        .header("referrer-policy", "no-referrer")
+        .send(file.stream)
+    );
   }
 }
 

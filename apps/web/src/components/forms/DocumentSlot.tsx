@@ -11,6 +11,7 @@ import {
   formatFileSize,
   type VisaFileType,
 } from "@/lib/visa/visaFiles";
+import { beginUpload } from "@/lib/forms/uploadsInFlight";
 
 const IMAGE_ACCEPT = ".jpg,.jpeg,.png,image/jpeg,image/png";
 
@@ -85,6 +86,7 @@ function DocumentSlot({
     request.current = controller;
     const fileName = chosen.name.slice(0, 120);
     setUploading(fileName);
+    const ended = beginUpload();
     try {
       const query = new URLSearchParams({ kind, name: fileName });
       const response = await fetch(`/api/uploads?${query.toString()}`, {
@@ -109,6 +111,7 @@ function DocumentSlot({
     } catch (failure) {
       if (!(failure instanceof DOMException && failure.name === "AbortError")) setError("upload");
     } finally {
+      ended();
       if (request.current === controller) {
         request.current = null;
         setUploading(null);

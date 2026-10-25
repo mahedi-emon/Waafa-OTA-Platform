@@ -10,7 +10,16 @@ export type CustomerFileType = (typeof CUSTOMER_FILE_TYPES)[number];
 export const CUSTOMER_FILE_MAX_BYTES = 5 * 1024 * 1024;
 
 /** An unclaimed upload is deleted after this long (the form was never sent). */
-export const CUSTOMER_FILE_PENDING_MS = 24 * 60 * 60_000;
+export const CUSTOMER_FILE_PENDING_MS = 6 * 60 * 60_000;
+
+/** Unclaimed uploads one visitor may hold at a time (four visa slots of 5 MB, twice over). */
+export const CUSTOMER_FILE_PENDING_PER_VISITOR_BYTES = 40 * 1024 * 1024;
+
+/** Unclaimed uploads the whole site may hold at a time, so uploads can never fill the server's disk. */
+export const CUSTOMER_FILE_PENDING_TOTAL_BYTES = 2 * 1024 * 1024 * 1024;
+
+/** Uploads pause when the private volume has less free space than this. */
+export const CUSTOMER_FILE_MIN_FREE_BYTES = 2 * 1024 * 1024 * 1024;
 
 /** Visa documents are deleted this long after their application closes (FR-VISA-05). */
 export const VISA_DOCUMENT_RETENTION_MS = 90 * 24 * 60 * 60_000;

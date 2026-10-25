@@ -11,7 +11,10 @@ export type CustomerFileRow = {
   mimeType: string;
   sizeBytes: number;
   scanStatus: string;
+  /** attached, or deleted once its retention ended. */
+  status: string;
   createdAt: string;
+  deletedAt: string | null;
 };
 
 /** The files a lead, order, payment proof or feedback holds; the API checks the staff member may see the record. */

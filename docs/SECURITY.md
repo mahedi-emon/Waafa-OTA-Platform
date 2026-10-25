@@ -15,7 +15,16 @@ PRD NFR-SEC and the OWASP Top 10 (2021), mapped to what the code does. Re-check 
 | A09 Logging and monitoring failures | Every admin write in the audit log with before and after values; pino request logs with request IDs; email delivery log; daily database backups with a tested restore | Admin › Audit log, `deploy/backup.sh` |
 | A10 Server-side request forgery | The provider health check only reaches public https hosts (no localhost, private ranges, IP v6 literals or single-label names); no other user-supplied URL is fetched | `apps/api/src/providers/catalogAdapters.ts` |
 
-Forms: Cloudflare Turnstile (when the keys are set), per-address rate limits in the web, the API and nginx (30 POSTs a minute), body size caps (web 16 KB per form, API 1 MB, nginx 2 MB). Passport and visa documents are never stored publicly (Phase A keeps file metadata only).
+Forms: Cloudflare Turnstile (when the keys are set), per-address rate limits in the web, the API and nginx (30 POSTs a minute), body size caps (web 16 KB per form, API 1 MB, nginx 2 MB).
+
+Customer files (issue 232): visa documents, payment slips, printing and trading attachments and feedback photos upload
+to `/api/uploads` (nginx 6 MB, web and API 5 MB, JPG, PNG or PDF decided by the first bytes, 20 a minute per visitor,
+40 MB of unclaimed files per visitor and 2 GB in total, uploads pause below 2 GB free disk). They live on the private
+`privatedata` volume, which nginx never serves. Staff open a file only through a 10-minute signed link from the admin;
+issuing the link and each download are written to the audit log, and staff see only files of records their role can
+open. Unclaimed uploads are deleted after 6 hours and visa documents 90 days after the application closes. Payment
+slips, attachments and feedback photos stay with their record. Nightly backups keep the private files for 14 days in
+owner-only archives; copy them off the server only to an encrypted place (the off-site copy in #239 encrypts them).
 
 ## Dependency audit (11 Oct 2026, `pnpm audit --prod`)
 

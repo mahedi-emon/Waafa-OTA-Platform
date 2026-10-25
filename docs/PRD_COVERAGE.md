@@ -241,9 +241,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 
 ### Other findings
 
-- **Customer file uploads are metadata only**: visa documents, payment-proof screenshots, printing/trading attachments
-  and the feedback photo (D87, D106, D109, Phase A rule never lifted). This breaks P0 FR-VISA-03/05 and parts of
-  FR-SHOP-07/11/12, FR-FDB and the Offline Payment page.
+- **Customer file uploads were metadata only** (found in this audit): fixed in #232 (private storage, signed staff links, e2e).
 - **The visa status email is never sent** (`visa-status-customer` template is seeded but has no caller).
 - **Staff alerts go to one env address** (`STAFF_ALERT_EMAIL`); there are no module routing and no Settings › Notifications recipients.
 - **There is no Bookings module**: convert-to-booking stores only an amount.

@@ -282,7 +282,7 @@ describe.skipIf(!dbAvailable)("customer files (#232)", () => {
     expect(file).toMatchObject({ ownerType: "payment-proof", ownerId: stored.id });
   });
 
-  it("deletes unclaimed uploads after a day and visa documents 90 days after the lead closed", async () => {
+  it("deletes unclaimed uploads after six hours and visa documents 90 days after the lead closed", async () => {
     const lonely = (await upload(JPEG, "image/jpeg")).json<CustomerFileUploaded>();
     const kept = (
       await upload(PDF, "application/pdf", "bank-statement", "bank.pdf")
@@ -290,8 +290,8 @@ describe.skipIf(!dbAvailable)("customer files (#232)", () => {
     await visaLead([ref(kept, "bank-statement")]);
     const scheduler = app.get(ContentScheduler);
 
-    const tomorrow = new Date(Date.now() + 25 * 60 * 60_000);
-    expect((await scheduler.tick(tomorrow)).files).toBe(1);
+    const later6h = new Date(Date.now() + 7 * 60 * 60_000);
+    expect((await scheduler.tick(later6h)).files).toBe(1);
     const gone = await prisma.customerFile.findUniqueOrThrow({
       where: { storageKey: lonely.storageKey },
     });
@@ -309,5 +309,77 @@ describe.skipIf(!dbAvailable)("customer files (#232)", () => {
       where: { storageKey: kept.storageKey },
     });
     expect(visa.status).toBe("deleted");
+    // Staff still see the row, so they know the file went at retention rather than never arriving.
+    const list = await app.inject({
+      method: "GET",
+      url: `/api/v1/admin/files?owner=lead&id=${lead.id}`,
+      headers: officer,
+    });
+    expect(list.json<Array<{ status: string; deletedAt: string | null }>>()).toEqual([
+      expect.objectContaining({ status: "deleted", deletedAt: expect.any(String) }),
+    ]);
+  });
+
+  it("caps what one visitor may hold before sending a form", async () => {
+    const big = Buffer.concat([JPEG, Buffer.alloc(5 * 1024 * 1024 - JPEG.length - 16, 3)]);
+    for (let index = 0; index < 8; index += 1) {
+      expect((await upload(big, "image/jpeg")).statusCode).toBe(201);
+    }
+    const refused = await upload(big, "image/jpeg");
+    expect(refused.statusCode).toBe(429);
+    // Another visitor is not affected.
+    ip += 1;
+    expect((await upload(JPEG, "image/jpeg")).statusCode).toBe(201);
+  });
+
+  it("claims a file only as the type the form names", async () => {
+    const pdf = (
+      await upload(PDF, "application/pdf", "photo", "trip.pdf")
+    ).json<CustomerFileUploaded>();
+    const feedback = await app.inject({
+      method: "POST",
+      url: "/api/v1/public/feedback",
+      headers: web({ "idempotency-key": randomUUID() }),
+      payload: {
+        name: "Sample Karim",
+        phone: "+8801812345678",
+        service: "flights",
+        comment: "Helpful team.",
+        consentToPublish: false,
+        photo: {
+          fileName: "trip.jpg",
+          mimeType: "image/jpeg",
+          sizeBytes: pdf.sizeBytes,
+          storageKey: pdf.storageKey,
+        },
+      },
+    });
+    expect(feedback.statusCode).toBe(201);
+    const file = await prisma.customerFile.findUniqueOrThrow({
+      where: { storageKey: pdf.storageKey },
+    });
+    expect(file.status).toBe("pending");
+  });
+
+  it("serves PDFs without the sandbox Chrome's viewer refuses, images sandboxed", async () => {
+    const statement = (
+      await upload(PDF, "application/pdf", "bank-statement", "bank.pdf")
+    ).json<CustomerFileUploaded>();
+    await visaLead([ref(statement, "bank-statement")]);
+    const link = await app.inject({
+      method: "POST",
+      url: "/api/v1/admin/files/link",
+      headers: officer,
+      payload: { storageKey: statement.storageKey },
+    });
+    const download = await app.inject({
+      method: "GET",
+      url: `/api/v1/public/files/signed?token=${link.json<CustomerFileLink>().token}`,
+      headers: web(),
+    });
+    expect(download.statusCode).toBe(200);
+    expect(download.headers["content-type"]).toBe("application/pdf");
+    expect(download.headers["content-security-policy"]).not.toContain("sandbox");
+    expect(download.headers["content-security-policy"]).toContain("frame-ancestors 'none'");
   });
 });

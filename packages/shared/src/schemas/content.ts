@@ -1,3 +1,4 @@
+import { STORAGE_KEY_PATTERN } from "../helpers/customerFiles";
 import { z } from "zod";
 import {
   IdSchema,
@@ -481,7 +482,7 @@ export const FeedbackCreateInputSchema = z
       .optional(),
     rating: z.number().int().min(1).max(5).optional(),
     comment: z.string().trim().min(10).max(1000),
-    /** Phase A keeps the photo in the browser; only its name, type and size travel (D87). */
+    /** The photo uploads to private storage when picked; the form sends its claim (issue 232, replaces D87). */
     photo: z
       .object({
         fileName: z.string().min(1).max(120),
@@ -491,6 +492,7 @@ export const FeedbackCreateInputSchema = z
           .int()
           .positive()
           .max(5 * 1024 * 1024),
+        storageKey: z.string().regex(STORAGE_KEY_PATTERN).optional(),
       })
       .strict()
       .optional(),

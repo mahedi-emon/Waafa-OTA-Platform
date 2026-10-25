@@ -52,6 +52,25 @@ async function CustomerFiles({ owner, id, expected, className }: CustomerFilesPr
       <ul className="flex flex-col gap-2">
         {rows.map((row) => {
           const Icon = row.mimeType === "application/pdf" ? FileText : FileImage;
+          if (row.status === "deleted") {
+            return (
+              <li
+                key={row.storageKey}
+                className="flex items-center gap-3 rounded-xl border border-mist-200 bg-mist-50 px-3 py-2.5"
+              >
+                <Icon aria-hidden="true" className="size-5 shrink-0 text-mist-500" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[14px] font-medium text-mist-700">
+                    {row.fileName}
+                  </span>
+                  <span className="block text-[12.5px] text-mist-600">
+                    {kind(row.kind)} ·{" "}
+                    {t("deleted", { date: formatDhakaDateTime(row.deletedAt ?? row.createdAt) })}
+                  </span>
+                </span>
+              </li>
+            );
+          }
           return (
             <li
               key={row.storageKey}

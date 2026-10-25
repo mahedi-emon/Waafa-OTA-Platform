@@ -694,7 +694,9 @@
       "title": "We couldn’t send your request",
       "body": "Your details are still here. Please try again; if it keeps happening, call or WhatsApp {phone} and we’ll take it from there.",
       "retry": "Try again",
-      "tooMany": "Too many requests from this connection. Please wait a minute and try again."
+      "tooMany": "Too many requests from this connection. Please wait a minute and try again.",
+      "waitTitle": "A file is still uploading",
+      "waitBody": "Send again when it shows Added. It only takes a moment."
     },
     "errors": {
       "nameRequired": "Enter your full name",
@@ -1736,7 +1738,8 @@
       "changed": "Prices or stock changed while you were checking out.",
       "changedCta": "Review cart",
       "cod": "Cash on delivery isn’t available for this order. Choose another payment.",
-      "minimum": "The order is below the minimum. Add more items."
+      "minimum": "The order is below the minimum. Add more items.",
+      "waitUpload": "One moment: a file is still uploading. Send again when it shows Added."
     },
     "done": {
       "title": "Order placed",
@@ -2318,7 +2321,8 @@
       "rate": "Too many messages from this connection. Wait a minute and try again.",
       "photoSub": "A photo from your trip, shown with your review only if you agree below.",
       "photoUploading": "Uploading…",
-      "photoUploadFailed": "The file didn't upload. Check your connection and choose it again."
+      "photoUploadFailed": "The file didn't upload. Check your connection and choose it again.",
+      "waitUpload": "One moment: a file is still uploading. Send again when it shows Added."
     },
     "sent": {
       "title": "Thank you, {name}",
@@ -2464,7 +2468,8 @@
       "rate": "Too many tries from this connection. Wait a minute and try again.",
       "slipSub": "A screenshot of the confirmation, or a photo of the deposit slip.",
       "slipUploading": "Uploading…",
-      "slipUploadFailed": "The file didn't upload. Check your connection and choose it again."
+      "slipUploadFailed": "The file didn't upload. Check your connection and choose it again.",
+      "waitUpload": "One moment: a file is still uploading. Send again when it shows Added."
     },
     "sent": {
       "title": "Proof received for {reference}",
@@ -6908,7 +6913,8 @@
         "invitation": "Invitation letter",
         "payment-proof": "Payment slip",
         "other": "Document"
-      }
+      },
+      "deleted": "Deleted {date}: visa documents are kept for 90 days after the case closes"
     }
   },
   "Consent": {

@@ -25,6 +25,10 @@ const page = (status: number, message: string) =>
  * Outside the proxy, like the media uploads; the session cookie authorises the call.
  */
 export async function GET(request: Request, context: { params: Promise<{ key: string }> }) {
+  // Only from the admin itself (or typed in the address bar): a link on another site can't make staff open files.
+  const site = request.headers.get("sec-fetch-site");
+  if (site && site !== "same-origin" && site !== "none")
+    return page(403, "Open files from the admin.");
   const { key } = await context.params;
   if (!isStorageKey(key)) return page(404, "File not found.");
   const link = await customerFileLink(key);

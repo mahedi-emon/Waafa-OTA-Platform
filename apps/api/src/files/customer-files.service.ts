@@ -1,12 +1,15 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { createReadStream, type ReadStream } from "node:fs";
-import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, stat, statfs, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Inject, Injectable } from "@nestjs/common";
 import {
   CUSTOMER_FILE_LINK_MS,
   CUSTOMER_FILE_MAX_BYTES,
+  CUSTOMER_FILE_MIN_FREE_BYTES,
   CUSTOMER_FILE_PENDING_MS,
+  CUSTOMER_FILE_PENDING_PER_VISITOR_BYTES,
+  CUSTOMER_FILE_PENDING_TOTAL_BYTES,
   VISA_DOCUMENT_RETENTION_MS,
   isStorageKey,
   sniffCustomerFile,
@@ -30,8 +33,8 @@ const EXTENSION: Record<CustomerFileType, string> = {
   "application/pdf": "pdf",
 };
 
-/** A file reference as forms send it: only the storage key matters here. */
-export type FileRef = { storageKey?: string | undefined; fileName: string };
+/** A file reference as forms send it: the storage key, and the type the form says it is. */
+export type FileRef = { storageKey?: string | undefined; fileName: string; mimeType?: string };
 
 export type ClaimResult = { claimed: number; missing: string[] };
 
@@ -42,7 +45,10 @@ export type CustomerFileRow = {
   mimeType: string;
   sizeBytes: number;
   scanStatus: string;
+  /** attached, or deleted once its retention ended (the row stays so staff know why it is gone). */
+  status: string;
   createdAt: string;
+  deletedAt: string | null;
 };
 
 export type OpenedFile = {
@@ -109,6 +115,7 @@ export class CustomerFilesService {
         "storage",
       );
     }
+    await this.assertRoom(bytes.length, uploaderIp, now);
     const mimeType = sniffCustomerFile(bytes);
     if (!mimeType || mimeType !== declaredType) {
       throw new ProblemException(
@@ -167,11 +174,21 @@ export class CustomerFilesService {
     const keys = wanted.map((ref) => ref.storageKey as string);
     const pending = await tx.customerFile.findMany({
       where: { storageKey: { in: keys }, status: "pending" },
-      select: { id: true, storageKey: true },
+      select: { id: true, storageKey: true, mimeType: true },
     });
-    if (pending.length > 0) {
-      await tx.customerFile.updateMany({
-        where: { id: { in: pending.map((file) => file.id) }, status: "pending" },
+    const byKey = new Map(pending.map((file) => [file.storageKey, file]));
+    // A file is claimed only as the type the form says it is (a PDF can't become a feedback "photo").
+    const fileOf = (ref: FileRef) => {
+      const file = byKey.get(ref.storageKey as string);
+      return file && (!ref.mimeType || ref.mimeType === file.mimeType) ? file : undefined;
+    };
+    const eligible = [
+      ...new Set(wanted.map((ref) => fileOf(ref)?.id).filter((id): id is string => Boolean(id))),
+    ];
+    let claimed = new Set<string>();
+    if (eligible.length > 0) {
+      const result = await tx.customerFile.updateMany({
+        where: { id: { in: eligible }, status: "pending" },
         data: {
           status: "attached",
           ownerType: owner,
@@ -180,13 +197,26 @@ export class CustomerFilesService {
           deleteAfter: null,
         },
       });
+      claimed = new Set(eligible);
+      if (result.count !== eligible.length) {
+        // Another form claimed some of them at the same moment: count only the ones this record got.
+        const mine = await tx.customerFile.findMany({
+          where: { id: { in: eligible }, ownerType: owner, ownerId, status: "attached" },
+          select: { id: true },
+        });
+        claimed = new Set(mine.map((file) => file.id));
+      }
     }
-    const found = new Set(pending.map((file) => file.storageKey));
     return {
-      claimed: pending.length,
+      claimed: claimed.size,
       missing: [
         ...missingWithoutKey.map((ref) => ref.fileName),
-        ...wanted.filter((ref) => !found.has(ref.storageKey as string)).map((ref) => ref.fileName),
+        ...wanted
+          .filter((ref) => {
+            const file = fileOf(ref);
+            return !file || !claimed.has(file.id);
+          })
+          .map((ref) => ref.fileName),
       ],
     };
   }
@@ -199,7 +229,7 @@ export class CustomerFilesService {
   ): Promise<CustomerFileRow[]> {
     await this.assertOwnerAccess(staff, owner, ownerId);
     const rows = await this.prisma.customerFile.findMany({
-      where: { ownerType: owner, ownerId, status: "attached" },
+      where: { ownerType: owner, ownerId, status: { in: ["attached", "deleted"] } },
       orderBy: { createdAt: "asc" },
       select: {
         storageKey: true,
@@ -208,10 +238,16 @@ export class CustomerFilesService {
         mimeType: true,
         sizeBytes: true,
         scanStatus: true,
+        status: true,
         createdAt: true,
+        deletedAt: true,
       },
     });
-    return rows.map((row) => ({ ...row, createdAt: row.createdAt.toISOString() }));
+    return rows.map((row) => ({
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+      deletedAt: row.deletedAt?.toISOString() ?? null,
+    }));
   }
 
   /** A signed link for one file (ten minutes), audited. */
@@ -291,31 +327,60 @@ export class CustomerFilesService {
       take: 200,
     });
     const visaCutoff = new Date(now.getTime() - VISA_DOCUMENT_RETENTION_MS);
-    const closed = await this.prisma.lead.findMany({
-      where: { module: "visa", closedAt: { lte: visaCutoff } },
-      select: { id: true },
-    });
-    const oldVisa =
-      closed.length === 0
-        ? []
-        : await this.prisma.customerFile.findMany({
-            where: {
-              ownerType: "lead",
-              ownerId: { in: closed.map((lead) => lead.id) },
-              status: "attached",
-            },
-            select: { id: true, path: true },
-            take: 200,
-          });
-    const doomed = [...expired, ...oldVisa];
-    for (const file of doomed) {
-      await rm(path.join(this.root, file.path), { force: true });
-      await this.prisma.customerFile.update({
-        where: { id: file.id },
+    // Only files still attached to visa leads closed long enough ago: the query stays small as years pass.
+    const oldVisa = await this.prisma.$queryRaw<Array<{ id: string; path: string }>>`
+      SELECT f."id", f."path" FROM "CustomerFile" f
+      JOIN "Lead" l ON l."id" = f."ownerId"
+      WHERE f."ownerType" = 'lead' AND f."status" = 'attached'
+        AND l."module" = 'visa' AND l."closedAt" <= ${visaCutoff}
+      LIMIT 200`;
+    let deleted = 0;
+    const remove = async (file: { id: string; path: string }, status: "pending" | "attached") => {
+      // Mark first and only if it is still what we found, so a claim landing meanwhile keeps its file.
+      const marked = await this.prisma.customerFile.updateMany({
+        where: { id: file.id, status },
         data: { status: "deleted", deletedAt: now },
       });
+      if (marked.count === 0) return;
+      await rm(path.join(this.root, file.path), { force: true });
+      deleted += 1;
+    };
+    for (const file of expired) await remove(file, "pending");
+    for (const file of oldVisa) await remove(file, "attached");
+    return deleted;
+  }
+
+  /** Refuses an upload that would let unclaimed files crowd the disk (per visitor, in total, free space). */
+  private async assertRoom(size: number, uploaderIp: string, now: Date): Promise<void> {
+    const since = new Date(now.getTime() - CUSTOMER_FILE_PENDING_MS);
+    const [mine, all] = await Promise.all([
+      this.prisma.customerFile.aggregate({
+        _sum: { sizeBytes: true },
+        where: {
+          status: "pending",
+          uploaderIp: uploaderIp.slice(0, 64),
+          createdAt: { gte: since },
+        },
+      }),
+      this.prisma.customerFile.aggregate({
+        _sum: { sizeBytes: true },
+        where: { status: "pending" },
+      }),
+    ]);
+    if ((mine._sum.sizeBytes ?? 0) + size > CUSTOMER_FILE_PENDING_PER_VISITOR_BYTES) {
+      throw problems.tooMany("Send the form with the files you added, then add more");
     }
-    return doomed.length;
+    const paused = new ProblemException(
+      503,
+      "Uploads paused",
+      "Files can't be received right now; send the form and we will ask for them",
+      undefined,
+      "storage",
+    );
+    if ((all._sum.sizeBytes ?? 0) + size > CUSTOMER_FILE_PENDING_TOTAL_BYTES) throw paused;
+    await mkdir(this.root, { recursive: true, mode: 0o700 });
+    const disk = await statfs(this.root).catch(() => null);
+    if (disk && disk.bavail * disk.bsize < CUSTOMER_FILE_MIN_FREE_BYTES + size) throw paused;
   }
 
   /**

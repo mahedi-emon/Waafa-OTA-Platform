@@ -2,6 +2,9 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { collectErrors } from "./errors";
 
+/** A tiny JPEG by its bytes (the upload route checks the first bytes, issue 232). */
+const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(1024, 7)]);
+
 /* A16 information pages: every route renders cleanly, and each form or filter works end to end. */
 test.use({ reducedMotion: "reduce" });
 
@@ -104,7 +107,16 @@ test.describe("forms and filters at 390", () => {
     await page
       .getByLabel("Your feedback")
       .fill("The Sajek trip was well planned and the guide was kind.");
+    // The photo uploads when picked and goes with the feedback as its storage key (issue 232).
+    const uploaded = page.waitForResponse((response) => response.url().includes("/api/uploads"));
+    await page
+      .locator('input[type="file"]')
+      .setInputFiles({ name: "sajek.jpg", mimeType: "image/jpeg", buffer: JPEG });
+    expect((await uploaded).status()).toBe(201);
+    await expect(page.getByText("sajek.jpg")).toBeVisible();
+    const sent = page.waitForRequest((request) => request.url().endsWith("/api/feedback"));
     await page.getByRole("button", { name: "Send feedback" }).click();
+    expect((await sent).postData()).toMatch(/"storageKey":"cf_[A-Za-z0-9_-]{32}"/);
     await expect(page.getByRole("heading", { name: "Thank you, Sample" })).toBeVisible();
     await page.reload();
     await expect(page.getByRole("heading", { name: "No published reviews yet" })).toBeVisible();
@@ -123,7 +135,15 @@ test.describe("forms and filters at 390", () => {
     await page.getByRole("button", { name: "Send proof" }).click();
     await expect(page.getByText("Add the transaction ID or the payment slip.")).toBeVisible();
     await page.getByLabel("Transaction ID").fill("8N7A6B5C4D");
+    const uploaded = page.waitForResponse((response) => response.url().includes("/api/uploads"));
+    await page
+      .locator('input[type="file"]')
+      .setInputFiles({ name: "slip.jpg", mimeType: "image/jpeg", buffer: JPEG });
+    expect((await uploaded).status()).toBe(201);
+    await expect(page.getByText("slip.jpg")).toBeVisible();
+    const sent = page.waitForRequest((request) => request.url().endsWith("/api/payment-proof"));
     await page.getByRole("button", { name: "Send proof" }).click();
+    expect((await sent).postData()).toMatch(/"storageKey":"cf_[A-Za-z0-9_-]{32}"/);
     await expect(
       page.getByRole("heading", { name: "Proof received for ORD-261008-0042" }),
     ).toBeVisible();
