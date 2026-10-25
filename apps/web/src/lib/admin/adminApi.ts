@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Role } from "@waafa/shared";
 import { apiConfig } from "@/lib/data/api/apiClient";
 import { ACCESS_COOKIE } from "./tokens";
@@ -67,12 +67,31 @@ async function problemOf(response: Response): Promise<AdminProblem> {
 }
 
 /**
- * Reads for admin pages: the data, or the sign-in page when the session ended. Other failures throw to the page's
- * error boundary (a 403 says the role can't open it).
+ * Reads for admin pages: the data, the sign-in page when the session ended, or the panel's not-found screen when the
+ * record isn't there (issue 225). Other failures throw to the page's error boundary (a 403 says the role can't open it).
  */
 export async function adminGet<T>(path: string, query?: RequestOptions["query"]): Promise<T> {
   const response = await send(path, { query });
   if (response.status === 401) redirect("/secure-admin-control/sign-in");
+  if (response.status === 404) notFound();
+  if (!response.ok) {
+    const problem = await problemOf(response);
+    throw new Error(problem.status === 403 ? "forbidden" : `${problem.status} ${problem.title}`);
+  }
+  return (await response.json()) as T;
+}
+
+/**
+ * A record read for record pages: the record, or null when it isn't there, so the page shows the not-found state in
+ * place (a `notFound()` thrown after streaming has started makes React fall back to the client, issue 225).
+ */
+export async function adminFind<T>(
+  path: string,
+  query?: RequestOptions["query"],
+): Promise<T | null> {
+  const response = await send(path, { query });
+  if (response.status === 401) redirect("/secure-admin-control/sign-in");
+  if (response.status === 404) return null;
   if (!response.ok) {
     const problem = await problemOf(response);
     throw new Error(problem.status === 403 ? "forbidden" : `${problem.status} ${problem.title}`);

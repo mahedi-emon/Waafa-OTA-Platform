@@ -4050,7 +4050,10 @@
       "retry": "Try again",
       "home": "Go to the dashboard",
       "forbiddenTitle": "Not for your role",
-      "forbiddenBody": "Your role can't open this page. Ask an admin if you need it."
+      "forbiddenBody": "Your role can't open this page. Ask an admin if you need it.",
+      "notFoundTitle": "We can't find this",
+      "notFoundBody": "It may have been deleted, moved to Trash, or the link was mistyped. Look in Trash or start from the dashboard.",
+      "trash": "Open Trash"
     },
     "editor": {
       "tabs": {

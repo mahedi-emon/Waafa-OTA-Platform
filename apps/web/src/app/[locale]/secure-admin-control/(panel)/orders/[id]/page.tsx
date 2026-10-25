@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Phone } from "lucide-react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
+import { AdminNotFound } from "@/components/admin/AdminNotFound";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { InboxListPane, type InboxPaneItem } from "@/components/admin/inbox/InboxListPane";
 import { InboxSplit } from "@/components/admin/inbox/InboxSplit";
@@ -14,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessagePaths } from "@/i18n/pickMessages";
-import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
+import { adminFind, adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { displayPhone, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
 import { orderListQuery, queueSearch, withSearch } from "@/lib/admin/queues";
 import { getPaymentSettings } from "@/lib/data/settings";
@@ -39,7 +40,7 @@ async function Order({ params, searchParams }: Pick<Params, "params" | "searchPa
   const back = withSearch(ORDERS, queueSearch(query));
   const [staff, order, queue, payment, t, tc, ts, tl, tp, messages] = await Promise.all([
     requireStaff(),
-    adminGet<OrderDetail>(`/admin/orders/${encodeURIComponent(id)}`),
+    adminFind<OrderDetail>(`/admin/orders/${encodeURIComponent(id)}`),
     adminGet<Paged<OrderRow>>("/admin/orders", query).catch(() => null),
     getPaymentSettings(),
     getTranslations("Admin.orders"),
@@ -49,6 +50,7 @@ async function Order({ params, searchParams }: Pick<Params, "params" | "searchPa
     getTranslations("Admin.proofs"),
     getMessages(),
   ]);
+  if (!order) return <AdminNotFound />;
   const canMove = hasRole(staff, "admin", "shop-manager");
   const status = (value: string) =>
     ["placed", "confirmed", "processing", "shipped", "delivered", "cancelled", "returned"].includes(

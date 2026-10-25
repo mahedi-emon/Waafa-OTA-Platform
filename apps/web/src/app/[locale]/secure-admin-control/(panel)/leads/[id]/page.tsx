@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { LeadPrioritySchema, type ContentOption } from "@waafa/shared";
+import { AdminNotFound } from "@/components/admin/AdminNotFound";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { CustomerCard } from "@/components/admin/inbox/CustomerCard";
@@ -17,7 +18,7 @@ import { VisaProgressPanel } from "@/components/admin/VisaProgressPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessagePaths } from "@/i18n/pickMessages";
 import { Link } from "@/i18n/navigation";
-import { adminGet } from "@/lib/admin/adminApi";
+import { adminFind, adminGet } from "@/lib/admin/adminApi";
 import { ageParts, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
 import { leadFacts } from "@/lib/admin/leadFacts";
 import {
@@ -98,7 +99,7 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
   const [{ id }, search] = await Promise.all([params, searchParams]);
   const [lead, staff, airports, queue, t, tl, tc, tm, ts, tp, tv, to, messages] = await Promise.all(
     [
-      adminGet<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
+      adminFind<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
       adminGet<StaffDirectoryEntry[]>("/admin/staff"),
       adminGet<{ items: ContentOption[] }>("/admin/content/airports/options").catch(() => ({
         items: [] as ContentOption[],
@@ -115,6 +116,7 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
       getMessages(),
     ],
   );
+  if (!lead) return <AdminNotFound />;
   // Fact labels and value words are looked up by computed keys, so this translator is used untyped.
   const tf = t as unknown as ((key: string, values?: Record<string, number>) => string) & {
     has: (key: string) => boolean;
