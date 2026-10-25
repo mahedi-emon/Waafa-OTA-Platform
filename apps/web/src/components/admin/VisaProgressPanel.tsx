@@ -90,7 +90,7 @@ function VisaProgressPanel({ id, visa, closed }: VisaProgressPanelProps) {
         </p>
       ) : (
         <fieldset className="flex flex-col gap-1" disabled={locked}>
-          <legend className="mb-1 text-[13px] font-semibold tracking-wide text-mist-500 uppercase">
+          <legend className="mb-1 text-[13.5px] font-semibold text-mist-600">
             {t("checklist")}
           </legend>
           {items.map((entry, index) => (

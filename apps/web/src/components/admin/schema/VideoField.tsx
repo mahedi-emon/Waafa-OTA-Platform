@@ -205,6 +205,8 @@ function VideoField({ path, node, value, optional, nullable }: VideoFieldProps) 
       >
         <Trash2 aria-hidden="true" className="size-4" />
         {t("remove")}
+        {/* "Remove Cover photo": with a photo and a video on one form, each button says which it removes. */}
+        <span className="sr-only"> {meta.label}</span>
       </Button>
     ) : null;
 

@@ -1,5 +1,20 @@
 import { formatTaka } from "@waafa/shared";
 
+/**
+ * Who last saved a record, in words: system names become what they are (the sample data, a site update, a store
+ * order), people keep their names; "seed" is not a person (D0 R10).
+ */
+export function editorName(
+  name: string | null | undefined,
+  words: { sample: string; update: string; order: string },
+): string | null {
+  if (!name) return null;
+  if (name === "seed") return words.sample;
+  if (name === "seed-patch") return words.update;
+  if (name === "order" || name === "order-cancel") return words.order;
+  return name;
+}
+
 /** Two letters for an avatar: first and last name, or the first two letters of one name. */
 export function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);

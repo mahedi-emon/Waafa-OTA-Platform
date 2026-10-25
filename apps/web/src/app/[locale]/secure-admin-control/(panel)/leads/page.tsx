@@ -214,7 +214,12 @@ async function Leads({
         ]}
         exportHref={withSearch(`${PATH}/export`, exportSearch)}
         openLabel={tc("open")}
-        empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
+        empty={
+          // "No leads match" only when something narrows the list; an empty inbox says so plainly (D0 R10).
+          query.q || query.status || query.module || query.view !== "all"
+            ? { title: t("emptyTitle"), body: t("emptyBody") }
+            : { title: t("emptyAllTitle"), body: t("emptyAllBody") }
+        }
       />
     </>
   );

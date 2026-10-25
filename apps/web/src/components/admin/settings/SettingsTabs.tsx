@@ -14,8 +14,9 @@ type SettingsTabsProps = {
 function SettingsTabs({ label, tabs, current }: SettingsTabsProps) {
   if (tabs.length < 2) return null;
   return (
-    <nav aria-label={label} className="-mx-1 mb-5 overflow-x-auto border-b border-mist-200">
-      <ul className="flex min-w-max gap-1 px-1">
+    // The parts wrap onto a second line on narrow phones, so no part is cut off (D0 R10).
+    <nav aria-label={label} className="mb-5 border-b border-mist-200">
+      <ul className="flex flex-wrap gap-x-1">
         {tabs.map((tab) => {
           const active = tab.id === current;
           return (

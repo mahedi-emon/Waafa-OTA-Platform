@@ -104,7 +104,7 @@ async function Reports({
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <AdminPageHeader title={t("title")} lead={t("lead")} />
       <ReportRange
         range={{ from, to }}
@@ -137,7 +137,13 @@ async function Reports({
         title={t("perDay")}
         days={summary.days}
         showRevenue={summary.orders !== null}
-        strings={{ date: t("date"), leads: t("leads"), orders: t("orders"), revenue: t("revenue") }}
+        strings={{
+          date: t("date"),
+          leads: t("leads"),
+          orders: t("orders"),
+          revenue: t("revenue"),
+          empty: t("empty"),
+        }}
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -265,7 +271,7 @@ async function Reports({
           ))}
         </ul>
       </section>
-    </>
+    </div>
   );
 }
 

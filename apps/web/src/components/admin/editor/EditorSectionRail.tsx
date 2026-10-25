@@ -46,9 +46,7 @@ function EditorSectionRail({ sections, states }: EditorSectionRailProps) {
 
   return (
     <nav aria-label={t("title")} className="sticky top-20">
-      <p className="mb-2 px-2 text-[12px] font-semibold tracking-wide text-mist-600 uppercase">
-        {t("title")}
-      </p>
+      <p className="mb-2 px-2 text-[13px] font-semibold text-mist-600">{t("title")}</p>
       <ol className="flex flex-col gap-0.5">
         {sections.map((section) => {
           const state = states[section.id] ?? "open";

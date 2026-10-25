@@ -219,9 +219,11 @@ async function MediaLibrary({
           </div>
 
           <section aria-label={t("title")} className="flex flex-col gap-4">
-            <p className="text-[13.5px] text-mist-600" aria-live="polite">
-              {t("count", { count: list.total })}
-            </p>
+            {list.total > 0 ? (
+              <p className="text-[13.5px] text-mist-600" aria-live="polite">
+                {t("count", { count: list.total })}
+              </p>
+            ) : null}
             {list.items.length === 0 ? (
               <div className="rounded-2xl border border-mist-200 bg-white">
                 <AdminEmpty

@@ -1,4 +1,5 @@
 import { contentChip } from "@waafa/shared/workflow/content";
+import { windowStatus } from "@waafa/shared/workflow/derived";
 import { getAt } from "../schema";
 import { pathFromDotted } from "./paths";
 import type { ResolvedBlueprint } from "./types";
@@ -60,7 +61,19 @@ export function headingOf(blueprint: ResolvedBlueprint, value: unknown): string 
 
 export type RecordStatus = {
   /** Which StatusChip to show; "direct" is content without drafts, live as soon as it is saved. */
-  state: "new" | "draft" | "scheduled" | "live" | "archived" | "shown" | "hidden" | "direct";
+  state:
+    | "new"
+    | "draft"
+    | "scheduled"
+    | "live"
+    | "archived"
+    | "shown"
+    | "hidden"
+    | "direct"
+    /** Switched on, with a start date still ahead (banners, deals, announcements; D0 R10). */
+    | "startsLater"
+    /** Switched on, but its end date has passed. */
+    | "ended";
   /** When a scheduled record goes live, or since when a live one is (D0 R4). */
   at?: string;
 };
@@ -93,6 +106,17 @@ export function statusOf(
     return { state: "draft" };
   }
   const switchName = blueprint.visibility.find((name) => name === "enabled" || name === "visible");
-  if (switchName) return { state: record[switchName] === false ? "hidden" : "shown" };
+  if (switchName) {
+    if (record[switchName] === false) return { state: "hidden" };
+    // Records with a start and end (banners, deals, announcements) say when they show, from their dates.
+    if (blueprint.visibility.includes("startsAt") || blueprint.visibility.includes("endsAt")) {
+      const startsAt = typeof record.startsAt === "string" ? record.startsAt : undefined;
+      const endsAt = typeof record.endsAt === "string" ? record.endsAt : undefined;
+      const window = windowStatus({ startsAt, endsAt }, now);
+      if (window === "scheduled" && startsAt) return { state: "startsLater", at: startsAt };
+      if (window === "ended" && endsAt) return { state: "ended", at: endsAt };
+    }
+    return { state: "shown" };
+  }
   return { state: "direct" };
 }

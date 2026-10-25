@@ -345,6 +345,28 @@ describe("status", () => {
     expect(statusOf(packages, { status: "published" }, true)).toEqual({ state: "new" });
   });
 
+  it("says when a banner shows from its dates, and when it ended (D0 R10)", () => {
+    const banners = resolved("banners");
+    const now = new Date("2026-10-23T10:00:00+06:00");
+    const friday = "2026-10-30T04:00:00.000Z";
+    const past = "2026-10-20T04:00:00.000Z";
+    expect(statusOf(banners, { enabled: true, startsAt: friday }, false, now)).toEqual({
+      state: "startsLater",
+      at: friday,
+    });
+    expect(statusOf(banners, { enabled: true, startsAt: past, endsAt: past }, false, now)).toEqual({
+      state: "ended",
+      at: past,
+    });
+    expect(statusOf(banners, { enabled: true, startsAt: past }, false, now)).toEqual({
+      state: "shown",
+    });
+    // Switched off wins over any date.
+    expect(statusOf(banners, { enabled: false, startsAt: friday }, false, now)).toEqual({
+      state: "hidden",
+    });
+  });
+
   it("names the date a record goes live, or since when it is live (D0 R4)", () => {
     const packages = resolved("tourPackages");
     const now = new Date("2026-10-23T10:00:00+06:00");

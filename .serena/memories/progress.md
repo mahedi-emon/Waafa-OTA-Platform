@@ -1,4 +1,9 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-25 — R9 merged (#228, 951080b; MIGRATION staff_invites → owner runs backup.sh first). R10 #200 on
+  chore/200-usability-qa: staff tasks 2/8/12/13 spec (all 14 covered), every-route axe in admin-screens, independent
+  review fixed (list names via headingOf, empty columns, editors in words, banner window states, group fares Ends
+  soon, sentence case, phone action bar, wrapping tabs/fades, matrix container queries, table scrollLabel), #229
+  filed for the larger items, docs/ADMIN_GUIDE.md + docs/admin-guide/*.png. web 664, e2e API job 79. No migration.
 - 2026-10-25 — R8 merged (#226, 137428f), #225 not-found merged (#227, 81d4e04). R9 #199 on
   feat/199-dashboard-settings: dashboard v2 (Today cards, week KPIs with sparklines, server SVG line, setup checklist),
   Settings one page (SettingsFrame, /settings/[section], embedded editor, redirects), invite by email + welcome page

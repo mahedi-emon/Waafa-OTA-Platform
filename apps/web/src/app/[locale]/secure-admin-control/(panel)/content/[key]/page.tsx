@@ -21,7 +21,9 @@ import { EDITOR_MESSAGES } from "@/lib/admin/blueprints/editorMessages";
 import { resolveBlueprint } from "@/lib/admin/blueprints/resolve";
 import { chipFilterNames, chipReason } from "@/lib/admin/chipWords";
 import { bulkContent } from "@/lib/admin/contentActions";
-import { formatDhakaDateTime, pageParam, taka } from "@/lib/admin/format";
+import { headingOf } from "@/lib/admin/blueprints/display";
+import { ADMIN_NAV } from "@/lib/admin/navigation";
+import { editorName, formatDhakaDateTime, initialsOf, pageParam, taka } from "@/lib/admin/format";
 import { settingsHrefFor } from "@/lib/admin/settingsSections";
 import type { ContentRecordsPage, ContentSingleton } from "@/lib/admin/types";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -98,7 +100,10 @@ async function ContentKeyView({ params, searchParams }: Pick<Params, "params" | 
   return (
     <>
       <AdminPageHeader
-        back={{ href: "/secure-admin-control/content", label: t("title") }}
+        // A list that is a sidebar item has its own breadcrumb; only the others go back to All content.
+        {...(inSidebar(key)
+          ? {}
+          : { back: { href: "/secure-admin-control/content", label: t("title") } })}
         title={title}
         lead={blueprint.intro}
         actions={
@@ -115,6 +120,12 @@ async function ContentKeyView({ params, searchParams }: Pick<Params, "params" | 
   );
 }
 
+/** Whether a content list is a sidebar item of its own (its breadcrumb comes from the sidebar). */
+const inSidebar = (key: ContentKey) =>
+  ADMIN_NAV.some((group) =>
+    group.items.some((item) => item.href.split("?")[0] === `/secure-admin-control/content/${key}`),
+  );
+
 /** A content list as the shared DataTable (D0 R5): the API searches, filters, sorts and pages it. */
 async function RecordTable({
   contentKey: key,
@@ -123,19 +134,28 @@ async function RecordTable({
   contentKey: ContentKey;
   search: Record<string, string | string[] | undefined>;
 }) {
-  const [data, t, tc, tchip] = await Promise.all([
+  const [data, t, tc, tchip, te, { blueprint }] = await Promise.all([
     adminGet<ContentRecordsPage>(`/admin/content/${key}/records`, recordsQuery(search)),
     getTranslations("Admin.content.list"),
     getTranslations("Admin.common"),
     getTranslations("Admin.chips"),
+    getTranslations("Admin.editor"),
+    resolveBlueprint(key),
   ]);
+  const actors = {
+    sample: te("actors.sample"),
+    update: te("actors.update"),
+    order: te("actors.order"),
+  };
   const now = new Date();
   const path = `/secure-admin-control/content/${key}`;
   const workflow = hasPublishWorkflow(key);
   // Moving a record only makes sense in the order the site uses: no search, filter or other sort.
   const query = recordsQuery(search);
   const inSiteOrder = !query.q && !query.chip && !query.sort;
-  const prices = data.items.map((item) => listPriceOf(item.data as Record<string, unknown>));
+  const prices = data.items.map(
+    (item) => listPriceOf(item.data as Record<string, unknown>) ?? null,
+  );
   const hasPrice = prices.some((price) => price !== null);
   const moveStrings = {
     earlier: t("moveEarlier"),
@@ -148,12 +168,15 @@ async function RecordTable({
     const updated = formatDhakaDateTime(item.updatedAt);
     const photo = photoOf(item.data as Record<string, unknown>);
     const price = prices[index] ?? null;
+    // The name staff know it by ("Dhaka → Dubai · Emirates", "Best sellers"), never its key (D0 R10).
+    const title = headingOf(blueprint, item.data) || item.title;
+    const editor = editorName(item.updatedBy, actors);
     return {
       id: item.id,
       href: `${path}/${encodeURIComponent(item.id)}`,
-      title: item.title,
-      ...(item.updatedBy ? { subtitle: t("changedBy", { name: item.updatedBy }) } : {}),
-      thumb: photo ? { src: photo, alt: "" } : { initials: item.title.slice(0, 2).toUpperCase() },
+      title,
+      ...(editor ? { subtitle: t("changedBy", { name: editor }) } : {}),
+      thumb: photo ? { src: photo, alt: "" } : { initials: initialsOf(title) },
       chips: recordChipsOf(
         key,
         item.data,
@@ -180,9 +203,11 @@ async function RecordTable({
     };
   });
 
+  // A column shows only when it has something to say on this list (no empty Status or Price columns).
+  const hasStatus = rows.some((row) => (row.chips?.length ?? 0) > 0);
   const columns: ColumnSpec[] = [
     { key: "name", label: t("name"), sort: "title", always: true },
-    { key: "status", label: t("status"), always: true },
+    ...(hasStatus ? [{ key: "status", label: t("status"), always: true }] : []),
     ...(hasPrice ? [{ key: "price", label: t("price"), align: "end" as const }] : []),
     { key: "updated", label: t("updated"), sort: "updated" },
   ];

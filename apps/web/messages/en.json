@@ -2796,7 +2796,9 @@
         "contact": "Contact"
       },
       "openCount": "{count} open",
-      "show": "Show"
+      "show": "Show",
+      "emptyAllTitle": "No leads yet",
+      "emptyAllBody": "Every search and form on the website lands here as a lead."
     },
     "lead": {
       "createdFrom": "Created {time} · {channel}",
@@ -3279,7 +3281,7 @@
         "feedbackUnnamed": "a feedback entry",
         "subscriber": "{name}",
         "subscriberUnnamed": "a subscriber",
-        "other": "something",
+        "other": "a record",
         "update": "{count, plural, =0 {no records} one {# record} other {# records}}"
       },
       "verbs": {
@@ -3372,7 +3374,7 @@
           "remove": "{actor} removed {target} from the newsletter",
           "other": "{actor} changed {target}"
         },
-        "other": "{actor} made a change to {target}",
+        "other": "{actor} made a change",
         "seed": {
           "patch": "A site update changed {target}",
           "other": "A site update changed {target}"
@@ -3440,7 +3442,8 @@
         "caption": "Screens and settings each role can open",
         "screen": "Screen",
         "yes": "Can open",
-        "no": "Can't open"
+        "no": "Can't open",
+        "scrollHint": "Swipe the table sideways to see every role."
       },
       "signIn": "How they sign in",
       "inviteOption": "Send an invite email",
@@ -3475,7 +3478,7 @@
         "shop": "Waafas World",
         "payments": "Payments and delivery"
       },
-      "records": "{count} records",
+      "records": "{count, plural, one {# record} other {# records}}",
       "setting": "Setting",
       "newRecord": "New record",
       "keys": {
@@ -3510,19 +3513,19 @@
         "team": "Team",
         "baggageRules": "Baggage rules",
         "emiBanks": "EMI banks",
-        "mediaSlots": "Media slots",
+        "mediaSlots": "Site images",
         "airports": "Airports",
-        "airlines": "Airlines",
+        "airlines": "Airlines and airports",
         "groupFares": "Group fares",
         "tourPackages": "Tour packages",
         "hotelPlaces": "Hotel places",
         "visaCountries": "Visa countries",
         "visaGuides": "Visa guides",
         "shopContent": "Waafas World copy",
-        "attributeSets": "Attribute sets",
+        "attributeSets": "Product attributes",
         "categories": "Categories",
         "brands": "Brands",
-        "compatibleModels": "Printer models",
+        "compatibleModels": "Compatible models",
         "products": "Products",
         "collections": "Collections",
         "deals": "Deals",
@@ -3764,7 +3767,7 @@
     "mediaLibrary": {
       "metaTitle": "Media library",
       "title": "Media library",
-      "lead": "Every photo and video of the site in one place. Upload here or from any photo field; photos are resized, saved as WebP and stripped of camera and location data.",
+      "lead": "Every photo and video of the site in one place. Upload here or from any photo field; photos are made lighter for fast pages and stripped of camera and location data.",
       "tabs": {
         "label": "Media library views",
         "library": "Library",
@@ -4182,7 +4185,7 @@
         },
         "modes": {
           "title": "Booking modes",
-          "body": "Manual request or Live booking for each service. Live stays locked until Phase E."
+          "body": "Manual request or live booking for each service. Live booking stays off until online booking is ready."
         },
         "payments": {
           "title": "Payments and delivery",
@@ -4300,7 +4303,13 @@
         "scheduled": "Scheduled",
         "scheduledReason": "Goes live by itself at the time you picked.",
         "scheduledReasonAt": "Goes live on {date}.",
-        "liveReasonAt": "Live on the site since {date}."
+        "liveReasonAt": "Live on the site since {date}.",
+        "startsLater": "Scheduled",
+        "startsLaterReason": "Shows on the site from its start date.",
+        "startsLaterReasonAt": "Shows on the site from {date}.",
+        "ended": "Ended",
+        "endedReason": "Its end date has passed, so the site doesn't show it.",
+        "endedReasonAt": "Ended on {date}. Change Ends to show it again."
       },
       "side": {
         "status": "Status",
@@ -4308,7 +4317,7 @@
         "viewOnSite": "View on site",
         "checklist": "Before you publish",
         "checklistReady": "Ready to publish.",
-        "missing": "Add {field}",
+        "missing": "{field} is missing",
         "seo": "In Google",
         "edited": "Edited <when></when> by {name}",
         "editedNoName": "Edited <when></when>",
@@ -4512,7 +4521,8 @@
         },
         "tags": {
           "placeholder": "Type, then press Enter",
-          "removeTag": "Remove {tag}"
+          "removeTag": "Remove {tag}",
+          "everywhere": "All other areas"
         },
         "lines": {
           "placeholder": "Type a line"
@@ -4708,7 +4718,12 @@
         "cancel": "Cancel",
         "confirm": "Schedule"
       },
-      "nextSection": "Next: {section}"
+      "nextSection": "Next: {section}",
+      "actors": {
+        "sample": "the sample data",
+        "update": "a site update",
+        "order": "a store order"
+      }
     },
     "fieldNames": {
       "abroad": "Places abroad",
@@ -5826,6 +5841,10 @@
         },
         "fields": {
           "key": "Place on the site"
+        },
+        "help": {
+          "image": "Shown when there is no video. Remove the video below to show this photo instead.",
+          "video": "When a video is set it plays in place of the photo; its poster is the first thing visitors see."
         }
       },
       "airports": {
@@ -6368,7 +6387,8 @@
         "lowStock": "Low stock",
         "outOfStock": "Out of stock",
         "shown": "Shown",
-        "hidden": "Hidden"
+        "hidden": "Hidden",
+        "endingSoon": "Ends soon"
       },
       "reasons": {
         "draft": "Not on the site yet.",
@@ -6391,7 +6411,8 @@
         "lowStock": "A variant is low or out of stock.",
         "outOfStock": "Nothing left to sell.",
         "shown": "Shows on the site.",
-        "hidden": "Hidden from the site."
+        "hidden": "Hidden from the site.",
+        "endingSoon": "Booking closes on {date}."
       }
     },
     "visaProgress": {
@@ -6822,11 +6843,11 @@
         },
         "analytics": {
           "title": "Add the Google Analytics ID",
-          "body": "Visits are counted only after a G- ID is added (and after cookie consent)."
+          "body": "Visits are counted only once the Google Analytics ID is added (and after cookie consent)."
         },
         "turnstile": {
           "title": "Turn on the bot check on forms",
-          "body": "The Turnstile keys go into the server settings. Ask the developer to add them."
+          "body": "The bot-check keys go into the server settings. Ask the developer to add them."
         },
         "realContent": {
           "title": "Replace Sample content with real details",
@@ -6840,7 +6861,8 @@
           "title": "Add the real payment accounts",
           "body": "Customers pay by transfer to these accounts until online payment is live."
         }
-      }
+      },
+      "progressShort": "{done} of {total} done"
     },
     "welcome": {
       "metaTitle": "Welcome to Waafa Admin",

@@ -20,7 +20,7 @@ const badgeVariants = cva(
         danger: "bg-danger-50 text-danger-600",
         discount: "bg-danger-600 font-bold text-white",
         outline:
-          "h-5 border border-mist-300 bg-white px-1.5 text-[10.5px] tracking-[0.08em] text-mist-600 uppercase",
+          "h-5 border border-mist-300 bg-white px-1.5 text-[12px] font-semibold text-mist-600",
         glass: "bg-white/14 text-white ring-1 ring-white/25 backdrop-blur-sm ring-inset",
       },
     },

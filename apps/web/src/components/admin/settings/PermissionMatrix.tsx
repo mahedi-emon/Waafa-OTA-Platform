@@ -48,6 +48,7 @@ async function PermissionMatrix({ roleNames }: PermissionMatrixProps) {
 
   return (
     <AdminPanel title={t("title")} lead={t("lead")} flush className="mt-8">
+      <p className="px-5 pb-3 text-[13px] text-mist-600 lg:hidden">{t("scrollHint")}</p>
       {/* A wide table scrolls on its own on narrow screens; keyboard users reach it with Tab and scroll with the arrows. */}
       <div
         role="region"

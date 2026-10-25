@@ -4,7 +4,7 @@ type ReportBarsProps = {
   title: string;
   days: Array<{ day: string; leads: number; orders: number; revenue: number }>;
   showRevenue: boolean;
-  strings: { date: string; leads: string; orders: string; revenue: string };
+  strings: { date: string; leads: string; orders: string; revenue: string; empty: string };
 };
 
 /**
@@ -35,6 +35,10 @@ function ReportBars({ title, days, showRevenue, strings }: ReportBarsProps) {
           ) : null}
         </p>
       </div>
+      {/* A range with nothing in it says so instead of an empty frame (D0 R10). */}
+      {days.every((day) => day.leads === 0 && day.orders === 0) ? (
+        <p className="text-[14px] text-mist-600">{strings.empty}</p>
+      ) : null}
       <div aria-hidden="true" className="overflow-x-auto">
         <div
           className="flex h-40 min-w-full items-end gap-1"

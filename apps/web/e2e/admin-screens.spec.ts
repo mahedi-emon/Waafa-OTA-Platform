@@ -95,3 +95,82 @@ test("signed-in admin screens hold every width, stay error-free and pass axe", a
   }
   expect(errors).toEqual([]);
 });
+
+/** Every other admin route (D0 R10): each sidebar list, each settings section and the website builder. */
+const ROUTES = [
+  "/secure-admin-control/visa-applications",
+  "/secure-admin-control/payments",
+  "/secure-admin-control/subscribers",
+  "/secure-admin-control/search",
+  "/secure-admin-control/notifications",
+  "/secure-admin-control/trash",
+  "/secure-admin-control/account",
+  "/secure-admin-control/website/home",
+  "/secure-admin-control/website/menus",
+  "/secure-admin-control/settings/hours",
+  "/secure-admin-control/settings/modes",
+  "/secure-admin-control/settings/forms",
+  "/secure-admin-control/settings/seo?tab=connections",
+  "/secure-admin-control/settings/search",
+  "/secure-admin-control/settings/maintenance",
+  ...[
+    "tourPackages",
+    "groupFares",
+    "flightRoutes",
+    "hotelPlaces",
+    "visaCountries",
+    "visaGuides",
+    "airlines",
+    "products",
+    "categories",
+    "brands",
+    "collections",
+    "deals",
+    "storeRows",
+    "coupons",
+    "attributeSets",
+    "compatibleModels",
+    "announcements",
+    "banners",
+    "pages",
+    "blogPosts",
+    "galleryAlbums",
+    "team",
+  ].map((key) => `/secure-admin-control/content/${key}`),
+  "/secure-admin-control/content/tourPackages/bali-temples-and-beaches",
+] as const;
+
+test("every other admin route holds a phone and a wide screen and passes axe", async ({ page }) => {
+  test.setTimeout(480_000);
+  const errors = collectErrors(page);
+  await page.setExtraHTTPHeaders({ "x-forwarded-for": "198.51.100.199" });
+  await page.goto("/secure-admin-control/sign-in");
+  await page.getByLabel("Work email").fill(ADMIN_EMAIL);
+  await page.getByLabel("Password", { exact: true }).fill(ADMIN_PASSWORD);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: /^Hello, / })).toBeVisible();
+
+  for (const route of ROUTES) {
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      await expect(page.getByRole("heading", { level: 1 }).first(), route).toBeVisible();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      expect(overflow, `${route} has no horizontal scroll at ${width}`).toBeLessThanOrEqual(0);
+      await page.screenshot({
+        path: `test-results/admin-shots/route-${route.replace(/[^a-zA-Z]+/g, "-")}-${width}.png`,
+        fullPage: true,
+      });
+      const axe = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
+      expect(
+        axe.violations.map(
+          (violation) => `${violation.id}: ${violation.nodes[0]?.target.join(" ")}`,
+        ),
+        `${route} axe at ${width}`,
+      ).toEqual([]);
+    }
+  }
+  expect(errors).toEqual([]);
+});

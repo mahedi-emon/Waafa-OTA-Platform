@@ -48,8 +48,13 @@ describe("list chips (D0 R4)", () => {
 
   it("reads group fares from seats and dates", () => {
     const fare = { expiresAt: later, departDate: "2026-11-10" };
+    const farOff = "2026-11-08T10:00:00+06:00";
+    expect(recordChipsOf("groupFares", { ...fare, expiresAt: farOff, seatsLeft: 9 }, now)).toEqual([
+      { name: "open", until: farOff },
+    ]);
+    // Booking closes within a week: Ends soon (D0 R10).
     expect(recordChipsOf("groupFares", { ...fare, seatsLeft: 9 }, now)).toEqual([
-      { name: "open", until: later },
+      { name: "endingSoon", until: later },
     ]);
     expect(recordChipsOf("groupFares", { ...fare, seatsLeft: 2 }, now)).toEqual([
       { name: "fewSeats", count: 2 },

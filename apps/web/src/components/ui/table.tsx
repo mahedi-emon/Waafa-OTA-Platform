@@ -3,9 +3,21 @@ import { cn } from "cn";
 
 /* shadcn/ui table primitives, themed with WAAFA tokens (admin data tables). */
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+type TableProps = React.ComponentProps<"table"> & {
+  /**
+   * Names the table's scroll box. A table that can be wider than a phone gets one: the box becomes a named region
+   * that keyboard users reach with Tab and scroll with the arrows (WCAG, axe scrollable-region-focusable).
+   */
+  scrollLabel?: string;
+};
+
+function Table({ className, scrollLabel, ...props }: TableProps) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div
+      data-slot="table-container"
+      {...(scrollLabel ? { role: "region", "aria-label": scrollLabel, tabIndex: 0 } : {})}
+      className="relative w-full overflow-x-auto focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+    >
       <table
         data-slot="table"
         className={cn("w-full caption-bottom text-[14px] text-ink-900", className)}
@@ -53,7 +65,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-11 px-3 text-left align-middle text-[12px] font-semibold tracking-[0.04em] whitespace-nowrap text-mist-600 uppercase first:pl-5 last:pr-5",
+        "h-11 px-3 text-left align-middle text-[13px] font-semibold whitespace-nowrap text-mist-600 first:pl-5 last:pr-5",
         className,
       )}
       {...props}

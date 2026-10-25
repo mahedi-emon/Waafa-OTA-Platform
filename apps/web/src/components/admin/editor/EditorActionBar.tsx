@@ -62,7 +62,7 @@ function EditorActionBar({ state, blueprint }: EditorActionBarProps) {
             </>
           )}
         </p>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2 max-sm:w-full">
           <span className="hidden items-center gap-1 text-[12.5px] text-mist-500 xl:inline-flex">
             <Kbd>Ctrl</Kbd>
             <Kbd>S</Kbd>
@@ -115,11 +115,15 @@ function EditorActionBar({ state, blueprint }: EditorActionBarProps) {
                   type="button"
                   variant="secondary"
                   size="md"
+                  aria-label={t("schedule")}
                   {...publishBlocked}
                   onClick={state.openSchedule}
                 >
                   <CalendarClock aria-hidden="true" className="size-4" />
-                  {t("schedule")}
+                  {/* On phones the calendar icon alone keeps the buttons on one row (D0 R10). */}
+                  <span aria-hidden="true" className="hidden sm:inline">
+                    {t("schedule")}
+                  </span>
                 </Button>
               ) : null}
               <Button
