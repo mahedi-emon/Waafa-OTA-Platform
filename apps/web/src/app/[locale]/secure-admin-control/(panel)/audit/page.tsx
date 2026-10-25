@@ -2,11 +2,12 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { AUDIT_AREAS, type AuditArea, type ContentKey } from "@waafa/shared";
-import { AdminEmpty } from "@/components/admin/AdminEmpty";
+import { AdminDateRange } from "@/components/admin/AdminDateRange";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminPagination } from "@/components/admin/AdminPagination";
-import { ListFilters } from "@/components/admin/ListFilters";
 import { SettingsFrame } from "@/components/admin/settings/SettingsFrame";
+import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { pageSizeOf } from "@/components/admin/table/listQuery";
+import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet } from "@/lib/admin/adminApi";
 import { auditTarget, verbPath, type AuditTarget } from "@/lib/admin/auditText";
@@ -14,7 +15,9 @@ import { changesBetween } from "@/lib/admin/blueprints/diff";
 import { changeSentence, type HistoryWords } from "@/lib/admin/blueprints/historyText";
 import { resolveBlueprint } from "@/lib/admin/blueprints/resolve";
 import type { ResolvedBlueprint } from "@/lib/admin/blueprints/types";
-import { dhakaDay, formatDhakaTime, formatPlainDate, pageParam } from "@/lib/admin/format";
+import { dateRangeStrings } from "@/lib/admin/dateRangeStrings";
+import { dhakaToday } from "@/lib/admin/dateRanges";
+import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import type { AuditRow, Paged, StaffDirectoryEntry } from "@/lib/admin/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,22 +36,27 @@ async function Audit({
   searchParams: PageProps<"/[locale]/secure-admin-control/audit">["searchParams"];
 }) {
   const params = await searchParams;
-  const page = pageParam(params.page);
+  const q = one(params.q)?.slice(0, 80);
   const areaParam = one(params.area);
   const area = areaParam && areaParam in AUDIT_AREAS ? (areaParam as AuditArea) : undefined;
   const actorParam = one(params.actorId);
   const actorId = actorParam && /^[a-z0-9]{8,40}$/.test(actorParam) ? actorParam : undefined;
   const from = DAY.test(one(params.from) ?? "") ? one(params.from) : undefined;
   const to = DAY.test(one(params.to) ?? "") ? one(params.to) : undefined;
-  const query = { area, actorId, from, to };
+  const query = { area, actorId, from, to, ...(q ? { q } : {}) };
 
-  const [list, people, t, tc, th, tk] = await Promise.all([
-    adminGet<Paged<AuditRow>>("/admin/audit", { ...query, page, pageSize: 40 }),
+  const [list, people, t, tc, th, tk, picker] = await Promise.all([
+    adminGet<Paged<AuditRow>>("/admin/audit", {
+      ...query,
+      page: pageParam(params.page),
+      pageSize: pageSizeOf(params.pageSize),
+    }),
     adminGet<StaffDirectoryEntry[]>("/admin/staff").catch(() => [] as StaffDirectoryEntry[]),
     getTranslations("Admin.audit"),
     getTranslations("Admin.common"),
     getTranslations("Admin.editor.history"),
     getTranslations("Admin.content"),
+    dateRangeStrings(),
   ]);
 
   // Blueprints of the content on this page, for record nouns and History-style change lines.
@@ -94,137 +102,103 @@ async function Audit({
   };
   const known = (path: string) => t.has(`verbs.${path}` as "verbs.other");
 
-  const rows = targets.map(({ row, target }) => {
+  const rows: DataRow[] = targets.map(({ row, target }) => {
     const blueprint = "key" in target ? blueprints.get(target.key) : undefined;
     const creates = row.action === "content.create" || row.action === "content.duplicate";
     const changes =
       blueprint && (target.kind === "record" || target.kind === "setting") && !creates
         ? changesBetween(row.before, row.after, blueprint)
         : [];
+    const lines = changes
+      .slice(0, SHOWN)
+      .map((change) => changeSentence(blueprint!, change, words));
+    const more = Math.max(0, changes.length - SHOWN);
+    const when = formatDhakaDateTime(row.at);
+    const sentence = t(`verbs.${verbPath(row.action, known)}` as "verbs.other", {
+      actor: row.actor,
+      target: targetWords(target),
+    });
+    const area = (Object.keys(AUDIT_AREAS) as AuditArea[]).find((key) =>
+      AUDIT_AREAS[key].some((prefix) => row.action.startsWith(prefix)),
+    );
     return {
       id: row.id,
-      at: row.at,
-      day: dhakaDay(row.at),
-      sentence: t(`verbs.${verbPath(row.action, known)}` as "verbs.other", {
-        actor: row.actor,
-        target: targetWords(target),
-      }),
-      reason: row.reason,
-      changes: changes.slice(0, SHOWN).map((change) => changeSentence(blueprint!, change, words)),
-      more: Math.max(0, changes.length - SHOWN),
+      title: sentence,
+      subtitle: when,
+      thumb: { initials: row.actor.slice(0, 2).toUpperCase() },
+      chips: [],
+      facts: {
+        person: { text: row.actor },
+        area: { text: area ? t(`areas.${area}`) : "", kind: "muted" },
+      },
+      summary: [
+        { label: t("colPerson"), value: row.actor },
+        { label: t("colWhen"), value: when },
+        ...(row.reason ? [{ label: t("colReason"), value: row.reason }] : []),
+      ],
+      ...(lines.length > 0
+        ? {
+            actions: (
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[13px] font-semibold text-mist-600">{t("whatChanged")}</p>
+                <ul className="flex flex-col gap-1 border-l-2 border-mist-200 pl-3 text-[13.5px] text-mist-800">
+                  {lines.map((line, index) => (
+                    <li key={index}>{line}</li>
+                  ))}
+                  {more > 0 ? (
+                    <li className="text-mist-600">{t("moreChanges", { count: more })}</li>
+                  ) : null}
+                </ul>
+              </div>
+            ),
+          }
+        : {}),
     };
   });
-  const days = [...new Set(rows.map((row) => row.day))];
   const filtered = Object.values(query).some(Boolean);
+
+  const columns: ColumnSpec[] = [
+    { key: "name", label: t("colChange"), always: true },
+    { key: "person", label: t("colPerson") },
+    { key: "area", label: t("colArea") },
+  ];
 
   return (
     <SettingsFrame current="audit">
       <AdminPageHeader title={t("title")} lead={t("lead")} />
-      <div className="mb-5">
-        <ListFilters
-          query={{ area, actorId, from, to }}
-          selects={[
-            {
-              name: "actorId",
-              label: t("filters.person"),
-              value: actorId ?? "",
-              options: [
-                { value: "", label: t("filters.anyone") },
-                ...people.map((person) => ({ value: person.id, label: person.name })),
-              ],
-            },
-            {
-              name: "area",
-              label: t("filters.area"),
-              value: area ?? "",
-              options: [
-                { value: "", label: t("filters.everywhere") },
-                ...(Object.keys(AUDIT_AREAS) as AuditArea[]).map((value) => ({
-                  value,
-                  label: t(`areas.${value}`),
-                })),
-              ],
-            },
-          ]}
-          dates={[
-            { name: "from", label: t("filters.from"), value: from ?? "" },
-            { name: "to", label: t("filters.to"), value: to ?? "" },
-          ]}
-          strings={{ apply: t("filters.apply"), reset: t("filters.clear") }}
-        />
+      <div className="mb-4">
+        <AdminDateRange from={from} to={to} today={dhakaToday()} strings={picker} />
       </div>
-      {rows.length === 0 ? (
-        <div className="rounded-2xl border border-mist-200 bg-white">
-          <AdminEmpty title={filtered ? t("empty") : t("emptyAll")} />
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-          {days.map((day) => (
-            <section key={day} aria-labelledby={`audit-${day}`}>
-              <h2
-                id={`audit-${day}`}
-                className="border-b border-mist-100 bg-mist-25 px-5 py-2 text-[13px] font-semibold text-mist-700"
-              >
-                {formatPlainDate(day)}
-              </h2>
-              <ul className="divide-y divide-mist-100">
-                {rows
-                  .filter((row) => row.day === day)
-                  .map((row) => (
-                    <li key={row.id} className="flex gap-4 px-5 py-3">
-                      <time
-                        dateTime={row.at}
-                        className="w-16 shrink-0 pt-0.5 text-[13px] text-mist-500 tabular-nums"
-                      >
-                        {formatDhakaTime(row.at)}
-                      </time>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[14.5px] text-navy-900">{row.sentence}</p>
-                        {row.reason ? (
-                          <p className="mt-0.5 text-[13.5px] text-mist-600">{row.reason}</p>
-                        ) : null}
-                        {row.changes.length > 0 ? (
-                          <details className="mt-1.5">
-                            <summary className="cursor-pointer text-[13.5px] font-semibold text-brand-700">
-                              {t("showChange")}
-                            </summary>
-                            <ul className="mt-2 flex flex-col gap-1 border-l-2 border-mist-200 pl-3 text-[13.5px] text-mist-800">
-                              {row.changes.map((sentence, index) => (
-                                <li key={index}>{sentence}</li>
-                              ))}
-                              {row.more > 0 ? (
-                                <li className="text-mist-600">
-                                  {t("moreChanges", { count: row.more })}
-                                </li>
-                              ) : null}
-                            </ul>
-                          </details>
-                        ) : null}
-                      </div>
-                    </li>
-                  ))}
-              </ul>
-            </section>
-          ))}
-          <AdminPagination
-            page={list.page}
-            pageSize={list.pageSize}
-            total={list.total}
-            path="/secure-admin-control/audit"
-            query={query}
-            strings={{
-              previous: tc("previous"),
-              next: tc("next"),
-              summary: tc("showing", { shown: list.items.length, total: list.total }),
-            }}
-          />
-        </div>
-      )}
+      <AdminDataTable
+        listKey="audit"
+        path="/secure-admin-control/audit"
+        rows={rows}
+        columns={columns}
+        page={{ total: list.total, page: list.page, pageSize: list.pageSize }}
+        searchLabel={t("search")}
+        filters={[
+          {
+            param: "actorId",
+            label: t("filters.person"),
+            options: people.map((person) => ({ value: person.id, label: person.name })),
+          },
+          {
+            param: "area",
+            label: t("filters.area"),
+            options: (Object.keys(AUDIT_AREAS) as AuditArea[]).map((value) => ({
+              value,
+              label: t(`areas.${value}`),
+            })),
+          },
+        ]}
+        openLabel={tc("open")}
+        empty={{ title: filtered ? t("empty") : t("emptyAll"), body: t("emptyBody") }}
+      />
     </SettingsFrame>
   );
 }
 
-/** Audit log (ADMIN.md §5.6): every admin change as a sentence, by person, area and day. */
+/** Audit log (ADMIN.md §5.6): every admin change as a sentence on the shared DataTable (issue 229). */
 export default function AuditPage(props: PageProps<"/[locale]/secure-admin-control/audit">) {
   return (
     <Suspense fallback={<Skeleton className="h-140 rounded-2xl" />}>

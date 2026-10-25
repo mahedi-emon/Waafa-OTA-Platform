@@ -21,6 +21,8 @@ const WIDE = new Set<ResolvedField["widget"]>([
   "map",
   "json",
   "weekdays",
+  "countries",
+  "bookingModes",
   "variantsMatrix",
   "templateBody",
 ]);

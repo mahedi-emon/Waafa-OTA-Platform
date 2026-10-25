@@ -89,10 +89,11 @@ test("task 10: office hours and a phone number change in Settings and show on th
   // A phone number: Business and contact.
   await sections.getByRole("link", { name: /Business and contact/ }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Business and contact" })).toBeVisible();
-  const phone = page.getByRole("textbox", { name: "Phone number as shown", exact: true });
+  // Typed once with the country code; the number as shown follows (issue 229).
+  const phone = page.getByRole("textbox", { name: "Phone number with country code", exact: true });
   const before = await phone.inputValue();
-  const next = `01823-2${STAMP}`;
-  await fill(page, "Phone number as shown", next);
+  const next = `01823-${STAMP}`;
+  await fill(page, "Phone number with country code", `+8801823${STAMP}`);
   await save(page);
 
   // The site shows both after its revalidation (about two seconds).
@@ -104,13 +105,18 @@ test("task 10: office hours and a phone number change in Settings and show on th
 
   // The audit log says it in a sentence, filtered to Settings.
   await page.goto("/secure-admin-control/audit?area=settings");
-  await expect(page.getByText(/saved the Contact and office hours settings/).first()).toBeVisible();
-  await page.getByText("Show what changed").first().click();
-  await expect(page.getByText(new RegExp(`${next}`)).first()).toBeVisible();
+  const change = page.getByText(/saved the Contact and office hours settings/).first();
+  await expect(change).toBeVisible();
+  // What changed is in the row's side sheet (issue 229).
+  await change.click();
+  const sheet = page.getByRole("dialog");
+  await expect(sheet.getByText("What changed")).toBeVisible();
+  await expect(sheet.getByText(new RegExp(STAMP)).first()).toBeVisible();
+  await page.keyboard.press("Escape");
 
   // Put the phone back for the specs after this one.
   await page.goto("/secure-admin-control/settings/business");
-  await fill(page, "Phone number as shown", before);
+  await fill(page, "Phone number with country code", before);
   await save(page);
   expect(errors).toEqual([]);
 });

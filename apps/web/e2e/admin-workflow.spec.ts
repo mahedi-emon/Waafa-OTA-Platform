@@ -149,14 +149,20 @@ test("a deleted package goes to Trash and comes back with Restore", async ({ pag
 
   await page.goto("/secure-admin-control/trash");
   await expect(page.getByRole("heading", { level: 1, name: "Trash" })).toBeVisible();
+  // Trash is a DataTable (issue 229): the row names the kind and the time left; Restore is in its side sheet.
   const row = page
-    .getByRole("listitem")
+    .getByRole("row")
     .filter({ hasText: title ?? "Maldives" })
     .first();
   await expect(row).toContainText("Tour package");
   await expect(row).toContainText(/30 days left|29 days left/);
+  await row
+    .getByText(title ?? "Maldives")
+    .first()
+    .click();
+  const sheet = page.getByRole("dialog");
   await until(
-    () => row.getByRole("button", { name: "Restore" }).click(),
+    () => sheet.getByRole("button", { name: "Restore" }).click(),
     page.getByText(/^Restored “/).first(),
   );
   await openPackage(page, "maldives-island-stay");

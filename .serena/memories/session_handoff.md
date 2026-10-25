@@ -5,18 +5,26 @@ VPS or its .env). Repo PRIVATE: CI budget rules in CLAUDE.md (normal PR = quick 
 required for schema/deploy/auth/payments/checkout/intake). Never cancel or skip CI by hand; wait for a run to finish
 before pushing again (a push restarts the full suite on full-ci PRs). Minutes: `node scripts/ci-minutes.mjs <pr>`.
 MAIN PROMPT: docs/claude-code-prompts.md v5 PROMPT 10 (Phase D, A–M); order D268. Deadline PRD P1 13 Nov 2026.
-DONE: #231 Step 0 merged (PR #260, 54 min); checkpoint summary sent to the owner (Banglish).
-NOW: #232 customer files → PR #262 (full-ci; also Closes #263 date-dependent hotel e2e). CI rerun after: CodeQL
-acceptance comment (js/http-to-file-access on writeFile, D214 style) + #263 test fix. After green: squash-merge, close
-#232/#263, Project Done, close-out comment. TELL OWNER (Banglish): MIGRATION + bundle change: copy new deploy/server
-bundle (compose.yml privatedata volume, backup.sh) FIRST, then `sh backup.sh`, then `sh deploy.sh`; uploads pause until
-the bundle is copied. Then record in TRACKER (inside the #233 PR): #232 block → Done + CI minutes, #263 bug row fixed.
-NEXT STEPS: 1) merge #262 + owner deploy note. 2) #233 P0 notification gaps (visa-status-customer email on stage
-change; staff recipients per module in Settings › Notifications replacing STAFF_ALERT_EMAIL-only; low-stock alert
-(Product.variants lowStockAt default 3) in placeOrder; EMI request form (EmiLeadPayloadSchema unused); booking-mode
-change reason → audit). 3) Letter A: #229, #219, #224.
+DONE: #231 Step 0 (PR #260, 54 min); #232 customer files (PR #262, 85 min, MIGRATION + bundle copy); #263 test fix;
+#233 P0 notifications + EMI form (PR #264, 48 min, no migration). TRACKER for #233 → Done + minutes goes in the next PR.
+NOW (26 Oct 01:45, usage limit): #229 WIP pushed on chore/229-admin-polish (no PR yet). DONE in it: Trash, Newsletter
+(+CustomerTabs), Sent messages (email chips), Search activity, Audit log on AdminDataTable with `q` in API; AdminDateRange
+(+Panel, lib/admin/dateRangeStrings) on Reports + Audit; ListFilters removed; integrations plain words + stacked switches;
+canDelete (FIXED lists) API 409 + editor/bulk hidden; template chips sending/notSending; airline logos as list thumbs;
+Add staff dialog in header; CountriesField widget (phoneCountries) + auto rule phoneDisplay (contact + extraPhones).
+TODO: booking modes as cards per service with lock chip + reason (item 2); unit tests (phoneDisplay rule, canDelete API
+409, q filters, CountriesField), run guards/lint/typecheck/test, local API-mode e2e (admin-screens/settings/staff tasks
+may need updates for new list markup), screenshots 390/1440, TRACKER #229 block + #233 Done/minutes, PR (no full-ci:
+no risky paths… check apps/api/src/admin only → quick set), merge.
+OLD NOTE — letter A: #229 admin polish (lists onto DataTable: Trash, Newsletter→Customers tab, Sent messages, Search
+activity, Audit log; booking modes cards; integrations plain words; phone once + country picker; themed date range;
+template status words + no Trash on fixed records; airline logos on group fares; Add staff in header), then #219
+(100-row page INP), #224 (budget cold-start flake).
+NEXT STEPS: 1) #229. 2) #219 + #224. 3) letter B #234 TOTP/login history/new-device email/Redis rate limits, #235 ClamAV.
+OWNER DEPLOY STATE: #232 needs bundle copy + backup before deploy (told). #233 no migration.
 COVERAGE: docs/PRD_COVERAGE.md is the FR-ID map; turn rows done and recompute the summary as issues close.
-GOTCHAS: "#232"-style strings in web code trip the hex-colour guard (write "issue 232"); bash heredocs with quotes
+GOTCHAS: NEVER `git stash pop` without checking `git stash list`: stash@{0} is the old A5 media WIP (first session);
+popping it onto main once caused conflicts (restored 26 Oct, backup in that session's scratchpad). "#232"-style strings in web code trip the hex-colour guard (write "issue 232"); bash heredocs with quotes
 break: write python/node scripts with Write; Project #4 auto-adds new issues; Fastify path params max 100 chars;
 strict zod payload schemas (feedback photo) must list new fields; e2e date math near month ends (2-month calendars);
 DocumentSlot uploads on pick (fixture mode returns a Sample key); real JPEG/PDF bytes needed in e2e (sniffed).

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { CustomerTabs } from "@/components/admin/CustomerTabs";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
 import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
@@ -92,6 +93,7 @@ async function Customers({
   return (
     <>
       <AdminPageHeader title={t("title")} lead={t("lead")} />
+      <CustomerTabs current="customers" />
       <AdminDataTable
         listKey="customers"
         path={PATH}

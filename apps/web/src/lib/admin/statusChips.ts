@@ -108,6 +108,8 @@ export const RECORD_CHIPS = {
   outOfStock: { tone: "danger", icon: PackageX },
   shown: { tone: "success", icon: Eye },
   hidden: { tone: "neutral", icon: EyeOff },
+  sending: { tone: "success", icon: Send },
+  notSending: { tone: "neutral", icon: EyeOff },
 } satisfies Record<RecordChipName, ChipSpec>;
 
 export const USER_CHIPS = {
@@ -115,6 +117,13 @@ export const USER_CHIPS = {
   invited: { tone: "info", icon: Clock },
   disabled: { tone: "neutral", icon: UserMinus },
   locked: { tone: "danger", icon: LockKeyhole },
+} satisfies Record<string, ChipSpec>;
+
+/** Sent messages (Settings › Forms and messages › Sent, issue 229). */
+export const EMAIL_CHIPS = {
+  queued: { tone: "info", icon: Clock },
+  sent: { tone: "success", icon: CircleCheck },
+  failed: { tone: "danger", icon: CircleX },
 } satisfies Record<string, ChipSpec>;
 
 /** Visa applications by checklist stage (ADMIN.md §8.3, D0 R6). */

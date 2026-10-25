@@ -20,7 +20,10 @@ export type RecordChipName =
   | "lowStock"
   | "outOfStock"
   | "shown"
-  | "hidden";
+  | "hidden"
+  /** Message templates (issue 229): sent when it applies, or switched off. */
+  | "sending"
+  | "notSending";
 
 /** A chip and what its tooltip names: a date (`at` it happens or happened, `until` it ends) or a number. */
 export type RecordChip = { name: RecordChipName; at?: string; until?: string; count?: number };
@@ -79,6 +82,8 @@ export function recordChipsOf(
 ): RecordChip[] {
   const data = (record && typeof record === "object" ? record : {}) as Data;
   switch (key) {
+    case "notificationTemplates":
+      return [{ name: data.enabled === false ? "notSending" : "sending" }];
     case "banners":
     case "announcements":
       return [windowChip(data, now)];

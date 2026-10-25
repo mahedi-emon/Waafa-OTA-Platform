@@ -287,6 +287,7 @@ export class AdminUsersService {
   async auditLog(query: {
     entity?: string;
     actorId?: string;
+    q?: string;
     area?: AuditArea;
     from?: string;
     to?: string;
@@ -309,6 +310,19 @@ export class AdminUsersService {
         ? { OR: AUDIT_AREAS[query.area].map((prefix) => ({ action: { startsWith: prefix } })) }
         : {}),
       ...(first || last ? { at } : {}),
+      ...(query.q
+        ? {
+            AND: [
+              {
+                OR: [
+                  { actorName: { contains: query.q, mode: "insensitive" as const } },
+                  { entityId: { contains: query.q, mode: "insensitive" as const } },
+                  { action: { contains: query.q, mode: "insensitive" as const } },
+                ],
+              },
+            ],
+          }
+        : {}),
     };
     const [total, rows] = await Promise.all([
       this.prisma.auditLog.count({ where }),

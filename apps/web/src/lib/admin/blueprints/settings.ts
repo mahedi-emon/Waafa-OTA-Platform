@@ -56,6 +56,9 @@ export const contactSettingsBlueprint = {
   fields: {
     addressLines: lines,
     phoneE164: phone,
+    // Typed once: the number as shown follows from the one with the country code (issue 229).
+    phoneDisplay: { auto: "phoneDisplay" },
+    extraPhones_display: { auto: "phoneDisplay" },
     whatsappE164: phone,
     whatsappMessage: textarea,
     extraPhones: { widget: "repeater", summary: "display", wide: true },
@@ -95,7 +98,7 @@ export const bookingModesBlueprint = {
   key: "bookingModes",
   sections: [{ id: "modes", fields: [""] }],
   fields: {
-    "": { widget: "repeater", summary: "module", fixed: true, wide: true },
+    "": { widget: "bookingModes", wide: true },
     module: { widget: "readOnly", choices: "bookingModule" },
     mode: { widget: "readOnly", choices: "bookingMode" },
     liveLocked: readOnly,
@@ -162,7 +165,7 @@ export const leadFormSettingsBlueprint = {
     { id: "alerts", fields: ["staffAlerts"] },
   ],
   fields: {
-    phoneCountries: tags,
+    phoneCountries: { widget: "countries" },
     consentText: textarea,
     staffAlerts: { widget: "repeater", summary: "email", wide: true },
     staffAlerts_areas: { widget: "choices", choices: "staffAlertArea" },

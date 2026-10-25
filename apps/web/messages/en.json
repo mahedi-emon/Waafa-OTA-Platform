@@ -3155,7 +3155,10 @@
       "colDevice": "Device",
       "colSource": "Source",
       "from": "From",
-      "to": "To"
+      "to": "To",
+      "searchBox": "Route or search words",
+      "emptyTitle": "No searches yet",
+      "emptyBody": "Searches on the website appear here as they happen."
     },
     "orders": {
       "metaTitle": "Orders",
@@ -3283,7 +3286,9 @@
       "remove": "Remove",
       "removed": "Removed from the list",
       "emptyTitle": "No subscribers yet",
-      "emptyBody": "Sign-ups from the footer and the blog appear here."
+      "emptyBody": "Sign-ups from the footer and the blog appear here.",
+      "search": "Email",
+      "removeConfirm": "Remove {email} from the list?"
     },
     "audit": {
       "metaTitle": "Audit log",
@@ -3433,7 +3438,15 @@
           "patch": "A site update changed {target}",
           "other": "A site update changed {target}"
         }
-      }
+      },
+      "search": "Person, record or action",
+      "colChange": "Change",
+      "colPerson": "Person",
+      "colArea": "Area",
+      "colWhen": "When",
+      "colReason": "Note",
+      "whatChanged": "What changed",
+      "emptyBody": "Changes made in Admin appear here."
     },
     "notifications": {
       "metaTitle": "Email log",
@@ -3444,7 +3457,19 @@
       "colTemplate": "Template",
       "colSubject": "Subject",
       "colStatus": "Status",
-      "templates": "Edit templates"
+      "templates": "Edit templates",
+      "search": "Email or subject",
+      "colSent": "Sent",
+      "colAttempts": "Tries",
+      "colError": "Why it failed",
+      "otherTemplate": "Other message",
+      "emptyTitle": "No emails yet",
+      "emptyBody": "Every email the site sends shows here with whether it arrived.",
+      "statuses": {
+        "queued": "Waiting",
+        "sent": "Sent",
+        "failed": "Failed"
+      }
     },
     "users": {
       "metaTitle": "Users and roles",
@@ -3506,7 +3531,8 @@
       "inviteSentTo": "Invite sent to {email}",
       "sendInvite": "Send invite",
       "resendInvite": "Send the invite again",
-      "inviteSent": "A new invite is on its way"
+      "inviteSent": "A new invite is on its way",
+      "addLead": "They get an email to choose their password, or you set a first one and pass it on."
     },
     "account": {
       "metaTitle": "My account",
@@ -3637,10 +3663,10 @@
         "email": "Email",
         "auth": "Customer sign-in"
       },
-      "signInNote": "Google sign-in: in Google Cloud › APIs & Services › Credentials, create an OAuth client ID (Web application), add {callback} as an authorised redirect URI, then paste the client ID and secret under Production and switch Live and Active on. The Log in link shows once Settings › Site › Accounts live is on.",
+      "signInNote": "Google sign-in: in Google Cloud › APIs & Services › Credentials, create an OAuth client ID (Web application), add {callback} as an authorised redirect URI, then paste the client ID and secret under Real account and switch Use the real account and Active on. The Log in link shows once Settings › Site › Accounts live is on.",
       "environment": "Environment",
-      "sandbox": "Sandbox",
-      "production": "Production",
+      "sandbox": "Test account",
+      "production": "Real account",
       "notConnected": "Not connected",
       "connected": "Saved",
       "secretSaved": "Saved, ends in {last4}. Leave empty to keep it.",
@@ -3672,12 +3698,12 @@
       "custom": "Custom",
       "statusActive": "Active",
       "statusOff": "Off",
-      "modeSandbox": "Sandbox",
-      "modeLive": "Live",
+      "modeSandbox": "Test",
+      "modeLive": "Real",
       "active": "Active",
-      "activeHint": "Use this provider for its category. Needs saved credentials for the selected mode.",
-      "live": "Use Live credentials",
-      "liveHint": "On: the Live (production) credentials are used. Off: the Sandbox (test) ones.",
+      "activeHint": "Use this provider for its kind of service. It needs the keys saved for the account chosen below.",
+      "live": "Use the real account",
+      "liveHint": "On: real bookings and payments with the real account's keys. Off: the test account, where nothing is charged or booked.",
       "markup": "Markup or commission",
       "markupNone": "None",
       "markupPercentage": "Percentage",
@@ -3687,17 +3713,17 @@
       "markupFixedHint": "Taka added to each booking from this provider.",
       "saveSetting": "Save settings",
       "settingSaved": "{name} settings saved",
-      "credentials": "Credentials",
+      "credentials": "Keys and passwords",
       "show": "Show {field}",
       "hide": "Hide {field}",
       "reveal": "Reveal saved value",
       "revealHint": "Shown for 30 seconds. Every reveal is written to the audit log.",
       "revealedLabel": "Saved {field}",
       "removeProvider": "Remove provider",
-      "removeProviderConfirm": "Remove {name} and all its saved credentials?",
+      "removeProviderConfirm": "Remove {name} and all its saved keys?",
       "add": {
         "title": "Add a provider",
-        "hint": "For a supplier that is not in the list. Its connection is stored and tested now; bookings through it start once its adapter is installed.",
+        "hint": "For a supplier that is not in the list. Its keys are stored and tested now; bookings through it start once its link is built.",
         "name": "Provider name",
         "namePlaceholder": "e.g. Galileo BD",
         "kind": "Category",
@@ -4751,6 +4777,19 @@
               "sample": "482913"
             }
           }
+        },
+        "countries": {
+          "add": "Add a country",
+          "search": "Country name or code",
+          "none": "No country by that name.",
+          "first": "the default",
+          "makeFirst": "Make {country} the default",
+          "remove": "Remove {country}"
+        },
+        "bookingModes": {
+          "locked": "Live booking locked",
+          "reason": "Why it is locked",
+          "reasonHelp": "Shown to staff. Live booking unlocks in a later phase, once a provider and online payment are connected."
         }
       },
       "advanced": {
@@ -5561,7 +5600,7 @@
         },
         "help": {
           "slaMinutes": "Requests waiting longer than this during office hours show as overdue.",
-          "phoneCountries": "Two-letter country codes; the first one is the default, like BD.",
+          "phoneCountries": "The countries in the phone number's country list on request forms. The first one is chosen by default.",
           "staffAlerts": "Each new request, order, payment proof, feedback or low-stock alert goes to everyone listed for it. While nobody is listed for an area, its alerts go to the server's main alert address."
         },
         "fields": {
@@ -6268,7 +6307,13 @@
       "purgeTitle": "Delete “{title}” forever?",
       "purgeBody": "It can't be restored after this.",
       "purgeConfirm": "Delete forever",
-      "purged": "Deleted “{title}” for good."
+      "purged": "Deleted “{title}” for good.",
+      "search": "Record or who deleted it",
+      "colRecord": "Record",
+      "colKind": "Kind",
+      "colDeletedBy": "Deleted by",
+      "colDeleted": "Deleted",
+      "colLeft": "Time left"
     },
     "leadActions": {
       "next": "Next step",
@@ -6467,7 +6512,9 @@
         "outOfStock": "Out of stock",
         "shown": "Shown",
         "hidden": "Hidden",
-        "endingSoon": "Ends soon"
+        "endingSoon": "Ends soon",
+        "sending": "On",
+        "notSending": "Off"
       },
       "reasons": {
         "draft": "Not on the site yet.",
@@ -6491,7 +6538,9 @@
         "outOfStock": "Nothing left to sell.",
         "shown": "Shows on the site.",
         "hidden": "Hidden from the site.",
-        "endingSoon": "Booking closes on {date}."
+        "endingSoon": "Booking closes on {date}.",
+        "sending": "Sent when it applies.",
+        "notSending": "Switched off: never sent."
       }
     },
     "visaProgress": {
@@ -6979,6 +7028,20 @@
         "other": "Document"
       },
       "deleted": "Deleted {date}: visa documents are kept for 90 days after the case closes"
+    },
+    "dateRange": {
+      "label": "Dates",
+      "any": "Any date",
+      "apply": "Show",
+      "clear": "Clear",
+      "range": "{from} to {to}",
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "customerTabs": {
+      "label": "Customers and newsletter",
+      "customers": "Customers",
+      "newsletter": "Newsletter"
     }
   },
   "Consent": {

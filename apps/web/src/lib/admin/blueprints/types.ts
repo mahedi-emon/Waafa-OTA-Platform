@@ -34,6 +34,10 @@ export type WidgetKind =
   | "phone"
   | "timeOfDay"
   | "weekdays"
+  /** Countries by name in order, the first the default (phone picker countries, issue 229). */
+  | "countries"
+  /** The Golden Switch as one card per service: mode, lock and its reason (issue 229). */
+  | "bookingModes"
   | "image"
   | "gallery"
   | "video"
@@ -79,7 +83,9 @@ export type AutoRule =
   /** A person's initials from their name ("Rafiq Ahmed" → "RA"), shown until a photo is uploaded. */
   | "initialsFromName"
   /** How many days the record's itinerary has (a package's length in days, D0 R8). */
-  | "itineraryDays";
+  | "itineraryDays"
+  /** A phone number as people read it ("01712-345678") from the same record's number with country code (issue 229). */
+  | "phoneDisplay";
 
 export type ReferenceSpec = {
   /** The list the choices come from. */
@@ -222,6 +228,8 @@ export type ResolvedBlueprint = {
   workflow: boolean;
   /** Duplicate is offered: false for lists of fixed places or codes, where a copy can't be valid. */
   duplicable: boolean;
+  /** Move to Trash is offered (fixed lists can't be deleted, issue 229). */
+  deletable: boolean;
   sample: boolean;
   seo: boolean;
 };

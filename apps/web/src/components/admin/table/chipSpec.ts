@@ -1,5 +1,6 @@
 import { CircleDot } from "lucide-react";
 import {
+  EMAIL_CHIPS,
   FEEDBACK_CHIPS,
   LEAD_CHIPS,
   ORDER_CHIPS,
@@ -21,6 +22,7 @@ const SETS: Record<ChipView["family"], Record<string, ChipSpec>> = {
   user: USER_CHIPS,
   overdue: { overdue: OVERDUE_CHIP },
   visa: VISA_CHIPS,
+  email: EMAIL_CHIPS,
 };
 
 const FALLBACK: ChipSpec = { tone: "neutral", icon: CircleDot };

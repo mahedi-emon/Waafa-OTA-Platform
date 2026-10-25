@@ -4,11 +4,18 @@ import { notFound, redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { CONTENT_MODEL, hasPublishWorkflow, isContentKey, type ContentKey } from "@waafa/shared";
+import {
+  CONTENT_MODEL,
+  canDelete,
+  hasPublishWorkflow,
+  isContentKey,
+  type ContentKey,
+} from "@waafa/shared";
 import { listPriceOf, photoOf } from "@waafa/shared/helpers/photo";
 import { recordChipsOf } from "@waafa/shared/workflow/chips";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ContentEditor } from "@/components/admin/editor/ContentEditor";
+import { airlineLogoSrc } from "@/components/travel/airlineLogoSrc";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
 import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { BulkAction, ColumnSpec, DataRow } from "@/components/admin/table/types";
@@ -53,6 +60,21 @@ function recordsQuery(search: Record<string, string | string[] | undefined>) {
     page: pageParam(search.page),
     pageSize: pageSizeOf(search.pageSize),
   };
+}
+
+/** The airline logo a group fare or an airline record shows in the list, or null. */
+function airlineLogoOf(key: string, data: unknown): string | null {
+  const record = (data ?? {}) as Record<string, unknown>;
+  const airline = (key === "groupFares" ? record.airline : key === "airlines" ? record : null) as {
+    code?: unknown;
+    logo?: { src?: unknown };
+  } | null;
+  if (!airline || typeof airline.code !== "string") return null;
+  const logo =
+    typeof airline.logo?.src === "string" ? { src: airline.logo.src, alt: "" } : undefined;
+  return airlineLogoSrc({ code: airline.code, ...(logo ? { logo } : {}) } as Parameters<
+    typeof airlineLogoSrc
+  >[0]);
 }
 
 async function ContentKeyView({ params, searchParams }: Pick<Params, "params" | "searchParams">) {
@@ -176,7 +198,13 @@ async function RecordTable({
       href: `${path}/${encodeURIComponent(item.id)}`,
       title,
       ...(editor ? { subtitle: t("changedBy", { name: editor }) } : {}),
-      thumb: photo ? { src: photo, alt: "" } : { initials: initialsOf(title) },
+      thumb: photo
+        ? { src: photo, alt: "" }
+        : (() => {
+            // Group fares and airlines show the airline's logo (Admin upload, else the bundled mark; issue 229).
+            const logo = airlineLogoOf(key, item.data);
+            return logo ? { src: logo, alt: "" } : { initials: initialsOf(title) };
+          })(),
       chips: recordChipsOf(
         key,
         item.data,
@@ -223,14 +251,18 @@ async function RecordTable({
           { id: "archive", label: t("archive"), run: bulkContent.bind(null, key, "archive") },
         ]
       : []),
-    {
-      id: "trash",
-      label: t("trash"),
-      danger: true,
-      // The bulk bar puts the number in: the raw words keep {count}.
-      confirm: t.raw("trashConfirm") as string,
-      run: bulkContent.bind(null, key, "trash"),
-    },
+    ...(canDelete(key)
+      ? [
+          {
+            id: "trash",
+            label: t("trash"),
+            danger: true,
+            // The bulk bar puts the number in: the raw words keep {count}.
+            confirm: t.raw("trashConfirm") as string,
+            run: bulkContent.bind(null, key, "trash"),
+          },
+        ]
+      : []),
   ];
 
   return (
