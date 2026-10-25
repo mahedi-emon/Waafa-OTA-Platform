@@ -139,27 +139,33 @@ async function Users({
 
   return (
     <SettingsFrame current="users">
-      <AdminPageHeader title={t("title")} lead={t("lead")} />
-      <StaffAddForm
-        roleNames={roleNames}
-        strings={{
-          add: t("add"),
-          name: t("name"),
-          email: t("email"),
-          roles: t("roles"),
-          signIn: t("signIn"),
-          inviteOption: t("inviteOption"),
-          inviteHelp: t("inviteHelp"),
-          passwordOption: t("passwordOption"),
-          password: t("password"),
-          passwordHint: t("passwordHint"),
-          created: t("created"),
-          invited: t("inviteSentTo", { email: "{email}" }),
-          sendInvite: t("sendInvite"),
-          cancel: tc("cancel"),
-          save: tc("save"),
-          failed: tc("unavailable"),
-        }}
+      <AdminPageHeader
+        title={t("title")}
+        lead={t("lead")}
+        actions={
+          <StaffAddForm
+            roleNames={roleNames}
+            strings={{
+              add: t("add"),
+              name: t("name"),
+              email: t("email"),
+              roles: t("roles"),
+              signIn: t("signIn"),
+              inviteOption: t("inviteOption"),
+              inviteHelp: t("inviteHelp"),
+              passwordOption: t("passwordOption"),
+              password: t("password"),
+              passwordHint: t("passwordHint"),
+              created: t("created"),
+              invited: t("inviteSentTo", { email: "{email}" }),
+              sendInvite: t("sendInvite"),
+              cancel: tc("cancel"),
+              save: tc("save"),
+              failed: tc("unavailable"),
+              lead: t("addLead"),
+            }}
+          />
+        }
       />
       <AdminDataTable
         listKey="users"

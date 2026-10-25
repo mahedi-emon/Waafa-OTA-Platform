@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
   canCopy,
+  canDelete,
   CONTENT_KEYS,
   CONTENT_MODEL,
   contentRecordId,
@@ -556,6 +557,11 @@ export class AdminContentService {
   /** Delete moves the record to Trash (D217): gone from the site at once, restorable for 30 days. */
   async remove(staff: StaffPrincipal, key: CollectionKey, id: string) {
     assertContentAccess(staff, key);
+    if (!canDelete(key))
+      throw problems.conflict(
+        "This list is fixed: turn the record off or edit it instead of deleting it",
+        "fixed",
+      );
     const before = await this.prisma.contentDocument.findUnique({
       where: { collection_docId: { collection: key, docId: id } },
     });
@@ -596,7 +602,18 @@ export class AdminContentService {
     const keys = CONTENT_KEYS.filter(
       (key) => CONTENT_MODEL[key].kind === "collection" && canEditContent(staff, key),
     );
-    const where = { collection: { in: keys } };
+    const where: Prisma.TrashItemWhereInput = {
+      collection: { in: keys },
+      // The record's address, who deleted it, or its title words (stored in the data).
+      ...(query.q
+        ? {
+            OR: [
+              { docId: { contains: query.q, mode: "insensitive" } },
+              { deletedBy: { contains: query.q, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+    };
     const [total, rows] = await Promise.all([
       this.prisma.trashItem.count({ where }),
       this.prisma.trashItem.findMany({

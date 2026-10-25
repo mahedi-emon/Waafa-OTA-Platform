@@ -2,18 +2,12 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { ActionButton } from "@/components/admin/ActionButton";
-import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminPagination } from "@/components/admin/AdminPagination";
+import { CustomerTabs } from "@/components/admin/CustomerTabs";
+import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { pageSizeOf } from "@/components/admin/table/listQuery";
+import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { adminGet } from "@/lib/admin/adminApi";
 import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import { removeSubscriber } from "@/lib/admin/opsActions";
@@ -24,78 +18,82 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
+const PATH = "/secure-admin-control/subscribers";
+const one = (value: string | string[] | undefined) =>
+  typeof value === "string" ? value : undefined;
+
 async function Subscribers({
   searchParams,
 }: {
   searchParams: PageProps<"/[locale]/secure-admin-control/subscribers">["searchParams"];
 }) {
   const params = await searchParams;
-  const page = pageParam(params.page);
+  const q = one(params.q)?.slice(0, 80);
   const [list, t, tc] = await Promise.all([
-    adminGet<Paged<SubscriberRow>>("/admin/subscribers", { page, pageSize: 50 }),
+    adminGet<Paged<SubscriberRow>>("/admin/subscribers", {
+      page: pageParam(params.page),
+      pageSize: pageSizeOf(params.pageSize),
+      ...(q ? { q } : {}),
+    }),
     getTranslations("Admin.subscribers"),
     getTranslations("Admin.common"),
   ]);
+
+  const rows: DataRow[] = list.items.map((row) => {
+    const when = formatDhakaDateTime(row.createdAt);
+    return {
+      id: row.id,
+      title: row.email,
+      thumb: { initials: row.email.slice(0, 2).toUpperCase() },
+      chips: [],
+      facts: {
+        source: { text: row.source ?? "", kind: "muted" },
+        when: { text: when, kind: "date" },
+      },
+      summary: [
+        { label: t("colEmail"), value: row.email },
+        ...(row.source ? [{ label: t("colSource"), value: row.source }] : []),
+        { label: t("colWhen"), value: when },
+      ],
+      actions: (
+        <ActionButton
+          action={removeSubscriber.bind(null, row.id)}
+          success={t("removed")}
+          failed={tc("unavailable")}
+          variant="secondary"
+          confirm={t("removeConfirm", { email: row.email })}
+        >
+          {t("remove")}
+        </ActionButton>
+      ),
+    };
+  });
+
+  const columns: ColumnSpec[] = [
+    { key: "name", label: t("colEmail"), always: true },
+    { key: "source", label: t("colSource") },
+    { key: "when", label: t("colWhen") },
+  ];
+
   return (
     <>
       <AdminPageHeader title={t("title")} lead={t("lead")} />
-      <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-        {list.items.length === 0 ? (
-          <AdminEmpty title={t("emptyTitle")} body={t("emptyBody")} />
-        ) : (
-          <Table scrollLabel={t("title")}>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead>{t("colEmail")}</TableHead>
-                <TableHead>{t("colSource")}</TableHead>
-                <TableHead>{t("colWhen")}</TableHead>
-                <TableHead>
-                  <span className="sr-only">{t("remove")}</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {list.items.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="break-all">{row.email}</TableCell>
-                  <TableCell className="text-mist-600">{row.source ?? ""}</TableCell>
-                  <TableCell className="text-[13px] whitespace-nowrap text-mist-600">
-                    {formatDhakaDateTime(row.createdAt)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <ActionButton
-                      action={removeSubscriber.bind(null, row.id)}
-                      success={t("removed")}
-                      failed={tc("unavailable")}
-                      variant="ghost"
-                      confirm={`${t("remove")} ${row.email}?`}
-                    >
-                      {t("remove")}
-                    </ActionButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-        <AdminPagination
-          page={list.page}
-          pageSize={list.pageSize}
-          total={list.total}
-          path="/secure-admin-control/subscribers"
-          query={{}}
-          strings={{
-            previous: tc("previous"),
-            next: tc("next"),
-            summary: tc("showing", { shown: list.items.length, total: list.total }),
-          }}
-        />
-      </section>
+      <CustomerTabs current="newsletter" />
+      <AdminDataTable
+        listKey="subscribers"
+        path={PATH}
+        rows={rows}
+        columns={columns}
+        page={{ total: list.total, page: list.page, pageSize: list.pageSize }}
+        searchLabel={t("search")}
+        openLabel={tc("open")}
+        empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
+      />
     </>
   );
 }
 
-/** Newsletter list (Marketing, FR-FTR-05). */
+/** Newsletter (FR-FTR-05): a tab beside Customers (ADMIN.md §3.1) on the shared DataTable (issue 229). */
 export default function SubscribersPage(
   props: PageProps<"/[locale]/secure-admin-control/subscribers">,
 ) {

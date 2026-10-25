@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminPagination } from "@/components/admin/AdminPagination";
-import { RelativeTime } from "@/components/admin/RelativeTime";
+import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { pageSizeOf } from "@/components/admin/table/listQuery";
+import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
-import { pageParam } from "@/lib/admin/format";
+import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import type { Paged, TrashRow } from "@/lib/admin/types";
 import { TrashActions } from "./_components/TrashActions";
 
@@ -17,7 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const DAY = 86_400_000;
+const PATH = "/secure-admin-control/trash";
 const capital = (words: string) => words.charAt(0).toUpperCase() + words.slice(1);
+const one = (value: string | string[] | undefined) =>
+  typeof value === "string" ? value : undefined;
 
 async function Trash({
   searchParams,
@@ -25,10 +28,14 @@ async function Trash({
   searchParams: PageProps<"/[locale]/secure-admin-control/trash">["searchParams"];
 }) {
   const params = await searchParams;
-  const page = pageParam(params.page);
+  const q = one(params.q)?.slice(0, 80);
   const [staff, list, t, tc, tb] = await Promise.all([
     requireStaff(),
-    adminGet<Paged<TrashRow>>("/admin/trash", { page, pageSize: 25 }),
+    adminGet<Paged<TrashRow>>("/admin/trash", {
+      page: pageParam(params.page),
+      pageSize: pageSizeOf(params.pageSize),
+      ...(q ? { q } : {}),
+    }),
     getTranslations("Admin.trash"),
     getTranslations("Admin.common"),
     getTranslations("Admin.blueprints"),
@@ -39,76 +46,73 @@ async function Trash({
   const canPurge = hasRole(staff, "super-admin");
   const now = new Date().getTime();
 
+  const rows: DataRow[] = list.items.map((item) => {
+    const days = Math.max(0, Math.ceil((Date.parse(item.purgeAt) - now) / DAY));
+    const deleted = formatDhakaDateTime(item.deletedAt);
+    return {
+      id: item.id,
+      title: item.title,
+      subtitle: noun(item.collection),
+      thumb: { initials: noun(item.collection).slice(0, 2).toUpperCase() },
+      chips: [],
+      facts: {
+        deletedBy: { text: item.deletedBy },
+        left: { text: t("daysLeft", { count: days }), kind: days <= 3 ? undefined : "muted" },
+        deleted: { text: deleted, kind: "date" },
+      },
+      summary: [
+        { label: t("colKind"), value: noun(item.collection) },
+        { label: t("colDeletedBy"), value: item.deletedBy },
+        { label: t("colDeleted"), value: deleted },
+        { label: t("colLeft"), value: t("daysLeft", { count: days }) },
+      ],
+      actions: (
+        <TrashActions
+          id={item.id}
+          title={item.title}
+          canPurge={canPurge}
+          strings={{
+            restore: t("restore"),
+            restored: t("restored", { title: "{title}" }),
+            purge: t("purge"),
+            purgeTitle: t("purgeTitle", { title: "{title}" }),
+            purgeBody: t("purgeBody"),
+            purgeConfirm: t("purgeConfirm"),
+            purged: t("purged", { title: "{title}" }),
+            cancel: tc("cancel"),
+            failed: tc("unavailable"),
+            open: tc("open"),
+          }}
+        />
+      ),
+    };
+  });
+
+  const columns: ColumnSpec[] = [
+    { key: "name", label: t("colRecord"), always: true },
+    { key: "deletedBy", label: t("colDeletedBy") },
+    { key: "left", label: t("colLeft") },
+    { key: "deleted", label: t("colDeleted") },
+  ];
+
   return (
     <>
       <AdminPageHeader title={t("title")} lead={t("lead")} />
-      <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-        {list.items.length === 0 ? (
-          <AdminEmpty title={t("emptyTitle")} body={t("emptyBody")} />
-        ) : (
-          <ul className="divide-y divide-mist-100">
-            {list.items.map((item) => {
-              const days = Math.max(0, Math.ceil((Date.parse(item.purgeAt) - now) / DAY));
-              return (
-                <li
-                  key={item.id}
-                  className="flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between"
-                >
-                  <div className="min-w-0">
-                    <p className="text-[12.5px] font-semibold text-mist-600">
-                      {noun(item.collection)}
-                    </p>
-                    <p className="mt-0.5 font-semibold wrap-break-word text-navy-900">
-                      {item.title}
-                    </p>
-                    <p className="mt-1 text-[13px] text-mist-600">
-                      {t.rich("deleted", {
-                        when: () => <RelativeTime iso={item.deletedAt} />,
-                        name: item.deletedBy,
-                      })}{" "}
-                      · {t("daysLeft", { count: days })}
-                    </p>
-                  </div>
-                  <TrashActions
-                    id={item.id}
-                    title={item.title}
-                    canPurge={canPurge}
-                    strings={{
-                      restore: t("restore"),
-                      restored: t("restored", { title: "{title}" }),
-                      purge: t("purge"),
-                      purgeTitle: t("purgeTitle", { title: "{title}" }),
-                      purgeBody: t("purgeBody"),
-                      purgeConfirm: t("purgeConfirm"),
-                      purged: t("purged", { title: "{title}" }),
-                      cancel: tc("cancel"),
-                      failed: tc("unavailable"),
-                      open: tc("open"),
-                    }}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        <AdminPagination
-          page={list.page}
-          pageSize={list.pageSize}
-          total={list.total}
-          path="/secure-admin-control/trash"
-          query={{}}
-          strings={{
-            previous: tc("previous"),
-            next: tc("next"),
-            summary: tc("showing", { shown: list.items.length, total: list.total }),
-          }}
-        />
-      </section>
+      <AdminDataTable
+        listKey="trash"
+        path={PATH}
+        rows={rows}
+        columns={columns}
+        page={{ total: list.total, page: list.page, pageSize: list.pageSize }}
+        searchLabel={t("search")}
+        openLabel={tc("open")}
+        empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
+      />
     </>
   );
 }
 
-/** Admin › Trash (D0 R4): deleted records for 30 days, then gone for good. */
+/** Admin › Trash (D0 R4) on the shared DataTable (issue 229): deleted records for 30 days, then gone for good. */
 export default function TrashPage(props: PageProps<"/[locale]/secure-admin-control/trash">) {
   return (
     <Suspense fallback={<Skeleton className="h-120 rounded-2xl" />}>

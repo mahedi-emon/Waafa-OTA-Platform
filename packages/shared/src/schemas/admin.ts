@@ -196,11 +196,23 @@ export const ContentMoveInputSchema = z
   .strict();
 
 /** Trash (D0 R4): newest first, only the lists this person may edit. */
-export const TrashListQuerySchema = z.object({ ...paging }).strict();
+/** Trash, Newsletter and Sent messages search one box each (D0 R5 DataTable, issue 229). */
+export const TrashListQuerySchema = z
+  .object({ q: z.string().trim().max(80).optional(), ...paging })
+  .strict();
+
+export const SubscriberListQuerySchema = z
+  .object({ q: z.string().trim().max(80).optional(), ...paging })
+  .strict();
+
+export const NotificationListQuerySchema = z
+  .object({ q: z.string().trim().max(80).optional(), ...paging })
+  .strict();
 
 export const SearchLogListQuerySchema = z
   .object({
     module: z.enum(["flights", "hotels", "packages", "visa"]).optional(),
+    q: z.string().trim().max(80).optional(),
     from: IsoDateSchema.optional(),
     to: IsoDateSchema.optional(),
     ...paging,
@@ -229,6 +241,7 @@ export const AuditListQuerySchema = z
   .object({
     entity: z.string().trim().min(1).max(40).optional(),
     actorId: IdSchema.optional(),
+    q: z.string().trim().max(80).optional(),
     area: z.enum(Object.keys(AUDIT_AREAS) as [AuditArea, ...AuditArea[]]).optional(),
     /** Dhaka days, both included. */
     from: AuditDay.optional(),

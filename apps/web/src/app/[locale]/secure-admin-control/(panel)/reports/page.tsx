@@ -13,6 +13,7 @@ import { dhakaToday, rangePresets } from "@/lib/admin/dateRanges";
 import { ReportBars } from "./_components/ReportBars";
 import { ReportList } from "./_components/ReportList";
 import { ReportRange } from "./_components/ReportRange";
+import { dateRangeStrings } from "@/lib/admin/dateRangeStrings";
 
 type SearchActivity = {
   total: number;
@@ -112,14 +113,12 @@ async function Reports({
         path="/secure-admin-control/reports"
         strings={{
           label: t("range"),
-          from: t("from"),
-          to: t("to"),
-          show: t("show"),
           last7: t("presets.last7"),
           last30: t("presets.last30"),
           thisMonth: t("presets.thisMonth"),
           lastMonth: t("presets.lastMonth"),
         }}
+        picker={await dateRangeStrings()}
       />
 
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label={t("kpis")}>

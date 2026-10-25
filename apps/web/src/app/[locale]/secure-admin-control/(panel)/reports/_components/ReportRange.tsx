@@ -1,7 +1,5 @@
 import { cn } from "cn";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { AdminDateRange, type AdminDateRangeStrings } from "@/components/admin/AdminDateRange";
 import { Link } from "@/i18n/navigation";
 import { presetOf, rangePresets, type DayRange, type RangePreset } from "@/lib/admin/dateRanges";
 
@@ -10,20 +8,22 @@ type ReportRangeProps = {
   /** Today in Dhaka, from the server, so the presets match the report. */
   today: string;
   path: string;
-  strings: { label: string; from: string; to: string; show: string } & Record<RangePreset, string>;
+  strings: { label: string } & Record<RangePreset, string>;
+  picker: AdminDateRangeStrings;
 };
 
 /**
- * The report's date range (D0 R9): one tap for the common ranges, or two days and Show. Each choice is an address,
- * so a report can be shared or reopened as it was.
+ * The report's date range (D0 R9, issue 229): one tap for the common ranges, or any range from the themed picker
+ * (dates read "12 Oct 2026", never the browser's mm/dd/yyyy). Each choice is an address, so a report can be shared or
+ * reopened as it was.
  */
-function ReportRange({ range, today, path, strings }: ReportRangeProps) {
+function ReportRange({ range, today, path, strings, picker }: ReportRangeProps) {
   const presets = rangePresets(today);
   const chosen = presetOf(range, presets);
   return (
     <section
       aria-label={strings.label}
-      className="flex flex-col gap-4 rounded-2xl border border-mist-200 bg-white p-4 lg:flex-row lg:items-end lg:justify-between"
+      className="flex flex-col gap-4 rounded-2xl border border-mist-200 bg-white p-4 lg:flex-row lg:items-center lg:justify-between"
     >
       <ul className="flex flex-wrap gap-2">
         {(Object.keys(presets) as RangePreset[]).map((key) => (
@@ -44,37 +44,7 @@ function ReportRange({ range, today, path, strings }: ReportRangeProps) {
           </li>
         ))}
       </ul>
-      <form action={path} className="flex flex-wrap items-end gap-3">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="report-from" className="text-[12.5px] text-mist-600">
-            {strings.from}
-          </Label>
-          <Input
-            id="report-from"
-            type="date"
-            name="from"
-            defaultValue={range.from}
-            max={today}
-            required
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="report-to" className="text-[12.5px] text-mist-600">
-            {strings.to}
-          </Label>
-          <Input
-            id="report-to"
-            type="date"
-            name="to"
-            defaultValue={range.to}
-            max={today}
-            required
-          />
-        </div>
-        <Button type="submit" variant="navy">
-          {strings.show}
-        </Button>
-      </form>
+      <AdminDateRange from={range.from} to={range.to} today={today} required strings={picker} />
     </section>
   );
 }

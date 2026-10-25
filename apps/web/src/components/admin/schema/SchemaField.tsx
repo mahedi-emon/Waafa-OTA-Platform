@@ -42,6 +42,7 @@ import { UnionField } from "./UnionField";
 import { VariantField } from "./VariantField";
 import { VariantsMatrixField } from "./VariantsMatrixField";
 import { WeekdaysField } from "./WeekdaysField";
+import { CountriesField } from "./CountriesField";
 import { useSchemaEditor } from "./useSchemaEditor";
 
 type SchemaFieldProps = {
@@ -167,6 +168,8 @@ function SchemaField({ schema, path, value, optional, bare = false }: SchemaFiel
       return <TimeOfDayField path={path} node={target} value={value} />;
     case "weekdays":
       return <WeekdaysField path={path} value={value} />;
+    case "countries":
+      return <CountriesField {...common} />;
     case "image":
       return (
         <LazyMediaField

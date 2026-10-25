@@ -247,6 +247,24 @@ const UNCOPYABLE = new Set<ContentKey>([
   "coupons",
 ]);
 
+/**
+ * Lists of fixed places the site's code expects (issue 229): every message template, home section, page image, store
+ * row, service page and menu is wired into a page, so staff turn one off or edit it, never delete it.
+ */
+const FIXED = new Set<ContentKey>([
+  "menus",
+  "notificationTemplates",
+  "homeSections",
+  "servicePages",
+  "mediaSlots",
+  "storeRows",
+]);
+
+/** Whether Move to Trash is offered for a key's records. */
+export function canDelete(key: ContentKey): boolean {
+  return CONTENT_MODEL[key].kind === "collection" && !FIXED.has(key);
+}
+
 /** Whether Duplicate is offered for a key's records. */
 export function canCopy(key: ContentKey): boolean {
   return CONTENT_MODEL[key].kind === "collection" && !UNCOPYABLE.has(key);

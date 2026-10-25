@@ -331,34 +331,36 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
                   {t("side.duplicate")}
                 </Button>
               ) : null}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={state.pending}
-                    className="w-full justify-start text-danger-700"
-                  >
-                    <Trash2 aria-hidden="true" className="size-4" />
-                    {t("side.delete")}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {t("side.deleteTitle", { thing: blueprint.nouns.one })}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>{t("side.deleteBody")}</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t("side.cancel")}</AlertDialogCancel>
-                    <AlertDialogAction variant="danger" onClick={state.remove}>
-                      {t("side.deleteConfirm")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              {blueprint.deletable ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={state.pending}
+                      className="w-full justify-start text-danger-700"
+                    >
+                      <Trash2 aria-hidden="true" className="size-4" />
+                      {t("side.delete")}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {t("side.deleteTitle", { thing: blueprint.nouns.one })}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>{t("side.deleteBody")}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t("side.cancel")}</AlertDialogCancel>
+                      <AlertDialogAction variant="danger" onClick={state.remove}>
+                        {t("side.deleteConfirm")}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : null}
             </>
           ) : null}
         </section>

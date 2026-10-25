@@ -1,3 +1,4 @@
+import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 import { getAt, setAt, type Path } from "../schema";
 import { pathsMatching } from "./paths";
 import { freeId, slugify } from "./slug";
@@ -166,6 +167,14 @@ export function applyAutomatic(
             .map((word) => (word ? Array.from(word)[0]?.toUpperCase() : ""))
             .join("");
           if (letters) set(path, letters.slice(0, 3));
+          break;
+        }
+        case "phoneDisplay": {
+          // The number with country code sits beside it: phoneE164 on contact settings, e164 in a list of numbers.
+          const record = (owner ?? {}) as { phoneE164?: unknown; e164?: unknown };
+          const e164 = typeof record.phoneE164 === "string" ? record.phoneE164 : record.e164;
+          const parsed = typeof e164 === "string" ? parsePhoneNumberFromString(e164) : undefined;
+          if (parsed?.isValid()) set(path, parsed.formatNational());
           break;
         }
         case "readingMinutes":

@@ -95,7 +95,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "sabre",
     name: "Sabre",
     kind: "flight",
-    summary: "GDS: search, PNR, ticketing",
+    summary: "Airline booking system: live fares, seat holds and tickets",
     fields: [
       url("From the Sabre Dev Studio account, e.g. the certification host for sandbox"),
       text("clientId", "Client ID"),
@@ -107,7 +107,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "amadeus",
     name: "Amadeus",
     kind: "flight",
-    summary: "GDS: search, PNR, ticketing",
+    summary: "Airline booking system: live fares, seat holds and tickets",
     fields: [
       url("The test or production host from the Amadeus account"),
       text("apiKey", "API key"),
@@ -119,7 +119,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "travelport",
     name: "Travelport",
     kind: "flight",
-    summary: "GDS: search, PNR, ticketing",
+    summary: "Airline booking system: live fares, seat holds and tickets",
     fields: [
       url("The pre-production or production host from Travelport"),
       text("username", "Username"),
@@ -131,7 +131,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "flyhub",
     name: "FlyHub",
     kind: "flight",
-    summary: "Consolidator API: search, booking, ticket issue",
+    summary: "Ticket wholesaler: live fares, bookings and tickets",
     fields: [
       url("The API host FlyHub gives with the B2B account"),
       text("username", "Username"),
@@ -142,7 +142,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "bdfare",
     name: "BDFare",
     kind: "flight",
-    summary: "Consolidator API: search, booking, ticket issue",
+    summary: "Ticket wholesaler: live fares, bookings and tickets",
     fields: [
       url("The API host BDFare gives with the B2B account"),
       text("username", "Username", false),
@@ -153,7 +153,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "hotelbeds",
     name: "Hotelbeds",
     kind: "hotel",
-    summary: "Hotel API: availability, rates, booking",
+    summary: "Hotel supplier: free rooms, prices and bookings",
     fields: [
       url("The test or live host from the Hotelbeds account"),
       text("apiKey", "API key"),
@@ -317,7 +317,7 @@ export function providerDefinition(key: string, customName?: string): ProviderDe
     id: key,
     name: customName ?? key,
     kind,
-    summary: "Added in Admin; the adapter is installed when the supplier contract lands",
+    summary: "Added in Admin; it starts working once the supplier's link is built for it",
     fields: customProviderFields(),
   };
 }

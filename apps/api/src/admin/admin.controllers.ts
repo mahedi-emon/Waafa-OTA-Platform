@@ -37,7 +37,9 @@ import {
   OrderListQuerySchema,
   OrderActionInputSchema,
   OrderUpdateInputSchema,
+  NotificationListQuerySchema,
   PagingQuerySchema,
+  SubscriberListQuerySchema,
   PasswordChangeInputSchema,
   PasswordSetInputSchema,
   PaymentProofListQuerySchema,
@@ -232,7 +234,7 @@ export class AdminActivityController {
   @Get("subscribers")
   @Roles("admin", "content-editor")
   subscribers(@Query() query: unknown) {
-    return this.inbox.subscribers(parseInput(PagingQuerySchema, query));
+    return this.inbox.subscribers(parseInput(SubscriberListQuerySchema, query));
   }
 
   @Delete("subscribers/:id")
@@ -245,7 +247,7 @@ export class AdminActivityController {
   @Get("notifications")
   @Roles("admin")
   notifications(@Query() query: unknown) {
-    return this.inbox.notifications(parseInput(PagingQuerySchema, query));
+    return this.inbox.notifications(parseInput(NotificationListQuerySchema, query));
   }
 }
 

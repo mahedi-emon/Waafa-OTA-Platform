@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 /** Which chip set a chip belongs to (tone and icon come from lib/admin/statusChips). */
 export type ChipFamily =
-  "record" | "lead" | "order" | "proof" | "feedback" | "user" | "overdue" | "visa";
+  "record" | "lead" | "order" | "proof" | "feedback" | "user" | "overdue" | "visa" | "email";
 
 export type ChipView = { family: ChipFamily; name: string; label: string; reason?: string };
 

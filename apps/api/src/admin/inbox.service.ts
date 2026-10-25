@@ -278,6 +278,7 @@ export class AdminInboxService {
     const where: Prisma.SearchLogWhereInput = {
       ...(query.module ? { module: query.module } : {}),
       ...(createdAt ? { createdAt } : {}),
+      ...(query.q ? { summary: { contains: query.q, mode: "insensitive" as const } } : {}),
     };
     const [total, rows, top, leads] = await Promise.all([
       this.prisma.searchLog.count({ where }),
@@ -320,8 +321,11 @@ export class AdminInboxService {
     };
   }
 
-  async subscribers(paging: Paging) {
-    const where = { unsubscribedAt: null };
+  async subscribers(paging: Paging & { q?: string | undefined }) {
+    const where: Prisma.SubscriberWhereInput = {
+      unsubscribedAt: null,
+      ...(paging.q ? { email: { contains: paging.q, mode: "insensitive" } } : {}),
+    };
     const [total, rows] = await Promise.all([
       this.prisma.subscriber.count({ where }),
       this.prisma.subscriber.findMany({ where, orderBy: { createdAt: "desc" }, ...window(paging) }),
@@ -351,10 +355,22 @@ export class AdminInboxService {
     });
   }
 
-  async notifications(paging: Paging) {
+  async notifications(paging: Paging & { q?: string | undefined }) {
+    const where: Prisma.NotificationLogWhereInput = paging.q
+      ? {
+          OR: [
+            { recipient: { contains: paging.q, mode: "insensitive" } },
+            { subject: { contains: paging.q, mode: "insensitive" } },
+          ],
+        }
+      : {};
     const [total, rows] = await Promise.all([
-      this.prisma.notificationLog.count(),
-      this.prisma.notificationLog.findMany({ orderBy: { createdAt: "desc" }, ...window(paging) }),
+      this.prisma.notificationLog.count({ where }),
+      this.prisma.notificationLog.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        ...window(paging),
+      }),
     ]);
     return {
       total,

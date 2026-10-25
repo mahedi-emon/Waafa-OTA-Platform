@@ -2,20 +2,14 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminPagination } from "@/components/admin/AdminPagination";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { BarList } from "@/components/admin/BarList";
 import { KpiCard } from "@/components/admin/KpiCard";
 import { StatusTabs } from "@/components/admin/StatusTabs";
+import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { pageSizeOf } from "@/components/admin/table/listQuery";
+import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { adminGet } from "@/lib/admin/adminApi";
 import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import type { SearchActivity } from "@/lib/admin/types";
@@ -26,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const MODULES = ["flights", "hotels", "packages", "visa"] as const;
+const PATH = "/secure-admin-control/search";
 const one = (value: string | string[] | undefined) =>
   typeof value === "string" ? value : undefined;
 
@@ -36,14 +31,52 @@ async function Activity({
 }) {
   const params = await searchParams;
   const area = MODULES.find((item) => item === one(params.module));
-  const page = pageParam(params.page);
+  const q = one(params.q)?.slice(0, 80);
   const [data, t, tc, tm, td] = await Promise.all([
-    adminGet<SearchActivity>("/admin/search-logs", { module: area, page, pageSize: 30 }),
+    adminGet<SearchActivity>("/admin/search-logs", {
+      module: area,
+      page: pageParam(params.page),
+      pageSize: pageSizeOf(params.pageSize),
+      ...(q ? { q } : {}),
+    }),
     getTranslations("Admin.search"),
     getTranslations("Admin.common"),
     getTranslations("Admin.modules"),
     getTranslations("Admin.dashboard"),
   ]);
+  const moduleName = (value: string) =>
+    MODULES.includes(value as (typeof MODULES)[number]) ? tm(value as "flights") : value;
+
+  const rows: DataRow[] = data.items.map((item) => {
+    const when = formatDhakaDateTime(item.createdAt);
+    return {
+      id: item.id,
+      title: item.summary,
+      subtitle: moduleName(item.module),
+      chips: [],
+      facts: {
+        module: { text: moduleName(item.module) },
+        device: { text: item.device ?? "", kind: "muted" },
+        source: { text: item.source ?? "", kind: "muted" },
+        when: { text: when, kind: "date" },
+      },
+      summary: [
+        { label: t("colModule"), value: moduleName(item.module) },
+        { label: t("colSearch"), value: item.summary },
+        ...(item.device ? [{ label: t("colDevice"), value: item.device }] : []),
+        ...(item.source ? [{ label: t("colSource"), value: item.source }] : []),
+        { label: t("colWhen"), value: when },
+      ],
+    };
+  });
+
+  const columns: ColumnSpec[] = [
+    { key: "name", label: t("colSearch"), always: true },
+    { key: "module", label: t("colModule") },
+    { key: "device", label: t("colDevice") },
+    { key: "source", label: t("colSource") },
+    { key: "when", label: t("colWhen") },
+  ];
 
   return (
     <>
@@ -52,11 +85,11 @@ async function Activity({
         label={t("title")}
         current={area ?? "all"}
         items={[
-          { value: "all", label: tc("all"), href: "/secure-admin-control/search" },
+          { value: "all", label: tc("all"), href: PATH },
           ...MODULES.map((value) => ({
             value,
             label: tm(value),
-            href: `/secure-admin-control/search?module=${value}`,
+            href: `${PATH}?module=${value}`,
           })),
         ]}
       />
@@ -65,65 +98,31 @@ async function Activity({
         <KpiCard label={t("leads")} value={data.leads} />
         <KpiCard label={t("rate")} value={`${data.searchToLeadRate}%`} />
       </div>
-      <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <AdminPanel title={t("topRoutes")}>
-          <BarList
-            empty={td("noData")}
-            rows={data.topRoutes.map((row) => ({
-              key: `${row.module}-${row.summary}`,
-              label: row.summary,
-              value: row.count,
-            }))}
-          />
-        </AdminPanel>
-        <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-          <Table scrollLabel={t("title")}>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead>{t("colWhen")}</TableHead>
-                <TableHead>{t("colModule")}</TableHead>
-                <TableHead>{t("colSearch")}</TableHead>
-                <TableHead>{t("colDevice")}</TableHead>
-                <TableHead>{t("colSource")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="text-[13px] whitespace-nowrap text-mist-600">
-                    {formatDhakaDateTime(item.createdAt)}
-                  </TableCell>
-                  <TableCell>
-                    {MODULES.includes(item.module as (typeof MODULES)[number])
-                      ? tm(item.module as "flights")
-                      : item.module}
-                  </TableCell>
-                  <TableCell className="max-w-[320px]">{item.summary}</TableCell>
-                  <TableCell>{item.device ?? ""}</TableCell>
-                  <TableCell className="text-[13px] text-mist-600">{item.source ?? ""}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <AdminPagination
-            page={data.page}
-            pageSize={data.pageSize}
-            total={data.total}
-            path="/secure-admin-control/search"
-            query={{ module: area }}
-            strings={{
-              previous: tc("previous"),
-              next: tc("next"),
-              summary: tc("showing", { shown: data.items.length, total: data.total }),
-            }}
-          />
-        </section>
-      </div>
+      <AdminPanel title={t("topRoutes")} className="mt-4 mb-4">
+        <BarList
+          empty={td("noData")}
+          rows={data.topRoutes.map((row) => ({
+            key: `${row.module}-${row.summary}`,
+            label: row.summary,
+            value: row.count,
+          }))}
+        />
+      </AdminPanel>
+      <AdminDataTable
+        listKey="search-logs"
+        path={PATH}
+        rows={rows}
+        columns={columns}
+        page={{ total: data.total, page: data.page, pageSize: data.pageSize }}
+        searchLabel={t("searchBox")}
+        openLabel={tc("open")}
+        empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
+      />
     </>
   );
 }
 
-/** Search activity (AdminSearch board). */
+/** Search activity (AdminSearch board) on the shared DataTable (issue 229). */
 export default function SearchActivityPage(
   props: PageProps<"/[locale]/secure-admin-control/search">,
 ) {
