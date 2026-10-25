@@ -50,6 +50,7 @@ import {
   VisaProgressInputSchema,
 } from "@waafa/shared";
 import { Roles, Staff, StaffGuard } from "../auth/auth.guard";
+import { TwoStepService } from "../auth/twoStep.service";
 import type { StaffPrincipal } from "../auth/principal";
 import { parseInput, problems } from "../common/problem";
 import { AdminContentService } from "./content-admin.service";
@@ -441,7 +442,10 @@ export class AdminContentController {
 @Controller("admin")
 @UseGuards(StaffGuard)
 export class AdminUsersController {
-  constructor(@Inject(AdminUsersService) private readonly users: AdminUsersService) {}
+  constructor(
+    @Inject(AdminUsersService) private readonly users: AdminUsersService,
+    @Inject(TwoStepService) private readonly twoStep: TwoStepService,
+  ) {}
 
   @Get("users")
   @Roles("super-admin")
@@ -482,6 +486,21 @@ export class AdminUsersController {
       id(userId),
       parseInput(PasswordSetInputSchema, body).password,
     );
+  }
+
+  /** Issue 234: the person's last 30 sign-in attempts. */
+  @Get("users/:id/logins")
+  @Roles("super-admin")
+  logins(@Param("id") userId: string) {
+    return this.twoStep.history(id(userId));
+  }
+
+  /** Issue 234: lost phone and recovery codes; the next sign-in sets two-step sign-in up again. */
+  @Post("users/:id/two-step/reset")
+  @Roles("super-admin")
+  @HttpCode(204)
+  async resetTwoStep(@Staff() staff: StaffPrincipal, @Param("id") userId: string) {
+    await this.twoStep.reset(staff, id(userId));
   }
 
   @Post("me/password")

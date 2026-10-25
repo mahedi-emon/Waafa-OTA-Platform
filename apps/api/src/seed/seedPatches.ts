@@ -278,6 +278,43 @@ async function lowStockTemplate(prisma: PrismaClient): Promise<number> {
   return 1;
 }
 
+/** The new-device sign-in email (issue 234), as fixtures/src/settings.ts has it. */
+const NEW_DEVICE_TEMPLATE = {
+  key: "staff-new-device",
+  audience: "Staff, on a new device",
+  channel: "email",
+  subject: "New sign-in to Waafa Admin",
+  body: "Hello {{name}},\n\nYour Waafa Admin account was just signed in to from a new device: {{device}}, address {{address}}, on {{time}}.\n\nIf this was you, there is nothing to do. If not, change your password now in My account ({{link}}) and tell the Super Admin.",
+  variables: ["{{name}}", "{{device}}", "{{address}}", "{{time}}", "{{link}}"],
+  enabled: true,
+} as const;
+
+/** The new-device template joins the live list at its end; an existing one with that key is left as it is. */
+async function newDeviceTemplate(prisma: PrismaClient): Promise<number> {
+  const exists = await prisma.contentDocument.findUnique({
+    where: {
+      collection_docId: { collection: "notificationTemplates", docId: NEW_DEVICE_TEMPLATE.key },
+    },
+    select: { docId: true },
+  });
+  if (exists) return 0;
+  const last = await prisma.contentDocument.findFirst({
+    where: { collection: "notificationTemplates" },
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+  await prisma.contentDocument.create({
+    data: {
+      collection: "notificationTemplates",
+      docId: NEW_DEVICE_TEMPLATE.key,
+      data: json(NEW_DEVICE_TEMPLATE),
+      position: (last?.position ?? -1) + 1,
+      updatedBy: "seed-patch",
+    },
+  });
+  return 1;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -289,6 +326,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-24-workflow-templates", apply: workflowTemplates },
   { id: "2026-10-25-staff-invite-template", apply: staffInviteTemplate },
   { id: "2026-10-26-low-stock-template", apply: lowStockTemplate },
+  { id: "2026-10-26-new-device-template", apply: newDeviceTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

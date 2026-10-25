@@ -14,22 +14,76 @@ datasource db {
 // Staff and sessions ------------------------------------------------------------------------------------------
 
 model StaffUser {
-  id              String         @id @default(cuid())
+  id              String              @id @default(cuid())
   name            String
-  email           String         @unique
+  email           String              @unique
   passwordHash    String
   /// Role keys from packages/shared RoleSchema.
   roles           String[]
-  status          String         @default("active")
-  failedLogins    Int            @default(0)
-  lockedUntil     DateTime?      @db.Timestamptz(3)
-  lastLoginAt     DateTime?      @db.Timestamptz(3)
+  status          String              @default("active")
+  failedLogins    Int                 @default(0)
+  lockedUntil     DateTime?           @db.Timestamptz(3)
+  lastLoginAt     DateTime?           @db.Timestamptz(3)
   /// SHA-256 of an open invite's token (the token itself is only in the email); cleared once a password is chosen.
-  inviteHash      String?        @unique
-  inviteExpiresAt DateTime?      @db.Timestamptz(3)
-  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
+  inviteHash      String?             @unique
+  inviteExpiresAt DateTime?           @db.Timestamptz(3)
+  /// Authenticator secret sealed with AES-256-GCM (issue 234); null until two-step sign-in is set up.
+  totpSecret      String?
+  totpEnabledAt   DateTime?           @db.Timestamptz(3)
+  /// The last 30-second step a code was accepted for: the same or an older code is refused (no replay).
+  totpLastStep    Int?
+  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
   sessions        StaffSession[]
+  recoveryCodes   StaffRecoveryCode[]
+  devices         StaffDevice[]
+  loginEvents     StaffLoginEvent[]
+}
+
+/// One-time recovery codes for two-step sign-in (issue 234); only hashes are stored.
+model StaffRecoveryCode {
+  id        String    @id @default(cuid())
+  userId    String
+  user      StaffUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  usedAt    DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@unique([userId, codeHash])
+}
+
+/// A browser a staff member signed in from (issue 234): new-device emails and "Trust this device for 30 days".
+model StaffDevice {
+  id           String    @id @default(cuid())
+  userId       String
+  user         StaffUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// SHA-256 of the browser's device cookie; the cookie itself is never stored.
+  deviceHash   String
+  /// "Chrome on Windows", read from the user agent.
+  label        String
+  lastIp       String?
+  firstSeenAt  DateTime  @default(now()) @db.Timestamptz(3)
+  lastSeenAt   DateTime  @default(now()) @db.Timestamptz(3)
+  /// The code step is skipped on this device until then; null when it isn't trusted.
+  trustedUntil DateTime? @db.Timestamptz(3)
+
+  @@unique([userId, deviceHash])
+}
+
+/// Every staff sign-in attempt for a known account (issue 234): time, device, address and result.
+model StaffLoginEvent {
+  id        String    @id @default(cuid())
+  userId    String
+  user      StaffUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// success | recovery-code | wrong-password | wrong-code | locked | paused
+  result    String
+  ip        String?
+  device    String?
+  newDevice Boolean   @default(false)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }
 
 model StaffSession {

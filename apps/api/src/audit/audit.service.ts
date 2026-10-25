@@ -4,7 +4,8 @@ import type { Prisma } from "../generated/prisma/client";
 import type { StaffPrincipal } from "../auth/principal";
 
 export type AuditEvent = {
-  actor: StaffPrincipal | { id: null; name: string };
+  /** A signed-in person, "system", or someone mid sign-in (no session yet, issue 234). */
+  actor: StaffPrincipal | { id: null; name: string } | { id: string; name: string };
   action: string;
   entity: string;
   entityId: string;

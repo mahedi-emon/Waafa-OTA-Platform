@@ -13,26 +13,12 @@ import {
 import { ENV, type Env } from "../config/env";
 import { IdempotencyService, type Replayable } from "../common/idempotency.service";
 import { parseInput, problems } from "../common/problem";
-import { createRateLimiter } from "../common/rateLimit";
+import { RateLimitService, type RateBucket } from "../common/rateLimit.service";
 import { IntakeKeyGuard, clientIp } from "../common/serverKey";
 import { ContentService } from "../content/content.service";
 import { IntakeService } from "./intake.service";
 
 const IdempotencyKeySchema = z.uuid();
-
-/*
- * Per-visitor limits behind the web's own (PRD NFR-SEC): the web limits first, these catch anything that reaches the
- * API another way. Twice the web's numbers, so the two layers never disagree for a real visitor.
- */
-const limits = {
-  leads: createRateLimiter({ limit: 20, windowMs: 60_000 }),
-  orders: createRateLimiter({ limit: 12, windowMs: 60_000 }),
-  track: createRateLimiter({ limit: 30, windowMs: 60_000 }),
-  feedback: createRateLimiter({ limit: 10, windowMs: 60_000 }),
-  proofs: createRateLimiter({ limit: 10, windowMs: 60_000 }),
-  searchLogs: createRateLimiter({ limit: 60, windowMs: 60_000 }),
-  subscribers: createRateLimiter({ limit: 10, windowMs: 60_000 }),
-};
 
 /**
  * What the public site reads and submits (B3), called by the web server with the intake key: the content snapshot
@@ -47,10 +33,12 @@ export class PublicController {
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(IdempotencyService) private readonly idempotency: IdempotencyService,
     @Inject(ENV) private readonly env: Env,
+    @Inject(RateLimitService) private readonly limits: RateLimitService,
   ) {}
 
-  private limit(request: FastifyRequest, name: keyof typeof limits): void {
-    if (!limits[name](`${name}:${clientIp(request, this.env)}`)) throw problems.tooMany();
+  /** Per-visitor limits behind the web's own (PRD NFR-SEC, `RATE_RULES`). */
+  private async limit(request: FastifyRequest, name: RateBucket): Promise<void> {
+    if (!(await this.limits.allow(name, clientIp(request, this.env)))) throw problems.tooMany();
   }
 
   private idempotencyKey(request: FastifyRequest): string {
@@ -81,9 +69,14 @@ export class PublicController {
     @Req() request: FastifyRequest,
     @Res() reply: FastifyReply,
   ) {
-    this.limit(request, "leads");
+    await this.limit(request, "leads");
     const key = this.idempotencyKey(request);
     const input = parseInput(LeadCreateInputSchema, body);
+    // NFR-SEC: 10 requests per hour from one phone number, from any address.
+    if (!(await this.limits.allow("leadsPerPhone", input.contact.phone)))
+      throw problems.tooMany(
+        "Too many requests from this phone number. Call us or try again in an hour.",
+      );
     const outcome = await this.idempotency.once(key, "lead", async () => ({
       status: 201,
       body: await this.intake.createLead(input),
@@ -97,7 +90,7 @@ export class PublicController {
     @Req() request: FastifyRequest,
     @Res() reply: FastifyReply,
   ) {
-    this.limit(request, "orders");
+    await this.limit(request, "orders");
     const key = this.idempotencyKey(request);
     const input = parseInput(OrderCreateInputSchema, body);
     const outcome = await this.idempotency.once<unknown>(key, "order", async () => {
@@ -122,7 +115,7 @@ export class PublicController {
   @Post("orders/track")
   @HttpCode(200)
   async trackOrder(@Body() body: unknown, @Req() request: FastifyRequest) {
-    this.limit(request, "track");
+    await this.limit(request, "track");
     const input = parseInput(OrderTrackInputSchema, body);
     const order = await this.intake.trackOrder(input.reference, input.phone);
     if (!order) throw problems.notFound("No order with this number and phone");
@@ -135,7 +128,7 @@ export class PublicController {
     @Req() request: FastifyRequest,
     @Res() reply: FastifyReply,
   ) {
-    this.limit(request, "feedback");
+    await this.limit(request, "feedback");
     const key = this.idempotencyKey(request);
     const input = parseInput(FeedbackCreateInputSchema, body);
     const outcome = await this.idempotency.once(key, "feedback", async () => ({
@@ -151,7 +144,7 @@ export class PublicController {
     @Req() request: FastifyRequest,
     @Res() reply: FastifyReply,
   ) {
-    this.limit(request, "proofs");
+    await this.limit(request, "proofs");
     const key = this.idempotencyKey(request);
     const input = parseInput(PaymentProofInputSchema, body);
     const outcome = await this.idempotency.once(key, "payment-proof", async () => ({
@@ -167,7 +160,7 @@ export class PublicController {
     @Req() request: FastifyRequest,
     @Res() reply: FastifyReply,
   ) {
-    this.limit(request, "searchLogs");
+    await this.limit(request, "searchLogs");
     await this.intake.logSearch(parseInput(SearchLogInputSchema, body));
     return reply.status(204).send();
   }
@@ -178,7 +171,7 @@ export class PublicController {
     @Req() request: FastifyRequest,
     @Res() reply: FastifyReply,
   ) {
-    this.limit(request, "subscribers");
+    await this.limit(request, "subscribers");
     const input = parseInput(SubscriberInputSchema, body);
     await this.intake.subscribe(input.email, input.source);
     return reply.status(204).send();

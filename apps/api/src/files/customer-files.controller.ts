@@ -10,13 +10,10 @@ import { Staff, StaffGuard } from "../auth/auth.guard";
 import type { StaffPrincipal } from "../auth/principal";
 import { ENV, type Env } from "../config/env";
 import { parseInput, problems } from "../common/problem";
-import { createRateLimiter } from "../common/rateLimit";
+import { RateLimitService } from "../common/rateLimit.service";
 import { IntakeKeyGuard, clientIp } from "../common/serverKey";
 import { rawBody } from "../media/media.controller";
 import { CustomerFilesService } from "./customer-files.service";
-
-/** Twice the web's limit per visitor, like the other intake routes. */
-const uploads = createRateLimiter({ limit: 40, windowMs: 60_000 });
 
 const typeOf = (request: FastifyRequest) =>
   (request.headers["content-type"] ?? "").split(";")[0]?.trim() ?? "";
@@ -42,6 +39,7 @@ export class PublicFilesController {
   constructor(
     @Inject(CustomerFilesService) private readonly files: CustomerFilesService,
     @Inject(ENV) private readonly env: Env,
+    @Inject(RateLimitService) private readonly limits: RateLimitService,
   ) {}
 
   @Post()
@@ -51,7 +49,8 @@ export class PublicFilesController {
     @Res() reply: FastifyReply,
   ) {
     const ip = clientIp(request, this.env);
-    if (!uploads(`files:${ip}`)) throw problems.tooMany();
+    // Twice the web's limit per visitor, like the other intake routes.
+    if (!(await this.limits.allow("uploads", ip))) throw problems.tooMany();
     const input = parseInput(CustomerFileUploadQuerySchema, query);
     const body = rawBody(request.body);
     if (!body) throw problems.badRequest("Send the file as the request body", "file-type");

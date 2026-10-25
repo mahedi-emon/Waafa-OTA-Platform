@@ -5415,7 +5415,8 @@
         "lead-overdue-staff": "No reply yet (to managers)",
         "sign-in-code-customer": "Sign-in code (to the customer)",
         "staff-invite": "Invite to Admin",
-        "low-stock-staff": "Low stock (to the store team)"
+        "low-stock-staff": "Low stock (to the store team)",
+        "staff-new-device": "New device sign-in (to that staff member)"
       },
       "tone": {
         "default": "Normal",

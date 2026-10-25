@@ -1,18 +1,33 @@
 import { Inject, Injectable } from "@nestjs/common";
 import argon2 from "argon2";
+import { twoStepRequired, type StaffLoginResult } from "@waafa/shared";
 import { ENV, type Env } from "../config/env";
 import { problems } from "../common/problem";
 import { PrismaService } from "../prisma/prisma.service";
 import { AuditService } from "../audit/audit.service";
+import { NotificationService } from "../notifications/notification.service";
+import type { StaffUser } from "../generated/prisma/client";
 import type { StaffPrincipal } from "./principal";
+import { TRUST_DAYS, deviceHashOf, deviceLabel } from "./device";
 import {
   REFRESH_TTL_SECONDS,
   asRoles,
   hashToken,
   newRefreshToken,
   signAccessToken,
+  signChallenge,
   verifyAccessToken,
+  verifyChallenge,
 } from "./tokens";
+import {
+  hashRecoveryCode,
+  looksLikeRecoveryCode,
+  newRecoveryCodes,
+  newTotpSecret,
+  otpauthUrl,
+  verifyTotp,
+} from "./totp";
+import { twoStepBox } from "./twoStepSecret";
 
 export const MAX_FAILED_LOGINS = 5;
 export const LOCK_MINUTES = 15;
@@ -27,12 +42,40 @@ export type SessionTokens = {
   user: { id: string; name: string; email: string; roles: string[] };
 };
 
-type ClientMeta = { ip?: string; userAgent?: string };
+/**
+ * What a correct password leads to (issue 234): a session, the code step (two-step sign-in is on and this device
+ * isn't trusted), or setting up an authenticator first (the role requires it and it isn't set up yet).
+ */
+export type LoginOutcome =
+  | ({ step: "done" } & SessionTokens)
+  | { step: "code"; challenge: string; challengeExpiresAt: string }
+  | {
+      step: "enrol";
+      challenge: string;
+      challengeExpiresAt: string;
+      secret: string;
+      otpauthUrl: string;
+    };
+
+export type ClientMeta = { ip?: string; userAgent?: string; device?: string };
+
+type SecondStep = { trustDevice?: boolean };
+
+const dhakaTime = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Dhaka",
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+});
 
 /**
  * Staff sign-in (PRD §13, NFR-SEC): argon2id passwords, a 15-minute access token, a rotating 7-day refresh token
  * stored only as a hash, a 15-minute lockout after five failures, and reuse detection (a refresh token used twice
- * revokes every session of that person).
+ * revokes every session of that person). Issue 234 adds two-step sign-in (authenticator codes, recovery codes,
+ * trusted devices), the sign-in history and the new-device email.
  */
 @Injectable()
 export class AuthService {
@@ -40,6 +83,7 @@ export class AuthService {
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(ENV) private readonly env: Env,
     @Inject(AuditService) private readonly audit: AuditService,
+    @Inject(NotificationService) private readonly notifications: NotificationService,
   ) {}
 
   async login(
@@ -47,7 +91,7 @@ export class AuthService {
     password: string,
     meta: ClientMeta,
     now = new Date(),
-  ): Promise<SessionTokens> {
+  ): Promise<LoginOutcome> {
     const user = await this.prisma.staffUser.findUnique({
       where: { email: email.trim().toLowerCase() },
     });
@@ -55,43 +99,147 @@ export class AuthService {
     const invalid = problems.unauthorized("Email or password is wrong");
     if (!user || user.status !== "active") {
       await argon2.hash(password).catch(() => undefined);
+      if (user) await this.record(user.id, "paused", meta, now);
       throw invalid;
     }
-    if (user.lockedUntil && user.lockedUntil > now) {
-      const minutes = Math.ceil((user.lockedUntil.getTime() - now.getTime()) / 60_000);
-      throw problems.tooMany(`Too many attempts. Try again in ${minutes} minutes.`);
-    }
+    this.refuseWhileLocked(user, now);
     const valid = await argon2.verify(user.passwordHash, password).catch(() => false);
     if (!valid) {
-      // Counted in the database, so parallel guesses still lock the account (#78).
-      const counted = await this.prisma.staffUser.update({
-        where: { id: user.id },
-        data: { failedLogins: { increment: 1 } },
-        select: { failedLogins: true },
-      });
-      const lock = counted.failedLogins >= MAX_FAILED_LOGINS;
-      if (lock) {
-        await this.prisma.staffUser.update({
-          where: { id: user.id },
-          data: { failedLogins: 0, lockedUntil: new Date(now.getTime() + LOCK_MINUTES * 60_000) },
-        });
-      }
-      if (lock) {
-        await this.audit.record({
-          actor: { id: null, name: "system" },
-          action: "staff.locked",
-          entity: "staff",
-          entityId: user.id,
-          reason: `${MAX_FAILED_LOGINS} failed sign-ins`,
-        });
-      }
+      await this.countFailure(user, "wrong-password", meta, now);
       throw invalid;
     }
-    await this.prisma.staffUser.update({
-      where: { id: user.id },
-      data: { failedLogins: 0, lockedUntil: null, lastLoginAt: now },
+
+    if (user.totpEnabledAt && user.totpSecret) {
+      if (await this.trusted(user.id, meta, now)) return this.finish(user, "success", meta, now);
+      const challenge = await signChallenge(
+        { sub: user.id, purpose: "code" },
+        this.env.JWT_SECRET,
+        now,
+      );
+      return {
+        step: "code",
+        challenge: challenge.token,
+        challengeExpiresAt: challenge.expiresAt.toISOString(),
+      };
+    }
+    if (twoStepRequired(user.roles)) {
+      const secret = newTotpSecret();
+      const challenge = await signChallenge(
+        { sub: user.id, purpose: "enrol", secret: twoStepBox(this.env.JWT_SECRET).seal(secret) },
+        this.env.JWT_SECRET,
+        now,
+      );
+      return {
+        step: "enrol",
+        challenge: challenge.token,
+        challengeExpiresAt: challenge.expiresAt.toISOString(),
+        secret,
+        otpauthUrl: otpauthUrl(secret, user.email),
+      };
+    }
+    return this.finish(user, "success", meta, now);
+  }
+
+  /** The code step: a 6-digit authenticator code, or one of the recovery codes (each works once). */
+  async verifyCode(
+    challengeToken: string,
+    code: string,
+    meta: ClientMeta & SecondStep,
+    now = new Date(),
+  ): Promise<LoginOutcome> {
+    const user = await this.challengedUser(challengeToken, "code", now);
+    if (!user.totpSecret || !user.totpEnabledAt) throw problems.unauthorized();
+    this.refuseWhileLocked(user, now);
+
+    if (looksLikeRecoveryCode(code)) {
+      const used = await this.prisma.staffRecoveryCode.updateMany({
+        where: { userId: user.id, codeHash: hashRecoveryCode(code), usedAt: null },
+        data: { usedAt: now },
+      });
+      if (used.count === 1) {
+        await this.audit.record({
+          actor: { id: user.id, name: user.name },
+          action: "staff.recovery-code-used",
+          entity: "staff",
+          entityId: user.email,
+        });
+        return this.finish(user, "recovery-code", meta, now);
+      }
+    } else {
+      const secret = twoStepBox(this.env.JWT_SECRET).open(user.totpSecret);
+      const step = verifyTotp(secret, code, { now, lastUsedStep: user.totpLastStep });
+      if (step !== null) {
+        // Only one request can move the step forward, so the same code sent twice opens one session.
+        const claimed = await this.prisma.staffUser.updateMany({
+          where: {
+            id: user.id,
+            OR: [{ totpLastStep: null }, { totpLastStep: { lt: step } }],
+          },
+          data: { totpLastStep: step },
+        });
+        if (claimed.count === 1) return this.finish(user, "success", meta, now);
+      }
+    }
+    await this.countFailure(user, "wrong-code", meta, now);
+    throw problems.badRequest("That code didn't work", "wrong-code");
+  }
+
+  /** First sign-in for a role that needs two-step sign-in: the first code turns it on and gives recovery codes. */
+  async enrol(
+    challengeToken: string,
+    code: string,
+    meta: ClientMeta & SecondStep,
+    now = new Date(),
+  ): Promise<LoginOutcome & { recoveryCodes: string[] }> {
+    const verified = await verifyChallenge(challengeToken, this.env.JWT_SECRET, now);
+    if (!verified || verified.purpose !== "enrol" || !verified.secret) {
+      throw problems.unauthorized();
+    }
+    const user = await this.prisma.staffUser.findUnique({ where: { id: verified.sub } });
+    if (!user || user.status !== "active" || user.totpEnabledAt) throw problems.unauthorized();
+    this.refuseWhileLocked(user, now);
+    const secret = twoStepBox(this.env.JWT_SECRET).open(verified.secret);
+    const step = verifyTotp(secret, code, { now });
+    if (step === null) {
+      await this.countFailure(user, "wrong-code", meta, now);
+      throw problems.badRequest("That code didn't work", "wrong-code");
+    }
+    const recoveryCodes = await this.turnOn(user, verified.secret, step, now);
+    const outcome = await this.finish(user, "success", meta, now);
+    return { ...outcome, recoveryCodes };
+  }
+
+  /**
+   * Saves a confirmed authenticator and a fresh set of recovery codes; used by sign-in enrolment and My account.
+   * Returns the recovery codes, which are shown once.
+   */
+  async turnOn(
+    user: { id: string; name: string; email: string },
+    sealedSecret: string,
+    step: number,
+    now: Date,
+  ): Promise<string[]> {
+    const codes = newRecoveryCodes();
+    await this.prisma.$transaction(async (tx) => {
+      await tx.staffUser.update({
+        where: { id: user.id },
+        data: { totpSecret: sealedSecret, totpEnabledAt: now, totpLastStep: step },
+      });
+      await tx.staffRecoveryCode.deleteMany({ where: { userId: user.id } });
+      await tx.staffRecoveryCode.createMany({
+        data: codes.map((code) => ({ userId: user.id, codeHash: hashRecoveryCode(code) })),
+      });
+      await this.audit.record(
+        {
+          actor: { id: user.id, name: user.name },
+          action: "staff.two-step-on",
+          entity: "staff",
+          entityId: user.email,
+        },
+        tx,
+      );
     });
-    return this.openSession(user, meta, now);
+    return codes;
   }
 
   async refresh(refreshToken: string, meta: ClientMeta, now = new Date()): Promise<SessionTokens> {
@@ -100,7 +248,11 @@ export class AuthService {
       include: { user: true },
     });
     if (!session) throw problems.unauthorized();
-    const usable = session.expiresAt > now && session.user.status === "active";
+    // A role that needs two-step sign-in and hasn't set it up signs in again, which asks for it (issue 234).
+    const usable =
+      session.expiresAt > now &&
+      session.user.status === "active" &&
+      !(twoStepRequired(session.user.roles) && !session.user.totpEnabledAt);
     if (session.revokedAt) {
       // Two requests refreshing at the same moment (a page and its prefetches) both present the token: one that
       // was rotated in the last 30 seconds still opens a session (#66).
@@ -143,6 +295,154 @@ export class AuthService {
       roles: claims.roles,
       sessionId: claims.sid,
     };
+  }
+
+  private async challengedUser(
+    token: string,
+    purpose: "code" | "enrol",
+    now: Date,
+  ): Promise<StaffUser> {
+    const verified = await verifyChallenge(token, this.env.JWT_SECRET, now);
+    if (!verified || verified.purpose !== purpose) throw problems.unauthorized();
+    const user = await this.prisma.staffUser.findUnique({ where: { id: verified.sub } });
+    if (!user || user.status !== "active") throw problems.unauthorized();
+    return user;
+  }
+
+  private refuseWhileLocked(user: StaffUser, now: Date): void {
+    if (user.lockedUntil && user.lockedUntil > now) {
+      const minutes = Math.ceil((user.lockedUntil.getTime() - now.getTime()) / 60_000);
+      throw problems.tooMany(`Too many attempts. Try again in ${minutes} minutes.`);
+    }
+  }
+
+  /** A wrong password or code: counted in the database, so parallel guesses still lock the account (#78). */
+  private async countFailure(
+    user: StaffUser,
+    result: "wrong-password" | "wrong-code",
+    meta: ClientMeta,
+    now: Date,
+  ): Promise<void> {
+    const counted = await this.prisma.staffUser.update({
+      where: { id: user.id },
+      data: { failedLogins: { increment: 1 } },
+      select: { failedLogins: true },
+    });
+    const lock = counted.failedLogins >= MAX_FAILED_LOGINS;
+    await this.record(user.id, lock ? "locked" : result, meta, now);
+    if (!lock) return;
+    await this.prisma.staffUser.update({
+      where: { id: user.id },
+      data: { failedLogins: 0, lockedUntil: new Date(now.getTime() + LOCK_MINUTES * 60_000) },
+    });
+    await this.audit.record({
+      actor: { id: null, name: "system" },
+      action: "staff.locked",
+      entity: "staff",
+      entityId: user.id,
+      reason: `${MAX_FAILED_LOGINS} failed sign-ins`,
+    });
+  }
+
+  /** True when this browser was trusted after a code in the last 30 days (needs the device cookie). */
+  private async trusted(userId: string, meta: ClientMeta, now: Date): Promise<boolean> {
+    if (!meta.device) return false;
+    const device = await this.prisma.staffDevice.findUnique({
+      where: {
+        userId_deviceHash: { userId, deviceHash: deviceHashOf(meta.device, meta.userAgent) },
+      },
+      select: { trustedUntil: true },
+    });
+    return Boolean(device?.trustedUntil && device.trustedUntil > now);
+  }
+
+  /** Every step passed: clear the failure count, remember the device, write the history, open the session. */
+  private async finish(
+    user: StaffUser,
+    result: "success" | "recovery-code",
+    meta: ClientMeta & SecondStep,
+    now: Date,
+  ): Promise<{ step: "done" } & SessionTokens> {
+    await this.prisma.staffUser.update({
+      where: { id: user.id },
+      data: { failedLogins: 0, lockedUntil: null, lastLoginAt: now },
+    });
+    const newDevice = await this.rememberDevice(user, meta, now);
+    await this.record(user.id, result, meta, now, newDevice);
+    if (newDevice) {
+      void this.notifications.notify("staff-new-device", user.email, {
+        name: user.name,
+        device: deviceLabel(meta.userAgent),
+        address: meta.ip ?? "unknown",
+        time: dhakaTime.format(now),
+        link: this.notifications.adminLink("/account"),
+      });
+    }
+    const tokens = await this.openSession(user, meta, now);
+    return { step: "done", ...tokens };
+  }
+
+  /**
+   * Saves the device of a successful sign-in; true when it is new for someone who had signed in from another device
+   * before (the first device after this feature ships sends no email).
+   */
+  private async rememberDevice(
+    user: StaffUser,
+    meta: ClientMeta & SecondStep,
+    now: Date,
+  ): Promise<boolean> {
+    const deviceHash = deviceHashOf(meta.device, meta.userAgent);
+    const trustedUntil =
+      meta.trustDevice && meta.device
+        ? new Date(now.getTime() + TRUST_DAYS * 86_400_000)
+        : undefined;
+    const existing = await this.prisma.staffDevice.findUnique({
+      where: { userId_deviceHash: { userId: user.id, deviceHash } },
+      select: { id: true },
+    });
+    if (existing) {
+      await this.prisma.staffDevice.update({
+        where: { id: existing.id },
+        data: {
+          lastSeenAt: now,
+          lastIp: meta.ip ?? null,
+          ...(trustedUntil ? { trustedUntil } : {}),
+        },
+      });
+      return false;
+    }
+    const others = await this.prisma.staffDevice.count({ where: { userId: user.id } });
+    await this.prisma.staffDevice.create({
+      data: {
+        userId: user.id,
+        deviceHash,
+        label: deviceLabel(meta.userAgent),
+        lastIp: meta.ip ?? null,
+        firstSeenAt: now,
+        lastSeenAt: now,
+        trustedUntil: trustedUntil ?? null,
+      },
+    });
+    return others > 0;
+  }
+
+  private async record(
+    userId: string,
+    result: StaffLoginResult,
+    meta: ClientMeta,
+    now: Date,
+    newDevice = false,
+  ): Promise<void> {
+    await this.prisma.staffLoginEvent.create({
+      data: {
+        userId,
+        result,
+        ip: meta.ip ?? null,
+        device: deviceLabel(meta.userAgent),
+        newDevice,
+        createdAt: now,
+      },
+    });
   }
 
   private async openSession(

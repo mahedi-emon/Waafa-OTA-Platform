@@ -76,3 +76,60 @@ export function hashToken(token: string): string {
 export function asRoles(values: string[]): Role[] {
   return values.filter((value): value is Role => RoleSchema.safeParse(value).success);
 }
+
+// Two-step sign-in challenges (issue 234) --------------------------------------------------------------------------
+
+/** How long the code step waits after a correct password. */
+export const CHALLENGE_TTL_SECONDS = 5 * 60;
+const CHALLENGE_AUDIENCE = "waafa-two-step";
+
+/**
+ * What a challenge proves: the password was right (`code`, `enrol`), or a signed-in person started setting up an
+ * authenticator (`setup`). `secret` is the new authenticator secret, sealed, for `enrol` and `setup`.
+ */
+const ChallengeSchema = z.object({
+  sub: z.string().min(1),
+  purpose: z.enum(["code", "enrol", "setup"]),
+  secret: z.string().optional(),
+});
+
+export type Challenge = z.infer<typeof ChallengeSchema>;
+
+export async function signChallenge(
+  challenge: Challenge,
+  secret: string,
+  now: Date = new Date(),
+): Promise<{ token: string; expiresAt: Date }> {
+  const issuedAt = Math.floor(now.getTime() / 1000);
+  const token = await new SignJWT({
+    purpose: challenge.purpose,
+    ...(challenge.secret ? { secret: challenge.secret } : {}),
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setSubject(challenge.sub)
+    .setIssuer(ISSUER)
+    .setAudience(CHALLENGE_AUDIENCE)
+    .setIssuedAt(issuedAt)
+    .setExpirationTime(issuedAt + CHALLENGE_TTL_SECONDS)
+    .sign(key(secret));
+  return { token, expiresAt: new Date((issuedAt + CHALLENGE_TTL_SECONDS) * 1000) };
+}
+
+export async function verifyChallenge(
+  token: string,
+  secret: string,
+  now: Date = new Date(),
+): Promise<Challenge | null> {
+  try {
+    const { payload } = await jwtVerify(token, key(secret), {
+      issuer: ISSUER,
+      audience: CHALLENGE_AUDIENCE,
+      currentDate: now,
+      algorithms: ["HS256"],
+    });
+    const parsed = ChallengeSchema.safeParse(payload);
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}

@@ -547,6 +547,15 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     variables: ["{{product}}", "{{sku}}", "{{stock}}", "{{order_number}}", "{{link}}"],
     enabled: true,
   },
+  {
+    key: "staff-new-device",
+    audience: "Staff, on a new device",
+    channel: "email",
+    subject: "New sign-in to Waafa Admin",
+    body: "Hello {{name}},\n\nYour Waafa Admin account was just signed in to from a new device: {{device}}, address {{address}}, on {{time}}.\n\nIf this was you, there is nothing to do. If not, change your password now in My account ({{link}}) and tell the Super Admin.",
+    variables: ["{{name}}", "{{device}}", "{{address}}", "{{time}}", "{{link}}"],
+    enabled: true,
+  },
 ];
 
 export const maintenanceSettings: In<typeof MaintenanceSettingsSchema> = {
