@@ -132,6 +132,7 @@ export class CustomerFilesService {
     const month = String(now.getUTCMonth() + 1).padStart(2, "0");
     const relative = `${year}/${month}/${id}.${EXTENSION[mimeType]}`;
     await mkdir(path.join(this.root, year, month), { recursive: true, mode: 0o700 });
+    // codeql[js/http-to-file-access] Storing customer files is the point: type checked by its bytes, size and quota capped, named by a random id on the private volume.
     await writeFile(path.join(this.root, relative), bytes, { flag: "wx", mode: 0o600 });
     try {
       await this.prisma.customerFile.create({
