@@ -12,6 +12,7 @@ const ALL_PATCHES = [
   "2026-10-14-home-seo",
   "2026-10-24-workflow-templates",
   "2026-10-25-staff-invite-template",
+  "2026-10-26-low-stock-template",
 ];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */
@@ -223,5 +224,33 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
       where: { collection_docId: { collection: "notificationTemplates", docId: "staff-invite" } },
     });
     expect((kept.data as { subject: string }).subject).toBe("Welcome aboard");
+  });
+
+  it("adds the low-stock email to a live list once, keeping one an admin already wrote (issue 233)", async () => {
+    await prisma.contentDocument.deleteMany({
+      where: { collection: "notificationTemplates", docId: "low-stock-staff" },
+    });
+    const others = ALL_PATCHES.filter((id) => id !== "2026-10-26-low-stock-template");
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-26-low-stock-template"],
+      changed: 1,
+    });
+    const where = {
+      collection_docId: { collection: "notificationTemplates", docId: "low-stock-staff" },
+    };
+    const added = await prisma.contentDocument.findUniqueOrThrow({ where });
+    expect(added.data).toMatchObject({ channel: "email", enabled: true });
+    await prisma.contentDocument.update({
+      where,
+      data: { data: { ...(added.data as object), subject: "Stock running out" } },
+    });
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-26-low-stock-template"],
+      changed: 0,
+    });
+    const kept = await prisma.contentDocument.findUniqueOrThrow({ where });
+    expect((kept.data as { subject: string }).subject).toBe("Stock running out");
   });
 });

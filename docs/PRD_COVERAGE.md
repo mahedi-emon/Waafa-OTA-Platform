@@ -19,15 +19,15 @@ Paths: `web/` = `apps/web/src/`, `site/` = `apps/web/src/app/[locale]/(site)/`, 
 `apps/web/src/app/[locale]/secure-admin-control/(panel)/`, `api/` = `apps/api/src/`, `shared/` = `packages/shared/src/`,
 `e2e/` = `apps/web/e2e/`.
 
-## Summary (updated 26 Oct 2026, after #232)
+## Summary (updated 26 Oct 2026, after #233)
 
 | Priority | Rows | Status |
 | --- | --- | --- |
-| P0 (launch) | 116 | done 93 · partial 22 · missing 1 |
+| P0 (launch) | 116 | done 99 · partial 16 · missing 1 |
 | P1 (Phase D, due 13 Nov) | 17 | done 1 · partial 7 · missing 7 · waiting for owner account 2 |
 | P2 (Phase E, live booking) | 8 | missing 8 |
 | P3 (scale) | 1 | missing 1 |
-| All | 142 | done 94 · partial 29 · missing 17 · waiting for owner account 2 |
+| All | 142 | done 100 · partial 23 · missing 17 · waiting for owner account 2 |
 
 **P0 not done (fixed first):** customer files never leave the browser (visa documents, payment proof, printing and
 trading attachments, feedback photo: the Phase A rule D87/D106/D109 was never lifted) → #232; visa status email never
@@ -102,7 +102,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-VISA-02 | P0 | Country page tab per type: checklist, fees split, forms, FAQs | done | site/visa/[country]; shared/schemas/visa.ts (embassyFee, serviceCharge, forms) | — | — |
 | FR-VISA-02a | P0 | Price range per visa type ("৳7,500 – ৳9,500" / "From …") | done | shared/schemas/visa.ts; #179 | — | — |
 | FR-VISA-03 | P0 | Apply form with document uploads (≤5 MB), appointment; VSA-… | done | site/visa/[country]/apply/_components/VisaFileStep.tsx; web/components/forms/DocumentSlot.tsx; app/api/uploads; api/files/*; apps/api/test/files.test.ts; e2e/api-mode.spec.ts (issue 232) | — | #232 |
-| FR-VISA-04 | P0 | Application statuses; customer email on each change | partial | adm/visa-applications; components/admin/VisaProgressPanel.tsx; api/admin/leads.service.ts | `visa-status-customer` template exists but is never sent; stages are derived, not the PRD's 8 named statuses | #233 |
+| FR-VISA-04 | P0 | Application statuses; customer email on each change | done | api/admin/leads.service.ts visa() emails visa-status-customer on each step forward; apps/api/test/admin.test.ts | — | #233 |
 | FR-VISA-05 | P0 | Private bucket, 10-min signed links, 90-day deletion, logged downloads | done | api/files/customer-files.service.ts (private volume, 10-min signed links, audit file.link and file.download, purge); app/secure-admin-control/files/[key]; apps/api/test/files.test.ts | — | #232 |
 | FR-VISA-06 | P1 | Track application by reference + phone; malware scan | missing | — | Whole feature | #240, #235 |
 | FR-VGD-01 | P0 | Visa Guide per country, linked both ways with visa page | done | site/visa-guide, site/visa-guide/[slug] | — | — |
@@ -127,7 +127,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-SHOP-07 | P0 (online pay P1) | One-page checkout; COD with cap; offline payment with txn ID + proof | partial | site/shop/checkout/_components/CheckoutForm.tsx; PaymentOptions.tsx | Online payment waiting for owner account | #251 |
 | FR-SHOP-08 | P0 | Order success ORD-…, instructions, WhatsApp, emails, staff alert | done | components/shop/OrderDone.tsx; intake.service (order-placed-*) | — | — |
 | FR-SHOP-09 | P0 | Track order by number + phone with 7 statuses | done | site/shop/track; OrderTimeline.tsx; e2e/orders.spec.ts | — | — |
-| FR-SHOP-10 | P0 | Stock per variant drops on order, returns on cancel; low-stock alerts | partial | intake.service.ts (take stock); admin/orders.service.ts (restock) | Low stock only listed in admin workbench; no alert sent to the shop manager | #233 |
+| FR-SHOP-10 | P0 | Stock per variant drops on order, returns on cancel; low-stock alerts | done | api/public/intake.service.ts (low-stock-staff when a variant reaches lowStockAt); apps/api/test/public.test.ts | — | #233 |
 | FR-SHOP-11 | P0 | Printing Solutions page + quote form PRN-… with attachment | done | site/shop/printing-solutions; components/services/PrintingRequest.tsx | — | #232 |
 | FR-SHOP-12 | P0 | Trading page + RFQ form TRD-… with attachments | done | site/shop/international-trading; TradingRequest.tsx | — | #232 |
 | FR-SHOP-13 | P1 | Reviews, wishlist, save for later, campaign pages, flash sales, Q&A, Buy again, online pay | missing | product page has only a WhatsApp "ask a question" link | All of it; SSLCommerz/bKash = waiting-owner (stubs only) | #245, #246, #247, #251 |
@@ -143,7 +143,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-TEAM | P0 | Team section/grid, initials, bento/carousel, admin order/featured/3:4 crop | done | components/team/TeamCard.tsx; content `team` (showOnHome/About, featured); ImageCropDialog 3:4 | — | — |
 | FR-PAGE Refund/Privacy/Terms | P0 | Rich-text policy pages with last-updated date | done | site/{refund-policy,privacy-policy,terms-and-conditions}; PolicyPage.tsx | — | — |
 | FR-PAGE Baggage | P0 | Searchable admin baggage table with disclaimer | done | site/baggage-information/_components/BaggageTable.tsx | — | — |
-| FR-PAGE EMI | P0 | How EMI works, banks/tenures, "Request EMI plan" form | partial | site/emi/page.tsx | Request form missing: only a WhatsApp link (`emi` lead schema unused) | #233 |
+| FR-PAGE EMI | P0 | How EMI works, banks/tenures, "Request EMI plan" form | done | site/emi; components/content/EmiRequest*.tsx; lib/leads/emiLeadForm.ts; e2e/content.spec.ts | — | #233 |
 | FR-PAGE EMI calculator | P1 | EMI calculator | done | site/emi/_components/EmiCalculator.tsx; lib/shop/emi.test.ts | — | — |
 | FR-PAGE Offline Payment | P0 | Accounts from settings; proof form → Accounts verification queue | done | site/offline-payment/_components/PaymentProofForm.tsx; adm/payments | — | #232 |
 | FR-PAGE Blogs | P0 | List with categories, search, featured; post with TOC, share, related | done | site/blog, site/blog/[slug]; ArticleContents.tsx | — | — |
@@ -153,7 +153,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ACC sign-in | P1 | Phone OTP, email+password or Google; guest flows still work | partial | site/login; components/account/GoogleSignInButton.tsx; api/customers/googleOAuth.ts | Google only; no phone OTP (template `sign-in-code-customer` unused), no email+password | #241, #252 |
 | FR-ACC my account | P1 | Queries timeline, visa apps, orders, wishlist, travellers, addresses, prefs, delete | partial | site/account/page.tsx; `GET /public/account`; e2e/account.spec.ts | Only requests, orders and delete; no wishlist, saved travellers, addresses, profile edit, notification prefs | #241, #246 |
 | FR-ACC attach | P1 | Guest leads/orders attach once the same phone is verified | partial | api/customers/customers.service.ts (match by verified email) | Matches by Google email, not verified phone | #241 |
-| FR-NTF P0 email | P0 | Emails: lead (cust), module-routed staff alert, order, visa status, feedback, proof | partial | api/public/intake.service.ts; api/notifications/notification.service.ts | Visa status email never sent; staff alerts go to one env address (`STAFF_ALERT_EMAIL`), not routed by module or admin-editable | #233 |
+| FR-NTF P0 email | P0 | Emails: lead (cust), module-routed staff alert, order, visa status, feedback, proof | done | api/notifications/notification.service.ts notifyStaff (Settings › Forms and messages › Staff alerts by area, env fallback); visa status and low-stock emails | — | #233 |
 | FR-NTF templates + queue | P0 | Admin-editable templates with variables; queue, retries, delivery log | done | notificationTemplates content; BullMQ queue (attempts 5) in notification.service.ts, api/worker.ts; adm/notifications | — | — |
 | FR-NTF SMS | P1 | SMS via BD gateway adapter (OTP, lead ack, order status) | waiting for owner account | catalog stubs ssl-wireless, bulksmsbd, twilio in shared/schemas/providers.ts | Adapters only health-check; no send code | #252 |
 | FR-NTF real-time | P1 | Real-time admin alerts with sound | partial | components/admin/AdminNotifications.tsx, useInboxSummary.ts (30 s poll) | No push/SSE, no sound | #243 |
@@ -164,7 +164,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
-| FR-GS-01 | P0 | Mode settings per module (mode, providers, fallback); audit who/when/from/to/reason | partial | shared/schemas/settings.ts BookingModesSchema; AuditLog before/after | No active-providers or fallback fields; no reason captured on change | #233 |
+| FR-GS-01 | P0 | Mode settings per module (mode, providers, fallback); audit who/when/from/to/reason | partial | shared/schemas/settings.ts BookingModesSchema; AuditLog before/after | Mode changes are impossible until the Phase E Live gate (Live stays locked); the reason, providers and fallback come with that gate (D276) | Phase E (#32) |
 | FR-GS-02 | P0 | Public config cached 60 s; switch purges cache + revalidates | done | modes in `GET /public/snapshot` ("use cache" snapshot tag); app/api/revalidate; lib/admin/contentActions.ts (updateTag) | No separate `/config/public` endpoint (same behaviour via snapshot) | — |
 | FR-GS-03 | P0 | Admin Booking Modes switch per module, Live locked with reason | done | lib/admin/blueprints/settings.ts bookingModes; content-admin.service.ts assertLiveStaysLocked | — | — |
 | FR-GS-04 | P2 | Live gate: Super Admin, creds, green health ≤5 min, gateway, typed confirm | missing | — (Live is hard-locked) | Phase 2 | Phase E (#32) |
@@ -190,7 +190,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM Bookings | P0 | Booking records from converted leads, with documents and payments | missing | — (no bookings screen or model) | Whole module | #242 |
 | FR-ADM Group fares | P0 | Create, edit, auto-expire | done | content `groupFares`; scheduler.service.ts expiresAt | P1 bulk CSV import missing | #248 (P1 CSV) |
 | FR-ADM Tour packages | P0 | Rich editor, day builder, price table, departures, SEO, draft/publish, duplicate | done | adm/content/[key]/[id] package editor (#198); e2e/admin-editors.spec.ts | — (P1 scheduled publishing done, #194) | — |
-| FR-ADM Visa | P0 | Countries/types/checklist/fees; pipeline with document viewer, notifying statuses | partial | adm/visa-applications; VisaProgressPanel.tsx | Document viewer done (#232); status changes do not email the customer yet | #233 |
+| FR-ADM Visa | P0 | Countries/types/checklist/fees; pipeline with document viewer, notifying statuses | done | adm/visa-applications; VisaProgressPanel.tsx; Files panel (#232); status emails (#233) | — | #233 |
 | FR-ADM Shop | P0 | Products/variants/attributes/tree/brands/collections, compat CSV, orders, zones, coupons | partial | adm/orders, adm/content/{products,categories,…}; admin/orders.service.ts | Compatibility CSV import missing | #248 |
 | FR-ADM Content | P0 | Pages, blog, FAQs, banners, home order, gallery, team, menus, baggage, EMI banks | done | adm/content/*, adm/website/{home,menus}, adm/feedback | P1 redirect manager: automatic slug redirects only (#194) | — |
 | FR-ADM Media | P0 | Uploads with required alt text and optimisation | done | adm/media; api/media/media.service.ts (sharp); e2e/admin-media.spec.ts | — (P1 usage tracking done) | — |
@@ -198,7 +198,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM Marketing/SEO | P0 | Per-page SEO, tracking codes, newsletter list, coupons | done | trackingSettings; adm/subscribers; content `coupons` | P1 campaign landing pages missing | #247 (P1 campaigns) |
 | FR-ADM Reports | P0 | Leads by module/status/agent/source, response, sales, visa, CSV | partial | adm/reports; api/admin/reports.service.ts (CSV + XLSX); apps/api/test/reports.test.ts | No by-agent, by-source or visa-case breakdown; P1 scheduled email reports missing | #244, #237 |
 | FR-ADM Users | P0 | Invite, roles, deactivate, reset password, login history | partial | adm/users; api/admin/users.service.ts; invite.controller.ts | Only last login, no login history; P1 custom roles missing | #234, #244 |
-| FR-ADM Settings | P0 | General, footer, modes, payments/COD, shipping, recipients+templates, lead form, maintenance | partial | adm/settings/[section]; lib/admin/blueprints/settings.ts | Notification recipients not editable (env only); encrypted credentials (P1/P2) done | #233 |
+| FR-ADM Settings | P0 | General, footer, modes, payments/COD, shipping, recipients+templates, lead form, maintenance | done | adm/settings/[section]; Staff alerts in Forms and messages (#233) | — | #233 |
 | FR-ADM later P1 | P1 | Leaderboard, funnel, CSV imports, invoices/slips, review moderation, SMS, merge, campaigns, scheduled reports, custom roles | partial | done: scheduled publishing, media usage, encrypted creds, report date ranges | All other listed P1 items missing | #242–#248, #252 |
 | FR-ADM later P2 | P2 | Full ticketing, refund and reconciliation operations | missing | — | Phase 2 | Phase E (#32) |
 | FR-ADM security | P0 | Hidden admin path, noindex, lockout 5/15 min, audit with before/after | done | secure-admin-control/layout.tsx (noindex); api/auth/auth.service.ts (LOCK_MINUTES); AuditLog; e2e/admin-path.spec.ts | — | — |

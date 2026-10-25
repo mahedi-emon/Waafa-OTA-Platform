@@ -38,7 +38,17 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #232 · D · Customer files reach private storage (P0) — 🟡 In progress
+### #233 · D · P0 notification gaps and the EMI request form — 🟡 In progress
+| Field | Value |
+| --- | --- |
+| Asked | P0 requirements the #231 audit found partial: visa status email to the customer (FR-VISA-04), staff alert recipients by module and editable (FR-NTF), low-stock alert (FR-SHOP-10), EMI "Request EMI plan" form (FR-PAGE EMI), a reason on booking-mode changes (FR-GS-01) |
+| Built | **Visa status emails**: each step forward (documents complete, submitted, approved, not approved, passport returned) emails the customer with `visa-status-customer`; an unticked document sends nothing. **Staff alerts by area**: `leadFormSettings.staffAlerts` (email + areas: every request module, orders, payments, feedback, low stock) edited in Settings › Forms and messages › Staff alerts; `notifyStaff(key, area)` sends one email per recipient and falls back to `STAFF_ALERT_EMAIL` while nobody covers an area (no change on deploy). **Low stock**: an order that takes a variant to its `lowStockAt` mark sends `low-stock-staff` (new template, seed patch `2026-10-26-low-stock-template`). **EMI request**: /emi card "Want to pay in instalments?" opens a dialog with the two-step request (amount over the minimum, months from Settings, the card's bank from Settings or Not sure yet, what for, consent) → EMI lead; the form loads when the dialog opens. **Mode-change reason**: moved to Phase E (D276) |
+| Files | `apps/api/src/admin/{leads.service,scheduler.service}.ts`, `apps/api/src/notifications/notification.service.ts`, `apps/api/src/public/intake.service.ts`, `apps/api/src/seed/seedPatches.ts`, `packages/shared/src/schemas/{settings.ts,staffAlerts.test.ts}`, `fixtures/src/settings.ts`, `apps/web/src/lib/admin/blueprints/settings.ts`, `apps/web/src/components/content/EmiRequest{,Dialog,Form}.tsx`, `apps/web/src/lib/leads/emiLeadForm{,.test}.ts`, `apps/web/src/app/[locale]/(site)/emi/page.tsx`, `apps/web/messages/en.json`, API tests (admin, public, seedPatches), e2e content.spec |
+| Tests | see the close-out |
+| Decision | D275–D277 |
+| Migration | none (seed patch adds the low-stock template; staff alerts default to empty) |
+
+### #232 · D · Customer files reach private storage (P0) — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Audit finding (#231): visa documents, payment slips, printing and trading attachments and the feedback photo never left the browser (Phase A rule D87/D106/D109 never lifted); FR-VISA-03, FR-VISA-05, FR-SHOP-07/11/12, FR-FDB, Offline Payment |
@@ -48,6 +58,7 @@ Serena memory `audit_findings`.
 | Widths checked | visa document slot at 390 (no sideways scroll, Added state); lead Files panel at 390 and 1440 (Open hit area 44 px through the sm button's extended target) |
 | Tools and skills | Serena, Context7 (Next 16 route handler params and streaming), Playwright MCP (screenshots .playwright-mcp/232-*), ui-ux-pro-max (errors announced, progress state, recovery path) |
 | Review | Independent subagent review: no P0; P1 disk fill through unclaimed uploads and PDFs blank in Chrome under a sandbox CSP; P2 send during an upload, purge query growth; P3 claim and purge races, type check on claim, deleted label, retention notes, cross-site opens, stale "metadata only" comments. All fixed with tests (quota, type on claim, deleted rows, PDF headers, feedback photo storage key: its strict schema had refused it) |
+| CI minutes | PR #262: 85 billed minutes (two full runs: a CodeQL acceptance comment on the upload write and the month-end hotel e2e, #263) |
 | Decision | D270–D274 |
 | Migration | `20261026010000_customer_files` (additive): owner copies the new `deploy/server` bundle (compose.yml with the `privatedata` volume, backup.sh), runs `sh backup.sh`, then `sh deploy.sh` |
 
@@ -1284,6 +1295,8 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-145 | Publish, unpublish, archive or trash many records at once | record status (workflow buttons) | every content list › select › bulk bar | `POST /api/v1/admin/content/:key/bulk` | ✅ 24 Oct · datatable.test |
 | AC-146 | Invite email to a new staff member | template `staff-invite` | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | ✅ 25 Oct · admin.test |
 | AC-147 | Office hours, phone numbers and brand names on the site | `contactSettings`, `siteSettings` | Settings › Office hours; Settings › Business and contact | `PUT /api/v1/admin/content/contactSettings` | ✅ 25 Oct · admin-settings.spec (task 10) |
+| AC-148 | Who gets staff alert emails, by area | `leadFormSettings.staffAlerts` (email, areas) | Settings › Forms and messages › Staff alerts | `PUT /api/v1/admin/content/leadFormSettings` | API test public.test (issue 233) |
+| AC-149 | EMI request form: minimum, months, bank choices | `getEmiSettings()` → minimumAmount, tenuresMonths; `listEmiBanks()` → name | Settings › Payments and delivery › EMI, EMI banks | snapshot | e2e content.spec (issue 233) |
 
 ## 5. Components inventory
 
@@ -1707,6 +1720,9 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D272 | 26 Oct | Files live on their own `privatedata` volume; in production uploads pause (503, the form still sends) when the folder is not a mounted volume, so a server with the old bundle never stores files that a deploy would wipe | The owner copies deploy/server by hand | #232 |
 | D273 | 26 Oct | File types are decided by their first bytes (shared `sniffCustomerFile`), checked in the web route and again in the API | Names and declared types are visitor-controlled | #232 |
 | D274 | 26 Oct | Upload limits beside the rate limits: 40 MB of unclaimed files per visitor, 2 GB in total, uploads pause under 2 GB free disk, unclaimed files go after 6 hours; a form sent while a file is still uploading asks the visitor to wait (shared in-flight counter) | A full disk would take PostgreSQL down with it | #232 |
+| D275 | 26 Oct | Staff alert recipients live in `leadFormSettings.staffAlerts` (email and areas: the request modules, orders, payments, feedback, low stock), edited in Settings › Forms and messages; each alert goes to everyone listed for its area, one email each; while nobody covers an area its alerts go to `STAFF_ALERT_EMAIL` as at launch | No new settings document or screen; deploys change nothing until staff fill the list | #233 |
+| D276 | 26 Oct | The booking-mode change reason, active providers and fallback (FR-GS-01 rest) ship with the Phase E Live gate (FR-GS-04): until then no save can change a mode (Live stays locked), so a reason prompt would never show | Avoids dead UI; the gate needs the reason, typed confirmation and health checks together | #233 |
+| D277 | 26 Oct | The EMI request (PRD §11) is a card under the calculator that opens the shared two-step request in a dialog, loaded on open (like the corporate quote, D174); banks come from Settings › EMI banks with "Not sure yet" | The board has no form (only "Ask for EMI on my booking"); the PRD wins on scope | #233 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1718,6 +1734,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #263 Hotel stay e2e checked a day the desktop calendar did not show when check-in fell near a month's end (CI on 26 Oct, check-in 31 Oct) | P2 (test only) | apps/web/e2e/search.spec.ts | ✅ Fixed in #232 (goes to the next month to check it) |
 | #232 Customer files (visa documents, payment slips, attachments, feedback photo) never left the browser; staff got only the file names (Phase A rule D87/D106/D109 never lifted). Found in the #231 audit | P0 | forms, API | Fixed in #232 (private storage, signed links, e2e) |
 | #224 Budget e2e: the first attempt on /tour-packages, /visa and /shop counts about 100 KB more first-load JS on a freshly started CI server; the retry passes (seen on #221 and #223) | P2 (test only) | apps/web/e2e/budget.spec.ts | Open |
 | #225 Admin: opening a record that does not exist shows "This page didn't load" (adminGet throws on the API's 404; no not-found screen in the panel) | P2 | apps/web/src/lib/admin/adminApi.ts | Fixed (adminGet → notFound, panel not-found screen, e2e in admin-shell) |
@@ -1807,6 +1824,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 26 Oct | #232 merged (PR #262, 85 min; owner: copy bundle, backup, deploy). #233: visa status emails, staff alerts by area, low-stock alert, EMI request form; mode-change reason moved to Phase E | #232, #263, #233 | #262, PR for #233 | see #233 |
 | 26 Oct | #231 merged (PR #260, 54 min). #232 customer files: private storage, upload on pick, claim on save, signed staff links with audit, purge, Files panels, deploy volume and backups | #231, #232 | #260, PR for #232 | shared 146 · web 666 · API 199 · e2e visa + api-mode |
 | 25 Oct | Step 0 of PROMPT 10: PRD coverage audit (142 rows, P0 file uploads gap found), CI budget (quick set, full-ci label, nightly), compiled API image, Docker Hub clean-up, live-site docs; 28 Phase D issues filed; epic #30 closed | #231, #232–#259 | PR for #231 | local image run |
 | 25 Oct | R10: staff tasks 2, 8, 12 and 13 as e2e (all 14 covered), axe on every admin route, the independent review fixed (names, columns, editors in words, dated chips, sentence case, phone layout), #229 filed, the Banglish staff guide | #200, #229 | PR for #200 | web 664 · e2e API job 79 |
@@ -1866,6 +1884,6 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. #232: PR with the full-ci label (migration, intake, deploy), CI, merge; tell the owner: copy the new deploy/server bundle, then `sh backup.sh`, then `sh deploy.sh`.
-2. #233 P0 notification gaps (visa status email, staff alert recipients, low-stock alert, EMI request form, mode-change reason).
-3. Letter A: #229 admin polish, #219 the 100-row page, #224 the budget e2e flake.
+1. #233: PR (full-ci: lead intake), CI, merge; tell the owner (no migration; set Staff alerts in Settings › Forms and messages).
+2. Letter A: #229 admin polish, #219 the 100-row page, #224 the budget e2e flake.
+3. Letter B: #234 two-factor sign-in, login history, new-device email, Redis rate limits; then #235 ClamAV.

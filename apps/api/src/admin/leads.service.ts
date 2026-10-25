@@ -6,6 +6,7 @@ import {
   nextLeadStatus,
   toDhakaIsoString,
   visaStage,
+  type VisaStage,
   type LeadActionInput,
   type LeadBulkInput,
   type LeadListQuery,
@@ -20,6 +21,7 @@ import { AuditService } from "../audit/audit.service";
 import type { StaffPrincipal } from "../auth/principal";
 import { problems } from "../common/problem";
 import { ContentService } from "../content/content.service";
+import { NotificationService } from "../notifications/notification.service";
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
@@ -41,6 +43,15 @@ const LEAD_REFUSALS = {
 } as const;
 
 /** Status words for the timeline (the stored values stay as they are, D191). */
+/** How the customer's email names each visa stage worth telling them about (FR-VISA-04). */
+const VISA_STAGE_WORDS: Partial<Record<VisaStage, string>> = {
+  readyToSubmit: "complete: we have every document",
+  submitted: "submitted to the embassy",
+  approved: "approved",
+  rejected: "not approved this time",
+  passportReturned: "closed: your passport is back with you",
+};
+
 const STATUS_WORDS: Record<string, string> = {
   new: "New",
   "in-progress": "In progress",
@@ -171,6 +182,7 @@ export class AdminLeadsService {
     @Inject(AuditService) private readonly audit: AuditService,
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
+    @Inject(NotificationService) private readonly notifications: NotificationService,
   ) {}
 
   private async slaMinutes(): Promise<number> {
@@ -667,6 +679,18 @@ export class AdminLeadsService {
         tx,
       );
     });
+    // The customer hears about every step forward (FR-VISA-04); a document unticked back to pending sends nothing.
+    const next = visaStage(visaFacts(checklist, progress, moved ?? lead.status)).stage;
+    const words = VISA_STAGE_WORDS[next];
+    if (next !== stage && words) {
+      const payload = lead.payload as { countryName?: unknown } | null;
+      void this.notifications.notify("visa-status-customer", lead.email ?? undefined, {
+        name: lead.name,
+        reference: lead.reference,
+        country: typeof payload?.countryName === "string" ? payload.countryName : "",
+        status: words,
+      });
+    }
     return this.detail(staff, id);
   }
 

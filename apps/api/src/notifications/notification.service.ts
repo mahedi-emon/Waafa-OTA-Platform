@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, type OnModuleDestroy } from "@nestjs/common";
 import { Queue } from "bullmq";
-import { ADMIN_BASE_PATH, type NotificationTemplate } from "@waafa/shared";
+import { ADMIN_BASE_PATH, type NotificationTemplate, type StaffAlertArea } from "@waafa/shared";
 import { ENV, type Env } from "../config/env";
 import { ContentService } from "../content/content.service";
 import { PrismaService } from "../prisma/prisma.service";
@@ -74,9 +74,36 @@ export class NotificationService implements OnModuleDestroy {
     await this.queue?.close();
   }
 
-  /** The address staff alerts go to (Settings › Notifications recipients come later; env for launch). */
-  get staffAddress(): string | undefined {
-    return this.env.STAFF_ALERT_EMAIL;
+  /**
+   * Who gets a staff alert about an area (issue 233): the recipients set in Settings › Forms and messages, or the
+   * server's STAFF_ALERT_EMAIL while that list names nobody for the area.
+   */
+  async staffRecipients(area: StaffAlertArea): Promise<string[]> {
+    let chosen: string[] = [];
+    try {
+      const settings = await this.content.setting("leadFormSettings");
+      chosen = (settings.staffAlerts ?? [])
+        .filter((recipient) => recipient.areas.includes(area))
+        .map((recipient) => recipient.email.toLowerCase());
+    } catch {
+      chosen = [];
+    }
+    if (chosen.length === 0 && this.env.STAFF_ALERT_EMAIL) chosen = [this.env.STAFF_ALERT_EMAIL];
+    return [...new Set(chosen)];
+  }
+
+  /** One staff alert to everyone who gets alerts about the area; fire and forget like notify(). */
+  notifyStaff(
+    key: NotificationTemplate["key"],
+    area: StaffAlertArea,
+    vars: Record<string, string>,
+  ): Promise<void> {
+    return this.track(
+      (async () => {
+        const recipients = await this.staffRecipients(area);
+        await Promise.all(recipients.map((to) => this.queueEmail(key, to, vars)));
+      })(),
+    );
   }
 
   /** A link into the admin for staff emails, on the first web origin. */

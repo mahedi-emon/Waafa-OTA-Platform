@@ -241,6 +241,43 @@ async function staffInviteTemplate(prisma: PrismaClient): Promise<number> {
   return 1;
 }
 
+/** The low-stock alert (issue 233), as fixtures/src/settings.ts has it. */
+const LOW_STOCK_TEMPLATE = {
+  key: "low-stock-staff",
+  audience: "Waafas World team",
+  channel: "email",
+  subject: "Low stock: {{product}}",
+  body: "{{product}} ({{sku}}) is down to {{stock}} after order {{order_number}}.\n\nRestock or update it in Admin: {{link}}.",
+  variables: ["{{product}}", "{{sku}}", "{{stock}}", "{{order_number}}", "{{link}}"],
+  enabled: true,
+} as const;
+
+/** The low-stock template joins the live list at its end; an existing one with that key is left as it is. */
+async function lowStockTemplate(prisma: PrismaClient): Promise<number> {
+  const exists = await prisma.contentDocument.findUnique({
+    where: {
+      collection_docId: { collection: "notificationTemplates", docId: LOW_STOCK_TEMPLATE.key },
+    },
+    select: { docId: true },
+  });
+  if (exists) return 0;
+  const last = await prisma.contentDocument.findFirst({
+    where: { collection: "notificationTemplates" },
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+  await prisma.contentDocument.create({
+    data: {
+      collection: "notificationTemplates",
+      docId: LOW_STOCK_TEMPLATE.key,
+      data: json(LOW_STOCK_TEMPLATE),
+      position: (last?.position ?? -1) + 1,
+      updatedBy: "seed-patch",
+    },
+  });
+  return 1;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -251,6 +288,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-14-home-seo", apply: homeSeo },
   { id: "2026-10-24-workflow-templates", apply: workflowTemplates },
   { id: "2026-10-25-staff-invite-template", apply: staffInviteTemplate },
+  { id: "2026-10-26-low-stock-template", apply: lowStockTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

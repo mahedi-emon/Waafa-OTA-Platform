@@ -2412,6 +2412,45 @@
       "months": "Months",
       "cards": "Cards",
       "appliesTo": "Applies to"
+    },
+    "request": {
+      "cardTitle": "Want to pay in instalments?",
+      "cardLead": "Tell us the amount and the months. An expert checks your card with the bank and calls you back with the plan.",
+      "open": "Request an EMI plan",
+      "kicker": "EMI plan",
+      "title": "Request an EMI plan",
+      "lead": "Two short steps. We confirm the plan with your bank before you pay anything.",
+      "step": "Your plan",
+      "stepTitle": "How would you like to pay?",
+      "amount": "Amount (৳)",
+      "amountHint": "The trip or order total; plans start at {minimum}.",
+      "months": "Months",
+      "monthsOption": "{months} months",
+      "bank": "Your credit card's bank",
+      "bankUnsure": "Not sure yet",
+      "notes": "What is it for? (optional)",
+      "notesPlaceholder": "A tour package, flight tickets or a Waafas World order",
+      "submit": "Send my EMI request",
+      "contactTitle": "Who should we call?",
+      "emailHint": "We send the plan here too.",
+      "errors": {
+        "amountRequired": "Enter the amount in taka.",
+        "amountBelowMinimum": "EMI plans start at {minimum}.",
+        "monthsRequired": "Choose the months.",
+        "bankRequired": "Choose your card's bank, or Not sure yet."
+      },
+      "success": {
+        "title": "EMI request received",
+        "lead": "An expert checks the plan with your bank and calls you back, usually within 30 minutes in office hours.",
+        "step1Title": "We check your card",
+        "step1Body": "Partner bank credit cards only; we confirm the months and any bank fee.",
+        "step2Title": "You get the plan",
+        "step2Body": "The monthly amount and the total, before you pay anything.",
+        "step3Title": "You pay once",
+        "step3Body": "At our office or by a secure link; your bank splits it into instalments.",
+        "whatsappMessage": "Hi Waafa, about my EMI request {reference}.",
+        "again": "Back to EMI"
+      }
     }
   },
   "OfflinePay": {
@@ -5336,7 +5375,8 @@
         "payment-proof-rejected-customer": "Payment proof not accepted (to the customer)",
         "lead-overdue-staff": "No reply yet (to managers)",
         "sign-in-code-customer": "Sign-in code (to the customer)",
-        "staff-invite": "Invite to Admin"
+        "staff-invite": "Invite to Admin",
+        "low-stock-staff": "Low stock (to the store team)"
       },
       "tone": {
         "default": "Normal",
@@ -5357,6 +5397,22 @@
         "student": "Student",
         "medical": "Medical",
         "transit": "Transit"
+      },
+      "staffAlertArea": {
+        "flights": "Flight requests",
+        "hotels": "Hotel requests",
+        "packages": "Tour package requests",
+        "plan-trip": "Plan my trip requests",
+        "visa": "Visa applications",
+        "printing": "Printing requests",
+        "trading": "Trading requests",
+        "contact": "Contact messages",
+        "emi": "EMI requests",
+        "bulk": "Bulk quote requests",
+        "orders": "Store orders",
+        "payments": "Payment proofs",
+        "feedback": "Feedback",
+        "stock": "Low stock"
       }
     },
     "blueprints": {
@@ -5498,13 +5554,21 @@
       "leadFormSettings": {
         "one": "form setting",
         "other": "form settings",
-        "intro": "How request forms behave: the reply target, email, phone countries and the consent sentence.",
+        "intro": "How request forms behave: the reply target, email, phone countries, the consent sentence, and who gets staff alerts.",
         "sections": {
-          "form": "Request forms"
+          "form": "Request forms",
+          "alerts": "Staff alerts"
         },
         "help": {
           "slaMinutes": "Requests waiting longer than this during office hours show as overdue.",
-          "phoneCountries": "Two-letter country codes; the first one is the default, like BD."
+          "phoneCountries": "Two-letter country codes; the first one is the default, like BD.",
+          "staffAlerts": "Each new request, order, payment proof, feedback or low-stock alert goes to everyone listed for it. While nobody is listed for an area, its alerts go to the server's main alert address."
+        },
+        "fields": {
+          "staffAlerts": "Who gets alerts",
+          "staffAlerts_item": "Recipient",
+          "staffAlerts_email": "Email",
+          "staffAlerts_areas": "Alerts about"
         }
       },
       "maintenanceSettings": {

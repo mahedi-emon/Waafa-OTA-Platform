@@ -271,6 +271,78 @@ describe.skipIf(!dbAvailable)("public intake (B3)", () => {
     expect(await prisma.order.count()).toBe(1);
   });
 
+  it("sends staff alerts to the people chosen for each area, and a low-stock alert (issue 233)", async () => {
+    const settings = await prisma.setting.findUniqueOrThrow({ where: { key: "leadFormSettings" } });
+    await prisma.setting.update({
+      where: { key: "leadFormSettings" },
+      data: {
+        value: {
+          ...(settings.value as object),
+          staffAlerts: [
+            { email: "visa@example.com", areas: ["visa"] },
+            { email: "Store@Example.com", areas: ["orders", "stock"] },
+          ],
+        },
+      },
+    });
+    const slug = "better-day-hp-151a-w1510a-black-toner";
+    const product = await prisma.contentDocument.findUniqueOrThrow({
+      where: { collection_docId: { collection: "products", docId: slug } },
+    });
+    const data = product.data as { variants: Array<Record<string, unknown>> };
+    await prisma.contentDocument.update({
+      where: { collection_docId: { collection: "products", docId: slug } },
+      data: {
+        data: JSON.parse(
+          JSON.stringify({
+            ...data,
+            variants: data.variants.map((variant) =>
+              variant.id === "bd-w1510a" ? { ...variant, stock: 4, lowStockAt: 3 } : variant,
+            ),
+          }),
+        ),
+      },
+    });
+    app.get(ContentService).invalidate();
+
+    expect(
+      (
+        await post("leads", {
+          contact,
+          consent: true,
+          payload: {
+            module: "visa",
+            countrySlug: "thailand",
+            countryName: "Thailand",
+            visaType: "tourist",
+            travelDate: "2026-12-01",
+            applicants: 1,
+          },
+        })
+      ).statusCode,
+    ).toBe(201);
+    expect(
+      (
+        await post("orders", {
+          lines: [{ variantId: "bd-w1510a", quantity: 1 }],
+          address,
+          payment: { method: "cod" },
+        })
+      ).statusCode,
+    ).toBe(201);
+    await app.get(NotificationService).idle();
+    const to = (subject: RegExp) =>
+      mailer.sent.filter((mail) => subject.test(mail.subject)).map((mail) => mail.to);
+    // A visa lead goes to the visa desk only; the env address gets nothing for areas someone covers.
+    expect(mailer.sent.filter((mail) => mail.to === STAFF)).toEqual([]);
+    expect(to(/^Low stock/)).toEqual(["store@example.com"]);
+    expect(mailer.sent.find((mail) => /^Low stock/.test(mail.subject))?.text).toContain(
+      "is down to 3",
+    );
+    expect(mailer.sent.map((mail) => mail.to)).toContain("visa@example.com");
+    expect(mailer.sent.map((mail) => mail.to)).toContain("store@example.com");
+  });
+
   it("never sells a product whose price is hidden (issue 178)", async () => {
     const hidden = await post("orders", {
       lines: [{ variantId: "bd-crg070h", quantity: 1 }],

@@ -159,10 +159,13 @@ export const leadFormSettingsBlueprint = {
   key: "leadFormSettings",
   sections: [
     { id: "form", fields: ["slaMinutes", "emailRequired", "phoneCountries", "consentText"] },
+    { id: "alerts", fields: ["staffAlerts"] },
   ],
   fields: {
     phoneCountries: tags,
     consentText: textarea,
+    staffAlerts: { widget: "repeater", summary: "email", wide: true },
+    staffAlerts_areas: { widget: "choices", choices: "staffAlertArea" },
   },
 } satisfies Blueprint;
 

@@ -291,6 +291,7 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
 
   it("walks a visa application through its checklist, submission and outcome (D0 R4)", async () => {
     const id = await submitLead(visa);
+    await prisma.lead.update({ where: { id }, data: { email: "visa-customer@example.com" } });
     const visaStep = (input: Record<string, unknown>) =>
       call(visaOfficer, "POST", `/leads/${id}/visa`, input);
     const first = await call(visaOfficer, "GET", `/leads/${id}`);
@@ -320,6 +321,16 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
     expect(approved.json<{ visa: { stage: string } }>().visa.stage).toBe("approved");
     const returned = await visaStep({ type: "passportReturned", on: "2026-11-02" });
     expect(returned.json<{ visa: { stage: string } }>().visa.stage).toBe("passportReturned");
+    // The customer got one email for each step forward (FR-VISA-04, issue 233).
+    await app.get(NotificationService).idle();
+    const visaMails = mailer.sent
+      .filter((mail) => mail.to === "visa-customer@example.com")
+      .map((mail) => mail.text);
+    expect(visaMails).toHaveLength(4);
+    expect(visaMails[0]).toContain("is now complete");
+    expect(visaMails[3]).toContain("your passport is back");
+    expect(visaMails[1]).toContain("is now submitted to the embassy");
+    expect(visaMails[2]).toContain("is now approved");
     const flightLead = await submitLead(flight);
     expect(
       (

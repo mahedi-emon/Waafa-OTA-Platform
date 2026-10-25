@@ -268,6 +268,36 @@ export const EmiSettingsSchema = z
   })
   .strict();
 
+/**
+ * What a staff alert is about (issue 233): every request module, plus store orders, payment proofs, feedback and low
+ * stock. A test keeps the request modules in step with LeadModuleSchema.
+ */
+export const STAFF_ALERT_AREAS = [
+  "flights",
+  "hotels",
+  "packages",
+  "plan-trip",
+  "visa",
+  "printing",
+  "trading",
+  "contact",
+  "emi",
+  "bulk",
+  "orders",
+  "payments",
+  "feedback",
+  "stock",
+] as const;
+export type StaffAlertArea = (typeof STAFF_ALERT_AREAS)[number];
+
+/** One person or shared inbox and the alerts it gets (Settings › Forms and messages). */
+export const StaffAlertRecipientSchema = z
+  .object({
+    email: EmailSchema,
+    areas: z.array(z.enum(STAFF_ALERT_AREAS)).min(1),
+  })
+  .strict();
+
 export const LeadFormSettingsSchema = z
   .object({
     emailRequired: z.boolean(),
@@ -280,6 +310,11 @@ export const LeadFormSettingsSchema = z
       .min(1)
       .max(40)
       .default(["BD"]),
+    /**
+     * Who gets staff alerts, by area (issue 233). Empty: every alert goes to the server's STAFF_ALERT_EMAIL, as at
+     * launch.
+     */
+    staffAlerts: z.array(StaffAlertRecipientSchema).max(30).default([]),
   })
   .strict();
 
@@ -297,6 +332,7 @@ export const NotificationTemplateSchema = z
       "lead-overdue-staff",
       "sign-in-code-customer",
       "staff-invite",
+      "low-stock-staff",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */
     audience: z.string().min(1).max(40),
