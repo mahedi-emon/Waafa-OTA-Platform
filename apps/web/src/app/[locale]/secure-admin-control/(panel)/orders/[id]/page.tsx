@@ -9,6 +9,8 @@ import { InboxListPane, type InboxPaneItem } from "@/components/admin/inbox/Inbo
 import { InboxSplit } from "@/components/admin/inbox/InboxSplit";
 import { OrderStatusChip } from "@/components/admin/OrderStatusChip";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import { CustomerFiles } from "@/components/admin/files/CustomerFiles";
+import { expectedFiles } from "@/lib/admin/expectedFiles";
 import { OrderSteps } from "@/components/admin/OrderSteps";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Badge } from "@/components/ui/badge";
@@ -244,6 +246,7 @@ async function Order({ params, searchParams }: Pick<Params, "params" | "searchPa
                 </div>
               ) : null}
             </AdminPanel>
+            <CustomerFiles owner="order" id={order.id} expected={expectedFiles(order.payment)} />
           </div>
         </div>
       </div>

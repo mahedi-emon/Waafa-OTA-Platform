@@ -13,6 +13,8 @@ import { ReplyTimer } from "@/components/admin/inbox/ReplyTimer";
 import { Timeline } from "@/components/admin/inbox/Timeline";
 import { LeadActions } from "@/components/admin/LeadActions";
 import { LeadFacts } from "@/components/admin/LeadFacts";
+import { CustomerFiles } from "@/components/admin/files/CustomerFiles";
+import { expectedFiles } from "@/lib/admin/expectedFiles";
 import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
 import { VisaProgressPanel } from "@/components/admin/VisaProgressPanel";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -308,6 +310,13 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
           <AdminPanel title={t("request")} lead={t("requestLead")} className="@4xl:col-start-1">
             <LeadFacts facts={facts} />
           </AdminPanel>
+
+          <CustomerFiles
+            owner="lead"
+            id={lead.id}
+            expected={expectedFiles(lead.payload)}
+            className="@4xl:col-start-1"
+          />
 
           <AdminPanel
             title={t("customer")}

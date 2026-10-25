@@ -411,3 +411,37 @@ model CustomerSession {
 
   @@index([customerId])
 }
+
+// Customer files (FR-VISA-03, FR-VISA-05, issue 232) ----------------------------------------------------------------
+
+/// A file a visitor sent with a form: visa documents, payment-proof slips, printing and trading attachments, a feedback
+/// photo. Stored on the private volume at `path` (never served by nginx); staff open it through a 10-minute signed
+/// link, and every link and download is audited. `storageKey` is the unguessable claim the form sends back; a file no
+/// record claims within 24 hours is deleted, visa documents 90 days after their lead closes.
+model CustomerFile {
+  id          String    @id @default(cuid())
+  storageKey  String    @unique
+  /// PrivateFileSchema kind: passport-bio, photo, bank-statement, invitation, payment-proof, other.
+  kind        String
+  fileName    String
+  mimeType    String
+  sizeBytes   Int
+  sha256      String
+  path        String    @unique
+  /// pending (uploaded, not claimed), attached, deleted.
+  status      String    @default("pending")
+  /// lead, payment-proof, order, feedback (set when claimed).
+  ownerType   String?
+  ownerId     String?
+  /// Malware scan (#235): unscanned, clean, infected.
+  scanStatus  String    @default("unscanned")
+  uploaderIp  String?
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  attachedAt  DateTime? @db.Timestamptz(3)
+  deleteAfter DateTime? @db.Timestamptz(3)
+  deletedAt   DateTime? @db.Timestamptz(3)
+
+  @@index([ownerType, ownerId])
+  @@index([status, createdAt])
+  @@index([deleteAfter])
+}

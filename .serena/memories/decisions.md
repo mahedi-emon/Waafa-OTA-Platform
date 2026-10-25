@@ -120,6 +120,12 @@
   (sha256 token 7 days, POST /auth/invite 5/15 min, welcome page; reset password closes invite); audit sentences
   (auditText, AUDIT_AREAS prefixes, Dhaka days); template Insert + preview (variables keep); Excel via own xlsx
   writer; dashboard charts server SVG, AdminPanel id names its section.
+- D266–D269 (#231, 25 Oct): CI quick set for PRs (smoke e2e only), full suite on main/nightly/`full-ci` label (required
+  for schema, deploy/, API Dockerfile, sign-in, payments, checkout, lead intake; label re-runs CI via full-ci-label.yml,
+  labels read live); CodeQL job inside ci.yml; VPS smoke not on main pushes (Docker images covers it). API image =
+  esbuild bundle (apps/api/scripts/build.mjs; @waafa/* + tsx are devDeps; dist/main|worker|seed.js; tsx stand-in for
+  the old worker command one release); Docker Hub keeps 15 releases. Phase D order D268 (#232 files, #233, A, B, C, D,
+  E, F, J, K, G, H, I, L, M). Markup → Phase E; no staging VPS (D269).
 - D262–D265 (R10, 25 Oct): lists named by headingOf, columns only with data; banner/deal/announcement editor states
   startsLater/ended + group fares endingSoon (<= 7 days); system editors in words (editorName); sentence-case admin
   chrome, Table scrollLabel → named focusable region, tab rows wrap or fade.

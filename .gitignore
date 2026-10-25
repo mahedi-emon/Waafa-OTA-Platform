@@ -32,6 +32,7 @@ __pycache__/
 
 # Uploaded photos in development (MEDIA_DIR, #109)
 .media/
+.private-files/
 
 # Production backups on the VPS (deploy/backup.sh)
 deploy/backups/

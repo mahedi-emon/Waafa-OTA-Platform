@@ -38,9 +38,9 @@ COPY apps/api/prisma/migrations prisma/migrations
 COPY apps/api/prisma.config.ts ./
 COPY --chmod=755 apps/api/scripts/tsx-compat.sh node_modules/.bin/tsx
 
-ENV NODE_ENV=production PORT=4000
-# The media volume (#109) takes this folder's owner on first mount, so the API can write uploads.
-RUN mkdir -p /data/media && chown node:node /data/media
+ENV NODE_ENV=production PORT=4000 MEDIA_DIR=/data/media PRIVATE_FILES_DIR=/data/private
+# The media (#109) and private (#232) volumes take these folders' owner on first mount, so the API can write uploads.
+RUN mkdir -p /data/media /data/private && chown node:node /data/media /data/private && chmod 700 /data/private
 EXPOSE 4000
 USER node
 # Migrations and the idempotent seed run before the API starts (NFR-OPS: migrations in the deploy pipeline). The

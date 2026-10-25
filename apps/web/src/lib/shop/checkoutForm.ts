@@ -74,7 +74,8 @@ export const PICKUP_ADDRESS = {
 export type ProofFile = {
   fileName: string;
   mimeType: "image/jpeg" | "image/png" | "application/pdf";
-  sizeBytes: number;
+  sizeBytes: number; /** The claim from POST /api/uploads (issue 232). */
+  storageKey?: string;
 };
 
 /** The shared order contract from the form: ids and quantities only, never prices. */

@@ -37,7 +37,8 @@ export type FeedbackFormValues = z.infer<typeof feedbackFormSchema>;
 export type FeedbackPhoto = {
   fileName: string;
   mimeType: "image/jpeg" | "image/png";
-  sizeBytes: number;
+  sizeBytes: number; /** The claim from POST /api/uploads (issue 232). */
+  storageKey?: string;
 };
 
 /** The shared feedback contract (the server validates again and stores it as pending). */

@@ -269,6 +269,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
 
       <DocumentSlot
         title={t("proof.slip")}
+        kind={"payment-proof"}
         sub={t("proof.slipSub")}
         file={slip}
         onChange={(file) => {
@@ -281,10 +282,12 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
           rule: t("proof.slipHint"),
           remove: t("proof.slipRemove", { file: "{file}" }),
           added: t("proof.slipAdded"),
+          uploading: t("proof.slipUploading"),
           errors: {
             fileType: t("proof.slipBad"),
             fileSize: t("proof.slipBad"),
             fileEmpty: t("proof.slipBad"),
+            upload: t("proof.slipUploadFailed"),
           },
         }}
       />

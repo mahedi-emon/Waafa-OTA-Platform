@@ -172,7 +172,7 @@ function VisaFileStep(props: VisaFileStepProps) {
         <p className="flex gap-2 rounded-xl bg-navy-900 px-4 py-3 text-[13.5px] leading-relaxed text-white">
           <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-cyan-400" />
           <span>
-            {t("apply.private")} {t("apply.phaseNote")}
+            {t("apply.private")} {t("apply.storedNote")}
           </span>
         </p>
         <div className="flex items-center justify-between gap-3">
@@ -192,6 +192,7 @@ function VisaFileStep(props: VisaFileStepProps) {
                   <DocumentSlot
                     key={slot}
                     title={t(`apply.slots.${slot}`)}
+                    kind={slot === "work-proof" ? "other" : slot}
                     sub={t(`apply.slots.${slot}Sub`)}
                     file={current}
                     onChange={(file) =>
@@ -206,10 +207,12 @@ function VisaFileStep(props: VisaFileStepProps) {
                       replace: t("apply.replace"),
                       remove: t("apply.remove", { file: "{file}" }),
                       added: t("apply.added"),
+                      uploading: t("apply.uploading"),
                       errors: {
                         fileType: t("errors.fileType"),
                         fileSize: t("errors.fileSize"),
                         fileEmpty: t("errors.fileEmpty"),
+                        upload: t("errors.upload"),
                       },
                     }}
                   />

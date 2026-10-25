@@ -43,6 +43,8 @@ export const EnvSchema = z
     /** Encrypts external API secrets at rest (#82). Without it, provider secrets cannot be saved. */
     /** Where uploaded photos are written (#109): the `mediadata` volume in Docker. */
     MEDIA_DIR: z.string().min(1).default("./.media"),
+    /** Customer files (issue 232): the `privatedata` volume in Docker; nginx never serves it. */
+    PRIVATE_FILES_DIR: z.string().min(1).default("./.private-files"),
     /**
      * How often the minute job runs (D0 R4, D215): scheduled records go live, window lists refresh, Trash is purged.
      * Default 60 s; 0 turns it off (API tests call it themselves).

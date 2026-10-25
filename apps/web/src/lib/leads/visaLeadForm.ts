@@ -19,6 +19,8 @@ const DocumentSchema = z
     fileName: z.string().min(1).max(120),
     mimeType: z.enum(VISA_FILE_TYPES),
     sizeBytes: z.number().int().positive(),
+    /** The claim from POST /api/uploads (issue 232). */
+    storageKey: z.string().optional(),
   })
   .strict();
 
@@ -100,6 +102,7 @@ export function buildVisaLead(args: {
         fileName: document.fileName,
         mimeType: document.mimeType,
         sizeBytes: document.sizeBytes,
+        ...(document.storageKey ? { storageKey: document.storageKey } : {}),
       })),
       ...(values.notes.trim() ? { notes: values.notes.trim() } : {}),
     },

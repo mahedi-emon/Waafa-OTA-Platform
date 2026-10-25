@@ -74,7 +74,12 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
     try {
       const image =
         photo && (photo.mimeType === "image/jpeg" || photo.mimeType === "image/png")
-          ? { fileName: photo.fileName, mimeType: photo.mimeType, sizeBytes: photo.sizeBytes }
+          ? {
+              fileName: photo.fileName,
+              mimeType: photo.mimeType,
+              sizeBytes: photo.sizeBytes,
+              ...(photo.storageKey ? { storageKey: photo.storageKey } : {}),
+            }
           : null;
       const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/feedback", {
@@ -283,6 +288,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
 
       <DocumentSlot
         title={t("form.photo")}
+        kind={"photo"}
         sub={t("form.photoSub")}
         file={photo}
         onChange={setPhoto}
@@ -293,10 +299,12 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
           rule: t("form.photoHint"),
           remove: t("form.photoRemove", { file: "{file}" }),
           added: t("form.photoAdded"),
+          uploading: t("form.photoUploading"),
           errors: {
             fileType: t("form.photoBad"),
             fileSize: t("form.photoBad"),
             fileEmpty: t("form.photoBad"),
+            upload: t("form.photoUploadFailed"),
           },
         }}
       />

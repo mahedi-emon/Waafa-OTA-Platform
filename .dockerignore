@@ -20,3 +20,5 @@ deploy/backups
 apps/api/src/generated
 *.png
 !apps/web/public/**/*.png
+**/.media
+**/.private-files

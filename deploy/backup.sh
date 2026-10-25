@@ -20,4 +20,7 @@ ls -1t deploy/backups/waafa-*.sql.gz | tail -n +15 | xargs -r rm --
 # Photos change rarely; a full copy each night keeps restores simple (an empty library is still a valid archive).
 docker compose -f deploy/compose.yml exec -T api tar -czf - -C /data/media . > "deploy/backups/waafa-$stamp.media.tar.gz"
 ls -1t deploy/backups/waafa-*.media.tar.gz | tail -n +15 | xargs -r rm --
+# Customer files (issue 232: visa documents, payment slips): readable by the server owner only.
+(umask 077 && docker compose -f deploy/compose.yml exec -T api tar -czf - -C /data/private . > "deploy/backups/waafa-$stamp.private.tar.gz")
+ls -1t deploy/backups/waafa-*.private.tar.gz | tail -n +15 | xargs -r rm --
 echo "$(date) backup ok: $file"

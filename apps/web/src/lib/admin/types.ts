@@ -254,7 +254,7 @@ export type FeedbackRow = {
   reference: string | null;
   rating: number | null;
   comment: string;
-  photo: { fileName?: string } | null;
+  photo: { fileName?: string; storageKey?: string } | null;
   consentToPublish: boolean;
   status: "pending" | "approved" | "rejected";
   moderatedBy: string | null;
@@ -270,7 +270,7 @@ export type ProofRow = {
   amount: number;
   accountId: string;
   transactionId: string | null;
-  proof: { fileName?: string } | null;
+  proof: { fileName?: string; storageKey?: string } | null;
   status: "received" | "matched" | "verified" | "rejected";
   note: string | null;
   /** The order the reference names (D0 R4): matched when the amount covers its total. */
