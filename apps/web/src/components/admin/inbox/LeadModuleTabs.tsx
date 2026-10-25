@@ -83,7 +83,10 @@ function LeadModuleTabs({
 
   if (shown.length < 2) return null;
   return (
-    <nav aria-label={label} className="-mx-1 mb-3 flex gap-1.5 overflow-x-auto px-1 pb-1">
+    <nav
+      aria-label={label}
+      className="-mx-1 mb-3 flex gap-1.5 overflow-x-auto px-1 pr-8 pb-1 max-lg:[mask-image:linear-gradient(to_right,black_calc(100%-2.5rem),transparent)]"
+    >
       {tab(undefined, labels.all, total)}
       {shown.map((module) => tab(module, labels[module], open.get(module) ?? 0))}
     </nav>

@@ -1,4 +1,4 @@
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight, EyeOff, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { canCopy, type ContentKey } from "@waafa/shared";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";
@@ -72,7 +72,8 @@ async function SettingsRecordList({ contentKey }: SettingsRecordListProps) {
                     {line ? <span className="text-[13.5px] text-mist-600">{line}</span> : null}
                   </span>
                   {off ? (
-                    <span className="relative shrink-0 rounded-full bg-mist-100 px-2.5 py-0.5 text-[12.5px] font-semibold text-mist-700">
+                    <span className="relative inline-flex shrink-0 items-center gap-1 rounded-full bg-mist-100 px-2.5 py-0.5 text-[12.5px] font-semibold text-mist-700">
+                      <EyeOff aria-hidden="true" className="size-3.5" />
                       {t("off")}
                     </span>
                   ) : null}

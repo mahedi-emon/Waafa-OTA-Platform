@@ -25,11 +25,16 @@ async function SetupChecklist({ steps, className }: SetupChecklistProps) {
       title={t("title")}
       lead={done === steps.length ? t("allDone") : t("lead")}
       action={
-        <ProgressRing
-          value={done}
-          total={steps.length}
-          label={t("progress", { done, total: steps.length })}
-        />
+        <div className="flex items-center gap-2.5">
+          <span aria-hidden="true" className="text-[13px] font-semibold text-mist-600 tabular-nums">
+            {t("progressShort", { done, total: steps.length })}
+          </span>
+          <ProgressRing
+            value={done}
+            total={steps.length}
+            label={t("progress", { done, total: steps.length })}
+          />
+        </div>
       }
       flush
     >

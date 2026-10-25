@@ -35,6 +35,8 @@ type DataTableToolbarProps = {
   onSaveView: (name: string) => void;
   onDeleteView: (name: string) => void;
   onExport: () => void;
+  /** Nothing to export on an empty list: the button stays away (D0 R10). */
+  canExport?: boolean;
 };
 
 /** Search, filter chips, saved views, column settings and export for one list (ADMIN.md §10). */
@@ -137,7 +139,7 @@ function DataTableToolbar(props: DataTableToolbarProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null}
-        {props.exportHref ? (
+        {props.canExport === false ? null : props.exportHref ? (
           <Button asChild variant="secondary" size="md">
             <a href={props.exportHref}>
               <Download aria-hidden="true" className="size-4" />

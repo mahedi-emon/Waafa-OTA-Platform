@@ -67,7 +67,7 @@ function Timeline({ entries, typeLabel, label }: TimelineProps) {
     <ol aria-label={label} className="flex flex-col gap-5">
       {days.map((group) => (
         <li key={group.day}>
-          <h3 className="mb-3 text-[12.5px] font-semibold tracking-wide text-mist-600 uppercase">
+          <h3 className="mb-3 text-[13.5px] font-semibold text-mist-600">
             <time dateTime={group.day}>{formatPlainDate(group.day)}</time>
           </h3>
           <ol className="relative flex flex-col gap-4 before:absolute before:top-2 before:bottom-2 before:left-[15px] before:w-px before:bg-mist-200">

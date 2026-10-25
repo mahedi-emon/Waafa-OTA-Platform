@@ -101,6 +101,7 @@ export const RECORD_CHIPS = {
   usedUp: { tone: "warning", icon: Ban },
   open: { tone: "success", icon: Plane },
   fewSeats: { tone: "warning", icon: Hourglass },
+  endingSoon: { tone: "warning", icon: Hourglass },
   soldOut: { tone: "danger", icon: Ban },
   inStock: { tone: "success", icon: PackageCheck },
   lowStock: { tone: "warning", icon: PackageOpen },

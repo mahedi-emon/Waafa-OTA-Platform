@@ -24,6 +24,8 @@ type DataTablePagerProps = {
 function DataTablePager({ page, pending, onPage, onPageSize }: DataTablePagerProps) {
   const t = useTranslations("Admin.table");
   const range = pageRange(page.page, page.pageSize, page.total);
+  // An empty list has nothing to count or page through (no "0 to 0 of 0").
+  if (page.total === 0) return null;
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-mist-100 px-4 py-3">
       <p className="text-[13.5px] text-mist-700 tabular-nums" aria-live="polite">

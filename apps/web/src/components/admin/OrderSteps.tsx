@@ -161,7 +161,7 @@ function OrderSteps({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[13px] font-semibold tracking-wide text-mist-500 uppercase">{t("next")}</p>
+      <p className="text-[13.5px] font-semibold text-mist-600">{t("next")}</p>
       {waiting ? (
         <p className="rounded-xl bg-warning-50 p-3 text-[14px] text-warning-800">
           {t("waitingProof")}{" "}

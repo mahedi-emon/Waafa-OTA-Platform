@@ -14,6 +14,7 @@ export type RecordChipName =
   | "usedUp"
   | "open"
   | "fewSeats"
+  | "endingSoon"
   | "soldOut"
   | "inStock"
   | "lowStock"
@@ -113,6 +114,10 @@ export function recordChipsOf(
       if (state === "expired") return [dated("expired", "at", data.expiresAt)];
       if (state === "soldOut") return [{ name: "soldOut" }];
       if (state === "fewSeats") return [{ name: "fewSeats", count: seats ?? 0 }];
+      // Booking closes within a week: the same rule as the sidebar's "ending this week" count (D0 R10).
+      const closes = text(data.expiresAt) ? Date.parse(String(data.expiresAt)) : Number.NaN;
+      if (!Number.isNaN(closes) && closes - now.getTime() <= 7 * 24 * 60 * 60_000)
+        return [dated("endingSoon", "until", data.expiresAt)];
       return [dated("open", "until", data.expiresAt)];
     }
     case "products": {

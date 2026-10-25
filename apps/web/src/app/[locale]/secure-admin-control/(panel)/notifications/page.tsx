@@ -44,7 +44,7 @@ async function Log({
       <SettingsSectionTabs section="forms" current="sent" sectionTitle={titles.forms} />
       <p className="mb-4 text-[14.5px] text-mist-600">{t("lead")}</p>
       <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-        <Table>
+        <Table scrollLabel={t("title")}>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>{t("colWhen")}</TableHead>

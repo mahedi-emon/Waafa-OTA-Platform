@@ -823,3 +823,33 @@ feedback.
 R1 shell and design system · R2 form engine v2 · R3 media · R4 status automation · R5 DataTable v2 · R6 inbox · R7
 website builder · R8 purpose-built editors · R9 dashboard, settings, users, audit, notifications, reports · R10
 usability QA (14 staff tasks as e2e, axe, screenshots at 390/768/1024/1440, independent review, `docs/ADMIN_GUIDE.md`).
+
+### R10: usability QA (what shipped)
+The 14 staff tasks run as Playwright e2e with visible, labelled controls only (roles and labels, no test ids), on a
+wide screen and, for inbox jobs, a phone:
+
+| # | Task | Spec |
+| --- | --- | --- |
+| 1 | Tour package with 5 photos, 3 days, 2 prices, published | `admin-editors.spec` |
+| 2 | Home hero photo and headline | `admin-staff-tasks.spec` |
+| 3 | Hide a home section, move another up (phone) | `admin-website.spec` |
+| 4 | WhatsApp reply moves a lead to In progress (1440, 390) | `admin-workflow.spec`, `admin-inbox.spec` |
+| 5 | Convert a lead to a booking (1440, 390) | `admin-workflow.spec`, `admin-inbox.spec` |
+| 6 | Verify a payment proof, the order is confirmed (1440, 390) | `admin-workflow.spec`, `admin-inbox.spec` |
+| 7 | Product with 2 variants and stock | `admin-editors.spec` |
+| 8 | Banner scheduled for next Friday | `admin-staff-tasks.spec` |
+| 9 | Team member with a photo | `admin-editors.spec` |
+| 10 | Office hours and a phone number | `admin-settings.spec` |
+| 11 | Sample visa country gets real fees and documents | `admin-editors.spec` |
+| 12 | Customer found by phone with every request and order (1440, 390) | `admin-staff-tasks.spec` |
+| 13 | A wrong price undone with Restore | `admin-staff-tasks.spec` |
+| 14 | A deleted package back from Trash | `admin-workflow.spec` |
+
+- axe (WCAG 2.2 AA tags) and a no-sideways-scroll check on every admin route at 390 and 1440 px
+  (`admin-screens.spec`: the main screens at 320–1440, every other route at 390 and 1440), with screenshots.
+- An independent review of every screen against this document; what it found was fixed in R10 (names from the record
+  instead of keys, no empty columns, sentence-case headers and labels, system editors named in words, dated chips in
+  the editor, ending-soon group fares, wrapping tabs and edge fades, a one-row action bar on phones, scrolling tables
+  as named regions) or filed as #229.
+- `docs/ADMIN_GUIDE.md`: the Banglish staff guide with screenshots in `docs/admin-guide/`.
+

@@ -64,10 +64,11 @@ function TagsField({ path, item, value, optional }: TagsFieldProps) {
             key={`${String(tag)}-${index}`}
             className="inline-flex h-9 items-center gap-1 rounded-full bg-mist-100 pr-1.5 pl-3 text-[14px] font-medium text-navy-900"
           >
-            {String(tag)}
+            {/* "*" is the catch-all (a delivery zone for everywhere else): it reads as words, never a symbol. */}
+            {tag === "*" ? t("everywhere") : String(tag)}
             <button
               type="button"
-              aria-label={t("removeTag", { tag: String(tag) })}
+              aria-label={t("removeTag", { tag: tag === "*" ? t("everywhere") : String(tag) })}
               onClick={() => remove(index)}
               className="relative flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-mist-600 after:absolute after:-inset-2 hover:bg-mist-200 hover:text-danger-700 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
             >

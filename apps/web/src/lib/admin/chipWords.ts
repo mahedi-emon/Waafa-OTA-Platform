@@ -26,6 +26,8 @@ export function chipReason(t: ChipTranslator, chip: RecordChip): string {
         : t("reasons.active");
     case "open":
       return chip.until ? t("reasons.openUntil", { date: date(chip.until) }) : t("reasons.open");
+    case "endingSoon":
+      return chip.until ? t("reasons.endingSoon", { date: date(chip.until) }) : t("reasons.open");
     case "usedUp":
     case "fewSeats":
       return t(`reasons.${chip.name}`, { count: chip.count ?? 0 });
@@ -51,7 +53,7 @@ export function chipFilterNames(
     case "coupons":
       return ["scheduled", "active", "usedUp", "expired", "off"];
     case "groupFares":
-      return ["open", "fewSeats", "soldOut", "expired"];
+      return ["open", "endingSoon", "fewSeats", "soldOut", "expired"];
     case "products":
       return [...WORKFLOW, "inStock", "lowStock", "outOfStock"];
     default:

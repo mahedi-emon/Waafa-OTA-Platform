@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CalendarX2,
   Archive,
   CalendarClock,
   CalendarX,
@@ -33,7 +34,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { StatusChip } from "@/components/admin/StatusChip";
 import { RelativeTime } from "@/components/admin/RelativeTime";
-import { formatDhakaDateTime } from "@/lib/admin/format";
+import { editorName, formatDhakaDateTime } from "@/lib/admin/format";
 import { publicPathOf, statusOf } from "@/lib/admin/blueprints/display";
 import { previewHref } from "@/lib/previewLinks";
 import type { ResolvedBlueprint } from "@/lib/admin/blueprints/types";
@@ -58,6 +59,8 @@ const CHIP = {
   shown: { tone: "success", icon: Eye },
   hidden: { tone: "neutral", icon: EyeOff },
   direct: { tone: "success", icon: Radio },
+  startsLater: { tone: "info", icon: Clock },
+  ended: { tone: "neutral", icon: CalendarX2 },
 } as const satisfies Record<string, { tone: ChipTone; icon: typeof Pencil }>;
 
 /**
@@ -83,12 +86,22 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
     where && !state.isNew && (status.state === "draft" || status.state === "scheduled");
   const missing = blueprint.workflow ? missingForPublish(blueprint, record) : [];
   const required = new Set(editor.root.required ?? []);
-  // Seeded records were "edited by" the setup, which isn't a person.
+  // Seeded records were "edited by" the setup, which isn't a person; other system saves get words (D0 R10).
   const editedBy =
-    state.saved.updatedBy && state.saved.updatedBy !== "seed" ? state.saved.updatedBy : null;
+    state.saved.updatedBy === "seed"
+      ? null
+      : editorName(state.saved.updatedBy, {
+          sample: t("actors.sample"),
+          update: t("actors.update"),
+          order: t("actors.order"),
+        });
   // Scheduled and Live name their date (D0 R4): "Goes live on 24 Oct 2026, 10:00 am".
   const reason =
-    status.at && (status.state === "scheduled" || status.state === "live")
+    status.at &&
+    (status.state === "scheduled" ||
+      status.state === "live" ||
+      status.state === "startsLater" ||
+      status.state === "ended")
       ? t(`status.${status.state}ReasonAt`, { date: formatDhakaDateTime(status.at) })
       : t(`status.${status.state}Reason`);
 
@@ -98,10 +111,7 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
         aria-labelledby="side-status"
         className="rounded-2xl border border-mist-200 bg-white p-4"
       >
-        <h2
-          id="side-status"
-          className="mb-3 text-[13px] font-semibold tracking-wide text-mist-500 uppercase"
-        >
+        <h2 id="side-status" className="mb-3 text-[13.5px] font-semibold text-mist-600">
           {t("side.status")}
         </h2>
         <div className="flex flex-col gap-2">
@@ -169,10 +179,7 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
           aria-labelledby="side-visibility"
           className="rounded-2xl border border-mist-200 bg-white p-4"
         >
-          <h2
-            id="side-visibility"
-            className="mb-3 text-[13px] font-semibold tracking-wide text-mist-500 uppercase"
-          >
+          <h2 id="side-visibility" className="mb-3 text-[13.5px] font-semibold text-mist-600">
             {t("side.visibility")}
           </h2>
           <div className="flex flex-col gap-4">
@@ -194,10 +201,7 @@ function EditorSidePanel({ state, blueprint, mode, onHistory }: EditorSidePanelP
           aria-labelledby="side-checklist"
           className="rounded-2xl border border-mist-200 bg-white p-4"
         >
-          <h2
-            id="side-checklist"
-            className="mb-3 text-[13px] font-semibold tracking-wide text-mist-500 uppercase"
-          >
+          <h2 id="side-checklist" className="mb-3 text-[13.5px] font-semibold text-mist-600">
             {t("side.publishing")}
           </h2>
           {status.state === "new" || status.state === "draft" ? (

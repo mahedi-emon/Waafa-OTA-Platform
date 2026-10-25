@@ -10,7 +10,10 @@ type StatusTabsProps = {
 /** Pill tabs that filter a list by status (orders, feedback, payment proofs); each is a shareable link. */
 function StatusTabs({ label, items, current }: StatusTabsProps) {
   return (
-    <nav aria-label={label} className="-mx-1 mb-4 flex gap-1 overflow-x-auto px-1 pb-1">
+    <nav
+      aria-label={label}
+      className="-mx-1 mb-4 flex gap-1 overflow-x-auto px-1 pr-8 pb-1 max-lg:[mask-image:linear-gradient(to_right,black_calc(100%-2.5rem),transparent)]"
+    >
       {items.map((item) => (
         <Link
           key={item.value}

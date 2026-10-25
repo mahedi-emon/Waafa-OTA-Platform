@@ -61,7 +61,9 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
   const t = useTranslations("Admin.editor");
   const state = useEditorState(input);
   const { blueprint, schema } = input;
-  const writing = blueprint.layout === "writing";
+  // One section needs no section list: such an editor (a template, a group fare) takes the centred column too.
+  const single = blueprint.sections.length <= 1;
+  const writing = blueprint.layout === "writing" || (single && blueprint.layout !== "embedded");
   const embedded = blueprint.layout === "embedded";
   const [tab, setTab] = useState("edit");
   const [sideOpen, setSideOpen] = useState(false);
@@ -153,7 +155,7 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
           onDismiss={state.dismissNotice}
         />
       ) : null}
-      {embedded ? null : <EditorSectionJump sections={blueprint.sections} />}
+      {embedded || single ? null : <EditorSectionJump sections={blueprint.sections} />}
       {blueprint.sections.map((section, index) => (
         <EditorSection key={section.id} section={section} next={blueprint.sections[index + 1]} />
       ))}

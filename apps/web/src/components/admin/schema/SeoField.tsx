@@ -66,7 +66,7 @@ function SeoField({ path, node, value }: SeoFieldProps) {
   return (
     <div className="flex min-w-0 flex-col gap-5">
       <figure className="rounded-xl border border-mist-200 bg-white p-4">
-        <figcaption className="mb-2 text-[12px] font-semibold tracking-wide text-mist-500 uppercase">
+        <figcaption className="mb-2 text-[13px] font-semibold text-mist-600">
           {t("preview")}
         </figcaption>
         <p className="truncate text-[13px] text-mist-600">

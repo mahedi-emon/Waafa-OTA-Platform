@@ -140,7 +140,7 @@ function LeadActions({ id, status, phone, email, whatsappHref, emailSubject }: L
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[13px] font-semibold tracking-wide text-mist-500 uppercase">{t("next")}</p>
+      <p className="text-[13.5px] font-semibold text-mist-600">{t("next")}</p>
       {contactable ? (
         <div className="flex flex-wrap gap-2">
           {whatsappButton}

@@ -32,11 +32,25 @@ Serena memory `audit_findings`.
 | B · Backend | 12 Oct · epic #29 | 5 (#54 – #57, #82 providers) + bugs #60, #61, #66, #72, #78 | 5 | 0 | 0 | ✅ 100% |
 | C · Integration & Launch | 13 Oct · epic #30 | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (live 13 Oct) | 7 | 0 | 0 | ✅ 100% |
 | D · P1 completion | 13 Nov · epic #31 | #71 admin editors, #91 performance (more with PROMPT 5) | 0 | 0 | 0 | 0% |
-| D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 10 | 0 | 0 | 91% |
+| D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 11 | 0 | 0 | ✅ 100% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #200 · D0 R10 · Usability QA, 14 staff tasks and the staff guide — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Epic #201: the 14 staff tasks as Playwright e2e with visible, labelled controls (1440, plus 390 for inbox jobs); axe on every admin route; screenshots at 390, 768, 1024 and 1440; an independent subagent review of every screen against ADMIN.md with everything fixed; docs/ADMIN_GUIDE.md (Banglish, with screenshots) |
+| Built | **Staff tasks**: new `admin-staff-tasks.spec.ts` for task 2 (hero photo and headline), 8 (banner for next Friday), 12 (customer by phone, 1440 and 390) and 13 (a wrong price undone with Restore); the map of all 14 in ADMIN.md (R10). **Every route**: `admin-screens.spec` adds axe, a sideways-scroll check and screenshots at 390 and 1440 for every other admin route (each list, each settings section, the builder, Trash, the package editor). **Review fixes**: list names from the record (group fares "Dhaka → Dubai · Emirates", store rows by name) instead of keys; no empty Price or Status columns (`listPriceOf` undefined read as a price); system editors in words ("the sample data", "a site update", "a store order"); the editor's chip follows a banner's dates (Scheduled, Ended); group fares "Ends soon" within a week; sentence-case table headers, rail labels and the Sample badge (also on phone cards); no extra "Content" crumb on sidebar lists; "*" reads "All other areas"; named Remove buttons; one-row editor action bar on phones; single-section editors without the empty rail; wrapping settings tabs and edge fades on scrolling rows; the matrix cells by container width; scrolling tables as named, focusable regions; a site-update audit sentence; leads say "No leads yet" when nothing filters them; plainer setup checklist words with the count; ticked open days; no zero pager or export on empty lists. **Guide**: `docs/ADMIN_GUIDE.md` with seven screenshots in `docs/admin-guide/` |
+| Files | `apps/web/e2e/{admin-staff-tasks,admin-screens}.spec.ts`, `.github/workflows/ci.yml`, `packages/shared/src/workflow/{chips,chips.test}.ts`, `apps/web/src/app/[locale]/secure-admin-control/(panel)/{content/[key],leads,media,reports/**,search,notifications,subscribers}`, `components/ui/{table,badge}.tsx`, `components/admin/{table/*,editor/*,schema/{MediaField,VideoField,TagsField,WeekdaysField,VariantsMatrixField},settings/*,SetupChecklist,StatusTabs,inbox/{LeadModuleTabs,Timeline},board/LeadBoardFrame,LeadActions,OrderSteps,VisaProgressPanel}.tsx`, `lib/admin/{format,chipWords,statusChips,blueprints/display,blueprints/engine.test}.ts`, `messages/en.json`, `docs/ADMIN_GUIDE.md`, `docs/admin-guide/*.png`, `docs/design/ADMIN.md` (R10) |
+| Tests | shared 144 · web unit 664 (banner window states, group fare ending soon) · e2e API job 79 on a fresh database (new staff tasks 5; every other route 42 at 390 and 1440 with axe) |
+| Widths checked | every admin screen at 390 and 1440 with axe and no sideways scroll; the main screens at 320 / 390 / 768 / 1024 / 1440 |
+| Review | Independent subagent review of every screen against ADMIN.md (166 screenshots): P1 raw keys and ids as names, "Not found:" in empty pickers (fixed in R8), "something" in the audit log, "*" in delivery zones; P2 empty columns, "seed" as an editor, extra crumbs, uppercase headers, cut tabs and chip rows, a three-row action bar on phones, the empty rail on single-section editors, Sample missing on phone cards. All fixed here, except the larger items filed as #229 (lists still outside the DataTable, booking modes cards, integrations words, phone typed twice and a country picker, a themed date-range picker, template status words and Trash, airline logos) |
+| Admin first-load JS | script transferred on load at 1440 (gzip): dashboard 276 KB, leads 310, orders 307, tour packages list 376, new package 392, media 285, home page builder 305, settings 353, reports 272, audit 273 (admin only; editors and the drag code load on demand; the public budgets are unchanged) |
+| Tools and skills | Serena (memories); Playwright MCP (guide screenshots at 1280, the matrix at 1280, first-load JS per admin route through CDP); an independent general-purpose subagent for the review; ui-ux-pro-max checklist (forms, tables, touch targets, contrast) on the fixes; design-taste-frontend and frontend-design on the screenshots |
+| Decision | D262–D265 |
+| Migration | none |
 
 ### #199 · D0 R9 · Dashboard v2, Settings, users, audit log, notifications, reports — ✅ Done
 | Field | Value |
@@ -1655,6 +1669,10 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D259 | 25 Oct | Message templates are edited with Insert buttons for the template's own details and a live preview with sample details; the stored variable list stays as it is (`keep`) | Staff never type curly-bracket codes by hand, and they see the message as it will arrive | #199 |
 | D260 | 25 Oct | Report downloads come as Excel and CSV; the API writes `.xlsx` itself (one sheet, inline strings, bold frozen header, stored zip with its own CRC-32) instead of adding a spreadsheet library | Excel opens it without the CSV encoding prompt; inline strings never run as formulas; no new dependency for one sheet | #199 |
 | D261 | 25 Oct | Dashboard charts and sparklines are SVG drawn on the server with HTML labels and a table alternative; a panel's heading names its section | No chart library in the admin bundle for a 14-point line; labels stay readable at 390 px | #199 |
+| D262 | 25 Oct | Lists name a record the way its editor does (`headingOf`: the blueprint heading or the label of a keyed title), never by its key; columns show only when a row has something for them | Group fares and store rows showed ids and keys; empty Price and Status columns read as missing data | #200 |
+| D263 | 25 Oct | Records with a start and end date (banners, deals, announcements) get their own editor states, Scheduled (shows from …) and Ended, apart from publish scheduling; group fares closing within a week read "Ends soon" | The editor said "Shown" for a banner that starts next Friday; the sidebar counted fares ending this week that every row called Open | #200 |
+| D264 | 25 Oct | System saves are named in words wherever a person's name would show ("the sample data", "a site update", "a store order") | "Last change by seed" and "Edited by order" meant nothing to staff | #200 |
+| D265 | 25 Oct | Admin chrome is sentence case: table headers, rail labels and the Sample badge; a table that can scroll gets `scrollLabel` and becomes a named, focusable region; tab rows wrap or fade at the edge | ADMIN.md §4.2 and §13; axe scrollable-region-focusable; nothing cut off on a 390 px phone | #200 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1740,8 +1758,9 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
-| 25 Oct | R9: dashboard v2, Settings as one page, invite by email with the welcome page, permission matrix, audit log in sentences, template Insert and preview, reports with ranges and Excel | #199 | PR for #199 | shared 144 · web 663 · API 192 · e2e API job 71 |
-| 25 Oct | #225: a missing admin record shows the panel's not-found screen (Open Trash, dashboard) instead of the error page | #225 | PR for #225 | e2e admin-shell + not-found case |
+| 25 Oct | R10: staff tasks 2, 8, 12 and 13 as e2e (all 14 covered), axe on every admin route, the independent review fixed (names, columns, editors in words, dated chips, sentence case, phone layout), #229 filed, the Banglish staff guide | #200, #229 | PR for #200 | web 664 · e2e API job 79 |
+| 25 Oct | R9: dashboard v2, Settings as one page, invite by email with the welcome page, permission matrix, audit log in sentences, template Insert and preview, reports with ranges and Excel | #199 | #228 (951080b) | shared 144 · web 663 · API 192 · e2e API job 71 |
+| 25 Oct | #225: a missing admin record shows the panel's not-found screen (Open Trash, dashboard) instead of the error page | #225 | #227 (81d4e04) | e2e admin-shell + not-found case |
 | 25 Oct | R8 purpose-built editors: tour package, product (variants matrix), visa country, blog post (writing view), group fare, banner, team member and gallery album (several photos at once); Price from, number of days and initials worked out on save; staff tasks 1, 7, 9 and 11 as e2e; design-review fixes (matrix alignment, empty photo tick, empty pickers, named Add buttons) | #198, #225 | #226 (137428f) | web unit 647 · e2e API job 67 (admin-editors 6) |
 | 24–25 Oct | R7 website builder: Website › Home page (sections in order, Show, arrows and drag, sheets with the live phone preview, hero sheet), Website › Menus (ten menus, link picker, Undo, fixed tab bar), Preview of unpublished changes on draft mode, Edit on site staff tools, framing for the previews; independent review (2 P1, 7 P2, 11 P3) fixed; #222 flaky intake test on main fixed | #197, #222, #224 | #223 (9b0b5cb) | shared 144 · web unit 643 · API 186 · e2e API job 61 |
 | 24 Oct | R6 inbox: queue panes beside leads and orders, lead page with reply timer, customer card and timeline, phone bottom bar, service tabs, board moves through the lead page's dialog, Visa applications by stage | #196 | #221 (b25e1b2) | shared 144 · web unit 623 · API 184 · e2e API job 52 |
@@ -1796,6 +1815,11 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
+1. R10 #200: PR, CI, merge; tell the owner in Banglish what the redesign changed; close epic #201 and #71 (replaced by the epic).
+2. Phase D (#31): #229 admin polish from the review, #219 the 100-row page, #224 the budget flake; then the PRD P1 list (Bangla at /bn and the rest) as new issues.
+3. Deploy notes for the owner: R9's migration needs `sh backup.sh` first; R10 has none.
+
+Earlier (25 Oct, R9):
 1. R9 #199: merge, then remind the owner: migration, so `sh backup.sh` before deploying.
 2. R10 #200 usability QA (14 staff tasks as e2e, axe, screenshots, independent review) and the admin guide (docs/ADMIN_GUIDE.md), then Phase D.
 3. #224 budget e2e cold-start flake and #219 the 100-row page, between the R issues.

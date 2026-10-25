@@ -120,3 +120,6 @@
   (sha256 token 7 days, POST /auth/invite 5/15 min, welcome page; reset password closes invite); audit sentences
   (auditText, AUDIT_AREAS prefixes, Dhaka days); template Insert + preview (variables keep); Excel via own xlsx
   writer; dashboard charts server SVG, AdminPanel id names its section.
+- D262–D265 (R10, 25 Oct): lists named by headingOf, columns only with data; banner/deal/announcement editor states
+  startsLater/ended + group fares endingSoon (<= 7 days); system editors in words (editorName); sentence-case admin
+  chrome, Table scrollLabel → named focusable region, tab rows wrap or fade.

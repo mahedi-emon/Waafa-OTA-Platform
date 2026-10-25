@@ -171,58 +171,60 @@ function VariantsMatrixField({ path, value, optional }: VariantsMatrixFieldProps
                 ) : null}
               </div>
               {sold ? (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  {cell(
-                    `${uid}-${key}-sku`,
-                    t("sku"),
-                    words(index, "sku"),
-                    <Input
-                      id={`${uid}-${key}-sku`}
-                      value={variant?.sku ?? ""}
-                      maxLength={40}
-                      autoComplete="off"
-                      onChange={(event) => set(combo, "sku", event.target.value.toUpperCase())}
-                      onBlur={() => editor.touch([...path, Math.max(index, 0), "sku"])}
-                      className="h-11 font-mono"
-                    />,
-                  )}
-                  {cell(
-                    `${uid}-${key}-price`,
-                    t("price"),
-                    words(index, "price"),
-                    <TakaInput
-                      id={`${uid}-${key}-price`}
-                      value={variant?.price}
-                      onChange={(next) => set(combo, "price", next)}
-                      className="h-11 w-full"
-                    />,
-                  )}
-                  {cell(
-                    `${uid}-${key}-mrp`,
-                    t("mrp"),
-                    words(index, "mrp"),
-                    <TakaInput
-                      id={`${uid}-${key}-mrp`}
-                      value={variant?.mrp}
-                      onChange={(next) => set(combo, "mrp", next)}
-                      className="h-11 w-full"
-                    />,
-                  )}
-                  {cell(
-                    `${uid}-${key}-stock`,
-                    t("stock"),
-                    words(index, "stock"),
-                    <Input
-                      id={`${uid}-${key}-stock`}
-                      inputMode="numeric"
-                      value={variant?.stock === undefined ? "" : String(variant.stock)}
-                      onChange={(event) => {
-                        const digits = event.target.value.replace(/[^\d]/g, "").slice(0, 6);
-                        set(combo, "stock", digits ? Number(digits) : 0);
-                      }}
-                      className="h-11 tabular-nums"
-                    />,
-                  )}
+                <div className="@container">
+                  <div className="grid grid-cols-1 gap-3 @xs:grid-cols-2 @2xl:grid-cols-4">
+                    {cell(
+                      `${uid}-${key}-sku`,
+                      t("sku"),
+                      words(index, "sku"),
+                      <Input
+                        id={`${uid}-${key}-sku`}
+                        value={variant?.sku ?? ""}
+                        maxLength={40}
+                        autoComplete="off"
+                        onChange={(event) => set(combo, "sku", event.target.value.toUpperCase())}
+                        onBlur={() => editor.touch([...path, Math.max(index, 0), "sku"])}
+                        className="h-11 font-mono"
+                      />,
+                    )}
+                    {cell(
+                      `${uid}-${key}-price`,
+                      t("price"),
+                      words(index, "price"),
+                      <TakaInput
+                        id={`${uid}-${key}-price`}
+                        value={variant?.price}
+                        onChange={(next) => set(combo, "price", next)}
+                        className="h-11 w-full"
+                      />,
+                    )}
+                    {cell(
+                      `${uid}-${key}-mrp`,
+                      t("mrp"),
+                      words(index, "mrp"),
+                      <TakaInput
+                        id={`${uid}-${key}-mrp`}
+                        value={variant?.mrp}
+                        onChange={(next) => set(combo, "mrp", next)}
+                        className="h-11 w-full"
+                      />,
+                    )}
+                    {cell(
+                      `${uid}-${key}-stock`,
+                      t("stock"),
+                      words(index, "stock"),
+                      <Input
+                        id={`${uid}-${key}-stock`}
+                        inputMode="numeric"
+                        value={variant?.stock === undefined ? "" : String(variant.stock)}
+                        onChange={(event) => {
+                          const digits = event.target.value.replace(/[^\d]/g, "").slice(0, 6);
+                          set(combo, "stock", digits ? Number(digits) : 0);
+                        }}
+                        className="h-11 tabular-nums"
+                      />,
+                    )}
+                  </div>
                 </div>
               ) : null}
             </div>

@@ -77,7 +77,7 @@ async function Activity({
           />
         </AdminPanel>
         <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
-          <Table>
+          <Table scrollLabel={t("title")}>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead>{t("colWhen")}</TableHead>

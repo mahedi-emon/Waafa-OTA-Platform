@@ -80,7 +80,7 @@ function MediaBrowser({ items, view, canDelete, keyNames }: MediaBrowserProps) {
         </ul>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-mist-200 bg-white">
-          <Table>
+          <Table scrollLabel={t("title")}>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("columns.file")}</TableHead>

@@ -169,7 +169,7 @@ const RowCells = memo(function RowCells({
   );
 });
 
-type CardRowProps = Omit<RowCellsProps, "sampleLabel" | "onKey">;
+type CardRowProps = Omit<RowCellsProps, "onKey">;
 
 /** One phone card (below 768 px); memoised like the table row. */
 const CardRow = memo(function CardRow({
@@ -177,6 +177,7 @@ const CardRow = memo(function CardRow({
   columns,
   selected,
   selectLabel,
+  sampleLabel,
   onSelect,
   onOpen,
 }: CardRowProps) {
@@ -199,7 +200,10 @@ const CardRow = memo(function CardRow({
       >
         <RowThumbnail thumb={row.thumb} name={row.title} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-semibold text-navy-900">{row.title}</span>
+          <span className="flex min-w-0 items-center gap-2">
+            <span className="truncate font-semibold text-navy-900">{row.title}</span>
+            {row.sample ? <Badge variant="outline">{sampleLabel}</Badge> : null}
+          </span>
           {row.subtitle ? (
             <span className="block truncate text-[13px] text-mist-600">{row.subtitle}</span>
           ) : null}
@@ -341,6 +345,7 @@ function DataTableView({
         }}
         onDeleteView={prefs.deleteView}
         onExport={() => exportRows(rows)}
+        canExport={page.total > 0}
       />
       {selectedIds.length > 0 ? (
         <DataTableBulkBar
@@ -406,7 +411,7 @@ function DataTableView({
                                   const next = nextSort(sort, column.sort ?? "");
                                   go({ sort: next ? `${next.key}.${next.dir}` : null });
                                 }}
-                                className="relative inline-flex min-h-11 cursor-pointer items-center gap-1.5 font-semibold tracking-[0.04em] uppercase focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+                                className="relative inline-flex min-h-11 cursor-pointer items-center gap-1.5 font-semibold focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
                               >
                                 <table.FlexRender header={header} />
                                 {active?.dir === "asc" ? (
@@ -467,6 +472,7 @@ function DataTableView({
                   columns={visibleColumns}
                   selected={Boolean(rowSelection[row.id])}
                   selectLabel={t("selectRow", { name: row.title })}
+                  sampleLabel={t("sample")}
                   onSelect={selectRow}
                   onOpen={openRow}
                 />

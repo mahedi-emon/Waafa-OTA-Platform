@@ -43,7 +43,7 @@ async function Subscribers({
         {list.items.length === 0 ? (
           <AdminEmpty title={t("emptyTitle")} body={t("emptyBody")} />
         ) : (
-          <Table>
+          <Table scrollLabel={t("title")}>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead>{t("colEmail")}</TableHead>
