@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { toDhakaIsoString } from "@waafa/shared";
 import type { StaffPrincipal } from "../auth/principal";
 import { toCsv } from "../common/csv";
+import { toXlsx } from "../common/xlsx";
 import { problems } from "../common/problem";
 import { PrismaService } from "../prisma/prisma.service";
 import { canSeeOrders, dhakaDate, leadModulesFor } from "./access";
@@ -13,6 +14,24 @@ const MAX_DAYS = 366;
 const CSV_LIMIT = 10_000;
 
 export type ReportRange = { from: string; to: string };
+
+/** Column names and rows of a download. */
+export type ReportTable = { header: readonly string[]; rows: ReadonlyArray<readonly unknown[]> };
+
+const sheet = (
+  header: readonly string[],
+  rows: ReadonlyArray<readonly unknown[]>,
+): ReportTable => ({
+  header,
+  rows,
+});
+
+const SHEET_NAMES: Record<ReportDataset, string> = {
+  leads: "Leads",
+  orders: "Orders",
+  feedback: "Feedback",
+  subscribers: "Newsletter",
+};
 export type ReportDataset = "leads" | "orders" | "feedback" | "subscribers";
 
 type OrderItemLike = { title?: unknown; sku?: unknown; quantity?: unknown; lineTotal?: unknown };
@@ -170,7 +189,12 @@ export class AdminReportsService {
     };
   }
 
-  async csv(staff: StaffPrincipal, dataset: ReportDataset, range: ReportRange): Promise<string> {
+  /** A dataset's rows in the range, with plain column names, for the CSV and Excel downloads. */
+  async table(
+    staff: StaffPrincipal,
+    dataset: ReportDataset,
+    range: ReportRange,
+  ): Promise<ReportTable> {
     const { start, end } = this.window(range);
     const created = { createdAt: { gte: start, lt: end } };
     switch (dataset) {
@@ -180,7 +204,7 @@ export class AdminReportsService {
           orderBy: { createdAt: "asc" },
           take: CSV_LIMIT,
         });
-        return toCsv(
+        return sheet(
           [
             "Reference",
             "Module",
@@ -218,7 +242,7 @@ export class AdminReportsService {
           orderBy: { createdAt: "asc" },
           take: CSV_LIMIT,
         });
-        return toCsv(
+        return sheet(
           [
             "Reference",
             "Status",
@@ -261,7 +285,7 @@ export class AdminReportsService {
           orderBy: { createdAt: "asc" },
           take: CSV_LIMIT,
         });
-        return toCsv(
+        return sheet(
           [
             "Name",
             "Phone",
@@ -292,7 +316,7 @@ export class AdminReportsService {
           orderBy: { createdAt: "asc" },
           take: CSV_LIMIT,
         });
-        return toCsv(
+        return sheet(
           ["Email", "Source", "Signed up", "Unsubscribed"],
           rows.map((row) => [
             row.email,
@@ -303,5 +327,16 @@ export class AdminReportsService {
         );
       }
     }
+  }
+
+  async csv(staff: StaffPrincipal, dataset: ReportDataset, range: ReportRange): Promise<string> {
+    const { header, rows } = await this.table(staff, dataset, range);
+    return toCsv(header, rows);
+  }
+
+  /** The same rows as an Excel workbook (D0 R9). */
+  async xlsx(staff: StaffPrincipal, dataset: ReportDataset, range: ReportRange): Promise<Buffer> {
+    const { header, rows } = await this.table(staff, dataset, range);
+    return toXlsx(SHEET_NAMES[dataset], header, rows);
   }
 }

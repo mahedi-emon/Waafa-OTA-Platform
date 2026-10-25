@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Roles, Staff, StaffGuard } from "../auth/auth.guard";
 import type { StaffPrincipal } from "../auth/principal";
 import { CSV_BOM } from "../common/csv";
+import { XLSX_TYPE } from "../common/xlsx";
 import { parseInput, problems } from "../common/problem";
 import { AdminCustomersService } from "./customers.service";
 import { AdminReportsService, type ReportDataset } from "./reports.service";
@@ -46,18 +47,19 @@ export class AdminReportsController {
     @Query() query: unknown,
     @Res() reply: FastifyReply,
   ) {
-    const name = dataset.replace(/\.csv$/, "") as ReportDataset;
+    // "leads", "leads.csv" or "leads.xlsx": the same rows as CSV or as an Excel workbook (D0 R9).
+    const excel = dataset.endsWith(".xlsx");
+    const name = dataset.replace(/\.(csv|xlsx)$/, "") as ReportDataset;
     if (!DATASETS.includes(name)) throw problems.notFound();
     const range = parseInput(RangeSchema, query);
-    const body = await this.reports.csv(staff, name, range);
-    return reply
-      .header("content-type", "text/csv; charset=utf-8")
-      .header(
-        "content-disposition",
-        `attachment; filename="waafa-${name}-${range.from}-to-${range.to}.csv"`,
-      )
-      .header("cache-control", "no-store")
-      .send(`${CSV_BOM}${body}`);
+    const file = `waafa-${name}-${range.from}-to-${range.to}.${excel ? "xlsx" : "csv"}`;
+    reply
+      .header("content-type", excel ? XLSX_TYPE : "text/csv; charset=utf-8")
+      .header("content-disposition", `attachment; filename="${file}"`)
+      .header("cache-control", "no-store");
+    return excel
+      ? reply.send(await this.reports.xlsx(staff, name, range))
+      : reply.send(`${CSV_BOM}${await this.reports.csv(staff, name, range)}`);
   }
 }
 

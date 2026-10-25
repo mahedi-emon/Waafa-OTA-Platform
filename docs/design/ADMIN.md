@@ -190,6 +190,11 @@ summary when work waits ("3 leads past the reply target").
 4. Recent activity (timeline, plain sentences) and a **setup checklist** that ticks itself (Search Console, GA4 ID,
    Turnstile keys, real photos replacing Sample, office hours, payment details).
 
+R9 shipped it as: Today cards from the inbox counts (the New leads card says how long the oldest has waited, Past the
+reply target turns red, zero reads "Nothing waiting"); This week (new leads, booked value, store orders, booking rate
+over 14 days) with 14-day sparklines and "4 more than last week"; Leads by day as a server-drawn line with a table one
+click away and Leads by service; Recent activity; the setup checklist. No chart library on the dashboard.
+
 ### 5.3 List (DataTable, section 10)
 Header · search + filter chips + saved views · table (thumbnail + name first, then status chip and key facts) · bulk
 bar when rows are selected · pagination with totals. Row click opens a **side sheet** (summary + actions); the name
@@ -269,6 +274,29 @@ modes · Payments and delivery (payment accounts, COD, shipping zones, EMI and b
 forms, email and SMS templates) · SEO and tracking · Search · Integrations · Users and roles · Audit log ·
 Maintenance · Advanced (raw JSON editor and All content; Super Admin only). Each section is a plain form with its own
 save bar.
+
+### 5.6.1 What R9 shipped
+- **Settings, one page** (`lib/admin/settingsSections.ts`, `components/admin/settings/*`): `SettingsFrame` puts the
+  sections on the left from 1024 px; on phones `/settings` is the list and the breadcrumb leads back. A section holds
+  one or more parts as link tabs (`?tab=`): a settings document in the embedded editor (`layout: "embedded"`: no
+  section list, the side panel folded above the form), only some of its blueprint sections when a document is split
+  (Office hours is the hours part of the contact details; saving keeps the rest), a short record list (EMI banks,
+  Email and SMS), or a screen of its own (Users, Integrations, Audit log, Sent messages keep their addresses inside
+  the frame). Old `/content/<setting>` addresses redirect to their section. `/settings` shows the setup checklist.
+- **Setup checklist** (`lib/admin/setupChecklist.ts`, `loadSetup`): Search Console (Site settings code or the
+  tracking one), GA4, Turnstile keys (server environment, managers only), no Sample content left, contact details
+  saved by a person, real payment accounts. It ticks itself; steps the person can't read are left out.
+- **Users and roles**: invite by email by default (a hashed token valid 7 days, the `staff-invite` template, a
+  welcome page at `/secure-admin-control/welcome` that sets the password, Send the invite again), or a first password
+  set now; a read-only permission matrix from the sidebar and settings rules.
+- **Audit log** in sentences (`lib/admin/auditText.ts`): who did what to which record, named by its title,
+  reference, email or file; Show what changed lists field changes like History; filters by person, area
+  (`AUDIT_AREAS`, by action prefix) and Dhaka days; grouped by day.
+- **Email and SMS templates**: Insert buttons for the template's own details (at the cursor, never typed), and a live
+  preview of the email or SMS with sample details; the raw variable list is off the screen.
+- **Reports**: one-tap ranges (Last 7 days, Last 30 days, This month, Last month) or two days; each download as Excel
+  (`.xlsx` from a small writer in the API, inline strings so nothing runs as a formula) and CSV; What people searched
+  (top searches and how many became requests).
 
 ### 5.7 Media library
 Grid (default) and list views; search; filters Photos, Videos, Unused; multi-upload by drag and drop; a details sheet

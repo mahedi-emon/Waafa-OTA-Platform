@@ -209,24 +209,55 @@ export const SearchLogListQuerySchema = z
 
 export const PagingQuerySchema = z.object(paging).strict();
 
+/** Audit log areas, each a set of action prefixes ("content.update" is Content), for the log's area filter (D0 R9). */
+export const AUDIT_AREAS = {
+  content: ["content.", "trash."],
+  settings: ["settings."],
+  leads: ["lead."],
+  orders: ["order.", "payment-proof."],
+  team: ["staff."],
+  media: ["media."],
+  integrations: ["integration.", "provider."],
+  feedback: ["feedback.", "subscriber."],
+} as const satisfies Record<string, readonly string[]>;
+
+export type AuditArea = keyof typeof AUDIT_AREAS;
+
+const AuditDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
+
 export const AuditListQuerySchema = z
   .object({
     entity: z.string().trim().min(1).max(40).optional(),
     actorId: IdSchema.optional(),
+    area: z.enum(Object.keys(AUDIT_AREAS) as [AuditArea, ...AuditArea[]]).optional(),
+    /** Dhaka days, both included. */
+    from: AuditDay.optional(),
+    to: AuditDay.optional(),
     ...paging,
   })
   .strict();
 
 const PasswordSchema = z.string().min(12, "Use at least 12 characters").max(200);
 
+/** A new staff member: with a password set now, or without one to get an invite email (D0 R9). */
 export const StaffCreateInputSchema = z
   .object({
     name: z.string().trim().min(2).max(80),
     email: z.email().max(160),
     roles: z.array(RoleSchema).min(1),
+    password: PasswordSchema.optional(),
+  })
+  .strict();
+
+/** The welcome page: the invite's token from the email link and the password the person chooses. */
+export const InviteAcceptInputSchema = z
+  .object({
+    token: z.string().regex(/^[A-Za-z0-9_-]{32,128}$/, "This invite link is not valid"),
     password: PasswordSchema,
   })
   .strict();
+
+export type InviteAcceptInput = z.infer<typeof InviteAcceptInputSchema>;
 
 export const StaffUpdateInputSchema = z
   .object({

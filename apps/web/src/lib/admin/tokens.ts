@@ -67,8 +67,9 @@ export function isAdminPath(pathname: string): boolean {
   return /^\/(?:[a-z]{2}\/)?secure-admin-control(?:\/|$)/.test(pathname);
 }
 
+/** Admin pages that work signed out: sign-in, and the welcome page an invite links to (D0 R9). */
 export function isSignInPath(pathname: string): boolean {
-  return /^\/(?:[a-z]{2}\/)?secure-admin-control\/sign-in\/?$/.test(pathname);
+  return /^\/(?:[a-z]{2}\/)?secure-admin-control\/(?:sign-in|welcome)\/?$/.test(pathname);
 }
 
 /** The admin's own JSON routes (inbox, pickers, the library): an ended session is a 401 there, never a redirect. */

@@ -134,13 +134,17 @@ test("Ctrl K finds pages and actions, + New creates, breadcrumbs say where you a
     .getByRole("button", { name: "Waafas World", exact: true })
     .click();
 
-  // Settings is one door with plain sections.
+  // Settings is one page: its sections on the left, each opening beside them (D0 R9).
   await page.getByRole("link", { name: "Settings" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Settings" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Users and roles/ })).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: /Business, contact and office hours/ }),
-  ).toBeVisible();
+  const sections = page.getByRole("navigation", { name: "Settings sections" }).first();
+  await expect(sections.getByRole("link", { name: /Users and roles/ })).toBeVisible();
+  await sections.getByRole("link", { name: /Office hours/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Office hours" })).toBeVisible();
+  await expect(sections.getByRole("link", { name: /Office hours/ })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   expect(errors).toEqual([]);
 });
 

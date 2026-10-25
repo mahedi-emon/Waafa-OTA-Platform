@@ -24,6 +24,7 @@ import { AdminCustomersController, AdminReportsController } from "./reports.cont
 import { AdminReportsService } from "./reports.service";
 import { ContentScheduler } from "./scheduler.service";
 import { AdminUsersService } from "./users.service";
+import { StaffInviteController } from "./invite.controller";
 import { AdminWorkbenchService } from "./workbench.service";
 
 /** The admin API (B4): staff only, by role; needs AuthModule and ServicesModule. */
@@ -40,6 +41,7 @@ import { AdminWorkbenchService } from "./workbench.service";
     AdminActivityController,
     AdminContentController,
     AdminUsersController,
+    StaffInviteController,
     AdminDashboardController,
     AdminReportsController,
     AdminCustomersController,

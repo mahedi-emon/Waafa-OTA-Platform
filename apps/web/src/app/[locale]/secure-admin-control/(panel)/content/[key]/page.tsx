@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -22,6 +22,7 @@ import { resolveBlueprint } from "@/lib/admin/blueprints/resolve";
 import { chipFilterNames, chipReason } from "@/lib/admin/chipWords";
 import { bulkContent } from "@/lib/admin/contentActions";
 import { formatDhakaDateTime, pageParam, taka } from "@/lib/admin/format";
+import { settingsHrefFor } from "@/lib/admin/settingsSections";
 import type { ContentRecordsPage, ContentSingleton } from "@/lib/admin/types";
 import { SITE_URL } from "@/lib/siteUrl";
 import { RecordMoveButtons } from "./_components/RecordMoveButtons";
@@ -55,6 +56,9 @@ function recordsQuery(search: Record<string, string | string[] | undefined>) {
 async function ContentKeyView({ params, searchParams }: Pick<Params, "params" | "searchParams">) {
   const { key } = await params;
   if (!isContentKey(key)) notFound();
+  // Settings live in one place (D0 R9): their old addresses open the right settings section.
+  const moved = settingsHrefFor(key);
+  if (moved) redirect(moved);
   const [staff, t, te, messages, { schema, blueprint }] = await Promise.all([
     requireStaff(),
     getTranslations("Admin.content"),

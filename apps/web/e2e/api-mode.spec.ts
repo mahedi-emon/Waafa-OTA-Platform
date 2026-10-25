@@ -284,9 +284,9 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   if (await saveSettings.isEnabled()) await saveSettings.click();
   await expect(card.getByRole("switch", { name: "Active" })).toBeChecked();
 
-  // Settings › Site › Accounts live shows the Log in link and page.
+  // Settings › SEO and tracking › Accounts live shows the Log in link and page.
   const setAccountsLive = async (on: boolean) => {
-    await page.goto("/secure-admin-control/content/siteSettings");
+    await page.goto("/secure-admin-control/settings/seo?tab=connections");
     const live = page.locator("#field-accountsLive");
     await expect(live).toBeVisible();
     if ((await live.isChecked()) !== on) await live.click();

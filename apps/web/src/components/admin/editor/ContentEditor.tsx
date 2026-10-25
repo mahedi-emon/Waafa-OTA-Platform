@@ -62,10 +62,11 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
   const state = useEditorState(input);
   const { blueprint, schema } = input;
   const writing = blueprint.layout === "writing";
+  const embedded = blueprint.layout === "embedded";
   const [tab, setTab] = useState("edit");
   const [sideOpen, setSideOpen] = useState(false);
-  // From 1280 px the side panel is a column of its own and always open.
-  const wide = useMinWidth(1280);
+  // From 1280 px the side panel is a column of its own and always open (folded above the form when embedded).
+  const wide = useMinWidth(1280) && !embedded;
 
   const context = useMemo<SchemaEditorContextValue>(
     () => ({
@@ -152,7 +153,7 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
           onDismiss={state.dismissNotice}
         />
       ) : null}
-      <EditorSectionJump sections={blueprint.sections} />
+      {embedded ? null : <EditorSectionJump sections={blueprint.sections} />}
       {blueprint.sections.map((section, index) => (
         <EditorSection key={section.id} section={section} next={blueprint.sections[index + 1]} />
       ))}
@@ -166,12 +167,14 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
       <div
         className={cn(
           "grid min-w-0 grid-cols-1 gap-6",
-          writing
-            ? "xl:grid-cols-[minmax(0,1fr)_20rem]"
-            : "lg:grid-cols-[13rem_minmax(0,1fr)] xl:grid-cols-[13rem_minmax(0,1fr)_20rem]",
+          embedded
+            ? null
+            : writing
+              ? "xl:grid-cols-[minmax(0,1fr)_20rem]"
+              : "lg:grid-cols-[13rem_minmax(0,1fr)] xl:grid-cols-[13rem_minmax(0,1fr)_20rem]",
         )}
       >
-        {writing ? null : (
+        {writing || embedded ? null : (
           <aside className="hidden lg:row-span-2 lg:block">
             <EditorSectionRail sections={blueprint.sections} states={sectionStates} />
           </aside>
@@ -180,29 +183,48 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
             scrolls on its own on short screens so its last buttons never sit under the action bar. */}
         <aside
           className={cn(
-            "min-w-0 xl:row-span-2 xl:row-start-1",
-            writing ? "xl:col-start-2" : "lg:col-start-2 xl:col-start-3",
+            "min-w-0",
+            embedded
+              ? null
+              : writing
+                ? "xl:col-start-2 xl:row-span-2 xl:row-start-1"
+                : "lg:col-start-2 xl:col-start-3 xl:row-span-2 xl:row-start-1",
           )}
         >
           <Collapsible
             open={wide || sideOpen}
             onOpenChange={setSideOpen}
-            className="xl:sticky xl:top-20 xl:max-h-[calc(100dvh-10.5rem)] xl:overflow-y-auto xl:overscroll-contain"
+            className={
+              embedded
+                ? undefined
+                : "xl:sticky xl:top-20 xl:max-h-[calc(100dvh-10.5rem)] xl:overflow-y-auto xl:overscroll-contain"
+            }
           >
-            <CollapsibleTrigger className="group flex min-h-12 w-full cursor-pointer items-center justify-between rounded-2xl border border-mist-200 bg-white px-4 text-[14.5px] font-semibold text-navy-900 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none xl:hidden">
+            <CollapsibleTrigger
+              className={cn(
+                "group flex min-h-12 w-full cursor-pointer items-center justify-between rounded-2xl border border-mist-200 bg-white px-4 text-[14.5px] font-semibold text-navy-900 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none",
+                embedded ? null : "xl:hidden",
+              )}
+            >
               {t("side.details")}
               <ChevronDown
                 aria-hidden="true"
                 className="size-4 text-mist-500 transition-transform duration-150 group-data-[state=open]:rotate-180 motion-reduce:transition-none"
               />
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-3 xl:pt-0">{side}</CollapsibleContent>
+            <CollapsibleContent className={cn("pt-3", embedded ? null : "xl:pt-0")}>
+              {side}
+            </CollapsibleContent>
           </Collapsible>
         </aside>
         <div
           className={cn(
-            "min-w-0 xl:row-start-1",
-            writing ? "mx-auto w-full max-w-3xl xl:col-start-1" : "lg:col-start-2",
+            "min-w-0",
+            embedded
+              ? null
+              : writing
+                ? "mx-auto w-full max-w-3xl xl:col-start-1 xl:row-start-1"
+                : "lg:col-start-2 xl:row-start-1",
           )}
         >
           {state.isNew ? (

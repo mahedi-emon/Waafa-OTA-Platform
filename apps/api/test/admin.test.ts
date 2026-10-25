@@ -9,6 +9,7 @@ import { ContentService } from "../src/content/content.service";
 import { featureModules } from "../src/features";
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { MemoryMailer } from "../src/notifications/mailer";
+import { NotificationService } from "../src/notifications/notification.service";
 import { seedDatabase } from "../src/seed/seedDatabase";
 import { dbAvailable, resetDatabase, testApp, testPrisma } from "./helpers";
 
@@ -54,6 +55,7 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
   let shop: Person;
   let editor: Person;
   let accounts: Person;
+  const mailer = new MemoryMailer();
 
   async function person(
     name: string,
@@ -140,7 +142,7 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
 
   beforeAll(async () => {
     prisma = testPrisma();
-    app = await testApp(featureModules({ mailer: new MemoryMailer() }));
+    app = await testApp(featureModules({ mailer }));
   });
   afterAll(async () => {
     await app.close();
@@ -733,6 +735,23 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
     expect(dashboard.leads).toMatchObject({ newToday: 1, open: 1 });
     expect(dashboard.orders).toMatchObject({ today: 1, revenueThisMonth: 4300 });
     expect(dashboard.topRoutes[0]).toEqual({ module: "flights", summary: "DAC → DXB", count: 2 });
+    // Two weeks of days for the sparklines and the chart, today last (D0 R9).
+    const trend = (await call(owner, "GET", "/dashboard")).json<{
+      series: Array<{ day: string; leads: number; orders?: number; revenue?: number }>;
+      weeks: { leads: { thisWeek: number; lastWeek: number }; orders?: { thisWeek: number } };
+      oldestNewAt: string | null;
+    }>();
+    expect(trend.series).toHaveLength(14);
+    expect(trend.series.at(-1)).toMatchObject({ leads: 1, orders: 1, revenue: 4300 });
+    expect(trend.weeks.leads).toEqual({ thisWeek: 1, lastWeek: 0 });
+    expect(trend.oldestNewAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    // Without order access the money and orders stay out of the series.
+    const agentTrend = (await call(agent, "GET", "/dashboard")).json<{
+      series: Array<Record<string, unknown>>;
+      weeks: Record<string, unknown>;
+    }>();
+    expect(agentTrend.series[0]).not.toHaveProperty("revenue");
+    expect(agentTrend.weeks).not.toHaveProperty("orders");
 
     const activity = (await call(agent, "GET", "/search-logs?module=flights")).json<{
       total: number;
@@ -740,5 +759,111 @@ describe.skipIf(!dbAvailable)("admin API (B4)", () => {
     }>();
     expect(activity.total).toBe(3);
     expect(activity.searchToLeadRate).toBeCloseTo(33.3, 1);
+  });
+  it("reads the audit log by area, person and Dhaka days, Super Admin and admins only (D0 R9)", async () => {
+    await prisma.auditLog.deleteMany();
+    await prisma.auditLog.createMany({
+      data: [
+        {
+          actorId: owner.id,
+          actorName: "Sample Owner",
+          action: "settings.update",
+          entity: "contactSettings",
+          entityId: "contactSettings",
+          at: new Date("2026-10-20T10:00:00+06:00"),
+        },
+        {
+          actorId: agent.id,
+          actorName: "Sample Agent",
+          action: "lead.status",
+          entity: "lead",
+          entityId: "lead-1",
+          at: new Date("2026-10-21T23:30:00+06:00"),
+        },
+        {
+          actorId: owner.id,
+          actorName: "Sample Owner",
+          action: "payment-proof.verify",
+          entity: "paymentProof",
+          entityId: "proof-1",
+          at: new Date("2026-10-22T00:30:00+06:00"),
+        },
+      ],
+    });
+    const read = async (query: string) => {
+      const response = await call(owner, "GET", `/audit?${query}`);
+      expect(response.statusCode, response.body).toBe(200);
+      return response.json<{ items: Array<{ action: string }> }>().items.map((item) => item.action);
+    };
+
+    expect(await read("area=orders")).toEqual(["payment-proof.verify"]);
+    expect(await read(`actorId=${agent.id}`)).toEqual(["lead.status"]);
+    // 21 Oct in Dhaka ends at midnight Dhaka time, so 00:30 on the 22nd is the next day.
+    expect(await read("from=2026-10-21&to=2026-10-21")).toEqual(["lead.status"]);
+    expect(await read("from=2026-10-22&to=2026-10-20")).toHaveLength(3);
+    expect((await call(owner, "GET", "/audit?area=unknown")).statusCode).toBe(422);
+    expect((await call(agent, "GET", "/audit")).statusCode).toBe(403);
+  });
+
+  it("invites by email: the link sets a password once, expired and used links fail, and an invite can be sent again (D0 R9)", async () => {
+    const tokenFor = async (email: string) => {
+      await app.get(NotificationService).idle();
+      const mail = mailer.sent.findLast((item) => item.to === email);
+      const token = /welcome\?token=([A-Za-z0-9_-]+)/.exec(mail?.text ?? "")?.[1];
+      expect(token, mail?.text).toBeTruthy();
+      return token ?? "";
+    };
+    // Five tries in all: the endpoint allows five per address in 15 minutes, like sign-in.
+    const accept = (token: string, password: string) =>
+      app.inject({ method: "POST", url: "/api/v1/auth/invite", payload: { token, password } });
+
+    const invited = await call(owner, "POST", "/users", {
+      name: "Sample Invitee",
+      email: "invitee@example.com",
+      roles: ["travel-sales"],
+    });
+    expect(invited.statusCode).toBe(201);
+    expect(invited.json<{ invite: { expired: boolean } | null }>().invite).toMatchObject({
+      expired: false,
+    });
+    const token = await tokenFor("invitee@example.com");
+    expect(mailer.sent.at(-1)?.subject).toBe("You're invited to Waafa Admin");
+
+    expect((await accept(token, "invitee-password-123")).statusCode).toBe(200);
+    const login = await app.inject({
+      method: "POST",
+      url: "/api/v1/auth/login",
+      headers: { "x-client-ip": "10.9.0.2" },
+      payload: { email: "invitee@example.com", password: "invitee-password-123" },
+    });
+    expect(login.statusCode).toBe(200);
+    // Used once; and someone who chose a password gets no new invite.
+    expect((await accept(token, "another-password-123")).statusCode).toBe(400);
+    const person = await prisma.staffUser.findUniqueOrThrow({
+      where: { email: "invitee@example.com" },
+    });
+    expect((await call(owner, "POST", `/users/${person.id}/invite`)).statusCode).toBe(409);
+
+    // An expired link fails; sending again gives a new link and the old one stops working.
+    await call(owner, "POST", "/users", {
+      name: "Sample Late",
+      email: "late@example.com",
+      roles: ["accounts"],
+    });
+    const late = await prisma.staffUser.findUniqueOrThrow({ where: { email: "late@example.com" } });
+    const first = await tokenFor("late@example.com");
+    await prisma.staffUser.update({
+      where: { id: late.id },
+      data: { inviteExpiresAt: new Date(Date.now() - 1000) },
+    });
+    expect((await accept(first, "late-password-1234")).statusCode).toBe(400);
+    expect((await call(owner, "POST", `/users/${late.id}/invite`)).statusCode).toBe(200);
+    const second = await tokenFor("late@example.com");
+    expect(second).not.toBe(first);
+    expect((await accept(first, "late-password-1234")).statusCode).toBe(400);
+    expect((await accept(second, "late-password-1234")).statusCode).toBe(200);
+    expect((await call(agent, "POST", `/users/${late.id}/invite`)).statusCode).toBe(403);
+    // A sixth try from the same address waits.
+    expect((await accept(second, "late-password-1234")).statusCode).toBe(429);
   });
 });

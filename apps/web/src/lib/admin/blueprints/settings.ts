@@ -220,15 +220,15 @@ export const announcementsBlueprint = {
 
 export const notificationTemplatesBlueprint = {
   key: "notificationTemplates",
-  sections: [
-    { id: "template", fields: ["key", "audience", "channel", "subject", "body", "variables"] },
-  ],
+  sections: [{ id: "template", fields: ["key", "audience", "channel", "subject", "body"] }],
   visibility: ["enabled"],
   fields: {
     key: { widget: "readOnly", choices: "templateKey" },
     audience: readOnly,
     channel: { choices: "channel" },
-    body: textarea,
-    variables: readOnly,
+    // Details go in with Insert buttons and the message shows as it will arrive (D0 R9).
+    subject: { widget: "template", wide: true },
+    body: { widget: "templateBody", wide: true },
+    variables: keep,
   },
 } satisfies Blueprint;

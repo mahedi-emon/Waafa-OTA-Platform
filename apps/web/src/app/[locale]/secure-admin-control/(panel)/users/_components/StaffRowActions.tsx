@@ -5,7 +5,7 @@ import type { Role } from "@waafa/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { resetStaffPassword, updateStaff } from "@/lib/admin/opsActions";
+import { resendStaffInvite, resetStaffPassword, updateStaff } from "@/lib/admin/opsActions";
 import type { StaffRow } from "@/lib/admin/types";
 import { RolePicker } from "./RolePicker";
 import { useStaffAction } from "./useStaffAction";
@@ -23,6 +23,8 @@ type StaffRowActionsProps = {
     activate: string;
     updated: string;
     passwordReset: string;
+    resendInvite: string;
+    inviteSent: string;
     cancel: string;
     failed: string;
   };
@@ -37,6 +39,15 @@ function StaffRowActions({ row, self, roleNames, strings }: StaffRowActionsProps
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-2">
+        {row.invite && !row.lastLoginAt && row.status === "active" ? (
+          <Button
+            size="sm"
+            loading={pending}
+            onClick={() => run(() => resendStaffInvite(row.id), strings.inviteSent)}
+          >
+            {strings.resendInvite}
+          </Button>
+        ) : null}
         <Button size="sm" variant="secondary" onClick={() => setRoles(row.roles)}>
           {strings.roles}
         </Button>

@@ -529,6 +529,15 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     // Customer accounts and SMS arrive in Phase 1B (P1).
     enabled: false,
   },
+  {
+    key: "staff-invite",
+    audience: "Staff, when added",
+    channel: "email",
+    subject: "You're invited to Waafa Admin",
+    body: "Hello {{name}},\n\n{{inviter}} added you to Waafa Admin. Choose your password here: {{link}}\n\nThe link works for 7 days. If you weren't expecting this, you can ignore this email.",
+    variables: ["{{name}}", "{{inviter}}", "{{link}}"],
+    enabled: true,
+  },
 ];
 
 export const maintenanceSettings: In<typeof MaintenanceSettingsSchema> = {

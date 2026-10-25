@@ -4,7 +4,6 @@ import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -14,10 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link } from "@/i18n/navigation";
 import { adminGet } from "@/lib/admin/adminApi";
 import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";
 import type { NotificationRow, Paged } from "@/lib/admin/types";
+import { SettingsFrame, settingsTitles } from "@/components/admin/settings/SettingsFrame";
+import { SettingsSectionTabs } from "@/components/admin/settings/SettingsSectionTabs";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.notifications");
@@ -31,24 +31,18 @@ async function Log({
 }) {
   const params = await searchParams;
   const page = pageParam(params.page);
-  const [list, t, tc] = await Promise.all([
+  const [list, t, tc, titles, ts] = await Promise.all([
     adminGet<Paged<NotificationRow>>("/admin/notifications", { page, pageSize: 40 }),
     getTranslations("Admin.notifications"),
     getTranslations("Admin.common"),
+    settingsTitles(),
+    getTranslations("Admin.settingsIndex"),
   ]);
   return (
-    <>
-      <AdminPageHeader
-        title={t("title")}
-        lead={t("lead")}
-        actions={
-          <Button asChild variant="secondary" size="sm">
-            <Link href="/secure-admin-control/content/notificationTemplates" prefetch={false}>
-              {t("templates")}
-            </Link>
-          </Button>
-        }
-      />
+    <SettingsFrame current="forms">
+      <AdminPageHeader title={titles.forms} lead={ts("sections.forms.body")} />
+      <SettingsSectionTabs section="forms" current="sent" sectionTitle={titles.forms} />
+      <p className="mb-4 text-[14.5px] text-mist-600">{t("lead")}</p>
       <section className="overflow-hidden rounded-2xl border border-mist-200 bg-white">
         <Table>
           <TableHeader>
@@ -102,7 +96,7 @@ async function Log({
           }}
         />
       </section>
-    </>
+    </SettingsFrame>
   );
 }
 

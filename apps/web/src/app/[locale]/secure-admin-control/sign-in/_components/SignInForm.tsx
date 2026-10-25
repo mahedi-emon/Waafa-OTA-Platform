@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CircleAlert, Eye, EyeOff, LockKeyhole } from "lucide-react";
+import { CircleAlert, CircleCheck, Eye, EyeOff, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,8 @@ type SignInFormProps = {
     lockedBody: string;
     unavailable: string;
     missing: string;
+    /** After the welcome page: the new password is set, sign in with it (D0 R9). */
+    welcome: string;
   };
 };
 
@@ -36,7 +38,9 @@ const INITIAL: SignInState = { error: null };
 function SignInForm({ strings }: SignInFormProps) {
   const [state, action, pending] = useActionState(signIn, INITIAL);
   const [visible, setVisible] = useState(false);
-  const next = useSearchParams().get("next") ?? "/secure-admin-control";
+  const search = useSearchParams();
+  const next = search.get("next") ?? "/secure-admin-control";
+  const welcome = search.get("welcome") === "1" && state.error === null;
   const fieldError = state.error === "wrong" || state.error === "missing";
 
   const message =
@@ -51,6 +55,15 @@ function SignInForm({ strings }: SignInFormProps) {
   return (
     <form action={action} className="flex flex-col gap-5" noValidate>
       <input type="hidden" name="next" value={next} />
+      {welcome ? (
+        <div
+          role="status"
+          className="flex gap-2.5 rounded-2xl border border-success-700/15 bg-success-50 p-3.5 text-[14px] font-semibold text-success-700"
+        >
+          <CircleCheck aria-hidden="true" className="mt-0.5 size-[18px] shrink-0" />
+          <p>{strings.welcome}</p>
+        </div>
+      ) : null}
       {state.error === "locked" ? (
         <div
           role="alert"

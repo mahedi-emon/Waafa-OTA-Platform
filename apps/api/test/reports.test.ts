@@ -144,6 +144,22 @@ describe.skipIf(!dbAvailable)("reports and customers (#111)", () => {
     ).toBe(404);
   });
 
+  it("downloads the same rows as an Excel workbook (D0 R9)", async () => {
+    const response = await get(manager, "/reports/leads.xlsx?from=2026-10-10&to=2026-10-11");
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toBe(
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+    expect(response.headers["content-disposition"]).toContain(
+      'filename="waafa-leads-2026-10-10-to-2026-10-11.xlsx"',
+    );
+    const file = response.rawPayload;
+    // A zip whose sheet carries the lead in the range, not the one outside it.
+    expect(file.subarray(0, 4)).toEqual(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
+    expect(file.toString("utf8")).toContain("FLT-0001");
+    expect(file.toString("utf8")).not.toContain("FLT-0002");
+  });
+
   it("lists customers by phone and opens a profile", async () => {
     const list = (await get(manager, "/customers")).json<{
       items: Array<{ phone: string; leads: number; orders: number; spent: number }>;
