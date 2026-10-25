@@ -29,7 +29,7 @@ function AdminTopBar() {
   const { toggleSidebar, open, isMobile } = useSidebar();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-1.5 border-b border-mist-200 bg-white/95 px-2 backdrop-blur-sm sm:gap-2 md:px-4 lg:px-6">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-1.5 border-b border-mist-200 bg-white px-2 sm:gap-2 md:px-4 lg:px-6">
       <Button
         variant="ghost"
         size="icon"

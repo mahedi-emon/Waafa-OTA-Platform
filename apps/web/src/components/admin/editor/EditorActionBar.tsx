@@ -33,7 +33,7 @@ function EditorActionBar({ state, blueprint }: EditorActionBarProps) {
     <div
       role="region"
       aria-label={t("save")}
-      className="sticky bottom-0 z-20 -mx-4 mt-6 border-t border-mist-200 bg-white/95 px-4 py-3 backdrop-blur-sm md:-mx-6 md:px-6 lg:-mx-8 lg:px-8"
+      className="sticky bottom-0 z-20 -mx-4 mt-6 border-t border-mist-200 bg-white px-4 py-3 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8"
     >
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <p
