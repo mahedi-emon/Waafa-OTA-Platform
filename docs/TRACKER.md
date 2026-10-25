@@ -38,6 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #231 · D Step 0 · Audit, CI budget and docs after D0 — 🟡 In progress
+| Field | Value |
+| --- | --- |
+| Asked | PROMPT 10 Step 0: docs/PRD_COVERAGE.md for every FR-ID checked in code and on the live site; a normal PR at 15 CI minutes or less with the full suite on main, nightly and the `full-ci` label; the API image without source or tests and a Docker Hub clean-up; TRACKER, CLAUDE.md and DEPLOY.md for the live site; prompts v5 committed |
+| Built | **Coverage**: docs/PRD_COVERAGE.md, 142 rows (P0 88 done, 26 partial, 2 missing; P1 1 done, 7 partial, 7 missing, 2 waiting for owner account), each gap with its issue; live checks on waafasworld.com (no /track, no /bn or hreflang, Google-only sign-in, no analytics IDs). New P0 finding: customer files never leave the browser (#232). 28 work-order issues #232–#259 under epic #31. **CI**: quick set vs full suite (D266), `full-ci` label + re-run workflow, nightly, CodeQL folded in, Turborepo cache, `scripts/ci-minutes.mjs`. **Image**: esbuild-compiled API (D267), multi-stage Dockerfile, compat stand-in, image check in Docker images, `scripts/dockerhub-cleanup.mjs` (15 releases). **Docs**: CLAUDE.md live-site and CI budget rules, DEPLOY.md private Docker Hub steps and bundle changes table, TRACKER header, section 11 for the VPS and Phase D accounts, section 14, fixed bug rows; epic #30 closed |
+| Files | `.github/workflows/{ci,docker,full-ci-label}.yml` (codeql.yml removed), `apps/api/{Dockerfile,package.json,scripts/build.mjs,scripts/tsx-compat.sh}`, `deploy/{compose.yml,server/compose.yml}`, `scripts/{ci-minutes,dockerhub-cleanup}.mjs`, `CLAUDE.md`, `docs/{PRD_COVERAGE,DEPLOY,TRACKER,claude-code-prompts}.md`, `pnpm-lock.yaml` |
+| Tests | Compiled API vs tsx on the same database: identical snapshot; the production image locally: migrations, seed, API ready, worker through the old command; guards, format, API lint and typecheck |
+| CI minutes | baseline PR #230: 60 billed minutes; this PR: see the close-out |
+| Tools and skills | Serena (memories), Context7 (Prisma 7 config, Docker Hub API), Playwright MCP (live-site checks), a general-purpose subagent for the FR-ID audit (spot-checked: visa files, visa status email, staff alert address) |
+| Decision | D266–D269 |
+| Migration | none (owner: copy the deploy/server bundle when convenient; Docker Hub private steps in DEPLOY.md) |
+
 ### #200 · D0 R10 · Usability QA, 14 staff tasks and the staff guide — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1673,6 +1685,10 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D263 | 25 Oct | Records with a start and end date (banners, deals, announcements) get their own editor states, Scheduled (shows from …) and Ended, apart from publish scheduling; group fares closing within a week read "Ends soon" | The editor said "Shown" for a banner that starts next Friday; the sidebar counted fares ending this week that every row called Open | #200 |
 | D264 | 25 Oct | System saves are named in words wherever a person's name would show ("the sample data", "a site update", "a store order") | "Last change by seed" and "Edited by order" meant nothing to staff | #200 |
 | D265 | 25 Oct | Admin chrome is sentence case: table headers, rail labels and the Sample badge; a table that can scroll gets `scrollLabel` and becomes a named, focusable region; tab rows wrap or fade at the edge | ADMIN.md §4.2 and §13; axe scrollable-region-focusable; nothing cut off on a 390 px phone | #200 |
+| D266 | 25 Oct | CI budget (#231): a normal PR runs guards, attribution, format, lint, typecheck, unit tests, build and `e2e/smoke.spec.ts`; the full suite (all e2e, public screens, API-mode e2e, VPS smoke, Lighthouse, CodeQL) runs on main, nightly (skipped when main's head already passed) and on PRs labelled `full-ci`; PRs touching the schema, deploy/, the API Dockerfile, sign-in, payments, checkout or lead intake fail without the label; adding it re-runs CI (`full-ci-label.yml`, labels read live); CodeQL moves into ci.yml (the D205 check stays, its own workflow goes); the VPS smoke skips main pushes because Docker images builds and checks the same stack there; Turborepo cache on PRs, forced off in the full suite | PR #230 cost 60 billed minutes; the private repo used about 1,870 of 2,000 free minutes in a week | #231 |
+| D267 | 25 Oct | API image compiled with esbuild (`apps/api/scripts/build.mjs`): main, worker and seed bundled with the workspace packages, npm dependencies external, no source maps, names kept; the runtime stage holds dist, production dependencies, schema, migrations and prisma.config.ts only (@waafa/* and tsx move to devDependencies); a `tsx` stand-in maps the old worker command for one release; Docker Hub keeps the newest 15 releases (`scripts/dockerhub-cleanup.mjs`, warns without delete rights) | The public Docker Hub image exposed the backend source; workspace packages export TypeScript, so tsc alone cannot run them; image 2.07 → 1.7 GB | #231 |
+| D268 | 25 Oct | Phase D order: #232 customer files (P0) and #233 P0 notification gaps first, then A (#229, #219, #224), B (#234, #235), C #236, D #237, E (#238, #239), F (#240, #241), J (#251–#253), K (#254, #255), G (#242–#244), H (#245, #246, #248, #247), I (#249, #250), L (#256, #258, #257), M #259 | The audit found P0 gaps (files never stored); J before K and G because OTP sign-in and online payment are PRD 1B headlines and SMS sender approval takes days; K before G and H so later screens ship with Bangla; inside H the PRD's reviews first | #231 |
+| D269 | 25 Oct | The provider markup (FR-GS-07) applies to Live prices only and moves to Phase E; staging stays a local Docker rehearsal plus the CI deploy smoke (one VPS) unless the owner asks for a second server | Manual mode has no provider prices to mark up; a staging VPS costs money | #231 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1717,6 +1733,11 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 If time runs out, cut in this order (PRD §17). Never cut security, lead capture, the admin leads module, compliance
 or accessibility.
+Proposed 25 Oct for Phase D (lowest impact first; applied only if progress falls behind at a checkpoint): 1) admin dark
+mode #257; 2) custom roles, search funnel, scheduled reports and merge customers #244; 3) campaign pages and flash
+sales #247; 4) benchmark extras beyond fixes #258; 5) Buy again and save for later (wishlist stays) #246. Never cut:
+#232 files, #233, security #234 #235, payments #251, accessibility, compliance.
+
 1. Gallery video embeds
 2. Blog extras (related posts, contents list)
 3. Part-code search in Find by model
@@ -1767,6 +1788,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 25 Oct | Step 0 of PROMPT 10: PRD coverage audit (142 rows, P0 file uploads gap found), CI budget (quick set, full-ci label, nightly), compiled API image, Docker Hub clean-up, live-site docs; 28 Phase D issues filed; epic #30 closed | #231, #232–#259 | PR for #231 | local image run |
 | 25 Oct | R10: staff tasks 2, 8, 12 and 13 as e2e (all 14 covered), axe on every admin route, the independent review fixed (names, columns, editors in words, dated chips, sentence case, phone layout), #229 filed, the Banglish staff guide | #200, #229 | PR for #200 | web 664 · e2e API job 79 |
 | 25 Oct | R9: dashboard v2, Settings as one page, invite by email with the welcome page, permission matrix, audit log in sentences, template Insert and preview, reports with ranges and Excel | #199 | #228 (951080b) | shared 144 · web 663 · API 192 · e2e API job 71 |
 | 25 Oct | #225: a missing admin record shows the panel's not-found screen (Open Trash, dashboard) instead of the error page | #225 | #227 (81d4e04) | e2e admin-shell + not-found case |
@@ -1824,6 +1846,6 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. #231 Step 0: PRD_COVERAGE.md, the CI budget, the compiled API image and the docs; PR with the full-ci label, merge, then the Banglish summary with the issue order.
-2. Letter A: #229 admin polish, #219 the 100-row page, #224 the budget e2e flake.
-3. Letter B: staff two-factor sign-in (TOTP, recovery codes, login history, new-device email), then the ClamAV upload scan.
+1. #231 Step 0: PR with the full-ci label, CI, merge; Banglish summary with the issue order and the owner's actions.
+2. #232 customer files reach private storage (P0: visa documents, payment proof, attachments), then #233 the P0 notification gaps.
+3. Letter A: #229 admin polish, #219 the 100-row page, #224 the budget e2e flake; then B (#234 two-factor, #235 ClamAV).
