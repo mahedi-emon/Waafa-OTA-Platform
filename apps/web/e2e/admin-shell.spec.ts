@@ -161,6 +161,23 @@ test("on a phone the menu opens as a sheet and closes after picking a page", asy
   expect(errors).toEqual([]);
 });
 
+test("a record that isn't there says so inside the admin, with Trash a click away (issue 225)", async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await signIn(page);
+  await page.goto("/secure-admin-control/content/tourPackages/no-such-package");
+  await expect(page.getByRole("heading", { level: 1, name: "We can't find this" })).toBeVisible();
+  await expect(page.getByText("This page didn't load")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Try again" })).toHaveCount(0);
+  // Still inside the admin frame, with the way out on offer.
+  await expect(page.getByRole("link", { name: "Open Trash" })).toBeVisible();
+  await page.getByRole("link", { name: "Open Trash" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Trash" })).toBeVisible();
+  // The missing address itself may answer 404; nothing else may fail.
+  expect(errors.filter((error) => !error.includes("/no-such-package"))).toEqual([]);
+});
+
 test("a wrong password says so in plain words, and Show password reveals it", async ({ page }) => {
   await page.setExtraHTTPHeaders({ "x-forwarded-for": "198.51.100.140" });
   await page.goto("/secure-admin-control/sign-in");

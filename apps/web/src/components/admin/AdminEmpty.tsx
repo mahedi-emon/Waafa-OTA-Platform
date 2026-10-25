@@ -10,6 +10,8 @@ type AdminEmptyProps = {
   action?: ReactNode;
   /** One to three icons for what belongs here (the first is the main one). */
   icons?: LucideIcon[];
+  /** The title's element: a paragraph inside a page, the page's h1 when the state is the whole page (not found). */
+  titleAs?: "p" | "h1";
   className?: string;
 };
 
@@ -20,7 +22,14 @@ const SIDE_TILE =
  * Empty state for admin lists and panels (ADMIN.md §5.9; layered icons after 21st.dev serafimcloud/empty-state):
  * says what will appear here and offers the next step. Calm: no hover motion.
  */
-function AdminEmpty({ title, body, action, icons = [Inbox], className }: AdminEmptyProps) {
+function AdminEmpty({
+  title,
+  body,
+  action,
+  icons = [Inbox],
+  titleAs: Title = "p",
+  className,
+}: AdminEmptyProps) {
   const [MainIcon = Inbox, LeftIcon, RightIcon] = icons;
   return (
     <div className={cn("flex flex-col items-center gap-2 px-5 py-12 text-center", className)}>
@@ -39,7 +48,7 @@ function AdminEmpty({ title, body, action, icons = [Inbox], className }: AdminEm
           </span>
         ) : null}
       </div>
-      <p className="font-display text-[17px] font-bold text-navy-900">{title}</p>
+      <Title className="font-display text-[17px] font-bold text-navy-900">{title}</Title>
       {body ? <p className="max-w-md text-[14.5px] leading-relaxed text-mist-600">{body}</p> : null}
       {action ? <div className="mt-3">{action}</div> : null}
     </div>

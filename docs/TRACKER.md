@@ -38,6 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #225 · Bug · A missing admin record shows the error page instead of not found — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Found during the R8 screenshots: a mistyped, old or deleted record address showed "This page didn't load" with Try again and logged React error #441 |
+| Built | Record pages (content records, leads, orders) read with `adminFind` (null on 404) and show `AdminNotFound` in place: "We can't find this", what may have happened, Open Trash and Go to the dashboard, no Try again (a `notFound()` thrown inside the streamed page made React fall back to the client and log #419). Other reads: `adminGet` calls `notFound()` on a 404 and `(panel)/not-found.tsx` shows the same screen (calls with `.catch(() => null)` still get null). `AdminEmpty` takes `titleAs="h1"` when the state is the whole page |
+| Files | `apps/web/src/lib/admin/adminApi.ts`, `app/[locale]/secure-admin-control/(panel)/{not-found.tsx,content/[key]/[id]/page.tsx,leads/[id]/page.tsx,orders/[id]/page.tsx}`, `components/admin/{AdminNotFound,AdminEmpty}.tsx`, `messages/en.json`, `e2e/admin-shell.spec.ts` |
+| Tests | e2e admin-shell: a missing tour package shows the not-found screen inside the admin, no Try again, Open Trash opens Trash, zero console errors; admin-editor and admin-inbox green |
+| Widths checked | 390 · 1440 (the not-found screen in the admin frame) |
+| Tools and skills | Serena; Playwright MCP (the error page at 1440 before the fix) |
+| Decision | D254 |
+| Migration | none |
+
 ### #198 · D0 R8 · Purpose-built editors: package, product, visa country, blog post and the quick forms — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -1617,6 +1629,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D251 | 25 Oct | Purpose-built editors are blueprint data, not forks: section order per record type, `layout: "writing"` for blog posts, `startWith` for a new record's first values (a new team member is shown), `bulkPhotos` for lists of photo items, and the automatic rules `lowestPrice`, `itineraryDays` and `initialsFromName` | One engine keeps every editor consistent and testable; staff never type a figure the record already knows | #198 |
 | D252 | 25 Oct | Product variants are edited as a matrix of the option values (Sell, suggested stock code, price, price before discount, stock) with "Variant shown first" as a radio; variants whose values are gone are listed with Remove instead of being dropped silently | Staff task 7: typing variant ids and option maps by hand was the most common mistake in the R0 audit | #198 |
 | D253 | 25 Oct | The "Optional" chip beside a label is hidden from screen readers and replaced by a visually hidden " (optional)", so a field's accessible name reads "Up to (optional)" instead of "Up toOptional" | Accessible names must read as words; e2e locators by name found the joined form | #198 |
+| D254 | 25 Oct | Admin page reads treat the API's 404 as not found (`notFound()` in `adminGet`) and show the panel's own not-found screen with Trash and the dashboard | A missing record is not a failure; Try again can't help, and Trash is where a deleted record usually is | #225 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1629,7 +1642,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
 | #224 Budget e2e: the first attempt on /tour-packages, /visa and /shop counts about 100 KB more first-load JS on a freshly started CI server; the retry passes (seen on #221 and #223) | P2 (test only) | apps/web/e2e/budget.spec.ts | Open |
-| #225 Admin: opening a record that does not exist shows "This page didn't load" (adminGet throws on the API's 404; no not-found screen in the panel) | P2 | apps/web/src/lib/admin/adminApi.ts | Open (next after R8) |
+| #225 Admin: opening a record that does not exist shows "This page didn't load" (adminGet throws on the API's 404; no not-found screen in the panel) | P2 | apps/web/src/lib/admin/adminApi.ts | Fixed (adminGet → notFound, panel not-found screen, e2e in admin-shell) |
 | #222 Intake tests counted emails from the test before (fire-and-forget emails landed after the next test emptied the list); main's CI failed after #221 | P1 (test only) | apps/api/test/public.test.ts | ✅ Fixed in the #197 PR: `NotificationService.idle()` and an afterEach wait, with a unit test (D250) |
 | Media library e2e looked for the sheet by its old title after Save renamed it (a race the PR run won and a local run lost) | P2 (test only) | apps/web/e2e/admin-media.spec.ts | ✅ Fixed in the #197 PR: the sheet is found by its new title |
 | R7 review before the PR (2 P1, 7 P2, 11 P3): open redirect through `/.//` in the preview path, Enter in the link picker's typed form saving the item sheet, drafts outliving the session, stale sheets, Undo reverting later changes, remounts dropping focus, drag-only reorder, preview reloading too early, preview frame in the tab order, and smaller ones | P1 | website builder, preview, staff tools | ✅ Fixed in the #197 PR with unit and e2e tests (D243–D249) |
@@ -1701,7 +1714,8 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
-| 25 Oct | R8 purpose-built editors: tour package, product (variants matrix), visa country, blog post (writing view), group fare, banner, team member and gallery album (several photos at once); Price from, number of days and initials worked out on save; staff tasks 1, 7, 9 and 11 as e2e; design-review fixes (matrix alignment, empty photo tick, empty pickers, named Add buttons) | #198, #225 | PR for #198 | web unit 647 · e2e API job 67 (admin-editors 6) |
+| 25 Oct | #225: a missing admin record shows the panel's not-found screen (Open Trash, dashboard) instead of the error page | #225 | PR for #225 | e2e admin-shell + not-found case |
+| 25 Oct | R8 purpose-built editors: tour package, product (variants matrix), visa country, blog post (writing view), group fare, banner, team member and gallery album (several photos at once); Price from, number of days and initials worked out on save; staff tasks 1, 7, 9 and 11 as e2e; design-review fixes (matrix alignment, empty photo tick, empty pickers, named Add buttons) | #198, #225 | #226 (137428f) | web unit 647 · e2e API job 67 (admin-editors 6) |
 | 24–25 Oct | R7 website builder: Website › Home page (sections in order, Show, arrows and drag, sheets with the live phone preview, hero sheet), Website › Menus (ten menus, link picker, Undo, fixed tab bar), Preview of unpublished changes on draft mode, Edit on site staff tools, framing for the previews; independent review (2 P1, 7 P2, 11 P3) fixed; #222 flaky intake test on main fixed | #197, #222, #224 | #223 (9b0b5cb) | shared 144 · web unit 643 · API 186 · e2e API job 61 |
 | 24 Oct | R6 inbox: queue panes beside leads and orders, lead page with reply timer, customer card and timeline, phone bottom bar, service tabs, board moves through the lead page's dialog, Visa applications by stage | #196 | #221 (b25e1b2) | shared 144 · web unit 623 · API 184 · e2e API job 52 |
 | 24 Oct | R4 merged (#218, ce05c1b). R5 merged (#220, 763f58d). R5 DataTable v2: one table for every content list, leads, orders, proofs, customers, feedback and users; records, bulk and move endpoints; search and sort on the queues; saved views and columns on the device; INP checked on 500 leads; perf bug #219 opened for the 100-row page | #195, #219 | #220 | shared 137 · web unit 622 · API 181 · e2e API job 42 |
@@ -1755,8 +1769,8 @@ Hosting is the owner's VPS with Docker (D141); the steps, settings and launch ch
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. R8 #198: merge, then the owner checkpoint (Banglish summary, screenshots, "test this yourself").
-2. #225 not-found screen for missing admin records; then R9 #199 settings, R10 #200 dashboard and the admin guide (docs/ADMIN_GUIDE.md).
+1. R9 #199 settings.
+2. R10 #200 dashboard and the admin guide (docs/ADMIN_GUIDE.md), then Phase D.
 3. #224 budget e2e cold-start flake and #219 the 100-row page, between the R issues.
 
 Earlier (24 Oct, R7):

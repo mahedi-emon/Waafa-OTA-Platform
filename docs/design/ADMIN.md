@@ -348,6 +348,8 @@ Grid (default) and list views; search; filters Photos, Videos, Unused; multi-upl
   again."); field errors next to the field and summarised at the top with links.
 - **Offline**: a banner "You're offline. Changes are kept on this device and saved when you're back."
 - **Forbidden**: "Your role can't open this page. Ask an admin if you need it." with a link home.
+- **Not found**: "We can't find this" inside the admin frame, with what may have happened (deleted, in Trash, link
+  mistyped), Open Trash and Go to the dashboard; never Try again (#225).
 - **Session**: a warning two minutes before the session ends ("Stay signed in"), silent refresh while active.
 
 ---

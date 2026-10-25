@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { CONTENT_MODEL, isContentKey } from "@waafa/shared";
+import { AdminNotFound } from "@/components/admin/AdminNotFound";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ContentEditor } from "@/components/admin/editor/ContentEditor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessagePaths } from "@/i18n/pickMessages";
-import { adminGet, requireStaff } from "@/lib/admin/adminApi";
+import { adminFind, requireStaff } from "@/lib/admin/adminApi";
 import { headingOf } from "@/lib/admin/blueprints/display";
 import { EDITOR_MESSAGES } from "@/lib/admin/blueprints/editorMessages";
 import { resolveBlueprint } from "@/lib/admin/blueprints/resolve";
@@ -29,12 +30,13 @@ async function RecordView({
   if (!isContentKey(key) || CONTENT_MODEL[key].kind !== "collection") notFound();
   const recordId = decodeURIComponent(id);
   const [record, staff, t, messages, { schema, blueprint }] = await Promise.all([
-    adminGet<ContentRecordResponse>(`/admin/content/${key}/${encodeURIComponent(recordId)}`),
+    adminFind<ContentRecordResponse>(`/admin/content/${key}/${encodeURIComponent(recordId)}`),
     requireStaff(),
     getTranslations("Admin.content"),
     getMessages(),
     resolveBlueprint(key),
   ]);
+  if (!record) return <AdminNotFound />;
 
   return (
     <>
