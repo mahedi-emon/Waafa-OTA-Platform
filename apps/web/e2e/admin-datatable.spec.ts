@@ -15,6 +15,10 @@ const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "";
 test.skip(!API || !INTAKE_KEY || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");
 test.describe.configure({ mode: "serial" });
 
+// INP is measured here: Playwright's trace takes a DOM snapshot around every action, which on a 100-row page stalls
+// frames and adds 150 ms or more to each interaction (issue 219). Traces stay on in every other spec.
+test.use({ trace: "off" });
+
 const STAMP = String(Date.now()).slice(-6);
 const TAG = `Sample Table ${STAMP}`;
 const LEADS = 500;
@@ -183,19 +187,25 @@ test("500 leads page by the server, open a summary sheet, take a bulk step and s
   await bar.getByRole("button", { name: "Assign" }).click();
   await expect(page.getByText(/^100 leads updated/).first()).toBeVisible();
 
-  // INP on the page staff see (25 of the 500): select all, open a sheet and close it, each under 200 ms. The 100-row
-  // page is slower on a low-memory machine (D228, the open bug in TRACKER section 9).
-  // A busy machine can stall one frame: the run is repeated up to three times; a real slowdown fails every time.
-  await expect(async () => {
-    await page.goto(`/secure-admin-control/leads?q=${encodeURIComponent(TAG)}`);
-    await expect(table.getByRole("row")).toHaveCount(26);
-    await table.getByRole("checkbox", { name: "Select all on this page" }).check();
-    await table.getByRole("checkbox", { name: "Select all on this page" }).uncheck();
-    await until(() => table.getByRole("row").nth(3).getByRole("cell").nth(3).click(), sheet);
-    await page.keyboard.press("Escape");
-    const slowest = await longestInteraction(page);
-    expect(slowest.duration, slowest.name).toBeLessThan(200);
-  }).toPass({ intervals: [500], timeout: 90_000 });
+  // INP on the default page (25 of the 500) and on the largest page (100, issue 219): select all, open a sheet and
+  // close it, each under 200 ms. A busy machine can stall one frame: each run is repeated up to three times; a real
+  // slowdown fails every time. The page settles first (an interaction during hydration is not what INP measures).
+  for (const size of [25, 100]) {
+    await expect(async () => {
+      await page.goto(
+        `/secure-admin-control/leads?q=${encodeURIComponent(TAG)}${size === 25 ? "" : `&pageSize=${size}`}`,
+      );
+      await expect(table.getByRole("row")).toHaveCount(size + 1);
+      await page.waitForLoadState("load");
+      await page.waitForTimeout(1_000);
+      await table.getByRole("checkbox", { name: "Select all on this page" }).check();
+      await table.getByRole("checkbox", { name: "Select all on this page" }).uncheck();
+      await until(() => table.getByRole("row").nth(3).getByRole("cell").nth(3).click(), sheet);
+      await page.keyboard.press("Escape");
+      const slowest = await longestInteraction(page);
+      expect(slowest.duration, `${size} rows: ${slowest.name}`).toBeLessThan(200);
+    }).toPass({ intervals: [500], timeout: 90_000 });
+  }
   expect(errors).toEqual([]);
 });
 

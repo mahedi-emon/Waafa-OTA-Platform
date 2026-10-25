@@ -288,6 +288,8 @@ Ready-to-use prompts:
 
 ## Design system files and prototype deviations
 
+- 26 Oct 2026 (issue 219): dialog, sheet and confirm overlays and the admin top bar and editor action bar drop their backdrop blur (solid white or the plain navy scrim). Blur behind a scrim repainted the whole page on every frame of the fade (a sheet closing over a 100-row list took 128 to 192 ms headless, 56 to 88 ms without it), and DESIGN.md keeps glass for the search card only.
+
 - UI UX Pro Max output, reconciled with this file and PRD §16: `docs/design/design-system/waafa/MASTER.md` and page
   overrides in `pages/` (home, flights, shop, admin). This file wins where they differ.
 - Signature moments and the competitor beat list: `MOTION.md` §8 and §9.
