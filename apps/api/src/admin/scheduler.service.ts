@@ -11,6 +11,7 @@ import {
   isDue,
   isOverdueLead,
   type CollectionKey,
+  type StaffAlertArea,
 } from "@waafa/shared";
 import { CustomerFilesService } from "../files/customer-files.service";
 import { withWorkflow } from "./workflow";
@@ -245,7 +246,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
           createdAt: now,
         },
       });
-      void this.notifications.notify("lead-overdue-staff", this.notifications.staffAddress, {
+      void this.notifications.notifyStaff("lead-overdue-staff", lead.module as StaffAlertArea, {
         reference: lead.reference,
         name: lead.name,
         minutes: String(sla),

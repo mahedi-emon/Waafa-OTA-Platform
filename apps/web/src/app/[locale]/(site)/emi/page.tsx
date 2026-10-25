@@ -9,6 +9,7 @@ import { Canonical } from "@/components/seo/Canonical";
 import { listEmiBanks, listPageBlocks } from "@/lib/data/content";
 import { getContactSettings, getEmiSettings } from "@/lib/data/settings";
 import { EmiCalculator } from "./_components/EmiCalculator";
+import { EmiRequest } from "@/components/content/EmiRequest";
 import { withSocial } from "@/lib/seo/withSocial";
 import { ExploreMore } from "@/components/seo/ExploreMore";
 
@@ -51,7 +52,7 @@ export default async function EmiPage() {
               </p>
             ) : null}
           </PageHero>
-          <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+          <div className="flex flex-col gap-6 lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <EmiCalculator
               minimum={settings.minimumAmount}
               tenures={tenures}
@@ -75,6 +76,11 @@ export default async function EmiPage() {
                 ask: t("ask"),
                 askMessage: t("askMessage", { amount: "{amount}", months: "{months}" }),
               }}
+            />
+            <EmiRequest
+              minimum={settings.minimumAmount}
+              tenures={tenures}
+              banks={banks.map((bank) => ({ id: bank.id, name: bank.name }))}
             />
           </div>
           {steps.length > 0 ? (

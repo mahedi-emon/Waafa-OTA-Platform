@@ -141,7 +141,7 @@ export class IntakeService {
       link: this.adminLink(`/leads/${created.id}`),
     };
     void this.notifications.notify("lead-received-customer", input.contact.email, vars);
-    void this.notifications.notify("lead-alert-staff", this.notifications.staffAddress, vars);
+    void this.notifications.notifyStaff("lead-alert-staff", module, vars);
     return { reference: created.reference, createdAt: toDhakaIsoString(now) };
   }
 
@@ -207,14 +207,20 @@ export class IntakeService {
         return { ok: false as const, reason: "cod" as const, quote };
       }
 
-      // Take the stock (pre-orders have none to take).
+      // Take the stock (pre-orders have none to take); note variants that reach their low-stock mark now.
+      const lowStock: Array<{ title: string; sku: string; stock: number; slug: string }> = [];
       for (const product of products) {
         let changed = false;
         const variants = product.variants.map((variant) => {
           const line = quote.lines.find((item) => item.variantId === variant.id);
           if (!line || variant.preOrder) return variant;
           changed = true;
-          return { ...variant, stock: Math.max(0, variant.stock - line.quantity) };
+          const stock = Math.max(0, variant.stock - line.quantity);
+          const mark = variant.lowStockAt ?? 3;
+          if (variant.stock > mark && stock <= mark) {
+            lowStock.push({ title: product.title, sku: variant.sku, stock, slug: product.slug });
+          }
+          return { ...variant, stock };
         });
         if (changed) {
           await tx.contentDocument.update({
@@ -269,6 +275,7 @@ export class IntakeService {
         ok: true as const,
         order: { reference, total: order.total, createdAt: toDhakaIsoString(now) },
         id: order.id,
+        lowStock,
       };
     });
 
@@ -288,7 +295,17 @@ export class IntakeService {
       link: this.adminLink(`/orders/${result.id}`),
     };
     void this.notifications.notify("order-placed-customer", input.address.email, vars);
-    void this.notifications.notify("order-placed-staff", this.notifications.staffAddress, vars);
+    void this.notifications.notifyStaff("order-placed-staff", "orders", vars);
+    // Variants that this order took down to their low-stock mark (FR-SHOP-10, issue 233).
+    for (const item of result.lowStock) {
+      void this.notifications.notifyStaff("low-stock-staff", "stock", {
+        product: item.title,
+        sku: item.sku,
+        stock: String(item.stock),
+        order_number: result.order.reference,
+        link: this.adminLink(`/content/products/${item.slug}`),
+      });
+    }
     return { ok: true, order: result.order };
   }
 
@@ -352,7 +369,7 @@ export class IntakeService {
       });
       if (input.photo) await this.files.claim(tx, [input.photo], "feedback", feedback.id, now);
     });
-    void this.notifications.notify("feedback-received-staff", this.notifications.staffAddress, {
+    void this.notifications.notifyStaff("feedback-received-staff", "feedback", {
       name: input.name,
       service: input.service,
       stars: input.rating ? String(input.rating) : "no",
@@ -389,7 +406,7 @@ export class IntakeService {
       if (input.proof) await this.files.claim(tx, [input.proof], "payment-proof", proof.id, now);
       return proof;
     });
-    void this.notifications.notify("payment-proof-staff", this.notifications.staffAddress, {
+    void this.notifications.notifyStaff("payment-proof-staff", "payments", {
       name: input.name,
       reference: input.reference,
       amount: formatTaka(input.amount),

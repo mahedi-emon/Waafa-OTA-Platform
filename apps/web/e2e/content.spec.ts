@@ -182,6 +182,35 @@ test.describe("forms and filters at 390", () => {
     await expect(page.getByText("৳8,334")).toBeVisible();
   });
 
+  test("an EMI plan request becomes an EMI lead (issue 233)", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.goto("/emi");
+    await page.getByRole("button", { name: "Request an EMI plan" }).click();
+    const dialog = page.getByRole("dialog", { name: "Request an EMI plan" });
+    await dialog.getByLabel("Full name").fill("Sample Rahim Uddin");
+    await dialog.getByLabel("Mobile number").fill("01712-345678");
+    await dialog.getByRole("button", { name: "Continue" }).click();
+    await dialog.getByRole("button", { name: "Send my EMI request" }).click();
+    await expect(dialog.getByText("Enter the amount in taka.")).toBeVisible();
+    await dialog.getByLabel("Amount (৳)").fill("500");
+    await dialog.getByRole("button", { name: "Send my EMI request" }).click();
+    await expect(dialog.getByText(/EMI plans start at/)).toBeVisible();
+    await dialog.getByLabel("Amount (৳)").fill("1,46,480");
+    await dialog
+      .getByRole("radiogroup", { name: "Months" })
+      .locator("label", { hasText: "6 months" })
+      .click();
+    await dialog
+      .getByRole("radiogroup", { name: "Your credit card's bank" })
+      .locator("label", { hasText: "Not sure yet" })
+      .click();
+    await dialog.getByLabel(/I agree that Waafa Tours and Travel may contact me/).check();
+    await dialog.getByRole("button", { name: "Send my EMI request" }).click();
+    await expect(dialog.getByRole("heading", { name: "EMI request received" })).toBeVisible();
+    await expect(dialog.getByText(/^EMI-\d{6}-\d{4}$/)).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
   test("album photos open in the lightbox", async ({ page }) => {
     await page.goto("/gallery/around-the-world");
     await page.getByRole("button", { name: "Open photo 1 of 8" }).click();

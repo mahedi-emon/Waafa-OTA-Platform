@@ -538,6 +538,15 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     variables: ["{{name}}", "{{inviter}}", "{{link}}"],
     enabled: true,
   },
+  {
+    key: "low-stock-staff",
+    audience: "Waafas World team",
+    channel: "email",
+    subject: "Low stock: {{product}}",
+    body: "{{product}} ({{sku}}) is down to {{stock}} after order {{order_number}}.\n\nRestock or update it in Admin: {{link}}.",
+    variables: ["{{product}}", "{{sku}}", "{{stock}}", "{{order_number}}", "{{link}}"],
+    enabled: true,
+  },
 ];
 
 export const maintenanceSettings: In<typeof MaintenanceSettingsSchema> = {
