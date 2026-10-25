@@ -434,6 +434,28 @@ order).
   drafts or a switch say Live, "Changes show on the site as soon as you save". Every chip carries its reason.
   Scheduling, expiry and the worker job come with R4.
 
+### 7.2 Purpose-built editors (R8)
+- Section order follows the way staff think about the thing, not the schema:
+  - Tour package: Basics, Photos, Day by day, Prices and dates, Included, Hotels and visa notes, SEO.
+  - Product: Basics, Photos, Options and variants, Price and selling, Specs and compatibility, SEO.
+  - Visa country: Basics with the cover, Visa types (fee ranges and documents per type), Questions and forms, SEO.
+  - Blog post: the writing layout (`layout: "writing"`): no section list, a centred 48 rem column with the title,
+    cover and intro first, the side panel at the right from 1280 px.
+  - Group fare and banner: one section each, on one screen.
+  - Team member: "Person and photo" and "How to reach them"; a new member starts shown on the site
+    (`startWith: { visible: true }`).
+  - Gallery album: items take several photos at once (`bulkPhotos: { image, with }`): each upload becomes its own item.
+- New automatic rules: `lowestPrice` (a package's "Price from" is its lowest price option), `itineraryDays` (the
+  number of days is the itinerary's length), `initialsFromName` (a team member's initials, shown until a photo is
+  uploaded). They are hidden and filled on save, like the other automatic rules.
+- Variants matrix (`widget: "variantsMatrix"`, `lib/admin/variantMatrix.ts`): each mix of the product's option values
+  is one row with Sell, a suggested stock code, price, price before discount and stock. "Variant shown first" is a
+  radio, never a typed id. Variants whose values no longer exist are listed with Remove. A product without options
+  sells one "Standard" variant.
+- A new record's sections each end with "Next: <section>", a new repeater card opens ready to fill, and the browser
+  tab says "New tour package".
+- Staff tasks 1, 7, 9 and 11 run as e2e in `e2e/admin-editors.spec.ts`, with axe at 768 and 1440 px.
+
 ---
 
 ## 8. Status machines (R4; shared in `packages/shared/src/workflow/`, enforced by the API, written to the audit log

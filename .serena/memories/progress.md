@@ -1,4 +1,13 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-25 — R7 merged (#223, 9b0b5cb). R8 #198 purpose-built editors on feat/198-purpose-built-editors: section
+  order for package/product/visa/blog (writing view)/group fare/banner/team, variants matrix, bulk photos for gallery
+  albums, auto Price from / days / initials, startWith, Next: section, design-review fixes. e2e admin-editors 6/6
+  (tasks 1, 7, 9, 11 + axe), web unit 647, lint/tsc/guards OK. No migration. Bug #225 (missing record → error page).
+- 2026-10-25 — R6 merged (#221, b25e1b2). R7 #197 website builder → PR #223 (also closes #222 flaky intake email
+  test): Website › Home page (sections, arrows + drag, sheets with live preview, hero), Website › Menus (link picker,
+  Undo, fixed tab bar), draft preview (draft mode + previewDrafts), staff tools (Edit this page / Edit sections),
+  framing, updateTag on saves. Independent review 2 P1/7 P2/11 P3 fixed; CI round 1 found a CodeQL regex + two specs
+  (fixed). Tests shared 144, web 643, API 186, API-job e2e 61. No migration. #224 budget cold-start flake opened.
 - 2026-10-24 — R5 merged (#220, 763f58d). R6 #196 inbox on feat/196-inbox: queue panes beside leads and orders (InboxSplit grid), lead page with reply timer, customer card and timeline, phone bottom bar, service tabs, board moves through the lead page's dialog (dnd-kit mouse + touch, Move to…), Visa applications by stage. Tests shared 144, web 623, API 184, API-job e2e 52. No migration.
 - 2026-10-24 — R4 merged (#218, ce05c1b). R5 #195 DataTable v2 on every list (content, leads, orders, proofs, customers, feedback, users; records/bulk/move endpoints; saved views on device; INP on 500 leads) → PR #220, no migration. Tests shared 137, web 622, API 181, API-job e2e 42. Bug #219 (100-row page INP).
 - 2026-10-23 — R3 #193 merged (#216). R4 #194 status automation on feat/194-status-automation: shared workflow rules, API buttons/actions, Trash, slug redirects, minute job, Sample undo, lead/visa/order/proof steps, list chips; PR open. Migration 20261024040000_status_automation.

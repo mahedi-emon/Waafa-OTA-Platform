@@ -60,9 +60,12 @@ function ObjectField({ schema, path, value, optional, bare = false }: ObjectFiel
           <p className="text-[14px] font-semibold text-navy-900">
             {meta.label}
             {optional ? (
-              <span className="ml-1.5 text-[12.5px] font-normal text-mist-500">
-                {t("optional")}
-              </span>
+              <>
+                <span aria-hidden="true" className="ml-1.5 text-[12.5px] font-normal text-mist-500">
+                  {t("optional")}
+                </span>
+                <span className="sr-only"> ({t("optional").toLowerCase()})</span>
+              </>
             ) : null}
           </p>
           {meta.help ? <p className="text-[13.5px] text-mist-600">{meta.help}</p> : null}
@@ -75,6 +78,7 @@ function ObjectField({ schema, path, value, optional, bare = false }: ObjectFiel
         >
           <Plus aria-hidden="true" className="size-4" />
           {t("set")}
+          <span className="sr-only"> {meta.label}</span>
         </Button>
       </div>
     );

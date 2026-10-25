@@ -87,7 +87,9 @@ function ReferenceField({
       ? value.map(String)
       : []
     : embedKey
-      ? typeof (value as Record<string, unknown> | null)?.[embedKey] === "string"
+      ? // A new record's embedded pick starts as empty words: nothing is chosen yet.
+        typeof (value as Record<string, unknown> | null)?.[embedKey] === "string" &&
+        (value as Record<string, string>)[embedKey] !== ""
         ? [String((value as Record<string, unknown>)[embedKey])]
         : []
       : typeof value === "string" && value

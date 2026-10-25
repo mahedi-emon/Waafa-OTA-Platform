@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
+import { ArrowDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import { cn } from "cn";
 import type { ResolvedSection } from "@/lib/admin/blueprints/types";
 import { resolve } from "@/lib/admin/schema";
@@ -10,15 +13,21 @@ import { SchemaField } from "../schema/SchemaField";
 import { SectionLabelContext, type SectionLabel } from "../schema/useQuietLabel";
 import { useSchemaEditor } from "../schema/useSchemaEditor";
 import { isWide } from "../schema/wideWidgets";
+import { scrollToSection } from "./scrollToSection";
 
-type EditorSectionProps = { section: ResolvedSection };
+type EditorSectionProps = {
+  section: ResolvedSection;
+  /** The section after this one: a new record walks through them in order (D0 R8). */
+  next?: ResolvedSection | undefined;
+};
 
 /**
  * One section of the editor: a title, a line of help and its fields (ADMIN.md §5.4). A section made of one group
  * draws the group's own fields; a section of the record itself (a list setting) draws that list.
  */
-function EditorSection({ section }: EditorSectionProps) {
+function EditorSection({ section, next }: EditorSectionProps) {
   const editor = useSchemaEditor();
+  const t = useTranslations("Admin.editor");
   const root = editor.root;
   const record = (editor.value && typeof editor.value === "object" ? editor.value : {}) as Record<
     string,
@@ -101,6 +110,15 @@ function EditorSection({ section }: EditorSectionProps) {
         {section.lead ? <p className="mt-1 text-[14px] text-mist-600">{section.lead}</p> : null}
       </header>
       <SectionLabelContext.Provider value={label}>{body}</SectionLabelContext.Provider>
+      {/* A new record is a guided walk: each section ends with the way to the next one. */}
+      {editor.isNew && next ? (
+        <div className="mt-6 flex justify-end border-t border-mist-100 pt-4">
+          <Button type="button" variant="secondary" onClick={() => scrollToSection(next.id)}>
+            {t("nextSection", { section: next.title })}
+            <ArrowDown aria-hidden="true" className="size-4" />
+          </Button>
+        </div>
+      ) : null}
     </section>
   );
 }

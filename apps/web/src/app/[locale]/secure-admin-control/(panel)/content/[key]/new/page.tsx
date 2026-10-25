@@ -15,9 +15,22 @@ import { defaultFor } from "@/lib/admin/schema";
 import type { ContentCollection } from "@/lib/admin/types";
 import { SITE_URL } from "@/lib/siteUrl";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Admin.content");
-  return { title: t("newRecord") };
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/secure-admin-control/content/[key]/new">): Promise<Metadata> {
+  const [{ key }, t, tAdmin] = await Promise.all([
+    params,
+    getTranslations("Admin.content"),
+    getTranslations("Admin"),
+  ]);
+  // "New tour package" in the browser tab, like the page heading (D0 R8).
+  const one = `blueprints.${key}.one` as "blueprints.tourPackages.one";
+  return {
+    title:
+      isContentKey(key) && tAdmin.has(one)
+        ? t("newRecordOf", { thing: tAdmin(one) })
+        : t("newRecord"),
+  };
 }
 
 async function NewRecord({
@@ -45,9 +58,10 @@ async function NewRecord({
     ),
   ];
   const initial = defaultFor(schema, schema);
-  // New records are real content, not Sample data.
-  if (initial && typeof initial === "object" && "sample" in (schema.properties ?? {})) {
-    (initial as Record<string, unknown>).sample = false;
+  // New records are real content, not Sample data, and start the way the blueprint says (D0 R8).
+  if (initial && typeof initial === "object") {
+    if ("sample" in (schema.properties ?? {})) (initial as Record<string, unknown>).sample = false;
+    Object.assign(initial, blueprint.startWith ?? {});
   }
 
   return (

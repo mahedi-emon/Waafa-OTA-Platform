@@ -97,6 +97,42 @@ describe("automatic fields", () => {
     expect(again.publishedAt).toBe("2026-01-01");
   });
 
+  it("works out a package's price from and a person's initials (D0 R8)", () => {
+    const pkg = buildResolvedBlueprint("tourPackages", editorSchema("tourPackages"), words);
+    const priced = applyAutomatic(
+      {
+        title: "Bali",
+        fromPrice: 99000,
+        prices: [{ price: 72500 }, { price: 64900 }, { price: 0 }],
+      },
+      pkg,
+      { isNew: false, now: NOW },
+    ) as { fromPrice: number };
+    expect(priced.fromPrice).toBe(64900);
+    const unpriced = applyAutomatic({ title: "Bali", fromPrice: 5, prices: [] }, pkg, {
+      isNew: false,
+      now: NOW,
+    }) as { fromPrice: number };
+    expect(unpriced.fromPrice).toBe(5);
+    const days = applyAutomatic(
+      {
+        title: "Bali",
+        durationDays: 9,
+        itinerary: [{ title: "a" }, { title: "b" }, { title: "c" }],
+      },
+      pkg,
+      { isNew: false, now: NOW },
+    ) as { durationDays: number };
+    expect(days.durationDays).toBe(3);
+
+    const team = buildResolvedBlueprint("team", editorSchema("team"), words);
+    const initials = (name: string) =>
+      (applyAutomatic({ name }, team, { isNew: true, now: NOW }) as { initials?: string }).initials;
+    expect(initials("Rafiq Ahmed Khan")).toBe("RK");
+    expect(initials("nusrat")).toBe("N");
+    expect(initials("  ")).toBeUndefined();
+  });
+
   it("gives list items ids and keys, and works out reading time and levels", () => {
     const post = buildResolvedBlueprint("blogPosts", editorSchema("blogPosts"), words);
     const filled = applyAutomatic(
@@ -238,7 +274,6 @@ describe("history", () => {
     const changes = changesBetween(before, after, blueprint);
     expect(changes.map((change) => `${change.kind}:${change.pattern}`)).toEqual([
       "edited:summary",
-      "changed:fromPrice",
       "list:prices",
       "changed:inclusions",
     ]);

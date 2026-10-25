@@ -144,6 +144,30 @@ export function applyAutomatic(
           if (typeof index === "number") set(path, index + 1);
           break;
         }
+        case "lowestPrice": {
+          const prices = (owner as { prices?: unknown } | null)?.prices;
+          const amounts = (Array.isArray(prices) ? prices : [])
+            .map((item) => (item as { price?: unknown } | null)?.price)
+            .filter((price): price is number => typeof price === "number" && price > 0);
+          if (amounts.length > 0) set(path, Math.min(...amounts));
+          break;
+        }
+        case "itineraryDays": {
+          const days = (owner as { itinerary?: unknown } | null)?.itinerary;
+          if (Array.isArray(days) && days.length > 0) set(path, days.length);
+          break;
+        }
+        case "initialsFromName": {
+          const words = String((owner as { name?: unknown } | null)?.name ?? "")
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+          const letters = [words[0], words.length > 1 ? words.at(-1) : undefined]
+            .map((word) => (word ? Array.from(word)[0]?.toUpperCase() : ""))
+            .join("");
+          if (letters) set(path, letters.slice(0, 3));
+          break;
+        }
         case "readingMinutes":
           set(path, Math.max(1, Math.round(wordCount(owner) / 200)));
           break;

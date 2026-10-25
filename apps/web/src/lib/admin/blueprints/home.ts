@@ -78,10 +78,12 @@ export const destinationsBlueprint = {
 
 export const bannersBlueprint = {
   key: "banners",
+  // One screen: where it shows, its words, photo and link; the dates sit in the side panel (D0 R8).
   sections: [
-    { id: "banner", fields: ["placement", "kicker", "title", "body", "code", "validityText"] },
-    { id: "photo", fields: ["image"] },
-    { id: "link", fields: ["link"] },
+    {
+      id: "banner",
+      fields: ["placement", "title", "kicker", "body", "image", "link", "code", "validityText"],
+    },
   ],
   visibility: ["enabled", "startsAt", "endsAt"],
   fields: {

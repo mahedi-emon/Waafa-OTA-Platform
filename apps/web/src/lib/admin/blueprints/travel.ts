@@ -36,12 +36,26 @@ export const airlinesBlueprint = {
 
 export const groupFaresBlueprint = {
   key: "groupFares",
+  // One screen: the flight, the fare and the seats left (a quick form, D0 R8).
   sections: [
     {
       id: "flight",
-      fields: ["airline", "from", "to", "tripType", "departDate", "returnDate", "stops"],
+      fields: [
+        "airline",
+        "from",
+        "to",
+        "tripType",
+        "departDate",
+        "returnDate",
+        "stops",
+        "farePerAdult",
+        "seatsLeft",
+        "expiresAt",
+        "cabin",
+        "baggage",
+        "notes",
+      ],
     },
-    { id: "seat", fields: ["cabin", "baggage", "farePerAdult", "seatsLeft", "expiresAt", "notes"] },
   ],
   fields: {
     id: recordId,
@@ -98,6 +112,7 @@ export const flightRoutesBlueprint = {
 
 export const tourPackagesBlueprint = {
   key: "tourPackages",
+  // Basics → Photos → Itinerary → Prices and dates → Inclusions → Hotels and visa notes → SEO (ADMIN.md §7, D0 R8).
   sections: [
     {
       id: "basics",
@@ -110,11 +125,16 @@ export const tourPackagesBlueprint = {
         "countries",
         "categories",
         "tags",
+        "highlights",
+        "includesShort",
       ],
     },
+    { id: "photos", fields: ["cover", "gallery", "video"] },
+    { id: "itinerary", fields: ["itinerary"] },
     {
-      id: "trip",
+      id: "prices",
       fields: [
+        "prices",
         "durationDays",
         "durationNights",
         "nightsPerCity",
@@ -124,15 +144,9 @@ export const tourPackagesBlueprint = {
         "departures",
       ],
     },
-    { id: "photos", fields: ["cover", "gallery", "video"] },
-    { id: "highlights", fields: ["highlights", "includesShort"] },
-    { id: "itinerary", fields: ["itinerary"] },
-    { id: "prices", fields: ["fromPrice", "prices"] },
-    { id: "included", fields: ["inclusions", "exclusions"] },
-    { id: "hotels", fields: ["hotels"] },
-    { id: "visa", fields: ["visa", "visaNote"] },
-    { id: "terms", fields: ["terms", "faqs", "relatedSlugs"] },
-    { id: "seo", fields: ["seo"] },
+    { id: "included", fields: ["inclusions", "exclusions", "terms", "faqs"] },
+    { id: "hotels", fields: ["hotels", "visa", "visaNote"] },
+    { id: "seo", fields: ["seo", "relatedSlugs"] },
   ],
   fields: {
     id: recordId,
@@ -157,7 +171,10 @@ export const tourPackagesBlueprint = {
     itinerary_day: { auto: "dayNumber" },
     itinerary_body: textarea,
     itinerary_tags: tags,
-    fromPrice: money,
+    // The lowest of the price options, worked out on save (never typed twice).
+    // One day per itinerary card: the length follows the plan (the site checks they match).
+    durationDays: { auto: "itineraryDays" },
+    fromPrice: { auto: "lowestPrice" },
     prices: { widget: "repeater", summary: "label", wide: true },
     prices_sharing: { choices: "sharing" },
     prices_price: money,

@@ -16,11 +16,11 @@ import type { Blueprint } from "./types";
 
 export const visaCountriesBlueprint = {
   key: "visaCountries",
+  // Basics → Visa types with fees and documents → Questions → SEO (ADMIN.md §7, D0 R8).
   sections: [
-    { id: "country", fields: ["name", "slug", "flagCode", "region", "submission"] },
-    { id: "photo", fields: ["cover"] },
+    { id: "country", fields: ["name", "slug", "flagCode", "region", "submission", "cover"] },
     { id: "types", fields: ["types"] },
-    { id: "forms", fields: ["forms", "faqs", "guideSlug"] },
+    { id: "forms", fields: ["faqs", "forms", "guideSlug"] },
     { id: "seo", fields: ["seo"] },
   ],
   visibility: ["popular"],

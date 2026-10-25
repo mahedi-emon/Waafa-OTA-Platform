@@ -145,7 +145,6 @@ async function newTeamMember(page: Page, name: string) {
     await nameBox.fill(name);
     await expect(page.getByText(`${name.length} of 80`).first()).toBeVisible({ timeout: 1_500 });
   }).toPass({ timeout: 30_000 });
-  await page.getByRole("textbox", { name: "Initials", exact: true }).fill("MT");
   await page.getByRole("textbox", { name: "Job title", exact: true }).fill("Media tester");
   await page.getByRole("textbox", { name: "Department", exact: true }).fill("Quality");
 }

@@ -40,6 +40,8 @@ export type WidgetKind =
   | "seo"
   | "map"
   | "variant"
+  /** A product's variants as a matrix of its option values, with the default by radio (D0 R8). */
+  | "variantsMatrix"
   /** Where a link goes: a page or record by name, or a web address, phone or email (D0 R7). */
   | "link"
   | "readOnly";
@@ -69,7 +71,13 @@ export type AutoRule =
   /** The list owns it (drag order); the API keeps it on save (issue 205). */
   | "listOrder"
   /** A list item's key in camelCase from its label ("Page yield" → "pageYield"), unique in the list. */
-  | "keyFromLabel";
+  | "keyFromLabel"
+  /** The lowest price among the record's price options (a package's "Price from", D0 R8). */
+  | "lowestPrice"
+  /** A person's initials from their name ("Rafiq Ahmed" → "RA"), shown until a photo is uploaded. */
+  | "initialsFromName"
+  /** How many days the record's itinerary has (a package's length in days, D0 R8). */
+  | "itineraryDays";
 
 export type ReferenceSpec = {
   /** The list the choices come from. */
@@ -122,7 +130,14 @@ export type FieldSpec = {
   variantOf?: string;
   /** Photo, gallery: the frame it shows in on the site. */
   frame?: PhotoFrame;
+  /**
+   * Repeater of photo items (a gallery album, D0 R8): several photos dropped at once each become an item, with the
+   * photo in `image` and the fixed parts in `with` ({ kind: "photo" }).
+   */
+  bulkPhotos?: BulkPhotos;
 };
+
+export type BulkPhotos = { image: string; with?: Record<string, string> };
 
 export type SectionSpec = {
   id: string;
@@ -143,6 +158,10 @@ export type Blueprint = {
   url?: string | Record<string, string>;
   /** The editor's heading when the title field alone says little: "{from_city} → {to_city}". */
   heading?: string;
+  /** "writing": a wide column for long text, without the section list beside it (a blog post, D0 R8). */
+  layout?: "writing";
+  /** Values a new record starts with instead of the schema's empty ones (a new team member shows, D0 R8). */
+  startWith?: Record<string, unknown>;
   /** What Publish needs besides valid fields: patterns that must not be empty ("cover_src", "prices"). */
   publish?: string[];
 };
@@ -166,6 +185,7 @@ export type ResolvedField = {
   from?: { list: string; value: string; label: string };
   variantOf?: string;
   frame?: PhotoFrame;
+  bulkPhotos?: BulkPhotos;
 };
 
 export type ResolvedSection = {
@@ -191,6 +211,8 @@ export type ResolvedBlueprint = {
   visibility: string[];
   url?: string | Record<string, string>;
   heading?: string;
+  layout?: "writing";
+  startWith?: Record<string, unknown>;
   publish: Array<{ path: string; label: string }>;
   /** The record has a draft / published / archived status, set by Save draft, Publish and Unpublish. */
   workflow: boolean;

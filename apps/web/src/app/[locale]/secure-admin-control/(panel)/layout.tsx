@@ -1,4 +1,5 @@
 import { Suspense, type ReactNode } from "react";
+import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,6 +7,8 @@ import { adminAvailable, requireStaff } from "@/lib/admin/adminApi";
 
 async function PanelFrame({ children }: { children: ReactNode }) {
   if (!adminAvailable()) {
+    // Per request like the signed-in frame, so pages whose tab title reads the address never block the build.
+    await connection();
     const t = await getTranslations("Admin.unavailable");
     return (
       <main id="main" className="flex min-h-dvh items-center justify-center bg-mist-50 px-4">

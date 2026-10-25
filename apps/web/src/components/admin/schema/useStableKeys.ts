@@ -10,7 +10,8 @@ export type StableKeys = {
   keys: string[];
   /** Call in the same event as the list change, so each item keeps its key (and its focus and open state). */
   move: (from: number, to: number) => void;
-  insert: (at: number) => void;
+  /** Returns the new item's key (a new card opens with it). */
+  insert: (at: number) => string;
   remove: (at: number) => void;
 };
 
@@ -39,11 +40,14 @@ export function useStableKeys(length: number): StableKeys {
         if (moved) keys.splice(to, 0, moved);
         return keys;
       }),
-    insert: (at) =>
+    insert: (at) => {
+      const key = nextKey();
       update((keys) => {
-        keys.splice(at, 0, nextKey());
+        keys.splice(at, 0, key);
         return keys;
-      }),
+      });
+      return key;
+    },
     remove: (at) =>
       update((keys) => {
         keys.splice(at, 1);
