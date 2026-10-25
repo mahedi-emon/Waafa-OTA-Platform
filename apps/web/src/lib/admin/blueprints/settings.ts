@@ -98,7 +98,7 @@ export const bookingModesBlueprint = {
   key: "bookingModes",
   sections: [{ id: "modes", fields: [""] }],
   fields: {
-    "": { widget: "repeater", summary: "module", fixed: true, wide: true },
+    "": { widget: "bookingModes", wide: true },
     module: { widget: "readOnly", choices: "bookingModule" },
     mode: { widget: "readOnly", choices: "bookingMode" },
     liveLocked: readOnly,

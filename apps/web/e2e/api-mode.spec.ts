@@ -106,7 +106,8 @@ test("a newsletter sign-up reaches the Admin list", async ({ page }) => {
   await expect(page.getByText(/Fare drops and visa news will reach you/)).toBeVisible();
   await signIn(page);
   await page.goto("/secure-admin-control/subscribers");
-  await expect(page.getByText(email)).toBeVisible();
+  // Newsletter is a DataTable (issue 229): the sign-up is a row of the table.
+  await expect(page.getByRole("row").filter({ hasText: email })).toBeVisible();
 });
 
 test("a Super Admin connects an external API, turns it on and reveals the secret on request", async ({

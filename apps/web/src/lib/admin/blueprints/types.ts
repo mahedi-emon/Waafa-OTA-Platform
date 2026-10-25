@@ -36,6 +36,8 @@ export type WidgetKind =
   | "weekdays"
   /** Countries by name in order, the first the default (phone picker countries, issue 229). */
   | "countries"
+  /** The Golden Switch as one card per service: mode, lock and its reason (issue 229). */
+  | "bookingModes"
   | "image"
   | "gallery"
   | "video"

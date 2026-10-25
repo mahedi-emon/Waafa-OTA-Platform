@@ -4785,6 +4785,11 @@
           "first": "the default",
           "makeFirst": "Make {country} the default",
           "remove": "Remove {country}"
+        },
+        "bookingModes": {
+          "locked": "Live booking locked",
+          "reason": "Why it is locked",
+          "reasonHelp": "Shown to staff. Live booking unlocks in a later phase, once a provider and online payment are connected."
         }
       },
       "advanced": {
@@ -7029,7 +7034,7 @@
       "any": "Any date",
       "apply": "Show",
       "clear": "Clear",
-      "range": "{from} – {to}",
+      "range": "{from} to {to}",
       "previous": "Previous month",
       "next": "Next month"
     },

@@ -97,6 +97,28 @@ describe("automatic fields", () => {
     expect(again.publishedAt).toBe("2026-01-01");
   });
 
+  it("writes each phone number as people read it from the one with the country code (issue 229)", () => {
+    const contact = buildResolvedBlueprint(
+      "contactSettings",
+      editorSchema("contactSettings"),
+      words,
+    );
+    const next = applyAutomatic(
+      {
+        phoneE164: "+8801712345678",
+        phoneDisplay: "old",
+        extraPhones: [
+          { e164: "+8801898765432", display: "" },
+          { e164: "not a number", display: "kept" },
+        ],
+      },
+      contact,
+      { isNew: false, now: NOW },
+    ) as { phoneDisplay: string; extraPhones: Array<{ display: string }> };
+    expect(next.phoneDisplay).toBe("01712-345678");
+    expect(next.extraPhones.map((phone) => phone.display)).toEqual(["01898-765432", "kept"]);
+  });
+
   it("works out a package's price from and a person's initials (D0 R8)", () => {
     const pkg = buildResolvedBlueprint("tourPackages", editorSchema("tourPackages"), words);
     const priced = applyAutomatic(

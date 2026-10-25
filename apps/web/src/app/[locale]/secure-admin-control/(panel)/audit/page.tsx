@@ -130,7 +130,6 @@ async function Audit({
       facts: {
         person: { text: row.actor },
         area: { text: area ? t(`areas.${area}`) : "", kind: "muted" },
-        when: { text: when, kind: "date" },
       },
       summary: [
         { label: t("colPerson"), value: row.actor },
@@ -162,7 +161,6 @@ async function Audit({
     { key: "name", label: t("colChange"), always: true },
     { key: "person", label: t("colPerson") },
     { key: "area", label: t("colArea") },
-    { key: "when", label: t("colWhen") },
   ];
 
   return (
