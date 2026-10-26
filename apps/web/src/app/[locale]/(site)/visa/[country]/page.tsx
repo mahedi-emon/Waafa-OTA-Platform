@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BookOpen, FileDown, Info } from "@/components/icons/serverIcons";
@@ -14,7 +13,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Skeleton } from "@/components/ui/skeleton";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { getVisaCountry, listVisaCountries } from "@/lib/data/visa";
@@ -307,22 +305,5 @@ async function VisaCountryPageContent({
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
 export default function VisaCountryPage({ params }: PageProps<"/[locale]/visa/[country]">) {
-  return (
-    <Suspense
-      fallback={
-        <main
-          id="main"
-          aria-busy="true"
-          className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6"
-        >
-          <Skeleton className="h-5 w-56 rounded-full" />
-          <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
-          <Skeleton className="h-10 w-3/4 rounded-xl" />
-          <Skeleton className="h-[480px] rounded-2xl" />
-        </main>
-      }
-    >
-      <VisaCountryPageContent params={params} />
-    </Suspense>
-  );
+  return <VisaCountryPageContent params={params} />;
 }

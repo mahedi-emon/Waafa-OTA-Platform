@@ -2,7 +2,8 @@
 
 import { createContext, useMemo, useState, type ReactNode } from "react";
 import type { TourPackage } from "@waafa/shared";
-import { packageQueryDefaults, type PackageQueryInput } from "@/lib/leads/packageLeadForm";
+import { packageQueryDefaults } from "@/lib/leads/packageLeadFormFields";
+import type { PackageQueryInput } from "@/lib/leads/packageLeadForm";
 
 type PackageBooking = {
   query: PackageQueryInput;

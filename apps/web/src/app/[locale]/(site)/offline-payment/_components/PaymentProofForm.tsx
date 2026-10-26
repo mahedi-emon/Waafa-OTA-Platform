@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { CircleAlert, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -13,13 +13,17 @@ import { PhoneField } from "@/components/forms/PhoneField";
 import { useTurnstile } from "@/components/forms/useTurnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  buildPaymentProof,
-  hasTransactionOrSlip,
-  paymentProofFormSchema,
-  type PaymentProofFormValues,
-} from "@/lib/leads/paymentProofForm";
+import type { PaymentProofFormValues } from "@/lib/leads/paymentProofForm";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { paymentProofFormSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/paymentProofForm"),
+  ]);
+  return zodResolver(paymentProofFormSchema);
+});
 
 type PaymentProofFormProps = {
   accounts: Array<{ id: string; title: string }>;
@@ -42,7 +46,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
     transactionId: "",
   };
   const form = useForm<PaymentProofFormValues>({
-    resolver: zodResolver(paymentProofFormSchema),
+    resolver: formResolver,
     defaultValues: defaults,
     mode: "onTouched",
   });
@@ -68,7 +72,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
       return;
     }
     if (sending) return;
-    if (!hasTransactionOrSlip(values, slip)) {
+    if (!(await import("@/lib/leads/paymentProofForm")).hasTransactionOrSlip(values, slip)) {
       setMissingProof(true);
       return;
     }
@@ -84,7 +88,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           idempotencyKey: key,
-          proof: buildPaymentProof(values, slip),
+          proof: (await import("@/lib/leads/paymentProofForm")).buildPaymentProof(values, slip),
           turnstileToken,
         }),
       });

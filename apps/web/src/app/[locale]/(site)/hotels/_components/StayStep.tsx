@@ -1,12 +1,12 @@
 "use client";
 
 import { useId } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { cn } from "cn";
-import { HotelBudgetBandSchema, HotelMealsSchema, MAX_HOTEL_ROOMS } from "@waafa/shared";
+import { HOTEL_BUDGET_BANDS, HOTEL_MEALS, MAX_HOTEL_ROOMS } from "@waafa/shared/constants";
 import { ChipRadioGroup } from "@/components/forms/ChipRadioGroup";
 import { FormField } from "@/components/forms/FormField";
 import { RoomsGuestsFields } from "@/components/forms/RoomsGuestsFields";
@@ -14,21 +14,19 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  ADULTS_PER_ROOM,
-  CHILDREN_PER_ROOM,
-  stayStepSchema,
-  type StayStepInput,
-  type StayStepValues,
-} from "@/lib/leads/hotelLeadForm";
+import { ADULTS_PER_ROOM, CHILDREN_PER_ROOM } from "@/lib/leads/hotelLeadFormFields";
+import type { StayStepInput, StayStepValues } from "@/lib/leads/hotelLeadForm";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { stayStepSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/hotelLeadForm"),
+  ]);
+  return zodResolver(stayStepSchema);
+});
 
 type StayStepProps = {
   defaultValues: StayStepInput;
@@ -54,7 +52,7 @@ function StayStep({
   const tLeads = useTranslations("Leads");
   const id = useId();
   const form = useForm<StayStepInput, unknown, StayStepValues>({
-    resolver: zodResolver(stayStepSchema),
+    resolver: formResolver,
     defaultValues,
     mode: "onTouched",
   });
@@ -80,18 +78,18 @@ function StayStep({
           control={form.control}
           name={name}
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger id={`stay-${name}`} ref={field.ref} className="h-12 w-full rounded-xl">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <NativeSelect
+              value={field.value ?? ""}
+              onChange={(event) => field.onChange(event.target.value)}
+              id={`stay-${name}`}
+              ref={field.ref}
+            >
+              {options.map((option) => (
+                <NativeSelectOption key={option.value} value={option.value}>
+                  {option.label}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
           )}
         />
       )}
@@ -151,7 +149,7 @@ function StayStep({
         {choice(
           "budgetBand",
           t("stay.budget"),
-          HotelBudgetBandSchema.options.map((band) => ({
+          HOTEL_BUDGET_BANDS.map((band) => ({
             value: band,
             label: t(`stay.budgets.${band}`),
           })),
@@ -159,7 +157,7 @@ function StayStep({
         {choice(
           "meals",
           t("stay.meals"),
-          HotelMealsSchema.options.map((meal) => ({
+          HOTEL_MEALS.map((meal) => ({
             value: meal,
             label: t(`stay.mealOptions.${meal}`),
           })),

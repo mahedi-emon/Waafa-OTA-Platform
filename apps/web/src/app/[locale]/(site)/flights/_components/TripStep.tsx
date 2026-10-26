@@ -1,32 +1,31 @@
 "use client";
 
 import { useId } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { cn } from "cn";
-import { CabinClassSchema, MAX_TRAVELLERS } from "@waafa/shared";
+import { CABIN_CLASSES, MAX_TRAVELLERS } from "@waafa/shared/constants";
 import { FormField } from "@/components/forms/FormField";
 import { TravellersFields } from "@/components/forms/TravellersFields";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  tripStepSchema,
-  type TripStepInput,
-  type TripStepValues,
-} from "@/lib/leads/flightLeadForm";
+import type { TripStepInput, TripStepValues } from "@/lib/leads/flightLeadForm";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { tripStepSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/flightLeadForm"),
+  ]);
+  return zodResolver(tripStepSchema);
+});
 
 type TripStepProps = {
   defaultValues: TripStepInput;
@@ -60,7 +59,7 @@ function TripStep({
   const tLeads = useTranslations("Leads");
   const id = useId();
   const form = useForm<TripStepInput, unknown, TripStepValues>({
-    resolver: zodResolver(tripStepSchema),
+    resolver: formResolver,
     defaultValues,
     mode: "onTouched",
   });
@@ -82,25 +81,23 @@ function TripStep({
           control={form.control}
           name={name}
           render={({ field }) => (
-            <Select value={field.value || undefined} onValueChange={field.onChange}>
-              <SelectTrigger
-                id={`trip-${name}`}
-                ref={field.ref}
-                aria-invalid={errors[name] ? true : undefined}
-                aria-describedby={describedBy}
-                className="h-12 w-full rounded-xl"
-              >
-                <SelectValue placeholder={t("trip.chooseAirport")} />
-              </SelectTrigger>
-              <SelectContent>
-                {airports.map((airport) => (
-                  <SelectItem key={airport.iata} value={airport.iata}>
-                    {airport.city}{" "}
-                    <span className="font-semibold text-mist-600">{airport.iata}</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <NativeSelect
+              value={field.value ?? ""}
+              onChange={(event) => field.onChange(event.target.value)}
+              id={`trip-${name}`}
+              ref={field.ref}
+              aria-describedby={describedBy}
+              aria-invalid={errors[name] ? true : undefined}
+            >
+              <NativeSelectOption value="" disabled>
+                {t("trip.chooseAirport")}
+              </NativeSelectOption>
+              {airports.map((airport) => (
+                <NativeSelectOption key={airport.iata} value={airport.iata}>
+                  {airport.city} ({airport.iata})
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
           )}
         />
       )}
@@ -156,18 +153,18 @@ function TripStep({
               control={form.control}
               name="cabin"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger id="trip-cabin" ref={field.ref} className="h-12 w-full rounded-xl">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CabinClassSchema.options.map((cabin) => (
-                      <SelectItem key={cabin} value={cabin}>
-                        {t(`cabins.${cabin}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NativeSelect
+                  value={field.value ?? ""}
+                  onChange={(event) => field.onChange(event.target.value)}
+                  id="trip-cabin"
+                  ref={field.ref}
+                >
+                  {CABIN_CLASSES.map((cabin) => (
+                    <NativeSelectOption key={cabin} value={cabin}>
+                      {t(`cabins.${cabin}`)}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
               )}
             />
           )}
@@ -178,26 +175,22 @@ function TripStep({
               control={form.control}
               name="airline"
               render={({ field }) => (
-                <Select
+                <NativeSelect
                   value={field.value || ANY}
-                  onValueChange={(v) => field.onChange(v === ANY ? "" : v)}
+                  onChange={(event) => {
+                    const v = event.target.value;
+                    field.onChange(v === ANY ? "" : v);
+                  }}
+                  id="trip-airline"
+                  ref={field.ref}
                 >
-                  <SelectTrigger
-                    id="trip-airline"
-                    ref={field.ref}
-                    className="h-12 w-full rounded-xl"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={ANY}>{t("trip.anyAirline")}</SelectItem>
-                    {airlines.map((airline) => (
-                      <SelectItem key={airline.code} value={airline.code}>
-                        {airline.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <NativeSelectOption value={ANY}>{t("trip.anyAirline")}</NativeSelectOption>
+                  {airlines.map((airline) => (
+                    <NativeSelectOption key={airline.code} value={airline.code}>
+                      {airline.name}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
               )}
             />
           )}
@@ -295,24 +288,24 @@ function TripStep({
             control={form.control}
             name="bestTime"
             render={({ field }) => (
-              <Select
+              <NativeSelect
                 value={field.value || "any"}
-                onValueChange={(v) => field.onChange(v === "any" ? "" : v)}
+                onChange={(event) => {
+                  const v = event.target.value;
+                  field.onChange(v === "any" ? "" : v);
+                }}
+                id="trip-best"
+                ref={field.ref}
               >
-                <SelectTrigger id="trip-best" ref={field.ref} className="h-12 w-full rounded-xl">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {BEST_TIMES.map((time) => (
-                    <SelectItem
-                      key={time}
-                      value={time === "any" ? "any" : t(`trip.bestTimes.${time}`)}
-                    >
-                      {t(`trip.bestTimes.${time}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {BEST_TIMES.map((time) => (
+                  <NativeSelectOption
+                    key={time}
+                    value={time === "any" ? "any" : t(`trip.bestTimes.${time}`)}
+                  >
+                    {t(`trip.bestTimes.${time}`)}
+                  </NativeSelectOption>
+                ))}
+              </NativeSelect>
             )}
           />
         )}

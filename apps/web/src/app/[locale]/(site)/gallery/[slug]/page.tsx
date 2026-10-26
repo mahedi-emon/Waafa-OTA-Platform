@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -7,7 +6,6 @@ import { formatDate } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getGalleryAlbum, listGalleryAlbums } from "@/lib/data/content";
 import { followMovedRecord } from "@/lib/data/movedRecord";
@@ -105,16 +103,5 @@ async function AlbumContent({ params }: Pick<PageProps<"/[locale]/gallery/[slug]
 
 /** /gallery/[slug] (Gallery-album, Gallery-photo, -m): the album's photos in a masonry grid with a lightbox. */
 export default function AlbumPage({ params }: PageProps<"/[locale]/gallery/[slug]">) {
-  return (
-    <Suspense
-      fallback={
-        <div className="site-container flex flex-col gap-6 pt-6 pb-28">
-          <Skeleton className="h-12 w-1/2 rounded-xl" />
-          <Skeleton className="h-96 rounded-2xl" />
-        </div>
-      }
-    >
-      <AlbumContent params={params} />
-    </Suspense>
-  );
+  return <AlbumContent params={params} />;
 }

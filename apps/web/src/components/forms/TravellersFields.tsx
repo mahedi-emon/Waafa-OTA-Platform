@@ -3,13 +3,7 @@
 import { useId } from "react";
 import { CircleAlert } from "lucide-react";
 import { NumberStepper } from "@/components/forms/NumberStepper";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 
 export type TravellersValue = { adults: number; childAges: number[]; infants: number };
 
@@ -99,28 +93,26 @@ function TravellersFields({ value, onChange, max, error, labels }: TravellersFie
                   >
                     {label}
                   </label>
-                  <Select
-                    value={String(age)}
-                    onValueChange={(next) =>
-                      onChange({
-                        ...value,
-                        childAges: value.childAges.map((item, i) =>
-                          i === index ? Number(next) : item,
-                        ),
-                      })
+                  <NativeSelect
+                    value={String(age) ?? ""}
+                    onChange={(event) =>
+                      ((next) =>
+                        onChange({
+                          ...value,
+                          childAges: value.childAges.map((item, i) =>
+                            i === index ? Number(next) : item,
+                          ),
+                        }))(event.target.value)
                     }
+                    size="sm"
+                    id={`${id}-age-${index}`}
                   >
-                    <SelectTrigger id={`${id}-age-${index}`} className="h-11 w-full rounded-xl">
-                      <SelectValue>{labels.years.replace("{age}", String(age))}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {AGES.map((item) => (
-                        <SelectItem key={item} value={String(item)}>
-                          {labels.years.replace("{age}", String(item))}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {AGES.map((item) => (
+                      <NativeSelectOption key={item} value={String(item)}>
+                        {labels.years.replace("{age}", String(item))}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
                 </div>
               );
             })}

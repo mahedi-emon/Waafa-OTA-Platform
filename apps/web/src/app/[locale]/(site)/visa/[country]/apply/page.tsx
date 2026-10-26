@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
@@ -6,7 +5,6 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { visaPrice } from "@waafa/shared";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HelpCard } from "@/components/results/HelpCard";
-import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessages } from "@/i18n/pickMessages";
 import { getContactSettings, getLeadFormSettings } from "@/lib/data/settings";
 import { getVisaCountry, listVisaCountries } from "@/lib/data/visa";
@@ -99,22 +97,5 @@ async function VisaApplyPageContent({
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
 export default function VisaApplyPage({ params }: PageProps<"/[locale]/visa/[country]/apply">) {
-  return (
-    <Suspense
-      fallback={
-        <main
-          id="main"
-          aria-busy="true"
-          className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6"
-        >
-          <Skeleton className="h-5 w-56 rounded-full" />
-          <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
-          <Skeleton className="h-10 w-3/4 rounded-xl" />
-          <Skeleton className="h-[480px] rounded-2xl" />
-        </main>
-      }
-    >
-      <VisaApplyPageContent params={params} />
-    </Suspense>
-  );
+  return <VisaApplyPageContent params={params} />;
 }

@@ -2,25 +2,14 @@ import { z } from "zod";
 import type { OrderCreateInput } from "@waafa/shared";
 import { isPhoneCountry, toE164 } from "@/lib/leads/phone";
 import type { CartLine } from "./cart";
+import { COD } from "./checkoutFormFields";
+export { DIVISIONS, COD } from "./checkoutFormFields";
 
 /*
  * Checkout form (FR-SHOP-07): contact, delivery address (or office pick-up), payment (cash on delivery or a
  * transfer with its transaction ID) and an optional VAT invoice. Messages are next-intl keys under
  * "Checkout.errors"; the server validates again with OrderCreateInputSchema and prices the order itself.
  */
-
-export const DIVISIONS = [
-  "Dhaka",
-  "Chattogram",
-  "Khulna",
-  "Rajshahi",
-  "Barishal",
-  "Sylhet",
-  "Rangpur",
-  "Mymensingh",
-] as const;
-
-export const COD = "cod";
 
 export const checkoutSchema = z
   .object({

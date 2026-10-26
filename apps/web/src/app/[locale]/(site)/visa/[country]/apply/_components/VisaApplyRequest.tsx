@@ -3,12 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
-import {
-  buildVisaLead,
-  visaFileDefaults,
-  type VisaFileInput,
-  type VisaFileValues,
-} from "@/lib/leads/visaLeadForm";
+import { visaFileDefaults } from "@/lib/leads/visaLeadFormFields";
+import type { VisaFileInput, VisaFileValues } from "@/lib/leads/visaLeadForm";
 import { VisaFileStep, type VisaTypeOption } from "./VisaFileStep";
 
 type VisaApplyRequestProps = {
@@ -56,7 +52,9 @@ function VisaApplyRequest({
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, values, page) => buildVisaLead({ contact, values, country, page })}
+      buildLead={async (contact, values, page) =>
+        (await import("@/lib/leads/visaLeadForm")).buildVisaLead({ contact, values, country, page })
+      }
       renderSecondStep={({ sending, goBack, submit }) => (
         <VisaFileStep
           countryName={country.name}

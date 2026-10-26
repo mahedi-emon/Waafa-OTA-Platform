@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, Lightbulb } from "@/components/icons/serverIcons";
@@ -16,7 +15,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getVisaCountry, getVisaGuide, listVisaGuides } from "@/lib/data/visa";
 import { followMovedRecord } from "@/lib/data/movedRecord";
@@ -258,22 +256,5 @@ async function VisaGuidePostPageContent({
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
 export default function VisaGuidePostPage({ params }: PageProps<"/[locale]/visa-guide/[slug]">) {
-  return (
-    <Suspense
-      fallback={
-        <main
-          id="main"
-          aria-busy="true"
-          className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6"
-        >
-          <Skeleton className="h-5 w-56 rounded-full" />
-          <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
-          <Skeleton className="h-10 w-3/4 rounded-xl" />
-          <Skeleton className="h-[480px] rounded-2xl" />
-        </main>
-      }
-    >
-      <VisaGuidePostPageContent params={params} />
-    </Suspense>
-  );
+  return <VisaGuidePostPageContent params={params} />;
 }

@@ -3,12 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
-import {
-  buildPlanTripLead,
-  planTripDefaults,
-  type PlanTripInput,
-  type PlanTripValues,
-} from "@/lib/leads/planTripLeadForm";
+import { planTripDefaults } from "@/lib/leads/planTripLeadFormFields";
+import type { PlanTripInput, PlanTripValues } from "@/lib/leads/planTripLeadForm";
 import { PlanStep } from "./PlanStep";
 
 type PlanTripRequestProps = {
@@ -38,8 +34,13 @@ function PlanTripRequest({ place, places, ...props }: PlanTripRequestProps) {
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, values, page) =>
-        buildPlanTripLead({ contact, plan: values, notSureLabel: t("notSure"), page })
+      buildLead={async (contact, values, page) =>
+        (await import("@/lib/leads/planTripLeadForm")).buildPlanTripLead({
+          contact,
+          plan: values,
+          notSureLabel: t("notSure"),
+          page,
+        })
       }
       renderSecondStep={({ sending, goBack, submit }) => (
         <PlanStep

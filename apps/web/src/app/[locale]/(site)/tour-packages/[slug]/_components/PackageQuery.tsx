@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { TourPackage } from "@waafa/shared";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
-import { buildPackageLead, type PackageQueryValues } from "@/lib/leads/packageLeadForm";
+import type { PackageQueryValues } from "@/lib/leads/packageLeadForm";
 import { QueryStep } from "./QueryStep";
 import { usePackageBooking } from "./usePackageBooking";
 
@@ -37,7 +37,14 @@ function PackageQuery({ pkg, departures, ...props }: PackageQueryProps) {
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, values, page) => buildPackageLead({ contact, query: values, pkg, page })}
+      buildLead={async (contact, values, page) =>
+        (await import("@/lib/leads/packageLeadForm")).buildPackageLead({
+          contact,
+          query: values,
+          pkg,
+          page,
+        })
+      }
       renderSecondStep={({ sending, goBack, submit }) => (
         <QueryStep
           key={revision}

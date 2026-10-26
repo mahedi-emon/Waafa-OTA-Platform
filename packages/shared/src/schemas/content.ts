@@ -1,5 +1,6 @@
 import { STORAGE_KEY_PATTERN } from "../helpers/customerFiles";
 import { z } from "zod";
+import { FEEDBACK_SERVICES } from "../constants";
 import {
   IdSchema,
   ImageSchema,
@@ -266,15 +267,7 @@ export const GalleryAlbumSchema = z
   })
   .strict();
 
-export const FeedbackServiceSchema = z.enum([
-  "flights",
-  "hotels",
-  "packages",
-  "visa",
-  "shop",
-  "printing",
-  "other",
-]);
+export const FeedbackServiceSchema = z.enum(FEEDBACK_SERVICES);
 
 /**
  * Visitor feedback (FR-FDB). Only `approved` items with consent appear publicly; contact details are never shown.

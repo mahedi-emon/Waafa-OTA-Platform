@@ -1,4 +1,8 @@
 // Each lucide-react icon module also exports its SVG data (issue 236, components/icons/serverIcon.tsx).
 declare module "lucide-react/dist/esm/icons/*.mjs" {
-  export const __iconData: import("@/components/icons/serverIcon").LucideIconData;
+  type LucideIconData = {
+    name: string;
+    node: ReadonlyArray<readonly [string, Record<string, string | number>]>;
+  };
+  export const __iconData: LucideIconData;
 }

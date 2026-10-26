@@ -1,5 +1,6 @@
 import { STORAGE_KEY_PATTERN } from "../helpers/customerFiles";
 import { z } from "zod";
+import { HOTEL_BUDGET_BANDS, HOTEL_MEALS } from "../constants";
 import {
   EmailSchema,
   IdSchema,
@@ -103,14 +104,8 @@ export const FlightLeadPayloadSchema = z
   .strict();
 
 /** Hotel request extras (Hotels-2): budget band, meals and the two preferences from the rail. */
-export const HotelBudgetBandSchema = z.enum([
-  "any",
-  "under-5000",
-  "5000-10000",
-  "10000-20000",
-  "over-20000",
-]);
-export const HotelMealsSchema = z.enum(["any", "room-only", "breakfast", "half-board"]);
+export const HotelBudgetBandSchema = z.enum(HOTEL_BUDGET_BANDS);
+export const HotelMealsSchema = z.enum(HOTEL_MEALS);
 
 export const HotelLeadPayloadSchema = z
   .object({

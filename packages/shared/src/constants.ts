@@ -9,6 +9,25 @@ export const MAX_HOTEL_NIGHTS = 30;
 export const MAX_HOTEL_ROOMS = 5;
 
 export const CABIN_CLASSES = ["economy", "premium-economy", "business", "first"] as const;
+/** Feedback form services (FR-FDB). */
+export const FEEDBACK_SERVICES = [
+  "flights",
+  "hotels",
+  "packages",
+  "visa",
+  "shop",
+  "printing",
+  "other",
+] as const;
+/** Hotel request budget bands and meals (Hotels-2). */
+export const HOTEL_BUDGET_BANDS = [
+  "any",
+  "under-5000",
+  "5000-10000",
+  "10000-20000",
+  "over-20000",
+] as const;
+export const HOTEL_MEALS = ["any", "room-only", "breakfast", "half-board"] as const;
 export const VISA_TYPE_KEYS = ["tourist", "business", "student", "medical", "transit"] as const;
 export const VISA_REGIONS = [
   "south-asia",

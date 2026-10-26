@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Building2 } from "@/components/icons/serverIcons";
@@ -15,7 +14,6 @@ import { BulkQuote } from "@/components/shop/BulkQuote";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { RecentlyViewed } from "@/components/shop/RecentlyViewed";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessages } from "@/i18n/pickMessages";
 import {
   getContactSettings,
@@ -349,25 +347,5 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
 
 /** /shop/p/[slug] (ShopProduct, -pb, -hp, -toner, -video, -bulk, -m-* boards). */
 export default function ProductPage({ params }: PageProps<"/[locale]/shop/p/[slug]">) {
-  return (
-    <Suspense
-      fallback={
-        <main
-          id="main"
-          aria-busy="true"
-          className="site-container grid grid-cols-1 gap-8 pt-4 pb-28 md:pt-6 lg:grid-cols-2"
-        >
-          <Skeleton className="aspect-square rounded-[20px]" />
-          <div className="flex flex-col gap-4">
-            <Skeleton className="h-6 w-40 rounded-full" />
-            <Skeleton className="h-16 rounded-xl" />
-            <Skeleton className="h-10 w-48 rounded-xl" />
-            <Skeleton className="h-[320px] rounded-2xl" />
-          </div>
-        </main>
-      }
-    >
-      <ProductContent params={params} />
-    </Suspense>
-  );
+  return <ProductContent params={params} />;
 }

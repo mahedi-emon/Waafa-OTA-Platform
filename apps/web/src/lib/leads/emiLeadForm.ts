@@ -1,14 +1,12 @@
 import type { LeadCreateInput } from "@waafa/shared";
 import { z } from "zod";
 import { contactToLead, type ContactStepValues } from "./contactForm";
+export { EMI_BANK_UNSURE } from "./emiLeadFormFields";
 
 /*
  * "Request an EMI plan" (PRD §11 EMI page, issue 233): the amount, the months, the card's bank and what it is for →
  * EMI reference. Messages are keys under "Emi.request.errors" or "Leads.errors".
  */
-
-/** The bank is chosen from the partner list, or "unsure" when the visitor doesn't know which cards qualify. */
-export const EMI_BANK_UNSURE = "unsure";
 
 export function emiRequestSchema(minimum: number) {
   return z

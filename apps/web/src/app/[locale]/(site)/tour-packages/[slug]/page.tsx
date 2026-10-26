@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CalendarDays, Check, FileCheck2, MapPin, Users, X } from "lucide-react";
@@ -12,7 +11,6 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PackageCard } from "@/components/travel/PackageCard";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Accordion,
   AccordionContent,
@@ -544,22 +542,5 @@ async function PackagePageContent({
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
 export default function PackagePage({ params }: PageProps<"/[locale]/tour-packages/[slug]">) {
-  return (
-    <Suspense
-      fallback={
-        <main
-          id="main"
-          aria-busy="true"
-          className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6"
-        >
-          <Skeleton className="h-5 w-56 rounded-full" />
-          <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
-          <Skeleton className="h-10 w-3/4 rounded-xl" />
-          <Skeleton className="h-[480px] rounded-2xl" />
-        </main>
-      }
-    >
-      <PackagePageContent params={params} />
-    </Suspense>
-  );
+  return <PackagePageContent params={params} />;
 }

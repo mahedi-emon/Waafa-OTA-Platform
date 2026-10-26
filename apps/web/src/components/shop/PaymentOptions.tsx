@@ -8,7 +8,7 @@ import { FormField } from "@/components/forms/FormField";
 import { RadioCard } from "@/components/forms/RadioCard";
 import { Input } from "@/components/ui/input";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { COD } from "@/lib/shop/checkoutForm";
+import { COD } from "@/lib/shop/checkoutFormFields";
 
 export type OfflineAccount = {
   id: string;

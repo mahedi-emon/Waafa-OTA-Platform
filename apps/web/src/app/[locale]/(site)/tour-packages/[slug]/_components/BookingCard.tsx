@@ -5,14 +5,8 @@ import { useTranslations } from "next-intl";
 import { formatTaka } from "@waafa/shared";
 import { NumberStepper } from "@/components/forms/NumberStepper";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { estimatePackageTotal } from "@/lib/leads/packageLeadForm";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { estimatePackageTotal } from "@/lib/leads/packageLeadFormFields";
 import type { PackagePrice, RoomSharing } from "@waafa/shared";
 import { usePackageBooking } from "./usePackageBooking";
 
@@ -52,23 +46,16 @@ function BookingCard({ fromPrice, prices, departures, whatsappHref }: BookingCar
       </p>
       <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-ink-900">
         {t("query.departure")}
-        <Select
-          value={query.departure || undefined}
-          onValueChange={(departure) => updateFromCard({ departure })}
+        <NativeSelect
+          value={query.departure ?? ""}
+          onChange={(event) => ((departure) => updateFromCard({ departure }))(event.target.value)}
         >
-          <SelectTrigger className="h-12 w-full rounded-xl">
-            <SelectValue>
-              {departures.find((departure) => departure.value === query.departure)?.label}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {departures.map((departure) => (
-              <SelectItem key={departure.value} value={departure.value}>
-                {departure.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          {departures.map((departure) => (
+            <NativeSelectOption key={departure.value} value={departure.value}>
+              {departure.label}
+            </NativeSelectOption>
+          ))}
+        </NativeSelect>
       </label>
       <div className="divide-y divide-mist-200 rounded-xl border border-mist-200 px-3">
         {(["adults", "children", "infants"] as const).map((name) => (
@@ -89,23 +76,22 @@ function BookingCard({ fromPrice, prices, departures, whatsappHref }: BookingCar
       </div>
       <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-ink-900">
         {t("detail.room")}
-        <Select
-          value={query.roomSharing}
-          onValueChange={(sharing) => updateFromCard({ roomSharing: sharing as RoomSharing })}
+        <NativeSelect
+          value={query.roomSharing ?? ""}
+          onChange={(event) =>
+            ((sharing) => updateFromCard({ roomSharing: sharing as RoomSharing }))(
+              event.target.value,
+            )
+          }
         >
-          <SelectTrigger className="h-12 w-full rounded-xl">
-            <SelectValue>{room}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {prices
-              .filter((price) => ["twin", "triple", "single"].includes(price.sharing))
-              .map((price) => (
-                <SelectItem key={price.sharing} value={price.sharing}>
-                  {price.label}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
+          {prices
+            .filter((price) => ["twin", "triple", "single"].includes(price.sharing))
+            .map((price) => (
+              <NativeSelectOption key={price.sharing} value={price.sharing}>
+                {price.label}
+              </NativeSelectOption>
+            ))}
+        </NativeSelect>
       </label>
       <div className="flex items-end justify-between gap-3 rounded-xl bg-mist-50 px-4 py-3">
         <div>

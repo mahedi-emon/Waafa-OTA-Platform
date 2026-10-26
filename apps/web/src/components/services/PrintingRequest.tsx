@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { useTranslations } from "next-intl";
 import { Controller, useForm } from "react-hook-form";
 import type { SlotFile } from "@/components/forms/DocumentSlot";
@@ -12,14 +12,18 @@ import { StepActions } from "@/components/forms/StepActions";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  PRINTING_FREQUENCIES,
-  PRINTING_SERVICES,
-  buildPrintingLead,
-  printingStepSchema,
-  type PrintingStepValues,
-} from "@/lib/leads/serviceLeadForm";
+import { PRINTING_FREQUENCIES, PRINTING_SERVICES } from "@/lib/leads/serviceLeadFormFields";
+import type { PrintingStepValues } from "@/lib/leads/serviceLeadForm";
 import { AttachmentField } from "./AttachmentField";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { printingStepSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/serviceLeadForm"),
+  ]);
+  return zodResolver(printingStepSchema);
+});
 
 type RequestProps = {
   title: string;
@@ -56,7 +60,7 @@ function PrintingStep({
   const te = useTranslations("Services.errors");
   const tl = useTranslations("Leads.errors");
   const form = useForm<PrintingStepValues>({
-    resolver: zodResolver(printingStepSchema),
+    resolver: formResolver,
     defaultValues,
     mode: "onTouched",
   });
@@ -250,8 +254,8 @@ function PrintingRequest(props: RequestProps) {
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, form, page) =>
-        buildPrintingLead({
+      buildLead={async (contact, form, page) =>
+        (await import("@/lib/leads/serviceLeadForm")).buildPrintingLead({
           contact,
           values: form,
           file,

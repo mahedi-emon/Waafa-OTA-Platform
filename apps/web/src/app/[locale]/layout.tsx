@@ -22,9 +22,6 @@ const sans = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-  // Body text shows at once in the size-adjusted fallback and swaps in; the 48 KB file no longer competes with the
-  // hero photo for the first bytes (issue 236).
-  preload: false,
 });
 
 // Inter and Plus Jakarta Sans have no taka sign: this 2.6 KB Hind Siliguri subset draws only "৳".

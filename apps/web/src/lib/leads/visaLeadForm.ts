@@ -2,16 +2,15 @@ import { VisaTypeKeySchema, daysBetween, type LeadCreateInput } from "@waafa/sha
 import { z } from "zod";
 import { VISA_FILE_TYPES } from "@/lib/visa/visaFiles";
 import { contactToLead, type ContactStepValues } from "./contactForm";
+import { DOCUMENT_SLOTS, MAX_VISA_APPLICANTS } from "./visaLeadFormFields";
+export { DOCUMENT_SLOTS, MAX_VISA_APPLICANTS, visaFileDefaults } from "./visaLeadFormFields";
 
 /*
  * Visa application step 2 (VisaApply boards, FR-VISA-03): visa type, travel date, applicants, documents for
  * applicant 1, an optional office visit, notes and consent. Messages are keys under "Visa.errors" or "Leads.errors".
  */
 
-/** Document slots for applicant 1 (VisaApply-2); "work-proof" is sent as kind "other". */
-export const DOCUMENT_SLOTS = ["passport-bio", "photo", "bank-statement", "work-proof"] as const;
 export type DocumentSlot = (typeof DOCUMENT_SLOTS)[number];
-export const MAX_VISA_APPLICANTS = 10;
 
 const DocumentSchema = z
   .object({
@@ -60,23 +59,6 @@ export function visaFileSchema(today: string) {
 
 export type VisaFileInput = z.input<ReturnType<typeof visaFileSchema>>;
 export type VisaFileValues = z.output<ReturnType<typeof visaFileSchema>>;
-
-export function visaFileDefaults(args: {
-  visaType: VisaFileInput["visaType"];
-  applicants?: number;
-}): VisaFileInput {
-  return {
-    visaType: args.visaType,
-    travelDate: "",
-    applicants: Math.min(MAX_VISA_APPLICANTS, Math.max(1, args.applicants ?? 1)),
-    documents: [],
-    visit: false,
-    appointmentDate: "",
-    appointmentWindow: "morning",
-    notes: "",
-    consent: false,
-  };
-}
 
 export function buildVisaLead(args: {
   contact: ContactStepValues;

@@ -1,6 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm } from "react-hook-form";
@@ -10,8 +10,17 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { buildBulkLead, bulkQuoteSchema, type BulkQuoteValues } from "@/lib/leads/bulkLeadForm";
+import type { BulkQuoteValues } from "@/lib/leads/bulkLeadForm";
 import type { BulkQuoteLabels } from "./BulkQuoteDialog";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { bulkQuoteSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/bulkLeadForm"),
+  ]);
+  return zodResolver(bulkQuoteSchema);
+});
 
 type BulkQuoteFormProps = {
   labels: BulkQuoteLabels;
@@ -44,7 +53,7 @@ function BulkStep({
 }) {
   const tLeads = useTranslations("Leads");
   const form = useForm<BulkQuoteValues>({
-    resolver: zodResolver(bulkQuoteSchema),
+    resolver: formResolver,
     defaultValues,
     mode: "onTouched",
   });
@@ -155,8 +164,13 @@ function BulkQuoteForm({ labels, productSlug, values, setValues, ...props }: Bul
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, form, page) =>
-        buildBulkLead({ contact, values: form, page, ...(productSlug ? { productSlug } : {}) })
+      buildLead={async (contact, form, page) =>
+        (await import("@/lib/leads/bulkLeadForm")).buildBulkLead({
+          contact,
+          values: form,
+          page,
+          ...(productSlug ? { productSlug } : {}),
+        })
       }
       renderSecondStep={({ sending, goBack, submit }) => (
         <BulkStep

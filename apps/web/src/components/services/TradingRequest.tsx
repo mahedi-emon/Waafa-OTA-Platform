@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { useTranslations } from "next-intl";
 import { Controller, useForm } from "react-hook-form";
 import type { SlotFile } from "@/components/forms/DocumentSlot";
@@ -11,22 +11,20 @@ import { FormField } from "@/components/forms/FormField";
 import { StepActions } from "@/components/forms/StepActions";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  DELIVERY_TERMS,
-  TRADING_DIRECTIONS,
-  buildTradingLead,
-  tradingStepSchema,
-  type TradingStepValues,
-} from "@/lib/leads/serviceLeadForm";
+import { DELIVERY_TERMS, TRADING_DIRECTIONS } from "@/lib/leads/serviceLeadFormFields";
+import type { TradingStepValues } from "@/lib/leads/serviceLeadForm";
 import { AttachmentField } from "./AttachmentField";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { tradingStepSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/serviceLeadForm"),
+  ]);
+  return zodResolver(tradingStepSchema);
+});
 
 type TradingRequestProps = {
   title: string;
@@ -62,7 +60,7 @@ function TradingStep({
   const te = useTranslations("Services.errors");
   const tl = useTranslations("Leads.errors");
   const form = useForm<TradingStepValues>({
-    resolver: zodResolver(tradingStepSchema),
+    resolver: formResolver,
     defaultValues,
     mode: "onTouched",
   });
@@ -176,22 +174,18 @@ function TradingStep({
               control={form.control}
               name="unit"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    id="trd-unit"
-                    className="h-[50px] w-full"
-                    aria-describedby={describedBy}
-                  >
-                    <SelectValue>{field.value}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {UNITS.map((key) => (
-                      <SelectItem key={key} value={t(`units.${key}`)}>
-                        {t(`units.${key}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NativeSelect
+                  value={field.value ?? ""}
+                  onChange={(event) => field.onChange(event.target.value)}
+                  id="trd-unit"
+                  aria-describedby={describedBy}
+                >
+                  {UNITS.map((key) => (
+                    <NativeSelectOption key={key} value={t(`units.${key}`)}>
+                      {t(`units.${key}`)}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
               )}
             />
           )}
@@ -257,22 +251,18 @@ function TradingStep({
               control={form.control}
               name="deliveryTerms"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    id="trd-terms"
-                    className="h-[50px] w-full"
-                    aria-describedby={describedBy}
-                  >
-                    <SelectValue>{field.value ? t(`terms.${field.value}`) : undefined}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DELIVERY_TERMS.map((key) => (
-                      <SelectItem key={key} value={key}>
-                        {t(`terms.${key}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NativeSelect
+                  value={field.value ?? ""}
+                  onChange={(event) => field.onChange(event.target.value)}
+                  id="trd-terms"
+                  aria-describedby={describedBy}
+                >
+                  {DELIVERY_TERMS.map((key) => (
+                    <NativeSelectOption key={key} value={key}>
+                      {t(`terms.${key}`)}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
               )}
             />
           )}
@@ -373,7 +363,14 @@ function TradingRequest(props: TradingRequestProps) {
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, form, page) => buildTradingLead({ contact, values: form, file, page })}
+      buildLead={async (contact, form, page) =>
+        (await import("@/lib/leads/serviceLeadForm")).buildTradingLead({
+          contact,
+          values: form,
+          file,
+          page,
+        })
+      }
       renderSecondStep={({ sending, goBack, submit }) => (
         <TradingStep
           defaultValues={values}
