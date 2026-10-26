@@ -110,6 +110,22 @@ describe.skipIf(!dbAvailable)("two-step sign-in (issue 234)", () => {
         },
       },
     });
+    await prisma.contentDocument.create({
+      data: {
+        collection: "notificationTemplates",
+        docId: "staff-code-locked",
+        position: 1,
+        data: {
+          key: "staff-code-locked",
+          audience: "Staff, when sign-in pauses at the code",
+          channel: "email",
+          subject: "Sign-in to Waafa Admin paused",
+          body: "Hello {{name}}, wrong codes from {{address}} at {{time}}. {{link}}",
+          variables: ["{{name}}", "{{address}}", "{{time}}", "{{link}}"],
+          enabled: true,
+        },
+      },
+    });
   });
 
   it("makes Super Admin and Admin set up an authenticator before the first session", async () => {
@@ -223,6 +239,39 @@ describe.skipIf(!dbAvailable)("two-step sign-in (issue 234)", () => {
     expect(locked.status).toBe(429);
     expect((await login("admin@example.com")).status).toBe(429);
     expect(await prisma.auditLog.count({ where: { action: "staff.locked" } })).toBe(1);
+
+    // The password was right: the person hears about it.
+    await app.get(NotificationService).idle();
+    const alert = mailer.sent.find((mail) => mail.subject === "Sign-in to Waafa Admin paused");
+    expect(alert?.to).toBe("admin@example.com");
+
+    // A second lock the same day lasts twice as long (review: no endless five-at-a-time guessing).
+    await prisma.staffUser.updateMany({ data: { lockedUntil: new Date(Date.now() - 1_000) } });
+    const again = await login("admin@example.com");
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await post("/auth/login/code", { challenge: again.body.challenge, code: "000000" });
+    }
+    const stored = await prisma.staffUser.findUniqueOrThrow({
+      where: { email: "admin@example.com" },
+    });
+    const minutes = ((stored.lockedUntil?.getTime() ?? 0) - Date.now()) / 60_000;
+    expect(minutes).toBeGreaterThan(29);
+    expect(minutes).toBeLessThanOrEqual(30);
+  });
+
+  it("turns two-step sign-in on once when the first code is sent twice at the same moment", async () => {
+    await person("admin@example.com", ["admin"]);
+    const first = await login("admin@example.com");
+    const payload = { challenge: first.body.challenge, code: totpCode(first.body.secret ?? "") };
+    const [a, b] = await Promise.all([
+      post("/auth/login/enrol", payload),
+      post("/auth/login/enrol", payload),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
+    const winner = a.status === 200 ? a : b;
+    const codes = await prisma.staffRecoveryCode.count();
+    expect(codes).toBe(10);
+    expect(winner.body.recoveryCodes).toHaveLength(10);
   });
 
   it("skips the code for 30 days on a trusted device only", async () => {

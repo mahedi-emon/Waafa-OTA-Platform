@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { KeyRound, Smartphone } from "lucide-react";
 import { CodeField } from "@/components/admin/twoStep/CodeField";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,9 @@ type CodeStepProps = {
 function CodeStep({ state, action, pending, strings, onRestart }: CodeStepProps) {
   const [recovery, setRecovery] = useState(false);
   const form = useRef<HTMLFormElement>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  // A new step: focus moves to its heading, so keyboard and screen reader users land on it.
+  useEffect(() => heading.current?.focus(), []);
   const error =
     state.error === "wrong-code"
       ? strings.wrongCode
@@ -48,7 +51,11 @@ function CodeStep({ state, action, pending, strings, onRestart }: CodeStepProps)
           )}
         </span>
         <div>
-          <h2 className="font-display text-[19px] leading-snug font-bold text-navy-900">
+          <h2
+            ref={heading}
+            tabIndex={-1}
+            className="font-display text-[19px] leading-snug font-bold text-navy-900 focus:outline-none"
+          >
             {strings.codeTitle}
           </h2>
           <p className="mt-1 text-[14.5px] text-mist-600">

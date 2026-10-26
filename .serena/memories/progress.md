@@ -1,4 +1,9 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-26 — Letter A done: #229 (PR #265, 9 min), #224 (PR #266, 8 min), #219 (PR #267, 11 min; no row transitions,
+  no overlay blur). Letter B started: #234 PR #268 (full-ci, MIGRATION 20261026120000_staff_two_step): TOTP two-step
+  sign-in (required Super Admin/Admin), recovery codes, trusted devices, sign-in history, new-device email (seed patch
+  staff-new-device), RateLimitService in Redis + 10/h per phone; web code/setup/recovery steps, My account panel,
+  Users history + reset; e2e setup project. Tests API 234, web 675, shared 148, e2e admin-two-step 4/4. D284–D289.
 - 2026-10-25 — R10 merged (#230). PROMPT 10 (v5) started. Step 0 #231 on chore/231-audit-ci-docs → PR #260 (full-ci):
   docs/PRD_COVERAGE.md (142 rows; P0 88 done/26 partial/2 missing; P1 1/7/7/2 waiting), CI budget (quick set vs full,
   full-ci label + re-run workflow, nightly, CodeQL in ci.yml), esbuild-compiled API image (1.7 GB, no src/tests), Docker

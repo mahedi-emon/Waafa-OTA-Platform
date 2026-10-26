@@ -29,10 +29,10 @@ describe("two-step sign-in on the web (issue 234)", () => {
     ).toBeNull();
   });
 
-  it("scopes the step cookie to the sign-in page for five minutes", () => {
+  it("keeps the step cookie httpOnly for five minutes, on every locale path", () => {
     const now = Date.UTC(2026, 9, 26, 10, 0, 0);
     const options = twoStepCookieOptions(now);
-    expect(options.path).toBe("/secure-admin-control/sign-in");
+    expect(options.path).toBe("/");
     expect(options.httpOnly).toBe(true);
     expect(options.expires.getTime() - now).toBe(5 * 60_000);
   });

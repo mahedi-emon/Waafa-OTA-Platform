@@ -162,6 +162,8 @@ export async function signIn(previous: SignInState, form: FormData): Promise<Sig
 
 /** The code after the password, or the first code from a newly added authenticator. */
 async function secondStep(previous: SignInState, form: FormData): Promise<SignInState> {
+  // A late second submit after setup must never replace the recovery codes on screen (the session is open).
+  if (previous.stage === "saved") return previous;
   const store = await cookies();
   const pending = decodePending(store.get(TWO_STEP_COOKIE)?.value);
   const email = previous.email;

@@ -14,6 +14,7 @@ const ALL_PATCHES = [
   "2026-10-25-staff-invite-template",
   "2026-10-26-low-stock-template",
   "2026-10-26-new-device-template",
+  "2026-10-26-code-locked-template",
 ];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */

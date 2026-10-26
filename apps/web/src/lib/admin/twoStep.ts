@@ -42,10 +42,10 @@ export type PendingTwoStep = {
 };
 
 export function twoStepCookieOptions(now = Date.now()) {
-  // Scoped to the sign-in page: no other request carries it.
+  // Site-wide path so the sign-in page works under any locale prefix; it lasts five minutes.
   return {
     ...base(),
-    path: "/secure-admin-control/sign-in",
+    path: "/",
     expires: new Date(now + TWO_STEP_MINUTES * 60_000),
   };
 }

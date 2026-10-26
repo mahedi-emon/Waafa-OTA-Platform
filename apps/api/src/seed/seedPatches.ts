@@ -289,11 +289,35 @@ const NEW_DEVICE_TEMPLATE = {
   enabled: true,
 } as const;
 
+/** The code-step lock email (issue 234 review), as fixtures/src/settings.ts has it. */
+const CODE_LOCKED_TEMPLATE = {
+  key: "staff-code-locked",
+  audience: "Staff, when sign-in pauses at the code",
+  channel: "email",
+  subject: "Sign-in to Waafa Admin paused",
+  body: "Hello {{name}},\n\nSomeone typed your correct password and then wrong sign-in codes several times (address {{address}}, {{time}}), so sign-in is paused for a while.\n\nIf this wasn't you, your password is known: change it now in My account ({{link}}) and tell the Super Admin.",
+  variables: ["{{name}}", "{{address}}", "{{time}}", "{{link}}"],
+  enabled: true,
+} as const;
+
 /** The new-device template joins the live list at its end; an existing one with that key is left as it is. */
 async function newDeviceTemplate(prisma: PrismaClient): Promise<number> {
+  return appendTemplate(prisma, NEW_DEVICE_TEMPLATE);
+}
+
+/** The code-step lock template joins the live list the same way. */
+async function codeLockedTemplate(prisma: PrismaClient): Promise<number> {
+  return appendTemplate(prisma, CODE_LOCKED_TEMPLATE);
+}
+
+/** Adds a message template at the end of the live list unless one with its key exists (staff edits are kept). */
+async function appendTemplate(
+  prisma: PrismaClient,
+  template: { key: string } & Record<string, unknown>,
+): Promise<number> {
   const exists = await prisma.contentDocument.findUnique({
     where: {
-      collection_docId: { collection: "notificationTemplates", docId: NEW_DEVICE_TEMPLATE.key },
+      collection_docId: { collection: "notificationTemplates", docId: template.key },
     },
     select: { docId: true },
   });
@@ -306,8 +330,8 @@ async function newDeviceTemplate(prisma: PrismaClient): Promise<number> {
   await prisma.contentDocument.create({
     data: {
       collection: "notificationTemplates",
-      docId: NEW_DEVICE_TEMPLATE.key,
-      data: json(NEW_DEVICE_TEMPLATE),
+      docId: template.key,
+      data: json(template),
       position: (last?.position ?? -1) + 1,
       updatedBy: "seed-patch",
     },
@@ -327,6 +351,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-25-staff-invite-template", apply: staffInviteTemplate },
   { id: "2026-10-26-low-stock-template", apply: lowStockTemplate },
   { id: "2026-10-26-new-device-template", apply: newDeviceTemplate },
+  { id: "2026-10-26-code-locked-template", apply: codeLockedTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

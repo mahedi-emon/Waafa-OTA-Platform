@@ -14,6 +14,8 @@ import { useStaffAction } from "./useStaffAction";
 type StaffRowActionsProps = {
   row: StaffRow;
   self: boolean;
+  /** Their role needs two-step sign-in, so a reset means setting it up again (issue 234). */
+  twoStepRequired: boolean;
   roleNames: Record<Role, string>;
   strings: {
     roles: string;
@@ -28,6 +30,7 @@ type StaffRowActionsProps = {
     inviteSent: string;
     resetTwoStep: string;
     resetTwoStepLead: string;
+    resetTwoStepLeadOptional: string;
     twoStepReset: string;
     cancel: string;
     failed: string;
@@ -38,7 +41,7 @@ type StaffRowActionsProps = {
  * One staff member's steps in the side sheet: roles, a new password, a two-step sign-in reset (issue 234), deactivate
  * or activate (never yourself).
  */
-function StaffRowActions({ row, self, roleNames, strings }: StaffRowActionsProps) {
+function StaffRowActions({ row, self, twoStepRequired, roleNames, strings }: StaffRowActionsProps) {
   const [roles, setRoles] = useState<Role[] | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [twoStep, setTwoStep] = useState(false);
@@ -149,7 +152,9 @@ function StaffRowActions({ row, self, roleNames, strings }: StaffRowActionsProps
       ) : null}
       {twoStep ? (
         <div className="flex flex-col gap-3 border-t border-mist-100 pt-4">
-          <p className="text-[14px] text-ink-900">{strings.resetTwoStepLead}</p>
+          <p className="text-[14px] text-ink-900">
+            {twoStepRequired ? strings.resetTwoStepLead : strings.resetTwoStepLeadOptional}
+          </p>
           <div className="flex gap-2">
             <Button
               size="sm"

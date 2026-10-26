@@ -2599,7 +2599,7 @@
       "wrong": "That email and password don't match. Check them and try again.",
       "wrongTries": "After 5 wrong tries, sign-in pauses for 15 minutes.",
       "lockedTitle": "Sign-in is paused",
-      "lockedBody": "Too many wrong tries. For your safety, sign-in is paused for 15 minutes. If you forgot your password, ask an admin to reset it in Users and roles.",
+      "lockedBody": "Too many wrong tries. For your safety, sign-in is paused for 15 minutes, and longer if it happens again today. If you forgot your password or lost your phone, ask a Super Admin in Users and roles.",
       "unavailable": "Sign-in isn't available right now. Check your connection and try again in a minute.",
       "missing": "Enter your work email and password.",
       "forgot": "Forgot your password, or lost your phone and your recovery codes? A Super Admin can reset them in Settings › Users and roles.",
@@ -3566,7 +3566,8 @@
       "resetTwoStepLead": "For someone who lost their phone and their recovery codes. Their next sign-in sets it up again.",
       "twoStepReset": "Two-step sign-in reset",
       "recentSignIns": "Recent sign-ins",
-      "noSignIns": "No sign-ins recorded yet."
+      "noSignIns": "No sign-ins recorded yet.",
+      "resetTwoStepLeadOptional": "For someone who lost their phone and their recovery codes. Two-step sign-in turns off; they can turn it on again in My account."
     },
     "account": {
       "metaTitle": "My account",
@@ -5481,7 +5482,8 @@
         "sign-in-code-customer": "Sign-in code (to the customer)",
         "staff-invite": "Invite to Admin",
         "low-stock-staff": "Low stock (to the store team)",
-        "staff-new-device": "New device sign-in (to that staff member)"
+        "staff-new-device": "New device sign-in (to that staff member)",
+        "staff-code-locked": "Sign-in paused at the code (to that staff member)"
       },
       "tone": {
         "default": "Normal",

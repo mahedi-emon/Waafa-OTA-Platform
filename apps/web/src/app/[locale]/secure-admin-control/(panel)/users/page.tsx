@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import {
   RoleSchema,
   StaffLoginResultSchema,
+  twoStepRequired,
   type Role,
   type StaffLoginEvent,
   type StaffLoginResult,
@@ -108,6 +109,7 @@ async function Users({
     inviteSent: t("inviteSent"),
     resetTwoStep: t("resetTwoStep"),
     resetTwoStepLead: t("resetTwoStepLead"),
+    resetTwoStepLeadOptional: t("resetTwoStepLeadOptional"),
     twoStepReset: t("twoStepReset"),
     cancel: tc("cancel"),
     failed: tc("unavailable"),
@@ -148,6 +150,7 @@ async function Users({
           <StaffRowActions
             row={row}
             self={row.id === staff.id}
+            twoStepRequired={twoStepRequired(row.roles)}
             roleNames={roleNames}
             strings={actionStrings}
           />

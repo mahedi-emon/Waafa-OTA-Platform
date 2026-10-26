@@ -6,7 +6,7 @@ import { problems } from "../common/problem";
 import { PrismaService } from "../prisma/prisma.service";
 import { AuditService } from "../audit/audit.service";
 import { NotificationService } from "../notifications/notification.service";
-import type { StaffUser } from "../generated/prisma/client";
+import { Prisma, type StaffUser } from "../generated/prisma/client";
 import type { StaffPrincipal } from "./principal";
 import { TRUST_DAYS, deviceHashOf, deviceLabel } from "./device";
 import {
@@ -31,6 +31,9 @@ import { twoStepBox } from "./twoStepSecret";
 
 export const MAX_FAILED_LOGINS = 5;
 export const LOCK_MINUTES = 15;
+/** The longest lock after repeated ones, and how far back earlier locks count. */
+export const MAX_LOCK_MINUTES = 24 * 60;
+const LOCK_WINDOW_MS = 24 * 60 * 60_000;
 /** A rotated refresh token presented again within this window is a concurrent refresh, not a stolen token (#66). */
 export const REFRESH_GRACE_MS = 30_000;
 
@@ -221,10 +224,13 @@ export class AuthService {
   ): Promise<string[]> {
     const codes = newRecoveryCodes();
     await this.prisma.$transaction(async (tx) => {
-      await tx.staffUser.update({
-        where: { id: user.id },
+      // Only the first of two requests at the same moment turns it on (the second would replace the codes shown).
+      const claimed = await tx.staffUser.updateMany({
+        where: { id: user.id, totpEnabledAt: null },
         data: { totpSecret: sealedSecret, totpEnabledAt: now, totpLastStep: step },
       });
+      if (claimed.count !== 1)
+        throw problems.conflict("Two-step sign-in is already on", "already-on");
       await tx.staffRecoveryCode.deleteMany({ where: { userId: user.id } });
       await tx.staffRecoveryCode.createMany({
         data: codes.map((code) => ({ userId: user.id, codeHash: hashRecoveryCode(code) })),
@@ -329,12 +335,33 @@ export class AuthService {
       select: { failedLogins: true },
     });
     const lock = counted.failedLogins >= MAX_FAILED_LOGINS;
+    // Each lock in the last day doubles the next one (15, 30, 60 minutes… up to a day), so someone who has the
+    // password can't keep guessing codes five at a time (issue 234 review).
+    const earlier = lock
+      ? await this.prisma.staffLoginEvent.count({
+          where: {
+            userId: user.id,
+            result: "locked",
+            createdAt: { gt: new Date(now.getTime() - LOCK_WINDOW_MS) },
+          },
+        })
+      : 0;
     await this.record(user.id, lock ? "locked" : result, meta, now);
     if (!lock) return;
+    const minutes = Math.min(LOCK_MINUTES * 2 ** earlier, MAX_LOCK_MINUTES);
     await this.prisma.staffUser.update({
       where: { id: user.id },
-      data: { failedLogins: 0, lockedUntil: new Date(now.getTime() + LOCK_MINUTES * 60_000) },
+      data: { failedLogins: 0, lockedUntil: new Date(now.getTime() + minutes * 60_000) },
     });
+    if (result === "wrong-code") {
+      // The password was right: tell the person, who may not know it is out.
+      void this.notifications.notify("staff-code-locked", user.email, {
+        name: user.name,
+        address: meta.ip ?? "unknown",
+        time: dhakaTime.format(now),
+        link: this.notifications.adminLink("/account"),
+      });
+    }
     await this.audit.record({
       actor: { id: null, name: "system" },
       action: "staff.locked",
@@ -412,17 +439,32 @@ export class AuthService {
       return false;
     }
     const others = await this.prisma.staffDevice.count({ where: { userId: user.id } });
-    await this.prisma.staffDevice.create({
-      data: {
-        userId: user.id,
-        deviceHash,
-        label: deviceLabel(meta.userAgent),
-        lastIp: meta.ip ?? null,
-        firstSeenAt: now,
-        lastSeenAt: now,
-        trustedUntil: trustedUntil ?? null,
-      },
-    });
+    try {
+      await this.prisma.staffDevice.create({
+        data: {
+          userId: user.id,
+          deviceHash,
+          label: deviceLabel(meta.userAgent),
+          lastIp: meta.ip ?? null,
+          firstSeenAt: now,
+          lastSeenAt: now,
+          trustedUntil: trustedUntil ?? null,
+        },
+      });
+    } catch (error) {
+      // The same device signing in twice at once: the other request saved it first.
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002"))
+        throw error;
+      await this.prisma.staffDevice.update({
+        where: { userId_deviceHash: { userId: user.id, deviceHash } },
+        data: {
+          lastSeenAt: now,
+          lastIp: meta.ip ?? null,
+          ...(trustedUntil ? { trustedUntil } : {}),
+        },
+      });
+      return false;
+    }
     return others > 0;
   }
 
