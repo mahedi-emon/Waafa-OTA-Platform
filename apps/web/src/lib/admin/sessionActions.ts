@@ -13,28 +13,64 @@ import {
   sessionCookies,
   type SessionTokens,
 } from "./tokens";
+import {
+  DEVICE_COOKIE,
+  TWO_STEP_COOKIE,
+  decodePending,
+  deviceCookieOptions,
+  encodePending,
+  groupedKey,
+  isDeviceId,
+  newDeviceId,
+  qrRows,
+  twoStepCookieOptions,
+  type PendingTwoStep,
+} from "./twoStep";
+
+export type SignInStage = "password" | "code" | "enrol" | "saved";
 
 export type SignInState = {
-  error: null | "missing" | "wrong" | "locked" | "unavailable";
+  stage: SignInStage;
+  error:
+    | null
+    | "missing"
+    | "wrong"
+    | "locked"
+    | "unavailable"
+    | "wrong-code"
+    | "expired"
+    | "missing-code";
   email?: string;
+  /** Setting up the authenticator: the QR code (rows of 0 and 1) and the key to type by hand. */
+  enrol?: { qr: string[]; key: string };
+  /** Shown once after setup; the session is already open. */
+  recoveryCodes?: string[];
+  next?: string;
+  /** Counts failed codes, so the code boxes start empty again after each one. */
+  attempt?: number;
 };
 
-/**
- * Staff sign-in (AdminLogin board, D129): the API checks the password, the lockout and the per-address limit; this
- * server keeps the tokens in httpOnly cookies and sends the person on to the page they wanted.
- */
-export async function signIn(_previous: SignInState, form: FormData): Promise<SignInState> {
-  const email = String(form.get("email") ?? "").trim();
-  const password = String(form.get("password") ?? "");
-  const remember = form.get("remember") === "on";
-  if (!email || !password) return { error: "missing", email };
-  const api = apiConfig();
-  if (!api) return { error: "unavailable", email };
+type LoginAnswer =
+  | ({ step: "done"; recoveryCodes?: string[] } & SessionTokens)
+  | { step: "code"; challenge: string }
+  | { step: "enrol"; challenge: string; secret: string; otpauthUrl: string };
 
+/** The browser's device id, made on its first sign-in (new-device emails, trusted devices; issue 234). */
+async function deviceId(): Promise<string> {
+  const store = await cookies();
+  const current = store.get(DEVICE_COOKIE)?.value;
+  if (isDeviceId(current)) return current;
+  const created = newDeviceId();
+  store.set(DEVICE_COOKIE, created, deviceCookieOptions());
+  return created;
+}
+
+async function callApi(path: string, body: unknown): Promise<Response | null> {
+  const api = apiConfig();
+  if (!api) return null;
   const incoming = await headers();
-  let response: Response;
   try {
-    response = await fetch(`${api.baseUrl}/api/v1/auth/login`, {
+    return await fetch(`${api.baseUrl}/api/v1${path}`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -42,19 +78,17 @@ export async function signIn(_previous: SignInState, form: FormData): Promise<Si
         "x-client-ip": clientKey(incoming),
         "user-agent": incoming.get("user-agent")?.slice(0, 200) ?? "unknown",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(body),
       cache: "no-store",
       signal: AbortSignal.timeout(10_000),
     });
   } catch {
-    return { error: "unavailable", email };
+    return null;
   }
-  if (response.status === 401) return { error: "wrong", email };
-  if (response.status === 429) return { error: "locked", email };
-  if (response.status === 422) return { error: "missing", email };
-  if (!response.ok) return { error: "unavailable", email };
+}
 
-  const tokens = (await response.json()) as SessionTokens;
+/** Session cookies, "Keep me signed in" and the staff hint for the public site, after the last step. */
+async function openSession(tokens: SessionTokens, remember: boolean): Promise<void> {
   const store = await cookies();
   for (const cookie of sessionCookies(tokens, remember))
     store.set(cookie.name, cookie.value, cookie.options);
@@ -78,7 +112,97 @@ export async function signIn(_previous: SignInState, form: FormData): Promise<Si
     path: "/",
     ...(remember ? { expires: new Date(tokens.refreshExpiresAt) } : {}),
   });
-  redirect(safeNext(form.get("next")));
+  store.delete({ name: TWO_STEP_COOKIE, path: twoStepCookieOptions().path });
+}
+
+async function rememberStep(pending: PendingTwoStep): Promise<void> {
+  (await cookies()).set(TWO_STEP_COOKIE, encodePending(pending), twoStepCookieOptions());
+}
+
+/**
+ * Staff sign-in (AdminLogin board, D129; issue 234): the API checks the password, the lockout and the per-address
+ * limit; when two-step sign-in is on it asks for a code, and for Super Admin and Admin without it, for setting it up.
+ * This server keeps the tokens in httpOnly cookies and sends the person on to the page they wanted.
+ */
+export async function signIn(previous: SignInState, form: FormData): Promise<SignInState> {
+  const stage = form.get("stage");
+  if (stage === "code" || stage === "enrol") return secondStep(previous, form);
+  if (stage === "saved") redirect(safeNext(previous.next));
+
+  const email = String(form.get("email") ?? "").trim();
+  const password = String(form.get("password") ?? "");
+  const remember = form.get("remember") === "on";
+  const next = safeNext(form.get("next"));
+  if (!email || !password) return { stage: "password", error: "missing", email };
+
+  const response = await callApi("/auth/login", { email, password, device: await deviceId() });
+  if (!response) return { stage: "password", error: "unavailable", email };
+  if (response.status === 401) return { stage: "password", error: "wrong", email };
+  if (response.status === 429) return { stage: "password", error: "locked", email };
+  if (response.status === 422) return { stage: "password", error: "missing", email };
+  if (!response.ok) return { stage: "password", error: "unavailable", email };
+
+  const answer = (await response.json()) as LoginAnswer;
+  if (answer.step === "code") {
+    await rememberStep({ step: "code", challenge: answer.challenge, remember, next });
+    return { stage: "code", error: null, email };
+  }
+  if (answer.step === "enrol") {
+    await rememberStep({ step: "enrol", challenge: answer.challenge, remember, next });
+    return {
+      stage: "enrol",
+      error: null,
+      email,
+      enrol: { qr: qrRows(answer.otpauthUrl), key: groupedKey(answer.secret) },
+    };
+  }
+  await openSession(answer, remember);
+  redirect(next);
+}
+
+/** The code after the password, or the first code from a newly added authenticator. */
+async function secondStep(previous: SignInState, form: FormData): Promise<SignInState> {
+  const store = await cookies();
+  const pending = decodePending(store.get(TWO_STEP_COOKIE)?.value);
+  const email = previous.email;
+  if (!pending) return { stage: "password", error: "expired", email };
+  const code = String(form.get("code") ?? "").trim();
+  if (!code) return { ...previous, error: "missing-code", attempt: (previous.attempt ?? 0) + 1 };
+  const response = await callApi(
+    pending.step === "enrol" ? "/auth/login/enrol" : "/auth/login/code",
+    {
+      challenge: pending.challenge,
+      code,
+      device: await deviceId(),
+      trustDevice: form.get("trust") === "on",
+    },
+  );
+  if (!response) return { ...previous, error: "unavailable" };
+  if (response.status === 401) {
+    store.delete({ name: TWO_STEP_COOKIE, path: twoStepCookieOptions().path });
+    return { stage: "password", error: "expired", email };
+  }
+  if (response.status === 429) {
+    store.delete({ name: TWO_STEP_COOKIE, path: twoStepCookieOptions().path });
+    return { stage: "password", error: "locked", email };
+  }
+  if (response.status === 400 || response.status === 422)
+    return { ...previous, error: "wrong-code", attempt: (previous.attempt ?? 0) + 1 };
+  if (!response.ok) return { ...previous, error: "unavailable" };
+
+  const answer = (await response.json()) as LoginAnswer;
+  if (answer.step !== "done") return { stage: "password", error: "expired", email };
+  await openSession(answer, pending.remember);
+  if (answer.recoveryCodes?.length) {
+    return {
+      stage: "saved",
+      error: null,
+      email,
+      recoveryCodes: answer.recoveryCodes,
+      next: pending.next,
+    };
+  }
+  redirect(safeNext(pending.next));
 }
 
 /** Ends the session at the API and clears the cookies. */

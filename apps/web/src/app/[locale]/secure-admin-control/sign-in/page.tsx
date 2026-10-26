@@ -20,10 +20,14 @@ const POINTS: Array<{ key: "inbox" | "website" | "store"; icon: LucideIcon }> = 
 
 /**
  * Staff sign-in (ADMIN.md, R1): a calm brand panel on midnight from 1024 px, and the form on white with the page's one
- * logo. Clear wrong-password and paused (locked) messages; "Keep me signed in" says what it does.
+ * logo. Clear wrong-password and paused (locked) messages; "Keep me signed in" says what it does. Two-step sign-in
+ * (issue 234) adds the code step, the authenticator setup and the recovery codes in the same card.
  */
 export default async function SignInPage() {
-  const t = await getTranslations("Admin.signIn");
+  const [t, ts] = await Promise.all([
+    getTranslations("Admin.signIn"),
+    getTranslations("Admin.twoStep"),
+  ]);
   return (
     <main
       id="main"
@@ -77,6 +81,41 @@ export default async function SignInPage() {
                 unavailable: t("unavailable"),
                 missing: t("missing"),
                 welcome: t("welcome"),
+                codeTitle: t("codeTitle"),
+                codeLead: t("codeLead"),
+                codeLabel: t("codeLabel"),
+                recoveryLabel: t("recoveryLabel"),
+                recoveryHint: t("recoveryHint"),
+                useRecovery: t("useRecovery"),
+                useApp: t("useApp"),
+                trust: t("trust"),
+                trustHint: t("trustHint"),
+                verify: t("verify"),
+                startAgain: t("startAgain"),
+                wrongCode: t("wrongCode"),
+                expired: t("expired"),
+                missingCode: t("missingCode"),
+                enrolTitle: t("enrolTitle"),
+                enrolLead: t("enrolLead"),
+                enrolApp: t("enrolApp"),
+                enrolScan: t("enrolScan"),
+                enrolKey: t("enrolKey"),
+                enrolCode: t("enrolCode"),
+                enrolSubmit: t("enrolSubmit"),
+                qrLabel: t("qrLabel"),
+                savedTitle: t("savedTitle"),
+                savedLead: t("savedLead"),
+                savedConfirm: t("savedConfirm"),
+                continue: t("continue"),
+                codes: {
+                  codesLabel: ts("codesLabel"),
+                  copy: ts("copy"),
+                  copied: ts("copied"),
+                  download: ts("download"),
+                  fileName: ts("fileName"),
+                  fileTitle: ts("fileTitle"),
+                  fileNote: ts("fileNote"),
+                },
               }}
             />
           </Suspense>

@@ -131,7 +131,7 @@ export class AuthController {
     @Body() body: unknown,
     @Req() request: FastifyRequest,
   ) {
-    await this.limitCodes(request);
+    await this.limitCodes(request, staff.id);
     const input = parseInput(SetupConfirmSchema, body);
     return this.twoStep.confirm(staff, input.challenge, input.code);
   }
@@ -144,7 +144,7 @@ export class AuthController {
     @Body() body: unknown,
     @Req() request: FastifyRequest,
   ) {
-    await this.limitCodes(request);
+    await this.limitCodes(request, staff.id);
     return this.twoStep.newRecoveryCodes(staff, parseInput(CodeOnlySchema, body).code);
   }
 
@@ -152,7 +152,7 @@ export class AuthController {
   @UseGuards(StaffGuard)
   @HttpCode(204)
   async off(@Staff() staff: StaffPrincipal, @Body() body: unknown, @Req() request: FastifyRequest) {
-    await this.limitCodes(request);
+    await this.limitCodes(request, staff.id);
     await this.twoStep.turnOff(staff, parseInput(PasswordOnlySchema, body).password);
   }
 
@@ -162,8 +162,13 @@ export class AuthController {
     return this.twoStep.history(staff.id);
   }
 
-  private async limitCodes(request: FastifyRequest): Promise<void> {
-    if (!(await this.limits.allow("loginCode", clientIp(request, this.env))))
+  /**
+   * Codes per address while signing in; per person in My account, where every call comes from the web server and
+   * the address would be the same for all staff.
+   */
+  private async limitCodes(request: FastifyRequest, staffId?: string): Promise<void> {
+    const key = staffId ? `staff:${staffId}` : clientIp(request, this.env);
+    if (!(await this.limits.allow("loginCode", key)))
       throw problems.tooMany("Too many tries. Wait 15 minutes.");
   }
 }

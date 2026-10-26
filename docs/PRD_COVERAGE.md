@@ -24,16 +24,16 @@ Paths: `web/` = `apps/web/src/`, `site/` = `apps/web/src/app/[locale]/(site)/`, 
 | Priority | Rows | Status |
 | --- | --- | --- |
 | P0 (launch) | 116 | done 99 · partial 16 · missing 1 |
-| P1 (Phase D, due 13 Nov) | 17 | done 1 · partial 7 · missing 7 · waiting for owner account 2 |
+| P1 (Phase D, due 13 Nov) | 17 | done 2 · partial 7 · missing 6 · waiting for owner account 2 |
 | P2 (Phase E, live booking) | 8 | missing 8 |
 | P3 (scale) | 1 | missing 1 |
-| All | 142 | done 100 · partial 23 · missing 17 · waiting for owner account 2 |
+| All | 142 | done 101 · partial 23 · missing 16 · waiting for owner account 2 |
 
 **P0 not done (fixed first):** customer files never leave the browser (visa documents, payment proof, printing and
 trading attachments, feedback photo: the Phase A rule D87/D106/D109 was never lifted) → #232; visa status email never
 sent, staff alert recipients only in the server env, no low-stock alert, no EMI request form, no reason on mode changes
 → #233; no Bookings module (convert keeps only an amount) → #242; compatible-models CSV import → #248; first-load JS
-over 200 KB on Home, Flights and Shop → #236; rate limits in memory, backups without an off-site copy → #234, #239; no
+over 200 KB on Home, Flights and Shop → #236; backups without an off-site copy → #239 (rate limits moved to Redis in #234); no
 conversion events and one sitemap → #237; no error tracking → #238; Chromium-only tests → #259.
 
 ## §7 Global layout, dynamic footer, home and unified search
@@ -75,7 +75,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-FLT-01 | P0 | "Best fare from experts" card, query form, matching group fares | done | site/flights; components/leads/LeadRequestCard.tsx; GroupFaresRail.tsx | — | — |
 | FR-FLT-02 | P0 | Step 1 contact: name, phone (+880 validated), email (admin optional) | done | components/leads/ContactStep.tsx; lib/leads/contactForm.ts (emailRequired) | — | — |
 | FR-FLT-03 | P0 | Step 2 trip prefilled + preferences + consent | done | site/flights/_components; e2e/flights.spec.ts | — | — |
-| FR-FLT-04 | P0 | Turnstile, rate limits, idempotency key (one lead per double tap) | done | components/forms/TurnstileWidget.tsx; app/api/leads/route.ts; api/common/idempotency.service.ts | Rate limits in memory (see NFR-SEC) | — |
+| FR-FLT-04 | P0 | Turnstile, rate limits, idempotency key (one lead per double tap) | done | components/forms/TurnstileWidget.tsx; app/api/leads/route.ts; api/common/idempotency.service.ts | — (API limits in Redis since #234) | — |
 | FR-FLT-05 | P0 | Success: check, ref FLT-YYMMDD-NNNN, copy, next steps, WhatsApp | done | components/leads/LeadSuccess.tsx; api/common/references.ts | — | — |
 | FR-FLT-06 | P0 (panel + Telegram P1) | Customer confirmation email; instant staff alert | done (P0 scope) | api/public/intake.service.ts (lead-received-customer, lead-alert-staff) | P1: real-time panel is a 30 s polled bell, no Telegram | #243, #252 (P1 parts) |
 | FR-FLT-07 | P0 | Admin group fares; /flights/group-fares; "Request this fare" | done | site/flights/group-fares; GroupFareCard.tsx; adm content/groupFares | — | — |
@@ -197,12 +197,12 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM Customers | P0 | Unified list, profile with history, notes, tags, export | partial | adm/customers, adm/customers/[phone]; api/admin/customers.service.ts | No notes, tags or export; P1 merge missing | #244 |
 | FR-ADM Marketing/SEO | P0 | Per-page SEO, tracking codes, newsletter list, coupons | done | trackingSettings; adm/subscribers; content `coupons` | P1 campaign landing pages missing | #247 (P1 campaigns) |
 | FR-ADM Reports | P0 | Leads by module/status/agent/source, response, sales, visa, CSV | partial | adm/reports; api/admin/reports.service.ts (CSV + XLSX); apps/api/test/reports.test.ts | No by-agent, by-source or visa-case breakdown; P1 scheduled email reports missing | #244, #237 |
-| FR-ADM Users | P0 | Invite, roles, deactivate, reset password, login history | partial | adm/users; api/admin/users.service.ts; invite.controller.ts | Only last login, no login history; P1 custom roles missing | #234, #244 |
+| FR-ADM Users | P0 | Invite, roles, deactivate, reset password, login history | partial | adm/users; api/admin/users.service.ts; invite.controller.ts; api/auth/twoStep.service.ts (history, two-step reset) | P1 custom roles missing | #244 |
 | FR-ADM Settings | P0 | General, footer, modes, payments/COD, shipping, recipients+templates, lead form, maintenance | done | adm/settings/[section]; Staff alerts in Forms and messages (#233) | — | #233 |
 | FR-ADM later P1 | P1 | Leaderboard, funnel, CSV imports, invoices/slips, review moderation, SMS, merge, campaigns, scheduled reports, custom roles | partial | done: scheduled publishing, media usage, encrypted creds, report date ranges | All other listed P1 items missing | #242–#248, #252 |
 | FR-ADM later P2 | P2 | Full ticketing, refund and reconciliation operations | missing | — | Phase 2 | Phase E (#32) |
 | FR-ADM security | P0 | Hidden admin path, noindex, lockout 5/15 min, audit with before/after | done | secure-admin-control/layout.tsx (noindex); api/auth/auth.service.ts (LOCK_MINUTES); AuditLog; e2e/admin-path.spec.ts | — | — |
-| FR-ADM 2FA | P1 | TOTP login, mandatory for Super Admin and Admin | missing | — (no TOTP code; only a shadcn input-otp primitive) | Whole feature | #234 |
+| FR-ADM 2FA | P1 | TOTP login, mandatory for Super Admin and Admin | done | api/auth/{totp,auth.service,twoStep.service}.ts; sign-in/_components/{CodeStep,EnrolStep,SavedStep}.tsx; adm/account; e2e/admin-two-step.spec.ts; test/twoStep.test.ts | — | #234 |
 | FR-ADM usability | P0 | Data tables, Ctrl+K palette, shortcuts, optimistic updates, phone-usable | done | components/admin/table, AdminCommand.tsx; e2e/admin-staff-tasks.spec.ts | — | — |
 
 ## §14 Non-functional requirements
@@ -210,7 +210,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
 | NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial | e2e/budget.spec.ts; apps/web/lighthouserc.json; TRACKER #170 | Home 217, Flights 259, Shop 215 KB > 200; Home/Flights/Shop below 85–90 in CI; LHCI assertions are `warn` only | #236 |
-| NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | partial | api/auth/auth.service.ts; lib/security/securityHeaders.ts; nginx HSTS; providers/secretBox.ts; ci.yml CodeQL; dependabot.yml | Rate limits in process memory and looser than spec (leads 10–20/min/IP, no 10/h per phone, no search limit); CSP uses 'unsafe-inline' not nonce (documented); backups keep 14 days, no off-site copy; no malware scan (P1) | #234, #235, #239 |
+| NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | partial | api/auth/auth.service.ts; lib/security/securityHeaders.ts; nginx HSTS; providers/secretBox.ts; ci.yml CodeQL; dependabot.yml | API limits in Redis with the 10/h per-phone lead limit (#234); per-IP lead limits stay at the web's 10/min (API 20) rather than 5; CSP uses 'unsafe-inline' not nonce (documented); backups keep 14 days, no off-site copy; no malware scan (P1) | #234, #235, #239 |
 | NFR-SEO | P0 | SSR titles, canonical, JSON-LD, split sitemap, OG images, llms.txt, GA4/GTM/Pixel events | partial | app/sitemap.ts, robots.ts, llms.txt; components/seo/*; e2e/seo.spec.ts | No conversion events (search, generate_lead, …, purchase); sitemap not split; OG = record photos, not generated images | #237 |
 | NFR-A11Y | P0 | WCAG 2.2 AA: contrast, focus, keyboard, labels, 44 px, skip link, reduced motion | done | skip link in app/[locale]/layout.tsx; AxeBuilder in 24 e2e specs | — | — |
 | NFR-OPS | P0 | 99.5% uptime, /health + /ready, Sentry, request-ID logs, envs, migrations, DLQ | partial | api/health/health.controller.ts; api/app.ts (pino, genReqId); deploy/* | Sentry not installed (no SDK; DSN waiting-owner); no staging environment; dead-letter only for email | #238, #239 (staging: owner decision) |
@@ -225,7 +225,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | No unified /track (only /shop/track) | Confirmed | No `site/track` route; only site/shop/track; FR-VISA-06 visa tracking missing too |
 | Customer sign-in Google only | Confirmed | api/customers/customers.controller.ts has only `auth/google*`; OTP template unused, no password flow |
 | No Bangla (/bn) | Confirmed | web/i18n/routing.ts `locales: ["en"]`; only messages/en.json |
-| No staff 2FA (TOTP) | Confirmed | No totp/otplib code in api/auth or web |
+| No staff 2FA (TOTP) | Fixed in #234 | api/auth/totp.ts (RFC 6238), sign-in code and setup steps, recovery codes, trusted devices |
 | No SMS, Telegram, courier or online payment adapters live | Confirmed | SMS (ssl-wireless, bulksmsbd, twilio) and payment (sslcommerz, bkash, nagad) are catalog stubs with health checks only; no Telegram or courier code |
 | No reviews, wishlist, product Q&A, flash sales, campaign pages | Confirmed | No such schemas or routes; product page "questions" is a WhatsApp link; deals have a countdown but no campaign or flash-sale pages |
 | No quote builder, reminders, round-robin, partial capture (FR-FLT-08) | Confirmed | No code; only an SLA "lead-overdue-staff" email exists (not follow-up reminders) |
@@ -246,7 +246,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 - **Staff alerts go to one env address** (`STAFF_ALERT_EMAIL`); there are no module routing and no Settings › Notifications recipients.
 - **There is no Bookings module**: convert-to-booking stores only an amount.
 - **No CSV import for compatible models** (P0 FR-CAT-05).
-- **Customers** has no notes, tags or export. **Reports** has no by-agent or by-source view. **Users** shows the last login only.
+- **Customers** has no notes, tags or export. **Reports** has no by-agent or by-source view. **Users** shows the sign-in history since #234.
 - **The registry applies no pricing rules**: the markup is stored but never applied.
-- **Rate limits** live in memory and are looser than NFR-SEC. **Backups** are kept 14 days with no off-site copy.
+- **Rate limits** are in Redis since #234. **Backups** are kept 14 days with no off-site copy.
   **Sentry** SDK is not installed. **The sitemap** is not split.

@@ -117,7 +117,7 @@ export function otpauthUrl(secretBase32: string, account: string, issuer = "Waaf
 const RECOVERY_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 export const RECOVERY_CODE_COUNT = 10;
 
-/** Ten one-time codes like "7KQ4-M2XD-9PRT" (about 74 bits each). */
+/** Ten one-time codes like "7KQ4M-2XD9P-RTWYZ" (about 74 bits each). */
 export function newRecoveryCodes(count = RECOVERY_CODE_COUNT): string[] {
   return Array.from({ length: count }, () => {
     const chars = Array.from(

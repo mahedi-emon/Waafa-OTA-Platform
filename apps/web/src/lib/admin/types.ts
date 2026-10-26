@@ -340,6 +340,8 @@ export type StaffRow = {
   status: "active" | "deactivated" | "invited";
   locked: boolean;
   lastLoginAt: string | null;
+  /** Two-step sign-in is set up (issue 234). */
+  twoStep: boolean;
   createdAt: string;
   /** An invite email still waiting to be used (D0 R9); expired ones can be sent again. */
   invite: { expiresAt: string | null; expired: boolean } | null;
