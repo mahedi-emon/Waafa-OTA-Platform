@@ -1,13 +1,9 @@
 import { timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { signInWithGoogle } from "@/lib/account/accountApi";
-import {
-  GOOGLE_CALLBACK_PATH,
-  OAUTH_COOKIE,
-  SESSION_COOKIE,
-  decodePending,
-} from "@/lib/account/googleOAuth";
+import { GOOGLE_CALLBACK_PATH, OAUTH_COOKIE, decodePending } from "@/lib/account/googleOAuth";
 import { seeOther } from "@/lib/account/redirects";
+import { setSessionCookie } from "@/lib/account/sessionCookie";
 import { clientKey } from "@/lib/rateLimit";
 import { absoluteUrl } from "@/lib/siteUrl";
 
@@ -54,12 +50,6 @@ export async function GET(request: Request) {
   if (!outcome.ok) return finish(`/login?error=${outcome.reason}`);
 
   const response = finish(pending.next);
-  response.cookies.set(SESSION_COOKIE, outcome.session.token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires: new Date(outcome.session.expiresAt),
-  });
+  setSessionCookie(response, outcome.session);
   return response;
 }

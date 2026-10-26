@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { endSession } from "@/lib/account/accountApi";
 import { SESSION_COOKIE } from "@/lib/account/googleOAuth";
 import { isSameOrigin, seeOther } from "@/lib/account/redirects";
+import { clearSessionCookies } from "@/lib/account/sessionCookie";
 
 /**
  * Log out (issues 134 and 138): a plain form post, answered with a 303 so the browser loads the home page in full
@@ -13,6 +14,6 @@ export async function POST(request: Request) {
   const store = await cookies();
   await endSession(store.get(SESSION_COOKIE)?.value);
   const response = seeOther("/");
-  response.cookies.set(SESSION_COOKIE, "", { path: "/", maxAge: 0 });
+  clearSessionCookies(response);
   return response;
 }

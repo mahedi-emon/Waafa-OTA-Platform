@@ -300,6 +300,22 @@ const CODE_LOCKED_TEMPLATE = {
   enabled: true,
 } as const;
 
+/** The customer sign-in code email (issue 241), as fixtures/src/settings.ts has it. */
+const CUSTOMER_CODE_TEMPLATE = {
+  key: "customer-sign-in-code",
+  audience: "Customer, when signing in",
+  channel: "email",
+  subject: "Your Waafa sign-in code",
+  body: "Your Waafa sign-in code is {{code}}.\n\nType it on the sign-in page within {{minutes}} minutes. It works once.\n\nNever share this code: Waafa staff will never ask for it. If you didn't try to sign in, you can ignore this email.",
+  variables: ["{{code}}", "{{minutes}}"],
+  enabled: true,
+} as const;
+
+/** The customer code template joins the live list the same way (staff edits to an existing one are kept). */
+async function customerCodeTemplate(prisma: PrismaClient): Promise<number> {
+  return appendTemplate(prisma, CUSTOMER_CODE_TEMPLATE);
+}
+
 /** The new-device template joins the live list at its end; an existing one with that key is left as it is. */
 async function newDeviceTemplate(prisma: PrismaClient): Promise<number> {
   return appendTemplate(prisma, NEW_DEVICE_TEMPLATE);
@@ -352,6 +368,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-26-low-stock-template", apply: lowStockTemplate },
   { id: "2026-10-26-new-device-template", apply: newDeviceTemplate },
   { id: "2026-10-26-code-locked-template", apply: codeLockedTemplate },
+  { id: "2026-10-27-customer-code-template", apply: customerCodeTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

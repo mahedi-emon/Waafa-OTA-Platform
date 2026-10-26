@@ -1,9 +1,9 @@
 import { User } from "@/components/icons/server/User";
 import { getTranslations } from "next-intl/server";
+import { AccountLink } from "@/components/account/AccountLink";
 import { LogoLockup } from "@/components/brand/LogoLockup";
 import { getContactSettings, getMenu, getSiteSettings } from "@/lib/data/settings";
 import { listCategories } from "@/lib/data/shop";
-import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { DesktopNavStatic } from "./DesktopNavStatic";
 import { DesktopNavSwitch } from "./DesktopNavSwitch";
 import { HelpMenu } from "./HelpMenu";
@@ -91,16 +91,14 @@ async function SiteHeader() {
             }}
           />
           {site.accountsLive ? (
-            <Link
-              href="/login"
-              // Icon and words from 1280 px; icon only from 1024 to 1279 px, where the words would push the header past
-              // the page grid (issues 138, 140, 142, 146). The phone menu shows the words.
-              title={t("logIn")}
+            // Icon and words from 1280 px; icon only from 1024 to 1279 px, where the words would push the header past
+            // the page grid (issues 138, 140, 142, 146). The phone menu shows the words. My account once signed in.
+            <AccountLink
+              labels={{ logIn: t("logIn"), myAccount: t("myAccount") }}
+              icon={<User aria-hidden="true" className="size-[18px]" />}
+              labelClassName="sr-only xl:not-sr-only"
               className="hidden h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full bg-navy-900 text-[14.5px] font-semibold text-white shadow-[0_8px_20px_-12px_rgb(2_13_57/0.7)] transition-colors duration-150 hover:bg-royal-800 focus-visible:ring-3 focus-visible:ring-ring/40 lg:inline-flex xl:px-4"
-            >
-              <User aria-hidden="true" className="size-[18px]" />
-              <span className="sr-only xl:not-sr-only">{t("logIn")}</span>
-            </Link>
+            />
           ) : null}
           <MobileMenu
             className="lg:hidden"

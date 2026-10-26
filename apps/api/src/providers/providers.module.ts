@@ -1,5 +1,6 @@
 import { type DynamicModule, Module } from "@nestjs/common";
 import { CustomersController } from "../customers/customers.controller";
+import { CustomerCodesService } from "../customers/customerCodes.service";
 import { CustomersService, GOOGLE_FETCH } from "../customers/customers.service";
 import type { GoogleFetch } from "../customers/googleOAuth";
 import { probePort, type Fetcher, type PortProbe } from "./catalogAdapters";
@@ -23,6 +24,7 @@ export class ProvidersModule {
       providers: [
         ProvidersService,
         CustomersService,
+        CustomerCodesService,
         { provide: PROVIDER_FETCH, useValue: fetcher },
         { provide: PROVIDER_PROBE, useValue: options.probe ?? probePort },
         { provide: GOOGLE_FETCH, useValue: googleFetch },

@@ -565,6 +565,16 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     variables: ["{{name}}", "{{address}}", "{{time}}", "{{link}}"],
     enabled: true,
   },
+  {
+    // Customer sign-in by email code (issue 241, D301); {{code}} must stay in the message.
+    key: "customer-sign-in-code",
+    audience: "Customer, when signing in",
+    channel: "email",
+    subject: "Your Waafa sign-in code",
+    body: "Your Waafa sign-in code is {{code}}.\n\nType it on the sign-in page within {{minutes}} minutes. It works once.\n\nNever share this code: Waafa staff will never ask for it. If you didn't try to sign in, you can ignore this email.",
+    variables: ["{{code}}", "{{minutes}}"],
+    enabled: true,
+  },
 ];
 
 export const maintenanceSettings: In<typeof MaintenanceSettingsSchema> = {

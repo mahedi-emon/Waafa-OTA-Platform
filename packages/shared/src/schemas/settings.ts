@@ -318,6 +318,11 @@ export const LeadFormSettingsSchema = z
   })
   .strict();
 
+/** Words a template's message must keep (issue 241): a sign-in email without its code is useless. */
+export const TEMPLATE_REQUIRED_VARIABLES: Partial<Record<string, readonly string[]>> = {
+  "customer-sign-in-code": ["{{code}}"],
+};
+
 export const NotificationTemplateSchema = z
   .object({
     key: z.enum([
@@ -335,6 +340,7 @@ export const NotificationTemplateSchema = z
       "low-stock-staff",
       "staff-new-device",
       "staff-code-locked",
+      "customer-sign-in-code",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */
     audience: z.string().min(1).max(40),
@@ -345,7 +351,18 @@ export const NotificationTemplateSchema = z
     variables: z.array(z.string().regex(/^\{\{[a-z][a-z0-9_]*\}\}$/)),
     enabled: z.boolean(),
   })
-  .strict();
+  .strict()
+  .superRefine((template, ctx) => {
+    for (const variable of TEMPLATE_REQUIRED_VARIABLES[template.key] ?? []) {
+      if (!template.body.includes(variable)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["body"],
+          message: `Keep ${variable} in the message: it is what the person needs.`,
+        });
+      }
+    }
+  });
 
 export const MaintenanceSettingsSchema = z
   .object({

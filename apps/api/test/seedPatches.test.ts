@@ -15,6 +15,7 @@ const ALL_PATCHES = [
   "2026-10-26-low-stock-template",
   "2026-10-26-new-device-template",
   "2026-10-26-code-locked-template",
+  "2026-10-27-customer-code-template",
 ];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */
@@ -282,5 +283,34 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
     });
     const kept = await prisma.contentDocument.findUniqueOrThrow({ where });
     expect((kept.data as { subject: string }).subject).toBe("Was this you?");
+  });
+
+  it("adds the customer sign-in code email to a live list once, keeping one an admin already wrote (issue 241)", async () => {
+    await prisma.contentDocument.deleteMany({
+      where: { collection: "notificationTemplates", docId: "customer-sign-in-code" },
+    });
+    const others = ALL_PATCHES.filter((id) => id !== "2026-10-27-customer-code-template");
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-27-customer-code-template"],
+      changed: 1,
+    });
+    const where = {
+      collection_docId: { collection: "notificationTemplates", docId: "customer-sign-in-code" },
+    };
+    const added = await prisma.contentDocument.findUniqueOrThrow({ where });
+    expect(added.data).toMatchObject({ channel: "email", enabled: true });
+    expect((added.data as { body: string }).body).toContain("{{code}}");
+    await prisma.contentDocument.update({
+      where,
+      data: { data: { ...(added.data as object), subject: "Your code for Waafa" } },
+    });
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-27-customer-code-template"],
+      changed: 0,
+    });
+    const kept = await prisma.contentDocument.findUniqueOrThrow({ where });
+    expect((kept.data as { subject: string }).subject).toBe("Your code for Waafa");
   });
 });

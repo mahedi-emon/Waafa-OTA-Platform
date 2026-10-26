@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { IsoDateTimeSchema } from "./common";
+import { E164PhoneSchema, IsoDateTimeSchema } from "./common";
 
 /*
- * Customer accounts (PRD FR-ACC, issue 134): sign-in with Google for now; every flow still works as a guest. The web
+ * Customer accounts (PRD FR-ACC, issues 134 and 241): sign-in with an email code or Google; every flow still works as a
+ * guest. The web
  * server runs the OAuth redirect (state + PKCE) and hands the code to the API, which exchanges it with Google using
  * the secret kept in Admin › Integrations and answers with an opaque session token for an httpOnly cookie.
  */
@@ -33,6 +34,8 @@ export const CustomerViewSchema = z
     id: z.string(),
     name: z.string(),
     email: z.email(),
+    /** E.164, a contact field typed at sign-up (never verified, D301). */
+    phone: z.string().nullable(),
     createdAt: IsoDateTimeSchema,
   })
   .strict();
@@ -78,3 +81,51 @@ export type AccountView = z.infer<typeof AccountViewSchema>;
 
 /** Sessions last 30 days; signing in again starts a new one. */
 export const CUSTOMER_SESSION_DAYS = 30;
+
+/*
+ * Email sign-in codes (issue 241, D301): no phone OTP and no SMS for sign-in. A 6-digit code goes by email, works for
+ * 10 minutes, once, with at most 5 tries. An address without an account gets a 15-minute sign-up ticket after the
+ * code, spent by the name-and-phone step. Every answer to a code request is the same, account or not.
+ */
+export const SIGN_IN_CODE_LENGTH = 6;
+export const SIGN_IN_CODE_MINUTES = 10;
+export const SIGN_IN_CODE_TRIES = 5;
+export const SIGN_UP_TICKET_MINUTES = 15;
+
+/** Trimmed and lower-cased before it is checked, so "Rahim@Example.com " and "rahim@example.com" are one account. */
+export const CustomerEmailSchema = z.string().trim().toLowerCase().pipe(z.email().max(254));
+
+export const EmailCodeRequestSchema = z.object({ email: CustomerEmailSchema }).strict();
+export type EmailCodeRequest = z.infer<typeof EmailCodeRequestSchema>;
+
+export const SignInCodeSchema = z
+  .string()
+  .trim()
+  .regex(/^\d{6}$/, "Enter the 6-digit code");
+
+export const EmailCodeVerifySchema = z
+  .object({ email: CustomerEmailSchema, code: SignInCodeSchema })
+  .strict();
+export type EmailCodeVerify = z.infer<typeof EmailCodeVerifySchema>;
+
+/** An opaque sign-up ticket: base64url, never stored in clear. */
+export const SignUpTicketSchema = z.string().regex(/^[A-Za-z0-9_-]{32,128}$/);
+
+export const EmailCodeResultSchema = z.discriminatedUnion("status", [
+  z.object({ status: z.literal("signed-in"), session: CustomerSessionSchema }).strict(),
+  z.object({ status: z.literal("new"), ticket: SignUpTicketSchema }).strict(),
+]);
+export type EmailCodeResult = z.infer<typeof EmailCodeResultSchema>;
+
+export const SignUpCompleteSchema = z
+  .object({
+    ticket: SignUpTicketSchema,
+    name: z.string().trim().min(2).max(80),
+    phone: E164PhoneSchema,
+  })
+  .strict();
+export type SignUpComplete = z.infer<typeof SignUpCompleteSchema>;
+
+/** How a customer got in last time (admin Customers). */
+export const SIGN_IN_METHODS = ["email-code", "google"] as const;
+export type SignInMethod = (typeof SIGN_IN_METHODS)[number];

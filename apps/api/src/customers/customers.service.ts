@@ -1,10 +1,7 @@
-import { createHash, randomBytes } from "node:crypto";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import {
-  CUSTOMER_SESSION_DAYS,
   type AccountView,
   type CustomerSession,
-  type CustomerView,
   type GoogleSignInConfig,
   type GoogleSignInInput,
 } from "@waafa/shared";
@@ -13,6 +10,7 @@ import { problems } from "../common/problem";
 import type { Customer } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProvidersService } from "../providers/providers.service";
+import { attachGuestRecords, hashToken, openSession, view } from "./customerAuth";
 import { GoogleSignInError, exchangeGoogleCode, type GoogleFetch } from "./googleOAuth";
 
 export const GOOGLE_FETCH = Symbol("GOOGLE_FETCH");
@@ -22,17 +20,6 @@ export const GOOGLE_CALLBACK_PATH = "/api/auth/google/callback";
 
 /** How many requests and orders My account lists, newest first. */
 const ACCOUNT_LIST_LIMIT = 50;
-
-const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
-
-function view(customer: Customer): CustomerView {
-  return {
-    id: customer.id,
-    name: customer.name,
-    email: customer.email,
-    createdAt: customer.createdAt.toISOString(),
-  };
-}
 
 /**
  * Customer accounts (FR-ACC, issue 134): Google sign-in with the credentials from Admin › Integrations, opaque
@@ -116,6 +103,9 @@ export class CustomersService {
       existing && existing.email !== identity.email
         ? (await this.prisma.customer.count({ where: { email: identity.email } })) > 0
         : false;
+    // A disabled account is refused like a failed sign-in (#241).
+    if (existing?.disabledAt)
+      throw problems.unauthorized("Google sign-in did not complete; try again");
     const customer = existing
       ? await this.prisma.customer.update({
           where: { id: existing.id },
@@ -124,6 +114,8 @@ export class CustomersService {
             email: emailTaken ? existing.email : identity.email,
             name: identity.name,
             lastSignInAt: now,
+            signInMethod: "google",
+            ...(existing.emailVerifiedAt ? {} : { emailVerifiedAt: now }),
           },
         })
       : await this.prisma.customer.create({
@@ -132,20 +124,12 @@ export class CustomersService {
             email: identity.email,
             name: identity.name,
             lastSignInAt: now,
+            signInMethod: "google",
+            emailVerifiedAt: now,
           },
         });
-
-    const token = randomBytes(32).toString("base64url");
-    const expiresAt = new Date(now.getTime() + CUSTOMER_SESSION_DAYS * 24 * 60 * 60 * 1000);
-    await this.prisma.customerSession.create({
-      data: {
-        customerId: customer.id,
-        tokenHash: hashToken(token),
-        expiresAt,
-        userAgent: userAgent?.slice(0, 200) ?? null,
-      },
-    });
-    return { token, expiresAt: expiresAt.toISOString(), customer: view(customer) };
+    await attachGuestRecords(this.prisma, customer);
+    return openSession(this.prisma, customer, userAgent, now);
   }
 
   /** The signed-in customer for a session token, or a 401. */
@@ -155,7 +139,12 @@ export class CustomersService {
       where: { tokenHash: hashToken(token) },
       include: { customer: true },
     });
-    if (!session || session.revokedAt || session.expiresAt.getTime() <= Date.now()) {
+    if (
+      !session ||
+      session.revokedAt ||
+      session.expiresAt.getTime() <= Date.now() ||
+      session.customer.disabledAt
+    ) {
       throw problems.unauthorized();
     }
     return session.customer;
@@ -163,16 +152,18 @@ export class CustomersService {
 
   async account(token: string | undefined): Promise<AccountView> {
     const customer = await this.customerFor(token);
-    const byEmail = { email: { equals: customer.email, mode: "insensitive" as const } };
+    // Requests sent since the last sign-in (as a guest, or with the same email) join the account here too.
+    await attachGuestRecords(this.prisma, customer);
+    const mine = { customerId: customer.id };
     const [leads, orders] = await Promise.all([
       this.prisma.lead.findMany({
-        where: byEmail,
+        where: mine,
         orderBy: { createdAt: "desc" },
         take: ACCOUNT_LIST_LIMIT,
         select: { reference: true, module: true, status: true, summary: true, createdAt: true },
       }),
       this.prisma.order.findMany({
-        where: byEmail,
+        where: mine,
         orderBy: { createdAt: "desc" },
         take: ACCOUNT_LIST_LIMIT,
         select: { reference: true, status: true, total: true, createdAt: true },
@@ -194,7 +185,7 @@ export class CustomersService {
     });
   }
 
-  /** Deletes the account and every session; requests and orders stay with the business. */
+  /** Deletes the account and every session; requests and orders stay with the business, no longer linked. */
   async deleteAccount(token: string | undefined): Promise<void> {
     const customer = await this.customerFor(token);
     await this.prisma.customer.delete({ where: { id: customer.id } });

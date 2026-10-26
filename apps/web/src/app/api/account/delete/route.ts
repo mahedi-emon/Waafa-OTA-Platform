@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { deleteAccount } from "@/lib/account/accountApi";
 import { SESSION_COOKIE } from "@/lib/account/googleOAuth";
 import { isSameOrigin, seeOther } from "@/lib/account/redirects";
+import { clearSessionCookies } from "@/lib/account/sessionCookie";
 
 /**
  * Delete account (issues 134 and 138): needs the confirmation tick; requests and orders stay with the business.
@@ -16,6 +17,6 @@ export async function POST(request: Request) {
   const deleted = await deleteAccount(store.get(SESSION_COOKIE)?.value);
   if (!deleted) return seeOther("/account?error=delete");
   const response = seeOther("/login?deleted=1");
-  response.cookies.set(SESSION_COOKIE, "", { path: "/", maxAge: 0 });
+  clearSessionCookies(response);
   return response;
 }
