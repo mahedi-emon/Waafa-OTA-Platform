@@ -202,7 +202,11 @@ export default function AccountPage({ searchParams }: PageProps<"/[locale]/accou
   return (
     <Suspense
       fallback={
-        <main id="main" aria-busy="true" className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <main
+          id="main"
+          aria-busy="true"
+          className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28"
+        >
           <Skeleton className="h-5 w-40 rounded-full" />
           <Skeleton className="h-32 rounded-[24px]" />
           <Skeleton className="h-[320px] rounded-2xl" />

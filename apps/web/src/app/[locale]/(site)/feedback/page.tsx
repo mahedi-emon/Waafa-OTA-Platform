@@ -187,7 +187,7 @@ export default function FeedbackPage({ searchParams }: PageProps<"/[locale]/feed
   return (
     <Suspense
       fallback={
-        <div className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
           <Skeleton className="h-10 w-2/3 rounded-xl" />
           <Skeleton className="h-72 rounded-[24px]" />
         </div>

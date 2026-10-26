@@ -212,7 +212,7 @@ export default function GalleryPage({ searchParams }: PageProps<"/[locale]/galle
   return (
     <Suspense
       fallback={
-        <div className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
           <Skeleton className="h-10 w-2/3 rounded-xl" />
           <Skeleton className="aspect-[21/9] rounded-[24px]" />
         </div>

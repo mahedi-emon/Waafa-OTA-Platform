@@ -141,8 +141,14 @@ for (const route of routes) {
 server?.kill();
 proxy?.kill();
 
-const budgets = config.budgets;
+// `budgets` fail the run; `targets` (the NFR-PERF goals not yet met everywhere, D298) are reported as warnings.
+const checks = [
+  ...Object.entries(config.budgets).map(([key, limit]) => ({ key, limit, error: true })),
+  ...Object.entries(config.targets ?? {}).map(([key, limit]) => ({ key, limit, error: false })),
+];
+const higherIsBetter = new Set(["performance", "accessibility", "best-practices", "seo"]);
 const misses = [];
+const warnings = [];
 const lines = [
   `Lighthouse ${config.lighthouse}, mobile, ${base}, median of ${runs}`,
   "",
@@ -155,23 +161,20 @@ for (const result of results) {
     misses.push(`${result.route}: no Lighthouse result`);
     continue;
   }
-  for (const key of ["performance", "accessibility", "best-practices", "seo"]) {
-    if (result[key] < budgets[key])
-      misses.push(`${result.route} ${key} ${result[key]} < ${budgets[key]}`);
-  }
-  for (const key of [
-    "largest-contentful-paint",
-    "cumulative-layout-shift",
-    "total-blocking-time",
-  ]) {
-    if (result[key] > budgets[key])
-      misses.push(`${result.route} ${key} ${Number(result[key].toFixed(3))} > ${budgets[key]}`);
+  for (const { key, limit, error } of checks) {
+    const value = result[key];
+    const missed = higherIsBetter.has(key) ? value < limit : value > limit;
+    if (!missed) continue;
+    const text = `${result.route} ${key} ${Number(value.toFixed(3))} ${higherIsBetter.has(key) ? "<" : ">"} ${limit}`;
+    (error ? misses : warnings).push(text);
   }
   lines.push(
     `| ${result.route} | ${result.performance} (${result.runs.join("/")}) | ${(result["largest-contentful-paint"] / 1000).toFixed(1)} s | ${Math.round(result["total-blocking-time"])} ms | ${result["cumulative-layout-shift"].toFixed(2)} | ${result.accessibility} | ${result["best-practices"]} | ${result.seo} |`,
   );
 }
-if (misses.length) lines.push("", "Over budget:", ...misses.map((miss) => `- ${miss}`));
+if (warnings.length)
+  lines.push("", "Below target (warning):", ...warnings.map((miss) => `- ${miss}`));
+if (misses.length) lines.push("", "Over budget (fails):", ...misses.map((miss) => `- ${miss}`));
 const text = `${lines.join("\n")}\n`;
 process.stdout.write(text);
 if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, text);

@@ -506,9 +506,10 @@ jobs:
       - name: Build web
         run: pnpm --filter @waafa/web... build
 
-      # Lighthouse 13 on the 11 key routes, median of 3 (issue 236); the budgets live in apps/web/lighthouse.config.json.
+      # Lighthouse 13 on the 11 key routes, median of 3 (issue 236): budgets in apps/web/lighthouse.config.json fail the
+      # job, targets are warnings (D298).
       - name: Lighthouse
-        run: node scripts/lighthouse-run.mjs --warn
+        run: node scripts/lighthouse-run.mjs
 
       - name: Upload Lighthouse reports
         if: always()

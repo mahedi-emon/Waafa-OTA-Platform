@@ -9,9 +9,9 @@ Key routes: `/`, `/flights`, `/hotels`, `/tour-packages`, a package, `/visa`, a 
 
 | ID | Area | Type | Preconditions | Steps | Expected result | Priority | Automated by |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-01 | Lighthouse | Happy | Production build, fixture data | LHCI, 3 runs per key route, mobile | Performance median 90+ on all 11 routes | P0 | `lighthouserc.json` (error) in CI |
-| C-02 | Lighthouse | Happy | Same | Same | Accessibility, best practices, SEO 95+ each | P0 | `lighthouserc.json` (error) |
-| C-03 | Core Web Vitals | Happy | Same | Same | LCP 2.5 s or less, CLS 0.1 or less, TBT 200 ms or less (lab stand-in for INP) | P0 | `lighthouserc.json` (error) |
+| C-01 | Lighthouse | Happy | Production build, fixture data | LHCI, 3 runs per key route, mobile | Performance median 90+ on all 11 routes | P0 | `scripts/lighthouse-run.mjs` in CI (target, a warning until #271; D298) |
+| C-02 | Lighthouse | Happy | Same | Same | Accessibility, best practices, SEO 95+ each | P0 | `scripts/lighthouse-run.mjs` (budget, fails CI) |
+| C-03 | Core Web Vitals | Happy | Same | Same | LCP 2.5 s or less, CLS 0.1 or less, TBT 200 ms or less (lab stand-in for INP) | P0 | `scripts/lighthouse-run.mjs` (CLS budget fails CI; LCP and TBT targets warn until #271) |
 | C-04 | JS budget | Happy | Production build | Load every public route at 390 px | First-load JS (scripts the HTML references, gzip) 200 KB or less | P0 | `e2e/budget.spec.ts` |
 | C-05 | JS budget | Edge | Same | Route with the largest client island (flights, contact, shop) | Still 200 KB or less; on-tap code not counted | P0 | `e2e/budget.spec.ts` |
 | C-06 | LCP | Happy | Home at 390 px | Load | LCP element is the hero photo, `fetchpriority=high`, not lazy, preloaded | P1 | `e2e/performance.spec.ts` |

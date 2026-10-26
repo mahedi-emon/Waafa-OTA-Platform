@@ -33,7 +33,7 @@ Paths: `web/` = `apps/web/src/`, `site/` = `apps/web/src/app/[locale]/(site)/`, 
 trading attachments, feedback photo: the Phase A rule D87/D106/D109 was never lifted) → #232; visa status email never
 sent, staff alert recipients only in the server env, no low-stock alert, no EMI request form, no reason on mode changes
 → #233; no Bookings module (convert keeps only an amount) → #242; compatible-models CSV import → #248; first-load JS
-over 200 KB on Home, Flights and Shop → #236; backups without an off-site copy → #239 (rate limits moved to Redis in #234); no
+over 200 KB on Home, Flights and Shop → fixed in #236 (Lighthouse 90 on Home, Hotels and Blog → #271); backups without an off-site copy → #239 (rate limits moved to Redis in #234); no
 conversion events and one sitemap → #237; no error tracking → #238; Chromium-only tests → #259.
 
 ## §7 Global layout, dynamic footer, home and unified search
@@ -209,7 +209,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
-| NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial | e2e/budget.spec.ts; apps/web/lighthouserc.json; TRACKER #170 | Home 217, Flights 259, Shop 215 KB > 200; Home/Flights/Shop below 85–90 in CI; LHCI assertions are `warn` only | #236 |
+| NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial | e2e/budget.spec.ts (31 routes ≤ 200 KB); scripts/lighthouse-run.mjs + apps/web/lighthouse.config.json (CI errors on a11y/BP/SEO/CLS); TRACKER #236 | 8 of 11 key routes at 90+ (Home 87, Hotels 86, Blog 88); lab LCP 2.6 to 4.0 s; performance and LCP are CI warnings (D298) | #271 |
 | NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | partial | api/auth/auth.service.ts; lib/security/securityHeaders.ts; nginx HSTS; providers/secretBox.ts; ci.yml CodeQL; dependabot.yml | API limits in Redis with the 10/h per-phone lead limit (#234); per-IP lead limits stay at the web's 10/min (API 20) rather than 5; CSP uses 'unsafe-inline' not nonce (documented); backups keep 14 days, no off-site copy; malware scan with ClamAV since #235 | #239 |
 | NFR-SEO | P0 | SSR titles, canonical, JSON-LD, split sitemap, OG images, llms.txt, GA4/GTM/Pixel events | partial | app/sitemap.ts, robots.ts, llms.txt; components/seo/*; e2e/seo.spec.ts | No conversion events (search, generate_lead, …, purchase); sitemap not split; OG = record photos, not generated images | #237 |
 | NFR-A11Y | P0 | WCAG 2.2 AA: contrast, focus, keyboard, labels, 44 px, skip link, reduced motion | done | skip link in app/[locale]/layout.tsx; AxeBuilder in 24 e2e specs | — | — |
