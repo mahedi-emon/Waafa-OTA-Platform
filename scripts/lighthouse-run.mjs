@@ -7,6 +7,7 @@
 //   node scripts/lighthouse-run.mjs --base https://waafasworld.com --live   the live site, read-only (liveRoutes)
 //   options: --runs 1, --only /shop, --out apps/web/lighthouse-report, --warn (report only, never fail)
 import { spawn } from "node:child_process";
+import { connect } from "node:net";
 import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -27,6 +28,17 @@ const out = path.resolve(arg("out", path.join(web, "lighthouse-report")));
 const only = arg("only", null);
 const routes = only ? [only] : live ? config.liveRoutes : config.routes;
 mkdirSync(out, { recursive: true });
+
+/** True when something listens on the local port. */
+const portOpen = (port) =>
+  new Promise((resolve) => {
+    const socket = connect(port, "127.0.0.1");
+    socket.once("connect", () => {
+      socket.destroy();
+      resolve(true);
+    });
+    socket.once("error", () => resolve(false));
+  });
 
 /** One shell argument on Windows (spawn uses a shell there); unchanged elsewhere. */
 const quoteOnWindows = (arg) => (process.platform === "win32" ? `"${arg}"` : arg);
@@ -75,16 +87,19 @@ if (local) {
     [path.join(root, "scripts", "h2-proxy.mjs"), "3443", "3200", cert, key],
     { stdio: "ignore" },
   );
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  // Wait for Next on plain HTTP, then for the proxy's port (no TLS check needed: Chrome gets --ignore-certificate-errors).
+  const origin = "http://localhost:3200";
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    const ok = await fetch(`${base}/robots.txt`)
+    const ok = await fetch(`${origin}/robots.txt`)
       .then((r) => r.ok)
       .catch(() => false);
-    if (ok) break;
+    if (ok && (await portOpen(3443))) break;
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   // Warm the server so the first run doesn't measure a cold render.
-  for (const route of routes) await fetch(`${base}${route}`).catch(() => undefined);
+  for (const route of routes)
+    // codeql[js/file-access-to-http] The routes come from this repository's own config and only reach localhost.
+    await fetch(`${origin}${route}`).catch(() => undefined);
 }
 
 const audit = (report, id) => report.audits[id]?.numericValue ?? 0;

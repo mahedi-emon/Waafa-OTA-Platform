@@ -9,12 +9,12 @@ const [base, from, to] = process.argv.slice(2);
 const scripts = async (route) => {
   const html = await (await fetch(`${base}${route}`)).text();
   const urls = new Set();
-  for (const m of html.matchAll(/<script\b[^>]*>/g)) {
+  for (const m of html.matchAll(/<script\b[^>]*>/gi)) {
     const src = /\bsrc="([^"]+)"/.exec(m[0])?.[1];
     if (src && !/\bnomodule\b/i.test(m[0])) urls.add(src);
   }
   for (const m of html.matchAll(
-    /<link\b[^>]*rel="(?:preload|modulepreload)"[^>]*as="script"[^>]*>/g,
+    /<link\b[^>]*rel="(?:preload|modulepreload)"[^>]*as="script"[^>]*>/gi,
   )) {
     const href = /href="([^"]+)"/.exec(m[0])?.[1];
     if (href) urls.add(href);

@@ -65,11 +65,11 @@ for (const route of routes) {
   }
   const html = await response.text();
   const urls = new Set();
-  for (const m of html.matchAll(/<script\b[^>]*>/g)) {
+  for (const m of html.matchAll(/<script\b[^>]*>/gi)) {
     const src = /\bsrc="([^"]+)"/.exec(m[0])?.[1];
     if (src && !/\bnomodule\b/i.test(m[0])) urls.add(src);
   }
-  for (const m of html.matchAll(/<link\b[^>]*>/g)) {
+  for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
     if (!/rel="(?:preload|modulepreload)"/.test(m[0]) || !/as="script"/.test(m[0])) continue;
     const href = /href="([^"]+)"/.exec(m[0])?.[1];
     if (href) urls.add(href);
