@@ -174,8 +174,13 @@ test("task 2: the home hero gets a new photo and headline, and the home page sho
     await expect(preview).toBeVisible({ timeout: 60_000 });
     if (before) await expect(preview).not.toHaveAttribute("src", before, { timeout: 60_000 });
     await description.fill(`Boats at the pier at sunrise ${STAMP}`);
-    const removeVideo = page.getByRole("button", { name: /^Remove Video/ });
-    if (await removeVideo.isVisible()) await removeVideo.click();
+    // The hero plays a video when one is set; remove it so the new photo shows. Its button reads "Remove video Video".
+    const removeVideo = page.getByRole("button", { name: /^Remove video/ });
+    if (await removeVideo.isVisible()) {
+      await whenHydrated(removeVideo);
+      await removeVideo.click();
+      await expect(removeVideo).toBeHidden();
+    }
     await saveChanges(page);
     photoSaved = true;
 
