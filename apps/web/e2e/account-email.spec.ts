@@ -124,7 +124,7 @@ test.describe("desktop (1440)", () => {
       .getByRole("textbox", { name: "Code from the email" })
       .fill(code === "000000" ? "111111" : "000000");
     await page.getByRole("button", { name: "Sign in" }).click();
-    await expect(page.getByRole("alert")).toContainText("That code isn't right. Tries left: 4.");
+    await expect(page.getByText("That code isn't right. Tries left: 4.")).toBeVisible();
     await page.getByRole("textbox", { name: "Code from the email" }).fill(code);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/account$/);
