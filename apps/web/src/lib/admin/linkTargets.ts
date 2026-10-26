@@ -18,7 +18,7 @@ export const SITE_PAGES = [
   { id: "shopCategories", path: "/shop/categories" },
   { id: "deals", path: "/shop/deals" },
   { id: "finder", path: "/shop/finder" },
-  { id: "track", path: "/shop/track" },
+  { id: "track", path: "/track" },
   { id: "printing", path: "/shop/printing-solutions" },
   { id: "trading", path: "/shop/international-trading" },
   { id: "blog", path: "/blog" },

@@ -29,6 +29,7 @@ export * from "./schemas/customers";
 export * from "./schemas/media";
 export * from "./schemas/files";
 export * from "./schemas/workflow";
+export * from "./schemas/track";
 
 export * from "./content/registry";
 export * from "./content/publicPaths";

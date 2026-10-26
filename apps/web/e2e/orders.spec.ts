@@ -100,12 +100,12 @@ test("places a cash-on-delivery order and tracks it with the phone number", asyn
   await page.goto("/shop/cart");
   await expect(page.getByRole("heading", { name: "Your cart is empty" })).toBeVisible();
 
-  await page.goto(`/shop/track?ref=${reference}&phone=01712345678`);
+  await page.goto(`/track?ref=${reference}&phone=01712345678`);
   await expect(page.getByRole("heading", { name: "Order placed" })).toBeVisible();
   await expect(page.getByText("৳2,980")).toBeVisible();
 
-  await page.goto(`/shop/track?ref=${reference}&phone=01999000000`);
-  await expect(page.getByRole("heading", { name: "We couldn’t find that order" })).toBeVisible();
+  await page.goto(`/track?ref=${reference}&phone=01999000000`);
+  await expect(page.getByRole("heading", { name: "We couldn’t find that" })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -129,8 +129,11 @@ test("blocks cash on delivery above the limit and takes a bKash order with a tra
   expect(errors).toEqual([]);
 });
 
-test("the tracked sample order shows its courier timeline", async ({ page }) => {
+test("the tracked sample order shows its courier timeline; old /shop/track links still work (issue 240)", async ({
+  page,
+}) => {
   await page.goto("/shop/track?ref=ORD-260921-0108&phone=%2B8801000000003");
+  await expect(page).toHaveURL(/\/track\?ref=ORD-260921-0108&phone=%2B8801000000003$/);
   await expect(page.getByRole("heading", { name: "Delivered" })).toBeVisible();
   await axe(page);
 });

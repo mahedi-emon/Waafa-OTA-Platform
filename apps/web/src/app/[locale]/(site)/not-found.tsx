@@ -9,7 +9,7 @@ const LINKS = [
   { key: "packages", href: "/tour-packages" },
   { key: "visa", href: "/visa" },
   { key: "store", href: "/shop" },
-  { key: "track", href: "/shop/track" },
+  { key: "track", href: "/track" },
   { key: "contact", href: "/contact" },
 ] as const;
 

@@ -104,7 +104,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-VISA-03 | P0 | Apply form with document uploads (≤5 MB), appointment; VSA-… | done | site/visa/[country]/apply/_components/VisaFileStep.tsx; web/components/forms/DocumentSlot.tsx; app/api/uploads; api/files/*; apps/api/test/files.test.ts; e2e/api-mode.spec.ts (issue 232) | — | #232 |
 | FR-VISA-04 | P0 | Application statuses; customer email on each change | done | api/admin/leads.service.ts visa() emails visa-status-customer on each step forward; apps/api/test/admin.test.ts | — | #233 |
 | FR-VISA-05 | P0 | Private bucket, 10-min signed links, 90-day deletion, logged downloads | done | api/files/customer-files.service.ts (private volume, 10-min signed links, audit file.link and file.download, purge); app/secure-admin-control/files/[key]; apps/api/test/files.test.ts | — | #232 |
-| FR-VISA-06 | P1 | Track application by reference + phone; malware scan | partial | api/files/{clamd,fileScan}.ts; worker.ts; deploy compose `clamav`; admin Files panel | Tracking by reference + phone | #240 |
+| FR-VISA-06 | P1 | Track application by reference + phone; malware scan | done | api/files/{clamd,fileScan}.ts; worker.ts; api/public/intake.service.ts (track); site/track; api/test/track.test.ts | — | #240 |
 | FR-VGD-01 | P0 | Visa Guide per country, linked both ways with visa page | done | site/visa-guide, site/visa-guide/[slug] | — | — |
 
 ## §10 Waafas World
@@ -222,7 +222,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 
 | Gap | Verdict | Evidence |
 | --- | --- | --- |
-| No unified /track (only /shop/track) | Confirmed | No `site/track` route; only site/shop/track; FR-VISA-06 visa tracking missing too |
+| No unified /track (only /shop/track) | Fixed in #240 | No `site/track` route; only site/shop/track; FR-VISA-06 visa tracking missing too |
 | Customer sign-in Google only | Confirmed | api/customers/customers.controller.ts has only `auth/google*`; OTP template unused, no password flow |
 | No Bangla (/bn) | Confirmed | web/i18n/routing.ts `locales: ["en"]`; only messages/en.json |
 | No staff 2FA (TOTP) | Fixed in #234 | api/auth/totp.ts (RFC 6238), sign-in code and setup steps, recovery codes, trusted devices |

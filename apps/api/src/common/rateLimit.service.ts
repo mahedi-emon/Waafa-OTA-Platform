@@ -25,6 +25,8 @@ export const RATE_RULES = {
   leadsPerPhone: { limit: 10, windowMs: 60 * 60_000 },
   orders: { limit: 12, windowMs: 60_000 },
   track: { limit: 30, windowMs: 60_000 },
+  /** /track lookups per visitor address (issue 240): 20 in 10 minutes, twice the web's own limit. */
+  trackLookup: { limit: 20, windowMs: 10 * 60_000 },
   feedback: { limit: 10, windowMs: 60_000 },
   proofs: { limit: 10, windowMs: 60_000 },
   searchLogs: { limit: 60, windowMs: 60_000 },

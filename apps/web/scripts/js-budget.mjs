@@ -23,7 +23,7 @@ const routes = process.argv.slice(3).length
       "/shop/c/power-banks",
       "/shop/cart",
       "/shop/checkout",
-      "/shop/track",
+      "/track",
       "/blog",
       "/blog/coxs-bazar-long-weekend",
       "/contact",

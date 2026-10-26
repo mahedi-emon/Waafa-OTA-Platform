@@ -38,6 +38,14 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #240 · D F3 · One /track for requests, visa applications and orders — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 27 Oct (D300): one /track for any request, visa application or order by reference and phone; /shop/track redirects; no personal data beyond the status; rate limited |
+| Built | Shared `TrackInputSchema`, `TrackResultSchema` (request: module, status, received, first reply and close dates, visa stage with documents count, submission and passport dates; order: as before). API `POST /public/track` (20 lookups per address in 10 minutes, the same 404 for a wrong phone, an unknown reference or spam), visa progress helpers moved to `common/visaProgress.ts`. Web `/track` (the old store page, generalised) with `RequestProgress` steps; `/shop/track` and `/bn/shop/track` 308 to `/track` with the query; every link, menu fixture and test moved to /track |
+| Tests | API `track.test.ts` 5 (request without personal data, visa steps, order, same not found, limit); e2e orders (old link redirect, order timeline, not found), api-mode (a quoted request on /track, wrong phone) |
+| Migration | none · live menus still point at /shop/track, which redirects (staff can edit the link) |
+
 ### #273 · D C · Lighthouse (manual) only on demand — ✅ Done
 | Field | Value |
 | --- | --- |

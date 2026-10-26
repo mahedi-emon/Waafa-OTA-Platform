@@ -25,7 +25,7 @@ const ROUTES = [
   "/shop/p/voltaro-power-bank-22-5w",
   "/shop/cart",
   "/shop/checkout",
-  "/shop/track",
+  "/track",
   "/shop/printing-solutions",
   "/shop/international-trading",
   "/blog",
