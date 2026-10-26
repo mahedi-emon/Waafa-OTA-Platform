@@ -90,8 +90,8 @@ else
   $COMPOSE build nginx
 fi
 
-echo "3/5 Worker, web, nginx and certbot"
-$COMPOSE up -d --no-build worker web nginx certbot
+echo "3/5 Worker, ClamAV, web, nginx and certbot"
+$COMPOSE up -d --no-build clamav worker web nginx certbot
 # Optimised images and /media/ files have no content hash in their URLs: drop the cached copies so a photo replaced in
 # this deploy shows at once (issue 126). nginx treats a missing cache file as a miss and refills it on demand.
 $COMPOSE exec -T nginx sh -c 'rm -rf /var/cache/nginx/waafa/*' || echo "nginx cache not cleared (nginx not running yet)"

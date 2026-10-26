@@ -453,6 +453,27 @@ jobs:
           docker compose -f deploy/compose.yml ps
           [ "$(docker compose -f deploy/compose.yml ps -q worker | xargs docker inspect -f '{{.State.Running}}')" = "true" ]
 
+      # Issue 235: the worker scans customer files with ClamAV; a clean PDF turns "clean", the EICAR test file
+      # "infected" and moves to quarantine/. ClamAV loads its signatures first (a minute or two).
+      - name: Malware scan (ClamAV, EICAR)
+        run: |
+          keys=$(docker compose -f deploy/compose.yml exec -T api node --input-type=module - < scripts/smoke-malware-scan.mjs | tail -1)
+          clean=${keys% *}; infected=${keys#* }
+          echo "clean=$clean infected=$infected"
+          status() {
+            docker compose -f deploy/compose.yml exec -T postgres psql -U waafa -d waafa -tAc \
+              "SELECT \"scanStatus\" || ' ' || \"path\" FROM \"CustomerFile\" WHERE \"storageKey\" = '$1'"
+          }
+          for attempt in $(seq 1 60); do
+            a=$(status "$clean"); b=$(status "$infected")
+            echo "$attempt: $a | $b"
+            case "$a" in unscanned*) ;; *) case "$b" in unscanned*) ;; *) break ;; esac ;; esac
+            sleep 5
+          done
+          case "$(status "$clean")" in clean*) ;; *) echo "clean file not marked clean"; exit 1 ;; esac
+          case "$(status "$infected")" in "infected quarantine/"*) ;; *) echo "EICAR file not quarantined"; exit 1 ;; esac
+          docker compose -f deploy/compose.yml logs --tail 20 worker
+
       - name: Logs
         if: failure()
         run: docker compose -f deploy/compose.yml logs --tail 150

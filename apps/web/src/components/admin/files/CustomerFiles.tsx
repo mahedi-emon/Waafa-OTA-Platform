@@ -1,4 +1,11 @@
-import { CircleAlert, ExternalLink, FileImage, FileText } from "lucide-react";
+import {
+  CircleAlert,
+  ExternalLink,
+  FileImage,
+  FileText,
+  ShieldAlert,
+  ShieldEllipsis,
+} from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { CustomerFileOwner } from "@waafa/shared";
 import { AdminPanel } from "@/components/admin/AdminPanel";
@@ -35,7 +42,8 @@ export function customerFileHref(storageKey: string): string {
 
 /**
  * What the customer sent with the form (issue 232): each file opens in a new tab through a signed link the API logs.
- * Files the form named but that never arrived are listed with what to do. Nothing renders when there are no files.
+ * Files the form named but that never arrived are listed with what to do. With the malware scan on (issue 235) a file
+ * opens once it is checked; a quarantined one shows a warning instead. Nothing renders when there are no files.
  */
 async function CustomerFiles({ owner, id, expected, className }: CustomerFilesProps) {
   const [t, rows] = await Promise.all([
@@ -71,6 +79,28 @@ async function CustomerFiles({ owner, id, expected, className }: CustomerFilesPr
               </li>
             );
           }
+          if (row.scan === "infected") {
+            // Quarantined by the malware scan (issue 235): a warning, never the file.
+            return (
+              <li
+                key={row.storageKey}
+                className="flex items-start gap-3 rounded-xl border border-danger-700/20 bg-danger-50 px-3 py-2.5"
+              >
+                <ShieldAlert
+                  aria-hidden="true"
+                  className="mt-0.5 size-5 shrink-0 text-danger-700"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[14px] font-medium text-ink-900">
+                    {row.fileName}
+                  </span>
+                  <span className="block text-[12.5px] text-danger-700">
+                    {kind(row.kind)} · {t("infected")}
+                  </span>
+                </span>
+              </li>
+            );
+          }
           return (
             <li
               key={row.storageKey}
@@ -84,19 +114,30 @@ async function CustomerFiles({ owner, id, expected, className }: CustomerFilesPr
                 <span className="block text-[12.5px] text-mist-600 tabular-nums">
                   {kind(row.kind)} · {formatFileSize(row.sizeBytes)} ·{" "}
                   {formatDhakaDateTime(row.createdAt)}
+                  {row.scan === "clean" ? ` · ${t("scanned")}` : ""}
                 </span>
               </span>
-              <Button asChild variant="secondary" size="sm">
-                <a
-                  href={customerFileHref(row.storageKey)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={t("openLabel", { name: row.fileName })}
+              {row.scan === "pending" ? (
+                <span
+                  role="status"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-2.5 py-1 text-[12.5px] font-semibold text-sky-700"
                 >
-                  {t("open")}
-                  <ExternalLink aria-hidden="true" />
-                </a>
-              </Button>
+                  <ShieldEllipsis aria-hidden="true" className="size-4" />
+                  {t("scanning")}
+                </span>
+              ) : (
+                <Button asChild variant="secondary" size="sm">
+                  <a
+                    href={customerFileHref(row.storageKey)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={t("openLabel", { name: row.fileName })}
+                  >
+                    {t("open")}
+                    <ExternalLink aria-hidden="true" />
+                  </a>
+                </Button>
+              )}
             </li>
           );
         })}

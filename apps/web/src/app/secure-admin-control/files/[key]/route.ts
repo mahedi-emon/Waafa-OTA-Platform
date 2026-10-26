@@ -39,6 +39,9 @@ export async function GET(request: Request, context: { params: Promise<{ key: st
     if (link.problem.code === "infected") {
       return page(409, "This file failed the malware scan and is quarantined.");
     }
+    if (link.problem.code === "scanning") {
+      return page(409, "This file is still being checked for viruses. Try again in a minute.");
+    }
     return page(link.problem.status === 403 ? 403 : 404, link.problem.detail ?? "File not found.");
   }
   const file = await fetchSignedFile(link.data.token);

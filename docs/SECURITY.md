@@ -17,6 +17,8 @@ PRD NFR-SEC and the OWASP Top 10 (2021), mapped to what the code does. Re-check 
 
 Forms: Cloudflare Turnstile (when the keys are set), per-address rate limits in the web, the API (in Redis, shared by every process and kept across restarts, plus 10 lead requests an hour per phone number; issue 234) and nginx (30 POSTs a minute), body size caps (web 16 KB per form, API 1 MB, nginx 2 MB).
 
+Malware scan (issue 235): with `CLAMAV_URL` set (the ClamAV container on the private network), the worker sends every customer file to clamd every 10 seconds; staff open a file only once it is clean, a hit moves to `quarantine/` on the private volume, is marked infected (staff see a warning, never the file) and is written to the audit log. A scanner that doesn't answer leaves files waiting, never clean.
+
 Customer files (issue 232): visa documents, payment slips, printing and trading attachments and feedback photos upload
 to `/api/uploads` (nginx 6 MB, web and API 5 MB, JPG, PNG or PDF decided by the first bytes, 20 a minute per visitor,
 40 MB of unclaimed files per visitor and 2 GB in total, uploads pause below 2 GB free disk). They live on the private

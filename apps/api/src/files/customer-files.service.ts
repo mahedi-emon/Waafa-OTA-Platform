@@ -45,6 +45,8 @@ export type CustomerFileRow = {
   mimeType: string;
   sizeBytes: number;
   scanStatus: string;
+  /** For staff (issue 235): off (no scanner), pending, clean or infected. */
+  scan: "off" | "pending" | "clean" | "infected";
   /** attached, or deleted once its retention ended (the row stays so staff know why it is gone). */
   status: string;
   createdAt: string;
@@ -75,6 +77,8 @@ export class CustomerFilesService {
   private readonly root: string;
   private readonly linkKey: Buffer;
   private readonly production: boolean;
+  /** CLAMAV_URL is set: staff open a file only once the worker found it clean (issue 235). */
+  private readonly scanning: boolean;
   private mounted: boolean | null = null;
 
   constructor(
@@ -84,6 +88,7 @@ export class CustomerFilesService {
   ) {
     this.root = path.resolve(env.PRIVATE_FILES_DIR);
     this.production = env.NODE_ENV === "production";
+    this.scanning = Boolean(env.CLAMAV_URL);
     // A key of its own, derived from the API secret, so a link can't be mistaken for a session token.
     this.linkKey = createHmac("sha256", env.JWT_SECRET).update("waafa:customer-file-link").digest();
   }
@@ -246,6 +251,14 @@ export class CustomerFilesService {
     });
     return rows.map((row) => ({
       ...row,
+      scan:
+        row.scanStatus === "infected"
+          ? "infected"
+          : row.scanStatus === "clean"
+            ? "clean"
+            : this.scanning
+              ? "pending"
+              : "off",
       createdAt: row.createdAt.toISOString(),
       deletedAt: row.deletedAt?.toISOString() ?? null,
     }));
@@ -264,6 +277,12 @@ export class CustomerFilesService {
     await this.assertOwnerAccess(staff, file.ownerType as CustomerFileOwner, file.ownerId);
     if (file.scanStatus === "infected") {
       throw problems.conflict("This file failed the malware scan and is quarantined", "infected");
+    }
+    if (this.scanning && file.scanStatus !== "clean") {
+      throw problems.conflict(
+        "This file is still being checked for viruses. Try again in a minute.",
+        "scanning",
+      );
     }
     const expires = now.getTime() + CUSTOMER_FILE_LINK_MS;
     const payload = `${file.id}.${expires}.${staff.id}`;
@@ -294,6 +313,7 @@ export class CustomerFilesService {
     if (!/^\d{13}$/.test(expires) || Number(expires) < now.getTime()) return null;
     const file = await this.prisma.customerFile.findUnique({ where: { id } });
     if (!file || file.status !== "attached" || file.scanStatus === "infected") return null;
+    if (this.scanning && file.scanStatus !== "clean") return null;
     const absolute = path.join(this.root, file.path);
     const info = await stat(absolute).catch(() => null);
     if (!info?.isFile()) return null;

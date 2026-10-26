@@ -24,10 +24,10 @@ Paths: `web/` = `apps/web/src/`, `site/` = `apps/web/src/app/[locale]/(site)/`, 
 | Priority | Rows | Status |
 | --- | --- | --- |
 | P0 (launch) | 116 | done 99 · partial 16 · missing 1 |
-| P1 (Phase D, due 13 Nov) | 17 | done 2 · partial 7 · missing 6 · waiting for owner account 2 |
+| P1 (Phase D, due 13 Nov) | 17 | done 2 · partial 8 · missing 5 · waiting for owner account 2 |
 | P2 (Phase E, live booking) | 8 | missing 8 |
 | P3 (scale) | 1 | missing 1 |
-| All | 142 | done 101 · partial 23 · missing 16 · waiting for owner account 2 |
+| All | 142 | done 101 · partial 24 · missing 15 · waiting for owner account 2 |
 
 **P0 not done (fixed first):** customer files never leave the browser (visa documents, payment proof, printing and
 trading attachments, feedback photo: the Phase A rule D87/D106/D109 was never lifted) → #232; visa status email never
@@ -104,7 +104,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-VISA-03 | P0 | Apply form with document uploads (≤5 MB), appointment; VSA-… | done | site/visa/[country]/apply/_components/VisaFileStep.tsx; web/components/forms/DocumentSlot.tsx; app/api/uploads; api/files/*; apps/api/test/files.test.ts; e2e/api-mode.spec.ts (issue 232) | — | #232 |
 | FR-VISA-04 | P0 | Application statuses; customer email on each change | done | api/admin/leads.service.ts visa() emails visa-status-customer on each step forward; apps/api/test/admin.test.ts | — | #233 |
 | FR-VISA-05 | P0 | Private bucket, 10-min signed links, 90-day deletion, logged downloads | done | api/files/customer-files.service.ts (private volume, 10-min signed links, audit file.link and file.download, purge); app/secure-admin-control/files/[key]; apps/api/test/files.test.ts | — | #232 |
-| FR-VISA-06 | P1 | Track application by reference + phone; malware scan | missing | — | Whole feature | #240, #235 |
+| FR-VISA-06 | P1 | Track application by reference + phone; malware scan | partial | api/files/{clamd,fileScan}.ts; worker.ts; deploy compose `clamav`; admin Files panel | Tracking by reference + phone | #240 |
 | FR-VGD-01 | P0 | Visa Guide per country, linked both ways with visa page | done | site/visa-guide, site/visa-guide/[slug] | — | — |
 
 ## §10 Waafas World
@@ -210,7 +210,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
 | NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial | e2e/budget.spec.ts; apps/web/lighthouserc.json; TRACKER #170 | Home 217, Flights 259, Shop 215 KB > 200; Home/Flights/Shop below 85–90 in CI; LHCI assertions are `warn` only | #236 |
-| NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | partial | api/auth/auth.service.ts; lib/security/securityHeaders.ts; nginx HSTS; providers/secretBox.ts; ci.yml CodeQL; dependabot.yml | API limits in Redis with the 10/h per-phone lead limit (#234); per-IP lead limits stay at the web's 10/min (API 20) rather than 5; CSP uses 'unsafe-inline' not nonce (documented); backups keep 14 days, no off-site copy; no malware scan (P1) | #234, #235, #239 |
+| NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | partial | api/auth/auth.service.ts; lib/security/securityHeaders.ts; nginx HSTS; providers/secretBox.ts; ci.yml CodeQL; dependabot.yml | API limits in Redis with the 10/h per-phone lead limit (#234); per-IP lead limits stay at the web's 10/min (API 20) rather than 5; CSP uses 'unsafe-inline' not nonce (documented); backups keep 14 days, no off-site copy; malware scan with ClamAV since #235 | #239 |
 | NFR-SEO | P0 | SSR titles, canonical, JSON-LD, split sitemap, OG images, llms.txt, GA4/GTM/Pixel events | partial | app/sitemap.ts, robots.ts, llms.txt; components/seo/*; e2e/seo.spec.ts | No conversion events (search, generate_lead, …, purchase); sitemap not split; OG = record photos, not generated images | #237 |
 | NFR-A11Y | P0 | WCAG 2.2 AA: contrast, focus, keyboard, labels, 44 px, skip link, reduced motion | done | skip link in app/[locale]/layout.tsx; AxeBuilder in 24 e2e specs | — | — |
 | NFR-OPS | P0 | 99.5% uptime, /health + /ready, Sentry, request-ID logs, envs, migrations, DLQ | partial | api/health/health.controller.ts; api/app.ts (pino, genReqId); deploy/* | Sentry not installed (no SDK; DSN waiting-owner); no staging environment; dead-letter only for email | #238, #239 (staging: owner decision) |

@@ -11,6 +11,8 @@ export type CustomerFileRow = {
   mimeType: string;
   sizeBytes: number;
   scanStatus: string;
+  /** Malware scan for staff (issue 235): off, pending, clean or infected. */
+  scan: "off" | "pending" | "clean" | "infected";
   /** attached, or deleted once its retention ended. */
   status: string;
   createdAt: string;

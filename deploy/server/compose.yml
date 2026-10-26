@@ -27,6 +27,8 @@ x-api-env: &api-env
   MEDIA_DIR: /data/media
   # Customer files (issue 232): visa documents, payment slips, attachments; never served by nginx.
   PRIVATE_FILES_DIR: /data/private
+  # Malware scan of customer files (issue 235): the worker sends each file to ClamAV; staff open only clean ones.
+  CLAMAV_URL: tcp://clamav:3310
   NODE_OPTIONS: --max-old-space-size=384
 
 services:
@@ -91,9 +93,21 @@ services:
     environment:
       <<: *api-env
       NODE_OPTIONS: --max-old-space-size=256
+    # Reads customer files for the malware scan and moves a hit to quarantine/ (issue 235).
+    volumes: [privatedata:/data/private]
     depends_on:
       api: { condition: service_healthy }
     mem_limit: 384m
+
+  # ClamAV (issue 235): clamd answers the worker on the private network; freshclam inside the image keeps the
+  # signatures current, kept in a volume so a restart doesn't download them again. About 1.2 GB once loaded.
+  clamav:
+    image: clamav/clamav:1.5.4
+    restart: unless-stopped
+    environment:
+      CLAMAV_NO_MILTERD: "true"
+    volumes: [clamdata:/var/lib/clamav]
+    mem_limit: 1600m
 
   web:
     image: ${IMAGE_REPO:?set IMAGE_REPO}:web-${IMAGE_TAG:-latest}
@@ -144,6 +158,7 @@ volumes:
   redisdata:
   mediadata:
   privatedata:
+  clamdata:
   nginxcache:
   letsencrypt:
   certbot_www:
