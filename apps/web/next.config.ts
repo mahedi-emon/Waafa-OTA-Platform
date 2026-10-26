@@ -40,6 +40,9 @@ const nextConfig: NextConfig = {
   // Visa moved from /visa-services to /visa (issue 176): old links, bookmarks and search results keep working.
   async redirects() {
     return [
+      // One /track for requests, visa applications and orders (issue 240); old order links keep their query.
+      { source: "/shop/track", destination: "/track", permanent: true },
+      { source: "/:locale(en|bn)/shop/track", destination: "/:locale/track", permanent: true },
       { source: "/visa-services", destination: "/visa", permanent: true },
       { source: "/visa-services/:path*", destination: "/visa/:path*", permanent: true },
       { source: "/:locale(en|bn)/visa-services", destination: "/:locale/visa", permanent: true },

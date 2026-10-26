@@ -64,7 +64,7 @@ function OrderDone({
         actions={
           <>
             <Button asChild>
-              <Link href="/shop/track">
+              <Link href="/track">
                 <Truck aria-hidden="true" />
                 {t("track")}
               </Link>

@@ -31,7 +31,7 @@ const ROUTES: Array<{ name: string; path: string }> = [
   { name: "ShopDeals", path: "/shop/deals" },
   { name: "ShopFinder", path: "/shop/finder" },
   { name: "ShopCart", path: "/shop/cart" },
-  { name: "ShopTrack", path: "/shop/track" },
+  { name: "ShopTrack", path: "/track" },
   { name: "Printing", path: "/shop/printing-solutions" },
   { name: "Trading", path: "/shop/international-trading" },
   { name: "Gallery", path: "/gallery" },

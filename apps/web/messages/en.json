@@ -1766,21 +1766,21 @@
     }
   },
   "Track": {
-    "metaTitle": "Track your order",
-    "title": "Track your order",
-    "lead": "Enter your order number and the phone number you used at checkout.",
-    "reference": "Order number",
-    "referencePlaceholder": "ORD-261008-0042",
+    "metaTitle": "Track a request or order",
+    "title": "Track a request or order",
+    "lead": "Enter the reference from your confirmation and the phone number you gave us: a flight, hotel, holiday or visa request, or a Waafas World order.",
+    "reference": "Reference",
+    "referencePlaceholder": "FLT-261027-0042 or ORD-261008-0042",
     "phone": "Phone number",
     "phonePlaceholder": "01712-345678",
-    "submit": "Track order",
-    "invalid": "Enter both the order number and your phone number.",
+    "submit": "Track",
+    "invalid": "Enter both the reference and your phone number.",
     "notFound": {
-      "title": "We couldn’t find that order",
-      "body": "Check the order number and the phone number you used at checkout. The number looks like ORD-261008-0042.",
+      "title": "We couldn’t find that",
+      "body": "Check the reference and the phone number you gave us. References look like FLT-261027-0042, VSA-261027-0042 or ORD-261008-0042.",
       "help": "Still stuck? Message us and we will find it.",
       "whatsapp": "WhatsApp us",
-      "whatsappMessage": "Hi Waafas World, I can’t find my order."
+      "whatsappMessage": "Hi Waafa, I can’t find my request or order."
     },
     "placedOn": "Placed on {date}",
     "total": "Total",
@@ -1804,8 +1804,31 @@
       "returned": "Returned"
     },
     "timeline": "Order progress",
-    "another": "Track another order",
-    "continue": "Continue shopping"
+    "another": "Track something else",
+    "continue": "Continue shopping",
+    "request": {
+      "sentOn": "Sent on {date}",
+      "timeline": "Progress",
+      "steps": {
+        "received": "Request received",
+        "expert": "A travel expert is on it",
+        "quote": "Quote sent",
+        "booked": "Booked",
+        "closed": "Closed"
+      },
+      "visa": {
+        "documents": "Documents received: {received} of {required}",
+        "submitted": "Submitted to the embassy",
+        "approved": "Visa approved",
+        "rejected": "Visa not approved",
+        "passport": "Passport returned to you"
+      },
+      "waiting": "Next",
+      "done": "done",
+      "help": "Questions about it? Message us with the reference and we will answer.",
+      "whatsappMessage": "Hi Waafa, I have a question about {reference}.",
+      "home": "Back to home"
+    }
   },
   "Services": {
     "whatsapp": "Talk on WhatsApp",

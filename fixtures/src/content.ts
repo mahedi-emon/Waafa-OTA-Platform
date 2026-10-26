@@ -718,7 +718,7 @@ export const faqs: In<typeof FaqSchema>[] = [
     question: "Where is my order?",
     answer:
       "Enter your order number (ORD-…) and mobile number on Track order to see each step and the courier tracking number.",
-    link: { label: "Track an order", href: "/shop/track" },
+    link: { label: "Track an order", href: "/track" },
     order: 2,
     sample: true,
   },

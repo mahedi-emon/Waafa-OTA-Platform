@@ -79,6 +79,23 @@ test("staff sign in, find the lead and move it to Quoted", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test("the request shows its progress on /track and nothing for a wrong phone (issue 240)", async ({
+  page,
+}) => {
+  test.skip(!ADMIN_PASSWORD, "the request is quoted by the staff test above");
+  const errors = collectErrors(page);
+  await page.goto(`/track?ref=${reference.toLowerCase()}&phone=01712-345678`);
+  await expect(page.getByRole("heading", { level: 2, name: "Quote sent" })).toBeVisible();
+  await expect(page.getByText("Request received")).toBeVisible();
+  // No personal data: the name and the message never show.
+  await expect(page.getByText("Sample Integration Customer")).toHaveCount(0);
+  await expect(page.getByText(/Thailand tourist visas/)).toHaveCount(0);
+
+  await page.goto(`/track?ref=${reference}&phone=01799-999999`);
+  await expect(page.getByRole("heading", { name: "We couldn’t find that" })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test("an FAQ saved in Admin shows on the public site", async ({ page }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
   const answer = `Yes, every price includes VAT. Checked ${Date.now()}.`;
