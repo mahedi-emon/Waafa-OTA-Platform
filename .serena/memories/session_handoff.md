@@ -1,18 +1,24 @@
 # Session handoff (update at every session end)
-Updated 2026-10-26 10:30 Dhaka.
+Updated 2026-10-26 19:00 Dhaka.
 STATE: site LIVE on https://waafasworld.com (owner deploys `sh deploy.sh` after Docker images is green; never touch the
 VPS or its .env). Repo PRIVATE: CI budget rules in CLAUDE.md (normal PR = quick set; `full-ci` label for the full suite,
 required for schema/deploy/auth/payments/checkout/intake). Never cancel or skip CI by hand. Minutes:
 `node scripts/ci-minutes.mjs <pr>`.
 MAIN PROMPT: docs/claude-code-prompts.md v5 PROMPT 10 (Phase D, A–M); order D268. Deadline PRD P1 13 Nov 2026.
-DONE: Step 0 (#231–#233), A (#229 PR #265, #224 PR #266, #219 PR #267), B (#234 PR #268 two-step sign-in, MIGRATION;
-#235 PR #270 ClamAV, BUNDLE CHANGE). Checkpoint B sent to the owner (26 Oct): copy deploy/server bundle → backup.sh →
-deploy.sh → set up the authenticator at the next sign-in, save recovery codes.
-NOW: branch chore/236-speed (pushed) holds only TRACKER (#235 Done + minutes) and Serena memory updates; issue #236 not
-started (Project status still Ready). Resume: set #236 In progress, plan comment, then the work on that branch.
-NEXT STEPS: 1) #236 Lighthouse mobile 90+ (median of 3) on the listed public routes + first-load JS ≤ 200 KB on every
-public route (Home 217, Flights 258, Shop 215 at last count), then LHCI assertions warn → error. 2) Letter C checkpoint.
-3) Letter D #237 measurement.
+DONE: Step 0, A, B (see progress).
+NOW: #236 (In progress) on chore/236-speed, all pushed (last ebcec41). First-load JS ≤ 200 KB on EVERY public route
+(Home 200 tight, Flights 192, Shop 196, Checkout 182; budget.spec covers 31 routes at 200). D293–D297 in TRACKER:
+native radio/checkbox/switch/tabs, compiled next-intl messages (no empty plural branches, no t.raw), lazy dialogs and
+second steps, useSubmitOnce (double tap), client-boundary guard (in pnpm guards + CI Guards job). Public e2e green
+locally (flights, hotels, packages, services, store, orders, visa, home, search, smoke, budget, content, seo, …).
+NOT YET: e2e/native-controls.spec.ts written but never run; Lighthouse local run failed (Windows dropped
+--ignore-certificate-errors → fixed in scripts/lighthouse-run.mjs, quoteOnWindows) and was then killed for low memory;
+TRACKER #236 issue block, session log, QA SUMMARY, PRD_COVERAGE NFR-PERF row not written; PR not opened.
+NEXT STEPS: 1) run `npx playwright test native-controls --no-deps --workers=2` (build first, port 3100), fix; 2) Lighthouse
+`node scripts/lighthouse-run.mjs --warn` with nothing else running (needs ~1.5 GB free); if all 11 medians ≥ 90 drop
+`--warn` in ci.yml lighthouse job, else keep warn and log why; 3) TRACKER block + QA SUMMARY + PRD_COVERAGE, open PR
+"Closes #236" with label full-ci (ui primitives changed under admin too: admin e2e must run in CI), merge, then letter D
+#237.
 E2E NOTE (D289): playwright `setup` project (e2e/staff.setup.ts) enrols/trusts the seed Super Admin and writes
 e2e/.auth (git-ignored). Local waafa_ci data is stale (toner stock 0, Malaysia has a range, 3000+ leads): 3 admin e2e
 fail locally only; reset waafa_ci (and delete e2e/.auth) for a clean local run.
