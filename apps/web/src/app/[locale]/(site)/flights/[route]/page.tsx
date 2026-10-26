@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "@/components/icons/server/ArrowRight";
@@ -23,6 +24,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   getAirport,
   getFlightRoute,
@@ -316,5 +318,16 @@ async function FlightRouteContent({
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components, D85). */
 export default function FlightRoutePage({ params }: PageProps<"/[locale]/flights/[route]">) {
-  return <FlightRouteContent params={params} />;
+  return (
+    <Suspense
+      fallback={
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28" aria-hidden="true">
+          <Skeleton className="h-6 w-56 rounded-full" />
+          <Skeleton className="h-[320px] rounded-[28px]" />
+        </div>
+      }
+    >
+      <FlightRouteContent params={params} />
+    </Suspense>
+  );
 }

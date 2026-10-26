@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -12,6 +13,7 @@ import { SmartImage } from "@/components/media/SmartImage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/button";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   getBlogPost,
   listBlogCategories,
@@ -232,5 +234,16 @@ async function BlogPostContent({ params }: Pick<PageProps<"/[locale]/blog/[slug]
 
 /** /blog/[slug]: awaits the slug inside Suspense (D85) so the shell stays static. */
 export default function BlogPostPage({ params }: PageProps<"/[locale]/blog/[slug]">) {
-  return <BlogPostContent params={params} />;
+  return (
+    <Suspense
+      fallback={
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
+          <Skeleton className="h-12 w-3/4 rounded-xl" />
+          <Skeleton className="aspect-[21/9] rounded-[20px]" />
+        </div>
+      }
+    >
+      <BlogPostContent params={params} />
+    </Suspense>
+  );
 }

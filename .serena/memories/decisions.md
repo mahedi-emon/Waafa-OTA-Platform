@@ -147,6 +147,8 @@
   guard (no LocalLink/next-intl/server/server-only/next/headers in client graphs; in pnpm guards + CI Guards);
   Lighthouse: budgets (a11y/BP/SEO 95, CLS 0.1) fail CI, targets (perf 90, LCP 2.5 s, TBT 200) warn until #271.
   Page-level Suspense fallbacks are min-h-dvh (footer jump = CLS). Supersedes D154/D174 on message precompile.
+  D299: record detail pages KEEP their Suspense (API-mode snapshot reads draftMode = request data; without it new or
+  moved records 500 "uncached or runtime data during prerendering"; fixture mode hides this — only API-mode e2e catches it).
 - D262–D265 (R10, 25 Oct): lists named by headingOf, columns only with data; banner/deal/announcement editor states
   startsLater/ended + group fares endingSoon (<= 7 days); system editors in words (editorName); sentence-case admin
   chrome, Table scrollLabel → named focusable region, tab rows wrap or fade.

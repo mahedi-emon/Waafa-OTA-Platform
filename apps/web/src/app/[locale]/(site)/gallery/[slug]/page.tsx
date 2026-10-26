@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -14,6 +15,7 @@ import { AlbumGrid } from "./_components/AlbumGrid";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 import { ExploreMore } from "@/components/seo/ExploreMore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export async function generateStaticParams() {
   const albums = await listGalleryAlbums();
@@ -104,5 +106,16 @@ async function AlbumContent({ params }: Pick<PageProps<"/[locale]/gallery/[slug]
 
 /** /gallery/[slug] (Gallery-album, Gallery-photo, -m): the album's photos in a masonry grid with a lightbox. */
 export default function AlbumPage({ params }: PageProps<"/[locale]/gallery/[slug]">) {
-  return <AlbumContent params={params} />;
+  return (
+    <Suspense
+      fallback={
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
+          <Skeleton className="h-12 w-1/2 rounded-xl" />
+          <Skeleton className="h-96 rounded-2xl" />
+        </div>
+      }
+    >
+      <AlbumContent params={params} />
+    </Suspense>
+  );
 }

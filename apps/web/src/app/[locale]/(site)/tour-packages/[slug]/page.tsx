@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CalendarDays, Check, FileCheck2, MapPin, Users, X } from "lucide-react";
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/accordion";
 import { pickMessages } from "@/i18n/pickMessages";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getContactSettings, getLeadFormSettings } from "@/lib/data/settings";
 import { getPackage, listPackages, listRelatedPackages } from "@/lib/data/travel";
 import { followMovedRecord } from "@/lib/data/movedRecord";
@@ -542,5 +544,22 @@ async function PackagePageContent({
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
 export default function PackagePage({ params }: PageProps<"/[locale]/tour-packages/[slug]">) {
-  return <PackagePageContent params={params} />;
+  return (
+    <Suspense
+      fallback={
+        <main
+          id="main"
+          aria-busy="true"
+          className="site-container flex min-h-dvh flex-col gap-6 pt-4 pb-28 md:pt-6"
+        >
+          <Skeleton className="h-5 w-56 rounded-full" />
+          <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
+          <Skeleton className="h-10 w-3/4 rounded-xl" />
+          <Skeleton className="h-[480px] rounded-2xl" />
+        </main>
+      }
+    >
+      <PackagePageContent params={params} />
+    </Suspense>
+  );
 }

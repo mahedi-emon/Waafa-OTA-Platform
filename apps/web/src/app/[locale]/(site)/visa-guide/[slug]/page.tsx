@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "@/components/icons/server/ArrowRight";
@@ -24,6 +25,7 @@ import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 import { formatVisaPrice } from "@/lib/visa/visaPrice";
 import { ExploreMore } from "@/components/seo/ExploreMore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export async function generateStaticParams() {
   const guides = await listVisaGuides();
@@ -257,5 +259,22 @@ async function VisaGuidePostPageContent({
 
 /** Params resolve inside Suspense, so navigations get an instant shell (Next 16 Cache Components). */
 export default function VisaGuidePostPage({ params }: PageProps<"/[locale]/visa-guide/[slug]">) {
-  return <VisaGuidePostPageContent params={params} />;
+  return (
+    <Suspense
+      fallback={
+        <main
+          id="main"
+          aria-busy="true"
+          className="site-container flex min-h-dvh flex-col gap-6 pt-4 pb-28 md:pt-6"
+        >
+          <Skeleton className="h-5 w-56 rounded-full" />
+          <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
+          <Skeleton className="h-10 w-3/4 rounded-xl" />
+          <Skeleton className="h-[480px] rounded-2xl" />
+        </main>
+      }
+    >
+      <VisaGuidePostPageContent params={params} />
+    </Suspense>
+  );
 }
