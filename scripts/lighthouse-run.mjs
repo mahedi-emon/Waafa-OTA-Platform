@@ -28,6 +28,9 @@ const only = arg("only", null);
 const routes = only ? [only] : live ? config.liveRoutes : config.routes;
 mkdirSync(out, { recursive: true });
 
+/** One shell argument on Windows (spawn uses a shell there); unchanged elsewhere. */
+const quoteOnWindows = (arg) => (process.platform === "win32" ? `"${arg}"` : arg);
+
 const run = (command, args, options = {}) =>
   new Promise((resolve) => {
     const child = spawn(command, args, {
@@ -99,7 +102,10 @@ for (const route of routes) {
         "--output=json",
         "--output=html",
         `--output-path=${file}`,
-        `--chrome-flags=--headless=new --no-sandbox${local ? " --ignore-certificate-errors" : ""}`,
+        // Windows runs this through a shell, which would split the flags at the spaces and drop the certificate flag.
+        quoteOnWindows(
+          `--chrome-flags=--headless=new --no-sandbox${local ? " --ignore-certificate-errors" : ""}`,
+        ),
         "--quiet",
       ]);
       try {
