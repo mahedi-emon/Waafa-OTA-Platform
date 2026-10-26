@@ -6,7 +6,7 @@ import type { Repositories } from "./types";
 
 /*
  * Next.js bundles route handlers and pages as separate module graphs, so a plain module-level instance would be two
- * different in-memory stores (an order placed through /api/orders would be invisible to /shop/track). Fixture mode
+ * different in-memory stores (an order placed through /api/orders would be invisible to /track). Fixture mode
  * keeps the one store on globalThis; API mode has no local state.
  */
 const globalStore = globalThis as typeof globalThis & { __waafaRepositories?: Repositories };

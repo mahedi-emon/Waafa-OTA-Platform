@@ -22,8 +22,12 @@ import {
   type Product,
   type Quote,
   type SearchLogInput,
+  type TrackResult,
+  type TrackedRequest,
+  visaStage,
 } from "@waafa/shared";
 import { nextReference } from "../common/references";
+import { checklistOf, progressOf, visaFacts } from "../common/visaProgress";
 import { ContentService } from "../content/content.service";
 import { CustomerFilesService, type FileRef } from "../files/customer-files.service";
 import type { Prisma } from "../generated/prisma/client";
@@ -346,6 +350,74 @@ export class IntakeService {
       })),
       createdAt: toDhakaIsoString(order.createdAt),
       sample: false,
+    };
+  }
+
+  /**
+   * /track (issue 240): an order (ORD-…) or a request by its reference and the phone on it. A request answers with its
+   * status and step dates only; a wrong phone and an unknown reference both give null.
+   */
+  async track(reference: string, phone: string): Promise<TrackResult | null> {
+    const ref = reference.trim().toUpperCase();
+    if (ref.startsWith("ORD-")) {
+      const order = await this.trackOrder(ref, phone);
+      return order ? { kind: "order", order } : null;
+    }
+    const lead = await this.prisma.lead.findUnique({
+      where: { reference: ref },
+      select: {
+        reference: true,
+        module: true,
+        status: true,
+        phone: true,
+        payload: true,
+        progress: true,
+        createdAt: true,
+        firstResponseAt: true,
+        closedAt: true,
+      },
+    });
+    if (
+      !lead ||
+      lead.status === "spam" ||
+      phoneTail(lead.phone).length !== 10 ||
+      phoneTail(lead.phone) !== phoneTail(phone)
+    ) {
+      return null;
+    }
+    let visa: TrackedRequest["visa"] = null;
+    if (lead.module === "visa") {
+      const payload = lead.payload as { countrySlug?: unknown; visaType?: unknown } | null;
+      const country =
+        typeof payload?.countrySlug === "string"
+          ? await this.prisma.contentDocument.findUnique({
+              where: {
+                collection_docId: { collection: "visaCountries", docId: payload.countrySlug },
+              },
+              select: { data: true },
+            })
+          : null;
+      const progress = progressOf(lead.progress);
+      const { stage, received, required } = visaStage(
+        visaFacts(checklistOf(country?.data, payload?.visaType), progress, lead.status),
+      );
+      visa = {
+        stage,
+        received,
+        required,
+        submittedOn: progress.submittedOn ?? null,
+        passportReturnedOn: progress.passportReturnedOn ?? null,
+      };
+    }
+    return {
+      kind: "request",
+      reference: lead.reference,
+      module: lead.module as TrackedRequest["module"],
+      status: lead.status as TrackedRequest["status"],
+      createdAt: toDhakaIsoString(lead.createdAt),
+      respondedAt: lead.firstResponseAt ? toDhakaIsoString(lead.firstResponseAt) : null,
+      closedAt: lead.closedAt ? toDhakaIsoString(lead.closedAt) : null,
+      visa,
     };
   }
 

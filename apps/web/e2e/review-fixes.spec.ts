@@ -56,10 +56,7 @@ test("the store bar lists categories, services and Track order", async ({ page }
   await page.goto("/shop");
   const row = page.getByRole("navigation", { name: "Shop by category" });
   await expect(row.getByRole("link", { name: "Printing Solutions" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Track order" })).toHaveAttribute(
-    "href",
-    "/shop/track",
-  );
+  await expect(page.getByRole("link", { name: "Track order" })).toHaveAttribute("href", "/track");
 });
 
 test("one WAAFA logo per page: the footer names the brand in text", async ({ page }) => {

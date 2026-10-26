@@ -10,12 +10,13 @@ import { SmartImage } from "@/components/media/SmartImage";
 import { Canonical } from "@/components/seo/Canonical";
 import { ListingHeader } from "@/components/shop/ListingHeader";
 import { OrderTimeline } from "@/components/shop/OrderTimeline";
+import { RequestProgress } from "@/components/track/RequestProgress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
-import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
-import { trackOrder } from "@/lib/data/orders";
+import { getContactSettings } from "@/lib/data/settings";
+import { trackReference } from "@/lib/data/track";
 import { clientKey } from "@/lib/rateLimit";
 import { withSocial } from "@/lib/seo/withSocial";
 
@@ -27,35 +28,31 @@ export async function generateMetadata(): Promise<Metadata> {
 const first = (value: string | string[] | undefined) =>
   (typeof value === "string" ? value : "").trim().slice(0, 40);
 
-async function TrackContent({
-  searchParams,
-}: Pick<PageProps<"/[locale]/shop/track">, "searchParams">) {
+async function TrackContent({ searchParams }: Pick<PageProps<"/[locale]/track">, "searchParams">) {
   const params = await searchParams;
   const reference = first(params.ref);
   const phone = first(params.phone);
-  const [site, contact, t] = await Promise.all([
-    getSiteSettings(),
+  const [contact, t, ta] = await Promise.all([
     getContactSettings(),
     getTranslations("Track"),
+    getTranslations("Account.account"),
   ]);
   const asked = reference !== "" || phone !== "";
-  const order =
+  const found =
     reference && phone
-      ? await trackOrder(reference, phone, { clientIp: clientKey(await headers()) })
+      ? await trackReference(reference, phone, { clientIp: clientKey(await headers()) })
       : null;
+  const order = found?.kind === "order" ? found.order : null;
+  const request = found?.kind === "request" ? found : null;
 
   return (
     <main id="main" className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6">
-      <Canonical path="/shop/track" />
-      <ListingHeader
-        crumbs={[{ label: site.storeName, href: "/shop" }, { label: t("title") }]}
-        title={t("title")}
-        lead={t("lead")}
-      />
+      <Canonical path="/track" />
+      <ListingHeader crumbs={[{ label: t("title") }]} title={t("title")} lead={t("lead")} />
 
       <form
         method="get"
-        action="/shop/track"
+        action="/track"
         className="grid max-w-3xl grid-cols-1 gap-3 rounded-2xl border border-mist-200 bg-white p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
       >
         <label className="flex flex-col gap-1.5 text-[14px] font-semibold text-ink-900">
@@ -84,6 +81,70 @@ async function TrackContent({
         </label>
         <Button type="submit">{t("submit")}</Button>
       </form>
+
+      {request ? (
+        <section
+          aria-labelledby="track-request"
+          className="flex max-w-3xl flex-col gap-5 rounded-2xl border border-mist-200 bg-white p-5"
+        >
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2
+              id="track-request"
+              className="font-display text-[20px] font-extrabold text-navy-900"
+            >
+              {ta.has(`requestStatus.${request.status}` as never)
+                ? ta(`requestStatus.${request.status}` as never)
+                : request.status}
+            </h2>
+            <p className="text-[13.5px] text-mist-700">
+              {ta.has(`modules.${request.module}` as never)
+                ? ta(`modules.${request.module}` as never)
+                : null}
+              {" · "}
+              <span className="font-semibold text-ink-900 tabular-nums">
+                {request.reference}
+              </span> · {t("request.sentOn", { date: formatDate(request.createdAt) })}
+            </p>
+          </div>
+          <RequestProgress
+            request={request}
+            heading={t("request.timeline")}
+            labels={{
+              received: t("request.steps.received"),
+              expert: t("request.steps.expert"),
+              quote: t("request.steps.quote"),
+              booked: t("request.steps.booked"),
+              closed: t("request.steps.closed"),
+              documents: t("request.visa.documents", {
+                received: "{received}",
+                required: "{required}",
+              }),
+              submitted: t("request.visa.submitted"),
+              approved: t("request.visa.approved"),
+              rejected: t("request.visa.rejected"),
+              passport: t("request.visa.passport"),
+              waiting: t("request.waiting"),
+              done: t("request.done"),
+            }}
+          />
+          <div className="flex flex-wrap items-center gap-3 border-t border-mist-100 pt-4">
+            <p className="text-[14px] text-mist-700">{t("request.help")}</p>
+            <Button asChild variant="whatsapp">
+              <a
+                href={whatsappLink(
+                  contact.whatsappE164,
+                  t("request.whatsappMessage", { reference: request.reference }),
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <WhatsAppIcon />
+                {t("notFound.whatsapp")}
+              </a>
+            </Button>
+          </div>
+        </section>
+      ) : null}
 
       {order ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-8">
@@ -181,7 +242,7 @@ async function TrackContent({
             </dl>
           </aside>
         </div>
-      ) : asked ? (
+      ) : asked && !request ? (
         <EmptyState
           icon={PackageSearch}
           title={t("notFound.title")}
@@ -204,13 +265,17 @@ async function TrackContent({
         />
       ) : null}
 
-      {order ? (
+      {found ? (
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="secondary">
-            <Link href="/shop/track">{t("another")}</Link>
+            <Link href="/track">{t("another")}</Link>
           </Button>
           <Button asChild variant="ghost">
-            <Link href="/shop">{t("continue")}</Link>
+            {order ? (
+              <Link href="/shop">{t("continue")}</Link>
+            ) : (
+              <Link href="/">{t("request.home")}</Link>
+            )}
           </Button>
         </div>
       ) : null}
@@ -218,8 +283,11 @@ async function TrackContent({
   );
 }
 
-/** /shop/track (ShopTrack, -nf, -delivered, -m): the order number plus the phone on it, then the order's progress. */
-export default function TrackPage({ searchParams }: PageProps<"/[locale]/shop/track">) {
+/**
+ * /track (issue 240; ShopTrack, -nf, -delivered, -m boards): a request, visa application or order by its reference and
+ * the phone on it, then its progress. /shop/track redirects here.
+ */
+export default function TrackPage({ searchParams }: PageProps<"/[locale]/track">) {
   return (
     <Suspense fallback={<Skeleton className="m-4 h-96 rounded-2xl" />}>
       <TrackContent searchParams={searchParams} />

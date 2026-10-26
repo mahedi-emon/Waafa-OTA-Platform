@@ -89,7 +89,7 @@ async function ShopBar() {
             { href: "/shop/categories", label: t("allCategories"), icon: LayoutGrid },
             { href: "/shop/deals", label: t("deals"), icon: Gauge },
             ...(finderOn ? [{ href: "/shop/finder", label: t("finder"), icon: Printer }] : []),
-            { href: "/shop/track", label: t("track"), icon: Truck },
+            { href: "/track", label: t("track"), icon: Truck },
           ].map((item) => (
             <Link
               key={item.href}

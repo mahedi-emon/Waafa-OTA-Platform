@@ -14,7 +14,6 @@ import {
   type LeadStatus,
   type LeadUpdateInput,
   type VisaApplicationListQuery,
-  type VisaProgressFacts,
   type VisaProgressInput,
 } from "@waafa/shared";
 import { AuditService } from "../audit/audit.service";
@@ -26,6 +25,7 @@ import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { assertLeadAccess, canSeeOrders, dhakaDate, leadModulesFor } from "./access";
+import { checklistOf, progressOf, visaFacts } from "../common/visaProgress";
 
 const CLOSED: LeadStatus[] = ["booked", "cancelled", "lost", "spam"];
 
@@ -103,45 +103,6 @@ function activityFor(
     case "reopen":
       return { type: "status", body: `Reopened: ${input.reason}` };
   }
-}
-
-/** What a visa lead stores about its application (D225). */
-type VisaProgress = {
-  received?: string[];
-  submittedOn?: string;
-  submissionReference?: string;
-  outcome?: "approved" | "rejected";
-  decidedOn?: string;
-  passportReturnedOn?: string;
-};
-
-function progressOf(value: unknown): VisaProgress {
-  return value && typeof value === "object" && !Array.isArray(value)
-    ? { ...(value as VisaProgress) }
-    : {};
-}
-
-/** The facts `visaStage` reads, from the checklist, the stored progress and the lead's status. */
-function visaFacts(checklist: string[], progress: VisaProgress, status: string): VisaProgressFacts {
-  const received = new Set(progress.received ?? []);
-  return {
-    documents: checklist.map((item) => ({ required: true, received: received.has(item) })),
-    submittedAt: progress.submittedOn ?? null,
-    outcome: progress.outcome ?? null,
-    passportReturnedAt: progress.passportReturnedOn ?? null,
-    cancelled: status === "cancelled" || status === "lost",
-  };
-}
-
-/** The checklist titles for a visa type of one Visa countries record (its first type when the request names none). */
-function checklistOf(country: unknown, visaType: unknown): string[] {
-  const types = (country as { types?: Array<{ type?: unknown; checklist?: unknown }> } | null)
-    ?.types;
-  const type = types?.find((item) => item.type === visaType) ?? types?.[0];
-  const items = Array.isArray(type?.checklist)
-    ? (type.checklist as Array<{ title?: unknown }>)
-    : [];
-  return items.flatMap((item) => (typeof item.title === "string" ? [item.title] : []));
 }
 
 const VISA_STAGES = [

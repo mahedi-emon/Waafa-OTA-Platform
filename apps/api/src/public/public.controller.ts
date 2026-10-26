@@ -9,6 +9,7 @@ import {
   PaymentProofInputSchema,
   SearchLogInputSchema,
   SubscriberInputSchema,
+  TrackInputSchema,
 } from "@waafa/shared";
 import { ENV, type Env } from "../config/env";
 import { IdempotencyService, type Replayable } from "../common/idempotency.service";
@@ -120,6 +121,17 @@ export class PublicController {
     const order = await this.intake.trackOrder(input.reference, input.phone);
     if (!order) throw problems.notFound("No order with this number and phone");
     return order;
+  }
+
+  /** One tracker for requests, visa applications and orders (issue 240); the same 404 for any mismatch. */
+  @Post("track")
+  @HttpCode(200)
+  async track(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "trackLookup");
+    const input = parseInput(TrackInputSchema, body);
+    const result = await this.intake.track(input.reference, input.phone);
+    if (!result) throw problems.notFound("Nothing with this reference and phone");
+    return result;
   }
 
   @Post("feedback")

@@ -173,7 +173,7 @@ export const menus: In<typeof MenuSchema>[] = [
     items: [
       { id: "mp-gallery", label: "Gallery", href: "/gallery", icon: "images" },
       { id: "mp-feedback", label: "Feedback", href: "/feedback", icon: "message-square-quote" },
-      { id: "mp-track", label: "Track order", href: "/shop/track", icon: "truck" },
+      { id: "mp-track", label: "Track order", href: "/track", icon: "truck" },
     ],
   },
   {
@@ -229,7 +229,7 @@ export const menus: In<typeof MenuSchema>[] = [
       },
       { id: "fs-printing", label: "Printing Solutions", href: "/shop/printing-solutions" },
       { id: "fs-trading", label: "International Trading", href: "/shop/international-trading" },
-      { id: "fs-track", label: "Track Order", href: "/shop/track" },
+      { id: "fs-track", label: "Track Order", href: "/track" },
     ],
   },
   {
