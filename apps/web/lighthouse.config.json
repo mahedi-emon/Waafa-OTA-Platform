@@ -1,0 +1,28 @@
+{
+  "$comment": "Lighthouse budgets (issue 236, NFR-PERF). scripts/lighthouse-run.mjs runs each route `runs` times on a mobile profile and checks the median run.",
+  "lighthouse": "13.5.0",
+  "runs": 3,
+  "routes": [
+    "/",
+    "/flights",
+    "/hotels",
+    "/tour-packages",
+    "/tour-packages/bangkok-and-phuket",
+    "/visa",
+    "/visa/thailand",
+    "/shop",
+    "/shop/p/voltaro-power-bank-22-5w",
+    "/blog",
+    "/blog/coxs-bazar-long-weekend"
+  ],
+  "liveRoutes": ["/", "/flights", "/hotels", "/tour-packages", "/visa", "/shop", "/blog"],
+  "budgets": {
+    "performance": 90,
+    "accessibility": 95,
+    "best-practices": 95,
+    "seo": 95,
+    "largest-contentful-paint": 2500,
+    "cumulative-layout-shift": 0.1,
+    "total-blocking-time": 200
+  }
+}

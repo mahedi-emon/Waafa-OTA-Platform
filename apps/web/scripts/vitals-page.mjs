@@ -31,8 +31,22 @@ await context.addInitScript(() => {
     for (const e of list.getEntries())
       window.__vitals.long.push([Math.round(e.startTime), Math.round(e.duration)]);
   }).observe({ type: "longtask", buffered: true });
+  window.__vitals.shifts = [];
   new PerformanceObserver((list) => {
-    for (const e of list.getEntries()) if (!e.hadRecentInput) window.__vitals.cls += e.value;
+    for (const e of list.getEntries()) {
+      if (e.hadRecentInput) continue;
+      window.__vitals.cls += e.value;
+      window.__vitals.shifts.push(
+        `${Math.round(e.startTime)} ${e.value.toFixed(3)} ` +
+          (e.sources ?? [])
+            .map((s) =>
+              s.node instanceof Element
+                ? `${s.node.tagName.toLowerCase()}.${String(s.node.className).slice(0, 60)}`
+                : "#text",
+            )
+            .join(" | "),
+      );
+    }
   }).observe({ type: "layout-shift", buffered: true });
 });
 const page = await context.newPage();
@@ -67,3 +81,4 @@ console.log(
   `long tasks ${result.long.length}: ${result.long.map(([s, d]) => `${s}+${d}`).join(" ")}  (blocking ${tbt} ms)`,
 );
 console.log(`CLS ${result.cls.toFixed(3)}`);
+for (const shift of result.shifts) console.log(`  shift ${shift}`);

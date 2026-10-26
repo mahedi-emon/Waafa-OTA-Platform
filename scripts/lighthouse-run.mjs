@@ -1,0 +1,144 @@
+// Lighthouse on the key public routes (issue 236): each route `runs` times on Lighthouse's mobile profile, the median
+// run checked against apps/web/lighthouse.config.json. Prints a table (and adds it to the GitHub job summary), keeps
+// the JSON and HTML reports, and fails when a median misses a budget.
+//
+//   node scripts/lighthouse-run.mjs                              starts `next start` on :3200 in apps/web (a build first)
+//   node scripts/lighthouse-run.mjs --base https://waafasworld.com --live   the live site, read-only (liveRoutes)
+//   options: --runs 1, --only /shop, --out apps/web/lighthouse-report, --warn (report only, never fail)
+import { spawn } from "node:child_process";
+import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const web = path.join(root, "apps", "web");
+const config = JSON.parse(readFileSync(path.join(web, "lighthouse.config.json"), "utf8"));
+const arg = (name, fallback) => {
+  const index = process.argv.indexOf(`--${name}`);
+  return index > -1 ? process.argv[index + 1] : fallback;
+};
+const live = process.argv.includes("--live");
+const warnOnly = process.argv.includes("--warn");
+const base = arg("base", "http://localhost:3200");
+const runs = Number(arg("runs", config.runs));
+const out = path.resolve(arg("out", path.join(web, "lighthouse-report")));
+const only = arg("only", null);
+const routes = only ? [only] : live ? config.liveRoutes : config.routes;
+mkdirSync(out, { recursive: true });
+
+const run = (command, args, options = {}) =>
+  new Promise((resolve) => {
+    const child = spawn(command, args, {
+      stdio: ["ignore", "pipe", "pipe"],
+      shell: process.platform === "win32",
+      ...options,
+    });
+    let output = "";
+    child.stdout.on("data", (chunk) => (output += chunk));
+    child.stderr.on("data", (chunk) => (output += chunk));
+    child.on("close", (code) => resolve({ code, output }));
+  });
+
+let server = null;
+if (!process.argv.includes("--base")) {
+  server = spawn("pnpm", ["exec", "next", "start", "--port", "3200"], {
+    cwd: web,
+    stdio: "ignore",
+    shell: process.platform === "win32",
+  });
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const ok = await fetch(`${base}/robots.txt`)
+      .then((r) => r.ok)
+      .catch(() => false);
+    if (ok) break;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  // Warm the server so the first run doesn't measure a cold render.
+  for (const route of routes) await fetch(`${base}${route}`).catch(() => undefined);
+}
+
+const audit = (report, id) => report.audits[id]?.numericValue ?? 0;
+const results = [];
+for (const route of routes) {
+  const name = route === "/" ? "home" : route.slice(1).replaceAll("/", "_");
+  const reports = [];
+  for (let index = 1; index <= runs; index += 1) {
+    const file = path.join(out, `${name}-${index}`);
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      await run("npx", [
+        "--yes",
+        `lighthouse@${config.lighthouse}`,
+        `${base}${route}`,
+        "--output=json",
+        "--output=html",
+        `--output-path=${file}`,
+        "--chrome-flags=--headless=new --no-sandbox",
+        "--quiet",
+      ]);
+      try {
+        const report = JSON.parse(readFileSync(`${file}.report.json`, "utf8"));
+        if (!report.runtimeError) {
+          reports.push(report);
+          break;
+        }
+      } catch {
+        // No report yet: try again.
+      }
+    }
+  }
+  if (reports.length === 0) {
+    results.push({ route, failed: true });
+    continue;
+  }
+  const score = (report, id) => Math.round((report.categories[id]?.score ?? 0) * 100);
+  const sorted = [...reports].sort((a, b) => score(a, "performance") - score(b, "performance"));
+  const median = sorted[Math.floor(sorted.length / 2)];
+  results.push({
+    route,
+    runs: reports.map((report) => score(report, "performance")),
+    performance: score(median, "performance"),
+    accessibility: score(median, "accessibility"),
+    "best-practices": score(median, "best-practices"),
+    seo: score(median, "seo"),
+    "largest-contentful-paint": audit(median, "largest-contentful-paint"),
+    "cumulative-layout-shift": audit(median, "cumulative-layout-shift"),
+    "total-blocking-time": audit(median, "total-blocking-time"),
+  });
+}
+server?.kill();
+
+const budgets = config.budgets;
+const misses = [];
+const lines = [
+  `Lighthouse ${config.lighthouse}, mobile, ${base}, median of ${runs}`,
+  "",
+  "| Route | Performance (runs) | LCP | TBT | CLS | Accessibility | Best practices | SEO |",
+  "| --- | --- | --- | --- | --- | --- | --- | --- |",
+];
+for (const result of results) {
+  if (result.failed) {
+    lines.push(`| ${result.route} | no result | | | | | | |`);
+    misses.push(`${result.route}: no Lighthouse result`);
+    continue;
+  }
+  for (const key of ["performance", "accessibility", "best-practices", "seo"]) {
+    if (result[key] < budgets[key])
+      misses.push(`${result.route} ${key} ${result[key]} < ${budgets[key]}`);
+  }
+  for (const key of [
+    "largest-contentful-paint",
+    "cumulative-layout-shift",
+    "total-blocking-time",
+  ]) {
+    if (result[key] > budgets[key])
+      misses.push(`${result.route} ${key} ${Number(result[key].toFixed(3))} > ${budgets[key]}`);
+  }
+  lines.push(
+    `| ${result.route} | ${result.performance} (${result.runs.join("/")}) | ${(result["largest-contentful-paint"] / 1000).toFixed(1)} s | ${Math.round(result["total-blocking-time"])} ms | ${result["cumulative-layout-shift"].toFixed(2)} | ${result.accessibility} | ${result["best-practices"]} | ${result.seo} |`,
+  );
+}
+if (misses.length) lines.push("", "Over budget:", ...misses.map((miss) => `- ${miss}`));
+const text = `${lines.join("\n")}\n`;
+process.stdout.write(text);
+if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, text);
+process.exit(misses.length && !warnOnly ? 1 : 0);
