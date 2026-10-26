@@ -62,6 +62,7 @@ export class ClamdClient {
           const size = Buffer.alloc(4);
           size.writeUInt32BE(piece.length);
           socket.write(size);
+          // codeql[js/file-access-to-http] Sending the file to the malware scanner is the point: clamd on the private network (CLAMAV_URL), never the internet.
           socket.write(piece);
         }
         socket.write(Buffer.alloc(4));
