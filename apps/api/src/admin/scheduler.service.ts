@@ -50,6 +50,9 @@ export type TickResult = {
   files: number;
 };
 
+/** How long staff sign-in history is kept (issue 234). */
+export const LOGIN_HISTORY_DAYS = 365;
+
 const EMPTY: TickResult = { published: [], windows: [], purged: 0, overdue: 0, files: 0 };
 
 const isCollectionKey = (key: string): key is CollectionKey =>
@@ -105,6 +108,10 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
         if (!lock?.locked) return null;
         const published = await this.publishDue(tx, now);
         const purged = await this.purgeTrash(tx, now);
+        // Sign-in history is kept for a year (issue 234).
+        await tx.staffLoginEvent.deleteMany({
+          where: { createdAt: { lt: new Date(now.getTime() - LOGIN_HISTORY_DAYS * 86_400_000) } },
+        });
         return { published, purged };
       });
       if (!result) return EMPTY;

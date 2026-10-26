@@ -547,6 +547,24 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     variables: ["{{product}}", "{{sku}}", "{{stock}}", "{{order_number}}", "{{link}}"],
     enabled: true,
   },
+  {
+    key: "staff-new-device",
+    audience: "Staff, on a new device",
+    channel: "email",
+    subject: "New sign-in to Waafa Admin",
+    body: "Hello {{name}},\n\nYour Waafa Admin account was just signed in to from a new device: {{device}}, address {{address}}, on {{time}}.\n\nIf this was you, there is nothing to do. If not, change your password now in My account ({{link}}) and tell the Super Admin.",
+    variables: ["{{name}}", "{{device}}", "{{address}}", "{{time}}", "{{link}}"],
+    enabled: true,
+  },
+  {
+    key: "staff-code-locked",
+    audience: "Staff, when sign-in pauses at the code",
+    channel: "email",
+    subject: "Sign-in to Waafa Admin paused",
+    body: "Hello {{name}},\n\nSomeone typed your correct password and then wrong sign-in codes several times (address {{address}}, {{time}}), so sign-in is paused for a while.\n\nIf this wasn't you, your password is known: change it now in My account ({{link}}) and tell the Super Admin.",
+    variables: ["{{name}}", "{{address}}", "{{time}}", "{{link}}"],
+    enabled: true,
+  },
 ];
 
 export const maintenanceSettings: In<typeof MaintenanceSettingsSchema> = {

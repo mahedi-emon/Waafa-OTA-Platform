@@ -1,10 +1,18 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { RoleSchema, type Role } from "@waafa/shared";
+import {
+  RoleSchema,
+  StaffLoginResultSchema,
+  twoStepRequired,
+  type Role,
+  type StaffLoginEvent,
+  type StaffLoginResult,
+} from "@waafa/shared";
 import { staffStatus } from "@waafa/shared/workflow/derived";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { LoginHistory } from "@/components/admin/twoStep/LoginHistory";
 import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -63,17 +71,28 @@ async function Users({
 }: {
   searchParams: PageProps<"/[locale]/secure-admin-control/users">["searchParams"];
 }) {
-  const [staff, t, tc, tf] = await Promise.all([
+  const [staff, t, tc, tf, tl, ta] = await Promise.all([
     requireStaff(),
     getTranslations("Admin.users"),
     getTranslations("Admin.common"),
     getTranslations("Admin.forbidden"),
+    getTranslations("Admin.loginResult"),
+    getTranslations("Admin.account"),
   ]);
   if (!hasRole(staff, "super-admin")) {
     return <AdminPageHeader title={tf("title")} lead={tf("body")} />;
   }
   const [all, search] = await Promise.all([adminGet<StaffRow[]>("/admin/users"), searchParams]);
   const list = pageOfStaff(all, search);
+  // Recent sign-ins for the people on this page (a short list; issue 234).
+  const histories = await Promise.all(
+    list.items.map((row) =>
+      adminGet<StaffLoginEvent[]>(`/admin/users/${encodeURIComponent(row.id)}/logins`),
+    ),
+  );
+  const resultLabels = Object.fromEntries(
+    StaffLoginResultSchema.options.map((result) => [result, tl(result)]),
+  ) as Record<StaffLoginResult, string>;
   const roleNames = Object.fromEntries(
     RoleSchema.options.map((role) => [role, t(`roleNames.${role}`)]),
   ) as Record<Role, string>;
@@ -88,15 +107,20 @@ async function Users({
     passwordReset: t("passwordReset"),
     resendInvite: t("resendInvite"),
     inviteSent: t("inviteSent"),
+    resetTwoStep: t("resetTwoStep"),
+    resetTwoStepLead: t("resetTwoStepLead"),
+    resetTwoStepLeadOptional: t("resetTwoStepLeadOptional"),
+    twoStepReset: t("twoStepReset"),
     cancel: tc("cancel"),
     failed: tc("unavailable"),
   };
 
-  const rows: DataRow[] = list.items.map((row) => {
+  const rows: DataRow[] = list.items.map((row, index) => {
     // Invited until the first sign-in, Locked while sign-in is locked (ADMIN.md §8.6).
     const state = staffStatus(row);
     const roles = row.roles.map((role) => roleNames[role] ?? role).join(", ");
     const login = row.lastLoginAt ? formatDhakaDateTime(row.lastLoginAt) : t("never");
+    const twoStep = row.twoStep ? t("twoStepOn") : t("twoStepOff");
     return {
       id: row.id,
       title: row.name,
@@ -113,19 +137,38 @@ async function Users({
       facts: {
         roles: { text: roles },
         login: { text: login, kind: row.lastLoginAt ? "date" : "muted" },
+        twoStep: { text: twoStep, ...(row.twoStep ? {} : { kind: "muted" as const }) },
       },
       summary: [
         { label: t("email"), value: row.email },
         { label: t("roles"), value: roles },
         { label: t("lastLogin"), value: login },
+        { label: t("twoStep"), value: twoStep },
       ],
       actions: (
-        <StaffRowActions
-          row={row}
-          self={row.id === staff.id}
-          roleNames={roleNames}
-          strings={actionStrings}
-        />
+        <div className="flex flex-col gap-5">
+          <StaffRowActions
+            row={row}
+            self={row.id === staff.id}
+            twoStepRequired={twoStepRequired(row.roles)}
+            roleNames={roleNames}
+            strings={actionStrings}
+          />
+          <section aria-labelledby={`signins-${row.id}`} className="flex flex-col gap-1">
+            <h3
+              id={`signins-${row.id}`}
+              className="text-[13px] font-semibold tracking-wide text-mist-600 uppercase"
+            >
+              {t("recentSignIns")}
+            </h3>
+            <LoginHistory
+              events={(histories[index] ?? []).slice(0, 10)}
+              resultLabels={resultLabels}
+              newDeviceLabel={ta("newDevice")}
+              emptyLabel={t("noSignIns")}
+            />
+          </section>
+        </div>
       ),
     };
   });
@@ -135,6 +178,7 @@ async function Users({
     { key: "status", label: t("colStatus"), always: true },
     { key: "roles", label: t("roles") },
     { key: "login", label: t("lastLogin"), sort: "login" },
+    { key: "twoStep", label: t("twoStep") },
   ];
 
   return (

@@ -287,6 +287,57 @@ export const PasswordChangeInputSchema = z
   .object({ current: z.string().min(1).max(200), next: PasswordSchema })
   .strict();
 
+// Two-step sign-in (issue 234) ------------------------------------------------------------------------------------
+
+/** PRD §11: two-step sign-in is required for these roles and optional for everyone else. */
+export const TWO_STEP_REQUIRED_ROLES = ["super-admin", "admin"] as const satisfies readonly Role[];
+
+export function twoStepRequired(roles: readonly string[]): boolean {
+  return TWO_STEP_REQUIRED_ROLES.some((role) => roles.includes(role));
+}
+
+/** A six-digit authenticator code, or a recovery code like "7KQ4M-2XD9P-RTWYZ" (case and dashes don't matter). */
+export const TwoStepCodeSchema = z
+  .string()
+  .trim()
+  .min(6)
+  .max(24)
+  .regex(/^(\d{3}\s?\d{3}|[A-Za-z0-9\s-]{15,24})$/, "Enter the 6-digit code or a recovery code");
+
+/** A browser's device id from its httpOnly cookie (random, base64url). */
+export const DeviceIdSchema = z.string().regex(/^[A-Za-z0-9_-]{22,64}$/);
+
+export const StaffLoginResultSchema = z.enum([
+  "success",
+  "recovery-code",
+  "wrong-password",
+  "wrong-code",
+  "locked",
+  "paused",
+]);
+export type StaffLoginResult = z.infer<typeof StaffLoginResultSchema>;
+
+/** One row of a staff member's sign-in history (time in Asia/Dhaka ISO). */
+export const StaffLoginEventSchema = z.object({
+  id: z.string(),
+  at: z.string(),
+  result: StaffLoginResultSchema,
+  device: z.string().nullable(),
+  address: z.string().nullable(),
+  newDevice: z.boolean(),
+});
+export type StaffLoginEvent = z.infer<typeof StaffLoginEventSchema>;
+
+/** My account › Two-step sign-in. */
+export const TwoStepStatusSchema = z.object({
+  enabled: z.boolean(),
+  required: z.boolean(),
+  enabledAt: z.string().nullable(),
+  recoveryCodesLeft: z.number().int().min(0),
+  trustedDevices: z.number().int().min(0),
+});
+export type TwoStepStatus = z.infer<typeof TwoStepStatusSchema>;
+
 /**
  * A content record or settings value; the server validates `data` with the CONTENT_MODEL schema of the key.
  * `action` is the editor's button (D0 R4): the API derives the status from it, and a plain save keeps the stored

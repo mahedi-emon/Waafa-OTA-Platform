@@ -13,7 +13,15 @@ export default defineConfig({
     baseURL: `http://localhost:${PORT}`,
     trace: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    // Signs the seed Super Admin in once and keeps the trusted-device cookie (two-step sign-in, issue 234).
+    { name: "setup", testMatch: /staff\.setup\.ts$/ },
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/staff-device.json" },
+      dependencies: ["setup"],
+    },
+  ],
   // Runs against the production build (`pnpm build` first), the way visitors get it.
   webServer: {
     command: `pnpm exec next start --port ${PORT}`,

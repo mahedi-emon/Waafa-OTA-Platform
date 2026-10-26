@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), next B #234 two-step sign-in 🟡 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), B #234 two-step sign-in 🟡 in review, then #235 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,6 +38,17 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #234 · D B · Two-step sign-in, sign-in history, new-device email and Redis rate limits — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | FR-ADM 2FA (TOTP, required for Super Admin and Admin), login history in Users, an email on a sign-in from a new device, and NFR-SEC rate limits in Redis (per address and per phone), surviving a restart |
+| Built | **API**: `totp.ts` (RFC 6238 on node:crypto, recovery codes), `/auth/login` answers with a session, a code step or an enrol step (5-minute signed challenge); `/auth/login/code` (authenticator or recovery code, replay-safe, counts toward the lockout), `/auth/login/enrol` (first code turns it on, ten recovery codes); trusted devices for 30 days; `StaffLoginEvent` history; `staff-new-device` email (seed patch); My account endpoints (status, start, confirm, new codes, off) and Super Admin `/admin/users/:id/logins` and `/two-step/reset`; required roles without it are signed out at the next refresh. `RateLimitService` in Redis for every API limit plus 10 lead requests an hour per phone. **Web**: the sign-in card gains the code step (six boxes, recovery code instead, trust this device), the setup step (QR drawn as SVG, key in fours) and the recovery-codes step (copy, download, "I saved them"); My account gets the two-step panel and recent sign-ins; Users shows two-step status, recent sign-ins and the reset |
+| Files | `apps/api/prisma/{schema.prisma,migrations/20261026120000_staff_two_step}`, `apps/api/src/auth/{totp,device,twoStepSecret,twoStep.service,auth.service,auth.controller,tokens}.ts`, `apps/api/src/common/rateLimit.service.ts` (+ every controller that limited), `apps/api/src/seed/seedPatches.ts`, `packages/shared/src/schemas/{admin,settings}.ts`, `apps/web/src/lib/admin/{sessionActions,twoStep,twoStepActions}.ts`, `apps/web/src/components/admin/twoStep/*`, sign-in, account and users routes, `apps/web/e2e/{staff.setup,admin-two-step.spec,totp}.ts`, `playwright.config.ts`, `ci.yml` (Redis service, factor), docs (DEPLOY, SECURITY, ADMIN_GUIDE, PRD_COVERAGE) |
+| Tests | API: totp.unit (RFC vectors, drift, replay, labels), twoStep.test (9: enrol, code, replay, recovery once, lockout, trusted device, history and email, refresh sign-out, account on/off, Super Admin reset, review fixes: lock doubles and emails, enrol once under a race), rateLimit.test (memory, factor, Redis fallback, shared across restart, per-phone), auth and seed patch tests · web 675 (twoStep helpers) · e2e admin-two-step 4/4 and the admin suite locally (failures only from reused local data: stock 0, an edited Sample visa country, a 4-digit badge count) |
+| Tools and skills | Serena; Context7 (ioredis 6, uqr, Playwright project dependencies); shadcn input-otp; Playwright MCP (enrol 390/1440, code step 390, account 1440, 320 overflow fixed); ui-ux-pro-max checklist; design review of the steps; independent review subagent (no bypass; 7 findings fixed, D290) |
+| Decision | D284–D290 |
+| Migration | **yes, additive** (StaffUser columns, StaffRecoveryCode, StaffDevice, StaffLoginEvent): `sh backup.sh` before `sh deploy.sh` |
+
 ### #219 · D A · Admin lists stay fast on a 100-row page — ✅ Done
 | Field | Value |
 | --- | --- |
@@ -46,6 +57,7 @@ Serena memory `audit_findings`.
 | Files | `apps/web/src/components/ui/{table,sheet,dialog,alert-dialog}.tsx`, `apps/web/src/components/admin/{AdminTopBar,editor/EditorActionBar}.tsx`, `apps/web/e2e/admin-datatable.spec.ts`, `docs/design/DESIGN.md` |
 | Tests | web 670 · admin-datatable e2e 4/4 locally (API mode, 500 tagged leads): Select all 96/80 → 64/48 ms, closing a sheet 128–192 → 56–88 ms; every interaction on 100 rows 40–112 ms |
 | Tools and skills | Serena; Playwright MCP (Event Timing and long-task observers at 1440, sheet screenshot without blur); design-superpowers review of the scrim; ui-ux-pro-max checklist |
+| CI minutes | PR #267: 11 billed minutes (quick set) |
 | Decision | D283 |
 | Migration | none |
 
@@ -1331,6 +1343,8 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-146 | Invite email to a new staff member | template `staff-invite` | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | ✅ 25 Oct · admin.test |
 | AC-147 | Office hours, phone numbers and brand names on the site | `contactSettings`, `siteSettings` | Settings › Office hours; Settings › Business and contact | `PUT /api/v1/admin/content/contactSettings` | ✅ 25 Oct · admin-settings.spec (task 10) |
 | AC-148 | Who gets staff alert emails, by area | `leadFormSettings.staffAlerts` (email, areas) | Settings › Forms and messages › Staff alerts | `PUT /api/v1/admin/content/leadFormSettings` | API test public.test (issue 233) |
+| AC-150 | New-device sign-in email to a staff member | template `staff-new-device` | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | API test twoStep.test (issue 234) |
+| AC-151 | Email when sign-in pauses at the code step | template `staff-code-locked` | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | API test twoStep.test (issue 234) |
 | AC-149 | EMI request form: minimum, months, bank choices | `getEmiSettings()` → minimumAmount, tenuresMonths; `listEmiBanks()` → name | Settings › Payments and delivery › EMI, EMI banks | snapshot | e2e content.spec (issue 233) |
 
 ## 5. Components inventory
@@ -1764,6 +1778,13 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D281 | 26 Oct | Newsletter is a tab beside Customers (ADMIN.md §3.1) shown to roles that may open it; Sent messages, Search activity and the Audit log join the DataTable with a search box; the Audit log keeps its sentences and shows the changes in the side sheet instead of day groups | One list pattern everywhere (ADMIN.md §10) | #229 |
 | D282 | 26 Oct | First-load JS = the scripts a page's HTML references (`<script src>`, script preloads), counted as transferred gzip bytes; later prefetches and on-tap code are not counted | The old count (every script until load) varied by up to 56 KB with idle-time prefetch timing | #224 |
 | D283 | 26 Oct | Admin lists on 100 rows (issue 219): table rows lose their colour transition and overlays and admin bars lose backdrop blur; the INP e2e checks the 100-row page too | Headless measurements: Select all 96/80 → 64/48 ms without row transitions; closing a sheet 128–192 → 56–88 ms without blur | #219 |
+| D284 | 26 Oct | Two-step sign-in is TOTP (RFC 6238, SHA-1, 6 digits, 30 s, one step of drift) written on node:crypto and checked against the RFC vectors; secrets sealed with AES-256-GCM under a key derived from JWT_SECRET; the last accepted step is stored so a code works once | No new auth dependency; JWT_SECRET is the one secret every API already has (PROVIDER_SECRET_KEY is optional) | #234 |
+| D285 | 26 Oct | Super Admin and Admin must set it up before their first session (`TWO_STEP_REQUIRED_ROLES`), and a refresh for such a person without it ends the session; other roles turn it on in My account. Ten one-time recovery codes (hashes only); wrong codes count toward the same 5-try lockout; "Trust this device for 30 days" needs the browser's httpOnly device cookie | PRD §11 FR-ADM 2FA; the trusted device keeps daily sign-ins quick without weakening a new device | #234 |
+| D286 | 26 Oct | Sign-in history keeps every attempt on a known account for a year (minute job); a new-device email (`staff-new-device`, seed patch) goes out only when the person had signed in from another device before, so the first sign-in after the release sends nothing | Useful alert without a flood on release day | #234 |
+| D287 | 26 Oct | API rate limits live in Redis (fixed windows, hashed keys, fall back to the process when Redis is unreachable, never off) with the NFR-SEC 10 lead requests an hour per phone; per-address lead limits keep the web's 10 a minute (API 20) instead of the PRD's 5, because one office address can send several real requests; `RATE_LIMIT_FACTOR` raises limits for e2e only | NFR-SEC; D-level choice logged as a deviation | #234 |
+| D288 | 26 Oct | The QR code is drawn as one SVG path from a matrix made on the server with `uqr` (zero dependencies, about 10 KB, server-only) | No QR library in any browser bundle | #234 |
+| D289 | 26 Oct | E2E: a Playwright setup project signs the seed Super Admin in once (enrolling on a fresh database), trusts that browser and keeps only its device cookie as every spec's storage state; the secret stays in git-ignored e2e/.auth for local runs | Every spec keeps its own sign-in, and no test-only bypass exists in the API | #234 |
+| D290 | 26 Oct | From the independent review: each lock in the last day doubles the next (15, 30, 60 minutes… up to a day); a lock reached at the code step emails the person (`staff-code-locked`, seed patch); enrolment claims `totpEnabledAt` atomically; the two-step cookie path is `/` (locale prefixes); focus moves to each new step's heading; a reset for optional roles says it turns two-step off | Someone with the password could otherwise guess codes five at a time forever, unseen | #234 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1865,6 +1886,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 26 Oct | #229 (PR #265), #224 (PR #266) and #219 (PR #267) merged: letter A done. #234 two-step sign-in, sign-in history, new-device email and Redis rate limits built and verified locally | #219, #224, #229, #234 | #265, #266, #267 | API twoStep, rateLimit, totp; web 675; e2e admin-two-step 4/4 |
 | 26 Oct | #233 merged (PR #264, 48 min). #229 admin polish: five lists on the DataTable, themed date range, booking mode cards, plain integration words, phones typed once and countries by name, fixed lists, template words, airline logos, Add staff in the header | #233, #229 | #264, PR for #229 | see #229 |
 | 26 Oct | #232 merged (PR #262, 85 min; owner: copy bundle, backup, deploy). #233: visa status emails, staff alerts by area, low-stock alert, EMI request form; mode-change reason moved to Phase E | #232, #263, #233 | #262, PR for #233 | see #233 |
 | 26 Oct | #231 merged (PR #260, 54 min). #232 customer files: private storage, upload on pick, claim on save, signed staff links with audit, purge, Files panels, deploy volume and backups | #231, #232 | #260, PR for #232 | shared 146 · web 666 · API 199 · e2e visa + api-mode |
@@ -1926,6 +1948,6 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. #229: PR (quick set), CI, merge; then #219 the 100-row page and #224 the budget e2e flake.
-2. Letter B: #234 two-factor sign-in, login history, new-device email, Redis rate limits; #235 ClamAV.
+1. #234: PR with full-ci, merge; owner: backup then deploy, then set up the authenticator at the next sign-in.
+2. #235 ClamAV, then the letter B checkpoint.
 3. Letter C: #236 Lighthouse 90+ and 200 KB on every public route, CI assertions as errors.

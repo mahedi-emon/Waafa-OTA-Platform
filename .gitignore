@@ -13,6 +13,8 @@ coverage/
 # Test and audit output
 playwright-report/
 test-results/
+# Two-step sign-in state for local e2e runs (issue 234)
+apps/web/e2e/.auth/
 blob-report/
 .lighthouseci/
 .playwright-mcp/

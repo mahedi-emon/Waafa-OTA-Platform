@@ -6,6 +6,8 @@ import { Roles, StaffGuard } from "../src/auth/auth.guard";
 import { AuthModule } from "../src/auth/auth.module";
 import { signAccessToken } from "../src/auth/tokens";
 import type { PrismaClient } from "../src/generated/prisma/client";
+import { MemoryMailer } from "../src/notifications/mailer";
+import { ServicesModule } from "../src/services.module";
 import { dbAvailable, resetDatabase, testApp, testPrisma } from "./helpers";
 
 @Controller("test-shop")
@@ -40,7 +42,11 @@ describe.skipIf(!dbAvailable)("staff auth", () => {
 
   beforeAll(async () => {
     prisma = testPrisma();
-    app = await testApp(() => [{ module: AuthModule }, { module: ShopOnlyModule }]);
+    app = await testApp(() => [
+      { module: AuthModule },
+      ServicesModule.register({ mailer: new MemoryMailer() }),
+      { module: ShopOnlyModule },
+    ]);
   });
   afterAll(async () => {
     await app.close();

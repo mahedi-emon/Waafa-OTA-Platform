@@ -15,6 +15,15 @@ Admin-er thikana: `https://waafasworld.com/secure-admin-control` (bookmark kore 
 - Password bhul hole lal lekha dekhaben. 5 bar bhul hole 15 minute opekkha korte hobe.
 - Notun staff hole email-e ekta **invite** asbe. Link-e click kore nijer password thik korun (link 7 din kaaj kore).
 - Password bhule gele admin-ke bolun: Settings › Users and roles theke reset kore deben.
+- **Two-step sign-in** (Super Admin ar Admin-er jonno lagbei, onnora My account theke chalu korte paren): phone-e
+  Google Authenticator ba Microsoft Authenticator rakhun. Prothombar sign in korle QR code dekhabe: app diye scan korun,
+  app-er 6-digit code din. Tarpor 10 ta **recovery code** dekhabe: copy ba download kore phone theke dure rakhun.
+- Porer bar notun browser-e password-er por app-er code chaibe. Nijer computer hole "Trust this device for 30 days" tick
+  din: 30 din oi browser-e code lagbe na.
+- Phone haralen? Ekta recovery code din (protyekta ekbar-i kaaj kore). Recovery code-o nei? Super Admin Users and roles
+  theke "Reset two-step sign-in" korben; porer sign-in-e abar setup hobe.
+- Notun device theke sign in hole email ashbe. Chena na hole sathe sathe password bodlan. My account-e shesh 10 ta
+  sign-in dekha jay.
 
 ## 2. Dashboard: ajker kaaj
 

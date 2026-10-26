@@ -278,6 +278,67 @@ async function lowStockTemplate(prisma: PrismaClient): Promise<number> {
   return 1;
 }
 
+/** The new-device sign-in email (issue 234), as fixtures/src/settings.ts has it. */
+const NEW_DEVICE_TEMPLATE = {
+  key: "staff-new-device",
+  audience: "Staff, on a new device",
+  channel: "email",
+  subject: "New sign-in to Waafa Admin",
+  body: "Hello {{name}},\n\nYour Waafa Admin account was just signed in to from a new device: {{device}}, address {{address}}, on {{time}}.\n\nIf this was you, there is nothing to do. If not, change your password now in My account ({{link}}) and tell the Super Admin.",
+  variables: ["{{name}}", "{{device}}", "{{address}}", "{{time}}", "{{link}}"],
+  enabled: true,
+} as const;
+
+/** The code-step lock email (issue 234 review), as fixtures/src/settings.ts has it. */
+const CODE_LOCKED_TEMPLATE = {
+  key: "staff-code-locked",
+  audience: "Staff, when sign-in pauses at the code",
+  channel: "email",
+  subject: "Sign-in to Waafa Admin paused",
+  body: "Hello {{name}},\n\nSomeone typed your correct password and then wrong sign-in codes several times (address {{address}}, {{time}}), so sign-in is paused for a while.\n\nIf this wasn't you, your password is known: change it now in My account ({{link}}) and tell the Super Admin.",
+  variables: ["{{name}}", "{{address}}", "{{time}}", "{{link}}"],
+  enabled: true,
+} as const;
+
+/** The new-device template joins the live list at its end; an existing one with that key is left as it is. */
+async function newDeviceTemplate(prisma: PrismaClient): Promise<number> {
+  return appendTemplate(prisma, NEW_DEVICE_TEMPLATE);
+}
+
+/** The code-step lock template joins the live list the same way. */
+async function codeLockedTemplate(prisma: PrismaClient): Promise<number> {
+  return appendTemplate(prisma, CODE_LOCKED_TEMPLATE);
+}
+
+/** Adds a message template at the end of the live list unless one with its key exists (staff edits are kept). */
+async function appendTemplate(
+  prisma: PrismaClient,
+  template: { key: string } & Record<string, unknown>,
+): Promise<number> {
+  const exists = await prisma.contentDocument.findUnique({
+    where: {
+      collection_docId: { collection: "notificationTemplates", docId: template.key },
+    },
+    select: { docId: true },
+  });
+  if (exists) return 0;
+  const last = await prisma.contentDocument.findFirst({
+    where: { collection: "notificationTemplates" },
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+  await prisma.contentDocument.create({
+    data: {
+      collection: "notificationTemplates",
+      docId: template.key,
+      data: json(template),
+      position: (last?.position ?? -1) + 1,
+      updatedBy: "seed-patch",
+    },
+  });
+  return 1;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -289,6 +350,8 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-24-workflow-templates", apply: workflowTemplates },
   { id: "2026-10-25-staff-invite-template", apply: staffInviteTemplate },
   { id: "2026-10-26-low-stock-template", apply: lowStockTemplate },
+  { id: "2026-10-26-new-device-template", apply: newDeviceTemplate },
+  { id: "2026-10-26-code-locked-template", apply: codeLockedTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

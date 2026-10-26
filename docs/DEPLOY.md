@@ -162,7 +162,9 @@ Fill in every value (the comments in the file explain each one). Secrets: genera
 `openssl rand -base64 48 | tr -d '/+=' | cut -c1-48`, a different value for `POSTGRES_PASSWORD`, `JWT_SECRET`,
 `REVALIDATE_SECRET`, `INTAKE_KEY` and `PROVIDER_SECRET_KEY` (encrypts the flight, hotel and payment API secrets saved in
 Admin › Integrations; keep it fixed once secrets are saved). Keep a copy in a password manager; never put them in chat, the repository or a
-screenshot.
+screenshot. `JWT_SECRET` also seals the staff authenticator secrets (two-step sign-in, issue 234): changing it signs
+everyone out and makes every staff member set up two-step sign-in again. Never set `RATE_LIMIT_FACTOR` on the server;
+it exists only for the end-to-end tests.
 
 Email (#107, #149): Resend sends the mail; the domain `waafasworld.com` is verified there (SPF, DKIM). The API needs `RESEND_API_KEY` or `SMTP_URL` in `deploy/.env` to start. Once an email
 provider (Resend or SMTP) is saved and turned on in Admin › Settings › Integrations › SMS and email, the API and the
@@ -269,6 +271,7 @@ the customer's requests or orders.
 | Restart one service | `docker compose -f deploy/compose.yml restart web` |
 | Database shell | `docker compose -f deploy/compose.yml exec postgres psql -U waafa waafa` |
 | Clear the nginx cache (`deploy.sh` does this on every deploy; by hand only if a file changed outside a deploy; it refills on demand) | `docker compose -f deploy/compose.yml exec nginx sh -c 'rm -rf /var/cache/nginx/waafa/*'` |
+| The only Super Admin lost their phone and their recovery codes (issue 234; anyone else is reset by a Super Admin in Settings › Users and roles). The next sign-in sets two-step sign-in up again | `docker compose -f deploy/compose.yml exec postgres psql -U waafa waafa -c "UPDATE \"StaffUser\" SET \"totpSecret\" = NULL, \"totpEnabledAt\" = NULL, \"totpLastStep\" = NULL WHERE email = 'owner@example.com'"` (your email) |
 
 ## 7. Rollback
 

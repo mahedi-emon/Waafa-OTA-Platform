@@ -126,6 +126,15 @@
   esbuild bundle (apps/api/scripts/build.mjs; @waafa/* + tsx are devDeps; dist/main|worker|seed.js; tsx stand-in for
   the old worker command one release); Docker Hub keeps 15 releases. Phase D order D268 (#232 files, #233, A, B, C, D,
   E, F, J, K, G, H, I, L, M). Markup → Phase E; no staging VPS (D269).
+- D270–D283 (Step 0 + letter A, 26 Oct): see TRACKER (customer files, staff alerts by area, AdminDateRange, fixed lists
+  no Trash, phones typed once, budget counts referenced scripts D282, no row transitions/overlay blur + INP e2e trace
+  off D283).
+- D284–D289 (#234, 26 Oct): TOTP on node:crypto (RFC 6238, sealed with key from JWT_SECRET, last step stored = no
+  replay); Super Admin/Admin must enrol before a session, refresh signs them out without it; 10 recovery codes (hashes);
+  wrong codes share the 5-try lockout; trusted device 30 days via httpOnly device cookie; history kept 1 year;
+  new-device email only after a first known device; API rate limits in Redis (hashed keys, process fallback, never off)
+  + 10/h per phone, RATE_LIMIT_FACTOR for e2e only; QR drawn server-side with uqr; e2e setup project trusts the seed
+  Super Admin's browser.
 - D262–D265 (R10, 25 Oct): lists named by headingOf, columns only with data; banner/deal/announcement editor states
   startsLater/ended + group fares endingSoon (<= 7 days); system editors in words (editorName); sentence-case admin
   chrome, Table scrollLabel → named focusable region, tab rows wrap or fade.

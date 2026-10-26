@@ -62,6 +62,8 @@ export class AdminUsersService {
       status: user.status,
       locked: Boolean(user.lockedUntil && user.lockedUntil > now),
       lastLoginAt: user.lastLoginAt ? toDhakaIsoString(user.lastLoginAt) : null,
+      /** Two-step sign-in is set up (issue 234). */
+      twoStep: Boolean(user.totpEnabledAt),
       createdAt: toDhakaIsoString(user.createdAt),
       /** An invite that is still open (sent, not yet used); an expired one can be sent again. */
       invite: user.inviteHash
@@ -255,6 +257,7 @@ export class AdminUsersService {
         where: { userId: id, revokedAt: null },
         data: { revokedAt: new Date() },
       });
+      await tx.staffDevice.updateMany({ where: { userId: id }, data: { trustedUntil: null } });
       await this.audit.record(
         { actor, action: "staff.password-reset", entity: "staff", entityId: user.email },
         tx,
@@ -272,10 +275,14 @@ export class AdminUsersService {
         where: { id: actor.id },
         data: { passwordHash: await hash(next) },
       });
-      // Other devices sign in again; this session stays.
+      // Other devices sign in again; this session stays. Trusted devices ask for a code again (issue 234).
       await tx.staffSession.updateMany({
         where: { userId: actor.id, revokedAt: null, id: { not: actor.sessionId } },
         data: { revokedAt: new Date() },
+      });
+      await tx.staffDevice.updateMany({
+        where: { userId: actor.id },
+        data: { trustedUntil: null },
       });
       await this.audit.record(
         { actor, action: "staff.password-change", entity: "staff", entityId: user.email },

@@ -333,6 +333,8 @@ export const NotificationTemplateSchema = z
       "sign-in-code-customer",
       "staff-invite",
       "low-stock-staff",
+      "staff-new-device",
+      "staff-code-locked",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */
     audience: z.string().min(1).max(40),
