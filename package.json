@@ -19,13 +19,13 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.3",
-    "@commitlint/config-conventional": "^21.2.3",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "@waafa/config": "workspace:*",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
-    "prettier": "3.9.9",
+    "prettier": "3.9.10",
     "prettier-plugin-tailwindcss": "0.8.1",
-    "turbo": "2.11.7"
+    "turbo": "2.11.10"
   }
 }
