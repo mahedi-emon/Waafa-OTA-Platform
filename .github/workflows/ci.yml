@@ -156,6 +156,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: node scripts/guards.mjs
+      # No server-only module (LocalLink, next-intl/server) inside a Client Component's imports (issue 236).
+      - run: node apps/web/scripts/client-boundary.mjs
 
   verify:
     name: Lint, typecheck, test, build, e2e smoke

@@ -40,8 +40,8 @@ async function seedCart(page: Page, qty = 2) {
 async function fillCustomer(page: Page, phone = "01712-345678") {
   await page.getByLabel("Full name").fill("Rahim Uddin");
   await page.getByLabel("Mobile number").fill(phone);
-  await page.getByRole("combobox", { name: /Division/ }).click();
-  await page.getByRole("option", { name: "Dhaka" }).click();
+  // A native select since issue 236.
+  await page.getByRole("combobox", { name: /Division/ }).selectOption("Dhaka");
   await page.getByLabel("District").fill("Dhaka");
   await page.getByLabel("Area or thana").fill("Motijheel");
   await page.locator("#co-street").fill("House 4, Road 2");

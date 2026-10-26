@@ -4,7 +4,8 @@ import { formatTaka, type Quote } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Button } from "@/components/ui/button";
-import { LocalLink as Link } from "@/components/nav/LocalLink";
+// Rendered inside Client Components (cart, checkout), so the client-safe Link, not the async LocalLink (issue 236).
+import { Link } from "@/i18n/navigation";
 
 type CheckoutSummaryProps = {
   quote: Quote;
