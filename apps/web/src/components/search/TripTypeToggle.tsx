@@ -48,7 +48,7 @@ function TripTypeToggle() {
               value={trip}
               checked={state.flight.trip === trip}
               onChange={() => dispatch({ type: "trip", trip })}
-              className="sr-only"
+              className="absolute inset-0 size-full cursor-pointer appearance-none rounded-full opacity-0"
             />
             {t(LABEL_KEY[trip])}
           </label>

@@ -709,7 +709,7 @@
     "prefs": {
       "clear": "Clear all",
       "save": "Save preferences",
-      "count": "{count, plural, =0 {} other {(#)}}"
+      "count": "({count})"
     },
     "noPayment": "No payment now",
     "back": "Back",
@@ -2937,7 +2937,9 @@
         "overdue": "Reply alert"
       },
       "factWords": {
-        "travellers": "{adults, plural, one {# adult} other {# adults}}{children, plural, =0 {} one {, # child} other {, # children}}{infants, plural, =0 {} one {, # infant} other {, # infants}}",
+        "travellersAdults": "{adults, plural, one {# adult} other {# adults}}",
+        "travellersChildren": "{children, plural, one {, # child} other {, # children}}",
+        "travellersInfants": "{infants, plural, one {, # infant} other {, # infants}}",
         "flight": "Flight {n}",
         "anyDate": "Any date",
         "files": "{count, plural, one {# file} other {# files}}"

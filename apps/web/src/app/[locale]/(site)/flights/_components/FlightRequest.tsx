@@ -90,7 +90,11 @@ function FlightRequest(props: FlightRequestProps) {
 
       <div className="flex min-w-0 flex-col gap-4">
         <PreferencesSheet
-          trigger={`${t("prefs.open")} ${tLeads("prefs.count", { count: prefCount })}`}
+          trigger={
+            prefCount > 0
+              ? `${t("prefs.open")} ${tLeads("prefs.count", { count: prefCount })}`
+              : t("prefs.open")
+          }
           labels={{
             title: t("prefs.title"),
             lead: t("prefs.lead"),

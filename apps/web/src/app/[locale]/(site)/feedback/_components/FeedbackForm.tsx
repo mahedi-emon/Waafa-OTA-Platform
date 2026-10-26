@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import type { FeedbackFormValues } from "@/lib/content/feedbackForm";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
+import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
 
 // zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
 const formResolver = lazyResolver(async () => {
@@ -63,7 +64,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
   const [sending, setSending] = useState(false);
   const [failure, setFailure] = useState<"retry" | "rate" | "uploading" | null>(null);
   const [sentName, setSentName] = useState<string | null>(null);
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const once = useSubmitOnce();
   const turnstile = useTurnstile();
 
   const message = (key: keyof FeedbackFormValues) => {
@@ -80,8 +81,8 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
     if (sending) return;
     setSending(true);
     setFailure(null);
-    const key = idempotencyKey ?? crypto.randomUUID();
-    setIdempotencyKey(key);
+    const key = once.start();
+    if (!key) return;
     try {
       const image =
         photo && (photo.mimeType === "image/jpeg" || photo.mimeType === "image/png")
@@ -109,10 +110,11 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
       }
       const body = (await response.json()) as { firstName: string };
       setSentName(body.firstName);
-      setIdempotencyKey(null);
+      once.renew();
     } catch {
       setFailure("retry");
     } finally {
+      once.finished();
       setSending(false);
     }
   });

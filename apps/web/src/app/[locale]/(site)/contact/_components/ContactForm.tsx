@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CONTACT_TOPICS } from "@/lib/leads/contactLeadFormFields";
 import type { ContactFormValues } from "@/lib/leads/contactLeadForm";
+import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
 
 // zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
 const formResolver = lazyResolver(async () => {
@@ -57,7 +58,7 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
   const [sending, setSending] = useState(false);
   const [failure, setFailure] = useState<"retry" | "rate" | null>(null);
   const [sent, setSent] = useState<{ name: string; created: LeadCreated } | null>(null);
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const once = useSubmitOnce();
   const turnstile = useTurnstile();
 
   const message = (key: keyof ContactFormValues) => {
@@ -69,8 +70,8 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
     if (sending) return;
     setSending(true);
     setFailure(null);
-    const key = idempotencyKey ?? crypto.randomUUID();
-    setIdempotencyKey(key);
+    const key = once.start();
+    if (!key) return;
     try {
       const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/leads", {
@@ -91,10 +92,11 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
         return;
       }
       setSent({ name: values.name.split(/\s+/)[0] ?? values.name, created: await response.json() });
-      setIdempotencyKey(null);
+      once.renew();
     } catch {
       setFailure("retry");
     } finally {
+      once.finished();
       setSending(false);
     }
   });

@@ -130,8 +130,13 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
     label: (key) => (tf.has(`facts.${key}`) ? tf(`facts.${key}`) : key),
     value: (group, value) =>
       tf.has(`values.${group}.${value}`) ? tf(`values.${group}.${value}`) : undefined,
+    // Three messages, not one with empty plural branches: compiled messages must not format to nothing (issue 236).
     travellers: (adults, children, infants) =>
-      t("factWords.travellers", { adults, children, infants }),
+      [
+        t("factWords.travellersAdults", { adults }),
+        children > 0 ? t("factWords.travellersChildren", { children }) : "",
+        infants > 0 ? t("factWords.travellersInfants", { infants }) : "",
+      ].join(""),
     flight: (n) => t("factWords.flight", { n }),
     airport: (iata) => (cityOf.has(iata) ? `${cityOf.get(iata)} (${iata})` : iata),
     anyDate: t("factWords.anyDate"),

@@ -27,6 +27,12 @@ describe("message catalogue", () => {
     }
   });
 
+  it("has no empty plural or select branches, which compiled messages cannot format (issue 236)", () => {
+    for (const [key, value] of messages) {
+      expect(value, key).not.toMatch(/\{\s*\}/);
+    }
+  });
+
   it("uses no em or en dashes in UI copy (DESIGN.md Do's and Don'ts)", () => {
     for (const [key, value] of messages) {
       expect(value, key).not.toMatch(/[–—]/);

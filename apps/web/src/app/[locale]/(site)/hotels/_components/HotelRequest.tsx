@@ -76,7 +76,9 @@ function HotelRequest(props: HotelRequestProps) {
       </aside>
       <div className="flex min-w-0 flex-col gap-4">
         <PreferencesSheet
-          trigger={`${t("prefs.open")} ${tLeads("prefs.count", { count })}`}
+          trigger={
+            count > 0 ? `${t("prefs.open")} ${tLeads("prefs.count", { count })}` : t("prefs.open")
+          }
           labels={{
             title: t("prefs.title"),
             lead: t("prefs.lead"),

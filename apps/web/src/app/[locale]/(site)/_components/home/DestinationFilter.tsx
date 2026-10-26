@@ -31,7 +31,7 @@ function DestinationFilter({ label, filters, items, emptyLabel }: DestinationFil
           <label
             key={option.value}
             className={cn(
-              "inline-flex h-11 shrink-0 cursor-pointer items-center rounded-full border border-mist-200 bg-white px-4 text-[14px] font-medium text-ink-900 transition-colors",
+              "relative inline-flex h-11 shrink-0 cursor-pointer items-center rounded-full border border-mist-200 bg-white px-4 text-[14px] font-medium text-ink-900 transition-colors",
               "hover:bg-mist-50 has-checked:border-navy-900 has-checked:bg-navy-900 has-checked:text-white has-focus-visible:ring-3 has-focus-visible:ring-ring/40",
             )}
           >
@@ -41,7 +41,7 @@ function DestinationFilter({ label, filters, items, emptyLabel }: DestinationFil
               value={option.value}
               checked={filter === option.value}
               onChange={() => setFilter(option.value)}
-              className="sr-only"
+              className="absolute inset-0 size-full cursor-pointer appearance-none rounded-full opacity-0"
             />
             {option.label}
           </label>

@@ -29,6 +29,7 @@ import { COD, DIVISIONS } from "@/lib/shop/checkoutFormFields";
 import type { CheckoutValues } from "@/lib/shop/checkoutForm";
 import { useHydrated } from "@/lib/useHydrated";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
+import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
 
 // zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
 const formResolver = lazyResolver(async () => {
@@ -139,7 +140,7 @@ function CheckoutForm({
   const [sending, setSending] = useState(false);
   const [failure, setFailure] = useState<Failure>(null);
   const [placed, setPlaced] = useState<Placed | null>(null);
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const once = useSubmitOnce();
   const turnstile = useTurnstile();
 
   const [mode, division, district, payment, vat, phoneCountry, transactionId] = useWatch({
@@ -196,8 +197,8 @@ function CheckoutForm({
     }
     setSending(true);
     setFailure(null);
-    const key = idempotencyKey ?? crypto.randomUUID();
-    setIdempotencyKey(key);
+    const key = once.start();
+    if (!key) return;
     try {
       const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/orders", {
@@ -218,7 +219,7 @@ function CheckoutForm({
       if (!response.ok) {
         // A refusal is final for this attempt: the next press is a new order request (#61). Server errors and
         // timeouts keep the key, so a retry can never place the order twice.
-        if (response.status < 500 && response.status !== 429) setIdempotencyKey(null);
+        if (response.status < 500 && response.status !== 429) once.renew();
         const body = (await response.json().catch(() => ({}))) as { error?: string };
         setFailure(
           response.status === 429
@@ -245,12 +246,13 @@ function CheckoutForm({
         transactionId: account ? values.transactionId : undefined,
         phoneDisplay,
       });
-      setIdempotencyKey(null);
+      once.renew();
       clear();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setFailure("retry");
     } finally {
+      once.finished();
       setSending(false);
     }
   });

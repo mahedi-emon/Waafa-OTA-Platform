@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { PaymentProofFormValues } from "@/lib/leads/paymentProofForm";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
+import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
 
 // zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
 const formResolver = lazyResolver(async () => {
@@ -57,7 +58,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
   const [sending, setSending] = useState(false);
   const [failure, setFailure] = useState<"retry" | "rate" | "uploading" | null>(null);
   const [sent, setSent] = useState<string | null>(null);
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const once = useSubmitOnce();
   const turnstile = useTurnstile();
 
   const message = (key: keyof PaymentProofFormValues) => {
@@ -79,8 +80,8 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
     setMissingProof(false);
     setSending(true);
     setFailure(null);
-    const key = idempotencyKey ?? crypto.randomUUID();
-    setIdempotencyKey(key);
+    const key = once.start();
+    if (!key) return;
     try {
       const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/payment-proof", {
@@ -99,10 +100,11 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
       }
       const body = (await response.json()) as { reference: string };
       setSent(body.reference);
-      setIdempotencyKey(null);
+      once.renew();
     } catch {
       setFailure("retry");
     } finally {
+      once.finished();
       setSending(false);
     }
   });
