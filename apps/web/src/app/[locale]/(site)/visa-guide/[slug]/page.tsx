@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, Lightbulb } from "lucide-react";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Lightbulb } from "@/components/icons/server/Lightbulb";
 import { getTranslations } from "next-intl/server";
 import { formatDate, visaPrice } from "@waafa/shared";
 import { RichText } from "@/components/content/RichText";
@@ -16,8 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getVisaCountry, getVisaGuide, listVisaGuides } from "@/lib/data/visa";
 import { followMovedRecord } from "@/lib/data/movedRecord";
 import { absoluteUrl } from "@/lib/siteUrl";
@@ -25,6 +25,7 @@ import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 import { formatVisaPrice } from "@/lib/visa/visaPrice";
 import { ExploreMore } from "@/components/seo/ExploreMore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export async function generateStaticParams() {
   const guides = await listVisaGuides();
@@ -264,7 +265,7 @@ export default function VisaGuidePostPage({ params }: PageProps<"/[locale]/visa-
         <main
           id="main"
           aria-busy="true"
-          className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6"
+          className="site-container flex min-h-dvh flex-col gap-6 pt-4 pb-28 md:pt-6"
         >
           <Skeleton className="h-5 w-56 rounded-full" />
           <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />

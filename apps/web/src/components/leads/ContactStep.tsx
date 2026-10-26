@@ -1,14 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useForm, useWatch } from "react-hook-form";
 import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { lazyResolver } from "@/lib/forms/lazyResolver";
 import type { ContactStepValues } from "@/lib/leads/contactForm";
 
 type ContactStepProps = {
@@ -20,7 +18,17 @@ type ContactStepProps = {
   copy?: { title?: string; emailHint?: string };
 };
 
-/** Step 1 (Flights, Flights-err): how the travel expert reaches the visitor. Errors show under each field. */
+type Field = "name" | "phone" | "email";
+type Errors = Partial<Record<keyof ContactStepValues, string>>;
+const ORDER: Field[] = ["name", "phone", "email"];
+
+/**
+ * Step 1 (Flights, Flights-err): how the travel expert reaches the visitor. Errors show under each field. Plain state
+ * instead of react-hook-form (issue 236): this is the first step on every lead page, so the form library stays out of
+ * the first load; step 2 keeps it. Same rules as before: a field is checked when it loses focus, then on every change,
+ * and every field after the first submit; the first wrong field gets focus. zod and the phone rules load on the first
+ * check (issue 170).
+ */
 function ContactStep({
   defaultValues,
   emailRequired,
@@ -29,34 +37,72 @@ function ContactStep({
   copy,
 }: ContactStepProps) {
   const t = useTranslations("Leads");
-  // zod and the phone rules load on the first check, not with the page (issue 170).
-  const resolver = useMemo(
-    () =>
-      lazyResolver<ContactStepValues>(async () => {
-        const [{ zodResolver }, { contactStepSchema }] = await Promise.all([
-          import("@hookform/resolvers/zod"),
-          import("@/lib/leads/contactForm"),
-        ]);
-        return zodResolver(contactStepSchema(emailRequired));
-      }),
-    [emailRequired],
-  );
-  const form = useForm<ContactStepValues>({
-    resolver,
-    defaultValues,
-    mode: "onTouched",
-  });
-  const { errors, submitCount } = form.formState;
+  const [values, setValues] = useState<ContactStepValues>(defaultValues);
+  const [errors, setErrors] = useState<Errors>({});
+  const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
+  const [submitCount, setSubmitCount] = useState(0);
+  const inputs = useRef<Partial<Record<Field, HTMLInputElement | null>>>({});
+  // The newest values for checks that resolve after a later keystroke; every change writes it before setValues.
+  const latest = useRef(defaultValues);
+
+  async function check(next: ContactStepValues) {
+    const { contactStepSchema } = await import("@/lib/leads/contactForm");
+    const result = contactStepSchema(emailRequired).safeParse(next);
+    const found: Errors = {};
+    if (!result.success)
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as keyof ContactStepValues;
+        found[key] ??= issue.message;
+      }
+    return { found, data: result.success ? result.data : null };
+  }
+
+  /** Re-checks the given fields against the newest values and updates only their messages. */
+  async function revalidate(fields: Array<keyof ContactStepValues>) {
+    const { found } = await check(latest.current);
+    setErrors((current) => {
+      const next = { ...current };
+      for (const field of fields) {
+        if (found[field]) next[field] = found[field];
+        else delete next[field];
+      }
+      return next;
+    });
+  }
+
+  function change(field: keyof ContactStepValues, value: string) {
+    const next = { ...latest.current, [field]: value };
+    latest.current = next;
+    setValues(next);
+    if (submitCount > 0 || touched[field as Field]) void revalidate([field]);
+  }
+
+  function blur(field: Field) {
+    setTouched((current) => ({ ...current, [field]: true }));
+    void revalidate([field]);
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmitCount((count) => count + 1);
+    const { found, data } = await check(latest.current);
+    setErrors(found);
+    if (data) {
+      onSubmit(data);
+      return;
+    }
+    const first = ORDER.find((field) => found[field]);
+    if (first) inputs.current[first]?.focus();
+  }
+
   const error = (key: keyof ContactStepValues) => {
-    const message = errors[key]?.message;
+    const message = errors[key];
     return message ? t(`errors.${message}` as "errors.nameRequired") : undefined;
   };
   const errorCount = Object.keys(errors).length;
-  const phone = form.register("phone");
-  const phoneCountry = useWatch({ control: form.control, name: "phoneCountry" });
 
   return (
-    <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
+    <form noValidate onSubmit={submit} className="flex flex-col gap-5">
       <div>
         <h3 className="font-display text-[18px] font-bold text-navy-900">
           {copy?.title ?? t("contact.title")}
@@ -77,12 +123,18 @@ function ContactStep({
       >
         {(describedBy) => (
           <Input
+            ref={(node) => {
+              inputs.current.name = node;
+            }}
             id="lead-name"
+            name="name"
             autoComplete="name"
             aria-required="true"
             aria-invalid={errors.name ? true : undefined}
             aria-describedby={describedBy}
-            {...form.register("name")}
+            value={values.name}
+            onChange={(event) => change("name", event.target.value)}
+            onBlur={() => blur("name")}
           />
         )}
       </FormField>
@@ -100,18 +152,24 @@ function ContactStep({
           <PhoneField
             id="lead-phone"
             countries={countries}
-            country={phoneCountry}
-            onCountryChange={(code) =>
-              form.setValue("phoneCountry", code, { shouldValidate: submitCount > 0 })
-            }
+            country={values.phoneCountry}
+            onCountryChange={(code) => {
+              const next = { ...latest.current, phoneCountry: code };
+              latest.current = next;
+              setValues(next);
+              if (submitCount > 0) void revalidate(["phoneCountry", "phone"]);
+            }}
             countryLabel={t("contact.country")}
             invalid={Boolean(errors.phone)}
             describedBy={describedBy}
-            inputRef={phone.ref}
+            inputRef={(node) => {
+              inputs.current.phone = node;
+            }}
             inputProps={{
-              name: phone.name,
-              onChange: phone.onChange,
-              onBlur: phone.onBlur,
+              name: "phone",
+              value: values.phone,
+              onChange: (event) => change("phone", event.target.value),
+              onBlur: () => blur("phone"),
               "aria-required": true,
             }}
           />
@@ -133,14 +191,20 @@ function ContactStep({
       >
         {(describedBy) => (
           <Input
+            ref={(node) => {
+              inputs.current.email = node;
+            }}
             id="lead-email"
+            name="email"
             type="email"
             inputMode="email"
             autoComplete="email"
             aria-required={emailRequired || undefined}
             aria-invalid={errors.email ? true : undefined}
             aria-describedby={describedBy}
-            {...form.register("email")}
+            value={values.email}
+            onChange={(event) => change("email", event.target.value)}
+            onBlur={() => blur("email")}
           />
         )}
       </FormField>

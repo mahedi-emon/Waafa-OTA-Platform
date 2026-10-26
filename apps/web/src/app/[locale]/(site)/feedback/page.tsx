@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { ArrowUpRight, MessageSquareQuote } from "lucide-react";
+import { MessageSquareQuote } from "lucide-react";
+import { ArrowUpRight } from "@/components/icons/server/ArrowUpRight";
 import { cn } from "cn";
 import { FeedbackServiceSchema, formatDate, type FeedbackService } from "@waafa/shared";
 import { PageHero } from "@/components/content/PageHero";
@@ -13,7 +14,7 @@ import { SmartImage } from "@/components/media/SmartImage";
 import { Canonical } from "@/components/seo/Canonical";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { pickMessages } from "@/i18n/pickMessages";
 import { listPublicFeedback } from "@/lib/data/content";
 import { getLeadFormSettings, getSiteSettings } from "@/lib/data/settings";
@@ -186,7 +187,7 @@ export default function FeedbackPage({ searchParams }: PageProps<"/[locale]/feed
   return (
     <Suspense
       fallback={
-        <div className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
           <Skeleton className="h-10 w-2/3 rounded-xl" />
           <Skeleton className="h-72 rounded-[24px]" />
         </div>

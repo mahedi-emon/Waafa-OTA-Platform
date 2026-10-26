@@ -1,9 +1,10 @@
-import Image, { type ImageProps } from "next/image";
+import { getImageProps, type ImageProps } from "next/image";
+import { preload as preloadImage } from "react-dom";
 import { objectPositionOf, type FocalPoint } from "@waafa/shared/helpers/media";
 import { cn } from "cn";
 import { PHOTO_QUALITY } from "@/lib/media/imageQuality";
 
-type SmartImageProps = Omit<ImageProps, "alt" | "placeholder"> & {
+type SmartImageProps = Omit<ImageProps, "alt" | "placeholder" | "onLoad" | "onError"> & {
   /** Required. Describe the photo; pass "" only for purely decorative images. */
   alt: string;
   /**
@@ -20,9 +21,13 @@ type SmartImageProps = Omit<ImageProps, "alt" | "placeholder"> & {
 };
 
 /**
- * next/image with WAAFA defaults: AVIF/WebP at photo quality 65 (issue 185), a blurred placeholder for imported photos, a mist frame that
- * reserves the space (no layout shift), and lazy loading unless `preload` is set for the LCP image. A preloaded
- * image is also fetched at high priority (issue 170): the preload hint alone left the store banner queued as Low.
+ * Photos with WAAFA defaults: AVIF/WebP at photo quality 65 (issue 185), a blurred placeholder for imported photos, a
+ * mist frame that reserves the space (no layout shift), and lazy loading unless `preload` is set for the LCP image. A
+ * preloaded image is also fetched at high priority (issue 170).
+ *
+ * Issue 236: the attributes come from `getImageProps` (the same optimiser URLs, srcset and sizes as next/image) on a
+ * plain <img>, so a photo needs no JavaScript in the browser; next/image hydrated one client component per photo (69
+ * on the home page). The blurred placeholder stays behind the photo, which covers it once loaded.
  */
 function SmartImage({
   alt,
@@ -39,10 +44,6 @@ function SmartImage({
   style,
   ...props
 }: SmartImageProps) {
-  const priority = {
-    ...(preload ? { preload } : {}),
-    ...(fetchPriority || preload ? { fetchPriority: fetchPriority ?? "high" } : {}),
-  };
   // A dynamic value from the data layer, so it is the one inline style here.
   const position = objectPositionOf(focal);
   const placed = position ? { ...style, objectPosition: position } : style;
@@ -51,39 +52,36 @@ function SmartImage({
     zoomOnHover &&
     "transition-transform duration-700 ease-out pointer-fine:group-hover:scale-[1.045] motion-reduce:transition-none";
 
-  if (!ratio) {
-    return (
-      <Image
-        src={src}
-        alt={alt}
-        sizes={sizes}
-        quality={quality}
-        placeholder={hasBlur ? "blur" : "empty"}
-        style={placed}
-        className={cn(zoom, className)}
-        {...priority}
-        {...props}
-      />
-    );
+  const { props: image } = getImageProps({
+    src,
+    alt,
+    quality,
+    placeholder: hasBlur ? "blur" : "empty",
+    style: placed,
+    ...(ratio ? { fill: true, sizes: sizes ?? "100vw" } : { sizes }),
+    ...(preload ? { preload: true } : {}),
+    ...(fetchPriority || preload ? { fetchPriority: fetchPriority ?? "high" } : {}),
+    ...props,
+  });
+  if (preload && image.src) {
+    preloadImage(image.src, {
+      as: "image",
+      fetchPriority: "high",
+      ...(image.srcSet ? { imageSrcSet: image.srcSet } : {}),
+      ...(image.sizes ? { imageSizes: image.sizes } : {}),
+    });
   }
 
+  // getImageProps is next/image's own attribute builder; a plain element keeps the photo free of client code.
+  // eslint-disable-next-line @next/next/no-img-element
+  const img = <img {...image} alt={alt} className={cn(ratio && "object-cover", zoom, className)} />;
+  if (!ratio) return img;
   return (
     <div
       className={cn("relative w-full overflow-hidden bg-mist-100", frameClassName)}
       style={{ aspectRatio: ratio }}
     >
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes={sizes ?? "100vw"}
-        quality={quality}
-        placeholder={hasBlur ? "blur" : "empty"}
-        style={placed}
-        className={cn("object-cover", zoom, className)}
-        {...priority}
-        {...props}
-      />
+      {img}
     </div>
   );
 }

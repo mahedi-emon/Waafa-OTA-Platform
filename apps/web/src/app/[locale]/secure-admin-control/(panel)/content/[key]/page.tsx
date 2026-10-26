@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus } from "@/components/icons/server/Plus";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import {
@@ -21,7 +21,7 @@ import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { BulkAction, ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { pickMessagePaths } from "@/i18n/pickMessages";
 import { adminGet, requireStaff } from "@/lib/admin/adminApi";
 import { EDITOR_MESSAGES } from "@/lib/admin/blueprints/editorMessages";
@@ -257,8 +257,8 @@ async function RecordTable({
             id: "trash",
             label: t("trash"),
             danger: true,
-            // The bulk bar puts the number in: the raw words keep {count}.
-            confirm: t.raw("trashConfirm") as string,
+            // The bulk bar puts the number in: the words keep {count} (compiled messages have no t.raw).
+            confirm: t("trashConfirm", { count: "{count}" }),
             run: bulkContent.bind(null, key, "trash"),
           },
         ]

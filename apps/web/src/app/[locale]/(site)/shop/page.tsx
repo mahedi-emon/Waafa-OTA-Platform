@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { ArrowRight, Building2, Printer } from "lucide-react";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Building2 } from "@/components/icons/server/Building2";
+import { Printer } from "@/components/icons/server/Printer";
 import { getTranslations } from "next-intl/server";
 import { contactPhones, whatsappLink, type Product, type StoreRow } from "@waafa/shared";
 import { SectionHeading } from "@/components/content/SectionHeading";
@@ -16,7 +18,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { schemaId } from "@/lib/seo/schemaIds";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getMediaSlot, listBanners } from "@/lib/data/content";
 import { getContactSettings, getShopContent, getSiteSettings } from "@/lib/data/settings";
 import {

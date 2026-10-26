@@ -1,4 +1,4 @@
-import { CheckIcon } from "lucide-react";
+import { CheckIcon } from "@/components/icons/server/CheckIcon";
 import { GoldTriangle } from "@/components/brand/GoldTriangle";
 import { Badge } from "@/components/ui/badge";
 

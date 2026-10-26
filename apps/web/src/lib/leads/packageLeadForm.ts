@@ -6,13 +6,13 @@ import {
 } from "@waafa/shared";
 import { z } from "zod";
 import { contactToLead, type ContactStepValues } from "./contactForm";
+export { ANY_DATE, packageQueryDefaults, estimatePackageTotal } from "./packageLeadFormFields";
+import { ANY_DATE } from "./packageLeadFormFields";
 
 /*
  * Package query step 2 (PackageDetail-query, FR-PKG-06): departure (a fixed date or any date), travellers, room
  * sharing, contact preference, notes and consent. Messages are keys under "Packages.errors" or "Leads.errors".
  */
-
-export const ANY_DATE = "any";
 
 export const packageQuerySchema = z
   .object({
@@ -36,22 +36,6 @@ export const packageQuerySchema = z
 export type PackageQueryInput = z.input<typeof packageQuerySchema>;
 export type PackageQueryValues = z.output<typeof packageQuerySchema>;
 
-export function packageQueryDefaults(
-  pkg: Pick<TourPackage, "departures" | "anyDate" | "prices">,
-): PackageQueryInput {
-  const first = pkg.departures[0]?.date;
-  return {
-    departure: first ?? (pkg.anyDate ? ANY_DATE : ""),
-    adults: 2,
-    children: 0,
-    infants: 0,
-    roomSharing: pkg.prices[0]?.sharing ?? "twin",
-    preferredContact: "call",
-    notes: "",
-    consent: false,
-  };
-}
-
 export function buildPackageLead(args: {
   contact: ContactStepValues;
   query: PackageQueryValues;
@@ -73,20 +57,4 @@ export function buildPackageLead(args: {
     consent: true,
     source: { channel: "web", page: args.page },
   };
-}
-
-/**
- * Indicative total for the booking card (PackageDetail "Estimated total"): adults at the chosen room sharing,
- * children at the child-with-bed price and infants at the infant price. Missing child prices fall back to the
- * adult price, a missing infant price to zero.
- */
-export function estimatePackageTotal(
-  prices: TourPackage["prices"],
-  travellers: Pick<PackageQueryInput, "adults" | "children" | "infants" | "roomSharing">,
-): number {
-  const priceOf = (sharing: string) => prices.find((price) => price.sharing === sharing)?.price;
-  const adult = priceOf(travellers.roomSharing) ?? prices[0]?.price ?? 0;
-  const child = priceOf("child-with-bed") ?? adult;
-  const infant = priceOf("infant") ?? 0;
-  return travellers.adults * adult + travellers.children * child + travellers.infants * infant;
 }

@@ -105,7 +105,7 @@ export default function VisaApplyPage({ params }: PageProps<"/[locale]/visa/[cou
         <main
           id="main"
           aria-busy="true"
-          className="site-container flex flex-col gap-6 pt-4 pb-28 md:pt-6"
+          className="site-container flex min-h-dvh flex-col gap-6 pt-4 pb-28 md:pt-6"
         >
           <Skeleton className="h-5 w-56 rounded-full" />
           <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />

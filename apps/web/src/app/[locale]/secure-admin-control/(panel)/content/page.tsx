@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { StatusTabs } from "@/components/admin/StatusTabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet } from "@/lib/admin/adminApi";
 import { CONTENT_GROUPS, keysInGroup, type ContentGroupKey } from "@/lib/admin/contentGroups";
 import type { ContentOverviewItem } from "@/lib/admin/types";

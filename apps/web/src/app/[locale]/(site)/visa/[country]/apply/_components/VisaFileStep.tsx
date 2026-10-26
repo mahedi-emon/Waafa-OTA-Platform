@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, type ReactNode } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { ArrowLeft, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -15,16 +15,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  DOCUMENT_SLOTS,
-  MAX_VISA_APPLICANTS,
-  visaFileSchema,
-  type VisaFileInput,
-  type VisaFileValues,
-} from "@/lib/leads/visaLeadForm";
+import { DOCUMENT_SLOTS, MAX_VISA_APPLICANTS } from "@/lib/leads/visaLeadFormFields";
+import type { VisaFileInput, VisaFileValues, visaFileSchema } from "@/lib/leads/visaLeadForm";
 import { addDays, formatFieldDate } from "@/lib/search/isoDate";
 import { DocumentSlot } from "@/components/forms/DocumentSlot";
 import { formatVisaPrice } from "@/lib/visa/visaPrice";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = (...args: Parameters<typeof visaFileSchema>) =>
+  lazyResolver(async () => {
+    const [{ zodResolver }, { visaFileSchema }] = await Promise.all([
+      import("@hookform/resolvers/zod"),
+      import("@/lib/leads/visaLeadForm"),
+    ]);
+    return zodResolver(visaFileSchema(...args));
+  });
 
 export type VisaTypeOption = {
   type: VisaTypeKey;
@@ -92,7 +97,7 @@ function VisaFileStep(props: VisaFileStepProps) {
   const today = useDhakaToday();
   const form = useForm<VisaFileInput, unknown, VisaFileValues>({
     resolver: (values, context, options) =>
-      zodResolver(visaFileSchema(today || "1970-01-01"))(values, context, options),
+      formResolver(today || "1970-01-01")(values, context, options),
     defaultValues: props.defaultValues,
     mode: "onTouched",
   });

@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { CircleAlert, LogOut, PackageOpen, Plane } from "lucide-react";
+import { CircleAlert } from "@/components/icons/server/CircleAlert";
+import { LogOut } from "@/components/icons/server/LogOut";
+import { PackageOpen } from "@/components/icons/server/PackageOpen";
+import { Plane } from "@/components/icons/server/Plane";
 import { formatDate, formatTaka } from "@waafa/shared";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -11,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { readAccount } from "@/lib/account/accountApi";
 import { SESSION_COOKIE } from "@/lib/account/googleOAuth";
 import { getSiteSettings } from "@/lib/data/settings";
@@ -199,7 +202,11 @@ export default function AccountPage({ searchParams }: PageProps<"/[locale]/accou
   return (
     <Suspense
       fallback={
-        <main id="main" aria-busy="true" className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <main
+          id="main"
+          aria-busy="true"
+          className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28"
+        >
           <Skeleton className="h-5 w-40 rounded-full" />
           <Skeleton className="h-32 rounded-[24px]" />
           <Skeleton className="h-[320px] rounded-2xl" />

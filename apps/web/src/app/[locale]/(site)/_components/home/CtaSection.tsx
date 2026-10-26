@@ -1,4 +1,7 @@
-import { Clock3, MapPin, Navigation, Phone } from "lucide-react";
+import { Clock3 } from "@/components/icons/server/Clock3";
+import { MapPin } from "@/components/icons/server/MapPin";
+import { Navigation } from "@/components/icons/server/Navigation";
+import { Phone } from "@/components/icons/server/Phone";
 import { getTranslations } from "next-intl/server";
 import { whatsappLink, type HomeContent } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";

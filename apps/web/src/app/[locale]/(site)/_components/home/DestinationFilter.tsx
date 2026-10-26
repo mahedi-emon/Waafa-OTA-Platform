@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { cn } from "cn";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 type DestinationFilterProps = {
   label: string;
@@ -14,34 +13,40 @@ type DestinationFilterProps = {
 
 /**
  * Destination finder filters (FR-HOME 5): chips filter the server-rendered tiles in place; "All" shows every tile.
- * Only the chip state is client-side; the cards stay server components.
+ * Only the chip state is client-side; the cards stay server components. The chips are native radios (issue 236).
  */
 function DestinationFilter({ label, filters, items, emptyLabel }: DestinationFilterProps) {
   const [filter, setFilter] = useState("all");
+  const name = useId();
   const shown = filter === "all" ? items : items.filter((item) => item.tags.includes(filter));
 
   return (
     <div className="flex flex-col gap-5">
-      <ToggleGroup
-        type="single"
-        value={filter}
-        onValueChange={(value) => setFilter(value || "all")}
+      <div
+        role="radiogroup"
         aria-label={label}
         className="-mx-4 flex w-auto [scrollbar-width:none] justify-start gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0"
       >
         {filters.map((option) => (
-          <ToggleGroupItem
+          <label
             key={option.value}
-            value={option.value}
             className={cn(
-              "h-11 shrink-0 rounded-full border border-mist-200 bg-white px-4 text-[14px] font-medium text-ink-900",
-              "hover:bg-mist-50 data-[state=on]:border-navy-900 data-[state=on]:bg-navy-900 data-[state=on]:text-white",
+              "relative inline-flex h-11 shrink-0 cursor-pointer items-center rounded-full border border-mist-200 bg-white px-4 text-[14px] font-medium text-ink-900 transition-colors",
+              "hover:bg-mist-50 has-checked:border-navy-900 has-checked:bg-navy-900 has-checked:text-white has-focus-visible:ring-3 has-focus-visible:ring-ring/40",
             )}
           >
+            <input
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={filter === option.value}
+              onChange={() => setFilter(option.value)}
+              className="absolute inset-0 size-full cursor-pointer appearance-none rounded-full opacity-0"
+            />
             {option.label}
-          </ToggleGroupItem>
+          </label>
         ))}
-      </ToggleGroup>
+      </div>
       {shown.length > 0 ? (
         <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-6">
           {shown.map((item) => (

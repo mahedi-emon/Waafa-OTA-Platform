@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState, type ReactNode } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import {
   ArrowLeft,
   Briefcase,
@@ -39,11 +39,18 @@ import {
   HOTEL_CLASSES,
   INTERESTS,
   TRIP_FOR,
-  planTripSchema,
-  type PlanTripInput,
-  type PlanTripValues,
-} from "@/lib/leads/planTripLeadForm";
+} from "@/lib/leads/planTripLeadFormFields";
+import type { PlanTripInput, PlanTripValues } from "@/lib/leads/planTripLeadForm";
 import { addMonths, formatShortMonth } from "@/lib/search/isoDate";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { planTripSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/planTripLeadForm"),
+  ]);
+  return zodResolver(planTripSchema);
+});
 
 const INTEREST_ICONS: Record<(typeof INTERESTS)[number], LucideIcon> = {
   beach: Waves,
@@ -116,7 +123,7 @@ function PlanStep({
   const today = useDhakaToday();
   const [draftPlace, setDraftPlace] = useState("");
   const form = useForm<PlanTripInput, unknown, PlanTripValues>({
-    resolver: zodResolver(planTripSchema),
+    resolver: formResolver,
     defaultValues,
     mode: "onTouched",
   });

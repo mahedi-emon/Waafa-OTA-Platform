@@ -3,13 +3,16 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Check, CircleAlert, CircleCheck, ShieldCheck } from "lucide-react";
+import { Check } from "@/components/icons/server/Check";
+import { CircleAlert } from "@/components/icons/server/CircleAlert";
+import { CircleCheck } from "@/components/icons/server/CircleCheck";
+import { ShieldCheck } from "@/components/icons/server/ShieldCheck";
 import { GoogleSignInButton } from "@/components/account/GoogleSignInButton";
 import { RibbonLine } from "@/components/brand/RibbonLine";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { googleSignInConfig, readAccount } from "@/lib/account/accountApi";
 import { SESSION_COOKIE, safeNext } from "@/lib/account/googleOAuth";
 import { getSiteSettings } from "@/lib/data/settings";
@@ -119,7 +122,11 @@ export default function LoginPage({ searchParams }: PageProps<"/[locale]/login">
   return (
     <Suspense
       fallback={
-        <main id="main" aria-busy="true" className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <main
+          id="main"
+          aria-busy="true"
+          className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28"
+        >
           <Skeleton className="h-5 w-40 rounded-full" />
           <Skeleton className="h-[420px] rounded-[24px]" />
         </main>

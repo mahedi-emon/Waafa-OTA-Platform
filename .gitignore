@@ -39,5 +39,6 @@ __pycache__/
 # Production backups on the VPS (deploy/backup.sh)
 deploy/backups/
 apps/web/lhci-report/
+apps/web/lighthouse-report/
 # Packed server bundle with its .env (docs/DEPLOY.md, image-only deploy)
 waafa-server.tgz

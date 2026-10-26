@@ -135,6 +135,20 @@
   new-device email only after a first known device; API rate limits in Redis (hashed keys, process fallback, never off)
   + 10/h per phone, RATE_LIMIT_FACTOR for e2e only; QR drawn server-side with uqr; e2e setup project trusts the seed
   Super Admin's browser.
+- D290 (#234 review): locks double within a day (cap 24 h), code-step lock emails the person (staff-code-locked),
+  enrol claims totpEnabledAt atomically, two-step cookie path "/", focus to each step heading.
+- D291–D292 (#235): worker scans unscanned customer files every 10 s with clamd (INSTREAM, no dependency); with
+  CLAMAV_URL staff open only clean files, hits → quarantine/ + infected + audit; ClamAV 1.5.4 (1.6 GB limit, clamdata
+  volume), VPS minimum 8 GB.
+- D293–D298 (#236, 26 Oct): ui radio-group/checkbox/switch/tabs = native inputs/buttons behind the shadcn API (tick =
+  `checkbox-tick` CSS mask, tabs set data-active); next-intl `precompile: true` (no empty plural branches — unit test;
+  no t.raw); overlays + second steps load on use (PreferencesSheet, LazyDialog, next/dynamic steps, checkout form after
+  hydration), ContactStep without RHF; useSubmitOnce (ref) for every submit with an idempotency key; client-boundary
+  guard (no LocalLink/next-intl/server/server-only/next/headers in client graphs; in pnpm guards + CI Guards);
+  Lighthouse: budgets (a11y/BP/SEO 95, CLS 0.1) fail CI, targets (perf 90, LCP 2.5 s, TBT 200) warn until #271.
+  Page-level Suspense fallbacks are min-h-dvh (footer jump = CLS). Supersedes D154/D174 on message precompile.
+  D299: record detail pages KEEP their Suspense (API-mode snapshot reads draftMode = request data; without it new or
+  moved records 500 "uncached or runtime data during prerendering"; fixture mode hides this — only API-mode e2e catches it).
 - D262–D265 (R10, 25 Oct): lists named by headingOf, columns only with data; banner/deal/announcement editor states
   startsLater/ended + group fares endingSoon (<= 7 days); system editors in words (editorName); sentence-case admin
   chrome, Table scrollLabel → named focusable region, tab rows wrap or fade.

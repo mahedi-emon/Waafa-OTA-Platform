@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
-import {
-  buildVisaLead,
-  visaFileDefaults,
-  type VisaFileInput,
-  type VisaFileValues,
-} from "@/lib/leads/visaLeadForm";
-import { VisaFileStep, type VisaTypeOption } from "./VisaFileStep";
+import { Skeleton } from "@/components/ui/skeleton";
+import { visaFileDefaults } from "@/lib/leads/visaLeadFormFields";
+import type { VisaFileInput, VisaFileValues } from "@/lib/leads/visaLeadForm";
+import type { VisaTypeOption } from "./VisaFileStep";
+
+/** Step 2 and its validation load when the visitor reaches it, not with the page (issues 170 and 236). */
+const VisaFileStep = dynamic(() => import("./VisaFileStep").then((mod) => mod.VisaFileStep), {
+  loading: () => <Skeleton className="mx-5 my-6 h-[520px] rounded-2xl md:mx-7" />,
+});
 
 type VisaApplyRequestProps = {
   country: { slug: string; name: string };
@@ -56,7 +59,9 @@ function VisaApplyRequest({
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, values, page) => buildVisaLead({ contact, values, country, page })}
+      buildLead={async (contact, values, page) =>
+        (await import("@/lib/leads/visaLeadForm")).buildVisaLead({ contact, values, country, page })
+      }
       renderSecondStep={({ sending, goBack, submit }) => (
         <VisaFileStep
           countryName={country.name}

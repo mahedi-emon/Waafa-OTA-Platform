@@ -7,7 +7,7 @@ import { DealCountdown } from "@/components/shop/DealCountdown";
 import { ListingHeader } from "@/components/shop/ListingHeader";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getSiteSettings } from "@/lib/data/settings";
 import { listDeals } from "@/lib/data/shop";
 import { brandNames } from "@/lib/shop/catalogue";

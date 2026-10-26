@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { CloudOff } from "lucide-react";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 /**
  * The Live body slot (FR-GS-02) until Phase E: shown only if an admin switches a module to Live while no provider is

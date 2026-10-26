@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { LOGO_QUALITY } from "@/lib/media/imageQuality";
 import markImage from "@/assets/brand/waafa-mark.png";
 import wordmarkImage from "@/assets/brand/waafa-wordmark.png";

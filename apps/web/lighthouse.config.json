@@ -1,0 +1,30 @@
+{
+  "$comment": "Lighthouse budgets (issue 236, NFR-PERF). scripts/lighthouse-run.mjs runs each route `runs` times on a mobile profile and checks the median run: a missed budget fails CI, a missed target is a warning until every key route meets it (D298, issue 271).",
+  "lighthouse": "13.5.0",
+  "runs": 3,
+  "routes": [
+    "/",
+    "/flights",
+    "/hotels",
+    "/tour-packages",
+    "/tour-packages/bangkok-and-phuket",
+    "/visa",
+    "/visa/thailand",
+    "/shop",
+    "/shop/p/voltaro-power-bank-22-5w",
+    "/blog",
+    "/blog/coxs-bazar-long-weekend"
+  ],
+  "liveRoutes": ["/", "/flights", "/hotels", "/tour-packages", "/visa", "/shop", "/blog"],
+  "budgets": {
+    "accessibility": 95,
+    "best-practices": 95,
+    "seo": 95,
+    "cumulative-layout-shift": 0.1
+  },
+  "targets": {
+    "performance": 90,
+    "largest-contentful-paint": 2500,
+    "total-blocking-time": 200
+  }
+}

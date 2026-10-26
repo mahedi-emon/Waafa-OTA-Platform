@@ -1,4 +1,10 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-26 evening — #236 in progress (chore/236-speed, pushed): all public routes ≤ 200 KB first-load JS; D293–D297;
+  branch bugs fixed (LocalLink in client code → client-boundary guard, useSubmitOnce, compiled messages). Left:
+  native-controls e2e run, Lighthouse medians, CI warn → error, docs, PR (full-ci).
+- 2026-10-26 — Letter B done: #234 merged (PR #268, 100 min), #235 ClamAV malware scan merged (PR #270, 107 min;
+  worker pass every 10 s, quarantine/, Files panel states, clamav in compose, VPS smoke EICAR; bundle change). D290
+  review fixes (doubling locks, code-lock email, atomic enrol), D291–D292. Next: letter C #236.
 - 2026-10-26 — Letter A done: #229 (PR #265, 9 min), #224 (PR #266, 8 min), #219 (PR #267, 11 min; no row transitions,
   no overlay blur). Letter B started: #234 PR #268 (full-ci, MIGRATION 20261026120000_staff_two_step): TOTP two-step
   sign-in (required Super Admin/Admin), recovery codes, trusted devices, sign-in history, new-device email (seed patch

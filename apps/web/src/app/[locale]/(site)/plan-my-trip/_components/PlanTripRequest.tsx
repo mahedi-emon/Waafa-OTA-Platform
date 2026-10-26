@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
-import {
-  buildPlanTripLead,
-  planTripDefaults,
-  type PlanTripInput,
-  type PlanTripValues,
-} from "@/lib/leads/planTripLeadForm";
-import { PlanStep } from "./PlanStep";
+import { Skeleton } from "@/components/ui/skeleton";
+import { planTripDefaults } from "@/lib/leads/planTripLeadFormFields";
+import type { PlanTripInput, PlanTripValues } from "@/lib/leads/planTripLeadForm";
+
+/** Step 2 and its validation load when the visitor reaches it, not with the page (issues 170 and 236). */
+const PlanStep = dynamic(() => import("./PlanStep").then((mod) => mod.PlanStep), {
+  loading: () => <Skeleton className="mx-5 my-6 h-[520px] rounded-2xl md:mx-7" />,
+});
 
 type PlanTripRequestProps = {
   /** A place carried from a link such as /plan-my-trip?place=Bali. */
@@ -38,8 +40,13 @@ function PlanTripRequest({ place, places, ...props }: PlanTripRequestProps) {
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, values, page) =>
-        buildPlanTripLead({ contact, plan: values, notSureLabel: t("notSure"), page })
+      buildLead={async (contact, values, page) =>
+        (await import("@/lib/leads/planTripLeadForm")).buildPlanTripLead({
+          contact,
+          plan: values,
+          notSureLabel: t("notSure"),
+          page,
+        })
       }
       renderSecondStep={({ sending, goBack, submit }) => (
         <PlanStep

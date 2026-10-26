@@ -156,6 +156,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: node scripts/guards.mjs
+      # No server-only module (LocalLink, next-intl/server) inside a Client Component's imports (issue 236).
+      - run: node apps/web/scripts/client-boundary.mjs
 
   verify:
     name: Lint, typecheck, test, build, e2e smoke
@@ -220,6 +222,10 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      # Issue 236: Server Components draw lucide icons on the server (needs node_modules, so not in the guards job).
+      - name: Server icons
+        run: node apps/web/scripts/server-icons.mjs --check
 
       - name: Typecheck
         run: pnpm typecheck
@@ -500,22 +506,17 @@ jobs:
       - name: Build web
         run: pnpm --filter @waafa/web... build
 
-      # Mobile (Lighthouse default), one run per route; budgets warn for now and the scores land in the summary (#22).
-      - name: Lighthouse CI
-        working-directory: apps/web
-        run: npx --yes @lhci/cli@0.14.0 autorun
-
-      - name: Lighthouse scores
-        if: always()
-        working-directory: apps/web
-        run: node ../../scripts/lighthouse-summary.mjs lhci-report
+      # Lighthouse 13 on the 11 key routes, median of 3 (issue 236): budgets in apps/web/lighthouse.config.json fail the
+      # job, targets are warnings (D298).
+      - name: Lighthouse
+        run: node scripts/lighthouse-run.mjs
 
       - name: Upload Lighthouse reports
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: lighthouse
-          path: apps/web/lhci-report
+          path: apps/web/lighthouse-report
           retention-days: 7
           if-no-files-found: ignore
 

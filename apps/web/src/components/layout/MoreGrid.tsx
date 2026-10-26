@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import type { MenuItem } from "@waafa/shared";
 import { MenuIcon } from "@/components/icons/MenuIcon";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 type MoreGridProps = {
   items: MenuItem[];

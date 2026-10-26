@@ -2,27 +2,50 @@
 
 import * as React from "react";
 import { cn } from "cn";
-import { Switch as SwitchPrimitive } from "radix-ui";
 
-/** 44 × 26 switch; the thumb slides by transform. Track colour swaps instantly. */
-function Switch({ className, ...props }: React.ComponentProps<typeof SwitchPrimitive.Root>) {
+type SwitchProps = Omit<
+  React.ComponentProps<"input">,
+  "type" | "role" | "checked" | "defaultChecked" | "onChange" | "children"
+> & {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+};
+
+/**
+ * 44 × 26 switch; the thumb slides by transform. Track colour swaps instantly. A native checkbox with the switch role
+ * behind the shadcn API (issue 236), so public pages carry no Radix code for it; the thumb is a pseudo-element.
+ */
+function Switch({
+  className,
+  checked,
+  defaultChecked,
+  onCheckedChange,
+  onChange,
+  ...props
+}: SwitchProps) {
   return (
-    <SwitchPrimitive.Root
+    <input
+      type="checkbox"
+      role="switch"
       data-slot="switch"
+      data-state={checked === undefined ? undefined : checked ? "checked" : "unchecked"}
+      {...(checked === undefined ? { defaultChecked } : { checked })}
+      onChange={(event) => {
+        onChange?.(event);
+        onCheckedChange?.(event.target.checked);
+      }}
       className={cn(
-        "peer group/switch relative inline-flex h-[26px] w-11 shrink-0 cursor-pointer items-center rounded-full p-[3px]",
+        "peer relative inline-flex h-[26px] w-11 shrink-0 cursor-pointer appearance-none items-center rounded-full bg-mist-300 outline-none checked:bg-primary",
+        "before:pointer-events-none before:absolute before:top-[3px] before:left-[3px] before:size-5 before:rounded-full before:bg-white before:shadow-sm before:transition-transform before:duration-200 before:ease-out checked:before:translate-x-[18px]",
         "after:absolute after:-inset-x-2 after:-inset-y-[9px]",
-        "data-checked:bg-primary data-unchecked:bg-mist-300",
-        "data-disabled:cursor-not-allowed data-disabled:opacity-45",
+        "focus-visible:ring-3 focus-visible:ring-ring/40",
+        "disabled:cursor-not-allowed disabled:opacity-45",
         className,
       )}
       {...props}
-    >
-      <SwitchPrimitive.Thumb
-        data-slot="switch-thumb"
-        className="pointer-events-none block size-5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-out data-checked:translate-x-[18px] data-unchecked:translate-x-0"
-      />
-    </SwitchPrimitive.Root>
+    />
   );
 }
 

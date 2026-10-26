@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Columns3 } from "lucide-react";
+import { Columns3 } from "@/components/icons/server/Columns3";
 import { getTranslations } from "next-intl/server";
 import { LeadModuleSchema, LeadStatusSchema, type LeadModule } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -10,7 +10,7 @@ import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
 import type { ChipView, ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet } from "@/lib/admin/adminApi";
 import {
   ageParts,

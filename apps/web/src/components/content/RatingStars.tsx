@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star } from "@/components/icons/server/Star";
 import { cn } from "cn";
 
 type RatingStarsProps = { rating: number; label: string; className?: string };

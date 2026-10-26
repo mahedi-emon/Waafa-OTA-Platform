@@ -1,7 +1,8 @@
-import { ChevronRight, CircleCheck, Circle } from "lucide-react";
+import { CircleCheck, Circle } from "lucide-react";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { getTranslations } from "next-intl/server";
 import { cn } from "cn";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import type { SetupStep } from "@/lib/admin/setupChecklist";
 import { AdminPanel } from "./AdminPanel";
 import { ProgressRing } from "./ProgressRing";

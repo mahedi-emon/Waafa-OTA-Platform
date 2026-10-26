@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { CircleAlert, MessageCircle, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { FeedbackServiceSchema } from "@waafa/shared";
+import { FEEDBACK_SERVICES } from "@waafa/shared/constants";
 import { DrawCheck } from "@/components/motion/DrawCheck";
 import { ChipRadioGroup } from "@/components/forms/ChipRadioGroup";
 import { ConsentField } from "@/components/forms/ConsentField";
@@ -18,12 +18,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
-import {
-  buildFeedbackInput,
-  feedbackFormSchema,
-  type FeedbackFormValues,
-} from "@/lib/content/feedbackForm";
+import type { FeedbackFormValues } from "@/lib/content/feedbackForm";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
+import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { feedbackFormSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/content/feedbackForm"),
+  ]);
+  return zodResolver(feedbackFormSchema);
+});
 
 type FeedbackFormProps = {
   countries: Array<{ code: string; name: string; dial: string }>;
@@ -48,7 +54,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
   const t = useTranslations("Feedback");
   const defaults = { ...DEFAULTS, phoneCountry: countries[0]?.code ?? "BD" };
   const form = useForm<FeedbackFormValues>({
-    resolver: zodResolver(feedbackFormSchema),
+    resolver: formResolver,
     defaultValues: defaults,
     mode: "onTouched",
   });
@@ -58,7 +64,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
   const [sending, setSending] = useState(false);
   const [failure, setFailure] = useState<"retry" | "rate" | "uploading" | null>(null);
   const [sentName, setSentName] = useState<string | null>(null);
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const once = useSubmitOnce();
   const turnstile = useTurnstile();
 
   const message = (key: keyof FeedbackFormValues) => {
@@ -75,8 +81,8 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
     if (sending) return;
     setSending(true);
     setFailure(null);
-    const key = idempotencyKey ?? crypto.randomUUID();
-    setIdempotencyKey(key);
+    const key = once.start();
+    if (!key) return;
     try {
       const image =
         photo && (photo.mimeType === "image/jpeg" || photo.mimeType === "image/png")
@@ -93,7 +99,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           idempotencyKey: key,
-          feedback: buildFeedbackInput(values, image),
+          feedback: (await import("@/lib/content/feedbackForm")).buildFeedbackInput(values, image),
           turnstileToken,
         }),
       });
@@ -104,10 +110,11 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
       }
       const body = (await response.json()) as { firstName: string };
       setSentName(body.firstName);
-      setIdempotencyKey(null);
+      once.renew();
     } catch {
       setFailure("retry");
     } finally {
+      once.finished();
       setSending(false);
     }
   });
@@ -218,7 +225,7 @@ function FeedbackForm({ countries }: FeedbackFormProps) {
               labelledBy="fb-service"
               value={field.value}
               onChange={field.onChange}
-              options={FeedbackServiceSchema.options.map((value) => ({
+              options={FEEDBACK_SERVICES.map((value) => ({
                 value,
                 label: t(`services.${value}`),
               }))}

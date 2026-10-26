@@ -1,10 +1,13 @@
-import { ChevronRight, Mail, Phone, User } from "lucide-react";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
+import { Mail } from "@/components/icons/server/Mail";
+import { Phone } from "@/components/icons/server/Phone";
+import { User } from "@/components/icons/server/User";
 import { getTranslations } from "next-intl/server";
 import type { ContactSettings, MenuItem } from "@waafa/shared";
 import { whatsappLink } from "@waafa/shared/helpers/phone";
 import { MenuIcon } from "@/components/icons/MenuIcon";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { MoreGrid } from "./MoreGrid";
 import { OfficeStatusChip } from "./OfficeStatusChip";
 

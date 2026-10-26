@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "cn";
 import { Sparkline } from "./dashboard/Sparkline";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 const kpiVariants = cva(
   "flex h-full min-h-[112px] flex-col justify-between gap-3 rounded-2xl border bg-white p-4 transition-colors duration-150 sm:p-5",

@@ -1,22 +1,23 @@
 import type { LeadCreateInput } from "@waafa/shared";
 import { z } from "zod";
 import { contactToLead, type ContactStepValues } from "./contactForm";
+import {
+  PRINTING_SERVICES,
+  PRINTING_FREQUENCIES,
+  TRADING_DIRECTIONS,
+  DELIVERY_TERMS,
+} from "./serviceLeadFormFields";
+export {
+  PRINTING_SERVICES,
+  PRINTING_FREQUENCIES,
+  TRADING_DIRECTIONS,
+  DELIVERY_TERMS,
+} from "./serviceLeadFormFields";
 
 /*
  * Waafa International service requests (A15): a printing quote (PRN) and a trading RFQ (TRD). Step 1 is the shared
  * contact step; step 2 is below. Messages are next-intl keys under "Services.errors" (consent under "Leads.errors").
  */
-
-export const PRINTING_SERVICES = [
-  "toner-supply",
-  "printer-repair",
-  "new-printers",
-  "paper-supplies",
-  "managed-printing",
-] as const;
-export const PRINTING_FREQUENCIES = ["one-off", "weekly", "monthly", "quarterly"] as const;
-export const TRADING_DIRECTIONS = ["import", "export", "sourcing"] as const;
-export const DELIVERY_TERMS = ["exw", "fob", "cif", "ddp", "other"] as const;
 
 export type ProofFile = {
   fileName: string;

@@ -3,7 +3,7 @@ import { formatTaka, type TourPackage } from "@waafa/shared";
 import { GoldTriangle } from "@/components/brand/GoldTriangle";
 import { HoverVideo } from "@/components/media/HoverVideo";
 import { SmartImage } from "@/components/media/SmartImage";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { CardFx } from "@/components/fx/CardFx";
 
 type PackageCardProps = { pkg: TourPackage; sizes?: string };

@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { MenuIcon } from "@/components/icons/MenuIcon";
 import { Canonical } from "@/components/seo/Canonical";
 import { ListingHeader } from "@/components/shop/ListingHeader";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getSiteSettings } from "@/lib/data/settings";
 import { listCategories } from "@/lib/data/shop";
 import { withSocial } from "@/lib/seo/withSocial";

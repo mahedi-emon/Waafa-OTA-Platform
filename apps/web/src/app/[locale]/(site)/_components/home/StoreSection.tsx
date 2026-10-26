@@ -1,11 +1,12 @@
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Check } from "@/components/icons/server/Check";
 import { getTranslations } from "next-intl/server";
 import type { HomeContent, HomeSection } from "@waafa/shared";
 import { MenuIcon } from "@/components/icons/MenuIcon";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { getMenu, getSiteSettings } from "@/lib/data/settings";
 import { listBrands, listCategories, listProducts } from "@/lib/data/shop";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { HomeSectionShell } from "./HomeSectionShell";
 import { SnapRow } from "./SnapRow";
 

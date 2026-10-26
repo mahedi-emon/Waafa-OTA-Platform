@@ -2,19 +2,20 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "@/components/icons/server/ArrowLeft";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { formatDate } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getGalleryAlbum, listGalleryAlbums } from "@/lib/data/content";
 import { followMovedRecord } from "@/lib/data/movedRecord";
 import { AlbumGrid } from "./_components/AlbumGrid";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 import { ExploreMore } from "@/components/seo/ExploreMore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export async function generateStaticParams() {
   const albums = await listGalleryAlbums();
@@ -108,7 +109,7 @@ export default function AlbumPage({ params }: PageProps<"/[locale]/gallery/[slug
   return (
     <Suspense
       fallback={
-        <div className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
           <Skeleton className="h-12 w-1/2 rounded-xl" />
           <Skeleton className="h-96 rounded-2xl" />
         </div>

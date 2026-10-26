@@ -2,22 +2,13 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FlightPreferences, FlightSearch, OpeningHours } from "@waafa/shared";
 import { OfficeStatusChip } from "@/components/layout/OfficeStatusChip";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
 import { useDhakaToday } from "@/components/search/useDhakaToday";
-import { Button } from "@/components/ui/button";
+import { PreferencesSheet } from "@/components/leads/PreferencesSheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import { Link } from "@/i18n/navigation";
 import type { TripStepInput, TripStepValues } from "@/lib/leads/flightLeadForm";
 import { tripDefaults } from "@/lib/leads/flightTrip";
@@ -98,33 +89,22 @@ function FlightRequest(props: FlightRequestProps) {
       </aside>
 
       <div className="flex min-w-0 flex-col gap-4">
-        <Drawer>
-          <DrawerTrigger asChild>
-            <Button variant="secondary" className="self-start xl:hidden">
-              <SlidersHorizontal aria-hidden="true" />
-              {t("prefs.open")} {tLeads("prefs.count", { count: prefCount })}
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent className="max-h-[90dvh] rounded-t-[28px] border-0 bg-white">
-            <div className="px-4 pt-2 pb-2">
-              <DrawerTitle className="font-display text-[18px] font-bold text-navy-900">
-                {t("prefs.title")}
-              </DrawerTitle>
-              <DrawerDescription className="text-[13.5px] text-mist-600">
-                {t("prefs.lead")}
-              </DrawerDescription>
-            </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">{preferencesPanel}</div>
-            <div className="flex gap-3 border-t border-mist-200 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
-              <Button variant="ghost" onClick={() => setPreferences(NO_PREFERENCES)}>
-                {tLeads("prefs.clear")}
-              </Button>
-              <DrawerClose asChild>
-                <Button className="flex-1">{tLeads("prefs.save")}</Button>
-              </DrawerClose>
-            </div>
-          </DrawerContent>
-        </Drawer>
+        <PreferencesSheet
+          trigger={
+            prefCount > 0
+              ? `${t("prefs.open")} ${tLeads("prefs.count", { count: prefCount })}`
+              : t("prefs.open")
+          }
+          labels={{
+            title: t("prefs.title"),
+            lead: t("prefs.lead"),
+            clear: tLeads("prefs.clear"),
+            save: tLeads("prefs.save"),
+          }}
+          onClear={() => setPreferences(NO_PREFERENCES)}
+        >
+          {preferencesPanel}
+        </PreferencesSheet>
 
         <LeadRequestCard<TripStepValues>
           titleId="flight-request-title"

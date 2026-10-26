@@ -1,11 +1,8 @@
-import {
-  CircleAlert,
-  ExternalLink,
-  FileImage,
-  FileText,
-  ShieldAlert,
-  ShieldEllipsis,
-} from "lucide-react";
+import { FileImage, FileText } from "lucide-react";
+import { CircleAlert } from "@/components/icons/server/CircleAlert";
+import { ExternalLink } from "@/components/icons/server/ExternalLink";
+import { ShieldAlert } from "@/components/icons/server/ShieldAlert";
+import { ShieldEllipsis } from "@/components/icons/server/ShieldEllipsis";
 import { getTranslations } from "next-intl/server";
 import type { CustomerFileOwner } from "@waafa/shared";
 import { AdminPanel } from "@/components/admin/AdminPanel";

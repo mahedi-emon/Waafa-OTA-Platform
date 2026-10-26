@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Phone } from "lucide-react";
+import { Phone } from "@/components/icons/server/Phone";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { AdminNotFound } from "@/components/admin/AdminNotFound";

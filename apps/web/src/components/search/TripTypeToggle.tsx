@@ -2,8 +2,6 @@
 
 import { useId } from "react";
 import { useTranslations } from "next-intl";
-import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
-import { RadioGroup } from "@/components/ui/radio-group";
 import { TRIP_TYPES, type TripType } from "@/lib/search/flightOptions";
 import { useSearchCard } from "./SearchCardContext";
 
@@ -13,11 +11,15 @@ const LABEL_KEY: Record<TripType, "oneWay" | "roundTrip" | "multiCity"> = {
   "multi-city": "multiCity",
 };
 
-/** One way / Round trip / Multi-city as a segmented radio group with a sliding pill. */
+/**
+ * One way / Round trip / Multi-city as a segmented radio group with a sliding pill. Native radios (issue 236): arrow
+ * keys and one tab stop come from the browser, so the search card carries no Radix roving-focus code.
+ */
 function TripTypeToggle() {
   const t = useTranslations("Search.trip");
   const { state, dispatch } = useSearchCard();
   const labelId = useId();
+  const name = useId();
   const index = TRIP_TYPES.indexOf(state.flight.trip);
 
   return (
@@ -25,10 +27,9 @@ function TripTypeToggle() {
       <span id={labelId} className="sr-only">
         {t("label")}
       </span>
-      <RadioGroup
+      <div
+        role="radiogroup"
         aria-labelledby={labelId}
-        value={state.flight.trip}
-        onValueChange={(trip) => dispatch({ type: "trip", trip: trip as TripType })}
         className="relative grid h-12 grid-cols-3 gap-0 rounded-full bg-mist-100 p-0.5"
       >
         <span
@@ -37,15 +38,22 @@ function TripTypeToggle() {
           style={{ transform: `translateX(${index * 100}%)` }}
         />
         {TRIP_TYPES.map((trip) => (
-          <RadioGroupPrimitive.Item
+          <label
             key={trip}
-            value={trip}
-            className="relative z-10 cursor-pointer rounded-full px-3 text-[13.5px] font-semibold whitespace-nowrap text-mist-600 outline-none hover:text-navy-900 focus-visible:ring-3 focus-visible:ring-ring/40 data-[state=checked]:text-navy-900 sm:px-4"
+            className="relative z-10 flex cursor-pointer items-center justify-center rounded-full px-3 text-[13.5px] font-semibold whitespace-nowrap text-mist-600 hover:text-navy-900 has-checked:text-navy-900 has-focus-visible:ring-3 has-focus-visible:ring-ring/40 sm:px-4"
           >
+            <input
+              type="radio"
+              name={name}
+              value={trip}
+              checked={state.flight.trip === trip}
+              onChange={() => dispatch({ type: "trip", trip })}
+              className="absolute inset-0 size-full cursor-pointer appearance-none rounded-full opacity-0"
+            />
             {t(LABEL_KEY[trip])}
-          </RadioGroupPrimitive.Item>
+          </label>
         ))}
-      </RadioGroup>
+      </div>
     </div>
   );
 }

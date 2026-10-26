@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm } from "react-hook-form";
@@ -11,19 +11,18 @@ import { NumberStepper } from "@/components/forms/NumberStepper";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  packageQuerySchema,
-  type PackageQueryInput,
-  type PackageQueryValues,
-} from "@/lib/leads/packageLeadForm";
+import type { PackageQueryInput, PackageQueryValues } from "@/lib/leads/packageLeadForm";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { packageQuerySchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/packageLeadForm"),
+  ]);
+  return zodResolver(packageQuerySchema);
+});
 
 type QueryStepProps = {
   defaultValues: PackageQueryInput;
@@ -49,7 +48,7 @@ function QueryStep({
   const tLeads = useTranslations("Leads");
   const id = useId();
   const form = useForm<PackageQueryInput, unknown, PackageQueryValues>({
-    resolver: zodResolver(packageQuerySchema),
+    resolver: formResolver,
     defaultValues,
     mode: "onTouched",
   });
@@ -96,26 +95,20 @@ function QueryStep({
               control={form.control}
               name="departure"
               render={({ field }) => (
-                <Select value={field.value || undefined} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    id="query-departure"
-                    ref={field.ref}
-                    aria-invalid={errors.departure ? true : undefined}
-                    aria-describedby={describedBy}
-                    className="h-12 w-full rounded-xl"
-                  >
-                    <SelectValue>
-                      {departures.find((departure) => departure.value === field.value)?.label}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departures.map((departure) => (
-                      <SelectItem key={departure.value} value={departure.value}>
-                        {departure.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NativeSelect
+                  value={field.value ?? ""}
+                  onChange={(event) => field.onChange(event.target.value)}
+                  id="query-departure"
+                  ref={field.ref}
+                  aria-describedby={describedBy}
+                  aria-invalid={errors.departure ? true : undefined}
+                >
+                  {departures.map((departure) => (
+                    <NativeSelectOption key={departure.value} value={departure.value}>
+                      {departure.label}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
               )}
             />
           )}
@@ -126,24 +119,18 @@ function QueryStep({
               control={form.control}
               name="roomSharing"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    id="query-sharing"
-                    ref={field.ref}
-                    className="h-12 w-full rounded-xl"
-                  >
-                    <SelectValue>
-                      {sharings.find((sharing) => sharing.value === field.value)?.label}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sharings.map((sharing) => (
-                      <SelectItem key={sharing.value} value={sharing.value}>
-                        {sharing.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NativeSelect
+                  value={field.value ?? ""}
+                  onChange={(event) => field.onChange(event.target.value)}
+                  id="query-sharing"
+                  ref={field.ref}
+                >
+                  {sharings.map((sharing) => (
+                    <NativeSelectOption key={sharing.value} value={sharing.value}>
+                      {sharing.label}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
               )}
             />
           )}

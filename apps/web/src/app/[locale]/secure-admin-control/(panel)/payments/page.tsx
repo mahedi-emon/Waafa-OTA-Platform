@@ -10,7 +10,7 @@ import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { customerFileHref } from "@/components/admin/files/CustomerFiles";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { displayPhone, formatDhakaDateTime, initialsOf, pageParam, taka } from "@/lib/admin/format";
 import type { Paged, ProofRow } from "@/lib/admin/types";

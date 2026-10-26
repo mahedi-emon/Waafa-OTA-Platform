@@ -1,0 +1,49 @@
+# Lighthouse on demand (issue 236): the same Lighthouse CI run as the CI job, on any branch, without the rest of the
+# suite. Speed work measures here between commits; the CI job stays the gate on main, nightly and full-ci PRs.
+name: Lighthouse (manual)
+
+on:
+  workflow_dispatch:
+  # Speed branches measure on every push (a dispatch needs the workflow on main first).
+  push:
+    branches: ["perf/**", "chore/*-speed"]
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  lighthouse:
+    name: Lighthouse CI (mobile, manual)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web
+        run: pnpm --filter @waafa/web... build
+
+      # Lighthouse 13 on the 11 key routes, median of 3 (issue 236); the budgets live in apps/web/lighthouse.config.json.
+      - name: Lighthouse
+        run: node scripts/lighthouse-run.mjs --warn
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-manual
+          path: apps/web/lighthouse-report
+          retention-days: 7
+          if-no-files-found: ignore

@@ -1,4 +1,5 @@
-import { CircleAlert, LockKeyhole } from "lucide-react";
+import { CircleAlert } from "@/components/icons/server/CircleAlert";
+import { LockKeyhole } from "@/components/icons/server/LockKeyhole";
 
 type SignInMessageProps = {
   id?: string;

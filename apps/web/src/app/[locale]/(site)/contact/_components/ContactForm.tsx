@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { CircleAlert, Lock, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -15,12 +15,18 @@ import { useTurnstile } from "@/components/forms/useTurnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  CONTACT_TOPICS,
-  buildContactLead,
-  contactFormSchema,
-  type ContactFormValues,
-} from "@/lib/leads/contactLeadForm";
+import { CONTACT_TOPICS } from "@/lib/leads/contactLeadFormFields";
+import type { ContactFormValues } from "@/lib/leads/contactLeadForm";
+import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { contactFormSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/leads/contactLeadForm"),
+  ]);
+  return zodResolver(contactFormSchema);
+});
 
 type ContactFormProps = {
   countries: Array<{ code: string; name: string; dial: string }>;
@@ -43,7 +49,7 @@ const DEFAULTS: ContactFormValues = {
 function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
   const t = useTranslations("Contact");
   const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactFormSchema),
+    resolver: formResolver,
     defaultValues: { ...DEFAULTS, phoneCountry: countries[0]?.code ?? "BD" },
     mode: "onTouched",
   });
@@ -52,7 +58,7 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
   const [sending, setSending] = useState(false);
   const [failure, setFailure] = useState<"retry" | "rate" | null>(null);
   const [sent, setSent] = useState<{ name: string; created: LeadCreated } | null>(null);
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const once = useSubmitOnce();
   const turnstile = useTurnstile();
 
   const message = (key: keyof ContactFormValues) => {
@@ -64,8 +70,8 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
     if (sending) return;
     setSending(true);
     setFailure(null);
-    const key = idempotencyKey ?? crypto.randomUUID();
-    setIdempotencyKey(key);
+    const key = once.start();
+    if (!key) return;
     try {
       const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/leads", {
@@ -73,7 +79,10 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           idempotencyKey: key,
-          lead: buildContactLead(values, window.location.pathname),
+          lead: (await import("@/lib/leads/contactLeadForm")).buildContactLead(
+            values,
+            window.location.pathname,
+          ),
           turnstileToken,
         }),
       });
@@ -83,10 +92,11 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
         return;
       }
       setSent({ name: values.name.split(/\s+/)[0] ?? values.name, created: await response.json() });
-      setIdempotencyKey(null);
+      once.renew();
     } catch {
       setFailure("retry");
     } finally {
+      once.finished();
       setSending(false);
     }
   });

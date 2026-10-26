@@ -1,6 +1,4 @@
-"use client";
-
-import { useRef, type PointerEvent, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "cn";
 
 type CardFxProps = {
@@ -13,47 +11,18 @@ type CardFxProps = {
   className?: string;
 };
 
-const MAX_TILT_DEG = 4;
-
 /**
  * Spotlight and 3D tilt for cards (HANDOFF effects: spotlight card and tilt card, rebuilt on our tokens). Mouse
- * pointers only, so touch devices and the server render the plain card; the tilt stays off under reduced motion.
- * Writes a CSS variable and a transform straight to the element once per frame: no React re-render, compositor
- * work only.
+ * pointers only, so touch devices see the plain card; the tilt stays off under reduced motion.
+ *
+ * Issue 236: a Server Component that only marks the card (`data-card-fx`); one listener for the whole page
+ * (`CardFxDriver`) moves the glow and the tilt. Before, each card was a client component to hydrate (21 on the home
+ * page) for an effect phones never use.
  */
 function CardFx({ children, tilt = false, spotlight = true, className }: CardFxProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const frame = useRef(0);
-
-  function move(event: PointerEvent<HTMLDivElement>) {
-    if (event.pointerType !== "mouse") return;
-    const element = ref.current;
-    if (!element) return;
-    const box = element.getBoundingClientRect();
-    const x = (event.clientX - box.left) / box.width;
-    const y = (event.clientY - box.top) / box.height;
-    cancelAnimationFrame(frame.current);
-    frame.current = requestAnimationFrame(() => {
-      element.style.setProperty("--spot-x", `${(x * 100).toFixed(1)}%`);
-      element.style.setProperty("--spot-y", `${(y * 100).toFixed(1)}%`);
-      if (tilt && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        const rotateX = ((0.5 - y) * MAX_TILT_DEG * 2).toFixed(2);
-        const rotateY = ((x - 0.5) * MAX_TILT_DEG * 2).toFixed(2);
-        element.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      }
-    });
-  }
-
-  function leave() {
-    cancelAnimationFrame(frame.current);
-    if (ref.current) ref.current.style.transform = "";
-  }
-
   return (
     <div
-      ref={ref}
-      onPointerMove={move}
-      onPointerLeave={leave}
+      data-card-fx={tilt ? "tilt" : "spot"}
       className={cn(
         "group/fx relative h-full transition-transform duration-200 ease-out motion-reduce:transition-none",
         className,

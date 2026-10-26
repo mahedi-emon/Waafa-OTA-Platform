@@ -1,8 +1,8 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/icons/server/ArrowLeft";
 import { cn } from "cn";
 import { RowChips } from "@/components/admin/table/RowChips";
 import type { ChipView } from "@/components/admin/table/types";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { ScrollToCurrent } from "./ScrollToCurrent";
 
 export type InboxPaneItem = {

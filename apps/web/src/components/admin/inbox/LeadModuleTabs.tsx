@@ -1,6 +1,6 @@
 import type { LeadModule } from "@waafa/shared";
 import { cn } from "cn";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { queueSearch, withSearch } from "@/lib/admin/queues";
 
 /** The tabs in the order of ADMIN.md §3.1; each person sees the modules they work on. */

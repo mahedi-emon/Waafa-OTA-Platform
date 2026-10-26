@@ -12,6 +12,8 @@ import {
 import { z } from "zod";
 import { contactToLead, type ContactStepValues } from "./contactForm";
 import { distributeGuests } from "../search/hotelParams";
+import { ADULTS_PER_ROOM, CHILDREN_PER_ROOM } from "./hotelLeadFormFields";
+export { ADULTS_PER_ROOM, CHILDREN_PER_ROOM } from "./hotelLeadFormFields";
 
 /*
  * Hotel request step 2 (Hotels-2, FR-HTL): the stay prefilled from the URL (place, nationality, dates), budget band,
@@ -19,10 +21,6 @@ import { distributeGuests } from "../search/hotelParams";
  */
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-
-/** Per room, as the hotel search allows (HotelRoomSchema). */
-export const ADULTS_PER_ROOM = 6;
-export const CHILDREN_PER_ROOM = 4;
 
 export const stayStepSchema = z
   .object({

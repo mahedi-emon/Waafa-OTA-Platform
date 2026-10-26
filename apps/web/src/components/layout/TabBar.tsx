@@ -2,11 +2,8 @@
 
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { cn } from "cn";
-import markImage from "@/assets/brand/waafa-mark.png";
 import { Link } from "@/i18n/navigation";
-import { LOGO_QUALITY } from "@/lib/media/imageQuality";
 import { CurrentMarker } from "./CurrentMarker";
 import { isActivePath } from "./isActivePath";
 import { useLazyOverlay } from "./useLazyOverlay";
@@ -31,6 +28,8 @@ type TabBarProps = {
   items: TabItem[];
   /** Server-rendered More sheet body (grid + call and WhatsApp buttons). */
   moreSheet: ReactNode;
+  /** Server-rendered W for the raised Waafas World disc (TabBarMark). */
+  mark: ReactNode;
   labels: {
     nav: string;
     moreTitle: string;
@@ -50,7 +49,7 @@ const TAB_CLASS =
  * re-mount after hydration: only the indicator and the current-page markers read the pathname. The sheet's code loads
  * when the browser is idle or on the first tap (issue 91).
  */
-function TabBar({ items, moreSheet, labels }: TabBarProps) {
+function TabBar({ items, moreSheet, mark, labels }: TabBarProps) {
   const more = useLazyOverlay(loadMoreSheet);
   const moreOpen = more.open;
   const setMoreOpen = more.setOpen;
@@ -95,14 +94,7 @@ function TabBar({ items, moreSheet, labels }: TabBarProps) {
                   data-cart-target=""
                   className="-mt-7 grid size-14 place-items-center rounded-full bg-white shadow-lg ring-2 ring-electric-100 transition-transform duration-150 group-active/tab:scale-95 group-has-[[data-current]]/tab:ring-electric-600"
                 >
-                  <Image
-                    src={markImage}
-                    alt=""
-                    width={33}
-                    height={20}
-                    quality={LOGO_QUALITY}
-                    className="h-5 w-[33px]"
-                  />
+                  {mark}
                 </span>
                 <span className="max-w-[72px] text-[11px] leading-[1.1] font-semibold">
                   {item.label}

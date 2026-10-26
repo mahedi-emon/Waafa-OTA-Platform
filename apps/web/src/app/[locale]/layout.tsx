@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { NavDriver } from "@/components/nav/NavDriver";
 import { THEME_COLOR } from "@/components/brand/brandColors";
 import { routing } from "@/i18n/routing";
 import { getSiteSettings, getTrackingSettings } from "@/lib/data/settings";
@@ -130,6 +131,8 @@ export default async function RootLayout({ children }: LayoutProps<"/[locale]">)
          * public first load).
          */}
         <NextIntlClientProvider messages={null}>{children}</NextIntlClientProvider>
+        {/* Client-side navigation for the plain links Server Components render (issue 236). */}
+        <NavDriver />
       </body>
     </html>
   );

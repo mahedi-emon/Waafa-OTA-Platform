@@ -1,6 +1,8 @@
-import { ArrowRight, ShoppingCart } from "lucide-react";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { ShoppingCart } from "@/components/icons/server/ShoppingCart";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+// Rendered inside Client Components (cart, checkout), so the client-safe Link, not the async LocalLink (issue 236).
 import { Link } from "@/i18n/navigation";
 
 type EmptyCartProps = {

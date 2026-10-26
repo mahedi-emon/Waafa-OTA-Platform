@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Phone } from "lucide-react";
+import { Phone } from "@/components/icons/server/Phone";
 import {
   formatDate,
   formatTime,

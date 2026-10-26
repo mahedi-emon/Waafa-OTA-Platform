@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { ArrowRight, Images } from "lucide-react";
+import { Images } from "lucide-react";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { cn } from "cn";
 import {
   GalleryCategorySchema,
@@ -19,7 +20,7 @@ import { Canonical } from "@/components/seo/Canonical";
 import { CollectionPageJsonLd } from "@/components/seo/CollectionPageJsonLd";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { listGalleryAlbums } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";
 import { withSocial } from "@/lib/seo/withSocial";
@@ -211,7 +212,7 @@ export default function GalleryPage({ searchParams }: PageProps<"/[locale]/galle
   return (
     <Suspense
       fallback={
-        <div className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
           <Skeleton className="h-10 w-2/3 rounded-xl" />
           <Skeleton className="aspect-[21/9] rounded-[24px]" />
         </div>

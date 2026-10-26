@@ -7,7 +7,7 @@ import { FilterDisclosure } from "@/components/forms/FilterDisclosure";
 import { FilterForm } from "@/components/forms/FilterForm";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getContactSettings } from "@/lib/data/settings";
 import { listBrands } from "@/lib/data/shop";
 import type { ProductQuery, ProductSort } from "@/lib/data/types";

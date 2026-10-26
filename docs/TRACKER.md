@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), B #234 ✅, #235 malware scan 🟡 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), B ✅ (#234, #235), C ✅ (#236; follow-up #271), next D #237 measurement · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -31,14 +31,28 @@ Serena memory `audit_findings`.
 | A · Frontend | 11 Oct · epic #28 | 24 (A0, A1–A22, A1b) + #39, #52, #89 | 24 | 0 | 0 | ✅ 100% |
 | B · Backend | 12 Oct · epic #29 | 5 (#54 – #57, #82 providers) + bugs #60, #61, #66, #72, #78 | 5 | 0 | 0 | ✅ 100% |
 | C · Integration & Launch | 13 Oct · epic #30 (closed 25 Oct) | #64 C1, #69 Turnstile, #85 admin path, #96/#99 SEO, #102 security + analytics, #74 deploy (live 13 Oct) | 7 | 0 | 0 | ✅ 100% |
-| D · P1 completion | 13 Nov · epic #31 | PROMPT 10 work order A–M (issues from #231; docs/PRD_COVERAGE.md) | 0 | 1 | 0 | 0% |
+| D · P1 completion | 13 Nov · epic #31 | PROMPT 10 work order A–M (issues from #231; docs/PRD_COVERAGE.md) | 9 | 0 | 0 | 3 of 13 letters (Step 0, A, B, C) |
 | D0 · Admin redesign | 3 Nov · epic #201 (under #31) | R0–R10 = #190–#200 (supersedes #71) | 11 | 0 | 0 | ✅ 100% |
 | E · Live booking | — · epic #32 | waits for a provider contract | 0 | 0 | — | 0% |
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
 
-### #235 · D B · Malware scan for customer uploads (ClamAV) — 🟡 In review
+### #236 · D C · Speed: first-load JS 200 KB on every public route, Lighthouse mobile — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | PROMPT 10 letter C (NFR-PERF): Lighthouse mobile 90+ (median of 3) on the 11 key routes, first-load JS ≤ 200 KB gzip on every public route, LCP 2.5 s, INP 200 ms, CLS 0.1, LHCI assertions as errors |
+| Built | Fewer client islands (server-drawn icons, one module per icon, server links, one card-effect listener); native radio group, checkbox, switch and tabs behind the shadcn API; next-intl messages compiled at build time; preferences sheet, corporate quote and EMI dialogs on first use (`PreferencesSheet`, `LazyDialog`); second steps of package, visa, plan-my-trip, printing and trading requests through `next/dynamic`; checkout form after hydration behind its placeholder; contact step without react-hook-form; tab-bar W drawn on the server; static detail pages; Lighthouse 13 runner over HTTP/2 (`scripts/lighthouse-run.mjs`, budgets and targets in `apps/web/lighthouse.config.json`); CLS fix on streamed list pages (fallbacks fill the screen) |
+| Result | First-load JS (gzip): Home 220 → 200, Flights 242 → 192, Hotels 232 → 188, Package 224 → 191, Shop 217 → 196, Product 213 → 192, Checkout 226 → 182, Contact 214 → 196; all 31 public routes ≤ 200 in `e2e/budget.spec.ts`. Lighthouse mobile median of 3 (local, HTTP/2, 26 Oct): / 87, /flights 91, /hotels 86, /tour-packages 92, package 94, /visa 95, /visa/thailand 96, /shop 94, product 91, /blog 88, post 97; accessibility, best practices and SEO 100 everywhere; CLS 0 (Blog was 0.21). Remaining: #271 |
+| Bugs found | On the branch, never live: cart and checkout crashed after hydration (async LocalLink in client code, D297); double tap sent two idempotency keys (D296); empty plural branches broke compiled messages (D294); Blog CLS 0.21 from a short streaming fallback; detail pages without Suspense failed for new records in API mode (D299, API-mode e2e). All fixed with regression tests |
+| Files | `apps/web/src/components/ui/{radio-group,checkbox,switch,tabs}.tsx`, `components/leads/{ContactStep,LeadRequestCard,PreferencesSheet,PreferencesDrawer}.tsx`, `components/layout/{LazyDialog,LazyDialogContent,TabBar}.tsx`, `components/forms/useSubmitOnce.ts`, `components/icons/server/*`, `components/services/*Step.tsx`, checkout `CheckoutFormLoader.tsx`, `next.config.ts`, `messages/en.json`, `app/globals.css` (`checkbox-tick`), `scripts/{lighthouse-run,h2-proxy}.mjs`, `apps/web/scripts/{client-boundary,server-icons,js-budget,js-diff}.mjs`, `ci.yml` (Guards, Lighthouse) |
+| Tests | Unit 689 (native controls, useSubmitOnce, messages); e2e budget (31 routes), native-controls (keyboard), flights, hotels, packages, services, store, orders, visa, home, search, smoke, content, seo and the rest of the public suite green locally; QA plan docs/qa/C-speed.md (23 cases) |
+| Tools and skills | Serena (symbols, replace_content, replace_in_files, memories), Context7 (next-intl precompile, Next inlineCss), Playwright MCP (checkout console), ui-ux-pro-max checklist on the native controls (focus rings, 44 px targets) |
+| CI minutes | see PR |
+| Decision | D293–D299 |
+| Migration | none · deploy bundle unchanged |
+
+### #235 · D B · Malware scan for customer uploads (ClamAV) — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | FR-VISA-06 and NFR-SEC: a ClamAV container sized for the 8 GB VPS; the worker scans each customer file before staff can see it; a hit is quarantined and staff see a warning; deploy bundle change; EICAR covered in an integration test and the deploy smoke |
@@ -46,6 +60,7 @@ Serena memory `audit_findings`.
 | Files | `apps/api/src/files/{clamd,fileScan,customer-files.service}.ts`, `apps/api/src/worker.ts`, `apps/api/src/config/env.ts`, `apps/api/test/fileScan.test.ts`, `apps/web/src/components/admin/files/CustomerFiles.tsx`, `apps/web/src/lib/admin/customerFiles.ts`, `apps/web/src/app/secure-admin-control/files/[key]/route.ts`, `deploy/{compose.yml,deploy.sh,server/compose.yml,server/deploy.sh}`, `scripts/smoke-malware-scan.mjs`, `ci.yml` (deploy smoke step), docs (DEPLOY, SECURITY, ADMIN_GUIDE, PRD_COVERAGE) |
 | Tests | API fileScan.test (verdicts, chunked stream, unreachable scanner, upload → pending → clean or quarantined with audit, links refused until clean, waiting when the scanner is down) against a clamd stand-in speaking INSTREAM; files.test unchanged; VPS deploy smoke with the real ClamAV: a clean PDF turns clean, an EICAR PDF is quarantined |
 | Tools and skills | Serena; Docker Hub tags for clamav/clamav; ui-ux-pro-max checklist on the Files panel states |
+| CI minutes | PR #270: 107 billed minutes (two full runs; the second accepted the CodeQL scanner upload) |
 | Decision | D291–D292 |
 | Migration | none (scanStatus existed since #232) · **deploy bundle changed**: copy deploy/server first |
 
@@ -1799,6 +1814,13 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D290 | 26 Oct | From the independent review: each lock in the last day doubles the next (15, 30, 60 minutes… up to a day); a lock reached at the code step emails the person (`staff-code-locked`, seed patch); enrolment claims `totpEnabledAt` atomically; the two-step cookie path is `/` (locale prefixes); focus moves to each new step's heading; a reset for optional roles says it turns two-step off | Someone with the password could otherwise guess codes five at a time forever, unseen | #234 |
 | D291 | 26 Oct | Malware scan runs in the worker as a 10-second pass over unscanned files (no queue); with `CLAMAV_URL` set staff open only clean files, a hit moves to `quarantine/` and stays for the normal retention; without it (development, tests, an old bundle) files open as before | The worker owns background work; polling survives restarts and a scanner outage without lost jobs | #235 |
 | D292 | 26 Oct | ClamAV 1.5.4 official image with freshclam inside, 1.6 GB limit, signatures in a volume; the VPS minimum becomes 8 GB | Owner's 8 GB VPS (PROMPT 10 letter B); clamd needs about 1.2 GB | #235 |
+| D293 | 26 Oct | Radio group, checkbox, switch and tabs keep the shadcn API but render native inputs and buttons (`components/ui/{radio-group,checkbox,switch,tabs}.tsx`); the tick is a CSS mask (`checkbox-tick`), the switch thumb a pseudo-element; tab triggers carry `data-active` so the intended active styles finally apply | Radix roving focus, collection and presence cost about 8 KB gzip on every page with a form or the search card; native radios give arrow keys and one tab stop for free | #236 |
+| D294 | 26 Oct | next-intl messages compile at build time (`precompile: true`); messages may not use empty plural or select branches (a unit test checks) and `t.raw` is not used (pass a placeholder back instead) | Saves the ICU parser (about 9 KB gzip) on every page; the earlier attempt (D154) broke on exactly those two patterns | #236 |
+| D295 | 26 Oct | Overlays and second steps load on first use: preferences sheet (`PreferencesSheet`), corporate quote and EMI dialogs (`LazyDialog`), package, visa, plan-my-trip, printing and trading second steps (`next/dynamic`), checkout form after hydration behind the same placeholder; the contact step drops react-hook-form | Every public route at 200 KB or less (Home 200, Flights 192, Shop 196, Checkout 182); the first step is three fields | #236 |
+| D296 | 26 Oct | Submit handlers keep the busy flag and idempotency key in a ref (`useSubmitOnce`) | With validation loading on first use both taps of a double tap reached submit before a re-render and sent two keys (caught by the flights e2e; never live, main validates synchronously) | #236 |
+| D297 | 26 Oct | `pnpm guards` and the CI Guards job run `client-boundary.mjs`: no Client Component may import LocalLink, next-intl/server, server-only or next/headers, directly or through a shared file (Server Actions excepted) | An earlier commit on the branch put the async LocalLink into EmptyCart and CheckoutSummary, which the cart and checkout render on the client: both pages crashed after hydration | #236 |
+| D298 | 26 Oct | Lighthouse in CI fails on accessibility, best practices, SEO (95) and CLS (0.1); performance 90, LCP 2.5 s and TBT 200 ms are `targets` reported as warnings until every key route meets them (#271) | Eight of eleven key routes reach 90 after #236; Home 87, Hotels 86 and Blog 88 need structural work (streamed Suspense reveal, RSC payload), and a failing job would block every full-ci merge meanwhile | #236 |
+| D299 | 26 Oct | Record detail pages (package, product, visa country and apply, blog post, visa guide, album, flight route) keep their Suspense boundary; its fallback fills the screen | In API mode (production) the snapshot reads `draftMode()`, which is request data: without the boundary a record added after the build (or a moved slug) failed with "uncached or runtime data during prerendering" (caught by the API-mode e2e on PR #272, never live) | #236 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1900,6 +1922,8 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 26 Oct evening | #236 on chore/236-speed: every public route ≤ 200 KB first-load JS (native form controls and tabs, compiled messages, lazy dialogs and second steps); three branch bugs found and fixed (cart/checkout crash, double-tap keys, compiled messages) with a client-boundary guard; Lighthouse local run stopped for low memory | #236 | — | unit 689 · public e2e green · budget 31 routes |
+| 26 Oct | #235 merged (PR #270, 107 min; bundle change, no migration). Letter B done: checkpoint sent to the owner (copy bundle, backup, deploy, set up the authenticator) | #235 | #270 | VPS smoke with real ClamAV (EICAR quarantined) |
 | 26 Oct | #234 merged (PR #268, 100 min, migration: owner backs up, deploys, sets up the authenticator). #235 malware scan built: clamd client, worker pass, quarantine, Files panel states, ClamAV in compose and the deploy smoke | #234, #235 | #268 | API fileScan; e2e two-step |
 | 26 Oct | #229 (PR #265), #224 (PR #266) and #219 (PR #267) merged: letter A done. #234 two-step sign-in, sign-in history, new-device email and Redis rate limits built and verified locally | #219, #224, #229, #234 | #265, #266, #267 | API twoStep, rateLimit, totp; web 675; e2e admin-two-step 4/4 |
 | 26 Oct | #233 merged (PR #264, 48 min). #229 admin polish: five lists on the DataTable, themed date range, booking mode cards, plain integration words, phones typed once and countries by name, fixed lists, template words, airline logos, Add staff in the header | #233, #229 | #264, PR for #229 | see #229 |
@@ -1963,6 +1987,6 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. #235: PR with full-ci (deploy/ changed), merge; owner: copy the bundle, then deploy.
-2. Letter B checkpoint to the owner (two-step setup, bundle copy).
-3. Letter C: #236 Lighthouse 90+ and 200 KB on every public route, CI assertions as errors.
+1. Letter D #237 measurement (GA4, GTM, Pixel events after consent, UTM on orders, Reports source view).
+2. Letter E (#238 error tracking, #239 off-site backups).
+3. #271 when a slot opens: Home, Hotels and Blog to Lighthouse 90 and LCP 2.5 s, then `targets` → `budgets` (D298).

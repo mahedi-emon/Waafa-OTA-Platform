@@ -1,5 +1,5 @@
-import { ArrowRight } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 type LinkPillProps = { href: string; children: string };
 

@@ -14,7 +14,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "e2e": "turbo run e2e --filter=@waafa/web",
-    "guards": "node scripts/guards.mjs",
+    "guards": "node scripts/guards.mjs && node apps/web/scripts/server-icons.mjs --check && node apps/web/scripts/client-boundary.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

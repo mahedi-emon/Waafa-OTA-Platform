@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { formatDate } from "@waafa/shared";
 import { ArticleContents } from "@/components/content/ArticleContents";
 import { BlogCard } from "@/components/content/BlogCard";
@@ -12,8 +12,8 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/button";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
 import {
   getBlogPost,
   listBlogCategories,
@@ -237,7 +237,7 @@ export default function BlogPostPage({ params }: PageProps<"/[locale]/blog/[slug
   return (
     <Suspense
       fallback={
-        <div className="site-container flex flex-col gap-6 pt-6 pb-28">
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
           <Skeleton className="h-12 w-3/4 rounded-xl" />
           <Skeleton className="aspect-[21/9] rounded-[20px]" />
         </div>

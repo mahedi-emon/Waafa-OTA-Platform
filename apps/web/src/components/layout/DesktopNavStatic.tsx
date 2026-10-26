@@ -1,7 +1,7 @@
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "@/components/icons/server/ChevronDownIcon";
 import { cn } from "cn";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigationMenuTriggerStyle";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { CurrentMarker } from "./CurrentMarker";
 import { CURRENT_BAR, CURRENT_TEXT, type DesktopNavItem } from "./desktopNavStyles";
 

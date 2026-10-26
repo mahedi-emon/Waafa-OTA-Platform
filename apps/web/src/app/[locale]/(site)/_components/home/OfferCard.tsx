@@ -1,6 +1,6 @@
 import type { Banner } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { CardFx } from "@/components/fx/CardFx";
 
 type OfferCardProps = { offer: Banner; viewLabel: string };

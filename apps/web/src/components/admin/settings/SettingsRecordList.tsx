@@ -1,9 +1,11 @@
-import { ChevronRight, EyeOff, Plus } from "lucide-react";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
+import { EyeOff } from "@/components/icons/server/EyeOff";
+import { Plus } from "@/components/icons/server/Plus";
 import { getTranslations } from "next-intl/server";
 import { canCopy, type ContentKey } from "@waafa/shared";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet } from "@/lib/admin/adminApi";
 import { resolveBlueprint } from "@/lib/admin/blueprints/resolve";
 import type { ContentCollection } from "@/lib/admin/types";

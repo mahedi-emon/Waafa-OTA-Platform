@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { CircleAlert, Store, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -20,26 +20,25 @@ import { useTurnstile } from "@/components/forms/useTurnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
-import {
-  COD,
-  DIVISIONS,
-  buildOrderInput,
-  checkoutSchema,
-  type CheckoutValues,
-} from "@/lib/shop/checkoutForm";
+import { COD, DIVISIONS } from "@/lib/shop/checkoutFormFields";
+import type { CheckoutValues } from "@/lib/shop/checkoutForm";
 import { useHydrated } from "@/lib/useHydrated";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
+import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = lazyResolver(async () => {
+  const [{ zodResolver }, { checkoutSchema }] = await Promise.all([
+    import("@hookform/resolvers/zod"),
+    import("@/lib/shop/checkoutForm"),
+  ]);
+  return zodResolver(checkoutSchema);
+});
 
 type CheckoutFormProps = {
   countries: Array<{ code: string; name: string; dial: string }>;
@@ -132,7 +131,7 @@ function CheckoutForm({
   const { lines, clear } = useCart();
   const prefs = useCartPrefs();
   const form = useForm<CheckoutValues>({
-    resolver: zodResolver(checkoutSchema),
+    resolver: formResolver,
     defaultValues: DEFAULTS,
     mode: "onTouched",
   });
@@ -141,7 +140,7 @@ function CheckoutForm({
   const [sending, setSending] = useState(false);
   const [failure, setFailure] = useState<Failure>(null);
   const [placed, setPlaced] = useState<Placed | null>(null);
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const once = useSubmitOnce();
   const turnstile = useTurnstile();
 
   const [mode, division, district, payment, vat, phoneCountry, transactionId] = useWatch({
@@ -198,8 +197,8 @@ function CheckoutForm({
     }
     setSending(true);
     setFailure(null);
-    const key = idempotencyKey ?? crypto.randomUUID();
-    setIdempotencyKey(key);
+    const key = once.start();
+    if (!key) return;
     try {
       const turnstileToken = await turnstile.getToken();
       const response = await fetch("/api/orders", {
@@ -207,7 +206,12 @@ function CheckoutForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           idempotencyKey: key,
-          order: buildOrderInput(values, lines, prefs.couponCode, proof),
+          order: (await import("@/lib/shop/checkoutForm")).buildOrderInput(
+            values,
+            lines,
+            prefs.couponCode,
+            proof,
+          ),
           turnstileToken,
         }),
       });
@@ -215,7 +219,7 @@ function CheckoutForm({
       if (!response.ok) {
         // A refusal is final for this attempt: the next press is a new order request (#61). Server errors and
         // timeouts keep the key, so a retry can never place the order twice.
-        if (response.status < 500 && response.status !== 429) setIdempotencyKey(null);
+        if (response.status < 500 && response.status !== 429) once.renew();
         const body = (await response.json().catch(() => ({}))) as { error?: string };
         setFailure(
           response.status === 429
@@ -242,12 +246,13 @@ function CheckoutForm({
         transactionId: account ? values.transactionId : undefined,
         phoneDisplay,
       });
-      setIdempotencyKey(null);
+      once.renew();
       clear();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setFailure("retry");
     } finally {
+      once.finished();
       setSending(false);
     }
   });
@@ -499,25 +504,22 @@ function CheckoutForm({
                     control={form.control}
                     name="division"
                     render={({ field }) => (
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger
-                          id="co-division"
-                          className="h-[50px] w-full"
-                          aria-invalid={Boolean(errors.division)}
-                          aria-describedby={describedBy}
-                        >
-                          <SelectValue placeholder={t("address.divisionPlaceholder")}>
-                            {field.value || undefined}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {DIVISIONS.map((name) => (
-                            <SelectItem key={name} value={name}>
-                              {name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <NativeSelect
+                        value={field.value ?? ""}
+                        onChange={(event) => field.onChange(event.target.value)}
+                        id="co-division"
+                        aria-describedby={describedBy}
+                        aria-invalid={Boolean(errors.division)}
+                      >
+                        <NativeSelectOption value="" disabled>
+                          {t("address.divisionPlaceholder")}
+                        </NativeSelectOption>
+                        {DIVISIONS.map((name) => (
+                          <NativeSelectOption key={name} value={name}>
+                            {name}
+                          </NativeSelectOption>
+                        ))}
+                      </NativeSelect>
                     )}
                   />
                 )}

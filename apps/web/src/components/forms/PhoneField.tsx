@@ -2,13 +2,7 @@
 
 import type { Ref } from "react";
 import { cn } from "cn";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ChevronDown } from "lucide-react";
 
 type PhoneFieldProps = {
   id: string;
@@ -44,21 +38,23 @@ function PhoneField({
           : "border-mist-300 focus-within:border-electric-600 focus-within:ring-ring/20",
       )}
     >
-      <Select value={country} onValueChange={onCountryChange}>
-        <SelectTrigger
+      {/* The phone's own picker lists the countries; the closed field shows only the dialling code (issue 236). */}
+      <span className="relative flex shrink-0 items-center gap-1 border-r border-mist-200 bg-mist-25 px-3 font-semibold text-mist-900 tabular-nums">
+        <span aria-hidden="true">{current?.dial}</span>
+        <ChevronDown aria-hidden="true" className="size-4 text-mist-500" />
+        <select
           aria-label={countryLabel}
-          className="h-full! w-auto shrink-0 gap-1 rounded-none border-0 border-r border-mist-200 bg-mist-25 px-3 font-semibold tabular-nums shadow-none focus-visible:ring-0"
+          value={country}
+          onChange={(event) => onCountryChange(event.target.value)}
+          className="absolute inset-0 size-full cursor-pointer appearance-none opacity-0"
         >
-          <SelectValue>{current?.dial}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
           {countries.map((c) => (
-            <SelectItem key={c.code} value={c.code}>
-              {c.name} <span className="text-mist-600 tabular-nums">{c.dial}</span>
-            </SelectItem>
+            <option key={c.code} value={c.code}>
+              {c.name} ({c.dial})
+            </option>
           ))}
-        </SelectContent>
-      </Select>
+        </select>
+      </span>
       <input
         id={id}
         ref={inputRef}

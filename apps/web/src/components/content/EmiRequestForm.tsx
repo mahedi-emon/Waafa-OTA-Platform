@@ -1,6 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm } from "react-hook-form";
@@ -11,13 +11,19 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  EMI_BANK_UNSURE,
-  buildEmiLead,
-  emiRequestSchema,
-  type EmiRequestValues,
-} from "@/lib/leads/emiLeadForm";
+import { EMI_BANK_UNSURE } from "@/lib/leads/emiLeadFormFields";
+import type { EmiRequestValues, emiRequestSchema } from "@/lib/leads/emiLeadForm";
 import type { EmiRequestLabels } from "./EmiRequestDialog";
+
+// zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
+const formResolver = (...args: Parameters<typeof emiRequestSchema>) =>
+  lazyResolver(async () => {
+    const [{ zodResolver }, { emiRequestSchema }] = await Promise.all([
+      import("@hookform/resolvers/zod"),
+      import("@/lib/leads/emiLeadForm"),
+    ]);
+    return zodResolver(emiRequestSchema(...args));
+  });
 
 type EmiRequestFormProps = {
   labels: EmiRequestLabels;
@@ -60,7 +66,7 @@ function EmiStep({
 }: EmiStepProps) {
   const tLeads = useTranslations("Leads");
   const form = useForm<EmiRequestValues>({
-    resolver: zodResolver(emiRequestSchema(minimum)),
+    resolver: formResolver(minimum),
     defaultValues,
     mode: "onTouched",
   });
@@ -220,8 +226,13 @@ function EmiRequestForm({
       emailRequired={props.emailRequired}
       phoneDisplay={props.phoneDisplay}
       whatsappE164={props.whatsappE164}
-      buildLead={(contact, form, page) =>
-        buildEmiLead({ contact, values: form, bankName: bankName(form.bank), page })
+      buildLead={async (contact, form, page) =>
+        (await import("@/lib/leads/emiLeadForm")).buildEmiLead({
+          contact,
+          values: form,
+          bankName: bankName(form.bank),
+          page,
+        })
       }
       renderSecondStep={({ sending, goBack, submit }) => (
         <EmiStep

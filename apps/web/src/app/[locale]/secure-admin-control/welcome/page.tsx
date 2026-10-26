@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { LogoLockup } from "@/components/brand/LogoLockup";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { WelcomeForm } from "./_components/WelcomeForm";
 
 export async function generateMetadata(): Promise<Metadata> {

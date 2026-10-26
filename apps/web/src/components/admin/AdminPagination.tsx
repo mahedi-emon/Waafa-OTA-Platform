@@ -1,6 +1,7 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft } from "@/components/icons/server/ChevronLeft";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 type AdminPaginationProps = {
   page: number;

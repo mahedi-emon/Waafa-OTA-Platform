@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Check } from "lucide-react";
+import { Check } from "@/components/icons/server/Check";
 import { formatDate } from "@waafa/shared";
 import { ArticleContents } from "@/components/content/ArticleContents";
 import { PageHero } from "@/components/content/PageHero";
@@ -9,7 +9,7 @@ import { SampleBadge } from "@/components/content/SampleBadge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Canonical } from "@/components/seo/Canonical";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getPage } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";
 

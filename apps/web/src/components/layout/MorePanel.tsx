@@ -1,7 +1,7 @@
-import { Phone } from "lucide-react";
+import { Phone } from "@/components/icons/server/Phone";
 import type { ContactSettings, MenuItem } from "@waafa/shared";
 import { MenuIcon } from "@/components/icons/MenuIcon";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { OfficeStatusChip } from "./OfficeStatusChip";
 
 type MorePanelProps = {

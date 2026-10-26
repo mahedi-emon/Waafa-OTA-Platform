@@ -1,7 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, CalendarRange, Clock3, Lightbulb, Plane, Stamp } from "lucide-react";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { CalendarRange } from "@/components/icons/server/CalendarRange";
+import { Clock3 } from "@/components/icons/server/Clock3";
+import { Lightbulb } from "@/components/icons/server/Lightbulb";
+import { Plane } from "@/components/icons/server/Plane";
+import { Stamp } from "@/components/icons/server/Stamp";
 import { getTranslations } from "next-intl/server";
 import { formatTaka } from "@waafa/shared";
 import { BannerHero } from "@/components/content/BannerHero";
@@ -18,8 +23,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
 import {
   getAirport,
   getFlightRoute,
@@ -316,7 +321,7 @@ export default function FlightRoutePage({ params }: PageProps<"/[locale]/flights
   return (
     <Suspense
       fallback={
-        <div className="site-container flex flex-col gap-6 pt-6 pb-28" aria-hidden="true">
+        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28" aria-hidden="true">
           <Skeleton className="h-6 w-56 rounded-full" />
           <Skeleton className="h-[320px] rounded-[28px]" />
         </div>

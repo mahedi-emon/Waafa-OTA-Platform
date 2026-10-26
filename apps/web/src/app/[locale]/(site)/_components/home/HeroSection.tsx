@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
-import { MapPin, Phone } from "lucide-react";
+import { MapPin } from "@/components/icons/server/MapPin";
+import { Phone } from "@/components/icons/server/Phone";
 import type { Destination, HomeContent, MediaSlot, OpeningHours } from "@waafa/shared";
 import { cn } from "cn";
 import { GoldTriangle } from "@/components/brand/GoldTriangle";

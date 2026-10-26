@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, Printer } from "lucide-react";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Printer } from "@/components/icons/server/Printer";
 import { getTranslations } from "next-intl/server";
 import { ListingHeader } from "@/components/shop/ListingHeader";
 import { ListingSkeleton } from "@/components/shop/ListingSkeleton";
 import { ProductListing } from "@/components/shop/ProductListing";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getShopContent, getSiteSettings } from "@/lib/data/settings";
 import { getAttributeSet, getCategory, listCategories } from "@/lib/data/shop";
 import { followMovedRecord } from "@/lib/data/movedRecord";

@@ -1,21 +1,13 @@
 import type { LeadCreateInput } from "@waafa/shared";
 import { z } from "zod";
 import { isPhoneCountry, toE164 } from "./phone";
+import { CONTACT_TOPICS } from "./contactLeadFormFields";
+export { CONTACT_TOPICS } from "./contactLeadFormFields";
 
 /*
  * Contact page message (Contact, Contact-sent; FR-PAGE): name, mobile, topic, message and an optional email → CNT
  * reference. Messages are next-intl keys under "Contact.form.errors".
  */
-
-export const CONTACT_TOPICS = [
-  "flights",
-  "packages",
-  "visa",
-  "shop",
-  "printing",
-  "trading",
-  "other",
-] as const;
 
 export const contactFormSchema = z
   .object({

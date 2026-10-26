@@ -1,8 +1,8 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { getTranslations } from "next-intl/server";
 import { cn } from "cn";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { absoluteUrl } from "@/lib/siteUrl";
 
 type Crumb = { label: string; href?: string };

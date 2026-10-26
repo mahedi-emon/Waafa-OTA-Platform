@@ -55,6 +55,8 @@ for (const width of [320, 1440]) {
 }
 
 test("information pages pass axe at 390px", async ({ page }) => {
+  // Fourteen pages with an axe scan each: more than the default 30 s on a busy machine.
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 390, height: 844 });
   for (const [path] of ROUTES) {
     await page.goto(path);

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Building2 } from "lucide-react";
+import { Building2 } from "@/components/icons/server/Building2";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { whatsappLink } from "@waafa/shared";
@@ -355,7 +355,7 @@ export default function ProductPage({ params }: PageProps<"/[locale]/shop/p/[slu
         <main
           id="main"
           aria-busy="true"
-          className="site-container grid grid-cols-1 gap-8 pt-4 pb-28 md:pt-6 lg:grid-cols-2"
+          className="site-container grid min-h-dvh grid-cols-1 gap-8 pt-4 pb-28 md:pt-6 lg:grid-cols-2"
         >
           <Skeleton className="aspect-square rounded-[20px]" />
           <div className="flex flex-col gap-4">

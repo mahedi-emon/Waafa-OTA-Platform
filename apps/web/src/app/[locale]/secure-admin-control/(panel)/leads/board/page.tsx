@@ -11,7 +11,7 @@ import { LeadModuleTabs } from "@/components/admin/inbox/LeadModuleTabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessagePaths } from "@/i18n/pickMessages";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet } from "@/lib/admin/adminApi";
 import { ageParts, whatsappHref } from "@/lib/admin/format";
 import { queueSearch, withSearch } from "@/lib/admin/queues";

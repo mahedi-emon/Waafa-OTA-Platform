@@ -5,6 +5,7 @@ import { CircleAlert, Home, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
 import { whatsappLink, type LeadCreateInput, type LeadCreated } from "@waafa/shared";
+import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
 import { useTurnstile } from "@/components/forms/useTurnstile";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
@@ -71,8 +72,8 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
   const [sending, setSending] = useState(false);
   const [failure, setFailure] = useState<"retry" | "rate" | "uploading" | null>(null);
   const [created, setCreated] = useState<LeadCreated | null>(null);
-  // One key per request: a double tap or a retry reuses it; a new key is made after a success.
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  // One request at a time, one idempotency key per request: a double tap or a retry reuses it (issue 236).
+  const once = useSubmitOnce();
   const turnstile = useTurnstile();
 
   const goTo = (next: Phase) => {
@@ -85,16 +86,15 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
   };
 
   const submit = async (values: T) => {
-    if (sending) return;
     // A file still uploading would be left out of the request (issue 232).
     if (uploadsInFlight()) {
       setFailure("uploading");
       return;
     }
+    const key = once.start();
+    if (!key) return;
     setSending(true);
     setFailure(null);
-    const key = idempotencyKey ?? crypto.randomUUID();
-    setIdempotencyKey(key);
     try {
       const lead = await props.buildLead(contact, values, window.location.pathname);
       const turnstileToken = await turnstile.getToken();
@@ -109,11 +109,12 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
         return;
       }
       setCreated((await response.json()) as LeadCreated);
-      setIdempotencyKey(null);
+      once.renew();
       goTo("sent");
     } catch {
       setFailure("retry");
     } finally {
+      once.finished();
       setSending(false);
     }
   };
