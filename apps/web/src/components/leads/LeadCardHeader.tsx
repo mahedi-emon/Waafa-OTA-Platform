@@ -1,4 +1,4 @@
-import { CircleCheck } from "lucide-react";
+import { CircleCheck } from "@/components/icons/serverIcons";
 
 type LeadCardHeaderProps = {
   kicker: string;

@@ -1,6 +1,6 @@
 import { Gauge, LayoutGrid, Printer, Truck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getShopContent, getSiteSettings } from "@/lib/data/settings";
 import { listBrands, listCategories, listProducts } from "@/lib/data/shop";
 import { CartButton } from "./CartButton";

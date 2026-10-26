@@ -20,7 +20,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { pickMessages } from "@/i18n/pickMessages";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getContactSettings, getLeadFormSettings } from "@/lib/data/settings";
 import { getPackage, listPackages, listRelatedPackages } from "@/lib/data/travel";
 import { followMovedRecord } from "@/lib/data/movedRecord";

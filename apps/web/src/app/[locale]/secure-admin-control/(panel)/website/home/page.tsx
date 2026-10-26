@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from "@/components/icons/serverIcons";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { canEditContentKey, type ContentOption } from "@waafa/shared";

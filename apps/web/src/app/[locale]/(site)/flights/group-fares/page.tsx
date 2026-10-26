@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Info, PlaneTakeoff } from "lucide-react";
+import { PlaneTakeoff } from "lucide-react";
+import { Info } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import type { GroupFare } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";
@@ -9,7 +10,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { GroupFareCard } from "@/components/travel/GroupFareCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "cn";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { listGroupFares } from "@/lib/data/travel";
 import { formatMonth } from "@/lib/search/isoDate";
 import { withSocial } from "@/lib/seo/withSocial";

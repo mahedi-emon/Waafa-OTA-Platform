@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BookOpen, FileDown, Info } from "lucide-react";
+import { BookOpen, FileDown, Info } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { visaPrice } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";
@@ -15,7 +15,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { getVisaCountry, listVisaCountries } from "@/lib/data/visa";
 import { followMovedRecord } from "@/lib/data/movedRecord";

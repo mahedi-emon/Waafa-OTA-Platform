@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VisaCountryCard } from "@/components/visa/VisaCountryCard";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { cn } from "cn";
 import { getMediaSlot, listFaqs } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";

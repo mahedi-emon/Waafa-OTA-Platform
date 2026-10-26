@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Printer, SearchX } from "lucide-react";
+import { SearchX } from "lucide-react";
+import { Printer } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { whatsappLink } from "@waafa/shared";
 import { EmptyState } from "@/components/feedback/EmptyState";

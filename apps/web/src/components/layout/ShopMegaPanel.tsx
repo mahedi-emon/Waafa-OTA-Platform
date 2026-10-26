@@ -1,8 +1,8 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons/serverIcons";
 import { cn } from "cn";
 import type { Category, MenuItem } from "@waafa/shared";
 import { MenuIcon } from "@/components/icons/MenuIcon";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 type ShopMegaPanelProps = {
   storeName: string;

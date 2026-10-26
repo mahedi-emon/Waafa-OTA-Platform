@@ -1,8 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import { LayoutDashboard, SearchX, Trash2 } from "lucide-react";
+import { SearchX } from "lucide-react";
+import { LayoutDashboard, Trash2 } from "@/components/icons/serverIcons";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 /**
  * A record or page that isn't there, inside the admin frame (ADMIN.md §5.9): what may have happened and where to look,

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons/serverIcons";
 import { cn } from "cn";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 type SectionHeadingProps = {
   id: string;

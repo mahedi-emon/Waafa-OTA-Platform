@@ -1,9 +1,10 @@
-import { Film, ImageIcon, Pencil } from "lucide-react";
+import { ImageIcon } from "lucide-react";
+import { Film, Pencil } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import type { MediaSlot } from "@waafa/shared";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { MediaThumb } from "@/components/admin/media/MediaThumb";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import type { ContentCollection } from "@/lib/admin/types";
 
 type SiteImagesProps = {

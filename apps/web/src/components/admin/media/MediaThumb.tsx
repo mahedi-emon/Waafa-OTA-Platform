@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Film } from "lucide-react";
+import { Film } from "@/components/icons/serverIcons";
 import { objectPositionOf, type FocalPoint, type MediaKind } from "@waafa/shared/helpers/media";
 import { cn } from "cn";
 

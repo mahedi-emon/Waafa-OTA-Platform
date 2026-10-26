@@ -1,8 +1,8 @@
-import { Clock3, Stamp } from "lucide-react";
+import { Clock3, Stamp } from "@/components/icons/serverIcons";
 import type { Destination } from "@waafa/shared";
 import { CountryFlag } from "@/components/media/CountryFlag";
 import { SmartImage } from "@/components/media/SmartImage";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { CardFx } from "@/components/fx/CardFx";
 
 type DestinationCardProps = {

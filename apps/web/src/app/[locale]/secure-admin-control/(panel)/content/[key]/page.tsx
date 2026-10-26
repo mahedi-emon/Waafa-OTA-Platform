@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus } from "@/components/icons/serverIcons";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import {
@@ -21,7 +21,7 @@ import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { BulkAction, ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { pickMessagePaths } from "@/i18n/pickMessages";
 import { adminGet, requireStaff } from "@/lib/admin/adminApi";
 import { EDITOR_MESSAGES } from "@/lib/admin/blueprints/editorMessages";

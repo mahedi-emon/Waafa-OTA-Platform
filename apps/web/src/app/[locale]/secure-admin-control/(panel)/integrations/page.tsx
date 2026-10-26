@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { Info, KeyRound } from "lucide-react";
+import { Info, KeyRound } from "@/components/icons/serverIcons";
 import type {
   IntegrationSettingView,
   ProviderConnectionView,

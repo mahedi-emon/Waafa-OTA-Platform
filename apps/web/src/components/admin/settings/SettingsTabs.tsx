@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 type SettingsTabsProps = {
   label: string;

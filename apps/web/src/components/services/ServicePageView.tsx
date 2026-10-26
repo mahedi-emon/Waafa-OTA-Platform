@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check } from "@/components/icons/serverIcons";
 import { whatsappLink, type ServicePage } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";

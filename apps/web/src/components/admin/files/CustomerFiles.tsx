@@ -1,11 +1,10 @@
+import { FileImage, FileText } from "lucide-react";
 import {
   CircleAlert,
   ExternalLink,
-  FileImage,
-  FileText,
   ShieldAlert,
   ShieldEllipsis,
-} from "lucide-react";
+} from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import type { CustomerFileOwner } from "@waafa/shared";
 import { AdminPanel } from "@/components/admin/AdminPanel";

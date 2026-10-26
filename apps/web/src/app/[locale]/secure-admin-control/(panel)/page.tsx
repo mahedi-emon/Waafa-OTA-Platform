@@ -12,7 +12,7 @@ import { LineChart } from "@/components/admin/dashboard/LineChart";
 import { TodayCard } from "@/components/admin/dashboard/TodayCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet, requireStaff } from "@/lib/admin/adminApi";
 import { formatDhakaTime, formatPlainDate } from "@/lib/admin/format";
 import { loadSetup } from "@/lib/admin/loadSetup";

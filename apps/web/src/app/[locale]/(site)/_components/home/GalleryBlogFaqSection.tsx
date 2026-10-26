@@ -1,4 +1,4 @@
-import { ArrowRight, MessageSquareHeart } from "lucide-react";
+import { ArrowRight, MessageSquareHeart } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import type { HomeContent, HomeSection } from "@waafa/shared";
 import { BlogCard } from "@/components/content/BlogCard";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/accordion";
 import { listBlogCategories, listBlogPosts, listFaqs, listGalleryAlbums } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { HomeSectionShell } from "./HomeSectionShell";
 import { SnapRow } from "./SnapRow";
 

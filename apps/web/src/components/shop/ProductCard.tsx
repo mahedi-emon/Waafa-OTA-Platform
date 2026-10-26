@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { formatTaka, whatsappLink, type Product } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { SmartImage } from "@/components/media/SmartImage";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getContactSettings } from "@/lib/data/settings";
 import { MAX_LINE_QTY } from "@/lib/shop/cart";
 import { canBuy, defaultVariant, priceInfo, priceRange, stockBadge } from "@/lib/shop/variants";

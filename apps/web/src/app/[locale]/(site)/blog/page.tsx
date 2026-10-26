@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { ArrowRight, Newspaper, Search } from "lucide-react";
+import { Newspaper } from "lucide-react";
+import { ArrowRight, Search } from "@/components/icons/serverIcons";
 import { cn } from "cn";
 import { formatDate } from "@waafa/shared";
 import { BlogCard } from "@/components/content/BlogCard";
@@ -14,7 +15,7 @@ import { NewsletterForm } from "@/components/layout/NewsletterForm";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { listBlogCategories, listBlogPosts } from "@/lib/data/content";
 import { getFooterSettings } from "@/lib/data/settings";
 import { withSocial } from "@/lib/seo/withSocial";

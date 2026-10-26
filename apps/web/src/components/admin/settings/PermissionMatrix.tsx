@@ -1,4 +1,4 @@
-import { Check, Minus } from "lucide-react";
+import { Check, Minus } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import type { Role } from "@waafa/shared";
 import { AdminPanel } from "@/components/admin/AdminPanel";

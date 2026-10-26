@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons/serverIcons";
 import { formatDate } from "@waafa/shared";
 import { ArticleContents } from "@/components/content/ArticleContents";
 import { BlogCard } from "@/components/content/BlogCard";
@@ -13,7 +13,7 @@ import { SmartImage } from "@/components/media/SmartImage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import {
   getBlogPost,
   listBlogCategories,

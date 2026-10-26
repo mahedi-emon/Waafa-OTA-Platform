@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock } from "@/components/icons/serverIcons";
 import { formatTaka } from "@waafa/shared";
 import { Button } from "@/components/ui/button";
 import { pickMessages } from "@/i18n/pickMessages";

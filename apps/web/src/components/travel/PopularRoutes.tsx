@@ -1,10 +1,10 @@
-import { ArrowRight, Clock3 } from "lucide-react";
+import { ArrowRight, Clock3 } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { formatTaka } from "@waafa/shared";
 import { CardFx } from "@/components/fx/CardFx";
 import { SmartImage } from "@/components/media/SmartImage";
 import { ItemListJsonLd } from "@/components/seo/ItemListJsonLd";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { listFlightRoutes } from "@/lib/data/travel";
 
 /**

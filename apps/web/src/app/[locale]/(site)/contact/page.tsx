@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowRight, Mail, MapPin, Phone } from "@/components/icons/serverIcons";
 import { contactPhones, whatsappLink } from "@waafa/shared";
 import { PageHero } from "@/components/content/PageHero";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
@@ -10,7 +10,7 @@ import { OfficeStatusChip } from "@/components/layout/OfficeStatusChip";
 import { Canonical } from "@/components/seo/Canonical";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { pickMessages } from "@/i18n/pickMessages";
 import { getContactSettings, getLeadFormSettings, getSiteSettings } from "@/lib/data/settings";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";

@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
-import { ArrowRight, House } from "lucide-react";
+import { ArrowRight, House } from "@/components/icons/serverIcons";
 import { SystemState } from "@/components/feedback/SystemState";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 const LINKS = [
   { key: "packages", href: "/tour-packages" },

@@ -1,4 +1,4 @@
-import { Check, Phone } from "lucide-react";
+import { Check, Phone } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { whatsappLink } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";

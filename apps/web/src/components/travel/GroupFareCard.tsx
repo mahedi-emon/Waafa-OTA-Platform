@@ -1,8 +1,8 @@
-import { Plane } from "lucide-react";
+import { Plane } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { formatDate, formatDayMonth, formatTaka, type GroupFare } from "@waafa/shared";
 import { CountryFlag } from "@/components/media/CountryFlag";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getAirport, listAirlines } from "@/lib/data/travel";
 import { AirlineLogo } from "./AirlineLogo";
 

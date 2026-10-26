@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { MaintenanceScreen } from "@/components/feedback/MaintenanceScreen";
+import { CardFxDriver } from "@/components/fx/CardFxDriver";
 import { OfflineNotice } from "@/components/feedback/OfflineNotice";
 import { Analytics } from "@/components/analytics/Analytics";
 import { SupportContactProvider } from "@/components/feedback/SupportContact";
@@ -63,6 +64,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
         </NextIntlClientProvider>
       </SupportContactProvider>
       <SiteFooter />
+      <CardFxDriver />
       {tabs.length === 5 ? (
         <TabBar
           items={tabs}

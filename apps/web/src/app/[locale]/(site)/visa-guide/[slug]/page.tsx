@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, Lightbulb } from "lucide-react";
+import { ArrowRight, Lightbulb } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { formatDate, visaPrice } from "@waafa/shared";
 import { RichText } from "@/components/content/RichText";
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getVisaCountry, getVisaGuide, listVisaGuides } from "@/lib/data/visa";
 import { followMovedRecord } from "@/lib/data/movedRecord";
 import { absoluteUrl } from "@/lib/siteUrl";

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Compass, Search } from "lucide-react";
+import { Compass } from "lucide-react";
+import { Search } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { PackageCategorySchema, type PackageCategory } from "@waafa/shared";
 import { cn } from "cn";
@@ -12,7 +13,7 @@ import { FilterForm } from "@/components/forms/FilterForm";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { PackageCard } from "@/components/travel/PackageCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getMediaSlot } from "@/lib/data/content";
 import { listPackages } from "@/lib/data/travel";
 import type { PackageSort } from "@/lib/data/types";

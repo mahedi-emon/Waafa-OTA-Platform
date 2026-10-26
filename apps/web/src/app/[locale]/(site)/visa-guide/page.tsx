@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
+import { ArrowRight } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { formatShortMonth } from "@/lib/search/isoDate";
 import { SampleBadge } from "@/components/content/SampleBadge";
@@ -8,7 +9,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Canonical } from "@/components/seo/Canonical";
 import { CollectionPageJsonLd } from "@/components/seo/CollectionPageJsonLd";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { listVisaGuides } from "@/lib/data/visa";
 import { withSocial } from "@/lib/seo/withSocial";
 

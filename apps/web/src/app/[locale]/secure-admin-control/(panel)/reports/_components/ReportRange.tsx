@@ -1,6 +1,6 @@
 import { cn } from "cn";
 import { AdminDateRange, type AdminDateRangeStrings } from "@/components/admin/AdminDateRange";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { presetOf, rangePresets, type DayRange, type RangePreset } from "@/lib/admin/dateRanges";
 
 type ReportRangeProps = {

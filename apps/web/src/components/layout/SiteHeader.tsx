@@ -1,9 +1,9 @@
-import { User } from "lucide-react";
+import { User } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { LogoLockup } from "@/components/brand/LogoLockup";
 import { getContactSettings, getMenu, getSiteSettings } from "@/lib/data/settings";
 import { listCategories } from "@/lib/data/shop";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { DesktopNavStatic } from "./DesktopNavStatic";
 import { DesktopNavSwitch } from "./DesktopNavSwitch";
 import { HelpMenu } from "./HelpMenu";

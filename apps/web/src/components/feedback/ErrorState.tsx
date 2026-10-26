@@ -1,4 +1,4 @@
-import { CircleAlertIcon } from "lucide-react";
+import { CircleAlertIcon } from "@/components/icons/serverIcons";
 import type { ReactNode } from "react";
 import {
   Empty,

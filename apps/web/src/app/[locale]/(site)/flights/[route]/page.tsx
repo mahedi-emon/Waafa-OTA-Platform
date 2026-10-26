@@ -1,7 +1,14 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, CalendarRange, Clock3, Lightbulb, Plane, Stamp } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarRange,
+  Clock3,
+  Lightbulb,
+  Plane,
+  Stamp,
+} from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { formatTaka } from "@waafa/shared";
 import { BannerHero } from "@/components/content/BannerHero";
@@ -19,7 +26,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import {
   getAirport,
   getFlightRoute,

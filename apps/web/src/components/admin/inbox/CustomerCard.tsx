@@ -1,5 +1,5 @@
-import { ExternalLink, Mail, Phone, UserRound } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { ExternalLink, Mail, Phone, UserRound } from "@/components/icons/serverIcons";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { displayPhone, formatDhakaDateTime, taka } from "@/lib/admin/format";
 
 type CustomerCardProps = {

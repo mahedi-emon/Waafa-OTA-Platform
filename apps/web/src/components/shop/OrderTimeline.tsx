@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check } from "@/components/icons/serverIcons";
 import { cn } from "cn";
 import { formatDate, formatTime, type Order, type OrderStatus } from "@waafa/shared";
 

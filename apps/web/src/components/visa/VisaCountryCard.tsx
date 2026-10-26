@@ -1,7 +1,7 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { formatTaka, lowestVisaPrice, type VisaCountry } from "@waafa/shared";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { CardFx } from "@/components/fx/CardFx";
 import { CountryFlag } from "@/components/media/CountryFlag";
 

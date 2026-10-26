@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { Plane } from "lucide-react";
+import { Plane } from "@/components/icons/serverIcons";
 import { formatDate, whatsappLink } from "@waafa/shared";
 import { InfoCard } from "@/components/content/InfoCard";
 import { PageHero } from "@/components/content/PageHero";
@@ -9,7 +9,7 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Canonical } from "@/components/seo/Canonical";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { listBaggageRules, listPageBlocks } from "@/lib/data/content";
 import { getContactSettings } from "@/lib/data/settings";
 import { BaggageTable } from "./_components/BaggageTable";

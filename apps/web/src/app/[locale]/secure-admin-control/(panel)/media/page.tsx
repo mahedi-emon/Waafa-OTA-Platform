@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Check, LayoutGrid, List, Search } from "lucide-react";
+import { LayoutGrid, List } from "lucide-react";
+import { Check, Search } from "@/components/icons/serverIcons";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import type { MediaList } from "@waafa/shared";
@@ -12,7 +13,7 @@ import { StatusTabs } from "@/components/admin/StatusTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { pickMessagePaths } from "@/i18n/pickMessages";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { formatDhakaDateTime, pageParam } from "@/lib/admin/format";

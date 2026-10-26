@@ -1,10 +1,10 @@
-import { Lock } from "lucide-react";
+import { Lock } from "@/components/icons/serverIcons";
 import { useTranslations } from "next-intl";
 import { formatTaka, type Quote } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 type CheckoutSummaryProps = {
   quote: Quote;

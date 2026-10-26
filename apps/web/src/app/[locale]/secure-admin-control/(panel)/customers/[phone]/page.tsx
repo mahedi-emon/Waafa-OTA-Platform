@@ -7,7 +7,7 @@ import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
 import { OrderStatusChip } from "@/components/admin/OrderStatusChip";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet } from "@/lib/admin/adminApi";
 import { formatDhakaDateTime } from "@/lib/admin/format";
 

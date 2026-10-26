@@ -1,4 +1,4 @@
-import { Headset, Mail, MapPin, Phone } from "lucide-react";
+import { Headset, Mail, MapPin, Phone } from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import type { ContactSettings } from "@waafa/shared";
 import { contactPhones, whatsappLink } from "@waafa/shared/helpers/phone";

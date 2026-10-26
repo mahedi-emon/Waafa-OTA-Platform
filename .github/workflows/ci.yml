@@ -221,6 +221,10 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # Issue 236: Server Components draw lucide icons on the server (needs node_modules, so not in the guards job).
+      - name: Server icons
+        run: node apps/web/scripts/server-icons.mjs --check
+
       - name: Typecheck
         run: pnpm typecheck
 

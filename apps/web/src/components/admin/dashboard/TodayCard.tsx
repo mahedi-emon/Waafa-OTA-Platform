@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import type { InboxCountKey } from "@waafa/shared";
 import { cn } from "cn";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 const ICONS: Record<InboxCountKey, LucideIcon> = {
   newLeads: Inbox,

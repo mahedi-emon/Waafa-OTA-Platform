@@ -9,12 +9,12 @@ import {
   Route,
   Smartphone,
   Truck,
-} from "lucide-react";
+} from "@/components/icons/serverIcons";
 import { getTranslations } from "next-intl/server";
 import { contactPhones, whatsappLink, type MenuItem, type PaymentMethodBadge } from "@waafa/shared";
 import { FacebookIcon } from "@/components/icons/FacebookIcon";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import {
   getContactSettings,
   getFooterSettings,

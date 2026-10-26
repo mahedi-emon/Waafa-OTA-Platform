@@ -19,7 +19,7 @@ import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
 import { VisaProgressPanel } from "@/components/admin/VisaProgressPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessagePaths } from "@/i18n/pickMessages";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminFind, adminGet } from "@/lib/admin/adminApi";
 import { ageParts, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
 import { leadFacts } from "@/lib/admin/leadFacts";

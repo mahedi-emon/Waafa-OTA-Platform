@@ -13,7 +13,7 @@ import { OrderTimeline } from "@/components/shop/OrderTimeline";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { trackOrder } from "@/lib/data/orders";
 import { clientKey } from "@/lib/rateLimit";

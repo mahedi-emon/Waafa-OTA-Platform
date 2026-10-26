@@ -5,7 +5,13 @@ import { PHOTO_HOSTS } from "./src/lib/admin/mediaAddress";
 import { PHOTO_QUALITY } from "./src/lib/media/imageQuality";
 import { securityHeaders } from "./src/lib/security/securityHeaders";
 
-const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+// Messages are compiled at build time (issue 236): the browser gets no ICU parser and formats without parsing.
+const withNextIntl = createNextIntlPlugin({
+  requestConfig: "./src/i18n/request.ts",
+  experimental: {
+    messages: { path: "./messages", format: "json", locales: "infer", precompile: true },
+  },
+});
 
 /** The Docker image (deploy/compose.yml) builds a standalone server; local and CI builds keep `next start`. */
 const standalone = process.env.NEXT_OUTPUT === "standalone";

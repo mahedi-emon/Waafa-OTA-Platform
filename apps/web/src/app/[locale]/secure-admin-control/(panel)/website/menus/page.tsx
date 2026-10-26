@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons/serverIcons";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -8,7 +8,7 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { MenuCard } from "@/components/admin/website/MenuCard";
 import type { ManagedMenu, MenuItemValue } from "@/components/admin/website/menuTypes";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
+import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { pickMessagePaths } from "@/i18n/pickMessages";
 import { adminGet, requireStaff } from "@/lib/admin/adminApi";
 import type { ContentRecordsPage } from "@/lib/admin/types";
