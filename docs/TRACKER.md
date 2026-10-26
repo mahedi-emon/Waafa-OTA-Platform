@@ -38,17 +38,25 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #273 · D C · Lighthouse (manual) only on demand — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | The manual Lighthouse workflow ran on every push of a speed branch (150 billed minutes on PR #272, docs pushes included) |
+| Built | `.github/workflows/lighthouse.yml` keeps `workflow_dispatch` only; the CI job stays the gate on main, nightly and full-ci PRs |
+| Tests | CI quick set |
+| Migration | none |
+
 ### #236 · D C · Speed: first-load JS 200 KB on every public route, Lighthouse mobile — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | PROMPT 10 letter C (NFR-PERF): Lighthouse mobile 90+ (median of 3) on the 11 key routes, first-load JS ≤ 200 KB gzip on every public route, LCP 2.5 s, INP 200 ms, CLS 0.1, LHCI assertions as errors |
 | Built | Fewer client islands (server-drawn icons, one module per icon, server links, one card-effect listener); native radio group, checkbox, switch and tabs behind the shadcn API; next-intl messages compiled at build time; preferences sheet, corporate quote and EMI dialogs on first use (`PreferencesSheet`, `LazyDialog`); second steps of package, visa, plan-my-trip, printing and trading requests through `next/dynamic`; checkout form after hydration behind its placeholder; contact step without react-hook-form; tab-bar W drawn on the server; static detail pages; Lighthouse 13 runner over HTTP/2 (`scripts/lighthouse-run.mjs`, budgets and targets in `apps/web/lighthouse.config.json`); CLS fix on streamed list pages (fallbacks fill the screen) |
-| Result | First-load JS (gzip): Home 220 → 200, Flights 242 → 192, Hotels 232 → 188, Package 224 → 191, Shop 217 → 196, Product 213 → 192, Checkout 226 → 182, Contact 214 → 196; all 31 public routes ≤ 200 in `e2e/budget.spec.ts`. Lighthouse mobile median of 3 (local, HTTP/2, 26 Oct): / 87, /flights 91, /hotels 86, /tour-packages 92, package 94, /visa 95, /visa/thailand 96, /shop 94, product 91, /blog 88, post 97; accessibility, best practices and SEO 100 everywhere; CLS 0 (Blog was 0.21). Remaining: #271 |
+| Result | First-load JS (gzip): Home 220 → 200, Flights 242 → 192, Hotels 232 → 188, Package 224 → 191, Shop 217 → 196, Product 213 → 192, Checkout 226 → 182, Contact 214 → 196; all 31 public routes ≤ 200 in `e2e/budget.spec.ts`. Lighthouse mobile median of 3 (local, HTTP/2, 26 Oct): / 87, /flights 91, /hotels 86, /tour-packages 92, package 94, /visa 95, /visa/thailand 96, /shop 94, product 91, /blog 88, post 97; accessibility, best practices and SEO 100 everywhere; CLS 0 (Blog was 0.21). CI (PR #272, median of 3): / 88, /flights 94, /hotels 85, /tour-packages 93, package 94, /visa 96, /visa/thailand 96, /shop 92, product 90, /blog 88, post 97. Remaining: #271 |
 | Bugs found | On the branch, never live: cart and checkout crashed after hydration (async LocalLink in client code, D297); double tap sent two idempotency keys (D296); empty plural branches broke compiled messages (D294); Blog CLS 0.21 from a short streaming fallback; detail pages without Suspense failed for new records in API mode (D299, API-mode e2e). All fixed with regression tests |
 | Files | `apps/web/src/components/ui/{radio-group,checkbox,switch,tabs}.tsx`, `components/leads/{ContactStep,LeadRequestCard,PreferencesSheet,PreferencesDrawer}.tsx`, `components/layout/{LazyDialog,LazyDialogContent,TabBar}.tsx`, `components/forms/useSubmitOnce.ts`, `components/icons/server/*`, `components/services/*Step.tsx`, checkout `CheckoutFormLoader.tsx`, `next.config.ts`, `messages/en.json`, `app/globals.css` (`checkbox-tick`), `scripts/{lighthouse-run,h2-proxy}.mjs`, `apps/web/scripts/{client-boundary,server-icons,js-budget,js-diff}.mjs`, `ci.yml` (Guards, Lighthouse) |
 | Tests | Unit 689 (native controls, useSubmitOnce, messages); e2e budget (31 routes), native-controls (keyboard), flights, hotels, packages, services, store, orders, visa, home, search, smoke, content, seo and the rest of the public suite green locally; QA plan docs/qa/C-speed.md (23 cases) |
 | Tools and skills | Serena (symbols, replace_content, replace_in_files, memories), Context7 (next-intl precompile, Next inlineCss), Playwright MCP (checkout console), ui-ux-pro-max checklist on the native controls (focus rings, 44 px targets) |
-| CI minutes | see PR |
+| CI minutes | PR #272: 379 billed minutes (CI 228 over three full runs and one re-run of the flaky API-mode hero upload test; the manual Lighthouse workflow 150 on six pushes, made dispatch-only in #273) |
 | Decision | D293–D299 |
 | Migration | none · deploy bundle unchanged |
 
@@ -1922,6 +1930,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 27 Oct | #236 merged (PR #272, 5583bf7, 379 min): all public routes ≤ 200 KB, 8 of 11 key routes at Lighthouse 90+ in CI; CI caught record pages failing in API mode without Suspense (D299) before merge; #271 follow-up, #273 manual Lighthouse dispatch-only. Letter C done | #236, #271, #273 | #272 | unit 689 · e2e public + API mode green · CI Lighthouse budgets pass |
 | 26 Oct evening | #236 on chore/236-speed: every public route ≤ 200 KB first-load JS (native form controls and tabs, compiled messages, lazy dialogs and second steps); three branch bugs found and fixed (cart/checkout crash, double-tap keys, compiled messages) with a client-boundary guard; Lighthouse local run stopped for low memory | #236 | — | unit 689 · public e2e green · budget 31 routes |
 | 26 Oct | #235 merged (PR #270, 107 min; bundle change, no migration). Letter B done: checkpoint sent to the owner (copy bundle, backup, deploy, set up the authenticator) | #235 | #270 | VPS smoke with real ClamAV (EICAR quarantined) |
 | 26 Oct | #234 merged (PR #268, 100 min, migration: owner backs up, deploys, sets up the authenticator). #235 malware scan built: clamd client, worker pass, quarantine, Files panel states, ClamAV in compose and the deploy smoke | #234, #235 | #268 | API fileScan; e2e two-step |

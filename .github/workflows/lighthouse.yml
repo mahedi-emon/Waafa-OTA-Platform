@@ -3,10 +3,8 @@
 name: Lighthouse (manual)
 
 on:
+  # On demand only (issue 273): running on every push of a speed branch cost 150 minutes on one pull request.
   workflow_dispatch:
-  # Speed branches measure on every push (a dispatch needs the workflow on main first).
-  push:
-    branches: ["perf/**", "chore/*-speed"]
 
 permissions:
   contents: read

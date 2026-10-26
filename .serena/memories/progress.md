@@ -1,7 +1,7 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
-- 2026-10-26 evening — #236 in progress (chore/236-speed, pushed): all public routes ≤ 200 KB first-load JS; D293–D297;
-  branch bugs fixed (LocalLink in client code → client-boundary guard, useSubmitOnce, compiled messages). Left:
-  native-controls e2e run, Lighthouse medians, CI warn → error, docs, PR (full-ci).
+- 2026-10-27 — Letter C done: #236 merged (PR #272, 5583bf7, 379 min incl. 150 manual Lighthouse): every public route
+  ≤ 200 KB first-load JS; CI Lighthouse 8/11 at 90+ (Home 88, Hotels 85, Blog 88 → #271), A11y/BP/SEO 100, CLS 0;
+  budgets fail CI, targets warn (D298); D293–D299. #273 makes the manual Lighthouse workflow dispatch-only.
 - 2026-10-26 — Letter B done: #234 merged (PR #268, 100 min), #235 ClamAV malware scan merged (PR #270, 107 min;
   worker pass every 10 s, quarantine/, Files panel states, clamav in compose, VPS smoke EICAR; bundle change). D290
   review fixes (doubling locks, code-lock email, atomic enrol), D291–D292. Next: letter C #236.
