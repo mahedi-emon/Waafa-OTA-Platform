@@ -1,5 +1,6 @@
 import { ImageIcon } from "lucide-react";
-import { Film, Pencil } from "@/components/icons/serverIcons";
+import { Film } from "@/components/icons/server/Film";
+import { Pencil } from "@/components/icons/server/Pencil";
 import { getTranslations } from "next-intl/server";
 import type { MediaSlot } from "@waafa/shared";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";

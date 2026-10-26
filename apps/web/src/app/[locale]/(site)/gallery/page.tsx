@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Images } from "lucide-react";
-import { ArrowRight } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { cn } from "cn";
 import {
   GalleryCategorySchema,

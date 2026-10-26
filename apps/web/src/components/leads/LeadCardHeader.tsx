@@ -1,4 +1,4 @@
-import { CircleCheck } from "@/components/icons/serverIcons";
+import { CircleCheck } from "@/components/icons/server/CircleCheck";
 
 type LeadCardHeaderProps = {
   kicker: string;

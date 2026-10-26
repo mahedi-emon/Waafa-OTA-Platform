@@ -1,4 +1,7 @@
-import { ExternalLink, Mail, Phone, UserRound } from "@/components/icons/serverIcons";
+import { ExternalLink } from "@/components/icons/server/ExternalLink";
+import { Mail } from "@/components/icons/server/Mail";
+import { Phone } from "@/components/icons/server/Phone";
+import { UserRound } from "@/components/icons/server/UserRound";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { displayPhone, formatDhakaDateTime, taka } from "@/lib/admin/format";
 

@@ -1,4 +1,5 @@
-import { ArrowRight, Clock3 } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Clock3 } from "@/components/icons/server/Clock3";
 import { getTranslations } from "next-intl/server";
 import { formatTaka } from "@waafa/shared";
 import { CardFx } from "@/components/fx/CardFx";

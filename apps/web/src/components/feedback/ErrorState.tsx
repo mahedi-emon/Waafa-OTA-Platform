@@ -1,4 +1,4 @@
-import { CircleAlertIcon } from "@/components/icons/serverIcons";
+import { CircleAlertIcon } from "@/components/icons/server/CircleAlertIcon";
 import type { ReactNode } from "react";
 import {
   Empty,

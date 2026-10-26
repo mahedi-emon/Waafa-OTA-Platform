@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, Lightbulb } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Lightbulb } from "@/components/icons/server/Lightbulb";
 import { getTranslations } from "next-intl/server";
 import { formatDate, visaPrice } from "@waafa/shared";
 import { RichText } from "@/components/content/RichText";

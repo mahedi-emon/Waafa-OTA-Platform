@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { ArrowRight, Building2, Printer } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Building2 } from "@/components/icons/server/Building2";
+import { Printer } from "@/components/icons/server/Printer";
 import { getTranslations } from "next-intl/server";
 import { contactPhones, whatsappLink, type Product, type StoreRow } from "@waafa/shared";
 import { SectionHeading } from "@/components/content/SectionHeading";

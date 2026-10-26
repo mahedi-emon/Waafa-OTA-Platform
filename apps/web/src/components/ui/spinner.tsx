@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { Loader2Icon } from "@/components/icons/serverIcons";
+import { Loader2Icon } from "@/components/icons/server/Loader2Icon";
 
 /** Inline spinner, 18 px, for buttons only (States board). Page loads use skeletons or the W loader. */
 function Spinner({ className, ...props }: React.ComponentProps<"svg">) {

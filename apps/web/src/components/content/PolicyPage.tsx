@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Check } from "@/components/icons/serverIcons";
+import { Check } from "@/components/icons/server/Check";
 import { formatDate } from "@waafa/shared";
 import { ArticleContents } from "@/components/content/ArticleContents";
 import { PageHero } from "@/components/content/PageHero";

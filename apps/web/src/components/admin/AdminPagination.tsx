@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight } from "@/components/icons/serverIcons";
+import { ChevronLeft } from "@/components/icons/server/ChevronLeft";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { Button } from "@/components/ui/button";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 

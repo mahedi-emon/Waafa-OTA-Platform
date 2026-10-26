@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { ArrowRight, Mail, MapPin, Phone } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Mail } from "@/components/icons/server/Mail";
+import { MapPin } from "@/components/icons/server/MapPin";
+import { Phone } from "@/components/icons/server/Phone";
 import { contactPhones, whatsappLink } from "@waafa/shared";
 import { PageHero } from "@/components/content/PageHero";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";

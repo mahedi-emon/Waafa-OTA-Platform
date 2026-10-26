@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { ArrowRight, House } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { House } from "@/components/icons/server/House";
 import { SystemState } from "@/components/feedback/SystemState";
 import { Button } from "@/components/ui/button";
 import { LocalLink as Link } from "@/components/nav/LocalLink";

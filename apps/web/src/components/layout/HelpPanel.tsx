@@ -1,4 +1,7 @@
-import { Headset, Mail, MapPin, Phone } from "@/components/icons/serverIcons";
+import { Headset } from "@/components/icons/server/Headset";
+import { Mail } from "@/components/icons/server/Mail";
+import { MapPin } from "@/components/icons/server/MapPin";
+import { Phone } from "@/components/icons/server/Phone";
 import { getTranslations } from "next-intl/server";
 import type { ContactSettings } from "@waafa/shared";
 import { contactPhones, whatsappLink } from "@waafa/shared/helpers/phone";

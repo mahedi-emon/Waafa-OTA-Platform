@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArrowRight } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { cn } from "cn";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 

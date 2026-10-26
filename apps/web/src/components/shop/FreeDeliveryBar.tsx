@@ -1,4 +1,4 @@
-import { Truck } from "@/components/icons/serverIcons";
+import { Truck } from "@/components/icons/server/Truck";
 import { useTranslations } from "next-intl";
 import { formatTaka } from "@waafa/shared";
 

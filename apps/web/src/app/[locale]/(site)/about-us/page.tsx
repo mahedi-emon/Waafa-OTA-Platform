@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowRight, MapPin, Phone } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { MapPin } from "@/components/icons/server/MapPin";
+import { Phone } from "@/components/icons/server/Phone";
 import { contactPhones } from "@waafa/shared";
 import { InfoCard } from "@/components/content/InfoCard";
 import { PageHero } from "@/components/content/PageHero";

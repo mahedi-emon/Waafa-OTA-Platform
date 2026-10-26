@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArrowUpRight } from "@/components/icons/serverIcons";
+import { ArrowUpRight } from "@/components/icons/server/ArrowUpRight";
 import { CopyButton } from "./CopyButton";
 
 type ContactRowProps = {

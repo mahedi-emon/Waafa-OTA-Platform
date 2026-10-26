@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { Plane } from "@/components/icons/serverIcons";
+import { Plane } from "@/components/icons/server/Plane";
 import { formatDate, whatsappLink } from "@waafa/shared";
 import { InfoCard } from "@/components/content/InfoCard";
 import { PageHero } from "@/components/content/PageHero";

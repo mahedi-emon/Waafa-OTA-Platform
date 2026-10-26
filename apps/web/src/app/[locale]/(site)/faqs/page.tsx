@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { Phone } from "@/components/icons/serverIcons";
+import { Phone } from "@/components/icons/server/Phone";
 import { FaqCategorySchema, whatsappLink } from "@waafa/shared";
 import { PageHero } from "@/components/content/PageHero";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";

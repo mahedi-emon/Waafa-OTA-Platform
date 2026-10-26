@@ -1,4 +1,4 @@
-import { ChevronRight } from "@/components/icons/serverIcons";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { getTranslations } from "next-intl/server";
 import { cn } from "cn";
 import { JsonLd } from "@/components/seo/JsonLd";

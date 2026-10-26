@@ -1,4 +1,4 @@
-import { Star } from "@/components/icons/serverIcons";
+import { Star } from "@/components/icons/server/Star";
 import { cn } from "cn";
 
 type RatingStarsProps = { rating: number; label: string; className?: string };

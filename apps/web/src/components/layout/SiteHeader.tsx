@@ -1,4 +1,4 @@
-import { User } from "@/components/icons/serverIcons";
+import { User } from "@/components/icons/server/User";
 import { getTranslations } from "next-intl/server";
 import { LogoLockup } from "@/components/brand/LogoLockup";
 import { getContactSettings, getMenu, getSiteSettings } from "@/lib/data/settings";

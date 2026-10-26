@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronRight } from "@/components/icons/serverIcons";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { StatusTabs } from "@/components/admin/StatusTabs";

@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  ArrowRight,
-  CalendarRange,
-  Clock3,
-  Lightbulb,
-  Plane,
-  Stamp,
-} from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { CalendarRange } from "@/components/icons/server/CalendarRange";
+import { Clock3 } from "@/components/icons/server/Clock3";
+import { Lightbulb } from "@/components/icons/server/Lightbulb";
+import { Plane } from "@/components/icons/server/Plane";
+import { Stamp } from "@/components/icons/server/Stamp";
 import { getTranslations } from "next-intl/server";
 import { formatTaka } from "@waafa/shared";
 import { BannerHero } from "@/components/content/BannerHero";

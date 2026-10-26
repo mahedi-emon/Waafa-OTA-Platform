@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BookOpen, FileDown, Info } from "@/components/icons/serverIcons";
+import { BookOpen } from "@/components/icons/server/BookOpen";
+import { FileDown } from "@/components/icons/server/FileDown";
+import { Info } from "@/components/icons/server/Info";
 import { getTranslations } from "next-intl/server";
 import { visaPrice } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";

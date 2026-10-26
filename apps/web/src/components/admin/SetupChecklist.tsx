@@ -1,5 +1,5 @@
 import { CircleCheck, Circle } from "lucide-react";
-import { ChevronRight } from "@/components/icons/serverIcons";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { getTranslations } from "next-intl/server";
 import { cn } from "cn";
 import { LocalLink as Link } from "@/components/nav/LocalLink";

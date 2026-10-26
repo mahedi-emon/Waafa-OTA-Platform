@@ -1,4 +1,4 @@
-import { ArrowRight } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { getTranslations } from "next-intl/server";
 import { formatTaka, lowestVisaPrice, type VisaCountry } from "@waafa/shared";
 import { LocalLink as Link } from "@/components/nav/LocalLink";

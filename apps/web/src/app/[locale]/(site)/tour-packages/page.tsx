@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Compass } from "lucide-react";
-import { Search } from "@/components/icons/serverIcons";
+import { Search } from "@/components/icons/server/Search";
 import { getTranslations } from "next-intl/server";
 import { PackageCategorySchema, type PackageCategory } from "@waafa/shared";
 import { cn } from "cn";

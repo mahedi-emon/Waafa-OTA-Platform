@@ -1,4 +1,4 @@
-import { ArrowLeft } from "@/components/icons/serverIcons";
+import { ArrowLeft } from "@/components/icons/server/ArrowLeft";
 import { cn } from "cn";
 import { RowChips } from "@/components/admin/table/RowChips";
 import type { ChipView } from "@/components/admin/table/types";

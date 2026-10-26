@@ -1,4 +1,5 @@
-import { Check, Minus } from "@/components/icons/serverIcons";
+import { Check } from "@/components/icons/server/Check";
+import { Minus } from "@/components/icons/server/Minus";
 import { getTranslations } from "next-intl/server";
 import type { Role } from "@waafa/shared";
 import { AdminPanel } from "@/components/admin/AdminPanel";

@@ -1,4 +1,4 @@
-import { Lock } from "@/components/icons/serverIcons";
+import { Lock } from "@/components/icons/server/Lock";
 import { useTranslations } from "next-intl";
 import { formatTaka, type Quote } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";

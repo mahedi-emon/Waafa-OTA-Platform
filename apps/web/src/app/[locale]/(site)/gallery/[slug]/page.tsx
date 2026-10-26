@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft, ArrowRight } from "@/components/icons/serverIcons";
+import { ArrowLeft } from "@/components/icons/server/ArrowLeft";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { formatDate } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";

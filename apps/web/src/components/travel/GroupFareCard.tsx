@@ -1,4 +1,4 @@
-import { Plane } from "@/components/icons/serverIcons";
+import { Plane } from "@/components/icons/server/Plane";
 import { getTranslations } from "next-intl/server";
 import { formatDate, formatDayMonth, formatTaka, type GroupFare } from "@waafa/shared";
 import { CountryFlag } from "@/components/media/CountryFlag";

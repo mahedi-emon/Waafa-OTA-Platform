@@ -1,4 +1,5 @@
-import { ArrowRight, Check } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { Check } from "@/components/icons/server/Check";
 import { getTranslations } from "next-intl/server";
 import type { HomeContent, HomeSection } from "@waafa/shared";
 import { MenuIcon } from "@/components/icons/MenuIcon";

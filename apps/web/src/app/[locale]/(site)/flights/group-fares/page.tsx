@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PlaneTakeoff } from "lucide-react";
-import { Info } from "@/components/icons/serverIcons";
+import { Info } from "@/components/icons/server/Info";
 import { getTranslations } from "next-intl/server";
 import type { GroupFare } from "@waafa/shared";
 import { SampleBadge } from "@/components/content/SampleBadge";

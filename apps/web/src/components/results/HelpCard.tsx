@@ -1,4 +1,5 @@
-import { Check, Phone } from "@/components/icons/serverIcons";
+import { Check } from "@/components/icons/server/Check";
+import { Phone } from "@/components/icons/server/Phone";
 import { getTranslations } from "next-intl/server";
 import { whatsappLink } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";

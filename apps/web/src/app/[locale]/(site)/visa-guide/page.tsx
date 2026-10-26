@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BookOpen } from "lucide-react";
-import { ArrowRight } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { getTranslations } from "next-intl/server";
 import { formatShortMonth } from "@/lib/search/isoDate";
 import { SampleBadge } from "@/components/content/SampleBadge";

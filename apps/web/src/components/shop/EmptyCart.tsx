@@ -1,4 +1,5 @@
-import { ArrowRight, ShoppingCart } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { ShoppingCart } from "@/components/icons/server/ShoppingCart";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { LocalLink as Link } from "@/components/nav/LocalLink";

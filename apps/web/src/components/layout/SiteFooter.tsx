@@ -1,15 +1,13 @@
 import type { ReactNode } from "react";
-import {
-  Building2,
-  Clock,
-  Landmark,
-  Mail,
-  MapPin,
-  Phone,
-  Route,
-  Smartphone,
-  Truck,
-} from "@/components/icons/serverIcons";
+import { Building2 } from "@/components/icons/server/Building2";
+import { Clock } from "@/components/icons/server/Clock";
+import { Landmark } from "@/components/icons/server/Landmark";
+import { Mail } from "@/components/icons/server/Mail";
+import { MapPin } from "@/components/icons/server/MapPin";
+import { Phone } from "@/components/icons/server/Phone";
+import { Route } from "@/components/icons/server/Route";
+import { Smartphone } from "@/components/icons/server/Smartphone";
+import { Truck } from "@/components/icons/server/Truck";
 import { getTranslations } from "next-intl/server";
 import { contactPhones, whatsappLink, type MenuItem, type PaymentMethodBadge } from "@waafa/shared";
 import { FacebookIcon } from "@/components/icons/FacebookIcon";

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { MessageSquareQuote } from "lucide-react";
-import { ArrowUpRight } from "@/components/icons/serverIcons";
+import { ArrowUpRight } from "@/components/icons/server/ArrowUpRight";
 import { cn } from "cn";
 import { FeedbackServiceSchema, formatDate, type FeedbackService } from "@waafa/shared";
 import { PageHero } from "@/components/content/PageHero";

@@ -1,4 +1,5 @@
-import { Clock3, Stamp } from "@/components/icons/serverIcons";
+import { Clock3 } from "@/components/icons/server/Clock3";
+import { Stamp } from "@/components/icons/server/Stamp";
 import type { Destination } from "@waafa/shared";
 import { CountryFlag } from "@/components/media/CountryFlag";
 import { SmartImage } from "@/components/media/SmartImage";

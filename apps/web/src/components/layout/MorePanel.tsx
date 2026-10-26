@@ -1,4 +1,4 @@
-import { Phone } from "@/components/icons/serverIcons";
+import { Phone } from "@/components/icons/server/Phone";
 import type { ContactSettings, MenuItem } from "@waafa/shared";
 import { MenuIcon } from "@/components/icons/MenuIcon";
 import { LocalLink as Link } from "@/components/nav/LocalLink";

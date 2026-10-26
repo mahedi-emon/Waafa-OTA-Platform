@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { SearchX } from "lucide-react";
-import { LayoutDashboard, Trash2 } from "@/components/icons/serverIcons";
+import { LayoutDashboard } from "@/components/icons/server/LayoutDashboard";
+import { Trash2 } from "@/components/icons/server/Trash2";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";
 import { Button } from "@/components/ui/button";
 import { LocalLink as Link } from "@/components/nav/LocalLink";

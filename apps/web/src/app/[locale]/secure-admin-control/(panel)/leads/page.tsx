@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Columns3 } from "@/components/icons/serverIcons";
+import { Columns3 } from "@/components/icons/server/Columns3";
 import { getTranslations } from "next-intl/server";
 import { LeadModuleSchema, LeadStatusSchema, type LeadModule } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";

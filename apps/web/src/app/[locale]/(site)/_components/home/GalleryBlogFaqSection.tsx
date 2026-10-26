@@ -1,4 +1,5 @@
-import { ArrowRight, MessageSquareHeart } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
+import { MessageSquareHeart } from "@/components/icons/server/MessageSquareHeart";
 import { getTranslations } from "next-intl/server";
 import type { HomeContent, HomeSection } from "@waafa/shared";
 import { BlogCard } from "@/components/content/BlogCard";

@@ -1,4 +1,6 @@
-import { ChevronRight, EyeOff, Plus } from "@/components/icons/serverIcons";
+import { ChevronRight } from "@/components/icons/server/ChevronRight";
+import { EyeOff } from "@/components/icons/server/EyeOff";
+import { Plus } from "@/components/icons/server/Plus";
 import { getTranslations } from "next-intl/server";
 import { canCopy, type ContentKey } from "@waafa/shared";
 import { AdminEmpty } from "@/components/admin/AdminEmpty";

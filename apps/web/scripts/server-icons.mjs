@@ -1,16 +1,17 @@
 /* eslint-disable no-console -- a command-line tool that prints its report */
 // Server Components draw lucide icons on the server (issue 236). This script moves every lucide icon that a Server
-// Component only renders as JSX (`<Plane />`) to `@/components/icons/serverIcons`, and regenerates that module with
-// exactly the icons in use. Icons used as values (passed to a Client Component, kept in a list) stay on lucide-react.
-//   node scripts/server-icons.mjs          rewrite imports and regenerate the module
-//   node scripts/server-icons.mjs --check  fail when a Server Component still renders a lucide-react icon (guards)
-import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+// Component only renders as JSX (`<Plane />`) to its own module, `@/components/icons/server/Plane`, generated here
+// with exactly the icons in use. One module per icon, so a component that ends up in a client bundle brings only its
+// own icons. Icons used as values (passed to a Client Component, kept in a list) stay on lucide-react.
+//   node scripts/server-icons.mjs          rewrite imports and regenerate the icon modules
+//   node scripts/server-icons.mjs --check  fail when a Server Component still renders a lucide-react icon (CI)
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const web = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = path.join(web, "src");
-const target = path.join(src, "components", "icons", "serverIcons.ts");
+const folder = path.join(src, "components", "icons", "server");
 const check = process.argv.includes("--check");
 
 // lucide-react's own list: export { default as Plane, default as PlaneIcon, ... } from './icons/plane.mjs';
@@ -36,72 +37,63 @@ function sourceFiles(dir, out = []) {
 }
 
 const importRe = /import \{([^}]*)\} from "lucide-react";\n/;
-const serverImportRe = /import \{([^}]*)\} from "@\/components\/icons\/serverIcons";\n/;
+const barrelRe = /import \{([^}]*)\} from "@\/components\/icons\/serverIcons";\n/;
+const ownRe = /import \{ (\w+) \} from "@\/components\/icons\/server\/\w+";\n/g;
 /** True when every use of the name outside imports is a JSX tag. */
 function jsxOnly(code, name) {
   const body = code.replace(/^import [^;]*;$/gms, "");
   const uses = [...body.matchAll(new RegExp(`(<\\/?)?\\b${name}\\b`, "g"))];
   return uses.length > 0 && uses.every((use) => Boolean(use[1]));
 }
+const iconImport = (name) => `import { ${name} } from "@/components/icons/server/${name}";\n`;
+const split = (list) =>
+  list
+    .split(",")
+    .map((n) => n.trim())
+    .filter(Boolean);
 
 const used = new Set();
 const offenders = [];
 for (const file of sourceFiles(src)) {
+  if (file.startsWith(folder)) continue;
   let code = readFileSync(file, "utf8");
-  if (code.includes('"use client"') || file === target) continue;
-  const already = serverImportRe.exec(code);
-  if (already)
-    for (const name of already[1]
-      .split(",")
-      .map((n) => n.trim())
-      .filter(Boolean))
-      used.add(name);
+  if (code.includes('"use client"')) continue;
+  for (const m of code.matchAll(ownRe)) used.add(m[1]);
+  // The earlier single module: one import line per icon instead.
+  const barrel = barrelRe.exec(code);
+  if (barrel && !check) {
+    const names = split(barrel[1]);
+    code = code.replace(barrel[0], names.map(iconImport).join(""));
+    for (const name of names) used.add(name);
+  } else if (barrel) {
+    offenders.push(`${path.relative(web, file)}: imports @/components/icons/serverIcons`);
+  }
   const match = importRe.exec(code);
-  if (!match) continue;
-  const names = match[1]
-    .split(",")
-    .map((n) => n.trim())
-    .filter(Boolean);
-  const move = names.filter(
-    (name) => !name.startsWith("type ") && fileOf.has(name) && jsxOnly(code, name),
-  );
-  if (move.length === 0) continue;
-  if (check) {
+  const move = match
+    ? split(match[1]).filter(
+        (name) => !name.startsWith("type ") && fileOf.has(name) && jsxOnly(code, name),
+      )
+    : [];
+  if (move.length && check) {
     offenders.push(`${path.relative(web, file)}: ${move.join(", ")}`);
     continue;
   }
-  const stay = names.filter((name) => !move.includes(name));
-  let replacement = stay.length ? `import { ${stay.join(", ")} } from "lucide-react";\n` : "";
-  const merged = new Set([
-    ...(already
-      ? already[1]
-          .split(",")
-          .map((n) => n.trim())
-          .filter(Boolean)
-      : []),
-    ...move,
-  ]);
-  if (already) code = code.replace(already[0], "");
-  replacement += `import { ${[...merged].sort().join(", ")} } from "@/components/icons/serverIcons";\n`;
-  code = code.replace(match[0], replacement);
-  writeFileSync(file, code);
-  for (const name of move) used.add(name);
+  if (move.length) {
+    const stay = split(match[1]).filter((name) => !move.includes(name));
+    const replacement =
+      (stay.length ? `import { ${stay.join(", ")} } from "lucide-react";\n` : "") +
+      move.map(iconImport).join("");
+    code = code.replace(match[0], replacement);
+    for (const name of move) used.add(name);
+  }
+  if (!check) writeFileSync(file, code);
 }
 
 if (check) {
-  if (offenders.length) {
+  const missing = [...used].filter((name) => !existsSync(path.join(folder, `${name}.ts`)));
+  if (offenders.length || missing.length) {
     console.error(
-      `Server Components render lucide-react icons (client components). Run node apps/web/scripts/server-icons.mjs:\n${offenders.join("\n")}`,
-    );
-    process.exit(1);
-  }
-  const listed = new Set(
-    [...readFileSync(target, "utf8").matchAll(/export const (\w+) =/g)].map((m) => m[1]),
-  );
-  const missing = [...used].filter((name) => !listed.has(name));
-  if (missing.length) {
-    console.error(
-      `serverIcons.ts lacks ${missing.join(", ")}. Run node apps/web/scripts/server-icons.mjs`,
+      `Server icons are out of date. Run node apps/web/scripts/server-icons.mjs\n${[...offenders, ...missing.map((name) => `missing ${name}`)].join("\n")}`,
     );
     process.exit(1);
   }
@@ -109,19 +101,13 @@ if (check) {
   process.exit(0);
 }
 
-const names = [...used].sort();
-const camel = (name) => name[0].toLowerCase() + name.slice(1);
-const lines = [
-  "// Generated by apps/web/scripts/server-icons.mjs (issue 236): the lucide icons Server Components draw on the server.",
-  "// Run the script again after adding or removing an icon in a Server Component; do not edit by hand.",
-  'import { serverIcon } from "./serverIcon";',
-  ...names.map(
-    (name) =>
-      `import { __iconData as ${camel(name)}Data } from "lucide-react/dist/esm/icons/${fileOf.get(name)}.mjs";`,
-  ),
-  "",
-  ...names.map((name) => `export const ${name} = serverIcon(${camel(name)}Data);`),
-  "",
-];
-writeFileSync(target, lines.join("\n"));
-console.log(`server icons: ${names.length} icons`);
+rmSync(folder, { recursive: true, force: true });
+mkdirSync(folder, { recursive: true });
+for (const name of used) {
+  writeFileSync(
+    path.join(folder, `${name}.ts`),
+    `// Generated by apps/web/scripts/server-icons.mjs (issue 236); do not edit by hand.\nimport { __iconData } from "lucide-react/dist/esm/icons/${fileOf.get(name)}.mjs";\nimport { serverIcon } from "../serverIcon";\n\nexport const ${name} = serverIcon(__iconData);\n`,
+  );
+}
+rmSync(path.join(src, "components", "icons", "serverIcons.ts"), { force: true });
+console.log(`server icons: ${used.size} icons`);

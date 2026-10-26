@@ -1,4 +1,4 @@
-import { ArrowRight } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 
 type LinkPillProps = { href: string; children: string };

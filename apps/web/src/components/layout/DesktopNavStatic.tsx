@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "@/components/icons/serverIcons";
+import { ChevronDownIcon } from "@/components/icons/server/ChevronDownIcon";
 import { cn } from "cn";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigationMenuTriggerStyle";
 import { LocalLink as Link } from "@/components/nav/LocalLink";

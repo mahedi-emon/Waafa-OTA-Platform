@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Phone } from "@/components/icons/serverIcons";
+import { Phone } from "@/components/icons/server/Phone";
 import {
   formatDate,
   formatTime,

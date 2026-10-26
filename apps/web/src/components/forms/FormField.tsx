@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CircleAlert } from "@/components/icons/serverIcons";
+import { CircleAlert } from "@/components/icons/server/CircleAlert";
 import { cn } from "cn";
 
 type FormFieldProps = {

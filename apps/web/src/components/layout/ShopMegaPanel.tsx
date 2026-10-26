@@ -1,4 +1,4 @@
-import { ArrowRight } from "@/components/icons/serverIcons";
+import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { cn } from "cn";
 import type { Category, MenuItem } from "@waafa/shared";
 import { MenuIcon } from "@/components/icons/MenuIcon";

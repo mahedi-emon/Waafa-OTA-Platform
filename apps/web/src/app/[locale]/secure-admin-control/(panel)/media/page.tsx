@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { LayoutGrid, List } from "lucide-react";
-import { Check, Search } from "@/components/icons/serverIcons";
+import { Check } from "@/components/icons/server/Check";
+import { Search } from "@/components/icons/server/Search";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import type { MediaList } from "@waafa/shared";
