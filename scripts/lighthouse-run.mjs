@@ -3,6 +3,7 @@
 // the JSON and HTML reports, and fails when a median misses a budget.
 //
 //   node scripts/lighthouse-run.mjs                              starts `next start` on :3200 in apps/web (a build first)
+//                                                                behind an HTTP/2 proxy, as production serves it
 //   node scripts/lighthouse-run.mjs --base https://waafasworld.com --live   the live site, read-only (liveRoutes)
 //   options: --runs 1, --only /shop, --out apps/web/lighthouse-report, --warn (report only, never fail)
 import { spawn } from "node:child_process";
@@ -19,7 +20,8 @@ const arg = (name, fallback) => {
 };
 const live = process.argv.includes("--live");
 const warnOnly = process.argv.includes("--warn");
-const base = arg("base", "http://localhost:3200");
+const local = !process.argv.includes("--base");
+const base = arg("base", "https://localhost:3443");
 const runs = Number(arg("runs", config.runs));
 const out = path.resolve(arg("out", path.join(web, "lighthouse-report")));
 const only = arg("only", null);
@@ -40,12 +42,37 @@ const run = (command, args, options = {}) =>
   });
 
 let server = null;
-if (!process.argv.includes("--base")) {
+let proxy = null;
+if (local) {
   server = spawn("pnpm", ["exec", "next", "start", "--port", "3200"], {
     cwd: web,
     stdio: "ignore",
     shell: process.platform === "win32",
   });
+  // Production serves HTTP/2 through nginx: a self-signed certificate and a small proxy do the same here.
+  const cert = path.join(out, "localhost-cert.pem");
+  const key = path.join(out, "localhost-key.pem");
+  await run("openssl", [
+    "req",
+    "-x509",
+    "-newkey",
+    "rsa:2048",
+    "-nodes",
+    "-days",
+    "2",
+    "-subj",
+    "/CN=localhost",
+    "-keyout",
+    key,
+    "-out",
+    cert,
+  ]);
+  proxy = spawn(
+    process.execPath,
+    [path.join(root, "scripts", "h2-proxy.mjs"), "3443", "3200", cert, key],
+    { stdio: "ignore" },
+  );
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const ok = await fetch(`${base}/robots.txt`)
       .then((r) => r.ok)
@@ -72,7 +99,7 @@ for (const route of routes) {
         "--output=json",
         "--output=html",
         `--output-path=${file}`,
-        "--chrome-flags=--headless=new --no-sandbox",
+        `--chrome-flags=--headless=new --no-sandbox${local ? " --ignore-certificate-errors" : ""}`,
         "--quiet",
       ]);
       try {
@@ -106,6 +133,7 @@ for (const route of routes) {
   });
 }
 server?.kill();
+proxy?.kill();
 
 const budgets = config.budgets;
 const misses = [];
