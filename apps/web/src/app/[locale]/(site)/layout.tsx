@@ -1,4 +1,5 @@
 import { NextIntlClientProvider } from "next-intl";
+import { TabBarMark } from "@/components/brand/TabBarMark";
 import { getMessages, getTranslations } from "next-intl/server";
 import { MaintenanceScreen } from "@/components/feedback/MaintenanceScreen";
 import { CardFxDriver } from "@/components/fx/CardFxDriver";
@@ -68,6 +69,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
       {tabs.length === 5 ? (
         <TabBar
           items={tabs}
+          mark={<TabBarMark />}
           moreSheet={
             <MoreSheetBody
               items={[...(more?.items ?? []), ...(morePhone?.items ?? [])]}

@@ -2,13 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { LazyDialog } from "@/components/layout/LazyDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { EmiRequestValues } from "@/lib/leads/emiLeadForm";
 
@@ -75,14 +69,9 @@ function EmiRequestDialog({ trigger, labels, ...props }: EmiRequestDialogProps) 
   });
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-h-[92dvh] max-w-[min(640px,calc(100vw-24px))] overflow-y-auto p-0">
-        <DialogTitle className="sr-only">{labels.title}</DialogTitle>
-        <DialogDescription className="sr-only">{labels.lead}</DialogDescription>
-        <EmiRequestForm labels={labels} values={values} setValues={setValues} {...props} />
-      </DialogContent>
-    </Dialog>
+    <LazyDialog trigger={trigger} title={labels.title} description={labels.lead}>
+      <EmiRequestForm labels={labels} values={values} setValues={setValues} {...props} />
+    </LazyDialog>
   );
 }
 

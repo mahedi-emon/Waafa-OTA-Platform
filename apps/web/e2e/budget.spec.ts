@@ -2,25 +2,44 @@ import { expect, test } from "@playwright/test";
 
 /*
  * First-load JavaScript per public route (#39, CLAUDE.md budgets): the scripts the page's HTML references, counted as
- * transferred (gzip) bytes from the production server (issue 224: not later prefetches). `nomodule` polyfills are skipped by modern
- * browsers and never requested here. The ceilings guard against regressions; the target stays 200 KB.
+ * transferred (gzip) bytes from the production server (issue 224: not later prefetches). `nomodule` polyfills are
+ * skipped by modern browsers and never requested here. Since issue 236 every public route must stay at 200 KB or less;
+ * scripts/js-budget.mjs prints the same numbers for a local build.
  */
 const TARGET_KB = 200;
-/**
- * Measured in CI on 11 Oct after issue 91 (home 215, flights 338, packages 189, visa 186, shop 315, contact 298 KB)
- * plus a small margin: a regression fails CI; lower these as the bundles shrink. Issue 170 (13 Oct): flights 259 and
- * shop 215 KB once the hidden search card, the lead form's second step and validation, and the corporate quote form
- * load on demand.
- */
-const CEILING_KB: Record<string, number> = {
-  "/": 235,
-  "/flights": 275,
-  "/tour-packages": 205,
-  "/visa": 205,
-  "/shop": 230,
-  "/contact": 315,
-};
-const ROUTES = Object.keys(CEILING_KB);
+const ROUTES = [
+  "/",
+  "/flights",
+  "/flights/group-fares",
+  "/flights/dhaka-to-dubai",
+  "/hotels",
+  "/tour-packages",
+  "/tour-packages/bangkok-and-phuket",
+  "/plan-my-trip",
+  "/visa",
+  "/visa/thailand",
+  "/visa/thailand/apply",
+  "/visa-guide",
+  "/shop",
+  "/shop/c/power-banks",
+  "/shop/p/voltaro-power-bank-22-5w",
+  "/shop/cart",
+  "/shop/checkout",
+  "/shop/track",
+  "/shop/printing-solutions",
+  "/shop/international-trading",
+  "/blog",
+  "/blog/coxs-bazar-long-weekend",
+  "/gallery",
+  "/contact",
+  "/about-us",
+  "/faqs",
+  "/feedback",
+  "/offline-payment",
+  "/emi",
+  "/login",
+  "/account",
+];
 
 test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
@@ -66,8 +85,6 @@ for (const route of ROUTES) {
       description: `${route}: ${kb} KB gzip (target ${TARGET_KB} KB)`,
     });
     process.stdout.write(`first-load JS ${route}: ${kb} KB gzip (target ${TARGET_KB} KB)\n`);
-    expect(kb, `${route} first-load JS (KB gzip)`).toBeLessThanOrEqual(
-      CEILING_KB[route] ?? TARGET_KB,
-    );
+    expect(kb, `${route} first-load JS (KB gzip)`).toBeLessThanOrEqual(TARGET_KB);
   });
 }

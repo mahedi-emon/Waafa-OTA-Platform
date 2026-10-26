@@ -1,11 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import type { TourPackage } from "@waafa/shared";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { PackageQueryValues } from "@/lib/leads/packageLeadForm";
-import { QueryStep } from "./QueryStep";
 import { usePackageBooking } from "./usePackageBooking";
+
+/** Step 2 and its validation load when the visitor reaches it, not with the page (issues 170 and 236). */
+const QueryStep = dynamic(() => import("./QueryStep").then((mod) => mod.QueryStep), {
+  loading: () => <Skeleton className="mx-5 my-6 h-[520px] rounded-2xl md:mx-7" />,
+});
 
 type PackageQueryProps = {
   pkg: Pick<TourPackage, "id" | "title" | "prices">;

@@ -12,7 +12,7 @@ import {
   getShippingSettings,
   getSiteSettings,
 } from "@/lib/data/settings";
-import { CheckoutForm } from "./_components/CheckoutForm";
+import { CheckoutFormLoader } from "./_components/CheckoutFormLoader";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -49,7 +49,7 @@ export default async function CheckoutPage() {
         lead={t("lead")}
       />
       <NextIntlClientProvider messages={pickMessages(messages, ["Checkout"])}>
-        <CheckoutForm
+        <CheckoutFormLoader
           countries={countries}
           shipping={shipping}
           codLimit={payment.codLimit}
