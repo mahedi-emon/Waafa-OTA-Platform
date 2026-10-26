@@ -1906,6 +1906,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 26 Oct evening | #236 on chore/236-speed: every public route ≤ 200 KB first-load JS (native form controls and tabs, compiled messages, lazy dialogs and second steps); three branch bugs found and fixed (cart/checkout crash, double-tap keys, compiled messages) with a client-boundary guard; Lighthouse local run stopped for low memory | #236 | — | unit 690 · public e2e green · budget 31 routes |
 | 26 Oct | #235 merged (PR #270, 107 min; bundle change, no migration). Letter B done: checkpoint sent to the owner (copy bundle, backup, deploy, set up the authenticator) | #235 | #270 | VPS smoke with real ClamAV (EICAR quarantined) |
 | 26 Oct | #234 merged (PR #268, 100 min, migration: owner backs up, deploys, sets up the authenticator). #235 malware scan built: clamd client, worker pass, quarantine, Files panel states, ClamAV in compose and the deploy smoke | #234, #235 | #268 | API fileScan; e2e two-step |
 | 26 Oct | #229 (PR #265), #224 (PR #266) and #219 (PR #267) merged: letter A done. #234 two-step sign-in, sign-in history, new-device email and Redis rate limits built and verified locally | #219, #224, #229, #234 | #265, #266, #267 | API twoStep, rateLimit, totp; web 675; e2e admin-two-step 4/4 |
