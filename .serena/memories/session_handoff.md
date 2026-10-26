@@ -5,12 +5,20 @@ VPS or its .env). Repo PRIVATE: CI budget rules in CLAUDE.md (normal PR = quick 
 required for schema/deploy/auth/payments/checkout/intake). Never cancel or skip CI by hand. Minutes:
 `node scripts/ci-minutes.mjs <pr>`. The manual Lighthouse workflow is dispatch-only (#273) — never let a workflow run
 on every branch push again.
-MAIN PROMPT: docs/claude-code-prompts.md v5 PROMPT 10 (Phase D, A–M); order D268. Deadline PRD P1 13 Nov 2026.
-DONE: Step 0, A, B, C (#236 merged PR #272 5583bf7; follow-up #271 Lighthouse 90 on Home/Hotels/Blog + LCP 2.5 s).
-NOW: #273 (lighthouse.yml dispatch-only + #236 TRACKER close-out) on chore/273-lighthouse-dispatch → PR → quick CI →
-merge. Owner checkpoint C to send (no migration, no bundle change: just `sh deploy.sh` after Docker images green).
-NEXT STEPS: 1) merge #273; 2) letter D #237 measurement (GA4, GTM, Pixel after consent, UTM on orders, Reports source
-view) with docs/qa/D-measurement.md first; 3) letter E (#238 error tracking, #239 off-site backups).
+MAIN PROMPT: docs/claude-code-prompts.md v5 PROMPT 10, but the ORDER is the owner's 27 Oct work order (D300, TRACKER
+section 14), which replaces D268: 1) #276 flaky hero test (stable waits); 2) letter F accounts + /track (email
+one-time code via Resend 6 digits/10 min/single use/5 tries, or Google; NO phone OTP/SMS sign-in; optional password
+later; sign-up same screen; guest flows stay and attach on verified email/phone; My account sections; one /track;
+admin Customers verified/method/last sign-in/disable/sign out everywhere; rate limits per email+IP, Turnstile, no
+enumeration, code email editable; PRD FR-ACC + PRD_COVERAGE in the same PR) → checkpoint; 3) D, E, G, H, I, J (SMS
+later, status only), K, #271 (then perf/LCP assertions to error), L, M, content readiness. QA rule every step.
+Lighthouse workflow manual; PRs touching public pages get `full-ci`. Deadline PRD P1 13 Nov 2026.
+DONE: Step 0, A, B, C (#236 PR #272; #273 PR #274).
+NOW: #276 on fix/276-flaky-hero-task: e2e/hydration.ts whenHydrated(), task 2 waits for URL + hydrated elements +
+preview src change in the "Photo (optional)" field; order saved in TRACKER 14 + D300. PR with `full-ci` (the test runs
+only in the API-mode job).
+NEXT STEPS: 1) merge #276; 2) letter F: QA plan docs/qa/F-accounts.md, PRD FR-ACC decision, issues per part;
+3) checkpoint F to the owner.
 LESSONS (#236): fixture mode hides API-mode problems — record pages must keep Suspense (draftMode in snapshot, D299);
 client-boundary guard catches server-only imports in client code; compiled messages forbid empty plural branches;
 Lighthouse local runner: run with MSYS_NO_PATHCONV=1 from Git Bash, nothing else running (memory).
