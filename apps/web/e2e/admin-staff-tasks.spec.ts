@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { deflateSync } from "node:zlib";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { collectErrors } from "./errors";
+import { whenHydrated } from "./hydration";
 
 /*
  * The staff tasks from the admin epic that no other spec covers yet (D0 R10): 2 (the home hero's photo and headline),
@@ -93,7 +94,10 @@ async function saveChanges(page: Page, button: RegExp = /^Save changes$/) {
 
 /** Restores a record's first change from its History tab (the version before this test). */
 async function restoreFirstChange(page: Page) {
-  await page.getByRole("tab", { name: "History" }).click();
+  const history = page.getByRole("tab", { name: "History" });
+  await whenHydrated(history);
+  await history.click();
+  await expect(history).toHaveAttribute("aria-selected", "true");
   await page.getByRole("button", { name: "Restore the version before this change" }).click();
   await page.getByRole("button", { name: "Restore", exact: true }).click();
   await expect(page.getByText("The older version is back.").first()).toBeVisible();
@@ -129,7 +133,9 @@ test("task 2: the home hero gets a new photo and headline, and the home page sho
   await page.goto("/secure-admin-control/website/home");
   await expect(page.getByRole("button", { name: "Drag to reorder: Hero" })).toBeVisible();
   const sheet = page.getByRole("dialog", { name: "Hero" });
-  await page.getByRole("button", { name: "Edit Hero" }).click();
+  const editHero = page.getByRole("button", { name: "Edit Hero" });
+  await whenHydrated(editHero);
+  await editHero.click();
   await expect(sheet).toBeVisible();
 
   // The headline, in the sheet.
@@ -148,20 +154,25 @@ test("task 2: the home hero gets a new photo and headline, and the home page sho
   try {
     // The photo: from the sheet to the hero's own photo and video, upload one, and let the photo show.
     // The sheet stays open after a save; reopen it only if it closed.
-    if (!(await sheet.isVisible())) await page.getByRole("button", { name: "Edit Hero" }).click();
+    if (!(await sheet.isVisible())) await editHero.click();
     await sheet.getByRole("link", { name: "Change photo or video" }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    const zone = page.getByRole("group", { name: "Drop a photo here or paste one" }).first();
-    const input = zone.locator('input[type="file"]').first();
-    const description = page.getByRole("textbox", { name: "Photo description" }).first();
-    await expect(async () => {
-      await input.setInputFiles({
-        name: `hero-${STAMP}.png`,
-        mimeType: "image/png",
-        buffer: png(2000, 1250, [40, 90, 160]),
-      });
-      await expect(description).toBeVisible({ timeout: 30_000 });
-    }).toPass({ timeout: 90_000 });
+    // Wait for the hero's own editor, not any page with a heading (issue 276).
+    await page.waitForURL(/\/content\/mediaSlots\/home-hero/);
+    // The hero's Photo field (the video below has a poster photo of its own).
+    const field = page.getByRole("group", { name: "Photo (optional)", exact: true });
+    const input = field.locator('input[type="file"]').first();
+    const preview = field.getByRole("img", { name: "Photo preview" });
+    const description = field.getByRole("textbox", { name: "Photo description" });
+    await whenHydrated(input);
+    const before = (await preview.count()) ? await preview.getAttribute("src") : null;
+    await input.setInputFiles({
+      name: `hero-${STAMP}.png`,
+      mimeType: "image/png",
+      buffer: png(2000, 1250, [40, 90, 160]),
+    });
+    // The upload is done when the field shows the new photo.
+    await expect(preview).toBeVisible({ timeout: 60_000 });
+    if (before) await expect(preview).not.toHaveAttribute("src", before, { timeout: 60_000 });
     await description.fill(`Boats at the pier at sunrise ${STAMP}`);
     const removeVideo = page.getByRole("button", { name: /^Remove Video/ });
     if (await removeVideo.isVisible()) await removeVideo.click();
@@ -183,7 +194,8 @@ test("task 2: the home hero gets a new photo and headline, and the home page sho
     }
     await page.goto("/secure-admin-control/website/home");
     await expect(page.getByRole("button", { name: "Drag to reorder: Hero" })).toBeVisible();
-    await page.getByRole("button", { name: "Edit Hero" }).click();
+    await whenHydrated(editHero);
+    await editHero.click();
     await expect(sheet.getByRole("textbox", { name: "Headline", exact: true })).toBeEditable();
     await sheet.getByRole("textbox", { name: "Headline", exact: true }).fill(before);
     await sheet.getByRole("button", { name: "Save" }).click();

@@ -1829,6 +1829,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D297 | 26 Oct | `pnpm guards` and the CI Guards job run `client-boundary.mjs`: no Client Component may import LocalLink, next-intl/server, server-only or next/headers, directly or through a shared file (Server Actions excepted) | An earlier commit on the branch put the async LocalLink into EmptyCart and CheckoutSummary, which the cart and checkout render on the client: both pages crashed after hydration | #236 |
 | D298 | 26 Oct | Lighthouse in CI fails on accessibility, best practices, SEO (95) and CLS (0.1); performance 90, LCP 2.5 s and TBT 200 ms are `targets` reported as warnings until every key route meets them (#271) | Eight of eleven key routes reach 90 after #236; Home 87, Hotels 86 and Blog 88 need structural work (streamed Suspense reveal, RSC payload), and a failing job would block every full-ci merge meanwhile | #236 |
 | D299 | 26 Oct | Record detail pages (package, product, visa country and apply, blog post, visa guide, album, flight route) keep their Suspense boundary; its fallback fills the screen | In API mode (production) the snapshot reads `draftMode()`, which is request data: without the boundary a record added after the build (or a moved slug) failed with "uncached or runtime data during prerendering" (caught by the API-mode e2e on PR #272, never live) | #236 |
+| D300 | 27 Oct | Owner's work order replaces D268: #276 flaky test, F (accounts and /track, email code sign-in), then D, E, G, H, I, J, K, #271, L, M, content readiness; PRs touching public pages carry `full-ci` (CI Lighthouse) | Owner, 27 Oct: accounts and tracking before measurement; no SMS for sign-in | #276 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1840,6 +1841,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #276 API-mode hero photo task flaky: continued on any level-1 heading before the editor loaded, uploaded into the first empty zone, clicked before hydration (PR #272, passed on re-run) | P1 (test only) | apps/web/e2e/admin-staff-tasks.spec.ts | ✅ Fixed in #276 (URL wait, whenHydrated, exact Photo field, preview change) |
 | #263 Hotel stay e2e checked a day the desktop calendar did not show when check-in fell near a month's end (CI on 26 Oct, check-in 31 Oct) | P2 (test only) | apps/web/e2e/search.spec.ts | ✅ Fixed in #232 (goes to the next month to check it) |
 | #232 Customer files (visa documents, payment slips, attachments, feedback photo) never left the browser; staff got only the file names (Phase A rule D87/D106/D109 never lifted). Found in the #231 audit | P0 | forms, API | Fixed in #232 (private storage, signed links, e2e) |
 | #224 Budget e2e: the first attempt on /tour-packages, /visa and /shop counts about 100 KB more first-load JS on a freshly started CI server; the retry passes (seen on #221 and #223) | P2 (test only) | apps/web/e2e/budget.spec.ts | ✅ Fixed in #224: the spec counts only the scripts the page HTML references (idle-time prefetches made it racy, cold or warm); stable over cold and warm runs |
@@ -1996,6 +1998,24 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. Letter D #237 measurement (GA4, GTM, Pixel events after consent, UTM on orders, Reports source view).
-2. Letter E (#238 error tracking, #239 off-site backups).
-3. #271 when a slot opens: Home, Hotels and Blog to Lighthouse 90 and LCP 2.5 s, then `targets` → `budgets` (D298).
+
+Owner's work order (27 Oct, replaces the PROMPT 10 letter order D268; every session follows it, D300):
+1. #276 flaky API-mode hero photo test: real cause fixed with stable waits (no retries).
+2. Letter F, customer accounts and /track (before D): email one-time code (6 digits via Resend, 10 minutes, single
+   use, 5 tries) or Google; no phone OTP or SMS for sign-in; optional password later in My account (reset by email
+   code). Sign-up on the same screen (email, code, name and phone; phone is a contact field). Guest flows stay; guest
+   leads and orders attach on the same verified email (or phone when the old record has no email); staff can attach.
+   My account: requests with status timeline, visa applications, orders, wishlist, saved travellers (passport fields
+   encrypted at rest), addresses, notification preferences, sign-in history, delete account. Header, phone drawer and
+   More sheet show the state; admin and customer sessions separate. One /track for any request, visa application or
+   order (reference and phone); /shop/track redirects. Admin Customers: verified, sign-in method, last sign-in,
+   Disable account, Sign out everywhere. Security: rate limits per email and IP, Turnstile on the code request, no
+   enumeration, the code email editable in Admin › Forms and notifications; e2e on phone and desktop. PRD FR-ACC and
+   PRD_COVERAGE updated in the same PR. Checkpoint after F.
+3. Then D (#237 measurement), E (operations), G (sales tools), H (store and trust), I (travel), J (outside accounts,
+   sandbox and off; SMS later and only for status messages), K (Bangla), #271 (Home, Hotels, Blog to 90+ and LCP
+   2.5 s; then performance and LCP assertions to error), L (best-OTA bar), M (Phase D QA), content-readiness checklist.
+4. Senior-QA rule on every step: test cases in docs/qa first, P0/P1 automated, exploratory pass, full regression, QA
+   line at each checkpoint.
+5. Lighthouse (manual) stays dispatch-only; PRs that touch public pages carry the `full-ci` label so the CI
+   Lighthouse job catches speed regressions before merge.
