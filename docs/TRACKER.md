@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), B #234 ✅, #235 malware scan 🟡 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), B ✅ (#234, #235), next C #236 speed · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,7 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #235 · D B · Malware scan for customer uploads (ClamAV) — 🟡 In review
+### #235 · D B · Malware scan for customer uploads (ClamAV) — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | FR-VISA-06 and NFR-SEC: a ClamAV container sized for the 8 GB VPS; the worker scans each customer file before staff can see it; a hit is quarantined and staff see a warning; deploy bundle change; EICAR covered in an integration test and the deploy smoke |
@@ -46,6 +46,7 @@ Serena memory `audit_findings`.
 | Files | `apps/api/src/files/{clamd,fileScan,customer-files.service}.ts`, `apps/api/src/worker.ts`, `apps/api/src/config/env.ts`, `apps/api/test/fileScan.test.ts`, `apps/web/src/components/admin/files/CustomerFiles.tsx`, `apps/web/src/lib/admin/customerFiles.ts`, `apps/web/src/app/secure-admin-control/files/[key]/route.ts`, `deploy/{compose.yml,deploy.sh,server/compose.yml,server/deploy.sh}`, `scripts/smoke-malware-scan.mjs`, `ci.yml` (deploy smoke step), docs (DEPLOY, SECURITY, ADMIN_GUIDE, PRD_COVERAGE) |
 | Tests | API fileScan.test (verdicts, chunked stream, unreachable scanner, upload → pending → clean or quarantined with audit, links refused until clean, waiting when the scanner is down) against a clamd stand-in speaking INSTREAM; files.test unchanged; VPS deploy smoke with the real ClamAV: a clean PDF turns clean, an EICAR PDF is quarantined |
 | Tools and skills | Serena; Docker Hub tags for clamav/clamav; ui-ux-pro-max checklist on the Files panel states |
+| CI minutes | PR #270: 107 billed minutes (two full runs; the second accepted the CodeQL scanner upload) |
 | Decision | D291–D292 |
 | Migration | none (scanStatus existed since #232) · **deploy bundle changed**: copy deploy/server first |
 
@@ -1900,6 +1901,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 26 Oct | #235 merged (PR #270, 107 min; bundle change, no migration). Letter B done: checkpoint sent to the owner (copy bundle, backup, deploy, set up the authenticator) | #235 | #270 | VPS smoke with real ClamAV (EICAR quarantined) |
 | 26 Oct | #234 merged (PR #268, 100 min, migration: owner backs up, deploys, sets up the authenticator). #235 malware scan built: clamd client, worker pass, quarantine, Files panel states, ClamAV in compose and the deploy smoke | #234, #235 | #268 | API fileScan; e2e two-step |
 | 26 Oct | #229 (PR #265), #224 (PR #266) and #219 (PR #267) merged: letter A done. #234 two-step sign-in, sign-in history, new-device email and Redis rate limits built and verified locally | #219, #224, #229, #234 | #265, #266, #267 | API twoStep, rateLimit, totp; web 675; e2e admin-two-step 4/4 |
 | 26 Oct | #233 merged (PR #264, 48 min). #229 admin polish: five lists on the DataTable, themed date range, booking mode cards, plain integration words, phones typed once and countries by name, fixed lists, template words, airline logos, Add staff in the header | #233, #229 | #264, PR for #229 | see #229 |
@@ -1963,6 +1965,6 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. #235: PR with full-ci (deploy/ changed), merge; owner: copy the bundle, then deploy.
-2. Letter B checkpoint to the owner (two-step setup, bundle copy).
+1. Letter C #236: Lighthouse 90+ and 200 KB first-load JS on every public route, then LHCI assertions to error.
+2. Letter D #237 measurement (GA4, GTM, Pixel events after consent, UTM on orders, Reports source view).
 3. Letter C: #236 Lighthouse 90+ and 200 KB on every public route, CI assertions as errors.

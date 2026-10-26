@@ -135,6 +135,11 @@
   new-device email only after a first known device; API rate limits in Redis (hashed keys, process fallback, never off)
   + 10/h per phone, RATE_LIMIT_FACTOR for e2e only; QR drawn server-side with uqr; e2e setup project trusts the seed
   Super Admin's browser.
+- D290 (#234 review): locks double within a day (cap 24 h), code-step lock emails the person (staff-code-locked),
+  enrol claims totpEnabledAt atomically, two-step cookie path "/", focus to each step heading.
+- D291–D292 (#235): worker scans unscanned customer files every 10 s with clamd (INSTREAM, no dependency); with
+  CLAMAV_URL staff open only clean files, hits → quarantine/ + infected + audit; ClamAV 1.5.4 (1.6 GB limit, clamdata
+  volume), VPS minimum 8 GB.
 - D262–D265 (R10, 25 Oct): lists named by headingOf, columns only with data; banner/deal/announcement editor states
   startsLater/ended + group fares endingSoon (<= 7 days); system editors in words (editorName); sentence-case admin
   chrome, Table scrollLabel → named focusable region, tab rows wrap or fade.
