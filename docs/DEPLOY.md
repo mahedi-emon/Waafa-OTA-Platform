@@ -17,13 +17,13 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 | | Minimum (launch) | Recommended (room to grow) |
 | --- | --- | --- |
 | CPU | 2 vCPU, x86_64 (Intel or AMD) | 4 vCPU, x86_64 |
-| Memory | 4 GB (+ 4 GB swap file) | 8 GB |
+| Memory | 8 GB (ClamAV needs about 1.2 GB, issue 235; 4 GB + a 4 GB swap file only without it) | 8 GB |
 | Disk | 60 GB NVMe SSD | 100 GB NVMe SSD |
 | Traffic | 2 TB a month | 4 TB a month |
 | System | Ubuntu 24.04 LTS | Ubuntu 24.04 LTS |
 | Region | Singapore (or Mumbai): the shortest round trip to Dhaka | same |
 
-The containers are capped at about 2.8 GB together (table above), PostgreSQL included. The images are built on GitHub
+The containers are capped at about 4.4 GB together (table above), PostgreSQL and ClamAV (1.6 GB, issue 235) included: use the 8 GB plan. The images are built on GitHub
 for x86_64 only: an ARM server (Ampere, Graviton, Hetzner CAX) would need `--build`. Turn on the provider's weekly
 snapshot backups as a second copy.
 
@@ -111,6 +111,7 @@ change the password, delete both lines from `/opt/waafa/.env`, and follow the la
 
 | Release | What changed in `deploy/server` | What to do |
 | --- | --- | --- |
+| Issue 235 (Oct 2026) | `compose.yml`: a `clamav` service (ClamAV 1.5.4, about 1.2 GB once loaded, limit 1.6 GB, signatures in the `clamdata` volume), `CLAMAV_URL` for the API and the worker, the worker mounts `privatedata`; `deploy.sh` starts `clamav` | **Copy the bundle before this deploy** (step 1), then `sh deploy.sh` (no migration). The first start downloads the ClamAV image (about 160 MB) and loads signatures for a minute or two; files wait as "Checking for viruses" until then. With the old bundle nothing is scanned and files open as before |
 | Issue 232 (Oct 2026) | `compose.yml`: a `privatedata` volume for customer files (visa documents, payment slips) and `PRIVATE_FILES_DIR`; `backup.sh` also keeps `waafa-<time>.private.tar.gz` (readable by the server owner only) | **Copy the bundle before this deploy** (step 1), then `sh backup.sh` (migration) and `sh deploy.sh`. With the old bundle the site works, but file uploads pause and the forms send only file names |
 | Issue 231 (Oct 2026) | `compose.yml`: the worker runs `node dist/worker.js` (the image no longer has TypeScript or tsx) | Copy the bundle again (step 1) when convenient. Until then the old `tsx src/worker.ts` command still works through a stand-in inside the image, kept for one more release |
 

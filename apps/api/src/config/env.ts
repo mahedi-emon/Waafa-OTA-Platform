@@ -50,6 +50,16 @@ export const EnvSchema = z
      * Default 60 s; 0 turns it off (API tests call it themselves).
      */
     SCHEDULER_INTERVAL_MS: z.coerce.number().int().min(0).max(3_600_000).optional(),
+    /**
+     * The ClamAV daemon, e.g. tcp://clamav:3310 (issue 235). Set: the worker scans every customer file and staff open
+     * only clean ones. Unset (development, tests): files are not scanned and open as before.
+     */
+    CLAMAV_URL: optional.refine(
+      (value) => value === undefined || /^tcp:\/\/[^:/]+:\d{1,5}\/?$/.test(value),
+      {
+        message: "CLAMAV_URL looks like tcp://clamav:3310",
+      },
+    ),
     /** End-to-end runs send many forms from one address and phone; CI raises every API limit by this factor. */
     RATE_LIMIT_FACTOR: z.coerce.number().int().min(1).max(100).default(1),
     PROVIDER_SECRET_KEY: optional.refine((value) => value === undefined || value.length >= 32, {

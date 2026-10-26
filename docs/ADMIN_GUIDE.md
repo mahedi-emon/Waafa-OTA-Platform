@@ -52,6 +52,8 @@ Admin-er thikana: `https://waafasworld.com/secure-admin-control` (bookmark kore 
 
 - Sidebar › **Visa applications**. Protiti application-er document checklist ache.
 - Document pele tick din: ring bhore jay, sob dorkari document hole **Ready to submit**.
+- Customer-er pathano file prothome virus check hoy (**Checking for viruses**, sadharonoto kichhu second). Tarpor
+  **Open** dekhabe. Lal **Failed the malware scan** dekhale file khola jabe na: customer-ke abar pathate bolun.
 - Jama dile tarikh ar reference din (**Submitted**), por e result (**Approved / Rejected**), passport ferot dile
   **Passport returned**.
 

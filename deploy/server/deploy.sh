@@ -61,8 +61,8 @@ echo "2/5 Database, Redis, API (migrations and seed run on start)"
 $COMPOSE up -d postgres redis api
 wait_healthy api
 
-echo "3/5 Worker, web, nginx and certbot"
-$COMPOSE up -d worker web nginx certbot
+echo "3/5 Worker, ClamAV, web, nginx and certbot"
+$COMPOSE up -d clamav worker web nginx certbot
 $COMPOSE exec -T nginx sh -c 'rm -rf /var/cache/nginx/waafa/*' || echo "nginx cache not cleared (nginx not running yet)"
 
 echo "4/5 Fresh content"

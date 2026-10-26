@@ -7095,7 +7095,10 @@
         "payment-proof": "Payment slip",
         "other": "Document"
       },
-      "deleted": "Deleted {date}: visa documents are kept for 90 days after the case closes"
+      "deleted": "Deleted {date}: visa documents are kept for 90 days after the case closes",
+      "scanning": "Checking for viruses",
+      "scanned": "Virus-checked",
+      "infected": "Failed the malware scan and is quarantined. Ask the customer to send it again."
     },
     "dateRange": {
       "label": "Dates",

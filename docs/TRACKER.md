@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), B #234 two-step sign-in 🟡 in review, then #235 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 26 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), B #234 ✅, #235 malware scan 🟡 · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #234 · D B · Two-step sign-in, sign-in history, new-device email and Redis rate limits — 🟡 In review
+### #235 · D B · Malware scan for customer uploads (ClamAV) — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | FR-VISA-06 and NFR-SEC: a ClamAV container sized for the 8 GB VPS; the worker scans each customer file before staff can see it; a hit is quarantined and staff see a warning; deploy bundle change; EICAR covered in an integration test and the deploy smoke |
+| Built | `clamd.ts` (INSTREAM over TCP, PING, no dependency), `fileScan.ts` (a pass over unscanned files: clean → visible, hit → `quarantine/` + infected + audit `file.infected` with the signature, no answer → stays waiting), the worker runs a pass every 10 s when `CLAMAV_URL` is set; the API refuses links and downloads until a file is clean (409 `scanning`) and lists `scan` (off, pending, clean, infected); the admin Files panel shows "Checking for viruses", "Virus-checked" or a red quarantine warning. Compose: `clamav` (clamav/clamav:1.5.4, 1.6 GB limit, `clamdata` volume), `CLAMAV_URL`, worker mounts `privatedata`; both deploy scripts start it |
+| Files | `apps/api/src/files/{clamd,fileScan,customer-files.service}.ts`, `apps/api/src/worker.ts`, `apps/api/src/config/env.ts`, `apps/api/test/fileScan.test.ts`, `apps/web/src/components/admin/files/CustomerFiles.tsx`, `apps/web/src/lib/admin/customerFiles.ts`, `apps/web/src/app/secure-admin-control/files/[key]/route.ts`, `deploy/{compose.yml,deploy.sh,server/compose.yml,server/deploy.sh}`, `scripts/smoke-malware-scan.mjs`, `ci.yml` (deploy smoke step), docs (DEPLOY, SECURITY, ADMIN_GUIDE, PRD_COVERAGE) |
+| Tests | API fileScan.test (verdicts, chunked stream, unreachable scanner, upload → pending → clean or quarantined with audit, links refused until clean, waiting when the scanner is down) against a clamd stand-in speaking INSTREAM; files.test unchanged; VPS deploy smoke with the real ClamAV: a clean PDF turns clean, an EICAR PDF is quarantined |
+| Tools and skills | Serena; Docker Hub tags for clamav/clamav; ui-ux-pro-max checklist on the Files panel states |
+| Decision | D291–D292 |
+| Migration | none (scanStatus existed since #232) · **deploy bundle changed**: copy deploy/server first |
+
+### #234 · D B · Two-step sign-in, sign-in history, new-device email and Redis rate limits — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | FR-ADM 2FA (TOTP, required for Super Admin and Admin), login history in Users, an email on a sign-in from a new device, and NFR-SEC rate limits in Redis (per address and per phone), surviving a restart |
@@ -46,6 +57,7 @@ Serena memory `audit_findings`.
 | Files | `apps/api/prisma/{schema.prisma,migrations/20261026120000_staff_two_step}`, `apps/api/src/auth/{totp,device,twoStepSecret,twoStep.service,auth.service,auth.controller,tokens}.ts`, `apps/api/src/common/rateLimit.service.ts` (+ every controller that limited), `apps/api/src/seed/seedPatches.ts`, `packages/shared/src/schemas/{admin,settings}.ts`, `apps/web/src/lib/admin/{sessionActions,twoStep,twoStepActions}.ts`, `apps/web/src/components/admin/twoStep/*`, sign-in, account and users routes, `apps/web/e2e/{staff.setup,admin-two-step.spec,totp}.ts`, `playwright.config.ts`, `ci.yml` (Redis service, factor), docs (DEPLOY, SECURITY, ADMIN_GUIDE, PRD_COVERAGE) |
 | Tests | API: totp.unit (RFC vectors, drift, replay, labels), twoStep.test (9: enrol, code, replay, recovery once, lockout, trusted device, history and email, refresh sign-out, account on/off, Super Admin reset, review fixes: lock doubles and emails, enrol once under a race), rateLimit.test (memory, factor, Redis fallback, shared across restart, per-phone), auth and seed patch tests · web 675 (twoStep helpers) · e2e admin-two-step 4/4 and the admin suite locally (failures only from reused local data: stock 0, an edited Sample visa country, a 4-digit badge count) |
 | Tools and skills | Serena; Context7 (ioredis 6, uqr, Playwright project dependencies); shadcn input-otp; Playwright MCP (enrol 390/1440, code step 390, account 1440, 320 overflow fixed); ui-ux-pro-max checklist; design review of the steps; independent review subagent (no bypass; 7 findings fixed, D290) |
+| CI minutes | PR #268: 100 billed minutes (two full runs: the first, then the review fixes) |
 | Decision | D284–D290 |
 | Migration | **yes, additive** (StaffUser columns, StaffRecoveryCode, StaffDevice, StaffLoginEvent): `sh backup.sh` before `sh deploy.sh` |
 
@@ -1785,6 +1797,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D288 | 26 Oct | The QR code is drawn as one SVG path from a matrix made on the server with `uqr` (zero dependencies, about 10 KB, server-only) | No QR library in any browser bundle | #234 |
 | D289 | 26 Oct | E2E: a Playwright setup project signs the seed Super Admin in once (enrolling on a fresh database), trusts that browser and keeps only its device cookie as every spec's storage state; the secret stays in git-ignored e2e/.auth for local runs | Every spec keeps its own sign-in, and no test-only bypass exists in the API | #234 |
 | D290 | 26 Oct | From the independent review: each lock in the last day doubles the next (15, 30, 60 minutes… up to a day); a lock reached at the code step emails the person (`staff-code-locked`, seed patch); enrolment claims `totpEnabledAt` atomically; the two-step cookie path is `/` (locale prefixes); focus moves to each new step's heading; a reset for optional roles says it turns two-step off | Someone with the password could otherwise guess codes five at a time forever, unseen | #234 |
+| D291 | 26 Oct | Malware scan runs in the worker as a 10-second pass over unscanned files (no queue); with `CLAMAV_URL` set staff open only clean files, a hit moves to `quarantine/` and stays for the normal retention; without it (development, tests, an old bundle) files open as before | The worker owns background work; polling survives restarts and a scanner outage without lost jobs | #235 |
+| D292 | 26 Oct | ClamAV 1.5.4 official image with freshclam inside, 1.6 GB limit, signatures in a volume; the VPS minimum becomes 8 GB | Owner's 8 GB VPS (PROMPT 10 letter B); clamd needs about 1.2 GB | #235 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1886,6 +1900,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 26 Oct | #234 merged (PR #268, 100 min, migration: owner backs up, deploys, sets up the authenticator). #235 malware scan built: clamd client, worker pass, quarantine, Files panel states, ClamAV in compose and the deploy smoke | #234, #235 | #268 | API fileScan; e2e two-step |
 | 26 Oct | #229 (PR #265), #224 (PR #266) and #219 (PR #267) merged: letter A done. #234 two-step sign-in, sign-in history, new-device email and Redis rate limits built and verified locally | #219, #224, #229, #234 | #265, #266, #267 | API twoStep, rateLimit, totp; web 675; e2e admin-two-step 4/4 |
 | 26 Oct | #233 merged (PR #264, 48 min). #229 admin polish: five lists on the DataTable, themed date range, booking mode cards, plain integration words, phones typed once and countries by name, fixed lists, template words, airline logos, Add staff in the header | #233, #229 | #264, PR for #229 | see #229 |
 | 26 Oct | #232 merged (PR #262, 85 min; owner: copy bundle, backup, deploy). #233: visa status emails, staff alerts by area, low-stock alert, EMI request form; mode-change reason moved to Phase E | #232, #263, #233 | #262, PR for #233 | see #233 |
@@ -1948,6 +1963,6 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 | 09 Oct 06:10 | Step 0 (v3): tools tested, attribution off, labels, milestones, issues #1–#22 on Project #4 | — | — | — |
 
 ## 14. Next steps
-1. #234: PR with full-ci, merge; owner: backup then deploy, then set up the authenticator at the next sign-in.
-2. #235 ClamAV, then the letter B checkpoint.
+1. #235: PR with full-ci (deploy/ changed), merge; owner: copy the bundle, then deploy.
+2. Letter B checkpoint to the owner (two-step setup, bundle copy).
 3. Letter C: #236 Lighthouse 90+ and 200 KB on every public route, CI assertions as errors.
