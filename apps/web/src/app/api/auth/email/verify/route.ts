@@ -31,14 +31,15 @@ export async function POST(request: Request) {
     userAgent: request.headers.get("user-agent") ?? undefined,
   });
   if (!outcome.ok) {
-    const status =
-      outcome.reason === "busy"
+    // A wrong, expired or used-up code is an ordinary answer (200), not a failed request: the form says what to do.
+    const refusal = ["wrong-code", "expired", "locked", "disabled"].includes(outcome.reason);
+    const status = refusal
+      ? 200
+      : outcome.reason === "busy"
         ? 429
         : outcome.reason === "off"
           ? 404
-          : outcome.reason === "unavailable"
-            ? 503
-            : 401;
+          : 503;
     return NextResponse.json(
       {
         error: outcome.reason,

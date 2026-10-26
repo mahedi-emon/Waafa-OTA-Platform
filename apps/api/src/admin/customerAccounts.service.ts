@@ -162,8 +162,8 @@ export class AdminCustomerAccountsService {
           action: "customer.disable",
           entity: "customer",
           entityId: id,
-          before: { disabled: false },
-          after: { disabled: true },
+          before: { email: customer.email, disabled: false },
+          after: { email: customer.email, disabled: true },
           ...(reason ? { reason } : {}),
         },
         tx,
@@ -183,8 +183,8 @@ export class AdminCustomerAccountsService {
           action: "customer.enable",
           entity: "customer",
           entityId: id,
-          before: { disabled: true },
-          after: { disabled: false },
+          before: { email: customer.email, disabled: true },
+          after: { email: customer.email, disabled: false },
         },
         tx,
       );
@@ -194,7 +194,7 @@ export class AdminCustomerAccountsService {
 
   /** Ends every session; the customer signs in again with a new code or Google. */
   async signOutEverywhere(staff: StaffPrincipal, id: string) {
-    await this.find(id);
+    const customer = await this.find(id);
     const now = new Date();
     const ended = await this.prisma.$transaction(async (tx) => {
       const result = await tx.customerSession.updateMany({
@@ -207,7 +207,7 @@ export class AdminCustomerAccountsService {
           action: "customer.sign-out-everywhere",
           entity: "customer",
           entityId: id,
-          after: { sessionsEnded: result.count },
+          after: { email: customer.email, sessionsEnded: result.count },
         },
         tx,
       );
@@ -222,7 +222,7 @@ export class AdminCustomerAccountsService {
     id: string,
     input: { kind: "lead" | "order"; reference: string },
   ) {
-    await this.find(id);
+    const customer = await this.find(id);
     const reference = input.reference.trim().toUpperCase();
     await this.prisma.$transaction(async (tx) => {
       if (input.kind === "lead") {
@@ -234,10 +234,10 @@ export class AdminCustomerAccountsService {
           {
             actor: staff,
             action: "customer.attach",
-            entity: "lead",
-            entityId: lead.id,
-            before: { customerId: lead.customerId },
-            after: { customerId: id },
+            entity: "customer",
+            entityId: id,
+            before: { email: customer.email, record: lead.reference, customerId: lead.customerId },
+            after: { email: customer.email, record: lead.reference, customerId: id },
           },
           tx,
         );

@@ -309,8 +309,15 @@ jobs:
         ports: ["5432:5432"]
         options: >-
           --health-cmd "pg_isready -U waafa" --health-interval 5s --health-timeout 5s --health-retries 12
+      # A test inbox (issue 241): the API sends through it and the sign-in e2e reads the emailed code from its API.
+      mailpit:
+        image: axllent/mailpit:v1.31.5
+        ports: ["1025:1025", "8025:8025"]
     env:
       DATABASE_URL: postgresql://waafa:waafa@localhost:5432/waafa
+      SMTP_URL: smtp://localhost:1025
+      MAIL_FROM: Waafa <no-reply@example.com>
+      MAILPIT_URL: http://localhost:8025
       JWT_SECRET: ci-jwt-secret-0123456789-0123456789-abcdef
       REVALIDATE_SECRET: ci-revalidate-secret-0123456789-abc
       INTAKE_KEY: ci-intake-key-0123456789-abcdef
@@ -378,7 +385,7 @@ jobs:
 
       - name: API mode e2e
         working-directory: apps/web
-        run: pnpm exec playwright test e2e/api-mode.spec.ts e2e/admin-shell.spec.ts e2e/admin-screens.spec.ts e2e/admin-editor.spec.ts e2e/admin-media.spec.ts e2e/admin-workflow.spec.ts e2e/admin-datatable.spec.ts e2e/admin-inbox.spec.ts e2e/admin-website.spec.ts e2e/admin-editors.spec.ts e2e/admin-settings.spec.ts e2e/admin-staff-tasks.spec.ts e2e/admin-two-step.spec.ts --workers=1
+        run: pnpm exec playwright test e2e/api-mode.spec.ts e2e/admin-shell.spec.ts e2e/admin-screens.spec.ts e2e/admin-editor.spec.ts e2e/admin-media.spec.ts e2e/admin-workflow.spec.ts e2e/admin-datatable.spec.ts e2e/admin-inbox.spec.ts e2e/admin-website.spec.ts e2e/admin-editors.spec.ts e2e/admin-settings.spec.ts e2e/admin-staff-tasks.spec.ts e2e/admin-two-step.spec.ts e2e/account-email.spec.ts --workers=1
 
       - name: Upload admin screenshots
         if: always()

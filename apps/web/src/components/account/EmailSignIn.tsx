@@ -84,7 +84,8 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
   const [busy, setBusy] = useState(false);
   const turnstile = useTurnstile();
   const once = useSubmitOnce();
-  const heading = useRef<HTMLHeadingElement>(null);
+  // The new step's heading (or the email box on the first step) takes focus.
+  const heading = useRef<HTMLElement | null>(null);
   const firstStep = useRef(true);
 
   // Each new step takes focus, so keyboard and screen-reader users land on it.
@@ -204,11 +205,11 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
         phone,
         phoneCountry: country,
       });
-      if (status === 200) {
+      if (status === 200 && json.status === "signed-in") {
         window.location.assign(next);
         return;
       }
-      if (status === 401) {
+      if (json.error === "expired") {
         setError(labels.errors.signUpExpired);
         setStep("email");
         return;
@@ -248,12 +249,12 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
         onFocus={turnstile.activate}
         className="flex flex-col gap-4"
       >
-        <h2 ref={heading} tabIndex={-1} className="sr-only">
-          {labels.email}
-        </h2>
         <FormField id="signin-email" label={labels.email} hint={labels.emailHint}>
           {(describedBy) => (
             <Input
+              ref={(node) => {
+                heading.current = node;
+              }}
               id="signin-email"
               name="email"
               type="email"
@@ -280,9 +281,11 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
     return (
       <form noValidate onSubmit={submitCode} className="flex flex-col gap-4">
         <h2
-          ref={heading}
+          ref={(node) => {
+            heading.current = node;
+          }}
           tabIndex={-1}
-          className="flex items-start gap-2 text-[15px] leading-relaxed text-navy-900 outline-none"
+          className="flex items-start gap-2 font-sans text-[15px] leading-relaxed font-normal text-navy-900 outline-none"
         >
           <MailCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-success-600" />
           <span>{labels.sentTo.replace("{email}", email.trim().toLowerCase())}</span>
@@ -338,7 +341,9 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
     <form noValidate onSubmit={submitProfile} className="flex flex-col gap-4">
       <div>
         <h2
-          ref={heading}
+          ref={(node) => {
+            heading.current = node;
+          }}
           tabIndex={-1}
           className="font-display text-[18px] font-bold text-navy-900 outline-none"
         >

@@ -25,6 +25,7 @@ const SCREENS = [
   { name: "integrations", path: "/secure-admin-control/integrations" },
   { name: "reports", path: "/secure-admin-control/reports" },
   { name: "customers", path: "/secure-admin-control/customers" },
+  { name: "customer-accounts", path: "/secure-admin-control/customers/accounts" },
   { name: "media", path: "/secure-admin-control/media" },
   { name: "settings", path: "/secure-admin-control/settings" },
   { name: "settings-payments", path: "/secure-admin-control/settings/payments" },

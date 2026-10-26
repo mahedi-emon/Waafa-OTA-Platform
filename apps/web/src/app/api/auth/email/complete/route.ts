@@ -26,7 +26,8 @@ export async function POST(request: Request) {
   const ip = clientKey(request.headers);
   if (!allow(`complete:${ip}`)) return NextResponse.json({ error: "busy" }, { status: 429 });
   const ticket = (await cookies()).get(SIGNUP_COOKIE)?.value;
-  if (!ticket) return NextResponse.json({ error: "expired" }, { status: 401 });
+  // An expired sign-up is an ordinary answer (200): the form starts again at the email.
+  if (!ticket) return NextResponse.json({ error: "expired" });
   const text = await readCappedBody(request, 2_000);
   if (text === null) return NextResponse.json({ error: "invalid" }, { status: 413 });
   let body: unknown;
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
     { clientIp: ip, userAgent: request.headers.get("user-agent") ?? undefined },
   );
   if (!outcome.ok) {
-    const status = outcome.reason === "busy" ? 429 : outcome.reason === "expired" ? 401 : 503;
+    const status = outcome.reason === "busy" ? 429 : outcome.reason === "expired" ? 200 : 503;
     const response = NextResponse.json({ error: outcome.reason }, { status });
     if (outcome.reason === "expired") clearSignUpCookie(response);
     return response;

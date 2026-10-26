@@ -361,10 +361,10 @@ describe.skipIf(!dbAvailable)("email code sign-in (issue 241)", () => {
       select: { action: true },
     });
     expect(actions.map((row) => row.action).sort()).toEqual([
+      "customer.attach",
       "customer.disable",
       "customer.sign-out-everywhere",
     ]);
-    expect(await prisma.auditLog.count({ where: { action: "customer.attach" } })).toBe(1);
   });
 
   it("F-21: keeps a name with markup as plain text", async () => {

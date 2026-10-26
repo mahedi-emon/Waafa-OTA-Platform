@@ -7,7 +7,15 @@ export type AuditTarget =
   | { kind: "list"; key: ContentKey }
   | {
       kind:
-        "lead" | "order" | "proof" | "staff" | "media" | "integration" | "feedback" | "subscriber";
+        | "lead"
+        | "order"
+        | "proof"
+        | "staff"
+        | "media"
+        | "integration"
+        | "feedback"
+        | "subscriber"
+        | "customer";
       name?: string;
     }
   | { kind: "update"; changed: number }
@@ -62,6 +70,7 @@ const KINDS: Record<
   provider: "integration",
   feedback: "feedback",
   subscriber: "subscriber",
+  customer: "customer",
 };
 
 /**

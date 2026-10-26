@@ -31,6 +31,8 @@ type Profile = {
     total: number;
     createdAt: string;
   }> | null;
+  /** The customer account with this phone or email (issue 241). */
+  account: { id: string; email: string; verified: boolean; disabled: boolean } | null;
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -44,9 +46,10 @@ async function CustomerProfile({
   params: PageProps<"/[locale]/secure-admin-control/customers/[phone]">["params"];
 }) {
   const { phone } = await params;
-  const [profile, t, tm, ts, to] = await Promise.all([
+  const [profile, t, ta, tm, ts, to] = await Promise.all([
     adminGet<Profile>(`/admin/customers/${encodeURIComponent(decodeURIComponent(phone))}`),
     getTranslations("Admin.customers"),
+    getTranslations("Admin.customerAccounts"),
     getTranslations("Admin.modules"),
     getTranslations("Admin.statuses"),
     getTranslations("Admin.orders.statuses"),
@@ -60,6 +63,25 @@ async function CustomerProfile({
         lead={[profile.phone, profile.email].filter(Boolean).join(" · ")}
         back={{ href: "/secure-admin-control/customers", label: t("back") }}
       />
+      {profile.account ? (
+        <p className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-mist-200 bg-white p-4 text-[14.5px] text-navy-900">
+          <span>
+            <span className="font-semibold">{ta("profileAccount")}</span> · {profile.account.email}{" "}
+            ·{" "}
+            {profile.account.disabled
+              ? ta("disabled")
+              : profile.account.verified
+                ? ta("verified")
+                : ta("unverified")}
+          </span>
+          <Link
+            href={`/secure-admin-control/customers/accounts/${encodeURIComponent(profile.account.id)}`}
+            className="inline-flex min-h-11 items-center font-semibold text-brand-700 hover:underline"
+          >
+            {ta("profileOpen")}
+          </Link>
+        </p>
+      ) : null}
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label={t("summary")}>
         <li className="rounded-2xl border border-mist-200 bg-white p-4">
           <p className="text-[13px] text-mist-600">{t("colLeads")}</p>
