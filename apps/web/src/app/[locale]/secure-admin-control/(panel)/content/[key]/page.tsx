@@ -257,8 +257,8 @@ async function RecordTable({
             id: "trash",
             label: t("trash"),
             danger: true,
-            // The bulk bar puts the number in: the raw words keep {count}.
-            confirm: t.raw("trashConfirm") as string,
+            // The bulk bar puts the number in: the words keep {count} (compiled messages have no t.raw).
+            confirm: t("trashConfirm", { count: "{count}" }),
             run: bulkContent.bind(null, key, "trash"),
           },
         ]

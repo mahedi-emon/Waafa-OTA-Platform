@@ -325,6 +325,32 @@
 }
 
 /*
+ * The native checkbox's tick and dash (components/ui/checkbox.tsx, issue 236): a mask in the text colour, so the
+ * input needs no child element. Hidden until checked or mixed.
+ */
+@utility checkbox-tick {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 14px;
+    height: 14px;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    visibility: hidden;
+  }
+  &:checked::before {
+    visibility: visible;
+  }
+  &:indeterminate::before {
+    visibility: visible;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+  }
+}
+
+/*
  * Header background layer: transparent at the top of the page, solid with blur after 24 px of scroll. Pure CSS
  * (scroll-driven animation on opacity); browsers without scroll timelines show the solid layer (MOTION.md §2).
  */

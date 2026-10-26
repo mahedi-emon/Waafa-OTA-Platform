@@ -9,7 +9,7 @@ type ConsentFieldProps = {
   checked: boolean;
   onChange: (checked: boolean) => void;
   error?: string;
-  inputRef?: Ref<HTMLButtonElement>;
+  inputRef?: Ref<HTMLInputElement>;
 };
 
 /** The consent checkbox that ends every lead step: the admin-set wording, an error under it, a 44 px target. */

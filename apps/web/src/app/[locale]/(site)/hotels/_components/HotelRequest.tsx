@@ -2,21 +2,12 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { HotelSearch } from "@waafa/shared";
 import { LeadRequestCard } from "@/components/leads/LeadRequestCard";
+import { PreferencesSheet } from "@/components/leads/PreferencesSheet";
 import { useDhakaToday } from "@/components/search/useDhakaToday";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import type { StayStepInput, StayStepValues } from "@/lib/leads/hotelLeadForm";
 import { stayDefaults } from "@/lib/leads/hotelStay";
@@ -84,33 +75,18 @@ function HotelRequest(props: HotelRequestProps) {
         {panel}
       </aside>
       <div className="flex min-w-0 flex-col gap-4">
-        <Drawer>
-          <DrawerTrigger asChild>
-            <Button variant="secondary" className="self-start xl:hidden">
-              <SlidersHorizontal aria-hidden="true" />
-              {t("prefs.open")} {tLeads("prefs.count", { count })}
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent className="max-h-[90dvh] rounded-t-[28px] border-0 bg-white">
-            <div className="px-4 pt-2 pb-2">
-              <DrawerTitle className="font-display text-[18px] font-bold text-navy-900">
-                {t("prefs.title")}
-              </DrawerTitle>
-              <DrawerDescription className="text-[13.5px] text-mist-600">
-                {t("prefs.lead")}
-              </DrawerDescription>
-            </div>
-            <div className="px-4 pb-4">{panel}</div>
-            <div className="flex gap-3 border-t border-mist-200 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
-              <Button variant="ghost" onClick={() => setPreferences(NONE)}>
-                {tLeads("prefs.clear")}
-              </Button>
-              <DrawerClose asChild>
-                <Button className="flex-1">{tLeads("prefs.save")}</Button>
-              </DrawerClose>
-            </div>
-          </DrawerContent>
-        </Drawer>
+        <PreferencesSheet
+          trigger={`${t("prefs.open")} ${tLeads("prefs.count", { count })}`}
+          labels={{
+            title: t("prefs.title"),
+            lead: t("prefs.lead"),
+            clear: tLeads("prefs.clear"),
+            save: tLeads("prefs.save"),
+          }}
+          onClear={() => setPreferences(NONE)}
+        >
+          {panel}
+        </PreferencesSheet>
 
         <LeadRequestCard<StayStepValues>
           titleId="hotel-request-title"
