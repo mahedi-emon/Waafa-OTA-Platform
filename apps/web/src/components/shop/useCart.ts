@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { track } from "@/lib/analytics/track";
 import {
   addLine,
   cartCount,
@@ -63,7 +64,10 @@ export function useCart() {
   return {
     lines,
     count: cartCount(lines),
-    add: (line: CartLine) => write(addLine(read(), line)),
+    add: (line: CartLine) => {
+      write(addLine(read(), line));
+      track("add_to_cart", { item_id: line.variantId });
+    },
     setQty: (variantId: string, qty: number) => write(setLineQty(read(), variantId, qty)),
     remove: (variantId: string) => write(removeLine(read(), variantId)),
     clear: () => write([]),

@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { useSyncExternalStore } from "react";
 import { Link } from "@/i18n/navigation";
+import { EventBridge } from "./EventBridge";
 
 type Choice = "granted" | "denied" | null;
 type Ids = { gtmId?: string; ga4Id?: string; metaPixelId?: string };
@@ -50,6 +51,7 @@ function decide(choice: "granted" | "denied") {
 function AnalyticsScripts({ gtmId, ga4Id, metaPixelId }: Ids) {
   return (
     <>
+      <EventBridge />
       {gtmId ? (
         <Script id="waafa-gtm" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');`}

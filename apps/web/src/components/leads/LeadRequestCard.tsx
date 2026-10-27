@@ -15,6 +15,7 @@ import { ContactStep } from "./ContactStep";
 import { LeadCardHeader } from "./LeadCardHeader";
 import { LeadSuccess } from "./LeadSuccess";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
+import { track } from "@/lib/analytics/track";
 
 type LeadRequestCardProps<T> = {
   /** id of the card heading (names the region). */
@@ -108,7 +109,9 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
         setFailure(response.status === 429 ? "rate" : "retry");
         return;
       }
-      setCreated((await response.json()) as LeadCreated);
+      const saved = (await response.json()) as LeadCreated;
+      track("lead_submit", { reference: saved.reference, module: lead.payload.module });
+      setCreated(saved);
       once.renew();
       goTo("sent");
     } catch {
