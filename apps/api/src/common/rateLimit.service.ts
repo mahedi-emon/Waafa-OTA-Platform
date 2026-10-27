@@ -27,7 +27,7 @@ export const RATE_RULES = {
   uploads: { limit: 40, windowMs: 60_000 },
   // Per-visitor limits behind the web's own: the web limits first, these catch anything that reaches the API another
   // way. Twice the web's numbers, so the two layers never disagree for a real visitor.
-  leads: { limit: 20, windowMs: 60_000 },
+  leads: { limit: 10, windowMs: 60_000 },
   /** NFR-SEC: 10 requests per hour from one phone number, whatever the address. */
   leadsPerPhone: { limit: 10, windowMs: 60 * 60_000 },
   orders: { limit: 12, windowMs: 60_000 },

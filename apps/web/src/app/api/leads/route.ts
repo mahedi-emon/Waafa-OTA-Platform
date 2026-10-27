@@ -8,7 +8,8 @@ import { verifyTurnstile } from "@/lib/leads/turnstile";
 import { clientKey, createRateLimiter } from "@/lib/rateLimit";
 
 const MAX_BODY_BYTES = 16_384;
-const allow = createRateLimiter({ limit: 10, windowMs: 60_000 });
+// PRD §13 (NFR-SEC): 5 lead submits a minute per address (issue 239).
+const allow = createRateLimiter({ limit: 5, windowMs: 60_000 });
 const once = createIdempotencyStore<LeadCreated>({ ttlMs: 10 * 60_000 });
 
 /**
