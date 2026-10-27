@@ -8,7 +8,6 @@ import { FormField } from "@/components/forms/FormField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import { useRouter } from "@/i18n/navigation";
 import { accountError, postAccount, type AccountErrors } from "./postAccount";
 
 export type TravellerLabels = {
@@ -55,8 +54,14 @@ const blank: Draft = {
 };
 
 /** Saved travellers in My account (issue 278): add, edit and remove; the passport number is sent once and shown masked. */
-function TravellersEditor({ travellers, nationalities, labels, errors }: TravellersEditorProps) {
-  const router = useRouter();
+function TravellersEditor({
+  travellers: initial,
+  nationalities,
+  labels,
+  errors,
+}: TravellersEditorProps) {
+  // The list lives here and follows each answer, so a change never reloads the page.
+  const [travellers, setTravellers] = useState(initial);
   const [editing, setEditing] = useState<string | "new" | null>(null);
   const [draft, setDraft] = useState<Draft>(blank);
   const [problem, setProblem] = useState<string | null>(null);
@@ -96,9 +101,15 @@ function TravellersEditor({ travellers, nationalities, labels, errors }: Travell
         setProblem(accountError(answer, errors, labels.full));
         return;
       }
+      const { ok: _ok, ...saved } = answer;
+      const view = saved as unknown as TravellerView;
+      setTravellers((list) =>
+        editing === "new"
+          ? [...list, view]
+          : list.map((item) => (item.id === view.id ? view : item)),
+      );
       toast.success(labels.saved);
       setEditing(null);
-      router.refresh();
     });
   }
 
@@ -109,8 +120,8 @@ function TravellersEditor({ travellers, nationalities, labels, errors }: Travell
         toast.error(accountError(answer, errors));
         return;
       }
+      setTravellers((list) => list.filter((item) => item.id !== traveller.id));
       toast.success(labels.removedDone);
-      router.refresh();
     });
   }
 

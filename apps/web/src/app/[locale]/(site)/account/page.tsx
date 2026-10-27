@@ -10,10 +10,11 @@ import { PackageOpen } from "@/components/icons/server/PackageOpen";
 import { Plane } from "@/components/icons/server/Plane";
 import { Stamp } from "@/components/icons/server/Stamp";
 import { formatDate, formatTaka, type AccountView } from "@waafa/shared";
+import { cn } from "cn";
 import { AccountSettings } from "@/components/account/AccountSettings";
 import { AddressesEditor } from "@/components/account/AddressesEditor";
 import { TravellersEditor } from "@/components/account/TravellersEditor";
-import { WishlistRemoveButton } from "@/components/account/WishlistRemoveButton";
+import { WishlistRow } from "@/components/account/WishlistRow";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -314,55 +315,47 @@ async function AccountContent({
               </h2>
               <p className={lead}>{t("wishlist.lead")}</p>
             </div>
-            {saved.length > 0 ? (
-              <ul className="flex flex-col gap-2">
-                {saved.map((item) => (
-                  <li
-                    key={`${item.kind}:${item.slug}`}
-                    className="flex items-center gap-3 rounded-2xl border border-mist-200 bg-white p-2.5"
-                  >
-                    {item.image ? (
-                      <SmartImage
-                        src={item.image.src}
-                        alt=""
-                        width={64}
-                        height={64}
-                        sizes="64px"
-                        className="size-16 shrink-0 rounded-xl object-cover"
-                      />
-                    ) : (
-                      <span
-                        aria-hidden="true"
-                        className="size-16 shrink-0 rounded-xl bg-mist-100"
-                      />
-                    )}
-                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <Link
-                        href={item.href}
-                        className="truncate text-[15px] font-semibold text-navy-900 outline-none hover:text-brand-700 focus-visible:underline"
-                      >
-                        {item.title}
-                      </Link>
-                      <span className="truncate text-[13px] text-mist-600 tabular-nums">
-                        {item.note}
-                      </span>
-                    </span>
-                    <WishlistRemoveButton
-                      kind={item.kind}
-                      slug={item.slug}
-                      label={t("wishlist.remove", { name: item.title })}
-                      removed={t("wishlist.removed")}
-                      errors={errors}
+            {/* A row removes itself on the client; the note shows once the list is empty. */}
+            <ul className="peer flex flex-col gap-2">
+              {saved.map((item) => (
+                <WishlistRow
+                  key={`${item.kind}:${item.slug}`}
+                  kind={item.kind}
+                  slug={item.slug}
+                  label={t("wishlist.remove", { name: item.title })}
+                  removed={t("wishlist.removed")}
+                  errors={errors}
+                >
+                  {item.image ? (
+                    <SmartImage
+                      src={item.image.src}
+                      alt=""
+                      width={64}
+                      height={64}
+                      sizes="64px"
+                      className="size-16 shrink-0 rounded-xl object-cover"
                     />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className={empty}>
-                <Heart aria-hidden="true" className="size-6 text-brand-700" />
-                <p className="text-[15px] text-mist-700">{t("wishlist.empty")}</p>
-              </div>
-            )}
+                  ) : (
+                    <span aria-hidden="true" className="size-16 shrink-0 rounded-xl bg-mist-100" />
+                  )}
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <Link
+                      href={item.href}
+                      className="truncate text-[15px] font-semibold text-navy-900 outline-none hover:text-brand-700 focus-visible:underline"
+                    >
+                      {item.title}
+                    </Link>
+                    <span className="truncate text-[13px] text-mist-600 tabular-nums">
+                      {item.note}
+                    </span>
+                  </span>
+                </WishlistRow>
+              ))}
+            </ul>
+            <div className={cn(empty, "hidden peer-empty:flex")}>
+              <Heart aria-hidden="true" className="size-6 text-brand-700" />
+              <p className="text-[15px] text-mist-700">{t("wishlist.empty")}</p>
+            </div>
           </section>
         </div>
       </div>

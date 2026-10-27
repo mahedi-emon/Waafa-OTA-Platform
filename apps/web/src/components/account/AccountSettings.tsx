@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useRouter } from "@/i18n/navigation";
 import { accountError, postAccount, type AccountErrors } from "./postAccount";
 
 export type SettingsLabels = {
@@ -54,8 +53,10 @@ function AccountSettings({
   labels,
   errors,
 }: AccountSettingsProps) {
-  const router = useRouter();
   const offersId = useId();
+  // Password and sign-ins follow each answer here, so a change never reloads the page.
+  const [passwordSet, setPasswordSet] = useState(hasPassword);
+  const [entries, setEntries] = useState(signIns);
   const [offers, setOffers] = useState(notifyOffers);
   const [password, setPassword] = useState("");
   const [problem, setProblem] = useState<string | null>(null);
@@ -88,8 +89,8 @@ function AccountSettings({
         return;
       }
       setPassword("");
+      setPasswordSet(true);
       toast.success(labels.passwordSaved);
-      router.refresh();
     });
   }
 
@@ -100,8 +101,8 @@ function AccountSettings({
         toast.error(accountError(answer, errors));
         return;
       }
+      setPasswordSet(false);
       toast.success(labels.passwordRemoved);
-      router.refresh();
     });
   }
 
@@ -119,12 +120,14 @@ function AccountSettings({
           : count === 1
             ? labels.signedOutOne
             : labels.signedOutMany;
+      setEntries((list) =>
+        list.map((entry) => (entry.current ? entry : { ...entry, active: false })),
+      );
       toast.success(words.replace("{count}", String(count)));
-      router.refresh();
     });
   }
 
-  const others = signIns.some((entry) => entry.active && !entry.current);
+  const others = entries.some((entry) => entry.active && !entry.current);
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -171,9 +174,9 @@ function AccountSettings({
         </FormField>
         <div className="flex flex-wrap gap-2">
           <Button type="submit" loading={pending}>
-            {hasPassword ? labels.passwordChange : labels.passwordSet}
+            {passwordSet ? labels.passwordChange : labels.passwordSet}
           </Button>
-          {hasPassword ? (
+          {passwordSet ? (
             <Button type="button" variant="ghost" disabled={pending} onClick={removePassword}>
               {labels.passwordRemove}
             </Button>
@@ -184,7 +187,7 @@ function AccountSettings({
       <div className={`${card} lg:col-span-2`}>
         <h3 className={h3}>{labels.signInsTitle}</h3>
         <ul className="flex flex-col divide-y divide-mist-100">
-          {signIns.map((entry) => (
+          {entries.map((entry) => (
             <li key={entry.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
               <span className="min-w-0 text-[14.5px] text-ink-900">
                 {entry.device}

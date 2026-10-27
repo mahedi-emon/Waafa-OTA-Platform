@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import { useRouter } from "@/i18n/navigation";
 import { DIVISIONS } from "@/lib/shop/checkoutFormFields";
 import { accountError, postAccount, type AccountErrors } from "./postAccount";
 
@@ -62,8 +61,9 @@ type Draft = {
 const national = (e164: string) => (e164.startsWith("+880") ? `0${e164.slice(4)}` : e164);
 
 /** Delivery addresses in My account (issue 278): the default one fills in at checkout. */
-function AddressesEditor({ addresses, countries, labels, errors }: AddressesEditorProps) {
-  const router = useRouter();
+function AddressesEditor({ addresses: initial, countries, labels, errors }: AddressesEditorProps) {
+  // The list lives here and follows each answer (the API's default rules mirrored), so a change never reloads the page.
+  const [addresses, setAddresses] = useState(initial);
   const [editing, setEditing] = useState<string | "new" | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -109,9 +109,24 @@ function AddressesEditor({ addresses, countries, labels, errors }: AddressesEdit
         else toast.error(message);
         return;
       }
+      const { ok: _ok, ...rest } = answer;
+      setAddresses((list) => {
+        if (op === "address.remove") {
+          const removed = list.find((item) => item.id === id);
+          const left = list.filter((item) => item.id !== id);
+          // The oldest address left becomes the default when the default goes.
+          return removed?.isDefault && left[0]
+            ? left.map((item, index) => ({ ...item, isDefault: index === 0 }))
+            : left;
+        }
+        const view = rest as unknown as AddressView;
+        const others = view.isDefault ? list.map((item) => ({ ...item, isDefault: false })) : list;
+        return list.some((item) => item.id === view.id)
+          ? others.map((item) => (item.id === view.id ? view : item))
+          : [...others, view];
+      });
       if (done) toast.success(done);
       setEditing(null);
-      router.refresh();
     });
   }
 
