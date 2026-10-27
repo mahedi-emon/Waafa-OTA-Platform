@@ -266,6 +266,7 @@ export class IntakeService {
           email: input.address.email ?? null,
           pickup: input.pickup,
           ...(input.invoice ? { invoice: json(input.invoice) } : {}),
+          ...(input.source ? { source: json(input.source) } : {}),
           createdAt: now,
           history: { create: { status: "placed", at: now, actorName: "Website" } },
         },

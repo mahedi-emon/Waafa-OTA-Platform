@@ -11,7 +11,7 @@ import {
   TakaSchema,
   VideoSchema,
 } from "./common";
-import { PrivateFileSchema } from "./leads";
+import { LeadSourceSchema, PrivateFileSchema } from "./leads";
 
 /** Attribute in a category's attribute set: drives the product form, listing filters and the spec table (FR-CAT-02). */
 export const AttributeSchema = z
@@ -410,6 +410,8 @@ export const OrderCreateInputSchema = z
     pickup: z.boolean().default(false),
     invoice: InvoiceDetailsSchema.optional(),
     payment: PaymentChoiceSchema,
+    /** Where the buyer came from (UTM, referrer, landing page), added by the web server (issue 237). */
+    source: LeadSourceSchema.optional(),
   })
   .strict();
 

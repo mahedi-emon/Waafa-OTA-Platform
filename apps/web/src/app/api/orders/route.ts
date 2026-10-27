@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { readSource, withSource } from "@/lib/analytics/attribution";
 import { placeOrder, type PlaceOrderResult } from "@/lib/data/orders";
 import { intakeFailure } from "@/lib/http/intakeFailure";
 import { isSameSite, readCappedBody } from "@/lib/http/readCappedBody";
@@ -40,10 +42,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "challenge" }, { status: 400 });
   }
 
+  // Where the buyer came from, remembered by the proxy (issue 237).
+  const source = readSource(await cookies());
   try {
     const key = body.idempotencyKey;
     const result = await once(key, () =>
-      placeOrder(body.order, { clientIp: ip, idempotencyKey: key }),
+      placeOrder(withSource(body.order, source), { clientIp: ip, idempotencyKey: key }),
     );
     if (result.ok) return NextResponse.json(result.order, { status: 201 });
     return NextResponse.json(
