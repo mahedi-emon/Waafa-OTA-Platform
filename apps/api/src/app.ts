@@ -10,6 +10,9 @@ import type { Env } from "./config/env";
 import { redactToken } from "./common/redact";
 import { CoreModule } from "./core.module";
 import { HealthController } from "./health/health.controller";
+import { WebErrorsController } from "./health/webErrors.controller";
+import { activeDsn, ErrorReporter } from "./common/errorReporter";
+import { PrismaService } from "./prisma/prisma.service";
 import { ProblemFilter } from "./common/problem";
 
 @Module({})
@@ -18,7 +21,7 @@ class AppModule {
     return {
       module: AppModule,
       imports: [CoreModule.register(env), ...features],
-      controllers: [HealthController],
+      controllers: [HealthController, WebErrorsController],
     };
   }
 }
@@ -116,7 +119,14 @@ export async function createApp(
     .addHook("onSend", async (request, reply) => {
       reply.header("x-request-id", request.id);
     });
-  app.useGlobalFilters(new ProblemFilter());
+  // Unexpected errors go to Sentry or GlitchTip when that card is On in Admin › Integrations (issue 238).
+  const reporter = app.get(ErrorReporter);
+  const stopWatching = reporter.watch(() => activeDsn(app.get(PrismaService)));
+  app.useGlobalFilters(new ProblemFilter(reporter));
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .addHook("onClose", async () => stopWatching());
   app.enableShutdownHooks();
   return app;
 }
