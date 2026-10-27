@@ -1,4 +1,5 @@
-import type { VisaProgressFacts } from "@waafa/shared";
+import { visaStage, type TrackedRequest, type VisaProgressFacts } from "@waafa/shared";
+import type { PrismaClient } from "../generated/prisma/client";
 
 /*
  * A visa lead's application progress (D225), shared by the admin (Visa applications, the lead page) and the public
@@ -46,4 +47,30 @@ export function checklistOf(country: unknown, visaType: unknown): string[] {
     ? (type.checklist as Array<{ title?: unknown }>)
     : [];
   return items.flatMap((item) => (typeof item.title === "string" ? [item.title] : []));
+}
+
+/** A visa lead's public progress (/track and My account, issues 240 and 278): stage, documents and dates only. */
+export async function visaTrack(
+  prisma: Pick<PrismaClient, "contentDocument">,
+  lead: { payload: unknown; progress: unknown; status: string },
+): Promise<NonNullable<TrackedRequest["visa"]>> {
+  const payload = lead.payload as { countrySlug?: unknown; visaType?: unknown } | null;
+  const country =
+    typeof payload?.countrySlug === "string"
+      ? await prisma.contentDocument.findUnique({
+          where: { collection_docId: { collection: "visaCountries", docId: payload.countrySlug } },
+          select: { data: true },
+        })
+      : null;
+  const progress = progressOf(lead.progress);
+  const { stage, received, required } = visaStage(
+    visaFacts(checklistOf(country?.data, payload?.visaType), progress, lead.status),
+  );
+  return {
+    stage,
+    received,
+    required,
+    submittedOn: progress.submittedOn ?? null,
+    passportReturnedOn: progress.passportReturnedOn ?? null,
+  };
 }

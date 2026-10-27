@@ -2220,8 +2220,13 @@
           "unavailable": "We could not reach the sign-in service. Please try again in a moment.",
           "name": "Enter your name.",
           "phone": "Enter a mobile number we can call.",
-          "signUpExpired": "That took too long. Enter your email again for a new code."
-        }
+          "signUpExpired": "That took too long. Enter your email again for a new code.",
+          "password": "Wrong email or password. Forgot it? Sign in with an email code."
+        },
+        "usePassword": "Sign in with a password instead",
+        "useCode": "Email me a code instead",
+        "password": "Password",
+        "passwordSignIn": "Sign in"
       }
     },
     "account": {
@@ -2248,7 +2253,11 @@
       "deleteButton": "Delete account",
       "errors": {
         "confirm": "Tick the box to confirm, then press Delete account.",
-        "delete": "We could not delete the account. Please try again."
+        "delete": "We could not delete the account. Please try again.",
+        "signedOut": "You were signed out. Sign in again to save this.",
+        "invalid": "Check the highlighted details and try again.",
+        "unavailable": "That didn't save. Try again in a moment.",
+        "busy": "Too many changes at once. Wait a moment and try again."
       },
       "modules": {
         "flights": "Flight",
@@ -2280,7 +2289,101 @@
         "delivered": "Delivered",
         "cancelled": "Cancelled",
         "returned": "Returned"
-      }
+      },
+      "sections": {
+        "label": "Sections of My account",
+        "requests": "Requests",
+        "visa": "Visa applications",
+        "orders": "Orders",
+        "wishlist": "Wishlist",
+        "travellers": "Travellers",
+        "addresses": "Addresses",
+        "settings": "Settings"
+      },
+      "showProgress": "Show progress",
+      "visaTitle": "Your visa applications",
+      "visaLead": "Each application with the documents we have and where it stands.",
+      "visaEmpty": "No visa applications yet.",
+      "wishlist": {
+        "title": "Your wishlist",
+        "lead": "Holidays and products you saved.",
+        "empty": "Nothing saved yet. Tap Save on a holiday or a product to keep it here.",
+        "remove": "Remove {name} from your wishlist",
+        "removed": "Removed from your wishlist.",
+        "gone": "No longer available",
+        "from": "From {price}",
+        "store": "Waafas World"
+      },
+      "travellers": {
+        "title": "Saved travellers",
+        "lead": "Fill requests faster. Passport numbers are stored encrypted and shown masked.",
+        "empty": "No travellers saved yet.",
+        "add": "Add a traveller",
+        "edit": "Edit {name}",
+        "remove": "Remove {name}",
+        "fullName": "Full name as in the passport",
+        "dateOfBirth": "Date of birth",
+        "nationality": "Nationality",
+        "passportNumber": "Passport number",
+        "passportKeep": "Leave empty to keep the saved number.",
+        "passportExpiry": "Passport expiry",
+        "passport": "Passport {masked}",
+        "expires": "expires {date}",
+        "save": "Save traveller",
+        "cancel": "Cancel",
+        "saved": "Traveller saved.",
+        "removedDone": "Traveller removed.",
+        "full": "You can keep up to 12 travellers."
+      },
+      "addresses": {
+        "title": "Delivery addresses",
+        "lead": "Your default address fills in at checkout.",
+        "empty": "No addresses saved yet.",
+        "add": "Add an address",
+        "edit": "Edit this address",
+        "remove": "Remove this address",
+        "label": "Label (optional)",
+        "labelHint": "For example Home or Office",
+        "name": "Name",
+        "phone": "Mobile number",
+        "country": "Country code",
+        "division": "Division",
+        "district": "District",
+        "area": "Area or thana",
+        "street": "House, road and more",
+        "default": "Use as my default address",
+        "isDefault": "Default",
+        "makeDefault": "Make default",
+        "save": "Save address",
+        "cancel": "Cancel",
+        "saved": "Address saved.",
+        "removedDone": "Address removed.",
+        "full": "You can keep up to 8 addresses."
+      },
+      "settings": {
+        "title": "Settings",
+        "offers": "Offers and travel news by email",
+        "offersHint": "Emails about your requests and orders always come.",
+        "offersSaved": "Saved.",
+        "passwordTitle": "Password (optional)",
+        "passwordLead": "Sign in with an email code any time. Set a password if you prefer one; forgot it? Use an email code.",
+        "passwordNew": "New password",
+        "passwordHint": "At least 10 characters.",
+        "passwordSet": "Set password",
+        "passwordChange": "Change password",
+        "passwordRemove": "Remove password",
+        "passwordSaved": "Password saved.",
+        "passwordRemoved": "Password removed. Use an email code to sign in.",
+        "passwordShort": "Use at least 10 characters.",
+        "signInsTitle": "Recent sign-ins",
+        "thisDevice": "This device",
+        "signedOut": "Signed out",
+        "signOutOthers": "Sign out other devices",
+        "signedOutNone": "No other devices were signed in.",
+        "signedOutOne": "Signed out 1 other device.",
+        "signedOutMany": "Signed out {count} other devices."
+      },
+      "visaApply": "Apply for a visa"
     }
   },
   "Gallery": {
@@ -7237,7 +7340,8 @@
       "methods": {
         "email-code": "Email code",
         "google": "Google",
-        "none": "Not yet"
+        "none": "Not yet",
+        "password": "Password"
       },
       "verified": "Email verified",
       "unverified": "Email not verified",
@@ -7287,5 +7391,12 @@
     "accept": "Accept",
     "decline": "No thanks",
     "privacy": "Privacy policy"
+  },
+  "Wishlist": {
+    "save": "Save",
+    "saved": "Saved",
+    "savedLink": "Saved to your wishlist.",
+    "open": "Open wishlist",
+    "failed": "That didn't save. Try again."
   }
 }

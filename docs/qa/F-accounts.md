@@ -34,13 +34,13 @@ Content editor); admin and customer sessions never mix.
 | F-22 | Open redirect | Security | — | /login?next=https://evil.example | Lands on My account, never off-site | P0 | unit (`safeNext`) |
 | F-23 | Session expiry | Security | Session older than 30 days | Open My account | Back to /login with a plain message | P1 | API |
 | F-24 | Delete | Data | Signed in | Delete account | Account and sessions gone; requests and orders stay with the business, no longer linked | P0 | API + e2e |
-| F-25 | My account | Happy | Records exist | Requests with status timeline, visa applications, orders | Each list matches admin; statuses in words; dates in Dhaka time | P0 | e2e (F2) |
-| F-26 | Wishlist | Happy | Signed in | Save a package and a product, open My account | Both listed, remove works; guests are asked to sign in | P1 | e2e (F2) |
-| F-27 | Travellers | Security | Signed in | Save a traveller with passport number | Stored encrypted at rest (no plain number in the database), shown masked except to the owner | P0 | API (F2) |
-| F-28 | Addresses | Happy | Signed in | Add, edit, remove an address; checkout | Default address prefills checkout | P1 | e2e (F2) |
-| F-29 | Preferences | Happy | Signed in | Turn off offers emails | Saved; marketing emails skip them; service emails still go | P1 | API (F2) |
-| F-30 | Sign-in history | Happy | Signed in | My account › Security | Last sign-ins with device and time, Sign out other devices | P1 | e2e (F2) |
-| F-31 | Password | Happy | Signed in | Set a password, sign out, sign in with it; reset by email code | Works; wrong password counts against the same tries | P1 | API + e2e (F2) |
+| F-25 | My account | Happy | Records exist | Requests with status timeline, visa applications, orders | Each list matches admin; statuses in words; dates in Dhaka time; each card opens its progress timeline | P0 | API `customerAccount.test.ts` (view with progress) + `/track` e2e (same timeline component) |
+| F-26 | Wishlist | Happy | Signed in | Save a package and a product, open My account | Both listed, remove works; guests are asked to sign in | P1 | `e2e/account-sections.spec.ts` (API mode) + API |
+| F-27 | Travellers | Security | Signed in | Save a traveller with passport number | Stored sealed at rest (AES-256-GCM, no plain number in the database), shown masked ("•••• 4567") even to the owner; editing without a new number keeps it | P0 | API `customerAccount.test.ts` + e2e |
+| F-28 | Addresses | Happy | Signed in | Add, edit, remove an address; checkout | First address is the default; a bad phone is refused; the default address and contact prefill empty checkout fields | P1 | e2e + API |
+| F-29 | Preferences | Happy | Signed in | Turn off offers emails | Off by default (opt-in, D302); saved at once; service emails still go (no marketing emails are sent yet) | P1 | API + e2e |
+| F-30 | Sign-in history | Happy | Signed in | My account › Security | Last sign-ins with device and time, this device marked; Sign out other devices ends the other session | P1 | e2e (two browsers) + API |
+| F-31 | Password | Happy | Signed in | Set a password, sign out, sign in with it; reset by email code | Works; a wrong password gets one neutral message; 5 wrong tries per email and address in 15 minutes are refused; forgotten password = email code; Remove password | P1 | API + e2e |
 | F-32 | /track | Happy | A lead, a visa application and an order | /track with reference and phone | Each shows its own status timeline and no personal data beyond it | P0 | e2e (F3) |
 | F-33 | /track | Negative | — | Wrong phone for a real reference; unknown reference | Same "not found" answer for both (no enumeration) | P0 | API + e2e (F3) |
 | F-34 | /track | Regression | Old links | /shop/track?order=…&phone=… | 308 to /track with the same values | P0 | e2e (F3) |

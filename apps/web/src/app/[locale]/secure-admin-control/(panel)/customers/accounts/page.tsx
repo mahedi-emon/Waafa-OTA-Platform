@@ -47,7 +47,9 @@ async function Accounts({
     getTranslations("Admin.common"),
   ]);
   const method = (value: string | null) =>
-    t(`methods.${value === "google" || value === "email-code" ? value : "none"}`);
+    t(
+      `methods.${value === "google" || value === "email-code" || value === "password" ? value : "none"}`,
+    );
 
   const rows: DataRow[] = list.items.map((row) => {
     const last = row.lastSignInAt ? formatDhakaDateTime(row.lastSignInAt) : t("never");

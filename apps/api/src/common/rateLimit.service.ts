@@ -22,6 +22,8 @@ export const RATE_RULES = {
   customerCodeIp: { limit: 20, windowMs: 60 * 60_000 },
   /** Code checks per visitor address; each code also allows only 5 tries. */
   customerCodeVerify: { limit: 30, windowMs: 15 * 60_000 },
+  /** Password sign-in tries per email (issue 278): 5 in 15 minutes, like a code. */
+  customerPassword: { limit: 5, windowMs: 15 * 60_000 },
   uploads: { limit: 40, windowMs: 60_000 },
   // Per-visitor limits behind the web's own: the web limits first, these catch anything that reaches the API another
   // way. Twice the web's numbers, so the two layers never disagree for a real visitor.

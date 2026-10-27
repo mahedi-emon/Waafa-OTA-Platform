@@ -24,10 +24,9 @@ import {
   type SearchLogInput,
   type TrackResult,
   type TrackedRequest,
-  visaStage,
 } from "@waafa/shared";
 import { nextReference } from "../common/references";
-import { checklistOf, progressOf, visaFacts } from "../common/visaProgress";
+import { visaTrack } from "../common/visaProgress";
 import { ContentService } from "../content/content.service";
 import { CustomerFilesService, type FileRef } from "../files/customer-files.service";
 import type { Prisma } from "../generated/prisma/client";
@@ -385,30 +384,7 @@ export class IntakeService {
     ) {
       return null;
     }
-    let visa: TrackedRequest["visa"] = null;
-    if (lead.module === "visa") {
-      const payload = lead.payload as { countrySlug?: unknown; visaType?: unknown } | null;
-      const country =
-        typeof payload?.countrySlug === "string"
-          ? await this.prisma.contentDocument.findUnique({
-              where: {
-                collection_docId: { collection: "visaCountries", docId: payload.countrySlug },
-              },
-              select: { data: true },
-            })
-          : null;
-      const progress = progressOf(lead.progress);
-      const { stage, received, required } = visaStage(
-        visaFacts(checklistOf(country?.data, payload?.visaType), progress, lead.status),
-      );
-      visa = {
-        stage,
-        received,
-        required,
-        submittedOn: progress.submittedOn ?? null,
-        passportReturnedOn: progress.passportReturnedOn ?? null,
-      };
-    }
+    const visa = lead.module === "visa" ? await visaTrack(this.prisma, lead) : null;
     return {
       kind: "request",
       reference: lead.reference,

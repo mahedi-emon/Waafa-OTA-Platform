@@ -96,3 +96,24 @@ export async function attachGuestRecords(db: Db, customer: Customer): Promise<nu
   ]);
   return leads.count + orders.count;
 }
+
+/** The signed-in customer and their session for a cookie token, or null (missing, ended, expired or turned off). */
+export async function sessionFor(
+  db: Db,
+  token: string | undefined,
+): Promise<{ customer: Customer; sessionId: string } | null> {
+  if (!token || token.length < 32 || token.length > 128) return null;
+  const session = await db.customerSession.findUnique({
+    where: { tokenHash: hashToken(token) },
+    include: { customer: true },
+  });
+  if (
+    !session ||
+    session.revokedAt ||
+    session.expiresAt.getTime() <= Date.now() ||
+    session.customer.disabledAt
+  ) {
+    return null;
+  }
+  return { customer: session.customer, sessionId: session.id };
+}

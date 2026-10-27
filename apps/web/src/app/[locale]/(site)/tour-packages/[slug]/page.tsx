@@ -21,7 +21,7 @@ import {
 import { pickMessages } from "@/i18n/pickMessages";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getContactSettings, getLeadFormSettings } from "@/lib/data/settings";
+import { getContactSettings, getLeadFormSettings, getSiteSettings } from "@/lib/data/settings";
 import { getPackage, listPackages, listRelatedPackages } from "@/lib/data/travel";
 import { followMovedRecord } from "@/lib/data/movedRecord";
 import { ANY_DATE } from "@/lib/leads/packageLeadForm";
@@ -34,6 +34,7 @@ import { PackageBookingProvider } from "./_components/PackageBookingProvider";
 import { PackageGallery } from "./_components/PackageGallery";
 import { PackageQuery } from "./_components/PackageQuery";
 import { ShareButton } from "./_components/ShareButton";
+import { WishlistButton } from "@/components/account/WishlistButton";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
@@ -87,13 +88,15 @@ async function PackagePageContent({
     notFound();
   }
 
-  const [related, contact, leadForm, messages, t, tList] = await Promise.all([
+  const [related, contact, leadForm, site, messages, t, tList, tw] = await Promise.all([
     listRelatedPackages(slug),
     getContactSettings(),
     getLeadFormSettings(),
+    getSiteSettings(),
     getMessages(),
     getTranslations("Packages"),
     getTranslations("Home.packages"),
+    getTranslations("Wishlist"),
   ]);
   const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
   const countries = leadForm.phoneCountries
@@ -211,7 +214,7 @@ async function PackagePageContent({
                 <p className="max-w-[68ch] text-[16px] leading-relaxed text-mist-700 md:text-[17px]">
                   {pkg.summary}
                 </p>
-                <div>
+                <div className="flex flex-wrap gap-2">
                   <ShareButton
                     title={pkg.title}
                     labels={{
@@ -220,6 +223,19 @@ async function PackagePageContent({
                       failed: t("detail.shareFailed"),
                     }}
                   />
+                  {site.accountsLive ? (
+                    <WishlistButton
+                      kind="package"
+                      slug={pkg.slug}
+                      labels={{
+                        save: tw("save"),
+                        saved: tw("saved"),
+                        savedLink: tw("savedLink"),
+                        open: tw("open"),
+                        failed: tw("failed"),
+                      }}
+                    />
+                  ) : null}
                 </div>
                 <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
                   {facts.map((fact) => (

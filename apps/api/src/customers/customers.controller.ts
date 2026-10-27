@@ -5,21 +5,29 @@ import {
   Header,
   HttpCode,
   Inject,
+  Param,
   Post,
   Req,
   UseGuards,
 } from "@nestjs/common";
 import type { FastifyRequest } from "fastify";
 import {
+  AccountPreferencesSchema,
+  AddressInputSchema,
   EmailCodeRequestSchema,
   EmailCodeVerifySchema,
   GoogleSignInInputSchema,
+  PasswordSetSchema,
+  PasswordSignInSchema,
   SignUpCompleteSchema,
+  TravellerInputSchema,
+  WishlistItemSchema,
 } from "@waafa/shared";
 import { ENV, type Env } from "../config/env";
 import { parseInput, problems } from "../common/problem";
 import { RateLimitService } from "../common/rateLimit.service";
 import { IntakeKeyGuard, clientIp } from "../common/serverKey";
+import { CustomerAccountService } from "./customerAccount.service";
 import { CustomerCodesService } from "./customerCodes.service";
 import { CustomersService } from "./customers.service";
 
@@ -47,6 +55,7 @@ export class CustomersController {
   constructor(
     @Inject(CustomersService) private readonly customers: CustomersService,
     @Inject(CustomerCodesService) private readonly codes: CustomerCodesService,
+    @Inject(CustomerAccountService) private readonly accounts: CustomerAccountService,
     @Inject(ENV) private readonly env: Env,
     @Inject(RateLimitService) private readonly limits: RateLimitService,
   ) {}
@@ -101,7 +110,131 @@ export class CustomersController {
   @Header("cache-control", "no-store")
   async account(@Req() request: FastifyRequest) {
     await this.limit(request, "account");
-    return this.customers.account(sessionToken(request));
+    return this.accounts.view(sessionToken(request));
+  }
+
+  /** Password sign-in for an account that set one (issue 278). */
+  @Post("auth/password")
+  @HttpCode(200)
+  async signInWithPassword(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "signIn");
+    const { email, password } = parseInput(PasswordSignInSchema, body);
+    return this.accounts.signInWithPassword(email, password, userAgentOf(request));
+  }
+
+  // My account sections (issue 278); every call needs the session header.
+
+  @Post("account/wishlist")
+  @HttpCode(204)
+  async saveWish(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    await this.accounts.saveWish(sessionToken(request), parseInput(WishlistItemSchema, body));
+  }
+
+  @Post("account/wishlist/remove")
+  @HttpCode(204)
+  async removeWish(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    await this.accounts.removeWish(sessionToken(request), parseInput(WishlistItemSchema, body));
+  }
+
+  @Post("account/travellers")
+  @HttpCode(201)
+  async addTraveller(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    return this.accounts.addTraveller(
+      sessionToken(request),
+      parseInput(TravellerInputSchema, body),
+    );
+  }
+
+  @Post("account/travellers/:id")
+  @HttpCode(200)
+  async updateTraveller(
+    @Param("id") id: string,
+    @Body() body: unknown,
+    @Req() request: FastifyRequest,
+  ) {
+    await this.limit(request, "account");
+    return this.accounts.updateTraveller(
+      sessionToken(request),
+      id,
+      parseInput(TravellerInputSchema, body),
+    );
+  }
+
+  @Post("account/travellers/:id/remove")
+  @HttpCode(204)
+  async removeTraveller(@Param("id") id: string, @Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    await this.accounts.removeTraveller(sessionToken(request), id);
+  }
+
+  @Post("account/addresses")
+  @HttpCode(201)
+  async addAddress(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    return this.accounts.saveAddress(
+      sessionToken(request),
+      null,
+      parseInput(AddressInputSchema, body),
+    );
+  }
+
+  @Post("account/addresses/:id")
+  @HttpCode(200)
+  async updateAddress(
+    @Param("id") id: string,
+    @Body() body: unknown,
+    @Req() request: FastifyRequest,
+  ) {
+    await this.limit(request, "account");
+    return this.accounts.saveAddress(
+      sessionToken(request),
+      id,
+      parseInput(AddressInputSchema, body),
+    );
+  }
+
+  @Post("account/addresses/:id/remove")
+  @HttpCode(204)
+  async removeAddress(@Param("id") id: string, @Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    await this.accounts.removeAddress(sessionToken(request), id);
+  }
+
+  @Post("account/preferences")
+  @HttpCode(204)
+  async setPreferences(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    await this.accounts.setPreferences(
+      sessionToken(request),
+      parseInput(AccountPreferencesSchema, body),
+    );
+  }
+
+  @Post("account/sign-out-others")
+  @HttpCode(200)
+  async signOutOthers(@Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    return { ended: await this.accounts.signOutOthers(sessionToken(request)) };
+  }
+
+  @Post("account/password")
+  @HttpCode(204)
+  async setPassword(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    await this.accounts.setPassword(
+      sessionToken(request),
+      parseInput(PasswordSetSchema, body).password,
+    );
+  }
+
+  @Post("account/password/remove")
+  @HttpCode(204)
+  async removePassword(@Req() request: FastifyRequest) {
+    await this.limit(request, "account");
+    await this.accounts.removePassword(sessionToken(request));
   }
 
   @Post("account/sign-out")

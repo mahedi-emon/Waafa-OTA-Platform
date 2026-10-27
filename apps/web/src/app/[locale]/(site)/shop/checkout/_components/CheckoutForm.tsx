@@ -10,6 +10,7 @@ import type { SlotFile } from "@/components/forms/DocumentSlot";
 import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
 import { RadioCard } from "@/components/forms/RadioCard";
+import { useCheckoutPrefill } from "@/components/account/useCheckoutPrefill";
 import { CheckoutSummary } from "@/components/shop/CheckoutSummary";
 import { OrderDone } from "@/components/shop/OrderDone";
 import { PaymentOptions, type OfflineAccount } from "@/components/shop/PaymentOptions";
@@ -135,6 +136,7 @@ function CheckoutForm({
     defaultValues: DEFAULTS,
     mode: "onTouched",
   });
+  useCheckoutPrefill(form);
   const { errors, submitCount } = form.formState;
   const [proof, setProof] = useState<SlotFile | null>(null);
   const [sending, setSending] = useState(false);

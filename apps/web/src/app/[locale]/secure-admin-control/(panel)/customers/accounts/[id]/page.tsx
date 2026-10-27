@@ -67,7 +67,13 @@ async function Account({
   const admin = hasRole(staff, "admin");
   const chip = account.disabled ? "disabled" : account.verified ? "active" : "invited";
   const method = t(
-    `methods.${account.signInMethod === "google" || account.signInMethod === "email-code" ? account.signInMethod : "none"}`,
+    `methods.${
+      account.signInMethod === "google" ||
+      account.signInMethod === "email-code" ||
+      account.signInMethod === "password"
+        ? account.signInMethod
+        : "none"
+    }`,
   );
   const facts = [
     { label: t("colMethod"), value: method },
