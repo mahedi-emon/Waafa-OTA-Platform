@@ -70,6 +70,10 @@ async function LoginContent({ searchParams }: Pick<PageProps<"/[locale]/login">,
     country: e("country"),
     create: e("create"),
     creating: e("creating"),
+    usePassword: e("usePassword"),
+    useCode: e("useCode"),
+    password: e("password"),
+    passwordSignIn: e("passwordSignIn"),
     errors: {
       email: e("errors.email"),
       code: e("errors.code"),
@@ -82,6 +86,7 @@ async function LoginContent({ searchParams }: Pick<PageProps<"/[locale]/login">,
       name: e("errors.name"),
       phone: e("errors.phone"),
       signUpExpired: e("errors.signUpExpired"),
+      password: e("errors.password"),
     },
   };
   const error = ERRORS.find((code) => code === first(params.error)) as LoginError | undefined;

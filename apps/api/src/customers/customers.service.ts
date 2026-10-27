@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import {
-  type AccountView,
   type CustomerSession,
   type GoogleSignInConfig,
   type GoogleSignInInput,
@@ -10,16 +9,13 @@ import { problems } from "../common/problem";
 import type { Customer } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProvidersService } from "../providers/providers.service";
-import { attachGuestRecords, hashToken, openSession, view } from "./customerAuth";
+import { attachGuestRecords, hashToken, openSession, sessionFor } from "./customerAuth";
 import { GoogleSignInError, exchangeGoogleCode, type GoogleFetch } from "./googleOAuth";
 
 export const GOOGLE_FETCH = Symbol("GOOGLE_FETCH");
 
 /** The only callback path the web serves; any other redirect address is refused. */
 export const GOOGLE_CALLBACK_PATH = "/api/auth/google/callback";
-
-/** How many requests and orders My account lists, newest first. */
-const ACCOUNT_LIST_LIMIT = 50;
 
 /**
  * Customer accounts (FR-ACC, issue 134): Google sign-in with the credentials from Admin › Integrations, opaque
@@ -134,46 +130,9 @@ export class CustomersService {
 
   /** The signed-in customer for a session token, or a 401. */
   private async customerFor(token: string | undefined): Promise<Customer> {
-    if (!token || token.length < 32 || token.length > 128) throw problems.unauthorized();
-    const session = await this.prisma.customerSession.findUnique({
-      where: { tokenHash: hashToken(token) },
-      include: { customer: true },
-    });
-    if (
-      !session ||
-      session.revokedAt ||
-      session.expiresAt.getTime() <= Date.now() ||
-      session.customer.disabledAt
-    ) {
-      throw problems.unauthorized();
-    }
-    return session.customer;
-  }
-
-  async account(token: string | undefined): Promise<AccountView> {
-    const customer = await this.customerFor(token);
-    // Requests sent since the last sign-in (as a guest, or with the same email) join the account here too.
-    await attachGuestRecords(this.prisma, customer);
-    const mine = { customerId: customer.id };
-    const [leads, orders] = await Promise.all([
-      this.prisma.lead.findMany({
-        where: mine,
-        orderBy: { createdAt: "desc" },
-        take: ACCOUNT_LIST_LIMIT,
-        select: { reference: true, module: true, status: true, summary: true, createdAt: true },
-      }),
-      this.prisma.order.findMany({
-        where: mine,
-        orderBy: { createdAt: "desc" },
-        take: ACCOUNT_LIST_LIMIT,
-        select: { reference: true, status: true, total: true, createdAt: true },
-      }),
-    ]);
-    return {
-      customer: view(customer),
-      requests: leads.map((lead) => ({ ...lead, createdAt: lead.createdAt.toISOString() })),
-      orders: orders.map((order) => ({ ...order, createdAt: order.createdAt.toISOString() })),
-    };
+    const found = await sessionFor(this.prisma, token);
+    if (!found) throw problems.unauthorized();
+    return found.customer;
   }
 
   /** Ends this session only; an unknown token is already signed out. */

@@ -30,6 +30,10 @@ export type EmailSignInLabels = {
   country: string;
   create: string;
   creating: string;
+  usePassword: string;
+  useCode: string;
+  password: string;
+  passwordSignIn: string;
   errors: {
     email: string;
     code: string;
@@ -42,10 +46,11 @@ export type EmailSignInLabels = {
     name: string;
     phone: string;
     signUpExpired: string;
+    password: string;
   };
 };
 
-type Step = "email" | "code" | "profile";
+type Step = "email" | "code" | "profile" | "password";
 
 type EmailSignInProps = {
   labels: EmailSignInLabels;
@@ -76,6 +81,7 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [country, setCountry] = useState(defaultCountry);
@@ -186,6 +192,46 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
     }
   }
 
+  /** Password sign-in for an account that set one in My account (issue 278); the email code stays the way back in. */
+  async function submitPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!EMAIL.test(email.trim())) {
+      setError(labels.errors.email);
+      return;
+    }
+    if (!password || busy) {
+      if (!password) setError(labels.errors.password);
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const { status, json } = await post("/api/auth/password", { email: email.trim(), password });
+      if (status === 200 && json.status === "signed-in") {
+        window.location.assign(next);
+        return;
+      }
+      setError(
+        status === 429
+          ? labels.errors.busy
+          : json.error === "refused"
+            ? labels.errors.password
+            : labels.errors.unavailable,
+      );
+    } catch {
+      setError(labels.errors.unavailable);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function switchTo(target: Step) {
+    setStep(target);
+    setError(null);
+    setNotice(null);
+    setPassword("");
+  }
+
   async function submitProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (name.trim().length < 2) {
@@ -272,6 +318,67 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
         {turnstile.field}
         <Button type="submit" size="lg" disabled={busy} aria-busy={busy || undefined}>
           {busy ? labels.sending : labels.sendCode}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          className="self-center"
+          onClick={() => switchTo("password")}
+        >
+          {labels.usePassword}
+        </Button>
+      </form>
+    );
+  }
+
+  if (step === "password") {
+    return (
+      <form noValidate onSubmit={submitPassword} className="flex flex-col gap-4">
+        <FormField id="signin-email" label={labels.email}>
+          {(describedBy) => (
+            <Input
+              ref={(node) => {
+                heading.current = node;
+              }}
+              id="signin-email"
+              name="email"
+              type="email"
+              inputMode="email"
+              autoComplete="username"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              aria-invalid={error === labels.errors.email ? true : undefined}
+              aria-describedby={describedBy}
+            />
+          )}
+        </FormField>
+        <FormField id="signin-password" label={labels.password}>
+          {(describedBy) => (
+            <Input
+              id="signin-password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              aria-invalid={error === labels.errors.password ? true : undefined}
+              aria-describedby={describedBy}
+            />
+          )}
+        </FormField>
+        {alert}
+        <Button type="submit" size="lg" disabled={busy} aria-busy={busy || undefined}>
+          {busy ? labels.checking : labels.passwordSignIn}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          className="self-center"
+          onClick={() => switchTo("email")}
+        >
+          {labels.useCode}
         </Button>
       </form>
     );
