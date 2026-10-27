@@ -38,7 +38,7 @@ function LogoLockup({
 }: LogoLockupProps) {
   const t = useTranslations("Brand");
 
-  const content = (
+  const logo = (
     <>
       {/* The mark carries the brand name for image search and link text; the wordmark beside it repeats it. */}
       <Image
@@ -59,44 +59,55 @@ function LogoLockup({
         loading="eager"
         className="h-[15px] w-[89px] shrink-0 object-contain md:h-[19px] md:w-[113px]"
       />
-      {tagline ? (
-        <>
-          <span
-            aria-hidden="true"
-            className={cn("mx-0.5 hidden h-8 w-px bg-mist-300", TAGLINE_FROM[taglineFrom])}
-          />
-          <span
-            aria-hidden="true"
-            className={cn(
-              "hidden text-[8.8px] leading-[1.34] font-semibold tracking-[0.1em] whitespace-nowrap text-mist-600 uppercase xl:text-[9.6px]",
-              TAGLINE_FROM[taglineFrom],
-            )}
-          >
-            {t("taglineLine1")}
-            <br />
-            {t("taglineLine2")}
-            <br />
-            {t("taglineLine3")}
-          </span>
-        </>
-      ) : null}
     </>
   );
 
-  const classes = cn("flex shrink-0 items-center gap-[9px] md:gap-3", className);
+  const taglineBlock = tagline ? (
+    <>
+      <span
+        aria-hidden="true"
+        className={cn("mx-0.5 hidden h-8 w-px bg-mist-300", TAGLINE_FROM[taglineFrom])}
+      />
+      <span
+        aria-hidden="true"
+        className={cn(
+          "hidden text-[8.8px] leading-[1.34] font-semibold tracking-[0.1em] whitespace-nowrap text-mist-600 uppercase xl:text-[9.6px]",
+          TAGLINE_FROM[taglineFrom],
+        )}
+      >
+        {t("taglineLine1")}
+        <br />
+        {t("taglineLine2")}
+        <br />
+        {t("taglineLine3")}
+      </span>
+    </>
+  ) : null;
+
+  const gap = "gap-[9px] md:gap-3";
+  const classes = cn("flex shrink-0 items-center", gap, className);
 
   if (!asLink) {
     return (
       <span role="img" aria-label={t("name")} className={classes}>
-        {content}
+        {logo}
+        {taglineBlock}
       </span>
     );
   }
 
+  // The tagline sits beside the link, not inside it: its visible words are not part of "WAAFA home" (WCAG 2.5.3).
   return (
-    <Link href="/" aria-label={t("homeLabel")} className={cn(classes, "rounded-sm")}>
-      {content}
-    </Link>
+    <span className={classes}>
+      <Link
+        href="/"
+        aria-label={t("homeLabel")}
+        className={cn("flex items-center rounded-sm", gap)}
+      >
+        {logo}
+      </Link>
+      {taglineBlock}
+    </span>
   );
 }
 
