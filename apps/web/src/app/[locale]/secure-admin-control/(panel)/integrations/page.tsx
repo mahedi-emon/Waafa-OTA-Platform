@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Info } from "@/components/icons/server/Info";
 import { KeyRound } from "@/components/icons/server/KeyRound";
-import type {
-  IntegrationSettingView,
-  ProviderConnectionView,
-  ProviderDefinition,
-  ProviderKind,
+import {
+  SUPPLIER_KINDS,
+  type IntegrationSettingView,
+  type ProviderConnectionView,
+  type ProviderDefinition,
+  type ProviderKind,
 } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -29,20 +30,31 @@ type ProvidersList = {
 };
 
 /**
- * The tabs (owner request, issue 107): SMS and email share Communication; Sign-in holds Google (issue 134) and takes
- * no custom providers.
+ * The tabs (issues 107 and 284): every outside service grouped by what it does; only supplier kinds take custom
+ * providers. Sign-in holds Google and the robot check.
  */
 const TABS: Array<{
-  id: "flight" | "hotel" | "payment" | "communication" | "signin";
+  id:
+    | "signin"
+    | "communication"
+    | "measurement"
+    | "operations"
+    | "payment"
+    | "courier"
+    | "flight"
+    | "hotel";
   kinds: ProviderKind[];
-  custom: boolean;
 }> = [
-  { id: "flight", kinds: ["flight"], custom: true },
-  { id: "hotel", kinds: ["hotel"], custom: true },
-  { id: "payment", kinds: ["payment"], custom: true },
-  { id: "communication", kinds: ["sms", "email"], custom: true },
-  { id: "signin", kinds: ["auth"], custom: false },
+  { id: "signin", kinds: ["auth", "captcha"] },
+  { id: "communication", kinds: ["email", "sms", "alerts"] },
+  { id: "measurement", kinds: ["analytics"] },
+  { id: "operations", kinds: ["monitoring", "storage"] },
+  { id: "payment", kinds: ["payment"] },
+  { id: "courier", kinds: ["courier"] },
+  { id: "flight", kinds: ["flight"] },
+  { id: "hotel", kinds: ["hotel"] },
 ];
+const SUPPLIER = new Set<ProviderKind>(SUPPLIER_KINDS);
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.integrations");
@@ -91,9 +103,6 @@ async function Integrations() {
     secretSavedShort: t("secretSavedShort"),
     show: t("show", { field: "{field}" }),
     hide: t("hide", { field: "{field}" }),
-    reveal: t("reveal"),
-    revealHint: t("revealHint"),
-    revealedLabel: t("revealedLabel", { field: "{field}" }),
     optional: t("optional"),
     connect: t("connect"),
     manage: t("manage"),
@@ -112,6 +121,17 @@ async function Integrations() {
     updated: t("updated", { time: "{time}", name: "{name}" }),
     save: tc("save"),
     failed: tc("failed"),
+    keysLink: t("keysLink"),
+    newTab: t("newTab"),
+    status: {
+      off: t("status.off"),
+      notConnected: t("status.notConnected"),
+      notTested: t("status.notTested"),
+      connected: t("status.connected"),
+      failing: t("status.failing"),
+    },
+    failingDetail: t("failingDetail", { message: "{message}", time: "{time}" }),
+    changedBy: t("changedBy", { name: "{name}", time: "{time}" }),
   };
   const addStrings = {
     title: t("add.title"),
@@ -152,7 +172,7 @@ async function Integrations() {
           <AlertDescription>{t("liveNote")}</AlertDescription>
         </Alert>
       </div>
-      <Tabs defaultValue="flight" className="flex min-w-0 flex-col gap-5">
+      <Tabs defaultValue="signin" className="flex min-w-0 flex-col gap-5">
         <TabsList aria-label={t("tabsLabel")} className="w-full max-w-2xl overflow-x-auto">
           {TABS.map((tab) => (
             <TabsTrigger key={tab.id} value={tab.id}>
@@ -197,21 +217,21 @@ async function Integrations() {
                 </section>
               );
             })}
-            {tab.custom ? (
+            {tab.kinds.some((kind) => SUPPLIER.has(kind)) ? (
               <AddProviderForm
                 kinds={tab.kinds
-                  .filter((kind): kind is Exclude<ProviderKind, "auth"> => kind !== "auth")
+                  .filter((kind): kind is (typeof SUPPLIER_KINDS)[number] => SUPPLIER.has(kind))
                   .map((kind) => ({ kind, label: t(`kinds.${kind}`) }))}
                 strings={addStrings}
               />
-            ) : (
+            ) : tab.id === "signin" ? (
               <Alert variant="info">
                 <Info aria-hidden="true" />
                 <AlertDescription className="break-words">
                   {t("signInNote", { callback: absoluteUrl(GOOGLE_CALLBACK_PATH) })}
                 </AlertDescription>
               </Alert>
-            )}
+            ) : null}
           </TabsContent>
         ))}
       </Tabs>
@@ -220,8 +240,8 @@ async function Integrations() {
 }
 
 /**
- * Admin › Settings › Integrations (issues 82 and 107): flight, hotel, payment, SMS and email APIs in four tabs, Super Admin
- * only.
+ * Admin › Settings › Integrations (issues 82, 107 and 284): every outside service as a card, grouped in tabs; Super
+ * Admin only.
  */
 export default function IntegrationsPage() {
   return (

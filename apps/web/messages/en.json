@@ -3790,7 +3790,7 @@
     "integrations": {
       "metaTitle": "Integrations",
       "title": "Integrations",
-      "lead": "Add and manage flight, hotel, payment, SMS and email APIs. Secrets are encrypted on the server; a Super Admin can reveal one when needed, and every reveal is logged.",
+      "lead": "Connect every outside service in one place: email, sign-in, the robot check, measurement, error tracking, backups, payments, SMS, Telegram, couriers and travel APIs. Keys are encrypted on the server and never shown again; changes reach the site within a minute, no redeploy.",
       "liveNote": "Turning a flight or hotel API on does not switch on live booking: the site keeps taking requests that an expert confirms until Live is unlocked in Booking modes. With no active API, the manual quote flow runs.",
       "noKey": "The server has no encryption key, so API secrets can’t be saved yet. Set PROVIDER_SECRET_KEY on the server and restart the API.",
       "kinds": {
@@ -3799,7 +3799,13 @@
         "payment": "Payments",
         "sms": "SMS",
         "email": "Email",
-        "auth": "Customer sign-in"
+        "auth": "Customer sign-in",
+        "captcha": "Robot check",
+        "analytics": "Measurement and search engines",
+        "monitoring": "Error tracking",
+        "storage": "Off-site backups",
+        "alerts": "Staff alerts",
+        "courier": "Couriers"
       },
       "signInNote": "Google sign-in: in Google Cloud › APIs & Services › Credentials, create an OAuth client ID (Web application), add {callback} as an authorised redirect URI, then paste the client ID and secret under Real account and switch Use the real account and Active on. The Log in link shows once Settings › Site › Accounts live is on.",
       "environment": "Environment",
@@ -3824,13 +3830,16 @@
       "neverTested": "Not tested yet",
       "note": "Internal note",
       "updated": "Updated {time} by {name}",
-      "tabsLabel": "API categories",
+      "tabsLabel": "Service groups",
       "tabs": {
+        "signin": "Sign-in and security",
+        "communication": "Email, SMS and alerts",
+        "measurement": "Measurement",
+        "operations": "Errors and backups",
+        "payment": "Payments",
+        "courier": "Couriers",
         "flight": "Flight APIs",
-        "hotel": "Hotel APIs",
-        "payment": "Payment gateways",
-        "communication": "SMS and email",
-        "signin": "Sign-in"
+        "hotel": "Hotel APIs"
       },
       "inUse": "in use",
       "custom": "Custom",
@@ -3854,9 +3863,6 @@
       "credentials": "Keys and passwords",
       "show": "Show {field}",
       "hide": "Hide {field}",
-      "reveal": "Reveal saved value",
-      "revealHint": "Shown for 30 seconds. Every reveal is written to the audit log.",
-      "revealedLabel": "Saved {field}",
       "removeProvider": "Remove provider",
       "removeProviderConfirm": "Remove {name} and all its saved keys?",
       "add": {
@@ -3871,7 +3877,18 @@
       "empty": "No providers in this category yet.",
       "off": "Saved, off",
       "enabled": "Use this connection",
-      "enabledHint": "Only enabled connections are offered to the booking engine."
+      "enabledHint": "Only enabled connections are offered to the booking engine.",
+      "keysLink": "Where to get the keys",
+      "newTab": "(opens in a new tab)",
+      "status": {
+        "off": "Off",
+        "notConnected": "No keys saved",
+        "notTested": "Not tested",
+        "connected": "Connected",
+        "failing": "Failing"
+      },
+      "failingDetail": "Last test failed {time}: {message}. The site does not use it until a test passes.",
+      "changedBy": "Changed by {name}, {time}"
     },
     "reports": {
       "metaTitle": "Reports",
