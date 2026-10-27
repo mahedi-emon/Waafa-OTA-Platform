@@ -117,6 +117,19 @@ else
 fi
 
 # Old image layers fill a small disk quickly.
+# Issue 239: the daily backup (03:15) and the monthly restore drill (1st, 04:30) install themselves; BACKUP_CRON=off in
+# deploy/.env leaves the crontab alone. Re-running replaces only the lines marked "waafa-backup".
+if [ "$(setting BACKUP_CRON)" != "off" ] && command -v crontab > /dev/null 2>&1; then
+  here=$(cd deploy && pwd)
+  mkdir -p deploy/backups
+  {
+    crontab -l 2>/dev/null | grep -v "# waafa-backup" || true
+    echo "15 3 * * * cd $here && sh backup.sh >> backups/backup.log 2>&1 # waafa-backup"
+    echo "30 4 1 * * cd $here && sh backup.sh --drill >> backups/drill.log 2>&1 # waafa-backup"
+  } | crontab -
+  echo "Backups: daily at 03:15 and a restore drill on the 1st (crontab; BACKUP_CRON=off to skip)"
+fi
+
 docker image prune -f > /dev/null
 $COMPOSE ps
 echo "Done ($MODE mode). Check the site, then Admin > Audit log after the first sign-in."

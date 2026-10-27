@@ -84,6 +84,19 @@ else
   echo "Skipped (ACME_EMAIL empty or localhost): the site answers over HTTP only"
 fi
 
+# Issue 239: the daily backup (03:15) and the monthly restore drill (1st, 04:30) install themselves; BACKUP_CRON=off in
+# .env leaves the crontab alone. Re-running replaces only the lines marked "waafa-backup".
+if [ "$(setting BACKUP_CRON)" != "off" ] && command -v crontab > /dev/null 2>&1; then
+  here=$(pwd)
+  mkdir -p backups
+  {
+    crontab -l 2>/dev/null | grep -v "# waafa-backup" || true
+    echo "15 3 * * * cd $here && sh backup.sh >> backups/backup.log 2>&1 # waafa-backup"
+    echo "30 4 1 * * cd $here && sh backup.sh --drill >> backups/drill.log 2>&1 # waafa-backup"
+  } | crontab -
+  echo "Backups: daily at 03:15 and a restore drill on the 1st (crontab; BACKUP_CRON=off to skip)"
+fi
+
 docker image prune -f > /dev/null
 $COMPOSE ps
 echo "Done: https://$DOMAIN (release $TAG). Admin: https://$DOMAIN/secure-admin-control"

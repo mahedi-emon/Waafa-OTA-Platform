@@ -17,7 +17,12 @@ await rm(path.join(root, "dist"), { recursive: true, force: true });
 
 const result = await build({
   absWorkingDir: root,
-  entryPoints: { main: "src/main.ts", worker: "src/worker.ts", seed: "prisma/seed.ts" },
+  entryPoints: {
+    main: "src/main.ts",
+    worker: "src/worker.ts",
+    seed: "prisma/seed.ts",
+    offsite: "src/offsite.ts",
+  },
   outdir: "dist",
   bundle: true,
   platform: "node",
