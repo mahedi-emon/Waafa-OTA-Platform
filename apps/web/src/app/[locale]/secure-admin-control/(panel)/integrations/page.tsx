@@ -227,7 +227,7 @@ async function Integrations() {
             ) : tab.id === "signin" ? (
               <Alert variant="info">
                 <Info aria-hidden="true" />
-                <AlertDescription className="break-words">
+                <AlertDescription className="break-all">
                   {t("signInNote", { callback: absoluteUrl(GOOGLE_CALLBACK_PATH) })}
                 </AlertDescription>
               </Alert>

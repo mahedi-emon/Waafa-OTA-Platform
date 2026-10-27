@@ -92,7 +92,12 @@ test("the Super Admin adds an Admin, whose first sign-in sets up two-step sign-i
   const axe = await new AxeBuilder({ page: fresh })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
     .analyze();
-  expect(axe.violations.map((violation) => violation.id)).toEqual([]);
+  expect(
+    axe.violations.map(
+      (violation) =>
+        `${violation.id}: ${violation.nodes.map((node) => node.target.join(" ")).join(", ")}`,
+    ),
+  ).toEqual([]);
   secret = ((await fresh.locator("code").first().textContent()) ?? "").replace(/\s/g, "");
 
   // A wrong first code says so and keeps the setup open.
