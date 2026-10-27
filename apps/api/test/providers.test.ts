@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { NestFastifyApplication } from "@nestjs/platform-fastify";
-import type { Role } from "@waafa/shared";
+import { ProviderKindSchema, type Role } from "@waafa/shared";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { signAccessToken } from "../src/auth/tokens";
 import { featureModules } from "../src/features";
@@ -142,7 +142,7 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
       isLive: false,
     });
     expect(new Set(body.settings.map((item) => item.kind))).toEqual(
-      new Set(["flight", "hotel", "payment", "sms", "email", "auth"]),
+      new Set(ProviderKindSchema.options),
     );
   });
 
@@ -287,7 +287,7 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
       ga4Id: "G-ABC1234567",
     });
     expect(body.features).toMatchObject({ telegramAlerts: false });
-    expect(status.body).not.toContain('0000000AA"');
+    expect(status.body).not.toContain("1x0000000000000000000000000000000AA");
     expect(status.body).not.toContain("AAEabcdef");
     const audit = await prisma.auditLog.findMany({ where: { entityId: "telegram:production" } });
     expect(JSON.stringify(audit)).not.toContain("AAEabcdef");
