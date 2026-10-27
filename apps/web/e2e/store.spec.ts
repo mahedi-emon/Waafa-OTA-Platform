@@ -99,7 +99,7 @@ test.describe("price on request at 390 (issue 178)", () => {
   test("cards show Price on request next to priced products", async ({ page }) => {
     await page.goto("/shop/brand/better-day");
     await expect(
-      page.getByRole("link", { name: "Ask the price of Better Day CRG 070H on WhatsApp" }),
+      page.getByRole("link", { name: "Ask for price: Better Day CRG 070H on WhatsApp" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /Add Better Day CE505A \/ CF280A to cart/ }),

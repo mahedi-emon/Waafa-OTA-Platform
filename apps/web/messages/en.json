@@ -1392,7 +1392,7 @@
       "viewCart": "View cart",
       "priceOnRequest": "Price on request",
       "askPrice": "Ask for price",
-      "askPriceLabel": "Ask the price of {title} on WhatsApp",
+      "askPriceLabel": "Ask for price: {title} on WhatsApp",
       "askPriceMessage": "Hello WAAFA, please share the price of {title}."
     },
     "stock": {
