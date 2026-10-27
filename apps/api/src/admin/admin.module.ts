@@ -13,6 +13,7 @@ import {
   AdminWorkbenchController,
 } from "./admin.controllers";
 import { AdminContentService } from "./content-admin.service";
+import { AdminCustomerAccountsService } from "./customerAccounts.service";
 import { AdminCustomersService } from "./customers.service";
 import { AdminDashboardService } from "./dashboard.service";
 import { AdminInboxService } from "./inbox.service";
@@ -59,6 +60,7 @@ import { AdminWorkbenchService } from "./workbench.service";
     AdminDashboardService,
     AdminReportsService,
     AdminCustomersService,
+    AdminCustomerAccountsService,
     AdminWorkbenchService,
     // The minute job: scheduled publishing, window refreshes, Trash purge, overdue alerts (D0 R4).
     ContentScheduler,

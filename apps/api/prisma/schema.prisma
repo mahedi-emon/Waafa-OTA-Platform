@@ -154,7 +154,12 @@ model Lead {
   createdAt       DateTime       @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
   activities      LeadActivity[]
+  /// The customer account the request belongs to (#241): set when the same email is verified, by phone when the
+  /// request has no email, or by staff. Cleared if the account is deleted.
+  customerId      String?
+  customer        Customer?      @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
+  @@index([customerId, createdAt])
   @@index([module, status, createdAt])
   @@index([status, createdAt])
   @@index([phone, module, createdAt])
@@ -213,7 +218,11 @@ model Order {
   createdAt       DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime     @updatedAt @db.Timestamptz(3)
   history         OrderEvent[]
+  /// The customer account the order belongs to (#241); attached like a lead's.
+  customerId      String?
+  customer        Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
+  @@index([customerId, createdAt])
   @@index([status, createdAt])
   @@index([phone])
   @@index([createdAt])
@@ -440,16 +449,47 @@ model MediaAsset {
 /// A visitor who signed in (Google for now). Requests and orders stay guest records; My account lists those sent with
 /// this verified email. Deleting the account removes this row and its sessions, never the requests or orders.
 model Customer {
-  id           String            @id @default(cuid())
+  id              String            @id @default(cuid())
   /// Lower-case, verified by Google.
-  email        String            @unique
-  name         String
+  email           String            @unique
+  name            String
   /// Google's stable account ID ("sub").
-  googleSub    String?           @unique
-  lastSignInAt DateTime?         @db.Timestamptz(3)
-  createdAt    DateTime          @default(now()) @db.Timestamptz(3)
-  updatedAt    DateTime          @updatedAt @db.Timestamptz(3)
-  sessions     CustomerSession[]
+  googleSub       String?           @unique
+  lastSignInAt    DateTime?         @db.Timestamptz(3)
+  /// E.164. A contact field the customer typed at sign-up, never verified (D301).
+  phone           String?
+  /// When the email was proven: a sign-in code, or Google.
+  emailVerifiedAt DateTime?         @db.Timestamptz(3)
+  /// The last way in: email-code or google.
+  signInMethod    String?
+  /// Staff turned the account off: no sign-in, every session ended (#241).
+  disabledAt      DateTime?         @db.Timestamptz(3)
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  sessions        CustomerSession[]
+  leads           Lead[]
+  orders          Order[]
+
+  @@index([phone])
+}
+
+/// An email sign-in code (#241, D301). Only an HMAC of the code is kept; it works for 10 minutes, once, with at most
+/// 5 tries, and only the newest code for an address counts. A verified code for an address without an account turns
+/// into a 15-minute sign-up ticket (hashed) that the name-and-phone step spends.
+model CustomerSignInCode {
+  id              String    @id @default(cuid())
+  /// Lower-case.
+  email           String
+  codeHash        String
+  expiresAt       DateTime  @db.Timestamptz(3)
+  attempts        Int       @default(0)
+  usedAt          DateTime? @db.Timestamptz(3)
+  ticketHash      String?   @unique
+  ticketExpiresAt DateTime? @db.Timestamptz(3)
+  ip              String?
+  createdAt       DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([email, createdAt])
 }
 
 /// One sign-in. The cookie holds the token; only its SHA-256 is stored.

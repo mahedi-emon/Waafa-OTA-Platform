@@ -1,3 +1,4 @@
+import { AccountLink } from "@/components/account/AccountLink";
 import { ChevronRight } from "@/components/icons/server/ChevronRight";
 import { Mail } from "@/components/icons/server/Mail";
 import { Phone } from "@/components/icons/server/Phone";
@@ -15,7 +16,7 @@ type MobileMenuBodyProps = {
   links: MenuItem[];
   more: MenuItem[];
   contact: ContactSettings;
-  /** Settings › Accounts live (issue 134): a Log in row above the links. */
+  /** Settings › Accounts live (issue 134): a Log in (or My account) row above the links. */
   accountsLive?: boolean;
 };
 
@@ -26,13 +27,11 @@ async function MobileMenuBody({ links, more, contact, accountsLive = false }: Mo
   return (
     <div className="flex flex-col gap-6 px-4 pt-2 pb-[calc(24px+env(safe-area-inset-bottom))]">
       {accountsLive ? (
-        <Link
-          href="/login"
+        <AccountLink
+          labels={{ logIn: t("logIn"), myAccount: t("myAccount") }}
+          icon={<User aria-hidden="true" className="size-[18px]" />}
           className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-navy-900 text-[15px] font-semibold text-white outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
-        >
-          <User aria-hidden="true" className="size-[18px]" />
-          {t("logIn")}
-        </Link>
+        />
       ) : null}
       <ul className="divide-y divide-mist-200">
         {links

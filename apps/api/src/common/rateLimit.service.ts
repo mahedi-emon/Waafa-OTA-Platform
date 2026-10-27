@@ -17,6 +17,11 @@ export const RATE_RULES = {
   invite: { limit: 5, windowMs: 15 * 60_000 },
   customerSignIn: { limit: 10, windowMs: 60_000 },
   customerAccount: { limit: 60, windowMs: 60_000 },
+  /** Email sign-in codes (issue 241): 5 an hour per address of email, 20 an hour per visitor address. */
+  customerCodeEmail: { limit: 5, windowMs: 60 * 60_000 },
+  customerCodeIp: { limit: 20, windowMs: 60 * 60_000 },
+  /** Code checks per visitor address; each code also allows only 5 tries. */
+  customerCodeVerify: { limit: 30, windowMs: 15 * 60_000 },
   uploads: { limit: 40, windowMs: 60_000 },
   // Per-visitor limits behind the web's own: the web limits first, these catch anything that reaches the API another
   // way. Twice the web's numbers, so the two layers never disagree for a real visitor.

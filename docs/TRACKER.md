@@ -38,12 +38,22 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #240 · D F3 · One /track for requests, visa applications and orders — 🟡 In review
+### #241 · D F1 · Email code sign-in and sign-up, guest records attach, admin account controls — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 27 Oct (D300, D301): email one-time code or Google, no phone OTP; sign-up on the same screen; guest flows stay and attach; header, drawer and More state; Admin Customers verified, method, last sign-in, Disable account, Sign out everywhere; rate limits, Turnstile, no enumeration, editable code email |
+| Built | Migration `20261027090000_customer_sign_in` (Customer phone, emailVerifiedAt, signInMethod, disabledAt; CustomerSignInCode; customerId on Lead and Order; Google accounts backfilled verified). API: `POST /public/auth/email/{code,verify,complete}` (CustomerCodesService), shared attach rule (customerAuth.ts), My account lists by account; `GET/POST /admin/customers/accounts…` (list, detail, disable, enable, sign-out-everywhere, attach), audited and named in the audit log. Template `customer-sign-in-code` (seed patch; `{{code}}` required by the schema). Web: /login email → code → name and phone (EmailSignIn), route handlers with same-site, limits, Turnstile and idempotency, session plus readable hint cookie, AccountLink in header, phone drawer and More sheet; Admin › Customers › Accounts list and account page (controls, attach form); account card on the phone profile; CI API-mode job gets a Mailpit inbox |
+| Tests | API `customerCodes.test.ts` (13: sign-up, sign-in, enumeration, disabled, 5 tries, expiry, single use, newest code, limits, ticket, attach rules, staff controls and audit, markup and Bangla names) and seed patch; shared schema tests; web unit (audit target); e2e `account-email.spec.ts` (API mode, Mailpit) at 390 and 1440 with axe; admin-screens covers the Accounts list; QA plan docs/qa/F-accounts.md |
+| Migration | yes: owner runs `sh backup.sh` before `sh deploy.sh` |
+| Decision | D301 |
+
+### #240 · D F3 · One /track for requests, visa applications and orders — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 27 Oct (D300): one /track for any request, visa application or order by reference and phone; /shop/track redirects; no personal data beyond the status; rate limited |
 | Built | Shared `TrackInputSchema`, `TrackResultSchema` (request: module, status, received, first reply and close dates, visa stage with documents count, submission and passport dates; order: as before). API `POST /public/track` (20 lookups per address in 10 minutes, the same 404 for a wrong phone, an unknown reference or spam), visa progress helpers moved to `common/visaProgress.ts`. Web `/track` (the old store page, generalised) with `RequestProgress` steps; `/shop/track` and `/bn/shop/track` 308 to `/track` with the query; every link, menu fixture and test moved to /track |
 | Tests | API `track.test.ts` 5 (request without personal data, visa steps, order, same not found, limit); e2e orders (old link redirect, order timeline, not found), api-mode (a quoted request on /track, wrong phone) |
+| CI minutes | PR #280: 60 billed minutes |
 | Migration | none · live menus still point at /shop/track, which redirects (staff can edit the link) |
 
 ### #273 · D C · Lighthouse (manual) only on demand — ✅ Done
@@ -1838,6 +1848,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D298 | 26 Oct | Lighthouse in CI fails on accessibility, best practices, SEO (95) and CLS (0.1); performance 90, LCP 2.5 s and TBT 200 ms are `targets` reported as warnings until every key route meets them (#271) | Eight of eleven key routes reach 90 after #236; Home 87, Hotels 86 and Blog 88 need structural work (streamed Suspense reveal, RSC payload), and a failing job would block every full-ci merge meanwhile | #236 |
 | D299 | 26 Oct | Record detail pages (package, product, visa country and apply, blog post, visa guide, album, flight route) keep their Suspense boundary; its fallback fills the screen | In API mode (production) the snapshot reads `draftMode()`, which is request data: without the boundary a record added after the build (or a moved slug) failed with "uncached or runtime data during prerendering" (caught by the API-mode e2e on PR #272, never live) | #236 |
 | D300 | 27 Oct | Owner's work order replaces D268: #276 flaky test, F (accounts and /track, email code sign-in), then D, E, G, H, I, J, K, #271, L, M, content readiness; PRs touching public pages carry `full-ci` (CI Lighthouse) | Owner, 27 Oct: accounts and tracking before measurement; no SMS for sign-in | #276 |
+| D301 | 27 Oct | Customers sign in with an email one-time code (6 digits, 10 minutes, single use, 5 tries, HMAC-stored, newest code only) or Google; no phone OTP or SMS for sign-in. Sign-up on the same screen (code, then a 15-minute ticket in an httpOnly cookie, then name and phone; phone not verified). Every code request gets the same answer; limits 5 an hour per email and 20 per address. Guest records attach by verified email, or by phone only when the record has no email; staff attach by hand (audited). Header, drawer and More read a readable hint cookie so the page shell stays static. Admin can turn an account off and sign it out everywhere | Owner, 27 Oct: no SMS cost or sender approval for sign-in; one screen for sign-in and sign-up; no enumeration | #241 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |

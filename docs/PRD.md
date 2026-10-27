@@ -122,7 +122,7 @@ Phase 1A ships about 60% of the platform by 13 October, inside the 50 to 70% tar
 | Phase | Target | Ships | Gate to start |
 | --- | --- | --- | --- |
 | 1A Launch (P0) | 13 Oct 2026 | All public pages and nav; unified search; Flights and Hotels in Manual mode with query capture and group fares; Tour Packages and Visa Services with query and apply forms; Waafas World store for any product category (with variants), cart, cash on delivery, offline payment and order tracking; printing quote and trading RFQ; Gallery; Feedback; all nine More pages; admin for leads, search activity, content, catalogue, orders and settings; Golden Switch UI with Live locked; email alerts; SEO and analytics | Owner signs off staging on 12 Oct |
-| 1B Completion (P1) | By 13 Nov 2026 | Customer accounts (phone OTP, Google); Bangla; SSLCommerz and bKash online payment; SMS; real-time admin alerts and 2FA; quote builder and lead kanban; reminders and reports; reviews; EMI calculator; courier API | Merchant account approved for online payment |
+| 1B Completion (P1) | By 13 Nov 2026 | Customer accounts (email code, Google); Bangla; SSLCommerz and bKash online payment; SMS; real-time admin alerts and 2FA; quote builder and lead kanban; reminders and reports; reviews; EMI calculator; courier API | Merchant account approved for online payment |
 | 2 Live booking (P2) | When a provider contract lands | Live flight search, booking, ticketing and e-tickets through the first two provider APIs; hotel API booking; instant package booking; pricing engine; booking operations, refunds and reconciliation in admin | IATA accreditation, consolidator API or GDS contract, plus sandbox certification |
 | 3 Scale (P3) | After Phase 2 | B2B agent portal with wallet and credit; iOS and Android apps on the same API; loyalty and referrals; multi-currency checkout | Business decision per item |
 | F Licensed modules | After the licence | Hajj and Umrah; Manpower and Recruitment | Licence issued and the owner's go-ahead |
@@ -403,14 +403,16 @@ Privacy Policy and Terms and Conditions are rich-text pages managed the same way
 
 **Customer accounts (FR-ACC, P1)**
 
-- Sign in with phone OTP, email and password, or Google; every flow still works as a guest.
-- My account: queries with status timeline, visa applications, orders, wishlist, saved travellers (passport fields encrypted), addresses, profile, notification preferences, delete account.
-- Guest leads and orders attach to the account once the same phone number is verified.
+- Sign in with an email one-time code (6 digits by email, valid 10 minutes, single use, at most 5 tries) or Google; no phone OTP and no SMS for sign-in (owner, 27 Oct, D301). An optional password can be set later in My account and is reset by an email code. Every flow still works as a guest.
+- Sign-up on the same screen: email, code, then name and phone (the phone is a contact field, not verified).
+- My account: queries with status timeline, visa applications, orders, wishlist, saved travellers (passport fields encrypted), addresses, profile, notification preferences, sign-in history, delete account.
+- Guest leads and orders attach to the account once the same email is verified, or by phone when the old record has no email; staff can attach a record by hand.
+- Security: rate limits per email and per address, Turnstile on the code request, no account enumeration, the code email editable in admin; admin and customer sessions never mix; staff can disable an account and sign it out everywhere.
 
 **Notifications (FR-NTF)**
 
 - P0 email: lead received (customer), new lead alert routed by module (staff), order placed (customer and staff), visa status change (customer), feedback received and payment proof received (staff).
-- P1: SMS through a Bangladeshi gateway adapter (OTP, lead acknowledgement, order status), real-time admin alerts with sound, a Telegram alert to the sales group.
+- P1: SMS through a Bangladeshi gateway adapter for status messages only (lead acknowledgement, order and visa status; never sign-in, D301), real-time admin alerts with sound, a Telegram alert to the sales group.
 - P2: WhatsApp Business API templates; push notifications for the apps.
 - Every template is editable in admin with variables; all sends run through a queue with retries and a delivery log.
 

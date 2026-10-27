@@ -231,6 +231,7 @@ export const AUDIT_AREAS = {
   media: ["media."],
   integrations: ["integration.", "provider."],
   feedback: ["feedback.", "subscriber."],
+  customers: ["customer."],
 } as const satisfies Record<string, readonly string[]>;
 
 export type AuditArea = keyof typeof AUDIT_AREAS;

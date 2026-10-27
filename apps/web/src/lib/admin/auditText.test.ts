@@ -77,4 +77,16 @@ describe("audit sentences", () => {
     expect(verbPath("lead.askPayment", (path) => known.has(path))).toBe("lead.other");
     expect(verbPath("seed.patch", (path) => known.has(path))).toBe("other");
   });
+
+  it("name a customer account by its email for the account controls (issue 241)", () => {
+    const row = {
+      action: "customer.attach",
+      entity: "customer",
+      entityId: "ckabcdefghijklmnopqrstuvw",
+      before: { email: "rahim@example.com", record: "FLT-261027-0001", customerId: null },
+      after: { email: "rahim@example.com", record: "FLT-261027-0001", customerId: "c1" },
+    };
+    expect(auditTarget(row)).toEqual({ kind: "customer", name: "rahim@example.com" });
+    expect(auditTarget({ ...row, before: null, after: null })).toEqual({ kind: "customer" });
+  });
 });
