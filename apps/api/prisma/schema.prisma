@@ -449,28 +449,85 @@ model MediaAsset {
 /// A visitor who signed in (Google for now). Requests and orders stay guest records; My account lists those sent with
 /// this verified email. Deleting the account removes this row and its sessions, never the requests or orders.
 model Customer {
-  id              String            @id @default(cuid())
+  id              String                 @id @default(cuid())
   /// Lower-case, verified by Google.
-  email           String            @unique
+  email           String                 @unique
   name            String
   /// Google's stable account ID ("sub").
-  googleSub       String?           @unique
-  lastSignInAt    DateTime?         @db.Timestamptz(3)
+  googleSub       String?                @unique
+  lastSignInAt    DateTime?              @db.Timestamptz(3)
   /// E.164. A contact field the customer typed at sign-up, never verified (D301).
   phone           String?
   /// When the email was proven: a sign-in code, or Google.
-  emailVerifiedAt DateTime?         @db.Timestamptz(3)
+  emailVerifiedAt DateTime?              @db.Timestamptz(3)
   /// The last way in: email-code or google.
   signInMethod    String?
   /// Staff turned the account off: no sign-in, every session ended (#241).
-  disabledAt      DateTime?         @db.Timestamptz(3)
-  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  disabledAt      DateTime?              @db.Timestamptz(3)
+  /// An optional password set in My account (#278, argon2id); a code sign-in always works too.
+  passwordHash    String?
+  /// Offers and news emails; service emails about requests and orders always go (#278).
+  notifyOffers    Boolean                @default(false)
+  createdAt       DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime               @updatedAt @db.Timestamptz(3)
   sessions        CustomerSession[]
   leads           Lead[]
   orders          Order[]
+  wishlist        CustomerWishlistItem[]
+  travellers      CustomerTraveller[]
+  addresses       CustomerAddress[]
 
   @@index([phone])
+}
+
+/// A package or product a customer saved (#278).
+model CustomerWishlistItem {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  /// package or product.
+  kind       String
+  slug       String
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([customerId, kind, slug])
+}
+
+/// A traveller a customer saved for faster requests (#278). The passport number is sealed (AES-256-GCM) and shown
+/// masked; only its last four characters are kept in clear for the list.
+model CustomerTraveller {
+  id             String   @id @default(cuid())
+  customerId     String
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  fullName       String
+  dateOfBirth    String?
+  nationality    String?
+  passportSealed String?
+  passportLast4  String?
+  passportExpiry String?
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([customerId])
+}
+
+/// A delivery address (#278); the default one prefills checkout.
+model CustomerAddress {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  label      String?
+  name       String
+  phone      String
+  division   String
+  district   String
+  area       String
+  street     String
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([customerId])
 }
 
 /// An email sign-in code (#241, D301). Only an HMAC of the code is kept; it works for 10 minutes, once, with at most

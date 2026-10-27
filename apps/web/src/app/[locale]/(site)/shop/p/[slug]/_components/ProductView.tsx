@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { Check, Expand, Minus, Phone, Plus, ShoppingCart, Truck, Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -42,6 +42,8 @@ type ProductViewProps = {
   compatible: string[];
   /** WhatsApp and phone for Ask for price when the price is hidden (issue 178). */
   contact: { whatsappE164: string; phoneDisplay: string; phoneE164: string };
+  /** The Save to wishlist button (issue 278), rendered by the page when accounts are on. */
+  save?: ReactNode;
 };
 
 /**
@@ -58,6 +60,7 @@ function ProductView({
   codLimit,
   compatible,
   contact,
+  save,
 }: ProductViewProps) {
   const t = useTranslations("Shop");
   const router = useRouter();
@@ -250,6 +253,7 @@ function ProductView({
             <StockBadge kind={stock} label={t(`stock.${stock}`, { count: variant.stock })} />
             <span className="tabular-nums">{t("product.sku", { sku: variant.sku })}</span>
           </div>
+          {save ? <div>{save}</div> : null}
         </div>
 
         {showPrice ? (

@@ -7,6 +7,7 @@ import {
   GoogleSignInInputSchema,
   PkceVerifierSchema,
   SignUpCompleteSchema,
+  TravellerInputSchema,
 } from "./customers";
 
 describe("customer sign-in schemas (issue 134)", () => {
@@ -31,7 +32,7 @@ describe("customer sign-in schemas (issue 134)", () => {
     );
   });
 
-  it("describes My account with requests and orders", () => {
+  it("describes My account with its sections (issue 278)", () => {
     const parsed = AccountViewSchema.parse({
       customer: {
         id: "c1",
@@ -40,6 +41,8 @@ describe("customer sign-in schemas (issue 134)", () => {
         phone: null,
         createdAt: "2026-10-12T10:00:00.000Z",
       },
+      hasPassword: false,
+      preferences: { notifyOffers: true },
       requests: [
         {
           reference: "FLT-0001",
@@ -47,11 +50,37 @@ describe("customer sign-in schemas (issue 134)", () => {
           status: "new",
           summary: "Dhaka to Dubai",
           createdAt: "2026-10-12T10:00:00.000Z",
+          respondedAt: null,
+          closedAt: null,
+          visa: null,
         },
       ],
       orders: [],
+      wishlist: [{ kind: "package", slug: "bangkok-and-phuket" }],
+      travellers: [
+        {
+          id: "t1",
+          fullName: "Rahim Uddin",
+          dateOfBirth: null,
+          nationality: "BD",
+          passportMasked: "•••• 4821",
+          passportExpiry: null,
+        },
+      ],
+      addresses: [],
+      signIns: [],
     });
     expect(parsed.requests).toHaveLength(1);
+  });
+
+  it("never takes a whole passport number in a traveller view, and checks the number's form on input", () => {
+    expect(
+      TravellerInputSchema.parse({ fullName: "Rahim Uddin", passportNumber: " ab1234567 " })
+        .passportNumber,
+    ).toBe("AB1234567");
+    expect(
+      TravellerInputSchema.safeParse({ fullName: "Rahim", passportNumber: "12 34" }).success,
+    ).toBe(false);
   });
 });
 

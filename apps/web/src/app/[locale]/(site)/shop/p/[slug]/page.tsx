@@ -29,6 +29,7 @@ import { brandNames, pricedProduct, pricedProducts } from "@/lib/shop/catalogue"
 import { stockBadge } from "@/lib/shop/variants";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { ProductView } from "./_components/ProductView";
+import { WishlistButton } from "@/components/account/WishlistButton";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 
@@ -72,7 +73,7 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
     await followMovedRecord("products", slug, (to) => `/shop/p/${to}`);
     notFound();
   }
-  const [product, categories, names, shipping, payment, contact, site, messages, t] =
+  const [product, categories, names, shipping, payment, contact, site, messages, t, tw] =
     await Promise.all([
       pricedProduct(found),
       listCategories(),
@@ -83,6 +84,7 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
       getSiteSettings(),
       getMessages(),
       getTranslations("Shop"),
+      getTranslations("Wishlist"),
     ]);
   const category = categories.find((item) => item.id === product.categoryId);
   const brand = names.get(product.brandId) ?? "";
@@ -155,6 +157,21 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
               phoneDisplay: contact.phoneDisplay,
               phoneE164: contact.phoneE164,
             }}
+            save={
+              site.accountsLive ? (
+                <WishlistButton
+                  kind="product"
+                  slug={product.slug}
+                  labels={{
+                    save: tw("save"),
+                    saved: tw("saved"),
+                    savedLink: tw("savedLink"),
+                    open: tw("open"),
+                    failed: tw("failed"),
+                  }}
+                />
+              ) : null
+            }
           />
         </NextIntlClientProvider>
       </div>

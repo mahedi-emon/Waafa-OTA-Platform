@@ -4,7 +4,11 @@
  */
 
 type ToastKind = "success" | "error";
-type ToastOptions = { description?: string };
+type ToastOptions = {
+  description?: string;
+  /** One button in the toast (e.g. "Open wishlist"). */
+  action?: { label: string; onClick: () => void };
+};
 
 let resolveReady: (() => void) | undefined;
 const ready = new Promise<void>((resolve) => {

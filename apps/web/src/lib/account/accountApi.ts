@@ -198,3 +198,50 @@ export async function completeSignUp(
     return { ok: false, reason: "unavailable" };
   }
 }
+
+export type AccountWriteOutcome = { ok: boolean; status: number; body: Record<string, unknown> };
+
+/** One My account change (issue 278) through the API with the session; the caller maps the answer. */
+export async function accountWrite(
+  path: string,
+  token: string | undefined,
+  body: unknown,
+): Promise<AccountWriteOutcome> {
+  const api = apiConfig();
+  if (!api) return { ok: false, status: 404, body: {} };
+  if (!token) return { ok: false, status: 401, body: {} };
+  try {
+    const answer = await callApi(api, `/api/v1/public/account/${path}`, {
+      body: body ?? {},
+      headers: sessionHeaders(token),
+      timeoutMs: 10_000,
+    });
+    return { ok: true, status: 200, body: (answer ?? {}) as Record<string, unknown> };
+  } catch (error) {
+    if (error instanceof ApiError) return { ok: false, status: error.status, body: error.body };
+    return { ok: false, status: 503, body: {} };
+  }
+}
+
+/** Password sign-in for an account that set one (issue 278). */
+export async function signInWithPassword(
+  input: { email: string; password: string },
+  visitor: Visitor,
+): Promise<SignInOutcome> {
+  const api = apiConfig();
+  if (!api) return { ok: false, reason: "off" };
+  try {
+    const body = await callApi(api, "/api/v1/public/auth/password", {
+      body: input,
+      ...visitorOptions(visitor),
+      timeoutMs: 10_000,
+    });
+    return { ok: true, session: CustomerSessionSchema.parse(body) };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.status === 429) return { ok: false, reason: "busy" };
+      if (error.status === 401 || error.status === 422) return { ok: false, reason: "refused" };
+    }
+    return { ok: false, reason: "unavailable" };
+  }
+}

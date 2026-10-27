@@ -1,5 +1,7 @@
 import { z } from "zod";
-import { E164PhoneSchema, IsoDateTimeSchema } from "./common";
+import { E164PhoneSchema, IsoDateSchema, IsoDateTimeSchema } from "./common";
+import { LeadModuleSchema, LeadStatusSchema } from "./leads";
+import { TrackedRequestSchema } from "./track";
 
 /*
  * Customer accounts (PRD FR-ACC, issues 134 and 241): sign-in with an email code or Google; every flow still works as a
@@ -50,21 +52,101 @@ export const CustomerSessionSchema = z
   .strict();
 export type CustomerSession = z.infer<typeof CustomerSessionSchema>;
 
-/** My account: the customer and the requests and orders sent with their verified email. */
+/*
+ * My account sections (issue 278): the requests and visa applications with their progress, orders, the wishlist,
+ * saved travellers (passport number sealed at rest, shown masked), addresses, preferences and recent sign-ins.
+ */
+
+export const WISHLIST_KINDS = ["package", "product"] as const;
+export const WishlistItemSchema = z
+  .object({ kind: z.enum(WISHLIST_KINDS), slug: z.string().regex(/^[a-z0-9-]{1,120}$/) })
+  .strict();
+export type WishlistItem = z.infer<typeof WishlistItemSchema>;
+
+export const TravellerInputSchema = z
+  .object({
+    fullName: z.string().trim().min(2).max(80),
+    dateOfBirth: IsoDateSchema.optional(),
+    nationality: z
+      .string()
+      .regex(/^[A-Z]{2}$/)
+      .optional(),
+    /** Letters and digits as printed (6 to 12), stored sealed. */
+    passportNumber: z
+      .string()
+      .trim()
+      .toUpperCase()
+      .regex(/^[A-Z0-9]{6,12}$/, "Enter the passport number as printed")
+      .optional(),
+    passportExpiry: IsoDateSchema.optional(),
+  })
+  .strict();
+export type TravellerInput = z.infer<typeof TravellerInputSchema>;
+
+export const TravellerViewSchema = z
+  .object({
+    id: z.string(),
+    fullName: z.string(),
+    dateOfBirth: z.string().nullable(),
+    nationality: z.string().nullable(),
+    /** "•••• 4821", never the whole number. */
+    passportMasked: z.string().nullable(),
+    passportExpiry: z.string().nullable(),
+  })
+  .strict();
+export type TravellerView = z.infer<typeof TravellerViewSchema>;
+
+export const AddressInputSchema = z
+  .object({
+    label: z.string().trim().max(40).optional(),
+    name: z.string().trim().min(2).max(80),
+    phone: E164PhoneSchema,
+    division: z.string().trim().min(2).max(40),
+    district: z.string().trim().min(2).max(60),
+    area: z.string().trim().min(2).max(80),
+    street: z.string().trim().min(3).max(200),
+    isDefault: z.boolean().optional(),
+  })
+  .strict();
+export type AddressInput = z.infer<typeof AddressInputSchema>;
+
+export const AddressViewSchema = AddressInputSchema.omit({ isDefault: true, label: true })
+  .extend({ id: z.string(), label: z.string().nullable(), isDefault: z.boolean() })
+  .strict();
+export type AddressView = z.infer<typeof AddressViewSchema>;
+
+export const AccountPreferencesSchema = z.object({ notifyOffers: z.boolean() }).strict();
+export type AccountPreferences = z.infer<typeof AccountPreferencesSchema>;
+
+export const SignInEntrySchema = z
+  .object({
+    id: z.string(),
+    device: z.string(),
+    at: IsoDateTimeSchema,
+    current: z.boolean(),
+    active: z.boolean(),
+  })
+  .strict();
+export type SignInEntry = z.infer<typeof SignInEntrySchema>;
+
+export const PASSWORD_MIN = 10;
+export const PasswordSetSchema = z
+  .object({ password: z.string().min(PASSWORD_MIN).max(128) })
+  .strict();
+
+const AccountRequestSchema = TrackedRequestSchema.omit({ kind: true }).extend({
+  summary: z.string(),
+  module: LeadModuleSchema,
+  status: LeadStatusSchema,
+});
+
+/** My account: the customer, their records on the account, and the sections they keep. */
 export const AccountViewSchema = z
   .object({
     customer: CustomerViewSchema,
-    requests: z.array(
-      z
-        .object({
-          reference: z.string(),
-          module: z.string(),
-          status: z.string(),
-          summary: z.string(),
-          createdAt: IsoDateTimeSchema,
-        })
-        .strict(),
-    ),
+    hasPassword: z.boolean(),
+    preferences: AccountPreferencesSchema,
+    requests: z.array(AccountRequestSchema),
     orders: z.array(
       z
         .object({
@@ -75,6 +157,10 @@ export const AccountViewSchema = z
         })
         .strict(),
     ),
+    wishlist: z.array(WishlistItemSchema),
+    travellers: z.array(TravellerViewSchema),
+    addresses: z.array(AddressViewSchema),
+    signIns: z.array(SignInEntrySchema),
   })
   .strict();
 export type AccountView = z.infer<typeof AccountViewSchema>;
@@ -127,5 +213,10 @@ export const SignUpCompleteSchema = z
 export type SignUpComplete = z.infer<typeof SignUpCompleteSchema>;
 
 /** How a customer got in last time (admin Customers). */
-export const SIGN_IN_METHODS = ["email-code", "google"] as const;
+export const SIGN_IN_METHODS = ["email-code", "google", "password"] as const;
 export type SignInMethod = (typeof SIGN_IN_METHODS)[number];
+
+/** Password sign-in for an account that set one (issue 278); the email code always works too. */
+export const PasswordSignInSchema = z
+  .object({ email: CustomerEmailSchema, password: z.string().min(1).max(128) })
+  .strict();
