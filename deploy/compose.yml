@@ -71,6 +71,8 @@ services:
     build:
       context: ..
       dockerfile: apps/api/Dockerfile
+      args:
+        RELEASE: ${IMAGE_TAG:-development}
     image: ${IMAGE_REPO:-waafa}:api-${IMAGE_TAG:-latest}
     restart: unless-stopped
     environment: *api-env
