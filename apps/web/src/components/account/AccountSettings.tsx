@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState, useTransition, type FormEvent } from "react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { formatDate, PASSWORD_MIN, type SignInEntry } from "@waafa/shared";
 import { FormField } from "@/components/forms/FormField";
 import { Badge } from "@/components/ui/badge";
@@ -68,10 +68,10 @@ function AccountSettings({
       const answer = await postAccount("preferences", { notifyOffers: next });
       if (!answer.ok) {
         setOffers(!next);
-        toast.error(accountError(answer, errors));
+        notify("error", accountError(answer, errors));
         return;
       }
-      toast.success(labels.offersSaved);
+      notify("success", labels.offersSaved);
     });
   }
 
@@ -90,7 +90,7 @@ function AccountSettings({
       }
       setPassword("");
       setPasswordSet(true);
-      toast.success(labels.passwordSaved);
+      notify("success", labels.passwordSaved);
     });
   }
 
@@ -98,11 +98,11 @@ function AccountSettings({
     startTransition(async () => {
       const answer = await postAccount("password.remove");
       if (!answer.ok) {
-        toast.error(accountError(answer, errors));
+        notify("error", accountError(answer, errors));
         return;
       }
       setPasswordSet(false);
-      toast.success(labels.passwordRemoved);
+      notify("success", labels.passwordRemoved);
     });
   }
 
@@ -110,7 +110,7 @@ function AccountSettings({
     startTransition(async () => {
       const answer = await postAccount("signOutOthers");
       if (!answer.ok) {
-        toast.error(accountError(answer, errors));
+        notify("error", accountError(answer, errors));
         return;
       }
       const count = typeof answer.ended === "number" ? answer.ended : 0;
@@ -123,7 +123,7 @@ function AccountSettings({
       setEntries((list) =>
         list.map((entry) => (entry.current ? entry : { ...entry, active: false })),
       );
-      toast.success(words.replace("{count}", String(count)));
+      notify("success", words.replace("{count}", String(count)));
     });
   }
 

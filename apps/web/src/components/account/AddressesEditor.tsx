@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import type { AddressView } from "@waafa/shared";
 import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
@@ -106,7 +106,7 @@ function AddressesEditor({ addresses: initial, countries, labels, errors }: Addr
       if (!answer.ok) {
         const message = accountError(answer, errors, labels.full);
         if (editing) setProblem(message);
-        else toast.error(message);
+        else notify("error", message);
         return;
       }
       const { ok: _ok, ...rest } = answer;
@@ -125,7 +125,7 @@ function AddressesEditor({ addresses: initial, countries, labels, errors }: Addr
           ? others.map((item) => (item.id === view.id ? view : item))
           : [...others, view];
       });
-      if (done) toast.success(done);
+      if (done) notify("success", done);
       setEditing(null);
     });
   }

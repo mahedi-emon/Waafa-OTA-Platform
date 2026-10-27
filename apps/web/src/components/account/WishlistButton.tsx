@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { Heart } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { postAccount } from "./postAccount";
@@ -53,11 +53,11 @@ function WishlistButton({ kind, slug, labels }: WishlistButtonProps) {
           router.push(`/login?next=${encodeURIComponent(pathname)}`);
           return;
         }
-        toast.error(labels.failed);
+        notify("error", labels.failed);
         return;
       }
       if (next) {
-        toast.success(labels.savedLink, {
+        notify("success", labels.savedLink, {
           action: { label: labels.open, onClick: () => router.push("/account#account-wishlist") },
         });
       }

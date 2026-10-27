@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from "react";
 import { X } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { accountError, postAccount, type AccountErrors } from "./postAccount";
 
 type WishlistRowProps = {
@@ -36,10 +36,10 @@ function WishlistRow({ kind, slug, label, removed, errors, children }: WishlistR
           startTransition(async () => {
             const answer = await postAccount("wishlist.remove", { kind, slug });
             if (!answer.ok) {
-              toast.error(accountError(answer, errors));
+              notify("error", accountError(answer, errors));
               return;
             }
-            toast.success(removed);
+            notify("success", removed);
             setGone(true);
           })
         }

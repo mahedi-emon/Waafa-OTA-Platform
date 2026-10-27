@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/components/feedback/notify";
 import { formatDate, type TravellerView } from "@waafa/shared";
 import { FormField } from "@/components/forms/FormField";
 import { Button } from "@/components/ui/button";
@@ -108,7 +108,7 @@ function TravellersEditor({
           ? [...list, view]
           : list.map((item) => (item.id === view.id ? view : item)),
       );
-      toast.success(labels.saved);
+      notify("success", labels.saved);
       setEditing(null);
     });
   }
@@ -117,11 +117,11 @@ function TravellersEditor({
     startTransition(async () => {
       const answer = await postAccount("traveller.remove", undefined, traveller.id);
       if (!answer.ok) {
-        toast.error(accountError(answer, errors));
+        notify("error", accountError(answer, errors));
         return;
       }
       setTravellers((list) => list.filter((item) => item.id !== traveller.id));
-      toast.success(labels.removedDone);
+      notify("success", labels.removedDone);
     });
   }
 

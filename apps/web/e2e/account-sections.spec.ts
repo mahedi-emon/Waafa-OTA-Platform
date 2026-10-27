@@ -142,7 +142,7 @@ test.describe("phone (390)", () => {
     await axe(page);
     await addresses.getByRole("button", { name: "Save address" }).click();
     await expect(page.getByText("Address saved.")).toBeVisible();
-    await expect(addresses.getByText("Default")).toBeVisible();
+    await expect(addresses.getByText("Default", { exact: true })).toBeVisible();
     await expect(addresses.getByText("House 1, Road 2, Gulshan, Dhaka, Dhaka")).toBeVisible();
 
     // F-28: a bad phone is refused with a message, not saved.

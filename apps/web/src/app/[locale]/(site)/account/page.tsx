@@ -11,10 +11,12 @@ import { Plane } from "@/components/icons/server/Plane";
 import { Stamp } from "@/components/icons/server/Stamp";
 import { formatDate, formatTaka, type AccountView } from "@waafa/shared";
 import { cn } from "cn";
-import { AccountSettings } from "@/components/account/AccountSettings";
-import { AddressesEditor } from "@/components/account/AddressesEditor";
-import { TravellersEditor } from "@/components/account/TravellersEditor";
-import { WishlistRow } from "@/components/account/WishlistRow";
+import {
+  AccountSettings,
+  AddressesEditor,
+  TravellersEditor,
+  WishlistRow,
+} from "@/components/account/lazyAccountSections";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { Alert, AlertDescription } from "@/components/ui/alert";
