@@ -51,7 +51,8 @@ for service in api web nginx; do
 done
 # The web image is built for one address (an image label); a mismatch would put wrong canonical links on every page.
 built_url=$(docker image inspect -f '{{ index .Config.Labels "org.waafa.site-url" }}' "$REPO:web-$TAG" 2>/dev/null | sed 's/<no value>//')
-if [ -n "$built_url" ] && [ "$built_url" != "$(setting SITE_URL)" ] && [ "$DOMAIN" != "localhost" ]; then
+# Staging (deploy/staging, STAGING=1) runs the live images on purpose: its canonical links point at the live site.
+if [ -n "$built_url" ] && [ "$built_url" != "$(setting SITE_URL)" ] && [ "$DOMAIN" != "localhost" ] && [ "$(setting STAGING)" != "1" ]; then
   echo "The web image was built for '$built_url' but SITE_URL in .env is '$(setting SITE_URL)'." >&2
   echo "Set the GitHub variable SITE_URL, run the Docker images workflow again, then deploy." >&2
   exit 1
