@@ -34,3 +34,15 @@ export function sendConversion(
   if (meta) target.fbq?.("track", meta, { ...money, ...params });
   else target.fbq?.("trackCustom", name, params);
 }
+
+/** A tap on a call or WhatsApp link is a conversion; any other link is not. */
+export function linkConversion(href: string): "call_click" | "whatsapp_click" | null {
+  if (href.startsWith("tel:")) return "call_click";
+  if (/^https:\/\/(wa\.me|api\.whatsapp\.com)\//.test(href)) return "whatsapp_click";
+  return null;
+}
+
+/** The key that keeps a lead, order or proof from being counted twice; null for events without a reference. */
+export function onceKey(name: ConversionEvent, params: TrackParams): string | null {
+  return params.reference ? `${name}:${String(params.reference)}` : null;
+}
