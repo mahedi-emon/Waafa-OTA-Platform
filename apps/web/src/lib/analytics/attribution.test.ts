@@ -62,7 +62,7 @@ describe("attribution (issue 237)", () => {
   });
 
   it("ignores a cookie edited by hand and adds the source to an order once", () => {
-    expect(readSource(jar(encodeURIComponent('{"utm":{"x":"1"}}')).cookies)).toBeNull();
+    expect(readSource(jar('{"utm":{"x":"1"}}').cookies)).toBeNull();
     expect(readSource(jar("not json").cookies)).toBeNull();
     const source = { referrer: "www.google.com", landing: "/shop" };
     expect(withSource({ lines: [] }, source)).toEqual({

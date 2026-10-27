@@ -66,7 +66,8 @@ export function rememberSource(
   const source = sourceOf(url, referer, ownHost);
   if (!source) return;
   if (!source.utm && cookies.get(SOURCE_COOKIE)) return;
-  response.set(SOURCE_COOKIE, encodeURIComponent(JSON.stringify(source)), {
+  // Next encodes cookie values itself.
+  response.set(SOURCE_COOKIE, JSON.stringify(source), {
     maxAge: MAX_AGE_SECONDS,
     httpOnly: true,
     sameSite: "lax",
@@ -80,7 +81,7 @@ export function readSource(cookies: CookieJar): Attribution | null {
   const raw = cookies.get(SOURCE_COOKIE)?.value;
   if (!raw) return null;
   try {
-    const parsed = SavedSourceSchema.safeParse(JSON.parse(decodeURIComponent(raw)));
+    const parsed = SavedSourceSchema.safeParse(JSON.parse(raw));
     return parsed.success ? parsed.data : null;
   } catch {
     return null;
