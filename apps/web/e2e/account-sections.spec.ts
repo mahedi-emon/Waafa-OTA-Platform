@@ -222,6 +222,14 @@ test.describe("desktop (1440)", () => {
     await page.getByRole("button", { name: "Remove password" }).click();
     await expect(page.getByText("Password removed. Use an email code to sign in.")).toBeVisible();
     await expect(page.getByRole("button", { name: "Set password" })).toBeVisible();
+
+    // A client-side move into /account from the header renders the page, not the error boundary (React 412).
+    await page.goto("/");
+    const myAccount = page.getByRole("banner").getByRole("link", { name: "My account" });
+    await whenHydrated(myAccount);
+    await myAccount.click();
+    await expect(page).toHaveURL(/\/account$/);
+    await expect(page.getByRole("navigation", { name: "Sections of My account" })).toBeVisible();
     expect(errors).toEqual([]);
   });
 });
