@@ -232,6 +232,8 @@ export const PaymentSettingsSchema = z
     /** Highest order total that may be paid cash on delivery (FR-SHOP-07). */
     codLimit: TakaSchema,
     onlinePaymentLive: z.boolean(),
+    /** The VAT rate inside the prices, shown on invoices (issue 248); empty = "All prices include VAT". */
+    vatPercent: z.number().min(0).max(30).optional(),
   })
   .strict();
 

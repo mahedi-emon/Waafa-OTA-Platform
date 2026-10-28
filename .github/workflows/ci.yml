@@ -386,7 +386,7 @@ jobs:
 
       - name: API mode e2e
         working-directory: apps/web
-        run: pnpm exec playwright test e2e/api-mode.spec.ts e2e/admin-shell.spec.ts e2e/admin-screens.spec.ts e2e/admin-editor.spec.ts e2e/admin-media.spec.ts e2e/admin-workflow.spec.ts e2e/admin-datatable.spec.ts e2e/admin-inbox.spec.ts e2e/admin-website.spec.ts e2e/admin-editors.spec.ts e2e/admin-settings.spec.ts e2e/admin-staff-tasks.spec.ts e2e/admin-two-step.spec.ts e2e/admin-alerts.spec.ts e2e/admin-customers.spec.ts e2e/admin-reviews.spec.ts e2e/account-email.spec.ts e2e/account-sections.spec.ts --workers=1
+        run: pnpm exec playwright test e2e/api-mode.spec.ts e2e/admin-shell.spec.ts e2e/admin-screens.spec.ts e2e/admin-editor.spec.ts e2e/admin-media.spec.ts e2e/admin-workflow.spec.ts e2e/admin-datatable.spec.ts e2e/admin-inbox.spec.ts e2e/admin-website.spec.ts e2e/admin-editors.spec.ts e2e/admin-settings.spec.ts e2e/admin-staff-tasks.spec.ts e2e/admin-two-step.spec.ts e2e/admin-alerts.spec.ts e2e/admin-customers.spec.ts e2e/admin-reviews.spec.ts e2e/admin-imports.spec.ts e2e/account-email.spec.ts e2e/account-sections.spec.ts --workers=1
 
       - name: Upload admin screenshots
         if: always()

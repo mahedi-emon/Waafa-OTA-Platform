@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { FileText } from "@/components/icons/server/FileText";
 import { Phone } from "@/components/icons/server/Phone";
+import { Printer } from "@/components/icons/server/Printer";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { AdminNotFound } from "@/components/admin/AdminNotFound";
@@ -27,6 +29,7 @@ import { OrderNote } from "./_components/OrderNote";
 /** Only the order steps' words reach the browser (scoped provider, D190). */
 const ORDER_MESSAGES = ["Admin.orderSteps"];
 const ORDERS = "/secure-admin-control/orders";
+const ADMIN_API = "/secure-admin-control/api";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.orders");
@@ -245,6 +248,33 @@ async function Order({ params, searchParams }: Pick<Params, "params" | "searchPa
                   </ul>
                 </div>
               ) : null}
+            </AdminPanel>
+            <AdminPanel title={t("print")}>
+              {/* The PDFs open in a new tab, ready to print or save (issue 248). */}
+              <div className="flex flex-wrap gap-2">
+                <Button asChild variant="secondary" size="sm">
+                  <a
+                    href={`${ADMIN_API}/orders/${order.id}/invoice`}
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <FileText aria-hidden="true" className="size-4" />
+                    {t("invoicePdf")}
+                  </a>
+                </Button>
+                {canMove ? (
+                  <Button asChild variant="secondary" size="sm">
+                    <a
+                      href={`${ADMIN_API}/orders/${order.id}/packing-slip`}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      <Printer aria-hidden="true" className="size-4" />
+                      {t("packingSlipPdf")}
+                    </a>
+                  </Button>
+                ) : null}
+              </div>
             </AdminPanel>
             <CustomerFiles owner="order" id={order.id} expected={expectedFiles(order.payment)} />
           </div>

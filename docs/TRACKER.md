@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 28 Oct (evening) Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise ✅, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 29 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise ✅, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #247 · Campaign pages and flash sales — 🟡 In review
+### #248 · Invoices and packing slips as PDF; CSV import with preview — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 8 (PROMPT 10 letter H; P0 FR-CAT-05 compatible models import; PRD §17 Shop P1 bulk CSV, invoices and packing slips) |
+| Built | PDFs: the quote PDF's brand kit moved to `api/src/pdf/brandPdf.ts` (header with logo and ribbon, fonts, taka sign, footer); `orders/orderDocuments.ts` says what an invoice and a packing slip contain (testable apart from the drawing), `orders/orderPdf.ts` draws them. Invoice ("VAT invoice" when the customer asked): Bill to with the company and the customer's BIN, Ship to, lines, subtotal, coupon, delivery, total in ৳ with lakh grouping, "All prices include VAT" or the VAT worked back from the total at the rate set in Payment settings (`vatPercent`, new optional field), payment, the seller's name and contacts only. Packing slip: Ship to with the phone, lines with SKU and quantity and a tick box, units, the delivery note, the cash to collect for unpaid cash on delivery; no prices. `GET /admin/orders/:id/invoice` (Admin, manager, Accounts) and `/packing-slip` (Admin, manager); "Print" panel on the order page. CSV: `GET /admin/content/:key/export.csv` and `POST …/import/preview`, `…/import` for products (one line per variant: title, short title, show price, COD, printer models, SKU, price, MRP, stock, low stock, pre-order), group fares and compatible models; `parseCsv` reads what Excel saves and undoes the formula guard; the plan merges each line into the saved record, checks it with the list's schema and says per line what happens (adds, changes with the columns, unchanged, problem with column and plain words); import goes through the normal save (rules, History, audit "content.import", cache) plus one "content.import.file" audit entry, refuses the whole file while a line has a problem, never deletes, refuses new products and variants (they need photos). Admin list header: "Download CSV to edit" and "Import CSV" (dialog with the preview table) |
+| Tests | API unit `contentCsv.unit.test.ts` 10 (parser quirks, round trip of all three exports, columns in any order, changed columns, plain-word problems, create/no delete/repeat id, file problems), `orderDocuments.unit.test.ts` 13 (invoice lines and totals, BIN, VAT maths, PDF title, page breaks, packing slip, phone format), quote PDF still passes; API DB `importsInvoices.test.ts` 4 (roles and 401/403/404, round trip saves nothing, edit + new fare + export back + audit, whole file refused); e2e `admin-imports.spec.ts` (API mode: both PDFs from the order page, export → edit → preview → import with axe on the dialog, a broken file can't be imported); screenshots at 390 and 1440, no horizontal scroll; QA plan `docs/qa/248-invoices-csv-import.md` (IC-01..15); UAT U-29..U-31 |
+| Migration | none |
+| Decision | D320 |
+| Tools and skills | Serena (memories), Playwright (screenshots 390/1440), ui-ux-pro-max checklist (labels, focus, empty and error states); no new library (pdfkit already used for quotes) |
+| PR · CI minutes | (PR open) |
+
+### #247 · Campaign pages and flash sales — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 7 (FR-SHOP-13) |
@@ -46,7 +57,7 @@ Serena memory `audit_findings`.
 | Tests | shared `flashSales.test.ts` 2; API DB `flashSales.test.ts` 2 (window, cap with cancelled units back); e2e `campaign.spec.ts` at 390 and 1440 with axe and scroll width + not found; budget 184 KB; QA plan `docs/qa/247-campaigns-flash-sales.md` (FS-01..11); UAT U-27, U-28 |
 | Migration | none (deals and campaigns are content documents) |
 | Decision | D319 |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #312 · 68 min |
 
 ### #246 · Save for later and Buy again — ✅ Done
 | Field | Value |
@@ -1596,6 +1607,8 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-158 | Features that need an outside service (online payment, courier tracking, Telegram alerts, off-site backup) shown only when On and healthy | `IntegrationStatus.features` | Settings › Integrations (each card) | `GET /public/integrations/status` | ✅ API test (#284); used by #238, #239, #251–#253 |
 | AC-149 | EMI request form: minimum, months, bank choices | `getEmiSettings()` → minimumAmount, tenuresMonths; `listEmiBanks()` → name | Settings › Payments and delivery › EMI, EMI banks | snapshot | e2e content.spec (issue 233) |
 | AC-159 | Customer quote page and PDF: options (title, details, baggage, price), last valid day, note | Quote record (options, validUntil, notes) | Admin › a lead › Quotes › the quote | `POST /admin/leads/:id/quotes`, `PATCH /admin/quotes/:id`; `GET /public/quotes/:token` | ✅ API test + e2e (#298) |
+| AC-161 | Invoice and packing slip PDFs: seller name, contacts; VAT rate | siteSettings.companyName, storeName; contactSettings; paymentSettings.vatPercent | Settings › Site, Contact, Payment settings (Invoices) | `GET /admin/orders/:id/invoice`, `/packing-slip` | ✅ API DB test + e2e (#248) |
+| AC-162 | Products, group fares, printer models changed in bulk | products, groupFares, compatibleModels records | Admin › each list › Download CSV to edit / Import CSV | `GET /admin/content/:key/export.csv`, `POST /admin/content/:key/import[/preview]` | ✅ API DB test + e2e (#248) |
 | AC-160 | Quote email and the "quote accepted" staff alert | notificationTemplates quote-customer, quote-accepted-staff | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | ✅ API test (#298) |
 
 ## 5. Components inventory
@@ -2072,6 +2085,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D317 | 28 Oct | Custom roles are named bundles of built-in roles (Travel sales, Visa officer, Content editor, Shop manager, Accounts), never Super Admin or Admin, expanded into the token when it is signed, so every existing role rule keeps working and two-step rules stay with built-in roles; a finer per-screen matrix would need every check in the API rewritten. Customers stay keyed by phone (D157): merge points one number at another and lists fold it in (reversible). Summary emails reuse staff alert areas and the queue (no new setting screen); 09:00 Dhaka, weekly on Saturday | Owner order step 4; safest change to access control | #244 |
 | D318 | 28 Oct | Reviews: only signed-in customers whose account holds a booked package request or a delivered order with the product (the API refuses everyone else, so no review can be invented), one per item, approved by staff before they show; names as first name + initial. Structured data: Product gets AggregateRating and Review from approved reviews only; packages (TouristTrip) get none because schema.org has no rating there. Questions: anyone may ask (Turnstile, limits), shown only with a staff answer. Feedback photos: copied into the public media library at approval only when the scan passed (or no scanner), the private upload stays private | Owner order step 5; "never invent reviews" | #245 |
 | D319 | 28 Oct | Flash sales are deals with an optional start and stock cap, enforced only by the API when it takes an order (counting units sold at the deal price since the start, inside the locked order transaction); a cart may show the flash price until the cap is reached and the order is then charged the normal price (the confirmation shows it). Campaign pages are a content list with a request-time strip in its own Suspense so the rest prerenders; no slug redirects for them (short-lived pages) | Owner order step 7: "price and cap enforced on the server" | #247 |
+| D320 | 29 Oct | CSV import (products, group fares, compatible models) merges each line into the saved record and saves through the normal editor save, so rules, History, audit and cache stay one path; the whole file is refused while any line has a problem; it never deletes; products update existing products and variants only (new ones need photos, added in the editor). Invoices are drawn from the order's price snapshot; the seller block shows only the name and contacts (no licence or ID numbers), the customer's BIN only when they asked for a VAT invoice; the VAT amount shows only when Admin sets a rate (no invented number) | Owner order step 8; CLAUDE.md "Never show licence or ID numbers" | #248 |
 
 ## 9. Bugs and known issues
 
@@ -2168,6 +2182,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 29 Oct | #246 merged (#311, 62 min) and #247 merged (#312, 68 min), both closed out. #248 built: invoice and packing slip PDFs on a shared brand kit, CSV export and import with a preview for products, group fares and compatible models; local API-mode e2e green; PR opened | #246 #247 #248 | #311 #312 | API unit 23 new, API DB 4 new, e2e admin-imports; all unit suites green (shared 168, web 720, API 360) |
 | 28 Oct (evening) | Owner's decisions D312 logged. #302 rename merged (#304, 61 min). #303 optimise merged (#306, 143 min): api 182 MB, web 321 MB, nginx 45 MB, stack 1.29 GB, rehearsal from 7af26e7. #243 reminders, mentions, round-robin and SSE alerts built and in CI (#307, full-ci; local API-mode e2e 11/11; CI found an axe aria-allowed-role on the note box, fixed). #244 started on feat/244-reports-customers-roles (reports by agent, visa cases, searches per day and funnel pushed) | #302 #303 #305 #243 #244 | #304 #306 #307 | API 316, web 717, shared 166 locally; API-mode e2e 85/86 then fixed |
 | 30–31 Oct | #300 merged (#242 bookings, 68 min); #298 quote builder built (API, PDF, admin, customer page, e2e) and PR opened with full-ci; RELEASE, PRD_COVERAGE (FR-ADM Bookings and convert done) and UAT updated | #242 #298 | #300 | shared 162, web 707, API unit 136; API DB tests and API-mode e2e in CI |
 | 29 Oct | Steps 3–5 of the owner's order: #284 hub merged after axe 4.14 fixes (#288); #287 sitemap index and share cards; #295 Home back under 200 KB; #285 release note and upgrade rehearsal (passed in CI from 541bd21); #237 measurement; #238 error tracking, System status, dead letters; #239 backups, drill, off-site copy, alerts, lead limit, CSP doc, staging | #284 #285 #287 #288 #289 #295 #237 #238 #239 | #286 #290 #296 #291 #292 #293 #294 | full suite green on each; rehearsal and backup drill run in the VPS smoke |
@@ -2240,23 +2255,10 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 ## 14. Next steps
 
-Owner's decisions of 28 Oct evening (D312) on top of D303. One issue per PR; start the next while CI runs.
-1. ✅ #302 rename (#304). 2. ✅ #303 optimise (#306).
-3. 🟡 #243: PR #307 in CI (full-ci). When green: squash-merge, close-out, Project Done, PRD_COVERAGE rows already done.
-4. 🟡 #244 on feat/244-reports-customers-roles (branched from #243; merge main after #307). Done: reports by agent, visa
-   cases, searches per day, funnel (API reportBreakdowns.ts + web reports page). Left: (a) customers notes, tags,
-   CSV export and merge (CustomerProfile {phone, tags, mergedInto}, CustomerNote; fold aliases in list/detail; merge and
-   unmerge audited, admin only); (b) daily and weekly summary emails (areas daily-report/weekly-report in
-   STAFF_ALERT_AREAS, templates + seed patch, minute job at 09:00 Dhaka, Saturday weekly, marker setting _reportsSent);
-   (c) custom roles (CustomRole {name, grants: built-in roles}, StaffUser.customRoleIds, effective roles expanded where
-   the access token is signed, Settings or Users › Roles screen with the PermissionMatrix showing custom columns);
-   QA plan docs/qa/244-*.md, migration, tests, docs. Then checkpoint.
-5. #245 reviews and Q&A; #246 wishlist extras; #247 campaigns and flash sales; #248 PDFs and CSV import. Checkpoint.
-6. #249 curated hotels; #250 partial lead capture.
-7. #251 payments, #252 SMS and Telegram, #253 couriers, plus every existing integration card: Banglish steps, copy-able
-   provider URLs (callback, IPN, success, fail, cancel, webhook), server IP, Telegram "Find my group", plain Test errors.
-   Checkpoint with the accounts to open.
-8. #254 Bangla at /bn, #255 bilingual content. Checkpoint.
-9. #271 Lighthouse 90+ (also the web image: prerender size, D313). 10. #256, #257 (admin JS splitting, D315), #258.
-11. #259 Phase D QA. Checkpoint. 12. Release candidate from 7af26e7. Checkpoint.
-Senior-QA rule on every issue: test cases in docs/qa first, P0/P1 automated, exploratory pass, full regression.
+Owner's order of 28 Oct (D303, D312). One issue per PR; start the next while CI runs.
+1. ✅ #302, #303, #243, #244, #245, #246, #247.
+2. 🟡 #248: PR in CI. When green: squash-merge, close-out, Project Done, CI minutes into the block. Then the checkpoint
+   to the owner (after #248).
+3. #249 / #250, then #251–#253 (integration cards with copyable URLs, Telegram "Find my group", plain Test connection;
+   checkpoint with the accounts to open), #254 / #255 (checkpoint), #271, #256 / #257 / #258, #259 (checkpoint), release
+   candidate (RELEASE.md from 7af26e7).

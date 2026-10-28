@@ -115,6 +115,7 @@ export const paymentSettingsBlueprint = {
   sections: [
     { id: "accounts", fields: ["offlineAccounts"] },
     { id: "cash", fields: ["codLimit", "onlinePaymentLive"] },
+    { id: "invoice", fields: ["vatPercent"] },
   ],
   fields: {
     offlineAccounts: { widget: "repeater", summary: "title", wide: true },

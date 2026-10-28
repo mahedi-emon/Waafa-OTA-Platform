@@ -3430,7 +3430,10 @@
       "bin": "BIN {bin}",
       "call": "Call",
       "whatsapp": "WhatsApp",
-      "colPhone": "Phone"
+      "colPhone": "Phone",
+      "print": "Print",
+      "invoicePdf": "Invoice (PDF)",
+      "packingSlipPdf": "Packing slip (PDF)"
     },
     "feedback": {
       "metaTitle": "Feedback",
@@ -3932,7 +3935,40 @@
         "emptyBody": "Add the first one and it shows on the site when it is live.",
         "changedBy": "Last change by {name}"
       },
-      "newRecordOf": "New {thing}"
+      "newRecordOf": "New {thing}",
+      "csv": {
+        "export": "Download CSV to edit",
+        "open": "Import CSV",
+        "title": "Import from a CSV file",
+        "intro": {
+          "products": "Change titles, prices, MRP, stock and printer models for many products at once. Start from Download CSV to edit: one line per variant. New products and variants are added in the editor (they need photos).",
+          "groupFares": "Add or change many group fares at once. Start from Download CSV to edit; a line with a new id adds a fare. Fares missing from the file stay as they are.",
+          "compatibleModels": "Add or change printer models at once. Start from Download CSV to edit; a line with a new id adds a model. Models missing from the file stay as they are."
+        },
+        "file": "CSV file",
+        "fileHelp": "Saved from Excel or Google Sheets as CSV (UTF-8), up to 2,000 lines. Nothing is saved until you press Import.",
+        "reading": "Reading the file…",
+        "summary": "{create} to add · {update} to change · {unchanged} unchanged · {error} with problems",
+        "ignored": "These columns are not read: {columns}",
+        "line": "Line",
+        "record": "Record",
+        "result": "What happens",
+        "actions": {
+          "create": "Adds",
+          "update": "Changes",
+          "unchanged": "Unchanged",
+          "error": "Problem"
+        },
+        "changed": "Changes: {columns}",
+        "more": "Showing the first {shown} of {total} lines",
+        "apply": "Import changes ({count})",
+        "applying": "Importing…",
+        "nothing": "Nothing to change",
+        "done": "Imported: {create} added, {update} changed",
+        "failed": "The file couldn't be read. Try again.",
+        "tooBig": "The file is too big: import up to 2,000 lines at a time",
+        "cancel": "Cancel"
+      }
     },
     "integrations": {
       "metaTitle": "Integrations",
@@ -5565,7 +5601,8 @@
       "zones": "Delivery zones",
       "video_credit": "Video credit",
       "video_creditUrl": "Credit link",
-      "maxUses": "Use limit"
+      "maxUses": "Use limit",
+      "vatPercent": "VAT rate inside the prices (%)"
     },
     "fieldHelp": {
       "alt": "Describe the photo for people who can't see it, like \"Beach at Patong, Phuket\".",
@@ -5982,7 +6019,8 @@
         "intro": "The accounts customers pay into and the cash on delivery limit.",
         "sections": {
           "accounts": "Accounts customers pay into",
-          "cash": "Cash on delivery"
+          "cash": "Cash on delivery",
+          "invoice": "Invoices"
         },
         "fields": {
           "offlineAccounts_title": "Account name",
@@ -5993,7 +6031,8 @@
         "help": {
           "offlineAccounts_lines": "One line each: account name, number, branch.",
           "codLimit": "Orders above this need payment in advance.",
-          "onlinePaymentLive": "Turns on when online payment is connected."
+          "onlinePaymentLive": "Turns on when online payment is connected.",
+          "vatPercent": "Shown on invoices as the VAT inside the total, e.g. 15. Leave empty to print \"All prices include VAT\" without an amount."
         }
       },
       "shippingSettings": {
