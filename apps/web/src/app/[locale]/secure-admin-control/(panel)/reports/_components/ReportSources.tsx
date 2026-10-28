@@ -53,8 +53,8 @@ function ReportSources({ rows, showOrders, strings }: ReportSourcesProps) {
       {rows.length === 0 ? (
         <p className="text-sm text-mist-600">{strings.empty}</p>
       ) : (
-        <div className="min-w-0 overflow-x-auto">
-          <Table>
+        <div className="min-w-0">
+          <Table scrollLabel={strings.title}>
             <TableHeader>
               <TableRow>
                 <TableHead scope="col">{strings.source}</TableHead>
