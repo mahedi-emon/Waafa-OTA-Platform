@@ -8,6 +8,7 @@ import { createMailer, type Mailer } from "./notifications/mailer";
 import { PrismaService } from "./prisma/prisma.service";
 import { MAILER, NotificationService } from "./notifications/notification.service";
 import { ErrorReporter } from "./common/errorReporter";
+import { ErrorReporterWatcher } from "./common/errorReporterWatcher";
 import { RevalidateService } from "./revalidate/revalidate.service";
 
 export type ServicesOptions = {
@@ -36,6 +37,7 @@ export class ServicesModule {
       IdempotencyService,
       IntakeKeyGuard,
       { provide: ErrorReporter, useValue: new ErrorReporter("api") },
+      ErrorReporterWatcher,
     ];
     return {
       module: ServicesModule,

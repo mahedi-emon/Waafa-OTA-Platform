@@ -112,16 +112,18 @@ export class ErrorReporter {
     this.dsn = parseDsn(dsn);
   }
 
-  /** Reads the DSN now and then every minute; returns a stop function. */
-  watch(read: () => Promise<string | null>): () => void {
+  /** Reads the DSN after `firstDelayMs`, then every minute; returns a stop function. */
+  watch(read: () => Promise<string | null>, firstDelayMs = 0): () => void {
     const refresh = () =>
       void read()
         .then((dsn) => this.configure(dsn))
         .catch(() => undefined);
-    refresh();
+    const first = setTimeout(refresh, firstDelayMs);
+    first.unref?.();
     this.timer = setInterval(refresh, REFRESH_MS);
     this.timer.unref?.();
     return () => {
+      clearTimeout(first);
       if (this.timer) clearInterval(this.timer);
     };
   }

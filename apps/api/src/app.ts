@@ -11,8 +11,7 @@ import { redactToken } from "./common/redact";
 import { CoreModule } from "./core.module";
 import { HealthController } from "./health/health.controller";
 import { WebErrorsController } from "./health/webErrors.controller";
-import { activeDsn, ErrorReporter } from "./common/errorReporter";
-import { PrismaService } from "./prisma/prisma.service";
+import { ErrorReporter } from "./common/errorReporter";
 import { ProblemFilter } from "./common/problem";
 
 @Module({})
@@ -120,13 +119,14 @@ export async function createApp(
       reply.header("x-request-id", request.id);
     });
   // Unexpected errors go to Sentry or GlitchTip when that card is On in Admin › Integrations (issue 238).
-  const reporter = app.get(ErrorReporter);
-  const stopWatching = reporter.watch(() => activeDsn(app.get(PrismaService)));
+  // Apps built without the services module (some tests) have no reporter: errors are only logged there.
+  let reporter: ErrorReporter | undefined;
+  try {
+    reporter = app.get(ErrorReporter);
+  } catch {
+    reporter = undefined;
+  }
   app.useGlobalFilters(new ProblemFilter(reporter));
-  app
-    .getHttpAdapter()
-    .getInstance()
-    .addHook("onClose", async () => stopWatching());
   app.enableShutdownHooks();
   return app;
 }
