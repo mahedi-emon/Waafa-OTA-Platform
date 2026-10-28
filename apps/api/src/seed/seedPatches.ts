@@ -456,6 +456,48 @@ async function integrationCards(prisma: PrismaClient, env: PatchEnv): Promise<nu
  * Issue 242: leads that were booked before the Bookings module get their booking record (amount from the lead, status
  * confirmed, unpaid), so staff can add the PNR and payments. Leads that already have one are skipped.
  */
+/** Issue 298: the quote email to the customer and the "quote accepted" alert join the live list. */
+const QUOTE_TEMPLATES = [
+  {
+    key: "quote-customer",
+    audience: "Customer, with a quote",
+    channel: "email",
+    subject: "Your quote {{reference}} from Waafa Tours and Travel",
+    body: "Hello {{name}},\n\nHere is your quote {{reference}} for {{summary}}: {{options}}, valid until {{valid_until}}.\n\nSee the options, download the PDF and accept the one you want: {{link}}\n\nPrices are indicative until our travel expert confirms them before payment. Reply to this email or call us with any question.",
+    variables: [
+      "{{name}}",
+      "{{reference}}",
+      "{{summary}}",
+      "{{options}}",
+      "{{valid_until}}",
+      "{{link}}",
+    ],
+    enabled: true,
+  },
+  {
+    key: "quote-accepted-staff",
+    audience: "Staff, by module",
+    channel: "email",
+    subject: "Quote {{reference}} accepted by {{name}}",
+    body: '{{name}} accepted "{{option}}" ({{price}}) on quote {{reference}} for {{lead_reference}}.\n\nConfirm the fare and convert the lead to a booking: {{link}}',
+    variables: [
+      "{{name}}",
+      "{{reference}}",
+      "{{option}}",
+      "{{price}}",
+      "{{lead_reference}}",
+      "{{link}}",
+    ],
+    enabled: true,
+  },
+];
+
+async function quoteTemplates(prisma: PrismaClient): Promise<number> {
+  let changed = 0;
+  for (const template of QUOTE_TEMPLATES) changed += await appendTemplate(prisma, template);
+  return changed;
+}
+
 async function bookingsForBookedLeads(prisma: PrismaClient): Promise<number> {
   const leads = await prisma.lead.findMany({
     where: { status: "booked", booking: null },
@@ -509,6 +551,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-28-integration-cards", apply: integrationCards },
   { id: "2026-10-29-system-alert-template", apply: systemAlertTemplate },
   { id: "2026-10-30-bookings-for-booked-leads", apply: bookingsForBookedLeads },
+  { id: "2026-10-31-quote-templates", apply: quoteTemplates },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

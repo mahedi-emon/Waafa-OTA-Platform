@@ -4,6 +4,7 @@ import {
   formatTaka,
   isOverdueLead,
   nextLeadStatus,
+  toDhakaDateString,
   toDhakaIsoString,
   visaStage,
   type VisaStage,
@@ -26,6 +27,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { assertLeadAccess, canSeeOrders, dhakaDate, leadModulesFor } from "./access";
 import { AdminBookingsService } from "./bookings.service";
+import { quoteSummary } from "../quotes/quoteSummary";
 import { checklistOf, progressOf, visaFacts } from "../common/visaProgress";
 
 const CLOSED: LeadStatus[] = ["booked", "cancelled", "lost", "spam"];
@@ -362,6 +364,14 @@ export class AdminLeadsService {
         where: { leadId: lead.id },
         select: { id: true, reference: true, status: true, paymentStatus: true },
       }),
+      // Its quotes, newest first (issue 298), for the Quotes card and the amount to convert with.
+      quotes: (
+        await this.prisma.quote.findMany({
+          where: { leadId: lead.id },
+          orderBy: { createdAt: "desc" },
+          take: 20,
+        })
+      ).map((row) => quoteSummary(row, toDhakaDateString(now))),
       reason: lead.reason,
       assignee: lead.assigneeId
         ? { id: lead.assigneeId, name: names.get(lead.assigneeId) ?? "Former staff" }

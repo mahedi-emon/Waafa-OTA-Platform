@@ -19,20 +19,20 @@ Paths: `web/` = `apps/web/src/`, `site/` = `apps/web/src/app/[locale]/(site)/`, 
 `apps/web/src/app/[locale]/secure-admin-control/(panel)/`, `api/` = `apps/api/src/`, `shared/` = `packages/shared/src/`,
 `e2e/` = `apps/web/e2e/`.
 
-## Summary (updated 29 Oct 2026, after #237, #238, #239, #287)
+## Summary (updated 31 Oct 2026, after #242 and #298)
 
 | Priority | Rows | Status |
 | --- | --- | --- |
-| P0 (launch) | 116 | done 101 · partial 13 · missing 1 · waiting for owner account 1 |
+| P0 (launch) | 116 | done 103 · partial 12 · missing 0 · waiting for owner account 1 |
 | P1 (Phase D, due 13 Nov) | 17 | done 2 · partial 8 · missing 5 · waiting for owner account 2 |
 | P2 (Phase E, live booking) | 8 | missing 8 |
 | P3 (scale) | 1 | missing 1 |
-| All | 142 | done 103 · partial 21 · missing 15 · waiting for owner account 3 |
+| All | 142 | done 105 · partial 20 · missing 14 · waiting for owner account 3 |
 
 **P0 not done (fixed first):** customer files never leave the browser (visa documents, payment proof, printing and
 trading attachments, feedback photo: the Phase A rule D87/D106/D109 was never lifted) → #232; visa status email never
 sent, staff alert recipients only in the server env, no low-stock alert, no EMI request form, no reason on mode changes
-→ #233; no Bookings module (convert keeps only an amount) → #242; compatible-models CSV import → #248; first-load JS
+→ #233; no Bookings module (convert keeps only an amount) → fixed in #242; compatible-models CSV import → #248; first-load JS
 over 200 KB on Home, Flights and Shop → fixed in #236 (Lighthouse 90 on Home, Hotels and Blog → #271); backups without an off-site copy → #239 (rate limits moved to Redis in #234); no
 conversion events and one sitemap → #237; no error tracking → #238; Chromium-only tests → #259.
 
@@ -182,12 +182,12 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM-LEAD list | P0 | Table/cards, filters, search, saved views, bulk assign/status, CSV+Excel | done | adm/leads/page.tsx (views mine/unassigned/overdue, bulk assign); leads/export; reports xlsx; e2e/admin-inbox.spec.ts | — | — |
 | FR-ADM-LEAD detail | P0 | Status/assignee/priority, customer card, readable search, timeline | done | adm/leads/[id]; components/admin/{LeadActions,LeadFacts}.tsx | — | — |
 | FR-ADM-LEAD statuses | P0 | 8 statuses; first change stamps response; Booked needs amount; reasons | done | shared/workflow (nextLeadStatus); leads.service.ts firstResponseAt | — | — |
-| FR-ADM-LEAD convert | P0 | Manual booking record: PNR, tickets, amount, payment status, attachments | partial | leads.service.ts `convert` (amount + group-fare seats) | No PNR, ticket numbers, payment status or attachments | #242 |
+| FR-ADM-LEAD convert | P0 | Manual booking record: PNR, tickets, amount, payment status, attachments | done | api/admin/bookings.service.ts `fromLead` (in the convert transaction); adm/bookings/[id]; api/test/bookings.test.ts; e2e/admin-workflow.spec.ts | — | #242 |
 | FR-ADM-LEAD duplicate | P0 | Same phone + module within 24 h flagged and linked | done | api/public/intake.service.ts DUPLICATE_WINDOW_MS | — | — |
-| FR-ADM-LEAD P1 | P1 | Quote builder + PDF, kanban, reminders, @mentions, round-robin | partial | kanban: adm/leads/board, components/admin/board/LeadBoardDnd.tsx | Quote builder, follow-up reminders, @mentions, round-robin missing | #242, #243 |
+| FR-ADM-LEAD P1 | P1 | Quote builder + PDF, kanban, reminders, @mentions, round-robin | partial | kanban: adm/leads/board, components/admin/board/LeadBoardDnd.tsx; quote builder: api/admin/quotes.service.ts, api/quotes/quotePdf.ts, adm/quotes/[id], site/quote/[token], api/test/quotes.test.ts, e2e/admin-workflow.spec.ts (#298) | Follow-up reminders, @mentions, round-robin missing | #243 |
 | FR-ADM Dashboard | P0 | KPI cards, leads by module/status, top routes, activity | done | api/admin/dashboard.service.ts; components/admin/dashboard | P1 agent leaderboard missing | #244 (P1 leaderboard) |
 | FR-ADM Search activity | P0 | Every search with device/source/converted; top routes; per day; rate | partial | adm/search/page.tsx; inbox.service.ts searchToLeadRate | No searches-per-day series; converted flag not shown per row; P1 funnel missing | #244 |
-| FR-ADM Bookings | P0 | Booking records from converted leads, with documents and payments | missing | — (no bookings screen or model) | Whole module | #242 |
+| FR-ADM Bookings | P0 | Booking records from converted leads, with documents and payments | done | Booking model (migration 20261030010000_bookings); adm/bookings (list, search, filters), adm/bookings/[id] (PNR, tickets, payments, documents); api/admin/bookings.{service,controller}.ts | — | #242 |
 | FR-ADM Group fares | P0 | Create, edit, auto-expire | done | content `groupFares`; scheduler.service.ts expiresAt | P1 bulk CSV import missing | #248 (P1 CSV) |
 | FR-ADM Tour packages | P0 | Rich editor, day builder, price table, departures, SEO, draft/publish, duplicate | done | adm/content/[key]/[id] package editor (#198); e2e/admin-editors.spec.ts | — (P1 scheduled publishing done, #194) | — |
 | FR-ADM Visa | P0 | Countries/types/checklist/fees; pipeline with document viewer, notifying statuses | done | adm/visa-applications; VisaProgressPanel.tsx; Files panel (#232); status emails (#233) | — | #233 |
@@ -228,7 +228,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | No staff 2FA (TOTP) | Fixed in #234 | api/auth/totp.ts (RFC 6238), sign-in code and setup steps, recovery codes, trusted devices |
 | No SMS, Telegram, courier or online payment adapters live | Confirmed | SMS (ssl-wireless, bulksmsbd, twilio) and payment (sslcommerz, bkash, nagad) are catalog stubs with health checks only; no Telegram or courier code |
 | No reviews, wishlist, product Q&A, flash sales, campaign pages | Confirmed | No such schemas or routes; product page "questions" is a WhatsApp link; deals have a countdown but no campaign or flash-sale pages |
-| No quote builder, reminders, round-robin, partial capture (FR-FLT-08) | Confirmed | No code; only an SLA "lead-overdue-staff" email exists (not follow-up reminders) |
+| No quote builder, reminders, round-robin, partial capture (FR-FLT-08) | Quote builder fixed in #298 | Reminders, round-robin and partial capture still missing (#243); only an SLA "lead-overdue-staff" email exists |
 | No invoice/packing-slip PDF or CSV import | Confirmed | Only CSV/XLSX export (reports.controller.ts); order page shows VAT invoice details as text; no PDF library |
 | No conversion events (GA4/GTM/Pixel load after consent only) | Confirmed | ConsentBar.tsx loads gtag/fbq PageView only; no generate_lead / add_to_cart etc. |
 | Search→results morph and card→detail transition not built | Confirmed | No `layoutId` or View Transitions anywhere; TRACKER #52 lists the morph as after launch |

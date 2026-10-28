@@ -1,0 +1,9 @@
+Fonts for the quote PDF (issue 298), latin and bengali subsets as served by Google Fonts, unmodified.
+
+- Inter (inter-400.woff, inter-600.woff): Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
+- Plus Jakarta Sans (plus-jakarta-sans-700.woff): Copyright 2020 The Plus Jakarta Sans Project Authors
+  (https://github.com/tokotype/PlusJakartaSans)
+- Hind Siliguri (hind-siliguri-600-bengali.woff, for the taka sign): Copyright (c) 2015 Indian Type Foundry
+  (info@indiantypefoundry.com)
+
+Licence: SIL Open Font License, Version 1.1 (https://openfontlicense.org)

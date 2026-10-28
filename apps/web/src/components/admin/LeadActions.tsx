@@ -67,6 +67,8 @@ type LeadActionsProps = {
   /** wa.me link with the greeting already written. */
   whatsappHref: string;
   emailSubject: string;
+  /** Convert starts with the price of the option the customer accepted (issue 298). */
+  convertAmount?: number;
 };
 
 /**
@@ -74,7 +76,15 @@ type LeadActionsProps = {
  * lead to In progress; every other button opens the step with what it needs (LeadStepDialog). The status follows;
  * nobody picks it. On phones the reply buttons and the main step also sit in a bottom bar (D0 R6).
  */
-function LeadActions({ id, status, phone, email, whatsappHref, emailSubject }: LeadActionsProps) {
+function LeadActions({
+  id,
+  status,
+  phone,
+  email,
+  whatsappHref,
+  emailSubject,
+  convertAmount,
+}: LeadActionsProps) {
   const t = useTranslations("Admin.leadActions");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -247,6 +257,7 @@ function LeadActions({ id, status, phone, email, whatsappHref, emailSubject }: L
         leadId={id}
         step={step === "customerReplied" ? null : step}
         onClose={() => setStep(null)}
+        {...(convertAmount ? { convertAmount } : {})}
       />
     </div>
   );

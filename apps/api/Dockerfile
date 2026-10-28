@@ -36,6 +36,8 @@ COPY --from=build /app/apps/api/dist dist
 COPY apps/api/prisma/schema.prisma prisma/schema.prisma
 COPY apps/api/prisma/migrations prisma/migrations
 COPY apps/api/prisma.config.ts ./
+# Fonts and the logo for the quote PDF (issue 298).
+COPY apps/api/assets assets
 COPY --chmod=755 apps/api/scripts/tsx-compat.sh node_modules/.bin/tsx
 
 # The release (image tag) on the Status page and in error reports (issue 238).

@@ -5694,7 +5694,9 @@
         "low-stock-staff": "Low stock (to the store team)",
         "staff-new-device": "New device sign-in (to that staff member)",
         "staff-code-locked": "Sign-in paused at the code (to that staff member)",
-        "system-alert-staff": "Server running low (to admins)"
+        "system-alert-staff": "Server running low (to admins)",
+        "quote-customer": "Quote sent (to the customer)",
+        "quote-accepted-staff": "Quote accepted (to staff)"
       },
       "tone": {
         "default": "Normal",
@@ -7503,6 +7505,84 @@
         "added": "Document added",
         "failed": "That file was not added. Use a PDF, JPG or PNG up to 5 MB."
       }
+    },
+    "quotes": {
+      "metaTitle": "Quote",
+      "newTitle": "New quote",
+      "newLead": "For {reference} · {name}",
+      "card": {
+        "title": "Quotes",
+        "lead": "Fare or package options with a price and a last day, sent by email or WhatsApp with a PDF.",
+        "new": "Write a quote",
+        "empty": "No quote yet.",
+        "options": "{count, plural, one {# option} other {# options}} from {price}",
+        "accepted": "Accepted: {title}, {price}",
+        "validUntil": "Valid until {date}",
+        "closed": "Reopen the lead to quote again."
+      },
+      "statuses": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "accepted": "Accepted",
+        "withdrawn": "Withdrawn",
+        "expired": "Expired"
+      },
+      "editor": {
+        "title": "Options",
+        "lead": "Up to five. The customer accepts one.",
+        "option": "Option {number}",
+        "optionTitle": "Title",
+        "optionTitleHint": "Airline and flight, hotel or package, e.g. Emirates EK 583, direct",
+        "details": "Details",
+        "detailsHint": "Times, dates, room or what is included",
+        "baggage": "Baggage",
+        "baggageHint": "e.g. 2 × 23 kg checked, 7 kg cabin",
+        "price": "Price (৳, VAT included, everyone travelling)",
+        "addOption": "Add an option",
+        "removeOption": "Remove option {number}",
+        "validUntil": "Valid until",
+        "validUntilHint": "The last day these prices hold, Dhaka time",
+        "notes": "Note to the customer",
+        "notesHint": "Shown on the page and the PDF",
+        "create": "Save quote",
+        "save": "Save changes",
+        "saved": "Quote saved",
+        "failed": "That did not save. Check the fields and try again.",
+        "locked": "The customer accepted this quote, so it can't change. Write a new one if the fare moves.",
+        "withdrawnNote": "This quote was withdrawn. Write a new one from the lead."
+      },
+      "send": {
+        "title": "Send to the customer",
+        "lead": "The lead moves to Quoted and the timeline records how it went.",
+        "email": "Send by email",
+        "emailTo": "To {email}",
+        "noEmail": "This request has no email: send the link on WhatsApp.",
+        "whatsapp": "Send on WhatsApp",
+        "copy": "Copy link",
+        "copied": "Link copied",
+        "pdf": "Open the PDF",
+        "sent": "Quote sent",
+        "sentVia": "Sent {time} · {channels}",
+        "channels": {
+          "email": "email",
+          "whatsapp": "WhatsApp"
+        },
+        "withdraw": "Withdraw quote",
+        "withdrawConfirm": "Withdraw this quote? Its link stops showing the options.",
+        "withdrawn": "Quote withdrawn",
+        "failed": "That did not work. Try again.",
+        "expired": "This quote has expired. Change the last valid day to send it again.",
+        "linkLabel": "Customer's link",
+        "linkHint": "Opens the options, the PDF and Accept. Anyone with it can see the quote."
+      },
+      "accepted": {
+        "title": "Accepted by the customer",
+        "body": "{title} at {price}, {time}. Confirm the fare with the airline or hotel, then convert the lead with this amount.",
+        "openLead": "Open the lead"
+      },
+      "price": "Price",
+      "fromLead": "Lead {reference}",
+      "updated": "Updated {time} by {name}"
     }
   },
   "Consent": {
@@ -7518,5 +7598,34 @@
     "savedLink": "Saved to your wishlist.",
     "open": "Open wishlist",
     "failed": "That didn't save. Try again."
+  },
+  "Quote": {
+    "metaTitle": "Your quote",
+    "eyebrow": "Quote {reference}",
+    "title": "Hello {name}, here are your options",
+    "summary": "For {summary}",
+    "validUntil": "Valid until {date}",
+    "optionsLabel": "Options",
+    "option": "Option {number}",
+    "baggage": "Baggage: {baggage}",
+    "vat": "VAT included",
+    "notes": "Note from your travel expert",
+    "pick": "Pick the option you want, then accept it. Our travel expert confirms the fare with the airline or hotel before you pay.",
+    "accept": "Accept this option",
+    "accepting": "Accepting…",
+    "acceptedTitle": "You accepted {title}",
+    "acceptedBody": "Thank you. Your travel expert will confirm the fare and call you about payment. Keep {reference} for any question.",
+    "expiredTitle": "This quote has expired",
+    "expiredBody": "Prices change quickly. Ask us on WhatsApp and we will send you a fresh quote.",
+    "withdrawnTitle": "This quote was replaced",
+    "withdrawnBody": "Your travel expert withdrew it, usually because a newer quote is on its way. Ask us on WhatsApp if you need it.",
+    "pdf": "Download PDF",
+    "whatsapp": "Ask on WhatsApp",
+    "whatsappText": "Hello, I have a question about quote {reference}.",
+    "indicative": "Prices are in taka for everyone travelling, VAT included, and indicative until our travel expert confirms them before payment.",
+    "failed": "That did not go through. Try again, or message us on WhatsApp.",
+    "challenge": "Please complete the check above, then accept again.",
+    "conflict": "This quote changed. Reload the page to see where it stands.",
+    "selected": "Selected"
   }
 }

@@ -29,10 +29,14 @@ Prisma applies only the ones the live database does not have yet, in this order,
 | `20261027090000_customer_sign_in` | #241 | customer email code sign-in, customer on leads and orders |
 | `20261027150000_customer_account_sections` | #278 | wishlist, saved travellers (sealed passport), addresses, optional password |
 | `20261029010000_order_source` | #237 | where a buyer came from (UTM, referrer, landing page) on each order |
+| `20261030010000_bookings` | #242 | a booking record per converted lead (PNR, tickets, amount, payments, documents) |
+| `20261031010000_quotes` | #298 | quotes on leads (options, last valid day, the accepted option) |
 
 One-time data patches (`_seedPatches`, never over staff edits) run after the migrations: workflow, invite, low-stock,
 new-device, code-locked and customer sign-in email templates; #284 adds `2026-10-28-integration-cards`; #239 adds
-`2026-10-29-system-alert-template` (disk and memory alerts).
+`2026-10-29-system-alert-template` (disk and memory alerts); #242 adds `2026-10-30-bookings-for-booked-leads` (one
+Confirmed, Unpaid booking for every lead already Booked, amount from the lead); #298 adds `2026-10-31-quote-templates`
+(the quote email to the customer and the "quote accepted" staff alert).
 
 ## New or changed containers
 
@@ -47,6 +51,8 @@ The VPS needs about 1.6 GB more free memory than before for ClamAV.
 
 Copy the changed files from `deploy/server` to `/opt/waafa` before deploying (DEPLOY.md, "When deploy/server
 changes"): `compose.yml` (clamav, private files volume, Turnstile lines moved to the API, #284), `deploy.sh` (it now installs the backup cron, #239) and `backup.sh` (restore drill, off-site copy, #239).
+The nginx settings live inside the `nginx` image (the 6 MB booking document upload, #242, comes with it): nothing to
+copy for them.
 
 ## Settings that moved or are new
 

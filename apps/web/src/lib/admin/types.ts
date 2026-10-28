@@ -3,6 +3,7 @@ import type {
   LeadPriority,
   LeadStatus,
   OrderStatus,
+  QuoteSummary,
   Role,
   VisaStage,
 } from "@waafa/shared";
@@ -130,6 +131,8 @@ export type LeadDetail = {
   amount: number | null;
   /** The booking made when the lead was converted (issue 242). */
   booking: { id: string; reference: string; status: string; paymentStatus: string } | null;
+  /** Its quotes, newest first (issue 298). */
+  quotes: QuoteSummary[];
   reason: string | null;
   assignee: { id: string; name: string } | null;
   duplicateOf: { id: string; reference: string } | null;

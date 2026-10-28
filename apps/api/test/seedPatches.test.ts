@@ -19,6 +19,7 @@ const ALL_PATCHES = [
   "2026-10-28-integration-cards",
   "2026-10-29-system-alert-template",
   "2026-10-30-bookings-for-booked-leads",
+  "2026-10-31-quote-templates",
 ];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */
@@ -258,6 +259,38 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
     });
     const kept = await prisma.contentDocument.findUniqueOrThrow({ where });
     expect((kept.data as { subject: string }).subject).toBe("Stock running out");
+  });
+
+  it("adds the quote email and the quote-accepted alert to a live list once, keeping one an admin already wrote (issue 298)", async () => {
+    await prisma.contentDocument.deleteMany({
+      where: {
+        collection: "notificationTemplates",
+        docId: { in: ["quote-customer", "quote-accepted-staff"] },
+      },
+    });
+    const others = ALL_PATCHES.filter((id) => id !== "2026-10-31-quote-templates");
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-31-quote-templates"],
+      changed: 2,
+    });
+    const where = {
+      collection_docId: { collection: "notificationTemplates", docId: "quote-customer" },
+    };
+    const added = await prisma.contentDocument.findUniqueOrThrow({ where });
+    expect(added.data).toMatchObject({ channel: "email", enabled: true });
+    expect((added.data as { body: string }).body).toContain("{{link}}");
+    await prisma.contentDocument.update({
+      where,
+      data: { data: { ...(added.data as object), subject: "Your Waafa quote" } },
+    });
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-31-quote-templates"],
+      changed: 0,
+    });
+    const kept = await prisma.contentDocument.findUniqueOrThrow({ where });
+    expect((kept.data as { subject: string }).subject).toBe("Your Waafa quote");
   });
 
   it("adds the new-device sign-in email to a live list once, keeping one an admin already wrote (issue 234)", async () => {

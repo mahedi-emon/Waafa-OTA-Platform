@@ -323,6 +323,7 @@ export const LeadFormSettingsSchema = z
 /** Words a template's message must keep (issue 241): a sign-in email without its code is useless. */
 export const TEMPLATE_REQUIRED_VARIABLES: Partial<Record<string, readonly string[]>> = {
   "customer-sign-in-code": ["{{code}}"],
+  "quote-customer": ["{{link}}"],
 };
 
 export const NotificationTemplateSchema = z
@@ -344,6 +345,8 @@ export const NotificationTemplateSchema = z
       "staff-code-locked",
       "customer-sign-in-code",
       "system-alert-staff",
+      "quote-customer",
+      "quote-accepted-staff",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */
     audience: z.string().min(1).max(40),
