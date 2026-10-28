@@ -415,9 +415,12 @@ jobs:
     needs: changes
     if: needs.changes.outputs.run == 'true' && needs.changes.outputs.full == 'true' && github.event_name != 'push'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The upgrade rehearsal checks out the live release (deploy/LIVE_RELEASE) beside this one.
+          fetch-depth: 0
 
       - name: Settings generator (deploy/init-env.sh)
         run: |
@@ -445,8 +448,10 @@ jobs:
           SEED_ADMIN_PASSWORD=ci-owner-password-123
           ENV
 
-      - name: Deploy
-        run: sh deploy/deploy.sh
+      # Issue 285: start the release live on the server, add a lead and an order, deploy this commit over it and check
+      # nothing was lost; the smoke steps below then run on the upgraded stack.
+      - name: Upgrade rehearsal (live release → this commit)
+        run: sh scripts/upgrade-rehearsal.sh
 
       - name: Site answers through nginx
         run: |
