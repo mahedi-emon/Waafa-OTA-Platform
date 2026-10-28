@@ -24,7 +24,9 @@ import { parseInput } from "../common/problem";
 import { IntakeKeyGuard } from "../common/serverKey";
 import { ProvidersService } from "./providers.service";
 
-const FieldKeySchema = z.string().regex(/^[A-Za-z][A-Za-z0-9]{0,39}$/, "Unknown field");
+const TurnstileVerifySchema = z
+  .object({ token: z.string().max(4096).default(""), ip: z.string().max(64).optional() })
+  .strict();
 
 const target = (provider: string, environment: string) =>
   [
@@ -34,7 +36,7 @@ const target = (provider: string, environment: string) =>
 
 /**
  * Admin › Settings › Integrations (#82, #107): providers per category, their Active and Sandbox / Live switches,
- * markup, credentials per environment and the audited reveal. Super Admin only (PRD §4).
+ * markup and credentials per environment (secrets never leave the API, issue 284). Super Admin only (PRD §4).
  */
 @Controller("admin/providers")
 @UseGuards(StaffGuard)
@@ -103,24 +105,6 @@ export class AdminProvidersController {
     return this.providers.test(staff, ...target(provider, environment));
   }
 
-  /** One saved secret, shown on request and written to the audit log (never cached). */
-  @Post(":provider/:environment/reveal/:field")
-  @Roles("super-admin")
-  @HttpCode(200)
-  @Header("cache-control", "no-store")
-  reveal(
-    @Staff() staff: StaffPrincipal,
-    @Param("provider") provider: string,
-    @Param("environment") environment: string,
-    @Param("field") field: string,
-  ) {
-    return this.providers.reveal(
-      staff,
-      ...target(provider, environment),
-      parseInput(FieldKeySchema, field),
-    );
-  }
-
   @Delete(":provider/:environment")
   @Roles("super-admin")
   @HttpCode(204)
@@ -146,5 +130,14 @@ export class PublicIntegrationsController {
   @Header("cache-control", "private, max-age=60")
   status() {
     return this.providers.publicStatus();
+  }
+
+  /** A visitor's Turnstile token, checked with the secret saved in Admin (issue 284); passes while Turnstile is off. */
+  @Post("turnstile/verify")
+  @HttpCode(200)
+  @Header("cache-control", "no-store")
+  verifyTurnstile(@Body() body: unknown) {
+    const input = parseInput(TurnstileVerifySchema, body);
+    return this.providers.verifyTurnstile(input.token, input.ip);
   }
 }

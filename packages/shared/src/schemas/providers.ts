@@ -9,8 +9,27 @@ import { IsoDateTimeSchema } from "./common";
  * keeps Live locked until Phase E).
  */
 
-/** "auth": customer sign-in providers (Google, issue 134); no custom ones, the sign-in flow is built per provider. */
-export const ProviderKindSchema = z.enum(["flight", "hotel", "payment", "sms", "email", "auth"]);
+/**
+ * "auth": customer sign-in providers (Google, issue 134); no custom ones, the sign-in flow is built per provider.
+ * Issue 284 adds every other outside service: captcha (Turnstile), analytics (GA4, GTM, Meta Pixel, search engine
+ * verification), monitoring (error tracking), storage (off-site backups), alerts (Telegram) and courier.
+ */
+export const ProviderKindSchema = z.enum([
+  "flight",
+  "hotel",
+  "payment",
+  "sms",
+  "email",
+  "auth",
+  "captcha",
+  "analytics",
+  "monitoring",
+  "storage",
+  "alerts",
+  "courier",
+]);
+/** Kinds staff may add their own supplier to (a custom REST connection). */
+export const SUPPLIER_KINDS = ["flight", "hotel", "payment", "sms", "email"] as const;
 export const ProviderEnvironmentSchema = z.enum(["sandbox", "production"]);
 
 export const PROVIDER_IDS = [
@@ -29,6 +48,20 @@ export const PROVIDER_IDS = [
   "resend",
   "smtp",
   "google",
+  "turnstile",
+  "ga4",
+  "gtm",
+  "meta-pixel",
+  "search-console",
+  "bing",
+  "sentry",
+  "glitchtip",
+  "r2",
+  "b2",
+  "telegram",
+  "steadfast",
+  "pathao",
+  "redx",
 ] as const;
 export const ProviderIdSchema = z.enum(PROVIDER_IDS);
 
@@ -55,13 +88,23 @@ export type ProviderField = {
   /** "url" fields must be full https addresses; "number" fields whole numbers (SMTP port). */
   type: "text" | "url" | "number";
   hint?: string;
+  /** A regular expression (source) the value must match, with the message shown when it does not (issue 284). */
+  pattern?: string;
+  patternMessage?: string;
 };
 
 export type ProviderDefinition = {
   id: ProviderKey;
   name: string;
   kind: ProviderKind;
+  /** What it does on our site, in plain words. */
   summary: string;
+  /** Where staff get the keys (opens in a new tab). */
+  keysUrl?: string;
+  /** One set of values, no Sandbox: saved and used as Live (measurement IDs, DSNs, storage, Telegram). */
+  liveOnly?: boolean;
+  /** Plain settings the visitor's browser may receive (site key, measurement IDs); never a secret. */
+  publicFields?: readonly string[];
   fields: ProviderField[];
 };
 
@@ -88,6 +131,14 @@ const secret = (key: string, label: string, required = true): ProviderField => (
   required,
   type: "text",
 });
+/** A plain value with a fixed shape (measurement IDs, tokens). */
+const shaped = (
+  key: string,
+  label: string,
+  pattern: string,
+  patternMessage: string,
+  hint?: string,
+): ProviderField => ({ ...text(key, label, true, hint), pattern, patternMessage });
 
 /** Every provider the API has an adapter (or a contract-tested stub) for. */
 export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
@@ -95,6 +146,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "sabre",
     name: "Sabre",
     kind: "flight",
+    keysUrl: "https://developer.sabre.com",
     summary: "Airline booking system: live fares, seat holds and tickets",
     fields: [
       url("From the Sabre Dev Studio account, e.g. the certification host for sandbox"),
@@ -107,6 +159,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "amadeus",
     name: "Amadeus",
     kind: "flight",
+    keysUrl: "https://developers.amadeus.com",
     summary: "Airline booking system: live fares, seat holds and tickets",
     fields: [
       url("The test or production host from the Amadeus account"),
@@ -119,6 +172,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "travelport",
     name: "Travelport",
     kind: "flight",
+    keysUrl: "https://developer.travelport.com",
     summary: "Airline booking system: live fares, seat holds and tickets",
     fields: [
       url("The pre-production or production host from Travelport"),
@@ -131,6 +185,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "flyhub",
     name: "FlyHub",
     kind: "flight",
+    keysUrl: "https://www.flyhub.com",
     summary: "Ticket wholesaler: live fares, bookings and tickets",
     fields: [
       url("The API host FlyHub gives with the B2B account"),
@@ -142,6 +197,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "bdfare",
     name: "BDFare",
     kind: "flight",
+    keysUrl: "https://bdfare.com",
     summary: "Ticket wholesaler: live fares, bookings and tickets",
     fields: [
       url("The API host BDFare gives with the B2B account"),
@@ -153,6 +209,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "hotelbeds",
     name: "Hotelbeds",
     kind: "hotel",
+    keysUrl: "https://developer.hotelbeds.com",
     summary: "Hotel supplier: free rooms, prices and bookings",
     fields: [
       url("The test or live host from the Hotelbeds account"),
@@ -164,6 +221,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "sslcommerz",
     name: "SSLCommerz",
     kind: "payment",
+    keysUrl: "https://developer.sslcommerz.com",
     summary: "Cards, mobile banking and net banking",
     fields: [
       url("sandbox.sslcommerz.com for sandbox, securepay.sslcommerz.com for live"),
@@ -175,6 +233,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "bkash",
     name: "bKash",
     kind: "payment",
+    keysUrl: "https://developer.bka.sh",
     summary: "bKash tokenized checkout",
     fields: [
       url("The sandbox or live tokenized checkout host from bKash"),
@@ -188,6 +247,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "nagad",
     name: "Nagad",
     kind: "payment",
+    keysUrl: "https://nagad.com.bd",
     summary: "Nagad merchant checkout",
     fields: [
       url("The sandbox or live host from Nagad"),
@@ -200,6 +260,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "ssl-wireless",
     name: "SSL Wireless",
     kind: "sms",
+    keysUrl: "https://sslwireless.com",
     summary: "Bulk and transactional SMS in Bangladesh",
     fields: [
       url("The SMS API host from the SSL Wireless account"),
@@ -211,6 +272,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "bulksmsbd",
     name: "BulkSMSBD",
     kind: "sms",
+    keysUrl: "https://bulksmsbd.net",
     summary: "Transactional SMS in Bangladesh",
     fields: [
       url("The API host from the BulkSMSBD account"),
@@ -222,6 +284,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "twilio",
     name: "Twilio",
     kind: "sms",
+    keysUrl: "https://console.twilio.com",
     summary: "International SMS and WhatsApp messages",
     fields: [
       url("https://api.twilio.com"),
@@ -234,6 +297,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "resend",
     name: "Resend",
     kind: "email",
+    keysUrl: "https://resend.com/api-keys",
     summary: "Transactional email (staff alerts, customer receipts)",
     fields: [
       url("https://api.resend.com"),
@@ -250,6 +314,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "smtp",
     name: "SMTP server",
     kind: "email",
+    keysUrl: "https://support.google.com/a/answer/176600",
     summary: "Any mailbox provider that offers SMTP (Google Workspace, Zoho, cPanel mail)",
     fields: [
       text("host", "SMTP host", true, "e.g. smtp.gmail.com"),
@@ -270,6 +335,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "google",
     name: "Google sign-in",
     kind: "auth",
+    keysUrl: "https://console.cloud.google.com/apis/credentials",
     summary: "Customers sign in with their Google account (My account: requests and orders)",
     fields: [
       text(
@@ -279,6 +345,255 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
         "Google Cloud › APIs & Services › Credentials › OAuth client ID (Web application); ends in .apps.googleusercontent.com",
       ),
       secret("clientSecret", "Client secret"),
+    ],
+  },
+  turnstile: {
+    id: "turnstile",
+    name: "Cloudflare Turnstile",
+    kind: "captcha",
+    summary:
+      "Stops robots on every public form (requests, sign-in codes, feedback) without a puzzle for people",
+    keysUrl: "https://dash.cloudflare.com/?to=/:account/turnstile",
+    publicFields: ["siteKey"],
+    fields: [
+      shaped(
+        "siteKey",
+        "Site key",
+        "^[0-3]x[A-Za-z0-9_-]{10,}$",
+        "A Turnstile site key starts with 0x (test keys with 1x, 2x or 3x)",
+        "Sandbox: Cloudflare's test key 1x00000000000000000000AA always passes",
+      ),
+      secret("secretKey", "Secret key"),
+    ],
+  },
+  ga4: {
+    id: "ga4",
+    name: "Google Analytics 4",
+    kind: "analytics",
+    summary: "Counts visits and conversions (requests, orders) after the visitor accepts cookies",
+    keysUrl: "https://analytics.google.com",
+    liveOnly: true,
+    publicFields: ["measurementId"],
+    fields: [
+      shaped(
+        "measurementId",
+        "Measurement ID",
+        "^G-[A-Z0-9]{4,15}$",
+        "A GA4 measurement ID looks like G-ABC1234567",
+        "Admin › Data streams › Web › Measurement ID",
+      ),
+    ],
+  },
+  gtm: {
+    id: "gtm",
+    name: "Google Tag Manager",
+    kind: "analytics",
+    summary: "Loads the marketing tags your team manages in Tag Manager, after cookie consent",
+    keysUrl: "https://tagmanager.google.com",
+    liveOnly: true,
+    publicFields: ["containerId"],
+    fields: [
+      shaped(
+        "containerId",
+        "Container ID",
+        "^GTM-[A-Z0-9]{4,12}$",
+        "A container ID looks like GTM-AB12CD3",
+      ),
+    ],
+  },
+  "meta-pixel": {
+    id: "meta-pixel",
+    name: "Meta Pixel",
+    kind: "analytics",
+    summary: "Measures Facebook and Instagram ads (leads, orders) after cookie consent",
+    keysUrl: "https://business.facebook.com/events_manager2",
+    liveOnly: true,
+    publicFields: ["pixelId"],
+    fields: [shaped("pixelId", "Pixel ID", "^\\d{10,20}$", "A Pixel ID is 10 to 20 digits")],
+  },
+  "search-console": {
+    id: "search-console",
+    name: "Google Search Console",
+    kind: "analytics",
+    summary: "Proves to Google that you own the site, so you can see searches and indexing",
+    keysUrl: "https://search.google.com/search-console",
+    liveOnly: true,
+    publicFields: ["token"],
+    fields: [
+      shaped(
+        "token",
+        "Verification code",
+        "^[A-Za-z0-9_-]{20,100}$",
+        "Paste only the content value of the google-site-verification tag",
+        'Settings › Ownership verification › HTML tag: the part inside content="…"',
+      ),
+    ],
+  },
+  bing: {
+    id: "bing",
+    name: "Bing Webmaster Tools",
+    kind: "analytics",
+    summary: "Proves to Bing that you own the site (Bing also feeds ChatGPT search)",
+    keysUrl: "https://www.bing.com/webmasters",
+    liveOnly: true,
+    publicFields: ["token"],
+    fields: [
+      shaped(
+        "token",
+        "Verification code",
+        "^[A-Fa-f0-9]{32}$",
+        "Paste only the content value of the msvalidate.01 tag (32 letters and digits)",
+      ),
+    ],
+  },
+  sentry: {
+    id: "sentry",
+    name: "Sentry",
+    kind: "monitoring",
+    summary:
+      "Sends site, API and worker errors to Sentry with the release, so problems are fixed fast",
+    keysUrl: "https://sentry.io",
+    liveOnly: true,
+    publicFields: ["dsn"],
+    fields: [
+      shaped(
+        "dsn",
+        "DSN",
+        "^https://[A-Za-z0-9]+@[A-Za-z0-9.-]+(?::\\d+)?/\\d+$",
+        "A DSN looks like https://abc123@o123.ingest.sentry.io/456",
+        "Project settings › Client keys (DSN)",
+      ),
+    ],
+  },
+  glitchtip: {
+    id: "glitchtip",
+    name: "GlitchTip",
+    kind: "monitoring",
+    summary: "Error tracking like Sentry, free or self-hosted",
+    keysUrl: "https://app.glitchtip.com",
+    liveOnly: true,
+    publicFields: ["dsn"],
+    fields: [
+      shaped(
+        "dsn",
+        "DSN",
+        "^https://[A-Za-z0-9]+@[A-Za-z0-9.-]+(?::\\d+)?/\\d+$",
+        "A DSN looks like https://abc123@app.glitchtip.com/456",
+      ),
+    ],
+  },
+  r2: {
+    id: "r2",
+    name: "Cloudflare R2",
+    kind: "storage",
+    summary: "Keeps a copy of the daily database and photo backups outside the server (10 GB free)",
+    keysUrl: "https://dash.cloudflare.com/?to=/:account/r2",
+    liveOnly: true,
+    fields: [
+      shaped(
+        "accountId",
+        "Account ID",
+        "^[a-f0-9]{32}$",
+        "The Cloudflare account ID is 32 letters and digits",
+      ),
+      shaped(
+        "bucket",
+        "Bucket name",
+        "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$",
+        "Use the bucket's name: small letters, digits, dots and dashes",
+      ),
+      text(
+        "accessKeyId",
+        "Access key ID",
+        true,
+        "R2 › Manage API tokens: a token limited to this bucket",
+      ),
+      secret("secretAccessKey", "Secret access key"),
+    ],
+  },
+  b2: {
+    id: "b2",
+    name: "Backblaze B2",
+    kind: "storage",
+    summary: "Keeps a copy of the daily database and photo backups outside the server",
+    keysUrl: "https://secure.backblaze.com/app_keys.htm",
+    liveOnly: true,
+    fields: [
+      {
+        ...url("The bucket's S3 endpoint, e.g. https://s3.us-west-004.backblazeb2.com"),
+        key: "endpoint",
+        label: "S3 endpoint",
+      },
+      shaped(
+        "bucket",
+        "Bucket name",
+        "^[A-Za-z0-9-]{6,50}$",
+        "Use the bucket's name: letters, digits and dashes",
+      ),
+      text("keyId", "Key ID", true, "An application key limited to this bucket"),
+      secret("applicationKey", "Application key"),
+    ],
+  },
+  telegram: {
+    id: "telegram",
+    name: "Telegram alerts",
+    kind: "alerts",
+    summary: "Posts every new request and order to your sales group on Telegram at once",
+    keysUrl: "https://t.me/BotFather",
+    liveOnly: true,
+    fields: [
+      {
+        ...secret("botToken", "Bot token"),
+        pattern: "^\\d{6,12}:[A-Za-z0-9_-]{30,50}$",
+        patternMessage: "A bot token looks like 123456789:AAE… (from @BotFather)",
+      },
+      shaped(
+        "chatId",
+        "Group chat ID",
+        "^-?\\d{5,20}$",
+        "The group chat ID is a number, usually starting with -100",
+        "Add the bot to the sales group, then use the group's ID",
+      ),
+    ],
+  },
+  steadfast: {
+    id: "steadfast",
+    name: "Steadfast Courier",
+    kind: "courier",
+    summary: "Books Waafas World deliveries and shows the parcel status to the customer",
+    keysUrl: "https://steadfast.com.bd",
+    fields: [
+      url("https://portal.packzy.com/api/v1"),
+      text("apiKey", "API key"),
+      secret("secretKey", "Secret key"),
+    ],
+  },
+  pathao: {
+    id: "pathao",
+    name: "Pathao Courier",
+    kind: "courier",
+    summary: "Books Waafas World deliveries and shows the parcel status to the customer",
+    keysUrl: "https://merchant.pathao.com",
+    fields: [
+      url("Sandbox: https://courier-api-sandbox.pathao.com; live: https://api-hermes.pathao.com"),
+      text("clientId", "Client ID"),
+      secret("clientSecret", "Client secret"),
+      text("username", "Merchant email"),
+      secret("password", "Merchant password"),
+      text("storeId", "Store ID"),
+    ],
+  },
+  redx: {
+    id: "redx",
+    name: "RedX",
+    kind: "courier",
+    summary: "Books Waafas World deliveries and shows the parcel status to the customer",
+    keysUrl: "https://redx.com.bd",
+    fields: [
+      url(
+        "Sandbox: https://sandbox.redx.com.bd/v1.0.0-beta; live: https://openapi.redx.com.bd/v1.0.0-beta",
+      ),
+      secret("apiToken", "API token"),
     ],
   },
 };
@@ -362,7 +677,7 @@ export const IntegrationSettingInputSchema = z
 export const CustomProviderInputSchema = z
   .object({
     // Sign-in providers are built one by one; only supplier kinds take custom entries.
-    kind: ProviderKindSchema.exclude(["auth"]),
+    kind: z.enum(SUPPLIER_KINDS),
     name: z.string().trim().min(2, "Enter the supplier's name").max(60),
   })
   .strict();
@@ -398,8 +713,58 @@ export const IntegrationStatusSchema = z
     sms: z.object({ ready: z.boolean() }).strict(),
     email: z.object({ ready: z.boolean() }).strict(),
     auth: z.object({ google: z.boolean() }).strict(),
+    /**
+     * Values the visitor's browser may hold (issue 284), each null while its service is Off, unsaved or failing its
+     * last test. Read by the site at run time, so a change in Admin needs no rebuild.
+     */
+    public: z
+      .object({
+        turnstileSiteKey: z.string().nullable(),
+        ga4Id: z.string().nullable(),
+        gtmId: z.string().nullable(),
+        metaPixelId: z.string().nullable(),
+        googleVerification: z.string().nullable(),
+        bingVerification: z.string().nullable(),
+        errorTrackingDsn: z.string().nullable(),
+      })
+      .strict(),
+    /** Features that need an outside service show only when it is On and healthy. */
+    features: z
+      .object({
+        onlinePayment: z.boolean(),
+        courierTracking: z.boolean(),
+        telegramAlerts: z.boolean(),
+        offsiteBackup: z.boolean(),
+      })
+      .strict(),
   })
   .strict();
+export type PublicIntegrations = IntegrationStatus["public"];
+
+/** Everything off: the site's answer before the API is reachable and in fixture mode. */
+export const INTEGRATIONS_OFF: IntegrationStatus = {
+  flight: { mode: "manual" },
+  hotel: { mode: "manual" },
+  payment: { ready: false },
+  sms: { ready: false },
+  email: { ready: false },
+  auth: { google: false },
+  public: {
+    turnstileSiteKey: null,
+    ga4Id: null,
+    gtmId: null,
+    metaPixelId: null,
+    googleVerification: null,
+    bingVerification: null,
+    errorTrackingDsn: null,
+  },
+  features: {
+    onlinePayment: false,
+    courierTracking: false,
+    telegramAlerts: false,
+    offsiteBackup: false,
+  },
+};
 export type IntegrationStatus = z.infer<typeof IntegrationStatusSchema>;
 
 const FieldValueSchema = z.string().trim().max(4096);
@@ -470,6 +835,11 @@ export function validateProviderConnection(
       problems.push({ path: `${group}.${field.key}`, message: `${field.label} is required` });
     if (field.type === "number" && value !== "" && !/^\d{1,5}$/.test(value))
       problems.push({ path: `${group}.${field.key}`, message: `${field.label} must be a number` });
+    if (field.pattern && value !== "" && !new RegExp(field.pattern).test(value))
+      problems.push({
+        path: `${group}.${field.key}`,
+        message: field.patternMessage ?? `${field.label} is not in the right form`,
+      });
     if (field.key === "extraHeaders" && value !== "") {
       let headersOk = false;
       try {

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { NestFastifyApplication } from "@nestjs/platform-fastify";
-import type { Role } from "@waafa/shared";
+import { ProviderKindSchema, type Role } from "@waafa/shared";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { signAccessToken } from "../src/auth/tokens";
 import { featureModules } from "../src/features";
@@ -142,7 +142,7 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
       isLive: false,
     });
     expect(new Set(body.settings.map((item) => item.kind))).toEqual(
-      new Set(["flight", "hotel", "payment", "sms", "email", "auth"]),
+      new Set(ProviderKindSchema.options),
     );
   });
 
@@ -206,6 +206,21 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
       sms: { ready: false },
       email: { ready: false },
       auth: { google: false },
+      public: {
+        turnstileSiteKey: null,
+        ga4Id: null,
+        gtmId: null,
+        metaPixelId: null,
+        googleVerification: null,
+        bingVerification: null,
+        errorTrackingDsn: null,
+      },
+      features: {
+        onlinePayment: true,
+        courierTracking: false,
+        telegramAlerts: false,
+        offsiteBackup: false,
+      },
     });
     expect(status.body).not.toContain("sabre");
     const anonymous = await app.inject({
@@ -215,17 +230,88 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
     expect(anonymous.statusCode).toBe(401);
   });
 
-  it("reveals a saved secret to the Super Admin only, and logs who looked", async () => {
-    expect((await call(manager, "POST", "/sabre/sandbox/reveal/clientSecret")).statusCode).toBe(
-      403,
-    );
-    const shown = await call(owner, "POST", "/sabre/sandbox/reveal/clientSecret");
-    expect(shown.statusCode).toBe(200);
-    expect(shown.headers["cache-control"]).toBe("no-store");
-    expect(shown.json()).toEqual({ field: "clientSecret", value: "very-secret-value-9876" });
-    const audit = await prisma.auditLog.findFirstOrThrow({ where: { action: "provider.reveal" } });
-    expect(JSON.stringify(audit)).not.toContain("very-secret-value");
-    expect((await call(owner, "POST", "/sabre/sandbox/reveal/nope")).statusCode).toBe(404);
+  it("never sends a saved secret back: the old reveal route is gone (issue 284)", async () => {
+    expect((await call(owner, "POST", "/sabre/sandbox/reveal/clientSecret")).statusCode).toBe(404);
+    const list = await call(owner, "GET", "");
+    expect(list.body).not.toContain("very-secret-value");
+    expect(list.body).toContain('"last4":"9876"');
+  });
+
+  it("puts each outside service on a card; the site gets public values only (issue 284)", async () => {
+    // A measurement ID: one set of values, saved and used as Live, checked for its form.
+    expect(
+      (await call(owner, "POST", "/ga4/production", { settings: { measurementId: "UA-1-1" } }))
+        .statusCode,
+    ).toBe(422);
+    expect(
+      (await call(owner, "POST", "/ga4/sandbox", { settings: { measurementId: "G-ABC1234567" } }))
+        .statusCode,
+    ).toBe(400);
+    expect(
+      (
+        await call(owner, "POST", "/ga4/production", {
+          settings: { measurementId: "G-ABC1234567" },
+        })
+      ).statusCode,
+    ).toBe(200);
+    const on = await call(owner, "POST", "/ga4/setting", { isActive: true, isLive: false });
+    expect(on.json()).toMatchObject({ isActive: true, isLive: true, updatedBy: "Owner" });
+
+    // Turnstile: the site key is public, the secret never is.
+    await call(owner, "POST", "/turnstile/sandbox", {
+      settings: { siteKey: "1x00000000000000000000AA" },
+      secrets: { secretKey: "1x0000000000000000000000000000000AA" },
+    });
+    await call(owner, "POST", "/turnstile/setting", { isActive: true, isLive: false });
+
+    // Telegram with a token Telegram refuses: Failing, so its feature stays off.
+    await call(owner, "POST", "/telegram/production", {
+      settings: { chatId: "-1001234567890" },
+      secrets: { botToken: "123456789:AAEabcdefghijklmnopqrstuvwxyz012345" },
+    });
+    await call(owner, "POST", "/telegram/setting", { isActive: true, isLive: true });
+    const test = await call(owner, "POST", "/telegram/production/test");
+    expect(test.json()).toMatchObject({ health: { ok: false } });
+
+    const status = await app.inject({
+      method: "GET",
+      url: "/api/v1/public/integrations/status",
+      headers: { "x-intake-key": "test-intake-key-0123456789-abcdef" },
+    });
+    const body = status.json<{
+      public: Record<string, unknown>;
+      features: Record<string, unknown>;
+    }>();
+    expect(body.public).toMatchObject({
+      turnstileSiteKey: "1x00000000000000000000AA",
+      ga4Id: "G-ABC1234567",
+    });
+    expect(body.features).toMatchObject({ telegramAlerts: false });
+    expect(status.body).not.toContain("1x0000000000000000000000000000000AA");
+    expect(status.body).not.toContain("AAEabcdef");
+    const audit = await prisma.auditLog.findMany({ where: { entityId: "telegram:production" } });
+    expect(JSON.stringify(audit)).not.toContain("AAEabcdef");
+  });
+
+  it("checks a visitor's Turnstile token with the saved secret, and passes while it is off", async () => {
+    const verify = (token: string) =>
+      app.inject({
+        method: "POST",
+        url: "/api/v1/public/integrations/turnstile/verify",
+        headers: { "x-intake-key": "test-intake-key-0123456789-abcdef" },
+        payload: { token, ip: "203.0.113.9" },
+      });
+    expect((await verify("")).json()).toEqual({ ok: false, checked: true });
+    // The test fetcher answers without a body: Cloudflare did not say success.
+    expect((await verify("token-from-the-widget")).json()).toEqual({ ok: false, checked: true });
+    await call(owner, "POST", "/turnstile/setting", { isActive: false, isLive: false });
+    expect((await verify("")).json()).toEqual({ ok: true, checked: false });
+    const anonymous = await app.inject({
+      method: "POST",
+      url: "/api/v1/public/integrations/turnstile/verify",
+      payload: { token: "x" },
+    });
+    expect(anonymous.statusCode).toBe(401);
   });
 
   it("adds, connects and removes a custom provider", async () => {

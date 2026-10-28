@@ -1,16 +1,35 @@
 import "server-only";
+import { apiConfig, callApi } from "@/lib/data/api/apiClient";
 
 const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 /**
- * Cloudflare Turnstile check for form submits (CLAUDE.md "Always"). Off until TURNSTILE_SECRET_KEY is set (the
- * owner adds keys in Phase C; development can use Cloudflare's always-pass test secret
- * 1x0000000000000000000000000000000AA). Returns true when the token is valid or the check is off.
+ * Cloudflare Turnstile check for form submits (CLAUDE.md "Always"). With the API (every real server), the keys live
+ * in Admin › Integrations and the API checks the token with the saved secret, so a change needs no redeploy (issue
+ * 284); it passes while Turnstile is off. Development without the API can still use TURNSTILE_SECRET_KEY (for
+ * example Cloudflare's always-pass test secret 1x0000000000000000000000000000000AA). Returns true when the token is
+ * valid or the check is off.
  */
 export async function verifyTurnstile(
   token: string | undefined,
   ip: string | undefined,
 ): Promise<boolean> {
+  const api = apiConfig();
+  if (api) {
+    try {
+      const result = await callApi<{ ok: boolean }>(
+        api,
+        "/api/v1/public/integrations/turnstile/verify",
+        {
+          body: { token: token ?? "", ...(ip && ip !== "unknown" ? { ip } : {}) },
+          timeoutMs: 8_000,
+        },
+      );
+      return result.ok;
+    } catch {
+      return false;
+    }
+  }
   const secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) return true;
   if (!token) return false;

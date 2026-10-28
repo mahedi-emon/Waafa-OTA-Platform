@@ -129,8 +129,23 @@ export interface SignInProvider {
   healthCheck(context: ProviderContext): Promise<HealthResult>;
 }
 
+/**
+ * Services added in issue 284 (Turnstile, measurement IDs, error tracking, off-site storage, Telegram, couriers): the
+ * connection is checked here; the features that use them read the active config.
+ */
+export interface ServiceProvider {
+  readonly id: ProviderKey;
+  readonly kind: "captcha" | "analytics" | "monitoring" | "storage" | "alerts" | "courier";
+  healthCheck(context: ProviderContext): Promise<HealthResult>;
+}
+
 export type ProviderAdapter =
-  FlightProvider | HotelProvider | PaymentProvider | MessagingProvider | SignInProvider;
+  | FlightProvider
+  | HotelProvider
+  | PaymentProvider
+  | MessagingProvider
+  | SignInProvider
+  | ServiceProvider;
 
 /** Thrown by an adapter that cannot do a call yet (stub before certification, Manual mode). */
 export class ProviderUnavailableError extends Error {

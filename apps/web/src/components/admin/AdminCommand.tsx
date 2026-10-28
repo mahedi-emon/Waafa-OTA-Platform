@@ -56,14 +56,14 @@ function AdminCommand() {
         onClick={() => change(() => true)}
         onPointerEnter={() => void loadDialog()}
         onFocus={() => void loadDialog()}
-        aria-label={t("shell.search")}
         className="flex h-11 w-full max-w-md cursor-pointer items-center gap-2.5 rounded-full border border-mist-200 bg-mist-50 px-4 text-left text-[14.5px] text-mist-600 transition-colors duration-150 hover:border-mist-300 hover:bg-white focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none max-sm:size-11 max-sm:justify-center max-sm:border-0 max-sm:bg-transparent max-sm:px-0 lg:h-10"
       >
         <Search
           aria-hidden="true"
           className="size-[18px] shrink-0 text-navy-900 sm:size-4 sm:text-mist-600"
         />
-        <span className="truncate max-sm:hidden">{t("shell.search")}</span>
+        {/* The words name the button (no aria-label: axe 4.14 wants a name that holds the visible text, Ctrl K included). */}
+        <span className="truncate max-sm:sr-only">{t("shell.search")}</span>
         <span aria-hidden="true" className="ml-auto hidden items-center gap-1 md:flex">
           <Kbd>Ctrl</Kbd>
           <Kbd>K</Kbd>

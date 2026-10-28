@@ -123,6 +123,30 @@ Admin-er thikana: `https://waafasworld.com/secure-admin-control` (bookmark kore 
   **Insert** button chapun; niche preview-te asol email-er moto dekhabe.
 - Protiti section-er niche nijer **Save changes** button.
 
+### 11.1 Integrations: bairer sob service ek jaygay (shudhu Super Admin)
+
+**Settings › Integrations**-e protiti bairer service ekta card. Card-e lekha thake site-e eta ki kore, **Where to get the
+keys** link (notun tab-e khule), field gulo, **Test connection**, **Active** switch, ar ekta chip:
+**Off** (bondho) · **No keys saved** (on kintu key nai) · **Not tested** · **Connected** (test pass) · **Failing**
+(shesh test-er error ar shomoy dekhay; pass na kora porjonto site eta use kore na). Niche lekha thake ke, kobe bodlechen.
+Secret ekbar save korle ar kokhono dekhano hoy na, shudhu shesh 4 ta okkhor; khali rakhle purono tai thake. Save korar
+ek minute-er moddhe site-e pouche jay, redeploy lage na.
+
+- **Sign-in and security**: *Google sign-in* (customer Google diye login), *Cloudflare Turnstile* (form-e robot
+  atkay; Test account-e Cloudflare-er test key `1x00000000000000000000AA` diye try korte paren).
+- **Email, SMS and alerts**: *Resend* ba *SMTP* (email pathay), *BulkSMSBD / SSL Wireless / Twilio* (status SMS,
+  sign-in na), *Telegram alerts* (notun request ar order sales group-e; @BotFather theke bot token, group chat ID).
+- **Measurement**: *GA4*, *Google Tag Manager*, *Meta Pixel* (visitor cookie accept korle tobei chole),
+  *Google Search Console* ar *Bing* (site-er malikana proman; shudhu content="…" er bhitorer code ta din). Egulo-te
+  Test/Real bhag nai, ekta set-i.
+- **Errors and backups**: *Sentry* ba *GlitchTip* DSN (site, API, worker-er error jay), *Cloudflare R2* ba
+  *Backblaze B2* (protidin-er backup-er copy server-er baire).
+- **Payments**: *SSLCommerz, bKash, Nagad*: age Test account-e key diye Test connection, pore Real account. Live na hoya
+  porjonto site-e online payment dekhay na.
+- **Couriers**: *Steadfast, Pathao, RedX*: order deliver booking ar parcel tracking.
+- **Flight APIs, Hotel APIs**: GDS ba consolidator; on korleo live booking chalu hoy na (Booking modes theke Live
+  unlock lage).
+
 ## 12. Bhul hole: History, Trash, Undo
 
 - **History**: protiti record-e ke kobe ki bodleche, sohoj bhashay. **Restore this version** diye age-r obosthay.

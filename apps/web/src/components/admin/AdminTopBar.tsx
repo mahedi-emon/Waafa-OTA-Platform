@@ -57,10 +57,11 @@ function AdminTopBar() {
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              aria-label={`${t("account")}: ${staff.name}`}
               className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-navy-900 text-[13px] font-bold text-white transition-colors duration-150 hover:bg-royal-800 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none lg:size-10"
             >
-              {staff.initials}
+              {/* The name comes from the words, not an aria-label, so the visible initials never contradict it (axe 4.14). */}
+              <span aria-hidden="true">{staff.initials}</span>
+              <span className="sr-only">{`${t("account")}: ${staff.name}`}</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">

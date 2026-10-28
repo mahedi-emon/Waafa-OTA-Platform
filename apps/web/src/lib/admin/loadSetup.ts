@@ -1,5 +1,6 @@
 import "server-only";
 import { canEditContentKey } from "@waafa/shared";
+import { getIntegrations } from "@/lib/data/integrations";
 import { adminGet, hasRole, requireStaff } from "./adminApi";
 import { setupSteps, type SetupFacts, type SetupStep } from "./setupChecklist";
 import type { ContentSingleton } from "./types";
@@ -12,22 +13,20 @@ export async function loadSetup(): Promise<SetupStep[]> {
   const can = (key: Parameters<typeof canEditContentKey>[1]) => canEditContentKey(staff.roles, key);
   const read = (key: string) =>
     adminGet<ContentSingleton>(`/admin/content/${key}`).catch(() => null);
-  const [tracking, site, contact, payments, inbox] = await Promise.all([
-    can("trackingSettings") ? read("trackingSettings") : undefined,
-    can("siteSettings") ? read("siteSettings") : undefined,
+  const [integrations, contact, payments, inbox] = await Promise.all([
+    hasRole(staff, "super-admin") ? getIntegrations() : undefined,
     can("contactSettings") ? read("contactSettings") : undefined,
     can("paymentSettings") ? read("paymentSettings") : undefined,
     adminGet<InboxCounts>("/admin/inbox").catch(() => null),
   ]);
   const facts: SetupFacts = {
-    ...(tracking !== undefined
-      ? { tracking: (tracking?.value ?? null) as SetupFacts["tracking"] }
-      : {}),
-    ...(typeof (site?.value as { googleSiteVerification?: unknown } | undefined)
-      ?.googleSiteVerification === "string"
+    ...(integrations
       ? {
-          siteVerification: (site?.value as { googleSiteVerification: string })
-            .googleSiteVerification,
+          integrations: {
+            searchConsole: Boolean(integrations.public.googleVerification),
+            analytics: Boolean(integrations.public.ga4Id || integrations.public.gtmId),
+            turnstile: Boolean(integrations.public.turnstileSiteKey),
+          },
         }
       : {}),
     ...(contact ? { contactUpdatedBy: contact.updatedBy ?? null } : {}),
@@ -36,15 +35,6 @@ export async function loadSetup(): Promise<SetupStep[]> {
       : {}),
     ...(typeof inbox?.counts.sampleLeft === "number"
       ? { sampleLeft: inbox.counts.sampleLeft }
-      : {}),
-    // The bot check keys live in the server's environment; managers see whether they are set.
-    ...(hasRole(staff, "admin")
-      ? {
-          turnstile: Boolean(
-            process.env.TURNSTILE_SECRET_KEY?.trim() &&
-            process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim(),
-          ),
-        }
       : {}),
   };
   return setupSteps(facts);
