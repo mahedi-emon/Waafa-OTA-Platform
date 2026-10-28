@@ -46,8 +46,9 @@ Serena memory `audit_findings`.
 | Tests | API `rateLimit.test.ts` (10 a minute per address), `offsiteStorage.unit.test.ts`, `resourceAlert.unit.test.ts`; VPS smoke step "Backups (cron, backup, restore drill)"; QA plan `docs/qa/239-backups-security.md` (B-01..12) |
 | Migration | none (seed patch); deploy/server: backup.sh and deploy.sh change; new optional .env lines BACKUP_CRON, STAGING |
 | Decision | D308 |
+| PR · CI minutes | #294 (1ab66f5) · 99 |
 
-### #238 · Error tracking, System status page, dead-letter list — ✅ Done
+### #238 · Error tracking, System status page, dead-letter list — 🟡 In review (PR #293)
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 5: error tracking for web, API and worker with release tags, a staff Status page, dead-letter handling for every queue |
@@ -66,6 +67,7 @@ Serena memory `audit_findings`.
 | Migration | `20261029010000_order_source` (additive): goes into docs/RELEASE.md |
 | Tools and skills | Serena; existing shadcn Table; Context7 and the design skills not run (one admin table in the existing report card style) |
 | Decision | D305 |
+| PR · CI minutes | #292 (b6d45f8) · 90 |
 
 ### #295 · Bug: Home first-load JS 201 KB after the integration hub — ✅ Done
 | Field | Value |
@@ -83,6 +85,7 @@ Serena memory `audit_findings`.
 | Migration | none |
 | Tools and skills | Serena; no UI |
 | Decision | D303 |
+| PR · CI minutes | #291 (b4fced7) · 105; the rehearsal passed in CI from 541bd21 |
 
 ### #287 · Sitemap index per area and share cards for visa countries without a photo — ✅ Done
 | Field | Value |
