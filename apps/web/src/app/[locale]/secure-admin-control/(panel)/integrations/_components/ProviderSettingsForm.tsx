@@ -13,6 +13,8 @@ import { saveIntegrationSetting } from "@/lib/admin/providerActions";
 import { fill, type IntegrationStrings } from "./integrationStrings";
 
 type ProviderSettingsFormProps = {
+  /** No Sandbox for this service: the Live switch is left out (issue 284). */
+  liveOnly?: boolean;
   setting: IntegrationSettingView;
   strings: IntegrationStrings;
 };
@@ -21,7 +23,7 @@ type ProviderSettingsFormProps = {
  * Provider switches (issue 107): Active, Sandbox or Live credentials, and for flights and hotels the markup or commission
  * on net fares. The API refuses to turn a provider on without saved credentials for the chosen mode.
  */
-function ProviderSettingsForm({ setting, strings }: ProviderSettingsFormProps) {
+function ProviderSettingsForm({ setting, liveOnly = false, strings }: ProviderSettingsFormProps) {
   const id = useId();
   const router = useRouter();
   const [isActive, setActive] = useState(setting.isActive);
@@ -84,20 +86,22 @@ function ProviderSettingsForm({ setting, strings }: ProviderSettingsFormProps) {
             </p>
           </div>
         </div>
-        <div className="flex items-start gap-3">
-          <Switch
-            id={`${id}-live`}
-            checked={isLive}
-            onCheckedChange={setLive}
-            aria-describedby={`${id}-live-hint`}
-          />
-          <div className="min-w-0">
-            <Label htmlFor={`${id}-live`}>{strings.live}</Label>
-            <p id={`${id}-live-hint`} className="text-sm text-mist-600">
-              {strings.liveHint}
-            </p>
+        {liveOnly ? null : (
+          <div className="flex items-start gap-3">
+            <Switch
+              id={`${id}-live`}
+              checked={isLive}
+              onCheckedChange={setLive}
+              aria-describedby={`${id}-live-hint`}
+            />
+            <div className="min-w-0">
+              <Label htmlFor={`${id}-live`}>{strings.live}</Label>
+              <p id={`${id}-live-hint`} className="text-sm text-mist-600">
+                {strings.liveHint}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {markupAllowed ? (

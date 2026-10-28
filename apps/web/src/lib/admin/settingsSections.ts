@@ -68,7 +68,6 @@ export const SETTINGS_SECTIONS: readonly SettingsSection[] = [
   {
     id: "seo",
     tabs: [
-      { id: "tracking", setting: "trackingSettings" },
       { id: "defaults", setting: "siteSettings", sections: ["search"] },
       { id: "connections", setting: "siteSettings", sections: ["connections"] },
     ],

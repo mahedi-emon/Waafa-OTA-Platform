@@ -62,7 +62,10 @@ export function buildResolvedBlueprint(
     // A link's "opens in a new tab" follows from where it goes; the link picker sets it (D0 R7).
     const linkFlag = info.name === "external" && linkParents.has(info.parent);
     const hidden =
-      Boolean(spec?.auto) || linkFlag || (system && (info.name === "sample" || workflow));
+      Boolean(spec?.auto) ||
+      Boolean(spec?.retired) ||
+      linkFlag ||
+      (system && (info.name === "sample" || workflow));
     const set = spec?.choices ?? info.name;
     const choices = info.values?.map((value) => ({
       value,

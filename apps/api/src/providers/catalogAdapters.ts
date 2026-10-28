@@ -1,4 +1,5 @@
 import { Socket } from "node:net";
+import { serviceProvider } from "./serviceChecks";
 import {
   providerDefinition,
   validateProviderConnection,
@@ -43,7 +44,11 @@ export function isPublicHost(hostname: string): boolean {
   return true;
 }
 
-export type Fetcher = (url: string, init: RequestInit) => Promise<{ status: number }>;
+/** `json` is read only where the answer's body matters (Turnstile, issue 284). */
+export type Fetcher = (
+  url: string,
+  init: RequestInit,
+) => Promise<{ status: number; json?: () => Promise<unknown> }>;
 
 /** Opens a TCP connection and closes it: is something listening on host:port (SMTP)? */
 export type PortProbe = (host: string, port: number, timeoutMs: number) => Promise<void>;
@@ -266,6 +271,8 @@ export function adapterFor(
       return messagingProvider(definition, fetcher, probe);
     case "auth":
       return signInProvider(definition, fetcher);
+    default:
+      return serviceProvider(definition, fetcher ?? fetch);
   }
 }
 

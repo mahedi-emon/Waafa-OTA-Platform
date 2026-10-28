@@ -7,7 +7,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { NavDriver } from "@/components/nav/NavDriver";
 import { THEME_COLOR } from "@/components/brand/brandColors";
 import { routing } from "@/i18n/routing";
-import { getSiteSettings, getTrackingSettings } from "@/lib/data/settings";
+import { getIntegrations } from "@/lib/data/integrations";
+import { getSiteSettings } from "@/lib/data/settings";
 import { defaultShareImage } from "@/lib/seo/withSocial";
 import { SITE_URL } from "@/lib/siteUrl";
 import "../globals.css";
@@ -44,19 +45,20 @@ export function generateStaticParams() {
  * Settings › General.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const [t, site, image, tracking] = await Promise.all([
+  const [t, site, image, integrations] = await Promise.all([
     getTranslations("Metadata"),
     getSiteSettings(),
     defaultShareImage(),
-    getTrackingSettings(),
+    getIntegrations(),
   ]);
-  // Search Console: General's field, else the token in Settings › Tracking.
-  const google = site.googleSiteVerification ?? tracking.searchConsoleToken;
+  // Search Console and Bing codes live on their Admin › Integrations cards (issue 284).
+  const google = integrations.public.googleVerification;
+  const bing = integrations.public.bingVerification;
   const title = site.defaultSeo.title ?? t("title");
   const description = site.defaultSeo.description ?? t("description");
   const verification: Metadata["verification"] = {
     ...(google ? { google } : {}),
-    ...(site.bingSiteVerification ? { other: { "msvalidate.01": site.bingSiteVerification } } : {}),
+    ...(bing ? { other: { "msvalidate.01": bing } } : {}),
   };
   return {
     metadataBase: new URL(SITE_URL),

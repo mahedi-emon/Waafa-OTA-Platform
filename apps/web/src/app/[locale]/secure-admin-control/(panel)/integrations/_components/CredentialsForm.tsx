@@ -51,7 +51,10 @@ function CredentialsForm({
   strings,
 }: CredentialsFormProps) {
   const router = useRouter();
-  const [environment, setEnvironment] = useState<ProviderEnvironment>(inUse);
+  // One set of values (measurement IDs, DSNs, storage, Telegram) is always the Live set (issue 284).
+  const [environment, setEnvironment] = useState<ProviderEnvironment>(
+    definition.liveOnly ? "production" : inUse,
+  );
   const connection = connections.find((item) => item.environment === environment);
   const [draft, setDraft] = useState<Draft>(() => draftFor(connection));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -120,17 +123,19 @@ function CredentialsForm({
     >
       <fieldset className="flex min-w-0 flex-col gap-2">
         <legend className="mb-2 text-sm font-semibold text-navy-900">{strings.credentials}</legend>
-        <ToggleGroup
-          type="single"
-          variant="segment"
-          value={environment}
-          onValueChange={switchEnvironment}
-          className="max-w-full"
-          aria-label={strings.environment}
-        >
-          <ToggleGroupItem value="sandbox">{strings.sandbox}</ToggleGroupItem>
-          <ToggleGroupItem value="production">{strings.production}</ToggleGroupItem>
-        </ToggleGroup>
+        {definition.liveOnly ? null : (
+          <ToggleGroup
+            type="single"
+            variant="segment"
+            value={environment}
+            onValueChange={switchEnvironment}
+            className="max-w-full"
+            aria-label={strings.environment}
+          >
+            <ToggleGroupItem value="sandbox">{strings.sandbox}</ToggleGroupItem>
+            <ToggleGroupItem value="production">{strings.production}</ToggleGroupItem>
+          </ToggleGroup>
+        )}
       </fieldset>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -172,11 +177,7 @@ function CredentialsForm({
                 <SecretInput
                   id={id}
                   label={field.label}
-                  provider={definition.id}
-                  environment={environment}
-                  fieldKey={field.key}
                   value={draft.secrets[field.key] ?? ""}
-                  saved={Boolean(saved)}
                   disabled={!canSaveSecrets}
                   invalid={Boolean(error)}
                   {...(describedBy ? { describedBy } : {})}

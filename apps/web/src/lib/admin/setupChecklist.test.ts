@@ -4,11 +4,10 @@ import { setupSteps } from "./setupChecklist";
 describe("setupSteps", () => {
   it("ticks each step from the settings and leaves out what it can't read", () => {
     const steps = setupSteps({
-      tracking: { ga4Id: "G-ABC123", searchConsoleToken: "" },
+      integrations: { searchConsole: false, analytics: true, turnstile: false },
       contactUpdatedBy: "seed",
       payments: { offlineAccounts: [{ sample: true }] },
       sampleLeft: 3,
-      turnstile: false,
     });
     expect(steps.map((step) => [step.id, step.done])).toEqual([
       ["searchConsole", false],
@@ -30,11 +29,10 @@ describe("setupSteps", () => {
     });
     expect(steps.every((step) => step.done)).toBe(true);
     expect(setupSteps({ contactUpdatedBy: "seed-patch" })[0]?.done).toBe(false);
-    // The Site settings code counts for Search Console too.
-    expect(setupSteps({ tracking: {}, siteVerification: "abc123" })[0]).toMatchObject({
-      id: "searchConsole",
-      done: true,
-    });
+    // Outside services point at Admin › Integrations (issue 284).
+    expect(
+      setupSteps({ integrations: { searchConsole: true, analytics: false, turnstile: true } })[0],
+    ).toEqual({ id: "searchConsole", done: true, href: "/secure-admin-control/integrations" });
     expect(setupSteps({ payments: { offlineAccounts: [] } })[0]?.done).toBe(false);
   });
 });

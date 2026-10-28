@@ -117,6 +117,8 @@ export type PhotoFrame = {
 export type FieldSpec = {
   widget?: WidgetKind;
   auto?: AutoRule;
+  /** Kept in the record for older data but edited elsewhere (e.g. moved to Admin › Integrations, issue 284). */
+  retired?: boolean;
   /** Labels for an enum's values come from Admin.choices.<choices>; defaults to the field's own name. */
   choices?: string;
   ref?: ReferenceSpec;

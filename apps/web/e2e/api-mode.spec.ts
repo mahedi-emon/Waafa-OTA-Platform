@@ -150,18 +150,25 @@ test("a newsletter sign-up reaches the Admin list", async ({ page }) => {
   await expect(page.getByRole("row").filter({ hasText: email })).toBeVisible();
 });
 
-test("a Super Admin connects an external API, turns it on and reveals the secret on request", async ({
+test("a Super Admin connects outside services; secrets never come back and the site follows without a rebuild", async ({
   page,
+  request,
 }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
   const errors = collectErrors(page);
   await signIn(page);
   await page.goto("/secure-admin-control/integrations");
   await expect(page.getByRole("heading", { level: 1, name: "Integrations" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "Flight APIs" })).toHaveAttribute(
+  await expect(page.getByRole("tab", { name: "Sign-in and security" })).toHaveAttribute(
     "aria-selected",
     "true",
   );
+  await expect(
+    page
+      .getByRole("article")
+      .filter({ has: page.getByRole("heading", { name: "Cloudflare Turnstile" }) }),
+  ).toBeVisible();
+  await page.getByRole("tab", { name: "Flight APIs" }).click();
   const card = page
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: "Sabre" }) });
@@ -188,13 +195,38 @@ test("a Super Admin connects an external API, turns it on and reveals the secret
   await expect(card.getByText("Active", { exact: true }).first()).toBeVisible();
   await expect(card.getByRole("switch", { name: "Active" })).toBeChecked();
 
-  // The saved secret is shown only on request (and logged by the API).
-  await card.getByRole("button", { name: "Reveal saved value" }).click();
-  await expect(card.getByText("e2e-client-secret-4321")).toBeVisible();
+  // Issue 284: a saved secret never comes back to the browser; the card says it is on but not tested yet.
+  await expect(card.getByRole("button", { name: /Reveal/ })).toHaveCount(0);
+  await expect(card.getByText("Not tested", { exact: true })).toBeVisible();
+  await expect(card.getByText(/^Changed by /)).toBeVisible();
+  expect(await page.content()).not.toContain("e2e-client-secret-4321");
+
+  // Issue 284: a search engine code saved here reaches the site within a minute, no rebuild.
+  await page.getByRole("tab", { name: "Measurement" }).click();
+  const google = page
+    .getByRole("article")
+    .filter({ has: page.getByRole("heading", { name: "Google Search Console" }) });
+  await expect(google.getByRole("link", { name: /Where to get the keys/ })).toHaveAttribute(
+    "target",
+    "_blank",
+  );
+  await expect(google.getByRole("switch", { name: "Use the real account" })).toHaveCount(0);
+  await google.getByRole("button", { name: /^(Connect|Manage)$/ }).click();
+  const code = `e2e-google-code-${String(Date.now()).slice(-8)}`;
+  await google.getByLabel("Verification code").fill(code);
+  await google.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByText("Google Search Console saved")).toBeVisible();
+  const on = google.getByRole("switch", { name: "Active" });
+  if (!(await on.isChecked())) await on.click();
+  await google.getByRole("button", { name: "Save settings" }).click();
+  await expect(page.getByText("Google Search Console settings saved")).toBeVisible();
+  await expect
+    .poll(async () => (await (await request.get("/")).text()).includes(code), { timeout: 60_000 })
+    .toBe(true);
 
   // A custom SMS provider in the Communication tab.
-  await page.getByRole("tab", { name: "SMS and email" }).click();
-  const panel = page.getByRole("tabpanel", { name: "SMS and email" });
+  await page.getByRole("tab", { name: "Email, SMS and alerts" }).click();
+  const panel = page.getByRole("tabpanel", { name: "Email, SMS and alerts" });
   // Its own name, so a rerun on a used database adds a new provider instead of clashing with the last one.
   const provider = `E2E SMS Gateway ${String(Date.now()).slice(-5)}`;
   await panel.getByLabel("Provider name").fill(provider);

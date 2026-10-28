@@ -4,7 +4,7 @@ name: Docker images
 # to Docker Hub as <repo>:api-<sha>, :web-<sha>, :nginx-<sha> and the matching -latest tags (issue 130). The VPS pulls
 # them with deploy/deploy.sh (IMAGE_REPO in deploy/.env), so the server never builds.
 # The web prerenders from a throwaway API and database in this runner; every secret here is random and discarded, so
-# the images hold none. Repository variables: SITE_URL (default https://waafasworld.com), TURNSTILE_SITE_KEY (public).
+# the images hold none. Repository variables: SITE_URL (default https://waafasworld.com). Turnstile keys live in Admin › Integrations (issue 284).
 
 on:
   push:
@@ -42,7 +42,6 @@ permissions:
 env:
   IMAGE_REPO: ${{ vars.DOCKERHUB_REPO || 'emon6107/waafa-ota-platform' }}
   SITE_URL: ${{ vars.SITE_URL || 'https://waafasworld.com' }}
-  TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
 
 jobs:
   images:
@@ -74,7 +73,6 @@ jobs:
           STAFF_ALERT_EMAIL=desk@example.com
           SEED_ADMIN_EMAIL=owner@example.com
           SEED_ADMIN_PASSWORD=$(secret)
-          TURNSTILE_SITE_KEY=$TURNSTILE_SITE_KEY
           ENV
 
       - name: Build and start (deploy.sh --build)

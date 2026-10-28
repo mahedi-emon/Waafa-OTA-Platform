@@ -7,11 +7,14 @@ import type {
   ProviderConnectionView,
   ProviderDefinition,
 } from "@waafa/shared";
+import { ExternalLink } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { removeCustomProvider } from "@/lib/admin/providerActions";
 import { CredentialsForm } from "./CredentialsForm";
+import { cardStatus, STATUS_VARIANT, whenText } from "./cardStatus";
 import { fill, type IntegrationStrings } from "./integrationStrings";
 import { ProviderSettingsForm } from "./ProviderSettingsForm";
 
@@ -38,7 +41,11 @@ function ProviderCard({
   const formId = useId();
   const [open, setOpen] = useState(false);
   const [removing, startRemove] = useTransition();
-  const inUse = setting.isLive ? "production" : "sandbox";
+  const inUse = definition.liveOnly || setting.isLive ? "production" : "sandbox";
+  const status = cardStatus(
+    setting,
+    connections.find((item) => item.environment === inUse),
+  );
 
   function removeCustom() {
     if (!window.confirm(fill(strings.removeProviderConfirm, { name: setting.name }))) return;
@@ -68,22 +75,49 @@ function ProviderCard({
             {setting.custom ? <Badge variant="neutral">{strings.custom}</Badge> : null}
           </h3>
           <p className="mt-0.5 text-sm text-mist-600">{definition.summary}</p>
+          {definition.keysUrl ? (
+            <a
+              href={definition.keysUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand-700 underline-offset-4 hover:underline md:min-h-0"
+            >
+              {strings.keysLink}
+              <ExternalLink aria-hidden="true" className="size-3.5" />
+              <span className="sr-only">{strings.newTab}</span>
+            </a>
+          ) : null}
         </div>
         <ul className="flex flex-wrap gap-2">
           <li>
-            <Badge variant={setting.isActive ? "success" : "neutral"}>
-              {setting.isActive ? strings.statusActive : strings.statusOff}
-            </Badge>
+            <Badge variant={STATUS_VARIANT[status.kind]}>{strings.status[status.kind]}</Badge>
           </li>
-          <li>
-            <Badge variant={setting.isLive ? "warning" : "brand"}>
-              {setting.isLive ? strings.modeLive : strings.modeSandbox}
-            </Badge>
-          </li>
+          {definition.liveOnly ? null : (
+            <li>
+              <Badge variant={setting.isLive ? "warning" : "brand"}>
+                {setting.isLive ? strings.modeLive : strings.modeSandbox}
+              </Badge>
+            </li>
+          )}
         </ul>
       </header>
 
+      {status.kind === "failing" ? (
+        <p className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700">
+          {fill(strings.failingDetail, { message: status.message, time: status.at })}
+        </p>
+      ) : null}
+      {setting.updatedBy && setting.updatedAt ? (
+        <p className="text-sm text-mist-600">
+          {fill(strings.changedBy, {
+            name: setting.updatedBy,
+            time: whenText(setting.updatedAt),
+          })}
+        </p>
+      ) : null}
+
       <ul
+        hidden={definition.liveOnly}
         className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-mist-700"
         aria-label={strings.environment}
       >
@@ -103,6 +137,7 @@ function ProviderCard({
       <ProviderSettingsForm
         key={`${setting.isActive}-${setting.isLive}-${setting.markupType}-${setting.markupValue}`}
         setting={setting}
+        liveOnly={definition.liveOnly ?? false}
         strings={strings}
       />
 

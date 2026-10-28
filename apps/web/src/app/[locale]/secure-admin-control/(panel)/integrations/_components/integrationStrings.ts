@@ -33,10 +33,6 @@ export type IntegrationStrings = {
   show: string;
   /** Contains {field}. */
   hide: string;
-  reveal: string;
-  revealHint: string;
-  /** Contains {field}. */
-  revealedLabel: string;
   optional: string;
   connect: string;
   manage: string;
@@ -60,6 +56,14 @@ export type IntegrationStrings = {
   updated: string;
   save: string;
   failed: string;
+  /** Issue 284: where to get the keys, the card state and who changed it. */
+  keysLink: string;
+  newTab: string;
+  status: Record<"off" | "notConnected" | "notTested" | "connected" | "failing", string>;
+  /** Contains {message} and {time}. */
+  failingDetail: string;
+  /** Contains {name} and {time}. */
+  changedBy: string;
 };
 
 export const fill = (text: string, values: Record<string, string>) =>
