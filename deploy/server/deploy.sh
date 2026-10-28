@@ -59,6 +59,9 @@ if [ -n "$built_url" ] && [ "$built_url" != "$(setting SITE_URL)" ] && [ "$DOMAI
 fi
 
 echo "2/5 Database, Redis, API (migrations and seed run on start)"
+# Issue 303: the API reads ./backups (read only) for the Status page. Made here, by this user, before Docker would
+# create it as root and leave backup.sh unable to write into it.
+mkdir -p backups
 $COMPOSE up -d postgres redis api
 wait_healthy api
 
@@ -98,6 +101,7 @@ if [ "$(setting BACKUP_CRON)" != "off" ] && command -v crontab > /dev/null 2>&1;
   echo "Backups: daily at 03:15 and a restore drill on the 1st (crontab; BACKUP_CRON=off to skip)"
 fi
 
-docker image prune -f > /dev/null
+# Issue 303: unused images older than a week go (earlier releases stay on Docker Hub for a rollback), then layers.
+docker image prune -af --filter "until=168h" > /dev/null
 $COMPOSE ps
 echo "Done: https://$DOMAIN (release $TAG). Admin: https://$DOMAIN/secure-admin-control"

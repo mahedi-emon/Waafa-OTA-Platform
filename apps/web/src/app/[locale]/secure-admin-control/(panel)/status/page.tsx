@@ -19,8 +19,10 @@ import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { decideFailedJob } from "@/lib/admin/statusActions";
 
 type Check = { ok: boolean; ms: number | null };
+type Usage = Record<"database" | "uploads" | "customerFiles" | "backups", number | null>;
 type Overview = {
   release: string;
+  revision?: string | null;
   startedAt: string;
   checkedAt: string;
   database: Check;
@@ -29,6 +31,7 @@ type Overview = {
   queue: Record<"waiting" | "active" | "delayed" | "failed", number> | null;
   memory: { totalBytes: number; freeBytes: number };
   disk: { totalBytes: number; freeBytes: number } | null;
+  usage?: Usage;
 };
 type FailedJob = {
   id: string;
@@ -42,6 +45,10 @@ type FailedJob = {
 
 const when = (iso: string) => `${formatDate(iso)}, ${formatTime(iso)}`;
 const gb = (bytes: number) => `${(bytes / 1024 ** 3).toFixed(1)} GB`;
+/** Sizes from a few kilobytes to many gigabytes, in the unit that reads best. */
+const size = (bytes: number) =>
+  bytes >= 1024 ** 3 ? gb(bytes) : `${Math.max(0.1, bytes / 1024 ** 2).toFixed(1)} MB`;
+const USAGE_KEYS = ["database", "uploads", "customerFiles", "backups"] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Admin.status");
@@ -108,6 +115,12 @@ async function Status() {
       <AdminPageHeader title={t("title")} lead={t("lead")} />
       <p className="text-sm text-mist-600">
         {t("release")}: <span className="font-mono text-navy-900">{overview.release}</span> ·{" "}
+        {overview.revision && overview.revision !== overview.release ? (
+          <>
+            {t("revision")}:{" "}
+            <span className="font-mono text-navy-900">{overview.revision.slice(0, 12)}</span> ·{" "}
+          </>
+        ) : null}
         {t("startedAt", { time: when(overview.startedAt) })} ·{" "}
         {t("checkedAt", { time: when(overview.checkedAt) })}
       </p>
@@ -146,6 +159,39 @@ async function Status() {
           ) : null}
         </dl>
       </section>
+
+      {overview.usage ? (
+        <section
+          aria-labelledby="status-usage"
+          className="flex min-w-0 flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-5"
+        >
+          <h2 id="status-usage" className="font-display text-lg font-bold text-navy-900">
+            {t("usageTitle")}
+          </h2>
+          <p className="text-[13.5px] text-mist-600">{t("usageLead")}</p>
+          <dl className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+            {USAGE_KEYS.map((key) => {
+              const bytes = overview.usage?.[key] ?? null;
+              return (
+                <div key={key} className="flex min-w-0 flex-col gap-1">
+                  <dt className="text-sm font-semibold text-navy-900">{t(`usage.${key}`)}</dt>
+                  <dd className="text-sm text-mist-700 tabular-nums">
+                    {bytes === null ? t("unknown") : size(bytes)}
+                  </dd>
+                </div>
+              );
+            })}
+            <div className="flex min-w-0 flex-col gap-1">
+              <dt className="text-sm font-semibold text-navy-900">{t("usage.nginxCache")}</dt>
+              <dd className="text-sm text-mist-700">{t("nginxCacheCap")}</dd>
+            </div>
+            <div className="flex min-w-0 flex-col gap-1">
+              <dt className="text-sm font-semibold text-navy-900">{t("usage.imageCache")}</dt>
+              <dd className="text-sm text-mist-700">{t("imageCacheCap")}</dd>
+            </div>
+          </dl>
+        </section>
+      ) : null}
 
       <section
         aria-labelledby="status-failed"
