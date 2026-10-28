@@ -48,7 +48,7 @@ Serena memory `audit_findings`.
 | Decision | D319 |
 | PR · CI minutes | (PR open) |
 
-### #246 · Save for later and Buy again — 🟡 In review
+### #246 · Save for later and Buy again — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 6 (FR-SHOP-13; the wishlist itself shipped in #278) |
@@ -56,9 +56,9 @@ Serena memory `audit_findings`.
 | Tests | web unit `useCart.test.ts` 2, `buyAgain.test.ts` 1; e2e `cart-saved.spec.ts` at 390 and 1440 with axe and scroll width; budget cart 191 KB, account 182 KB; QA plan `docs/qa/246-save-for-later.md` (SL-01..10); UAT U-25, U-26. Found and fixed on the way: axe label-content-name-mismatch on the new buttons, an 84 px overflow at 390 px in the cart line row; and on #245 the admin Reviews page prerendering at build without the API |
 | Migration | none |
 | Tools and skills | Playwright e2e and budget; no new library |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #311 · 62 min |
 
-### #245 · Reviews from real customers, product Q&A, feedback photos — 🟡 In review
+### #245 · Reviews from real customers, product Q&A, feedback photos — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 5 (FR-PKG-08, FR-SHOP-13; approved feedback photos on the wall) |
@@ -67,9 +67,9 @@ Serena memory `audit_findings`.
 | Migration | `20261103010000_reviews_questions` (additive) |
 | Decision | D318 |
 | Tools and skills | Serena (memories); Playwright e2e and budget; no new library |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #310 · 93 min |
 
-### #244 · Reports, summaries, customers and custom roles — 🟡 In review
+### #244 · Reports, summaries, customers and custom roles — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 4 (PROMPT 10 letter G; FR-ADM Reports, Search activity, Customers, Users P0 partials and FR-ADM later P1) |
@@ -78,9 +78,9 @@ Serena memory `audit_findings`.
 | Migration | `20261102010000_customers_roles` (additive) and seed patch `2026-11-02-summary-template` |
 | Decision | D317 |
 | Tools and skills | Serena (memories); no new library |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #309 · 64 min |
 
-### #243 · Reminders, @mentions, round-robin and real-time alerts with sound — 🟡 In review
+### #243 · Reminders, @mentions, round-robin and real-time alerts with sound — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 3 (PROMPT 10 letter G; FR-ADM-LEAD P1, FR-NTF real time) |
@@ -89,7 +89,7 @@ Serena memory `audit_findings`.
 | Migration | `20261101010000_reminders_alerts` (additive); no seed patch (round-robin starts off for everyone) |
 | Decision | D316 |
 | Tools and skills | Serena (memories, replace_content); no new library (EventSource and Web Audio are browser APIs, ioredis already used); Playwright e2e |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #307 · 187 min |
 
 ### #303 · Lighter images, RAM and disk on the VPS — ✅ Done
 | Field | Value |
