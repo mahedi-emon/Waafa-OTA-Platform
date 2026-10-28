@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { adminGet } from "@/lib/admin/adminApi";
+import { adminGet, requireStaff } from "@/lib/admin/adminApi";
 import { formatDhakaDateTime } from "@/lib/admin/format";
 import { ModerationItem } from "./_components/ModerationItem";
 
@@ -35,6 +35,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function Reviews() {
+  // The session first: it makes the page render per request (never at build, where there is no API).
+  await requireStaff();
   const [queue, t] = await Promise.all([
     adminGet<Queue>("/admin/reviews", { status: "pending" }),
     getTranslations("Admin.reviewsAdmin"),
