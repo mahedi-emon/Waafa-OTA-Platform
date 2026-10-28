@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Waafas World · Cart</title>
+<title>Waafa’s World · Cart</title>
 <link rel="stylesheet" href="./waafa.css">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../photos.css">
@@ -23,7 +23,7 @@
   <main class="w-main" id="main">
     <section class="ww-sec" style="padding-top:16px">
       <div class="w-wrap">
-        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><span aria-current="page">Cart</span></nav>
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafa’s World</a><span class="i i-chevron-right"></span><span aria-current="page">Cart</span></nav>
         <div class="ww-listhead" style="margin:16px 0 18px"><div><h1>Your cart</h1><p>{{headLine}}</p></div>
           <sc-if value="{{has}}" hint-placeholder-val="{{ true }}"><ol class="ww-costeps" aria-label="Checkout steps"><li class="is-now"><i>1</i>Cart</li><li><i>2</i>Delivery and payment</li><li><i>3</i>Done</li></ol></sc-if>
         </div>
@@ -84,7 +84,7 @@
             <h2 class="v-h3">Your cart is empty</h2>
             <p>Start with a category, or pick up where you left off.</p>
             <div class="ww-emptycats"><sc-for list="{{cats}}" as="c" hint-placeholder-count="6"><a href="{{L.ShopList}}"><span class="{{c.icon}}"></span>{{c.name}}</a></sc-for></div>
-            <a class="w-btn w-btn-primary" href="{{L.Shop}}">Browse Waafas World<span class="i i-arrow-right"></span></a>
+            <a class="w-btn w-btn-primary" href="{{L.Shop}}">Browse Waafa’s World<span class="i i-arrow-right"></span></a>
           </div>
           <div class="ww-head" style="margin:40px 0 14px"><div><h2 style="font-size:20px">Recently viewed</h2></div></div>
           <div class="ww-rail is-compact"><sc-for list="{{recent}}" as="it" hint-placeholder-count="4"><dc-import name="PCard" p="{{it}}" variant="compact" style="display:contents" hint-size="100%,100px"></dc-import></sc-for></div>

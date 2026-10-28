@@ -20,7 +20,7 @@
 <nav class="{{sideCls}}" aria-label="Admin">
   <div class="a-side-brand">
     <img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt="">
-    <div class="min-w-0"><b>Waafa Admin</b><small>Tours and Travel · Waafas World</small></div>
+    <div class="min-w-0"><b>Waafa Admin</b><small>Tours and Travel · Waafa’s World</small></div>
     <sc-if value="{{m}}" hint-placeholder-val="{{ false }}"><button class="a-iconbtn" type="button" aria-label="Close menu" style="margin-left:auto;color:rgb(255 255 255/.7)" onClick="{{close}}"><span class="i i-x"></span></button></sc-if>
   </div>
   <sc-for list="{{groups}}" as="g" hint-placeholder-count="6">
@@ -47,7 +47,7 @@ class Component extends DCLogic {
       ['Overview', [['dash', 'Dashboard', 'layout-dashboard', 'AdminDash']]],
       ['Sales', [['leads', 'Leads', 'inbox', 'AdminLeads', '12', ''], ['bookings', 'Bookings', 'ticket', 'AdminBookings'], ['groupfares', 'Group fares', 'plane-takeoff', 'AdminGroupFares'], ['search', 'Search activity', 'chart-line', 'AdminSearch'], ['customers', 'Customers', 'users', 'AdminCustomers']]],
       ['Travel', [['packages', 'Tour packages', 'map', 'AdminPackages'], ['visa', 'Visa applications', 'passport', 'AdminVisa', '5', '']]],
-      ['Waafas World', [['orders', 'Orders', 'shopping-bag', 'AdminOrders', '4', ''], ['products', 'Products', 'package', 'AdminProducts'], ['cats', 'Categories', 'folder-tree', 'AdminCats'], ['collections', 'Collections', 'layers', 'AdminCollections'], ['coupons', 'Coupons', 'ticket-percent', 'AdminCoupons']]],
+      ['Waafa’s World', [['orders', 'Orders', 'shopping-bag', 'AdminOrders', '4', ''], ['products', 'Products', 'package', 'AdminProducts'], ['cats', 'Categories', 'folder-tree', 'AdminCats'], ['collections', 'Collections', 'layers', 'AdminCollections'], ['coupons', 'Coupons', 'ticket-percent', 'AdminCoupons']]],
       ['Content', [['home', 'Home and banners', 'house', 'AdminHome'], ['team', 'Team', 'users-round', 'AdminTeam'], ['gallery', 'Gallery', 'images', 'AdminGallery'], ['feedback', 'Feedback', 'message-square-quote', 'AdminFeedback', '3', 'warn'], ['pages', 'Pages, blog and FAQs', 'file-text', 'AdminPages'], ['media', 'Media library', 'image', 'AdminMedia']]],
       ['Insights', [['reports', 'Reports', 'chart-column', 'AdminReports']]],
       ['Settings', [['modes', 'Booking modes', 'toggle-right', 'AdminModes'], ['footer', 'Footer and menus', 'rows-3', 'AdminFooter'], ['payments', 'Payments and delivery', 'wallet', 'AdminPayments'], ['notify', 'Notifications', 'bell', 'AdminNotify'], ['users', 'Users and roles', 'user-cog', 'AdminUsers'], ['general', 'General', 'settings', 'AdminGeneral']]]

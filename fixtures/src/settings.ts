@@ -22,7 +22,7 @@ import type { In } from "./input";
 /** Admin > Settings > General. Brand names and tagline come from the PRD brand identity. */
 export const siteSettings: In<typeof SiteSettingsSchema> = {
   travelBrand: "Waafa Tours and Travel",
-  storeName: "Waafas World",
+  storeName: "Waafa’s World",
   companyName: "Waafa International",
   footerTagline: "Connecting the World, Creating the Future.",
   footerAbout:
@@ -33,7 +33,7 @@ export const siteSettings: In<typeof SiteSettingsSchema> = {
   defaultSeo: {
     title: "Waafa Tours and Travel: Travel Agency in Dhaka, Bangladesh",
     description:
-      "Air tickets, visa processing, tour packages and hotel booking from our Motijheel office in Dhaka, plus Waafas World by Waafa International.",
+      "Air tickets, visa processing, tour packages and hotel booking from our Motijheel office in Dhaka, plus Waafa’s World by Waafa International.",
   },
   reviewsUrl: "https://www.facebook.com/waafatoursandtravel",
 };
@@ -71,7 +71,7 @@ export const menus: In<typeof MenuSchema>[] = [
       { id: "home", label: "Home", href: "/", icon: "house" },
       { id: "packages", label: "Tour Packages", href: "/tour-packages", icon: "map" },
       { id: "visa", label: "Visa", href: "/visa", icon: "stamp" },
-      { id: "shop", label: "Waafas World", href: "/shop", icon: "shopping-bag", panel: "shop" },
+      { id: "shop", label: "Waafa’s World", href: "/shop", icon: "shopping-bag", panel: "shop" },
       { id: "gallery", label: "Gallery", href: "/gallery", icon: "images" },
       { id: "feedback", label: "Feedback", href: "/feedback", icon: "message-square-quote" },
       { id: "more", label: "More", icon: "layout-grid", panel: "more" },
@@ -153,7 +153,7 @@ export const menus: In<typeof MenuSchema>[] = [
       { id: "dr-hotels", label: "Hotels", href: "/hotels", icon: "bed-double" },
       { id: "dr-packages", label: "Tour Packages", href: "/tour-packages", icon: "map" },
       { id: "dr-visa", label: "Visa", href: "/visa", icon: "stamp" },
-      { id: "dr-shop", label: "Waafas World", href: "/shop", icon: "shopping-bag" },
+      { id: "dr-shop", label: "Waafa’s World", href: "/shop", icon: "shopping-bag" },
       { id: "dr-gallery", label: "Gallery", href: "/gallery", icon: "images" },
       { id: "dr-feedback", label: "Feedback", href: "/feedback", icon: "message-square-quote" },
     ],
@@ -163,7 +163,7 @@ export const menus: In<typeof MenuSchema>[] = [
     items: [
       { id: "tb-home", label: "Home", href: "/", icon: "house" },
       { id: "tb-packages", label: "Packages", href: "/tour-packages", icon: "map" },
-      { id: "tb-shop", label: "Waafas World", href: "/shop", icon: "shopping-bag" },
+      { id: "tb-shop", label: "Waafa’s World", href: "/shop", icon: "shopping-bag" },
       { id: "tb-visa", label: "Visa", href: "/visa", icon: "stamp" },
       { id: "tb-more", label: "More", icon: "layout-grid", panel: "more" },
     ],
@@ -258,7 +258,7 @@ export const menus: In<typeof MenuSchema>[] = [
 export const footerSettings: In<typeof FooterSettingsSchema> = {
   columns: [
     { title: "Travel", menu: "footer-travel" },
-    { title: "Waafas World", menu: "footer-shop" },
+    { title: "Waafa’s World", menu: "footer-shop" },
     { title: "Help", menu: "footer-help" },
   ],
   paymentMethods: [
@@ -266,7 +266,7 @@ export const footerSettings: In<typeof FooterSettingsSchema> = {
     { id: "bkash", label: "bKash", enabled: true },
     { id: "nagad", label: "Nagad", enabled: true },
     { id: "office", label: "Pay at our office", enabled: true },
-    { id: "cod", label: "Cash on delivery", enabled: true, note: "Waafas World" },
+    { id: "cod", label: "Cash on delivery", enabled: true, note: "Waafa’s World" },
     {
       id: "card",
       label: "Visa, Mastercard, Amex",
@@ -408,7 +408,7 @@ export const emiSettings: In<typeof EmiSettingsSchema> = {
   minimumAmount: 20000,
   tenuresMonths: [3, 6, 9, 12],
   cardsNote: "Credit cards from partner banks (not debit cards)",
-  appliesTo: "Flights, tour packages, hotels and Waafas World orders",
+  appliesTo: "Flights, tour packages, hotels and Waafa’s World orders",
   interestNote:
     "0% interest on partner bank credit cards for these tenures. Your bank may charge its own processing fee; we show it before you pay.",
   sample: true,
@@ -460,14 +460,14 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     key: "order-placed-customer",
     audience: "Customer",
     channel: "email",
-    subject: "Your Waafas World order {{order_number}}",
+    subject: "Your Waafa’s World order {{order_number}}",
     body: "Hi {{name}}, we got your order {{order_number}} for {{total}}.\n\nWe’ll call to confirm before we ship. Track it any time with your order number and phone.",
     variables: ["{{name}}", "{{order_number}}", "{{total}}"],
     enabled: true,
   },
   {
     key: "order-placed-staff",
-    audience: "Waafas World team",
+    audience: "Waafa’s World team",
     channel: "email",
     subject: "New order {{order_number}} · {{total}}",
     body: "{{name}} placed order {{order_number}} for {{total}}, paying by {{method}}.\n\nConfirm it in Admin: {{link}}.",
@@ -540,7 +540,7 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
   },
   {
     key: "low-stock-staff",
-    audience: "Waafas World team",
+    audience: "Waafa’s World team",
     channel: "email",
     subject: "Low stock: {{product}}",
     body: "{{product}} ({{sku}}) is down to {{stock}} after order {{order_number}}.\n\nRestock or update it in Admin: {{link}}.",
@@ -685,7 +685,7 @@ export const homeContent: In<typeof HomeContentSchema> = {
   },
 };
 
-/** Waafas World copy (Content › Store). Sample until the owner approves it. */
+/** Waafa’s World copy (Content › Store). Sample until the owner approves it. */
 export const shopContent: In<typeof ShopContentSchema> = {
   tagline: "by Waafa International",
   bulkStrip: {
@@ -795,7 +795,7 @@ export const homeSections: In<typeof HomeSectionSchema>[] = [
     order: 11,
     title: "The people behind WAAFA",
     subtitle:
-      "Trip planners, visa specialists and the Waafas World team, all in one Motijheel office.",
+      "Trip planners, visa specialists and the Waafa’s World team, all in one Motijheel office.",
   },
   { key: "cta", enabled: true, order: 12 },
 ];

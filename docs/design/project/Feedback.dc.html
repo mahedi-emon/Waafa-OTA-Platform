@@ -51,7 +51,7 @@
             <div class="w-formcard-body">
               <div><h2 class="v-h3" id="fb-t">Travelled or shopped with us?</h2><p class="text-13 text-muted" style="margin-top:4px">Tell us how it went. We read every message, good or bad.</p></div>
               <div class="w-grid-2"><div class="w-field"><label class="w-label" for="f-n">Your name <span class="w-req">*</span></label><input class="w-input" id="f-n" value="{{v.name}}" placeholder="e.g. Nadia Islam"></div><div class="w-field"><label class="w-label" for="f-p">Mobile <span class="w-req">*</span></label><input class="w-input" id="f-p" inputmode="tel" placeholder="01712-345678"></div></div>
-              <div class="w-grid-2"><label class="w-field"><span class="w-label">Service you used <span class="w-req">*</span></span><span class="w-select"><select class="w-input"><option>Tour package</option><option>Flight</option><option>Hotel</option><option>Visa</option><option>Waafas World order</option><option>Printing or trading</option></select></span></label><div class="w-field"><label class="w-label" for="f-r">Reference <span class="w-opt">(optional)</span></label><input class="w-input" id="f-r" placeholder="PKG-261008-0021"></div></div>
+              <div class="w-grid-2"><label class="w-field"><span class="w-label">Service you used <span class="w-req">*</span></span><span class="w-select"><select class="w-input"><option>Tour package</option><option>Flight</option><option>Hotel</option><option>Visa</option><option>Waafa’s World order</option><option>Printing or trading</option></select></span></label><div class="w-field"><label class="w-label" for="f-r">Reference <span class="w-opt">(optional)</span></label><input class="w-input" id="f-r" placeholder="PKG-261008-0021"></div></div>
               <div class="w-field"><span class="w-label">How was it? <span class="w-opt">(optional)</span></span><div class="wc-starpick" role="radiogroup" aria-label="Rating"><sc-for list="{{pick}}" as="s" hint-placeholder-count="5"><button class="{{s.cls}}" type="button" role="radio" aria-checked="{{s.on}}" aria-label="{{s.label}}" onClick="{{s.go}}"><span class="i i-star-fill"></span></button></sc-for></div></div>
               <div class="w-field"><label class="w-label" for="f-t">Your feedback <span class="w-req">*</span></label><textarea class="w-input v-textarea" id="f-t" rows="4" placeholder="What went well? What should we do better?"></textarea></div>
               <label class="v-drop" style="padding:14px"><span class="i i-image-plus"></span><b>Add a photo from your trip</b><small>Optional · JPG or PNG up to 5 MB</small></label>
@@ -85,7 +85,7 @@ class Component extends DCLogic {
     const L = { Home: 'Home' + sx + '.dc.html' };
     const PH = { coxsbazar: ['Cox’s Bazar beach', 'photo-1711077470004-cb6a7258c082', 'Masum Ahmed'], nepal: ['Nepal', 'photo-1518002054494-3a6f94352e9d', 'Giuseppe Mondì'], maldives: ['Maldives overwater villas', 'photo-1514282401047-d79a71a590e8', 'Ishan @seefromthesky'] };
     const ph = k => ({ key: k, subj: PH[k][0], credit: PH[k][2] + ' · Unsplash', src: 'https://images.unsplash.com/' + PH[k][1] + '?auto=format&fit=crop&w=900&q=80' });
-    const SV = { tour: ['Tour package', 'i i-map'], flight: ['Flight', 'i i-plane'], visa: ['Visa', 'i i-passport'], hotel: ['Hotel', 'i i-hotel'], shop: ['Waafas World', 'i i-shopping-bag'] };
+    const SV = { tour: ['Tour package', 'i i-map'], flight: ['Flight', 'i i-plane'], visa: ['Visa', 'i i-passport'], hotel: ['Hotel', 'i i-hotel'], shop: ['Waafa’s World', 'i i-shopping-bag'] };
     const R = [
       ['NI', 'Nadia I.', 'Cox’s Bazar, 3 nights', 'Sep 2026', 'tour', 5, 'They called the hotel when our room wasn’t ready and sorted it in ten minutes. The kids still talk about the beach horse ride.', 'coxsbazar', ''],
       ['RU', 'Rahim U.', 'Dhaka to Dubai', 'Sep 2026', 'flight', 5, 'Asked for the cheapest fare with 30 kg baggage. Sadia found one and explained the change rules before I paid. No surprises at the airport.', '', ''],
@@ -97,7 +97,7 @@ class Component extends DCLogic {
       ['ST', 'Sumaiya T.', 'Power bank and earbuds', 'Oct 2026', 'shop', 5, 'Cash on delivery, arrived the next day in Mirpur. Rider let me check the box before paying.', '', '']
     ];
     const svc = st.svc || 'all';
-    const CH = [['all', 'All', 'i i-layout-grid'], ['tour', 'Tours', 'i i-map'], ['flight', 'Flights', 'i i-plane'], ['visa', 'Visa', 'i i-passport'], ['hotel', 'Hotels', 'i i-hotel'], ['shop', 'Waafas World', 'i i-shopping-bag']];
+    const CH = [['all', 'All', 'i i-layout-grid'], ['tour', 'Tours', 'i i-map'], ['flight', 'Flights', 'i i-plane'], ['visa', 'Visa', 'i i-passport'], ['hotel', 'Hotels', 'i i-hotel'], ['shop', 'Waafa’s World', 'i i-shopping-bag']];
     const chips = CH.map(c => ({ label: c[1], icon: c[2], n: c[0] === 'all' ? R.length : R.filter(r => r[4] === c[0]).length, on: svc === c[0], cls: 'w-chip' + (svc === c[0] ? ' is-on' : ''), go: () => this.setState({ svc: c[0] }) }));
     const revs = R.filter(r => svc === 'all' || r[4] === svc).map(r => ({ ini: r[0], name: r[1], where: r[2], date: r[3], svc: SV[r[4]][0], icon: SV[r[4]][1], stars: Array.from({ length: r[5] }, (_, i) => i), starsLabel: r[5] + ' out of 5, given by the traveller', text: r[6], photo: r[7] ? ph(r[7]) : null, reply: r[8] }));
     const rate = st.rate || 0;

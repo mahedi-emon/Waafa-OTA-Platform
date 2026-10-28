@@ -16,7 +16,7 @@ import {
 } from "./common";
 import type { Blueprint } from "./types";
 
-/* Waafas World: store words, attribute sets, categories, brands, compatible models, products, collections, deals,
+/* Waafa’s World: store words, attribute sets, categories, brands, compatible models, products, collections, deals,
  * store rows and coupons. */
 
 export const shopContentBlueprint = {

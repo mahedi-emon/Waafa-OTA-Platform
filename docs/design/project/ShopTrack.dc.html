@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Waafas World · Track order</title>
+<title>Waafa’s World · Track order</title>
 <link rel="stylesheet" href="./waafa.css">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../photos.css">
@@ -23,7 +23,7 @@
   <main class="w-main" id="main">
     <section class="v-pagehead is-shop">
       <div class="w-wrap">
-        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><span aria-current="page">Track order</span></nav>
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafa’s World</a><span class="i i-chevron-right"></span><span aria-current="page">Track order</span></nav>
         <div class="ww-listhead"><div><h1>Track your order</h1><p>Enter the order number from your SMS or email and the mobile number you ordered with.</p></div></div>
         <form class="ww-trackform" onSubmit="{{find}}">
           <label class="w-field"><span class="w-label">Order number</span><input class="w-input" value="{{ref}}" onInput="{{typeRef}}" placeholder="ORD-261008-0042" autocapitalize="characters"></label>
@@ -109,11 +109,11 @@ class Component extends DCLogic {
     return {
       L, m: !!p.m, ref, found: !nf, nf, hsteps, events,
       statusLabel: LABEL[stage], barStyle: 'width:' + Math.round(si * 100 / (STAGES.length - 1)) + '%',
-      eta: stage === 'delivered' ? 'Delivered Fri 9 Oct, 2:15 pm' : 'Arriving today, Fri 9 Oct', etaSub: stage === 'delivered' ? 'Thank you for shopping with Waafas World' : 'Usually between 12 pm and 6 pm',
+      eta: stage === 'delivered' ? 'Delivered Fri 9 Oct, 2:15 pm' : 'Arriving today, Fri 9 Oct', etaSub: stage === 'delivered' ? 'Thank you for shopping with Waafa’s World' : 'Usually between 12 pm and 6 pm',
       typeRef: (e) => this.setState({ ref: e && e.target ? e.target.value : '' }),
       find: (e) => { if (e && e.preventDefault) e.preventDefault(); const r = (this.state && this.state.ref) || ref; this.setState({ nf: r.toUpperCase() !== 'ORD-261008-0042' }); },
       demo: () => this.setState({ nf: false, ref: 'ORD-261008-0042' }),
-      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafas World, about my order ' + ref)
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafa’s World, about my order ' + ref)
     };
   }
 }

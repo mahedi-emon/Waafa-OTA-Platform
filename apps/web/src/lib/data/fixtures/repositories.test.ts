@@ -37,7 +37,7 @@ describe("settings repository", () => {
       "Home",
       "Tour Packages",
       "Visa",
-      "Waafas World",
+      "Waafa’s World",
       "Gallery",
       "Feedback",
       "More",

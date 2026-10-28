@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Waafas World · product page</title>
+<title>Waafa’s World · product page</title>
 <link rel="stylesheet" href="./waafa.css">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../photos.css">
@@ -23,7 +23,7 @@
   <main class="w-main" id="main">
     <section class="ww-sec" style="padding-top:16px">
       <div class="w-wrap">
-        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">{{P.catName}}</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">{{P.sub}}</a><span class="i i-chevron-right"></span><span aria-current="page">{{P.short}}</span></nav>
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafa’s World</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">{{P.catName}}</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">{{P.sub}}</a><span class="i i-chevron-right"></span><span aria-current="page">{{P.short}}</span></nav>
         <div class="ww-pdp">
           <div class="ww-gal">
             <div class="{{galCls}}" style="{{zoomStyle}}" onPointerMove="{{zoomMove}}" onPointerLeave="{{zoomOut}}" onClick="{{toggleZoom}}" role="img" aria-label="{{img.alt}}">
@@ -252,7 +252,7 @@ class Component extends DCLogic {
       specs: D.specs.map(r => ({ k: r[0], v: r[1] })).concat([{ k: 'SKU', v: sku }]),
       variantLine: D.opts.length ? D.opts.map(o => sel[o.key]).join(' · ') : 'Inclusive of VAT',
       related, recent,
-      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafas World, a question about ' + D.title + ' (' + sku + ')'),
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafa’s World, a question about ' + D.title + ' (' + sku + ')'),
       videoOpen: st.video !== undefined ? st.video : !!p.video, closeVideo: () => this.setState({ video: false }), vHp: key === 'hp', vPb: key === 'pb', vToner: key === 'toner',
       bulkOpen, bulkForm: !st.bulkSent, bulkDone: !!st.bulkSent,
       openBulk: () => this.setState({ bulk: true, bulkSent: false }), closeBulk: () => this.setState({ bulk: false, bulkSent: false }), sendBulk: () => this.setState({ bulkSent: true }),

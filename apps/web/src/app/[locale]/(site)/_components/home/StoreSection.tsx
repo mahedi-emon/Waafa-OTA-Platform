@@ -13,7 +13,7 @@ import { SnapRow } from "./SnapRow";
 type StoreSectionProps = { section: HomeSection; store: HomeContent["store"] };
 
 /**
- * Waafas World band (FR-HOME 9): the store name as text (never a second logo), what it sells, the perks, top
+ * Waafa’s World band (FR-HOME 9): the store name as text (never a second logo), what it sells, the perks, top
  * categories, the two Waafa International services and this week's best sellers.
  */
 async function StoreSection({ section, store }: StoreSectionProps) {

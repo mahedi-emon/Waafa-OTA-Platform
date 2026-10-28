@@ -25,7 +25,7 @@
       <div class="w-wrap">
         <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Contact</span></nav>
         <div class="v-pagehead-in">
-          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">Contact</span><h1 class="v-h1 v-h1-page">Talk to a person, not a bot</h1><p class="v-lead">One number for travel, visas, Waafas World orders, printing and trading. Call, WhatsApp, email or come to our office in Motijheel.</p></div>
+          <div class="flex flex-col gap-3" style="max-width:720px"><span class="v-eyebrow">Contact</span><h1 class="v-h1 v-h1-page">Talk to a person, not a bot</h1><p class="v-lead">One number for travel, visas, Waafa’s World orders, printing and trading. Call, WhatsApp, email or come to our office in Motijheel.</p></div>
           <span class="{{hours.cls}}">{{hours.label}}</span>
         </div>
       </div>
@@ -33,7 +33,7 @@
     <section class="v-sec" style="padding-top:22px">
       <div class="w-wrap flex flex-col gap-8">
         <div class="wc-contacts">
-          <a class="wc-contact" href="tel:+8801823232241"><span class="w-tile"><span class="i i-phone-call"></span></span><small>Call</small><b>01823-232241</b><p>Saturday to Thursday, 10 am to 6 pm. Ask for travel, visa or Waafas World.</p></a>
+          <a class="wc-contact" href="tel:+8801823232241"><span class="w-tile"><span class="i i-phone-call"></span></span><small>Call</small><b>01823-232241</b><p>Saturday to Thursday, 10 am to 6 pm. Ask for travel, visa or Waafa’s World.</p></a>
           <a class="wc-contact is-wa" href="https://wa.me/8801823232241"><span class="w-tile"><span class="i i-whatsapp-fill"></span></span><small>WhatsApp</small><b>Message us</b><p>Best for photos of documents, printer labels and order questions. We reply in office hours.</p></a>
           <a class="wc-contact" href="mailto:info@waafasworld.com"><span class="w-tile"><span class="i i-mail"></span></span><small>Email</small><b>info@waafasworld.com</b><p>For quotes, corporate orders and anything with attachments. Reply within one working day.</p></a>
           <a class="wc-contact" href="https://maps.google.com/?q=Motijheel+Plaza+Dhaka"><span class="w-tile"><span class="i i-map-pin"></span></span><small>Visit</small><b>Motijheel Plaza, 4th floor</b><p>193/C-1, East Side, Aziz Square, Box Kalvat Road, Motijheel, Dhaka.</p></a>
@@ -89,7 +89,7 @@ class Component extends DCLogic {
     const _dow = _d.getUTCDay(), _mins = _d.getUTCHours() * 60 + _d.getUTCMinutes();
     const open = _dow !== 5 && _mins >= 600 && _mins < 1080;
     const hours = { cls: 'v-hours ' + (open ? 'is-open' : 'is-closed'), label: open ? 'Open now · until 6 pm' : (_dow === 4 || _dow === 5 ? 'Closed · opens Saturday at 10 am' : 'Closed · opens at 10 am') };
-    const T = [['travel', 'Flights and tours', 'i i-plane', 'Where and when are you going, and how many travellers?'], ['visa', 'Visa', 'i i-passport', 'Which country, which visa, and when do you travel?'], ['shop', 'Waafas World order', 'i i-shopping-bag', 'Your order number (ORD-…) and what you need help with'], ['print', 'Printing', 'i i-layers', 'What do you need printed, and how many?'], ['trade', 'Trading', 'i i-ship', 'Product, quantity and destination'], ['pay', 'Payment', 'i i-banknote', 'Your reference number and how you paid'], ['other', 'Something else', 'i i-message-circle', 'How can we help?']];
+    const T = [['travel', 'Flights and tours', 'i i-plane', 'Where and when are you going, and how many travellers?'], ['visa', 'Visa', 'i i-passport', 'Which country, which visa, and when do you travel?'], ['shop', 'Waafa’s World order', 'i i-shopping-bag', 'Your order number (ORD-…) and what you need help with'], ['print', 'Printing', 'i i-layers', 'What do you need printed, and how many?'], ['trade', 'Trading', 'i i-ship', 'Product, quantity and destination'], ['pay', 'Payment', 'i i-banknote', 'Your reference number and how you paid'], ['other', 'Something else', 'i i-message-circle', 'How can we help?']];
     const tk = st.topic || 'travel';
     const cur = T.find(t => t[0] === tk) || T[0];
     const topics = T.map(t => ({ label: t[1], icon: t[2], on: tk === t[0], cls: 'w-chip' + (tk === t[0] ? ' is-on' : ''), go: () => this.setState({ topic: t[0] }) }));

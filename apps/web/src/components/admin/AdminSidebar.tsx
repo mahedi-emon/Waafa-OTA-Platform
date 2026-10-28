@@ -160,7 +160,7 @@ function NavGroup({
 type AdminSidebarProps = { brand: ReactNode };
 
 /**
- * The admin sidebar (ADMIN.md §3.1): Home, Inbox, Travel, Waafas World and Website as groups that fold away, count
+ * The admin sidebar (ADMIN.md §3.1): Home, Inbox, Travel, Waafa’s World and Website as groups that fold away, count
  * badges where work waits, Settings in the footer. Folds to icons on desktop (Ctrl+B); a sheet below 1024 px.
  */
 function AdminSidebar({ brand }: AdminSidebarProps) {

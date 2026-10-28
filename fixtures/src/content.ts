@@ -31,11 +31,11 @@ export const pages: In<typeof PageSchema>[] = [
     slug: "refund-policy",
     title: "Refund policy",
     summary:
-      "How cancellations, changes and refunds work for flights, hotels, tours, visas and Waafas World orders.",
+      "How cancellations, changes and refunds work for flights, hotels, tours, visas and Waafa’s World orders.",
     highlights: [
       "Airline and hotel rules decide most refunds. We explain them before you pay.",
       "Embassy visa fees are never refundable; our service charge is shown separately.",
-      "Waafas World: faulty items replaced within 7 days; clothing exchanged for size within 7 days.",
+      "Waafa’s World: faulty items replaced within 7 days; clothing exchanged for size within 7 days.",
       "Refunds go back the way you paid: bKash or Nagad in 3 working days, bank in up to 7.",
     ],
     sections: [
@@ -61,7 +61,7 @@ export const pages: In<typeof PageSchema>[] = [
       },
       {
         id: "shop",
-        heading: "Waafas World orders",
+        heading: "Waafa’s World orders",
         body: "<p>Tell us within 7 days if an item arrives faulty or damaged, with a photo, and we replace it or refund it.</p><p>Clothing can be exchanged for another size within 7 days if unworn and with tags. Opened software, ink and toner are exchanged only if faulty.</p><p>If you refuse a cash-on-delivery parcel without a reason, we may ask for the delivery charge on your next order.</p>",
       },
       {
@@ -94,7 +94,7 @@ export const pages: In<typeof PageSchema>[] = [
       {
         id: "collect",
         heading: "What we collect",
-        body: "<p>Contact details: your name, mobile number and, if you give it, your email.</p><p>Trip details you enter: routes, dates, travellers and preferences. For visas, the documents you upload. For Waafas World, your delivery address.</p><p>Payment references such as a bKash transaction ID. We never see or store card numbers.</p>",
+        body: "<p>Contact details: your name, mobile number and, if you give it, your email.</p><p>Trip details you enter: routes, dates, travellers and preferences. For visas, the documents you upload. For Waafa’s World, your delivery address.</p><p>Payment references such as a bKash transaction ID. We never see or store card numbers.</p>",
       },
       {
         id: "use",
@@ -131,7 +131,7 @@ export const pages: In<typeof PageSchema>[] = [
     slug: "terms-and-conditions",
     title: "Terms and conditions",
     summary:
-      "The rules for using this site and booking with Waafa Tours and Travel, Waafas World and Waafa International.",
+      "The rules for using this site and booking with Waafa Tours and Travel, Waafa’s World and Waafa International.",
     highlights: [
       "Prices marked “from” or “indicative” are a guide; an expert confirms the final price before you pay.",
       "A booking is confirmed only when you receive a confirmation with your reference number.",
@@ -147,7 +147,7 @@ export const pages: In<typeof PageSchema>[] = [
       {
         id: "prices",
         heading: "Prices and availability",
-        body: "<p>In Manual mode, prices for flights, hotels and packages are indicative. Our expert checks live availability and confirms the price for your dates before you pay. In Live mode, prices come straight from airlines and are held for a limited time.</p><p>Waafas World prices include VAT. Stock and delivery estimates can change until your order is confirmed.</p>",
+        body: "<p>In Manual mode, prices for flights, hotels and packages are indicative. Our expert checks live availability and confirms the price for your dates before you pay. In Live mode, prices come straight from airlines and are held for a limited time.</p><p>Waafa’s World prices include VAT. Stock and delivery estimates can change until your order is confirmed.</p>",
       },
       {
         id: "bookings",
@@ -157,7 +157,7 @@ export const pages: In<typeof PageSchema>[] = [
       {
         id: "payments",
         heading: "Payments",
-        body: "<p>We accept bKash, Nagad, bank transfer and payment at our office. Waafas World also accepts cash on delivery for orders up to ৳20,000. Instalments (EMI) depend on your card and bank.</p>",
+        body: "<p>We accept bKash, Nagad, bank transfer and payment at our office. Waafa’s World also accepts cash on delivery for orders up to ৳20,000. Instalments (EMI) depend on your card and bank.</p>",
       },
       {
         id: "travel",
@@ -189,12 +189,12 @@ export const pages: In<typeof PageSchema>[] = [
     slug: "about-us",
     title: "Connecting the world, creating the future",
     summary:
-      "WAAFA stands for Worldwide Alliance for Advancement, Future & Achievement. Waafa International has served Dhaka’s offices since 2010; in 2026 we opened Waafa Tours and Travel and Waafas World with the same promise: people you can call, and an office you can visit.",
+      "WAAFA stands for Worldwide Alliance for Advancement, Future & Achievement. Waafa International has served Dhaka’s offices since 2010; in 2026 we opened Waafa Tours and Travel and Waafa’s World with the same promise: people you can call, and an office you can visit.",
     sections: [
       {
         id: "our-story",
         heading: "Our story",
-        body: "<p>For nearly sixteen years Waafa International has supplied printing products and toner to Dhaka’s offices, building long-term corporate clients on trust, delivery on time and honest prices. In 2026 the same team opened a new chapter: travel, visas, international trading and the Waafas World store.</p>",
+        body: "<p>For nearly sixteen years Waafa International has supplied printing products and toner to Dhaka’s offices, building long-term corporate clients on trust, delivery on time and honest prices. In 2026 the same team opened a new chapter: travel, visas, international trading and the Waafa’s World store.</p>",
       },
       {
         id: "mission",
@@ -221,7 +221,7 @@ export const blogCategories: In<typeof BlogCategorySchema>[] = [
   { slug: "destinations", name: "Destinations" },
   { slug: "travel-tips", name: "Travel tips" },
   { slug: "visa", name: "Visa" },
-  { slug: "waafas-world", name: "Waafas World" },
+  { slug: "waafas-world", name: "Waafa’s World" },
 ];
 
 const AUTHOR = "Waafa travel desk";
@@ -928,7 +928,7 @@ export const timeline: In<typeof TimelineEventSchema>[] = [
   {
     id: "tl-2026",
     period: "2026",
-    text: "A new chapter: Waafa Tours and Travel, visas, international trading and the Waafas World store.",
+    text: "A new chapter: Waafa Tours and Travel, visas, international trading and the Waafa’s World store.",
     order: 2,
   },
   {
@@ -1185,8 +1185,8 @@ export const team: In<typeof TeamMemberSchema>[] = [
     name: "Mahmudul Karim",
     initials: "MK",
     designation: "Store Manager",
-    department: "Waafas World",
-    bio: "Runs Waafas World, from office supplies to gadgets, and knows which toner fits which printer.",
+    department: "Waafa’s World",
+    bio: "Runs Waafa’s World, from office supplies to gadgets, and knows which toner fits which printer.",
     visible: true,
     order: 3,
     sample: true,
@@ -1325,7 +1325,7 @@ export const baggageRules: In<typeof BaggageRuleSchema>[] = [
  */
 export const emiBanks: In<typeof EmiBankSchema>[] = [];
 
-/* Service pages inside Waafas World (A15): copy from the Printing and Trading boards, edited in Admin › Pages. */
+/* Service pages inside Waafa’s World (A15): copy from the Printing and Trading boards, edited in Admin › Pages. */
 export const servicePages: In<typeof ServicePageSchema>[] = [
   {
     key: "printing",
@@ -1490,7 +1490,7 @@ export const pageBlocks: In<typeof PageBlockSchema>[] = [
     page: "about",
     group: "services",
     icon: "shopping-bag",
-    title: "Waafas World",
+    title: "Waafa’s World",
     body: "Our online store at waafasworld.com: office supplies, electronics, fashion and more, with cash on delivery.",
     link: { label: "Open the store", href: "/shop" },
     order: 2,
@@ -1658,7 +1658,7 @@ export const pageBlocks: In<typeof PageBlockSchema>[] = [
     group: "steps",
     icon: "clock",
     title: "Wait for the confirmed price",
-    body: "Pay only after your expert confirms the final price, or after you place a Waafas World order.",
+    body: "Pay only after your expert confirms the final price, or after you place a Waafa’s World order.",
     order: 0,
     sample: true,
   },

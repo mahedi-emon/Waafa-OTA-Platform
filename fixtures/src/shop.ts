@@ -14,7 +14,7 @@ import { photo, productShot, video } from "./images";
 import type { In } from "./input";
 
 /* ------------------------------------------------------------------------------------------------
- * Waafas World catalogue (FR-CAT, FR-SHOP). Everyday products only: no restricted items (PRD §2).
+ * Waafa’s World catalogue (FR-CAT, FR-SHOP). Everyday products only: no restricted items (PRD §2).
  * The Better Day toners use Waafa International’s own product photos; the T-shirt, power bank and
  * headphones are sample listings with Unsplash photos and fictional brands. Prices are samples.
  * ---------------------------------------------------------------------------------------------- */

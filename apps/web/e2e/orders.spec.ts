@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { collectErrors } from "./errors";
 
-/* Waafas World cart, checkout and tracking (A14): coupon, delivery area, COD and transfer orders, track by phone. */
+/* Waafa’s World cart, checkout and tracking (A14): coupon, delivery area, COD and transfer orders, track by phone. */
 test.use({ reducedMotion: "reduce", viewport: { width: 390, height: 844 } });
 
 async function axe(page: Page) {

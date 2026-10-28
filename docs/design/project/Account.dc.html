@@ -28,7 +28,7 @@
           <a class="v-link" href="{{L.Home}}" style="min-height:0;font-size:13.5px;color:var(--color-mist-600)"><span class="i i-log-out"></span>Log out</a>
         </aside>
         <div class="flex flex-col gap-5 min-w-0" key="{{tab}}" style="animation:v-step-in .35s var(--ease-out) both">
-          <div class="wd-hello"><div><h1>{{greet}}, Rahim</h1><p>Your trips, visas and Waafas World orders, all in one place.</p></div><a class="w-btn w-btn-primary" href="{{L.Flights}}"><span class="i i-plus"></span>New request</a></div>
+          <div class="wd-hello"><div><h1>{{greet}}, Rahim</h1><p>Your trips, visas and Waafa’s World orders, all in one place.</p></div><a class="w-btn w-btn-primary" href="{{L.Flights}}"><span class="i i-plus"></span>New request</a></div>
           <sc-if value="{{isOverview}}" hint-placeholder-val="{{ true }}">
             <div class="wd-kpis">
               <div class="wd-kpi"><b>2</b><span><span class="i i-ticket"></span>Requests in progress</span></div>
@@ -45,7 +45,7 @@
           </sc-if>
           <sc-if value="{{showOrders}}" hint-placeholder-val="{{ true }}">
             <div class="wd-list">
-              <div class="wd-list-head"><b>Waafas World orders</b><a class="v-link" href="{{L.Shop}}" style="min-height:0;font-size:13.5px">Open the store<span class="i i-arrow-right"></span></a></div>
+              <div class="wd-list-head"><b>Waafa’s World orders</b><a class="v-link" href="{{L.Shop}}" style="min-height:0;font-size:13.5px">Open the store<span class="i i-arrow-right"></span></a></div>
               <sc-for list="{{orders}}" as="o" hint-placeholder-count="3"><a class="wd-row" href="{{L.ShopTrack}}"><span class="w-tile"><span class="i i-shopping-bag"></span></span><span class="min-w-0"><b>{{o.title}}</b><small><code>{{o.ref}}</code> · {{o.when}}</small></span><span class="wd-row-r"><span class="{{o.stCls}}">{{o.st}}</span><small>{{o.total}}</small></span></a></sc-for>
             </div>
           </sc-if>

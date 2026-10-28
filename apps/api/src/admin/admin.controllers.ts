@@ -141,7 +141,7 @@ export class AdminVisaApplicationsController {
   }
 }
 
-/** Waafas World orders (FR-SHOP-09). Accounts verifies payments. */
+/** Waafa’s World orders (FR-SHOP-09). Accounts verifies payments. */
 @Controller("admin/orders")
 @UseGuards(StaffGuard)
 @Roles("admin", "shop-manager", "accounts")

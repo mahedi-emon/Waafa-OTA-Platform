@@ -165,13 +165,13 @@ class Component extends DCLogic {
         ], empty: 'Add a fare to show it on the website.' },
       customers: { nav: 'customers', group: 'Sales', title: 'Customers', desc: 'One list built from leads and orders, matched by phone number. Merging duplicates arrives in P1.', search: 'Name, phone or email',
         acts: [['a-btn a-btn-outline', 'i i-download', 'Export', '']],
-        tabs: [['all', 'All', '1,284'], ['travel', 'Travel', 842], ['shop', 'Waafas World', 516], ['corp', 'Corporate', 38]], filters: [['Tags', 'i i-tags'], ['Source', 'i i-globe'], ['Last activity', 'i i-clock']],
+        tabs: [['all', 'All', '1,284'], ['travel', 'Travel', 842], ['shop', 'Waafa’s World', 516], ['corp', 'Corporate', 38]], filters: [['Tags', 'i i-tags'], ['Source', 'i i-globe'], ['Last activity', 'i i-clock']],
         cols: ['Customer', 'Phone', 'Leads', 'Orders', 'Bookings', 'Lifetime value', 'Tags', 'Last activity'],
         rows: [
           ['travel', W('FA', 'Farhana Akter', 'farhana.a@example.com', '#7C5CFF'), T('01819-220114'), T('4'), T('2'), T('2'), M('৳1,46,480'), TG([['Family traveller', 'is-violet']]), T('Today')],
           ['travel', W('RU', 'Rahim Uddin', 'rahim.uddin@example.com', '#003FBE'), T('01712-345678'), T('2'), T('0'), T('1'), M('৳41,200'), TG([['New', 'is-blue']]), T('Today')],
           ['corp', W('NT', 'Nexus Textiles Ltd', 'procurement@nexus.example', '#0E6B5C'), T('01730-118844'), T('3'), T('7'), T('0'), M('৳2,18,900'), TG([['Corporate', 'is-dark'], ['Printing', '']]), T('Today')],
-          ['shop', W('MR', 'Mitu Rahman', 'mitu.r@example.com', '#0D8CEE'), T('01556-402210'), T('1'), T('5'), T('0'), M('৳12,640'), TG([['Waafas World', 'is-amber']]), T('Yesterday')],
+          ['shop', W('MR', 'Mitu Rahman', 'mitu.r@example.com', '#0D8CEE'), T('01556-402210'), T('1'), T('5'), T('0'), M('৳12,640'), TG([['Waafa’s World', 'is-amber']]), T('Yesterday')],
           ['travel', W('IK', 'Imran Kabir', 'imran.k@example.com', '#0E6B5C'), T('01933-121212'), T('3'), T('0'), T('2'), M('৳1,08,300'), TG([['Repeat', 'is-green']]), T('2 days ago')],
           ['shop', W('SI', 'Sumaiya Islam', 'sumaiya.i@example.com', '#A15C07'), T('01688-909090'), T('1'), T('1'), T('0'), M('৳1,250'), TG([]), T('3 days ago')]
         ], empty: 'Customers appear with their first lead or order.' },
@@ -188,7 +188,7 @@ class Component extends DCLogic {
           ['draft', TH('bali', 'i i-sun', 'Bali honeymoon', '6 days, 5 nights · Indonesia'), C('Honeymoon', 'is-violet'), M('৳1,02,000', 'per person, twin'), T('—'), T('—'), S('Draft', 'a-s-draft'), T('3 days ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])],
           ['pub', TH('thailand', 'i i-sunset', 'Phuket and Krabi family', '6 days, 5 nights · Thailand'), C('Family', 'is-green'), M('৳74,000', 'per person, twin'), T('Sat, 7 Nov'), T('23'), S('Published', 'a-s-booked'), T('1 week ago'), A([['', 'i i-pencil', 'a-btn-ghost', 'Edit', () => {}], ['', 'i i-copy', 'a-btn-ghost', 'Duplicate', () => flash('Duplicated as a draft')]])]
         ], empty: 'Create a package to show it on Tour Packages.' },
-      coupons: { nav: 'coupons', group: 'Waafas World', title: 'Coupons', desc: 'Codes for Waafas World checkout: a percent or a fixed amount, with a minimum order, a usage limit and dates.', search: 'Code',
+      coupons: { nav: 'coupons', group: 'Waafa’s World', title: 'Coupons', desc: 'Codes for Waafa’s World checkout: a percent or a fixed amount, with a minimum order, a usage limit and dates.', search: 'Code',
         acts: [['a-btn a-btn-primary', 'i i-plus', 'New coupon', '']],
         tabs: [['on', 'Active', 4], ['sched', 'Scheduled', 1], ['off', 'Expired', 9]], filters: [['Type', 'i i-percent']],
         cols: ['Code', 'Discount', 'Applies to', 'Minimum order', 'Used', 'Valid', 'Status', ''],
@@ -206,7 +206,7 @@ class Component extends DCLogic {
         rows: [
           ['new', W('FA', 'Farhana Akter', 'Contact hidden', '#7C5CFF'), MD('i i-map', 'Tour package'), ST(5, '5.0'), T('[Comment as submitted]', 'Up to 600 characters'), T('Yes · 1 photo'), C('Yes', 'is-green'), T('2 days ago'), A([['Approve', 'i i-check', 'a-btn-primary', 'Approve', () => flash('Approved. It shows on the Feedback wall now.')], ['', 'i i-eye-off', 'a-btn-ghost', 'Hide', () => flash('Hidden')]])],
           ['new', W('IK', 'Imran Kabir', 'Contact hidden', '#0E6B5C'), MD('i i-plane', 'Air ticket'), ST(4, '4.0'), T('[Comment as submitted]'), T('—'), C('Yes', 'is-green'), T('Yesterday'), A([['Approve', 'i i-check', 'a-btn-primary', 'Approve', () => flash('Approved. It shows on the Feedback wall now.')], ['', 'i i-eye-off', 'a-btn-ghost', 'Hide', () => flash('Hidden')]])],
-          ['new', W('MR', 'Mitu Rahman', 'Contact hidden', '#0D8CEE'), MD('i i-shopping-bag', 'Waafas World'), ST(3, '3.0'), T('[Comment as submitted]'), T('—'), C('No', ''), T('5 h ago'), A([['Approve', 'i i-check', 'a-btn-primary', 'Approve', () => flash('This customer did not agree to publish')], ['', 'i i-eye-off', 'a-btn-ghost', 'Hide', () => flash('Hidden')]])]
+          ['new', W('MR', 'Mitu Rahman', 'Contact hidden', '#0D8CEE'), MD('i i-shopping-bag', 'Waafa’s World'), ST(3, '3.0'), T('[Comment as submitted]'), T('—'), C('No', ''), T('5 h ago'), A([['Approve', 'i i-check', 'a-btn-primary', 'Approve', () => flash('This customer did not agree to publish')], ['', 'i i-eye-off', 'a-btn-ghost', 'Hide', () => flash('Hidden')]])]
         ], empty: 'No feedback in this view.' },
       pages: { nav: 'pages', group: 'Content', title: 'Pages, blog and FAQs', desc: 'Rich-text pages with a last-updated date, blog posts with SEO fields, and FAQ entries grouped by category.', search: 'Title',
         acts: [['a-btn a-btn-outline', 'i i-plus', 'New FAQ', ''], ['a-btn a-btn-primary', 'i i-plus', 'New post', '']],

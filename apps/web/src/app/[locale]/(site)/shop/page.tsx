@@ -16,6 +16,7 @@ import { RecentlyViewed } from "@/components/shop/RecentlyViewed";
 import { Canonical } from "@/components/seo/Canonical";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { schemaId } from "@/lib/seo/schemaIds";
+import { formerStoreNames, schemaName } from "@/lib/seo/schemaNames";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { Button } from "@/components/ui/button";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
@@ -67,14 +68,15 @@ export default async function ShopPage() {
   // The list follows the Best sellers row: switched off in Admin, the page shows no such list, so neither does the data.
   const bestRow = rows.find((row) => row.key === "bestSellers");
   const bestItems = bestRow ? popular.items : [];
-  // OnlineStore for Waafas World and its best sellers as an ItemList (issue 125). No ratings: none are collected.
+  // OnlineStore for Waafa’s World and its best sellers as an ItemList (issue 125). No ratings: none are collected.
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "OnlineStore",
         "@id": schemaId("store"),
-        name: site.storeName,
+        name: schemaName(site.storeName),
+        alternateName: formerStoreNames(site.storeName),
         url: storeUrl,
         description: t("metaDescription"),
         logo: absoluteUrl("/icon.png"),

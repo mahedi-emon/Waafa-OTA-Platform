@@ -27,8 +27,8 @@ type DesktopNavProps = {
 };
 
 /**
- * Desktop header navigation (≥ 1024 px): seven items from the header menu. "Waafas World" and "More" open panels on
- * hover or keyboard; a pointer click on "Waafas World" still opens the store (PRD §6). Panels span the header
+ * Desktop header navigation (≥ 1024 px): seven items from the header menu. "Waafa’s World" and "More" open panels on
+ * hover or keyboard; a pointer click on "Waafa’s World" still opens the store (PRD §6). Panels span the header
  * container (items are `static`), so the mega panel can be wider than the nav. Loaded on desktop screens only, by
  * DesktopNavSwitch (issue 91).
  */

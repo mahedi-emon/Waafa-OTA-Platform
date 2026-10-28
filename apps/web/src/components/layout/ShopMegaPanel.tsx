@@ -17,7 +17,7 @@ type ShopMegaPanelProps = {
 };
 
 /**
- * Waafas World menu panel (Home-shopmenu board): the store's own words and "Shop all", the top categories, and the
+ * Waafa’s World menu panel (Home-shopmenu board): the store's own words and "Shop all", the top categories, and the
  * Waafa International services. Text only for the store name: the WAAFA logo stays once, in the header.
  * Items rise in with a 40 ms stagger (CSS, transform and opacity).
  */

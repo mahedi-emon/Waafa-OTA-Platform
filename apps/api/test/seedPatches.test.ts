@@ -20,6 +20,7 @@ const ALL_PATCHES = [
   "2026-10-29-system-alert-template",
   "2026-10-30-bookings-for-booked-leads",
   "2026-10-31-quote-templates",
+  "2026-10-28-store-name",
 ];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */
@@ -291,6 +292,58 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
     });
     const kept = await prisma.contentDocument.findUniqueOrThrow({ where });
     expect((kept.data as { subject: string }).subject).toBe("Your Waafa quote");
+  });
+
+  it("renames the store in stored text that still equals the old default and keeps staff wording (issue 302)", async () => {
+    const site = await prisma.setting.findUniqueOrThrow({ where: { key: "siteSettings" } });
+    await prisma.setting.update({
+      where: { key: "siteSettings" },
+      data: { value: { ...(site.value as object), storeName: "Waafas World" } },
+    });
+    const tabWhere = { collection_docId: { collection: "menus", docId: "tabbar" } };
+    const tabbar = await prisma.contentDocument.findUniqueOrThrow({ where: tabWhere });
+    const tabData = tabbar.data as { items: Array<{ id: string; label: string }> };
+    await prisma.contentDocument.update({
+      where: tabWhere,
+      data: {
+        data: {
+          ...tabData,
+          items: tabData.items.map((item) =>
+            item.id === "tb-shop" ? { ...item, label: "Waafas World" } : item,
+          ),
+        } as Prisma.InputJsonValue,
+      },
+    });
+    const footWhere = { collection_docId: { collection: "menus", docId: "footer-shop" } };
+    const foot = await prisma.contentDocument.findUnique({ where: footWhere });
+    const others = ALL_PATCHES.filter((id) => id !== "2026-10-28-store-name");
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    const result = await applySeedPatches(prisma);
+    expect(result.applied).toEqual(["2026-10-28-store-name"]);
+    expect(result.changed).toBeGreaterThanOrEqual(2); // plus any template an earlier patch added with the old wording
+    const renamed = await prisma.setting.findUniqueOrThrow({ where: { key: "siteSettings" } });
+    expect((renamed.value as { storeName: string }).storeName).toBe("Waafa’s World");
+    const tabs = await prisma.contentDocument.findUniqueOrThrow({ where: tabWhere });
+    expect((tabs.data as { items: Array<{ id: string; label: string }> }).items).toContainEqual(
+      expect.objectContaining({ id: "tb-shop", label: "Waafa’s World" }),
+    );
+    if (foot) {
+      const after = await prisma.contentDocument.findUniqueOrThrow({ where: footWhere });
+      expect(after.data).toEqual(foot.data);
+    }
+
+    // A name staff chose is never overwritten.
+    await prisma.setting.update({
+      where: { key: "siteSettings" },
+      data: { value: { ...(renamed.value as object), storeName: "Waafas World Store" } },
+    });
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+    expect(await applySeedPatches(prisma)).toEqual({
+      applied: ["2026-10-28-store-name"],
+      changed: 0,
+    });
+    const kept = await prisma.setting.findUniqueOrThrow({ where: { key: "siteSettings" } });
+    expect((kept.value as { storeName: string }).storeName).toBe("Waafas World Store");
   });
 
   it("adds the new-device sign-in email to a live list once, keeping one an admin already wrote (issue 234)", async () => {

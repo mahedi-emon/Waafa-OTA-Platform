@@ -89,7 +89,7 @@
           </section>
 
           <section class="a-card" aria-labelledby="ws-t">
-            <div class="a-card-head"><div><h3 id="ws-t">Waafas World today</h3><p>Orders, payments and stock</p></div><a class="a-link text-13" href="AdminOrders.dc.html">Orders</a></div>
+            <div class="a-card-head"><div><h3 id="ws-t">Waafa’s World today</h3><p>Orders, payments and stock</p></div><a class="a-link text-13" href="AdminOrders.dc.html">Orders</a></div>
             <div class="a-card-body flex flex-col gap-3">
               <dl class="a-kv"><dt>New orders</dt><dd>9 · ৳31,450</dd><dt>Cash on delivery</dt><dd>6</dd><dt>Offline payments to verify</dt><dd style="color:var(--color-warning-700)">2</dd><dt>Ready to ship</dt><dd>4</dd></dl>
               <div class="a-callout is-warn"><span class="i i-triangle-alert"></span><span><b>Low stock:</b> Better Day HP 151A (W1510A) toner, 4 left. The 10,000 mAh power bank is out.</span></div>
@@ -142,7 +142,7 @@ class Component extends DCLogic {
       ['Feedback to review', 'i i-message-square-quote', '3', 'Oldest 2 days', '', null, 'AdminFeedback.dc.html', '']
     ];
     const kpis = K.map(k => { const arr = k[5] || []; const mx = Math.max.apply(null, arr.concat([1])); return { label: k[0], icon: k[1], n: k[2], c: String(k[2]).replace(/[^0-9.]/g, ''), pre: String(k[2]).indexOf('৳') === 0 ? '৳' : '', d: k[3], dCls: 'a-kpi-d' + (k[4] ? ' ' + k[4] : ''), hasBars: arr.length > 0, mb: arr.map((v, i) => ({ st: 'height:' + Math.max(3, Math.round(v / mx * 28)) + 'px;animation-delay:' + (0.25 + i * 0.05).toFixed(2) + 's' + (i === arr.length - 1 ? ';background:var(--color-electric-600)' : '') })), href: k[6], cls: 'a-kpi' + (k[7] === 'alert' ? ' is-alert' : '') }; });
-    const COLS = [['Flights', '#0053D7'], ['Hotels', '#0D8CEE'], ['Packages', '#39CCE9'], ['Visa', '#7C5CFF'], ['Waafas World', '#C9A05A']];
+    const COLS = [['Flights', '#0053D7'], ['Hotels', '#0D8CEE'], ['Packages', '#39CCE9'], ['Visa', '#7C5CFF'], ['Waafa’s World', '#C9A05A']];
     const days14 = [[9, 3, 2, 3, 1], [11, 2, 4, 2, 2], [8, 4, 2, 3, 1], [14, 3, 5, 2, 3], [12, 2, 3, 4, 2], [6, 1, 1, 2, 1], [10, 3, 4, 3, 2], [13, 4, 3, 5, 2], [15, 2, 6, 3, 3], [12, 5, 4, 2, 2], [9, 2, 3, 4, 1], [16, 4, 5, 3, 4], [14, 3, 4, 4, 3], [12, 4, 5, 3, 3]];
     const labels14 = ['25', '26', '27', '28', '29', '30', '1', '2', '3', '4', '5', '6', '7', '8'];
     const data = range === 'today' ? [[1, 0, 1, 0, 0], [2, 1, 0, 1, 0], [3, 1, 1, 0, 1], [2, 0, 1, 1, 0], [4, 1, 0, 1, 1], [3, 1, 1, 0, 0], [2, 0, 0, 1, 1], [1, 1, 0, 0, 0]] : range === '7d' ? days14.slice(7) : days14;
@@ -169,7 +169,7 @@ class Component extends DCLogic {
     const cmdGroups = [
       { label: 'Leads', items: [['i i-plane', 'FLT-261008-0042', 'Rahim Uddin · Dhaka to Dubai', 'AdminLead.dc.html', 'Enter'], ['i i-plane', 'FLT-261007-0118', 'Mitu Rahman · Dhaka to Dubai, return', 'AdminLead.dc.html', '']] },
       { label: 'Group fares', items: [['i i-plane-takeoff', 'DAC → DXB · flydubai', '23 seats · until 30 Oct', 'AdminGroupFares.dc.html', '']] },
-      { label: 'Go to', items: [['i i-toggle-right', 'Booking modes', 'Settings', 'AdminModes.dc.html', 'G M'], ['i i-shopping-bag', 'Orders', 'Waafas World', 'AdminOrders.dc.html', 'G O']] },
+      { label: 'Go to', items: [['i i-toggle-right', 'Booking modes', 'Settings', 'AdminModes.dc.html', 'G M'], ['i i-shopping-bag', 'Orders', 'Waafa’s World', 'AdminOrders.dc.html', 'G O']] },
       { label: 'Create', items: [['i i-plus', 'New group fare', '', 'AdminGroupFares.dc.html', ''], ['i i-plus', 'New product', '', 'AdminProduct.dc.html', '']] }
     ].map((g, gi) => ({ label: g.label, items: g.items.map((it, ii) => ({ icon: it[0], title: it[1], sub: it[2], href: it[3], kbd: it[4], cls: 'a-cmdk-item' + (gi === 0 && ii === 0 ? ' is-on' : '') })) }));
     const cmdOpen = st.cmd !== undefined ? st.cmd : !!p.cmd;

@@ -1,11 +1,14 @@
+import { loadFixtures } from "@waafa/fixtures";
 import { describe, expect, it } from "vitest";
 import {
   addSecondPhone,
   moveVisaLinks,
   moveVisaPath,
+  renameStore,
   renameVisaNavItem,
   updateHomeSeo,
 } from "./seedPatches";
+import { OLD_STORE_TEXTS } from "./storeRenameTexts";
 
 describe("moveVisaPath (issue 176)", () => {
   it("moves the visa list, country and apply paths to /visa", () => {
@@ -137,5 +140,52 @@ describe("updateHomeSeo (issue 184)", () => {
     expect(updateHomeSeo(edited)).toMatchObject({ defaultSeo: { title: "Our own title" } });
     expect(updateHomeSeo({ travelBrand: "x" })).toEqual({ travelBrand: "x" });
     expect(updateHomeSeo(null)).toBeNull();
+  });
+});
+
+describe("renameStore (issue 302)", () => {
+  it("renames every text that still equals an old default, deep inside stored values", () => {
+    const menu = {
+      key: "tabbar",
+      items: [
+        { id: "tb-home", label: "Home", href: "/" },
+        { id: "tb-shop", label: "Waafas World", href: "/shop" },
+      ],
+    };
+    expect(renameStore(menu)).toEqual({
+      key: "tabbar",
+      items: [
+        { id: "tb-home", label: "Home", href: "/" },
+        { id: "tb-shop", label: "Waafa’s World", href: "/shop" },
+      ],
+    });
+    expect(renameStore({ subject: "Your Waafas World order {{order_number}}" })).toEqual({
+      subject: "Your Waafa’s World order {{order_number}}",
+    });
+  });
+
+  it("keeps wording staff wrote, even when it mentions the old name", () => {
+    const edited = {
+      label: "Waafas World: office supplies",
+      storeName: "Our store",
+      n: 3,
+      ok: true,
+    };
+    expect(renameStore(edited)).toEqual(edited);
+    expect(renameStore(null)).toBeNull();
+  });
+
+  it("maps each old default to a text the fixtures ship today", () => {
+    const today = new Set<string>();
+    const walk = (value: unknown): void => {
+      if (typeof value === "string") today.add(value);
+      else if (Array.isArray(value)) value.forEach(walk);
+      else if (value && typeof value === "object") Object.values(value).forEach(walk);
+    };
+    walk(loadFixtures());
+    for (const text of OLD_STORE_TEXTS) {
+      expect(today.has(renameStore(text) as string), text.slice(0, 60)).toBe(true);
+      expect(today.has(text)).toBe(false);
+    }
   });
 });

@@ -259,7 +259,7 @@ export const EmiLeadPayloadSchema = z
   })
   .strict();
 
-/** Corporate and bulk quote from Waafas World (Shop-bulk, ShopProduct-bulk): QTE reference. */
+/** Corporate and bulk quote from Waafa’s World (Shop-bulk, ShopProduct-bulk): QTE reference. */
 export const BulkLeadPayloadSchema = z
   .object({
     module: z.literal("bulk"),

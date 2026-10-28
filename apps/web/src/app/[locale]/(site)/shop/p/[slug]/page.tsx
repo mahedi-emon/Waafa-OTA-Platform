@@ -31,6 +31,7 @@ import { absoluteUrl } from "@/lib/siteUrl";
 import { ProductView } from "./_components/ProductView";
 import { WishlistButton } from "@/components/account/WishlistButton";
 import { recordRobots } from "@/lib/seo/indexing";
+import { schemaName } from "@/lib/seo/schemaNames";
 import { withSocial } from "@/lib/seo/withSocial";
 
 export async function generateStaticParams() {
@@ -130,7 +131,7 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
                   availability: AVAILABILITY[stockBadge(variant)],
                   itemCondition: "https://schema.org/NewCondition",
                   url,
-                  seller: { "@type": "Organization", name: site.storeName },
+                  seller: { "@type": "Organization", name: schemaName(site.storeName) },
                 })),
               }
             : {}),

@@ -10,7 +10,10 @@
  * 6. One animation library: no framer-motion (Motion's "motion/react" only).
  * 7. Compliance: no Hajj, Umrah, manpower or recruitment copy in UI code, messages, fixtures or contracts
  *    (Phase F, after the licence). Comments and *.test.* files (which assert the absence) are skipped.
- * 8. Store name: never "Waafa Shop" in UI code, messages or fixtures.
+ * 8. Store name (issue 302): "Waafa’s World" with the typographic apostrophe. Never "Waafa Shop", never the former
+ *    "Waafas World" (only lib/seo/schemaNames.ts keeps it, as the structured data alternateName) and never a plain
+ *    apostrophe in visible copy (schemaName() writes that one for structured data). The fixtures' store name must be
+ *    the new one.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -57,6 +60,19 @@ const failures = [];
 const fail = (file, line, message) => failures.push(`${file}${line ? `:${line}` : ""}  ${message}`);
 const read = (file) => readFileSync(join(root, file), "utf8");
 const isComment = (line) => /^\s*(?:\/\/|\/?\*)/.test(line);
+/** Issue 302: what is wrong with how a line names the store, or null. */
+const SCHEMA_NAMES = "apps/web/src/lib/seo/schemaNames.ts";
+function storeNameProblem(file, text) {
+  if (/Waafa Shop/.test(text)) return 'the store is "Waafa’s World", never "Waafa Shop"';
+  if (file === SCHEMA_NAMES) return null;
+  if (/Waafas World/.test(text)) {
+    return 'the store is now "Waafa’s World"; the former name lives only in lib/seo/schemaNames.ts';
+  }
+  if (/Waafa's World/.test(text))
+    return 'write "Waafa’s World" with the typographic apostrophe (’)';
+  return null;
+}
+
 const isTest = (file) => /\.test\.[cm]?[jt]sx?$/.test(file) || file.includes("/e2e/");
 
 // 1. One stylesheet
@@ -141,9 +157,8 @@ for (const file of files.filter((f) => CODE.test(f) || f.endsWith(".css"))) {
       );
     }
     // 8. Store name
-    if (/Waafa Shop/.test(text)) {
-      fail(file, line, 'the store is "Waafas World", never "Waafa Shop"');
-    }
+    const storeName = storeNameProblem(file, text);
+    if (storeName) fail(file, line, storeName);
   });
 }
 
@@ -159,8 +174,14 @@ for (const file of files.filter((f) => f.startsWith("apps/web/messages/") && f.e
           "Hajj/Umrah/manpower/recruitment copy is out of this build (Phase F)",
         );
       }
-      if (/Waafa Shop/.test(text)) fail(file, index + 1, 'the store is "Waafas World"');
+      const storeName = storeNameProblem(file, text);
+      if (storeName) fail(file, index + 1, storeName);
     });
+}
+
+// 8. The store's own name in the fixtures is the new one (issue 302).
+if (!read("fixtures/src/settings.ts").includes('storeName: "Waafa’s World"')) {
+  fail("fixtures/src/settings.ts", 0, 'siteSettings.storeName must be "Waafa’s World"');
 }
 
 // The image-only server bundle (issue 164) must pass every setting the repository's compose file passes.

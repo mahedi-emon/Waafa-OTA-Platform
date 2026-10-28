@@ -78,7 +78,7 @@ describe("compliance (PRD §2 and the CLAUDE.md Never list)", () => {
     for (const mention of mentions) expect(mention).toMatch(/\b(do not|don’t|never|no)\b/i);
   });
 
-  it("lists no restricted items in Waafas World", () => {
+  it("lists no restricted items in Waafa’s World", () => {
     const restricted =
       /weapon|knife|gun|ammunition|alcohol|liquor|tobacco|cigarette|vape|narcotic|drug|pharma|medicine|adult|explosive|firework/i;
     const listed = data.products.flatMap((product) =>

@@ -24,11 +24,11 @@ type TabItem = {
 };
 
 type TabBarProps = {
-  /** Exactly five tabs from the "tabbar" menu: the third is Waafas World, the fifth opens More. */
+  /** Exactly five tabs from the "tabbar" menu: the third is Waafa’s World, the fifth opens More. */
   items: TabItem[];
   /** Server-rendered More sheet body (grid + call and WhatsApp buttons). */
   moreSheet: ReactNode;
-  /** Server-rendered W for the raised Waafas World disc (TabBarMark). */
+  /** Server-rendered W for the raised Waafa’s World disc (TabBarMark). */
   mark: ReactNode;
   labels: {
     nav: string;
@@ -43,8 +43,8 @@ const TAB_CLASS =
   "group/tab flex min-w-0 cursor-pointer flex-col items-center justify-center gap-1 px-0.5 text-center text-mist-600 outline-none select-none focus-visible:bg-mist-50 has-[[data-current]]:text-navy-900";
 
 /**
- * Phone bottom tab bar (TabBar board, correction 3): Home, Packages, Waafas World on a raised W disc, Visa, More.
- * The store label always reads "Waafas World" and may wrap to two lines at 320 px, never cut. One indicator slides
+ * Phone bottom tab bar (TabBar board, correction 3): Home, Packages, Waafa’s World on a raised W disc, Visa, More.
+ * The store label always reads "Waafa’s World" and may wrap to two lines at 320 px, never cut. One indicator slides
  * under the current tab (CSS transform); More opens a bottom sheet with drag-to-close above the bar. The tabs never
  * re-mount after hydration: only the indicator and the current-page markers read the pathname. The sheet's code loads
  * when the browser is idle or on the first tap (issue 91).

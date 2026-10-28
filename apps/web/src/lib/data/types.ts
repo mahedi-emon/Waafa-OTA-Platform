@@ -103,7 +103,7 @@ export interface SettingsRepository {
   getSearchSettings(): Promise<SearchSettings>;
   /** Home copy that is not a list: hero, Why WAAFA figure, store band, reviews and closing band. */
   getHomeContent(): Promise<HomeContent>;
-  /** Waafas World copy: strips, corporate band, service cards and trust row. */
+  /** Waafa’s World copy: strips, corporate band, service cards and trust row. */
   getShopContent(): Promise<ShopContent>;
   /** Enabled home sections in admin order (FR-HOME). */
   listHomeSections(): Promise<HomeSection[]>;
