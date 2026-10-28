@@ -39,6 +39,7 @@ import {
   OrderListQuerySchema,
   OrderActionInputSchema,
   OrderUpdateInputSchema,
+  RefundRecordInputSchema,
   NotificationListQuerySchema,
   SubscriberListQuerySchema,
   PasswordChangeInputSchema,
@@ -173,6 +174,14 @@ export class AdminOrdersController {
   @Get(":id/invoice")
   async invoice(@Param("id") orderId: string, @Res() reply: FastifyReply) {
     return sendOrderPdf(reply, await this.orders.document(id(orderId), "invoice"));
+  }
+
+  /** A refund made in the gateway's or bank's panel, written on the order (issue 251). */
+  @Post(":id/refunds")
+  @HttpCode(200)
+  @Roles("admin", "accounts")
+  refund(@Staff() staff: StaffPrincipal, @Param("id") orderId: string, @Body() body: unknown) {
+    return this.orders.recordRefund(staff, id(orderId), parseInput(RefundRecordInputSchema, body));
   }
 
   /** The packing slip PDF (issue 248): the people who pack. */

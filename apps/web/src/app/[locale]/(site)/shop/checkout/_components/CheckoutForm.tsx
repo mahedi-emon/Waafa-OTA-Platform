@@ -5,7 +5,13 @@ import { lazyResolver } from "@/lib/forms/lazyResolver";
 import { CircleAlert, Store, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { zoneForArea, formatTaka, type DeliveryChoice, type ShippingSettings } from "@waafa/shared";
+import {
+  zoneForArea,
+  formatTaka,
+  type DeliveryChoice,
+  type OnlineGateway,
+  type ShippingSettings,
+} from "@waafa/shared";
 import type { SlotFile } from "@/components/forms/DocumentSlot";
 import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
@@ -26,7 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
-import { COD, DIVISIONS } from "@/lib/shop/checkoutFormFields";
+import { COD, DIVISIONS, ONLINE_PREFIX } from "@/lib/shop/checkoutFormFields";
 import type { CheckoutValues } from "@/lib/shop/checkoutForm";
 import { useHydrated } from "@/lib/useHydrated";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
@@ -49,6 +55,8 @@ type CheckoutFormProps = {
   accounts: OfflineAccount[];
   phoneDisplay: string;
   whatsappE164: string;
+  /** Gateways taking real payments now (issue 251). */
+  gateways?: readonly OnlineGateway[];
 };
 
 type Placed = {
@@ -62,7 +70,7 @@ type Placed = {
   phoneDisplay: string;
 };
 
-type Failure = "retry" | "rate" | "changed" | "cod" | "minimum" | "uploading" | null;
+type Failure = "retry" | "rate" | "changed" | "cod" | "minimum" | "uploading" | "payment" | null;
 
 const DEFAULTS: CheckoutValues = {
   name: "",
@@ -127,6 +135,7 @@ function CheckoutForm({
   accounts,
   phoneDisplay,
   whatsappE164,
+  gateways = [],
 }: CheckoutFormProps) {
   const t = useTranslations("Checkout");
   const hydrated = useHydrated();
@@ -234,14 +243,38 @@ function CheckoutForm({
               ? "changed"
               : body.error === "cod"
                 ? "cod"
-                : body.error === "minimum"
-                  ? "minimum"
-                  : "retry",
+                : body.error === "payment"
+                  ? "payment"
+                  : body.error === "minimum"
+                    ? "minimum"
+                    : "retry",
         );
         return;
       }
       const created = (await response.json()) as { reference: string; total: number };
       track("order_placed", { reference: created.reference, value: created.total });
+      // Online: straight to the gateway's page; the order waits there unpaid if it doesn't open (issue 251).
+      if (values.payment.startsWith(ONLINE_PREFIX)) {
+        const order = (await import("@/lib/shop/checkoutForm")).buildOrderInput(
+          values,
+          lines,
+          prefs.couponCode,
+          null,
+        );
+        const started = await fetch("/api/payments/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reference: created.reference, phone: order.address.phone }),
+        }).catch(() => null);
+        const go = started?.ok
+          ? ((await started.json()) as { redirectUrl?: string }).redirectUrl
+          : undefined;
+        if (go) {
+          clear();
+          window.location.assign(go);
+          return;
+        }
+      }
       const account = accounts.find((item) => item.id === values.payment) ?? null;
       setPlaced({
         reference: created.reference,
@@ -615,6 +648,7 @@ function CheckoutForm({
         <Section n={3} id="checkout-payment-title" title={t("payment.title")}>
           <PaymentOptions
             accounts={accounts}
+            gateways={gateways}
             value={payment}
             onChange={(value) =>
               form.setValue("payment", value, { shouldValidate: submitCount > 0 })
@@ -670,7 +704,9 @@ function CheckoutForm({
                       ? t("errors.cod")
                       : failure === "minimum"
                         ? t("errors.minimum")
-                        : t("errors.failed")}
+                        : failure === "payment"
+                          ? t("payment.onlineUnavailable")
+                          : t("errors.failed")}
               {failure === "changed" || failure === "minimum" ? (
                 <>
                   {" "}

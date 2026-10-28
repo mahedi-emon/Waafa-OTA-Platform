@@ -33,7 +33,12 @@ async function Orders({
   ]);
 
   const rows: DataRow[] = list.items.map((order) => {
-    const payment = order.payment === "cod" ? t("cod") : t("offline");
+    const payment =
+      order.payment === "cod"
+        ? t("cod")
+        : order.payment === "online"
+          ? t("onlineShort")
+          : t("offline");
     const placed = formatDhakaDateTime(order.createdAt);
     return {
       id: order.id,

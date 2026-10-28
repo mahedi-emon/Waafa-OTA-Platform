@@ -4,10 +4,12 @@ import { getTranslations } from "next-intl/server";
 import { Info } from "@/components/icons/server/Info";
 import { KeyRound } from "@/components/icons/server/KeyRound";
 import {
+  PROVIDER_SETUP,
   SUPPLIER_KINDS,
   type IntegrationSettingView,
   type ProviderConnectionView,
   type ProviderDefinition,
+  type ProviderId,
   type ProviderKind,
 } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -16,6 +18,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GOOGLE_CALLBACK_PATH } from "@/lib/account/googleOAuth";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
+import { SITE_URL } from "@/lib/siteUrl";
+import { ProviderSetupGuide } from "./_components/ProviderSetupGuide";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { AddProviderForm } from "./_components/AddProviderForm";
 import type { IntegrationStrings } from "./_components/integrationStrings";
@@ -71,7 +75,17 @@ async function Integrations() {
   if (!hasRole(staff, "super-admin")) {
     return <AdminPageHeader title={tf("title")} lead={tf("body")} />;
   }
-  const data = await adminGet<ProvidersList>("/admin/providers");
+  const [data, server] = await Promise.all([
+    adminGet<ProvidersList>("/admin/providers"),
+    adminGet<{ ip: string | null }>("/admin/providers/server-ip").catch(() => ({ ip: null })),
+  ]);
+  const guideStrings = {
+    title: t("guide.title"),
+    values: t("guide.values"),
+    copy: t("guide.copy"),
+    copied: t("guide.copied"),
+    noIp: t("guide.noIp"),
+  };
   // Placeholders stay in the strings; the cards fill them in (messages are precompiled, so no t.raw).
   const strings: IntegrationStrings = {
     environment: t("environment"),
@@ -210,6 +224,16 @@ async function Integrations() {
                           )}
                           canSaveSecrets={data.encryptionReady}
                           strings={strings}
+                          guide={
+                            PROVIDER_SETUP[definition.id as ProviderId] ? (
+                              <ProviderSetupGuide
+                                setup={PROVIDER_SETUP[definition.id as ProviderId]!}
+                                origin={SITE_URL}
+                                serverIp={server.ip}
+                                strings={guideStrings}
+                              />
+                            ) : null
+                          }
                         />
                       ))}
                     </div>

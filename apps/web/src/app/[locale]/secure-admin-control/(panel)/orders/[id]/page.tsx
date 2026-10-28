@@ -25,6 +25,7 @@ import { orderListQuery, queueSearch, withSearch } from "@/lib/admin/queues";
 import { getPaymentSettings } from "@/lib/data/settings";
 import type { OrderDetail, OrderRow, Paged } from "@/lib/admin/types";
 import { OrderNote } from "./_components/OrderNote";
+import { RecordRefund } from "./_components/RecordRefund";
 
 /** Only the order steps' words reach the browser (scoped provider, D190). */
 const ORDER_MESSAGES = ["Admin.orderSteps"];
@@ -218,10 +219,14 @@ async function Order({ params, searchParams }: Pick<Params, "params" | "searchPa
             </AdminPanel>
             <AdminPanel title={t("payment")}>
               <p className="text-[14.5px]">
-                {order.payment.method === "cod" ? t("cod") : t("offline")}
+                {order.payment.method === "cod"
+                  ? t("cod")
+                  : order.payment.method === "online"
+                    ? t("online", { gateway: order.payment.gateway })
+                    : t("offline")}
                 {paidTo ? ` · ${paidTo}` : ""}
               </p>
-              {order.payment.method === "offline" ? (
+              {order.payment.method !== "cod" && order.payment.transactionId ? (
                 <p className="text-[13.5px] text-mist-600">
                   {t("transaction", { id: order.payment.transactionId })}
                 </p>
@@ -234,6 +239,33 @@ async function Order({ params, searchParams }: Pick<Params, "params" | "searchPa
                   {t("invoice")}: {order.invoice.companyName} ·{" "}
                   {t("bin", { bin: order.invoice.bin })}
                 </p>
+              ) : null}
+              {(order.payment.refunds ?? []).length > 0 ? (
+                <ul className="mt-3 flex flex-col gap-1 border-t border-mist-100 pt-3 text-[14px]">
+                  {(order.payment.refunds ?? []).map((refund) => (
+                    <li key={`${refund.at}-${refund.reference}`}>
+                      {t("refunded", { amount: taka(refund.amount), reference: refund.reference })}
+                      <span className="text-mist-600"> · {refund.by}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {order.paymentVerified && hasRole(staff, "admin", "accounts") ? (
+                <div className="mt-4 border-t border-mist-100 pt-4">
+                  <RecordRefund
+                    orderId={order.id}
+                    strings={{
+                      title: t("refund.title"),
+                      amount: t("refund.amount"),
+                      reference: t("refund.reference"),
+                      referenceHint: t("refund.referenceHint"),
+                      note: t("refund.note"),
+                      save: t("refund.save"),
+                      saved: t("refund.saved"),
+                      failed: tc("unavailable"),
+                    }}
+                  />
+                </div>
               ) : null}
               {order.proofs.length > 0 ? (
                 <div className="mt-3 border-t border-mist-100 pt-3">

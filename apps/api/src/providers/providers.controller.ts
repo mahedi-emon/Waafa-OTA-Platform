@@ -49,6 +49,13 @@ export class AdminProvidersController {
     return this.providers.list();
   }
 
+  /** The server's public IP, for providers that whitelist it (issue 251); null when it can't be found. */
+  @Get("server-ip")
+  @Roles("super-admin")
+  serverIp() {
+    return this.providers.serverIp();
+  }
+
   @Post()
   @Roles("super-admin")
   @HttpCode(201)

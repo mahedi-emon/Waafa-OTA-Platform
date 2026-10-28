@@ -12,6 +12,7 @@ import {
   getShippingSettings,
   getSiteSettings,
 } from "@/lib/data/settings";
+import { getIntegrations } from "@/lib/data/integrations";
 import { CheckoutFormLoader } from "./_components/CheckoutFormLoader";
 import { withSocial } from "@/lib/seo/withSocial";
 
@@ -22,15 +23,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** /shop/checkout (ShopCheckout, -err, -m): one page for contact, delivery, payment and the order summary. */
 export default async function CheckoutPage() {
-  const [site, shipping, payment, contact, leadForm, messages, t] = await Promise.all([
-    getSiteSettings(),
-    getShippingSettings(),
-    getPaymentSettings(),
-    getContactSettings(),
-    getLeadFormSettings(),
-    getMessages(),
-    getTranslations("Checkout"),
-  ]);
+  const [site, shipping, payment, contact, leadForm, messages, t, integrations] = await Promise.all(
+    [
+      getSiteSettings(),
+      getShippingSettings(),
+      getPaymentSettings(),
+      getContactSettings(),
+      getLeadFormSettings(),
+      getMessages(),
+      getTranslations("Checkout"),
+      getIntegrations(),
+    ],
+  );
   const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
   const countries = leadForm.phoneCountries
     .filter(isPhoneCountry)
@@ -62,6 +66,7 @@ export default async function CheckoutPage() {
           }))}
           phoneDisplay={contact.phoneDisplay}
           whatsappE164={contact.whatsappE164}
+          gateways={integrations.payment.gateways}
         />
       </NextIntlClientProvider>
     </main>

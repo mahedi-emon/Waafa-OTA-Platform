@@ -1,5 +1,7 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 import {
+  ONLINE_GATEWAYS,
+  type OnlineGateway,
   MARKUP_KINDS,
   PROVIDER_CATALOG,
   PROVIDER_IDS,
@@ -422,6 +424,35 @@ export class ProvidersService {
    * What the public site may know (#107, issue 284): modes, ready flags and the plain values a browser needs (site
    * key, measurement IDs, verification codes, DSN). Never a secret: only fields listed as public in the catalog.
    */
+  /** The address the outside world sees this server at (ipify), so staff can give it to a provider. */
+  async serverIp(): Promise<{ ip: string | null }> {
+    try {
+      const response = await this.fetcher("https://api.ipify.org?format=json", {
+        method: "GET",
+        signal: AbortSignal.timeout(4_000),
+      });
+      const body = (await response.json?.().catch(() => null)) as { ip?: unknown } | null;
+      const ip =
+        typeof body?.ip === "string" && /^[d.:a-fA-F]{3,45}$/.test(body.ip) ? body.ip : null;
+      return { ip };
+    } catch {
+      return { ip: null };
+    }
+  }
+
+  /**
+   * Gateways taking real payments (issue 251): on, in Live mode and with Live keys. Checkout offers only these, so a
+   * sandbox never takes a customer's money and nothing shows until the owner's keys are saved.
+   */
+  async liveGateways(): Promise<OnlineGateway[]> {
+    const live: OnlineGateway[] = [];
+    for (const gateway of ONLINE_GATEWAYS) {
+      const config = await this.getIntegrationConfig("payment", gateway);
+      if (config.status === "ready" && config.environment === "production") live.push(gateway);
+    }
+    return live;
+  }
+
   async publicStatus(): Promise<IntegrationStatus> {
     const [flight, hotel, payment, sms, email, courier, storage] = await Promise.all(
       (["flight", "hotel", "payment", "sms", "email", "courier", "storage"] as const).map((kind) =>
@@ -452,7 +483,7 @@ export class ProvidersService {
     return {
       flight: { mode: flight?.mode === "provider" ? "provider" : "manual" },
       hotel: { mode: hotel?.mode === "provider" ? "provider" : "manual" },
-      payment: { ready: payment?.mode === "provider" },
+      payment: { ready: payment?.mode === "provider", gateways: await this.liveGateways() },
       sms: { ready: sms?.mode === "provider" },
       email: { ready: email?.mode === "provider" },
       auth: { google: google.status === "ready" },
