@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
-import { useTurnstileSiteKey } from "./TurnstileKeyProvider";
+import { readTurnstileSiteKey } from "./turnstileSiteKey";
 import { TurnstileWidget } from "./TurnstileWidget";
 
 const WAIT_MS = 10_000;
@@ -19,7 +19,7 @@ export type TurnstileControls = {
 
 /** Turnstile for a public form; everything is a no-op until Turnstile is On in Admin › Integrations (issues 69 and 284). */
 export function useTurnstile(): TurnstileControls {
-  const SITE_KEY = useTurnstileSiteKey();
+  const [siteKey, setSiteKey] = useState<string | undefined>(undefined);
   const [active, setActive] = useState(false);
   const [resetSignal, setResetSignal] = useState(0);
   const token = useRef<string | undefined>(undefined);
@@ -33,12 +33,20 @@ export function useTurnstile(): TurnstileControls {
   }
 
   function activate() {
-    if (SITE_KEY && !active) setActive(true);
+    const key = readTurnstileSiteKey();
+    if (key && !active) {
+      setSiteKey(key);
+      setActive(true);
+    }
   }
 
   function getToken(): Promise<string | undefined> {
-    if (!SITE_KEY) return Promise.resolve(undefined);
-    if (!active) setActive(true);
+    const key = readTurnstileSiteKey();
+    if (!key) return Promise.resolve(undefined);
+    if (!active) {
+      setSiteKey(key);
+      setActive(true);
+    }
     if (token.current) return Promise.resolve(token.current);
     return new Promise((resolve) => {
       waiters.current.push(resolve);
@@ -56,8 +64,8 @@ export function useTurnstile(): TurnstileControls {
     getToken,
     reset,
     field:
-      SITE_KEY && active ? (
-        <TurnstileWidget siteKey={SITE_KEY} onToken={onToken} resetSignal={resetSignal} />
+      siteKey && active ? (
+        <TurnstileWidget siteKey={siteKey} onToken={onToken} resetSignal={resetSignal} />
       ) : null,
   };
 }
