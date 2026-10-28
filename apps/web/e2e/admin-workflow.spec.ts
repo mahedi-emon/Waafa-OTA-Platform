@@ -256,8 +256,9 @@ test("a payment proof that matches its order is verified, and the order is confi
 }) => {
   test.setTimeout(120_000);
   const errors = collectErrors(page);
+  // A variant with 24 in stock: the 3 of BD-W1510A ran out across the suite and the order came back "changed" (#289).
   const order = await intake<{ reference: string; total: number }>(request, "orders", {
-    lines: [{ variantId: "bd-w1510a", quantity: 1 }],
+    lines: [{ variantId: "bd-cf280a", quantity: 1 }],
     address: {
       name: `Sample Payer ${STAMP}`,
       phone: "+8801712345612",
@@ -302,7 +303,7 @@ test("an order is packed and shipped with its courier and tracking number", asyn
   test.setTimeout(120_000);
   const errors = collectErrors(page);
   const order = await intake<{ reference: string }>(request, "orders", {
-    lines: [{ variantId: "bd-w1510a", quantity: 1 }],
+    lines: [{ variantId: "bd-cf280a", quantity: 1 }],
     address: {
       name: `Sample Shipping ${STAMP}`,
       phone: "+8801712345613",
