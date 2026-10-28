@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 31 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅, next #243 🟡, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 28 Oct (evening) Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename 🟡, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -37,6 +37,17 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #302 · Store renamed to Waafa’s World — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's decisions of 28 Oct (evening), item 4 and RENAME (first issue) |
+| Built | "Waafa’s World" (typographic apostrophe) in every visible place: fixtures (store name, menus, footer column, COD note, templates, pages, team, timeline), messages, admin sidebar group, tab bar, mega panel, store bar, emails, docs (CLAUDE.md corrections 2–4, PRD, DESIGN.md, ADMIN.md, HANDOFF, ADMIN_GUIDE, README, prototype boards). Structured data: `lib/seo/schemaNames.ts` writes "Waafa's World" (plain apostrophe) with `alternateName` "Waafas World" on the OnlineStore, the About brand and Home's WebSite; product seller name plain. Guards: "Waafas World" fails in visible source except schemaNames.ts, a plain-apostrophe "Waafa's World" fails, the fixtures' store name must be the new one. Seed patch `2026-10-28-store-name` renames every stored string that still equals one of the 18 old defaults (`apps/api/src/seed/storeRenameTexts.ts`); staff wording is never touched. Route /shop and the domain waafasworld.com unchanged |
+| Tests | web unit `schemaNames.test.ts` 4; API unit `renameStore` 3 (deep rename, staff wording kept, old list maps to today's fixtures); API DB `seedPatches.test.ts` (live copy with old defaults renamed, staff name kept); e2e `seo.spec.ts` (name and alternateName), `layout.spec.ts`, `store.spec.ts`, `admin-shell.spec.ts`; QA plan `docs/qa/302-rename.md` (RN-01..16); UAT U-14 |
+| Migration | none; seed patch `2026-10-28-store-name` runs at the release |
+| Decision | D311, D312 |
+| Tools and skills | Serena (memories, replace_content on seedPatches.ts); guards planted-file check; Playwright e2e |
+| PR · CI minutes | (PR open) |
 
 ### #298 · Quote builder: options, baggage, validity, branded PDF, accept page — ✅ Done
 | Field | Value |
@@ -1986,6 +1997,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 | D309 | 30 Oct | Bookings: one Booking per lead, created in the same transaction as Convert and kept when the lead is reopened (a second Convert corrects the amount); payment status follows amount and paid unless Refunded; Accounts see every booking, other roles follow lead access; documents reuse the customer files store (owner "booking") | Owner, 28 Oct | #242 |
 | D310 | 31 Oct | Quote builder: the customer's link is `<quote id>-<HMAC signature>` with JWT_SECRET (staff can copy it again; withdrawing closes it; a dot would send it past the locale proxy); emails carry the link, not an attachment (the queue stays small) and the PDF is rendered on demand by the API with pdfkit 0.20.2 (new dependency: the smallest maintained Node PDF writer that embeds fonts and mixes them in a line, needed for ৳) with Inter, Plus Jakarta Sans and Hind Siliguri WOFF files in apps/api/assets; accepting withdraws the lead's other open quotes; Convert starts with the accepted price; sending is the lead's "Log quote" step | Owner, 28 Oct | #298 |
+| D311 | 28 Oct | The store is "Waafa’s World" (was "Waafas World"): typographic apostrophe in visible copy; structured data "Waafa's World" with alternateName "Waafas World" (only `lib/seo/schemaNames.ts` may hold the old name, enforced by guards); route /shop and domain unchanged; the live rename is a seed patch that changes only strings still equal to an old default, across every content document and setting (wider than menus, home and store so emails and pages follow; exact match keeps it safe) | Owner, 28 Oct evening | #302 |
+| D312 | 28 Oct | Owner's decisions of 28 Oct evening: (1) no hotfix, no deploy until the one release; the live server runs **7af26e7** (Docker images run #30, PR #187, 14 Oct; api/worker `sha256:b52c4bb5…a61a8e1`, web `sha256:023a177a…6a3d6a`, 13 Oct deploy/server bundle), so RELEASE.md and the upgrade rehearsal start there; (2) photos, videos, documents and backups stay on VPS volumes, no R2 or other outside storage now (the off-site card stays built, off, optional); (3) keep the software light (OPTIMISE issue: image sizes, RAM, disk, front-end budgets); (4) rename (D311). Integration cards (every existing card and #251–#253): Banglish step-by-step help to get the keys, every value to paste into the provider's panel (callback, IPN, success, fail, cancel, webhook URLs, server IP) with Copy, a Telegram "Find my group" helper, and one plain sentence when Test connection fails; nothing ever needs code or the server .env | Owner, 28 Oct evening | #302, OPTIMISE, #251–#253 |
 
 ## 9. Bugs and known issues
 
