@@ -115,7 +115,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-CAT-02 | P0 | Attribute sets drive product form, filters, spec table | done | content key `attributeSets`; components/shop/ProductListing.tsx | — | — |
 | FR-CAT-03 | P0 | Options and variants (SKU, price, MRP, stock, images) | done | shared/schemas/shop.ts; adm product editor (#198) | — | — |
 | FR-CAT-04 | P0 | Manual or rule-based collections | done | shop.ts CollectionSchema (manual / rule) | — | — |
-| FR-CAT-05 | P0 | Optional "Compatible with" list, imported by CSV | partial | content key `compatibleModels`; site/shop/finder | No CSV import (export only) | #248 |
+| FR-CAT-05 | P0 | Optional "Compatible with" list, imported by CSV | done | content key `compatibleModels`; site/shop/finder; CSV export and import with a preview (Admin › Compatible models › Download CSV to edit / Import CSV; api admin/contentCsv.ts, contentImport.service.ts; contentCsv.unit.test.ts, test/importsInvoices.test.ts, e2e/admin-imports.spec.ts, #248) | — | #248 |
 | FR-CAT-06 | P0 | Launch catalogue from real stock; samples only in prototype | done (code) | fixtures + admin products | Real products are owner content (not verifiable in code) | — |
 | FR-SHOP-01 | P0 | Store home rows (campaigns, deals, brands, recently viewed…) admin-ordered | done | site/shop/page.tsx; CampaignCarousel.tsx; storeRows; e2e/store.spec.ts | — | — |
 | FR-SHOP-02 | P0 | Listings with brand/price/stock/attribute filters, sort, Load more | done | ProductListing.tsx; site/shop/{c,brand,collection,deals,search} | — | — |
@@ -188,10 +188,10 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM Dashboard | P0 | KPI cards, leads by module/status, top routes, activity | done | api/admin/dashboard.service.ts; components/admin/dashboard | P1 agent leaderboard missing | #244 (P1 leaderboard) |
 | FR-ADM Search activity | P0 | Every search with device/source/converted; top routes; per day; rate | done | adm/search/page.tsx; inbox.service.ts searchToLeadRate ; searches per day and the search → booking funnel on Reports (api/admin/reportBreakdowns.ts, #244) | — | #244 |
 | FR-ADM Bookings | P0 | Booking records from converted leads, with documents and payments | done | Booking model (migration 20261030010000_bookings); adm/bookings (list, search, filters), adm/bookings/[id] (PNR, tickets, payments, documents); api/admin/bookings.{service,controller}.ts | — | #242 |
-| FR-ADM Group fares | P0 | Create, edit, auto-expire | done | content `groupFares`; scheduler.service.ts expiresAt | P1 bulk CSV import missing | #248 (P1 CSV) |
+| FR-ADM Group fares | P0 | Create, edit, auto-expire | done | content `groupFares`; scheduler.service.ts expiresAt | — (P1 CSV import done in #248) | #248 |
 | FR-ADM Tour packages | P0 | Rich editor, day builder, price table, departures, SEO, draft/publish, duplicate | done | adm/content/[key]/[id] package editor (#198); e2e/admin-editors.spec.ts | — (P1 scheduled publishing done, #194) | — |
 | FR-ADM Visa | P0 | Countries/types/checklist/fees; pipeline with document viewer, notifying statuses | done | adm/visa-applications; VisaProgressPanel.tsx; Files panel (#232); status emails (#233) | — | #233 |
-| FR-ADM Shop | P0 | Products/variants/attributes/tree/brands/collections, compat CSV, orders, zones, coupons | partial | adm/orders, adm/content/{products,categories,…}; admin/orders.service.ts | Compatibility CSV import missing | #248 |
+| FR-ADM Shop | P0 | Products/variants/attributes/tree/brands/collections, compat CSV, orders, zones, coupons | partial | adm/orders, adm/content/{products,categories,…}; admin/orders.service.ts | — (compatibility, product and group fare CSV import, invoice and packing slip PDFs in #248) | #248 |
 | FR-ADM Content | P0 | Pages, blog, FAQs, banners, home order, gallery, team, menus, baggage, EMI banks | done | adm/content/*, adm/website/{home,menus}, adm/feedback | P1 redirect manager: automatic slug redirects only (#194) | — |
 | FR-ADM Media | P0 | Uploads with required alt text and optimisation | done | adm/media; api/media/media.service.ts (sharp); e2e/admin-media.spec.ts | — (P1 usage tracking done) | — |
 | FR-ADM Customers | P0 | Unified list, profile with history, notes, tags, export | done | adm/customers, adm/customers/[phone]; api/admin/customers.service.ts ; notes, tags, CSV export, merge and unmerge (api/admin/customerProfiles.service.ts, adm/customers/[phone]/_components/CustomerExtras.tsx, api/test/customersRoles.test.ts, #244) | — | #244 |
@@ -199,7 +199,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM Reports | P0 | Leads by module/status/agent/source, response, sales, visa, CSV | done | adm/reports; api/admin/reports.service.ts (CSV + XLSX); apps/api/test/reports.test.ts ; by agent, by source (#237), visa cases by stage and country, daily and weekly summary emails (api/admin/summaryReports.service.ts, #244) | — | #244, #237 |
 | FR-ADM Users | P0 | Invite, roles, deactivate, reset password, login history | done | adm/users; api/admin/users.service.ts; invite.controller.ts; api/auth/twoStep.service.ts (history, two-step reset) ; custom roles with the permission matrix (api/admin/customRoles.service.ts, auth.service effectiveRoles, adm/users CustomRolesPanel, #244) | — | #244 |
 | FR-ADM Settings | P0 | General, footer, modes, payments/COD, shipping, recipients+templates, lead form, maintenance | done | adm/settings/[section]; Staff alerts in Forms and messages (#233) | — | #233 |
-| FR-ADM later P1 | P1 | Leaderboard, funnel, CSV imports, invoices/slips, review moderation, SMS, merge, campaigns, scheduled reports, custom roles | partial | done: scheduled publishing, media usage, encrypted creds, report date ranges | All other listed P1 items missing | #242–#248, #252 |
+| FR-ADM later P1 | P1 | Leaderboard, funnel, CSV imports, invoices/slips, review moderation, SMS, merge, campaigns, scheduled reports, custom roles | partial | done: scheduled publishing, media usage, encrypted creds, report date ranges; by-agent report and funnel, customer merge, scheduled summaries, custom roles (#244); review moderation (#245); campaigns (#247); CSV imports and invoice / packing slip PDFs (#248) | SMS (#252) | #252 |
 | FR-ADM later P2 | P2 | Full ticketing, refund and reconciliation operations | missing | — | Phase 2 | Phase E (#32) |
 | FR-ADM security | P0 | Hidden admin path, noindex, lockout 5/15 min, audit with before/after | done | secure-admin-control/layout.tsx (noindex); api/auth/auth.service.ts (LOCK_MINUTES); AuditLog; e2e/admin-path.spec.ts | — | — |
 | FR-ADM 2FA | P1 | TOTP login, mandatory for Super Admin and Admin | done | api/auth/{totp,auth.service,twoStep.service}.ts; sign-in/_components/{CodeStep,EnrolStep,SavedStep}.tsx; adm/account; e2e/admin-two-step.spec.ts; test/twoStep.test.ts | — | #234 |
@@ -245,7 +245,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 - **The visa status email is never sent** (`visa-status-customer` template is seeded but has no caller).
 - **Staff alerts go to one env address** (`STAFF_ALERT_EMAIL`); there are no module routing and no Settings › Notifications recipients.
 - **There is no Bookings module**: convert-to-booking stores only an amount.
-- **No CSV import for compatible models** (P0 FR-CAT-05).
+- ~~**No CSV import for compatible models** (P0 FR-CAT-05).~~ Fixed in #248.
 - **Customers** has no notes, tags or export. **Reports** has no by-agent or by-source view. **Users** shows the sign-in history since #234.
 - **The registry applies no pricing rules**: the markup is stored but never applied.
 - **Rate limits** are in Redis since #234. **Backups** are kept 14 days with no off-site copy.

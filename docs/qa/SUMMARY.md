@@ -17,5 +17,6 @@ checkpoint updates this table.
 | Reviews and Q&A (#245) | [245-reviews-qa.md](245-reviews-qa.md) | 17 | 15 | 2 (Rich Results test on the live site, exploratory) | API DB 4 + shared 2 + e2e admin-reviews 1 (locally, API mode) + budget 194 KB | 0 | 0 | 0 |
 | Save for later, Buy again (#246) | [246-save-for-later.md](246-save-for-later.md) | 10 | 9 | 1 (exploratory) | unit 3 + e2e cart-saved 2 (390, 1440) + budget cart 191 KB, account 182 KB | 2 (axe label mismatch on the new buttons; 84 px overflow at 390 px) | 2 | 0 |
 | Campaigns and flash sales (#247) | [247-campaigns-flash-sales.md](247-campaigns-flash-sales.md) | 11 | 10 | 1 (exploratory) | shared 2 + API DB 2 + e2e campaign 3 + budget 184 KB | 1 (heading order on the campaign page) | 1 | 0 |
+| Invoices, packing slips, CSV import (#248) | [248-invoices-csv-import.md](248-invoices-csv-import.md) | 15 | 14 | 1 (print on paper) | API unit 23 (CSV 10, documents 13) + API DB 4 + e2e admin-imports 2 | 2 (placeholder strings reached the dialog as ICU objects; zod's own words in the preview) | 2 | 0 |
 
-Totals: 222 cases · 190 automated · 32 manual · 12 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5) · 0 open (performance target follow-up #271).
+Totals: 237 cases · 204 automated · 33 manual · 12 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5) · 0 open (performance target follow-up #271).

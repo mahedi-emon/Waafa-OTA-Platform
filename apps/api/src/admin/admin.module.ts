@@ -24,6 +24,7 @@ import { MediaCoreModule } from "../media/media.module";
 import { FilesCoreModule } from "../files/files.module";
 import { AdminLeadsService } from "./leads.service";
 import { MediaReplaceService } from "./media-replace.service";
+import { ContentImportService } from "./contentImport.service";
 import { AdminOrdersService } from "./orders.service";
 import { AdminCustomersController, AdminReportsController } from "./reports.controller";
 import { AdminReportsService } from "./reports.service";
@@ -82,6 +83,7 @@ import { RemindersService } from "../realtime/reminders.service";
     AdminOrdersService,
     AdminInboxService,
     AdminContentService,
+    ContentImportService,
     AdminUsersService,
     AdminDashboardService,
     AdminReportsService,

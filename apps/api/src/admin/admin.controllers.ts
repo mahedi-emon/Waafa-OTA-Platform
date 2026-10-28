@@ -18,6 +18,8 @@ import {
   AdminSearchQuerySchema,
   AuditListQuerySchema,
   ContentBulkInputSchema,
+  ContentImportInputSchema,
+  CsvImportKeySchema,
   ContentListQuerySchema,
   ContentMoveInputSchema,
   ContentOptionsQuerySchema,
@@ -58,6 +60,7 @@ import { AdminDashboardService } from "./dashboard.service";
 import { AdminInboxService } from "./inbox.service";
 import { AdminLeadsService } from "./leads.service";
 import { MediaReplaceService } from "./media-replace.service";
+import { ContentImportService } from "./contentImport.service";
 import { AdminOrdersService } from "./orders.service";
 import { AdminUsersService } from "./users.service";
 import { AdminWorkbenchService } from "./workbench.service";
@@ -141,6 +144,14 @@ export class AdminVisaApplicationsController {
   }
 }
 
+const sendOrderPdf = (reply: FastifyReply, file: { name: string; pdf: Buffer }) =>
+  reply
+    .header("content-type", "application/pdf")
+    .header("content-disposition", `inline; filename="${file.name}"`)
+    .header("cache-control", "private, no-store")
+    .header("x-content-type-options", "nosniff")
+    .send(file.pdf);
+
 /** Waafa’s World orders (FR-SHOP-09). Accounts verifies payments. */
 @Controller("admin/orders")
 @UseGuards(StaffGuard)
@@ -156,6 +167,19 @@ export class AdminOrdersController {
   @Get(":id")
   detail(@Param("id") orderId: string) {
     return this.orders.detail(id(orderId));
+  }
+
+  /** The invoice PDF (issue 248): the team and Accounts. */
+  @Get(":id/invoice")
+  async invoice(@Param("id") orderId: string, @Res() reply: FastifyReply) {
+    return sendOrderPdf(reply, await this.orders.document(id(orderId), "invoice"));
+  }
+
+  /** The packing slip PDF (issue 248): the people who pack. */
+  @Get(":id/packing-slip")
+  @Roles("admin", "shop-manager")
+  async packingSlip(@Param("id") orderId: string, @Res() reply: FastifyReply) {
+    return sendOrderPdf(reply, await this.orders.document(id(orderId), "packing-slip"));
   }
 
   @Patch(":id")
@@ -255,7 +279,10 @@ export class AdminActivityController {
 @Controller("admin")
 @UseGuards(StaffGuard)
 export class AdminContentController {
-  constructor(@Inject(AdminContentService) private readonly content: AdminContentService) {}
+  constructor(
+    @Inject(AdminContentService) private readonly content: AdminContentService,
+    @Inject(ContentImportService) private readonly imports: ContentImportService,
+  ) {}
 
   @Get("content")
   overview(@Staff() staff: StaffPrincipal) {
@@ -274,6 +301,44 @@ export class AdminContentController {
     return this.content.create(staff, this.content.collectionKey(key), input.data, {
       ...(input.action ? { button: input.action } : {}),
     });
+  }
+
+  /** The list as a CSV file, the template for an import (issue 248). */
+  @Get("content/:key/export.csv")
+  async exportCsv(
+    @Staff() staff: StaffPrincipal,
+    @Param("key") key: string,
+    @Res() reply: FastifyReply,
+  ) {
+    const list = parseInput(CsvImportKeySchema, key);
+    const body = await this.imports.exportCsv(staff, list);
+    return reply
+      .header("content-type", "text/csv; charset=utf-8")
+      .header("content-disposition", `attachment; filename="${list}.csv"`)
+      .header("cache-control", "private, no-store")
+      .send(`${BYTE_ORDER_MARK}${body}`);
+  }
+
+  /** What importing a CSV file would do, line by line; nothing is saved (issue 248). */
+  @Post("content/:key/import/preview")
+  @HttpCode(200)
+  previewImport(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Body() body: unknown) {
+    return this.imports.preview(
+      staff,
+      parseInput(CsvImportKeySchema, key),
+      parseInput(ContentImportInputSchema, body).csv,
+    );
+  }
+
+  /** Import a CSV file: every line or none (issue 248). */
+  @Post("content/:key/import")
+  @HttpCode(200)
+  applyImport(@Staff() staff: StaffPrincipal, @Param("key") key: string, @Body() body: unknown) {
+    return this.imports.apply(
+      staff,
+      parseInput(CsvImportKeySchema, key),
+      parseInput(ContentImportInputSchema, body).csv,
+    );
   }
 
   /** One page of a list: search, chip, sort (D0 R5). */

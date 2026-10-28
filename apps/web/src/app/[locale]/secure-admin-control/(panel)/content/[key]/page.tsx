@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { Download } from "@/components/icons/server/Download";
 import { Plus } from "@/components/icons/server/Plus";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import {
   CONTENT_MODEL,
+  CSV_IMPORT_KEYS,
   canDelete,
   hasPublishWorkflow,
   isContentKey,
@@ -17,6 +19,7 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ContentEditor } from "@/components/admin/editor/ContentEditor";
 import { airlineLogoSrc } from "@/components/travel/airlineLogoSrc";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
+import { CsvImportDialog, type CsvImportStrings } from "@/components/admin/table/CsvImportDialog";
 import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { BulkAction, ColumnSpec, DataRow } from "@/components/admin/table/types";
 import { Button } from "@/components/ui/button";
@@ -129,15 +132,68 @@ async function ContentKeyView({ params, searchParams }: Pick<Params, "params" | 
         title={title}
         lead={blueprint.intro}
         actions={
-          <Button asChild size="sm">
-            <Link href={`/secure-admin-control/content/${key}/new`} prefetch={false}>
-              <Plus aria-hidden="true" className="size-4" />
-              {te("title", { thing: blueprint.nouns.one })}
-            </Link>
-          </Button>
+          <>
+            {isCsvKey(key) ? <CsvActions contentKey={key} /> : null}
+            <Button asChild size="sm">
+              <Link href={`/secure-admin-control/content/${key}/new`} prefetch={false}>
+                <Plus aria-hidden="true" className="size-4" />
+                {te("title", { thing: blueprint.nouns.one })}
+              </Link>
+            </Button>
+          </>
         }
       />
       <RecordTable contentKey={key} search={await searchParams} />
+    </>
+  );
+}
+
+type CsvKey = (typeof CSV_IMPORT_KEYS)[number];
+const isCsvKey = (key: ContentKey): key is CsvKey =>
+  (CSV_IMPORT_KEYS as readonly string[]).includes(key);
+
+/** Export and Import CSV for the lists staff change in bulk (issue 248): products, group fares, printer models. */
+async function CsvActions({ contentKey: key }: { contentKey: CsvKey }) {
+  const t = await getTranslations("Admin.content.csv");
+  // The dialog fills these in itself: each placeholder comes back as written ("{count}").
+  const slots = (names: string[]) => Object.fromEntries(names.map((name) => [name, `{${name}}`]));
+  const strings: CsvImportStrings = {
+    open: t("open"),
+    title: t("title"),
+    intro: t(`intro.${key}`),
+    file: t("file"),
+    fileHelp: t("fileHelp"),
+    reading: t("reading"),
+    summary: t("summary", slots(["create", "update", "unchanged", "error"])),
+    ignored: t("ignored", slots(["columns"])),
+    line: t("line"),
+    record: t("record"),
+    result: t("result"),
+    actions: {
+      create: t("actions.create"),
+      update: t("actions.update"),
+      unchanged: t("actions.unchanged"),
+      error: t("actions.error"),
+    },
+    changed: t("changed", slots(["columns"])),
+    more: t("more", slots(["shown", "total"])),
+    apply: t("apply", slots(["count"])),
+    applying: t("applying"),
+    nothing: t("nothing"),
+    done: t("done", slots(["create", "update"])),
+    failed: t("failed"),
+    tooBig: t("tooBig"),
+    cancel: t("cancel"),
+  };
+  return (
+    <>
+      <Button asChild variant="secondary" size="sm">
+        <a href={`/secure-admin-control/api/content/${key}/export`} download>
+          <Download aria-hidden="true" className="size-4" />
+          {t("export")}
+        </a>
+      </Button>
+      <CsvImportDialog listKey={key} strings={strings} />
     </>
   );
 }

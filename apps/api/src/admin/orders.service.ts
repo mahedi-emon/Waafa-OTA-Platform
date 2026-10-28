@@ -8,10 +8,13 @@ import {
   type Product,
 } from "@waafa/shared";
 import { AuditService } from "../audit/audit.service";
+import { ENV, type Env } from "../config/env";
 import type { StaffPrincipal } from "../auth/principal";
 import { problems } from "../common/problem";
 import { ContentService } from "../content/content.service";
 import type { Prisma } from "../generated/prisma/client";
+import { invoiceModel, packingSlipModel, type OrderForDocuments } from "../orders/orderDocuments";
+import { renderInvoicePdf, renderPackingSlipPdf } from "../orders/orderPdf";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 
@@ -50,7 +53,58 @@ export class AdminOrdersService {
     @Inject(AuditService) private readonly audit: AuditService,
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
+    @Inject(ENV) private readonly env: Env,
   ) {}
+
+  /**
+   * The order's invoice or packing slip as a PDF (issue 248), drawn from the stored order (its price snapshot) and
+   * the seller's settings at print time.
+   */
+  async document(
+    id: string,
+    kind: "invoice" | "packing-slip",
+  ): Promise<{ name: string; pdf: Buffer }> {
+    const row = await this.prisma.order.findUnique({ where: { id } });
+    if (!row) throw problems.notFound("Order not found");
+    const order: OrderForDocuments = {
+      reference: row.reference,
+      createdAt: row.createdAt,
+      items: row.items as OrderForDocuments["items"],
+      subtotal: row.subtotal,
+      discount: row.discount,
+      delivery: row.delivery,
+      total: row.total,
+      couponCode: row.couponCode,
+      payment: row.payment as OrderForDocuments["payment"],
+      paymentVerified: row.paymentVerified,
+      address: row.address as OrderForDocuments["address"],
+      pickup: row.pickup,
+      invoice: (row.invoice as OrderForDocuments["invoice"]) ?? null,
+    };
+    if (kind === "packing-slip")
+      return {
+        name: `${row.reference}-packing-slip.pdf`,
+        pdf: await renderPackingSlipPdf(packingSlipModel(order)),
+      };
+    const [site, contact, payment] = await Promise.all([
+      this.content.setting("siteSettings"),
+      this.content.setting("contactSettings"),
+      this.content.setting("paymentSettings"),
+    ]);
+    const origin = this.env.WEB_ORIGINS[0] ?? "https://waafasworld.com";
+    const pdf = await renderInvoicePdf(
+      invoiceModel(order, {
+        companyName: site.companyName,
+        storeName: site.storeName,
+        addressLines: [...contact.addressLines, `${contact.city}, ${contact.country}`],
+        phone: contact.phoneDisplay,
+        email: contact.email,
+        website: new URL(origin).host,
+        ...(payment.vatPercent !== undefined ? { vatPercent: payment.vatPercent } : {}),
+      }),
+    );
+    return { name: `${row.reference}-invoice.pdf`, pdf };
+  }
 
   async list(query: OrderListQuery) {
     const where: Prisma.OrderWhereInput = {

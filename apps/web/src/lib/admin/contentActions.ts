@@ -1,7 +1,11 @@
 "use server";
 
 import { updateTag } from "next/cache";
-import type { ContentActionInput } from "@waafa/shared";
+import {
+  CsvImportKeySchema,
+  type ContentActionInput,
+  type ContentImportReport,
+} from "@waafa/shared";
 import { forgetPreviewSnapshot } from "@/lib/data/api/snapshot";
 import { CACHE_TAGS } from "@/lib/data/tags";
 import { adminWrite, type AdminProblem } from "./adminApi";
@@ -238,4 +242,37 @@ export async function reorderContent(key: string, ids: string[]): Promise<Action
   if (!result.ok) return result;
   showOnSite();
   return { ok: true };
+}
+
+export type ImportResult =
+  | { ok: true; report: ContentImportReport }
+  | { ok: false; message?: string; report?: ContentImportReport };
+
+/**
+ * Reads a CSV file against a list (issue 248): `apply` false only previews it; true imports it, and the site shows
+ * the new prices at once. A file with problems comes back with the preview that lists them.
+ */
+export async function importCsv(key: string, csv: string, apply: boolean): Promise<ImportResult> {
+  const list = CsvImportKeySchema.safeParse(key);
+  if (!list.success) return { ok: false };
+  const path = `/admin/content/${list.data}/import${apply ? "" : "/preview"}`;
+  const result = await adminWrite<ContentImportReport>(path, "POST", { csv }, KEEP);
+  if (result.ok) {
+    if (apply) showOnSite();
+    return { ok: true, report: result.data };
+  }
+  if (result.problem.code === "import-problems") {
+    const preview = await adminWrite<ContentImportReport>(
+      `/admin/content/${list.data}/import/preview`,
+      "POST",
+      { csv },
+      KEEP,
+    );
+    return preview.ok ? { ok: false, report: preview.data } : { ok: false };
+  }
+  const field = result.problem.fields?.[0]?.message;
+  return {
+    ok: false,
+    ...(field || result.problem.detail ? { message: field ?? result.problem.detail } : {}),
+  };
 }

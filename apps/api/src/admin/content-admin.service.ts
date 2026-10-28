@@ -76,7 +76,7 @@ const orderOf = (data: unknown): number | undefined => {
 };
 
 /** Lists the site sorts by `order` show in that order in the admin too, so both always agree (#205). */
-function sortByRecordOrder<T extends { data: unknown; position: number }>(
+export function sortByRecordOrder<T extends { data: unknown; position: number }>(
   key: ContentKey,
   rows: T[],
 ): T[] {
