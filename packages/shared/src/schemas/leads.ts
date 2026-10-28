@@ -289,12 +289,18 @@ export const LeadSourceSchema = z
     page: z.string().max(200).optional(),
     utm: z
       .object({
-        source: z.string().optional(),
-        medium: z.string().optional(),
-        campaign: z.string().optional(),
+        source: z.string().max(100).optional(),
+        medium: z.string().max(100).optional(),
+        campaign: z.string().max(100).optional(),
+        term: z.string().max(100).optional(),
+        content: z.string().max(100).optional(),
       })
       .strict()
       .optional(),
+    /** Another site the visitor came from (host and path), issue 237. */
+    referrer: z.string().max(200).optional(),
+    /** The first page of that visit. */
+    landing: z.string().max(200).optional(),
   })
   .strict();
 

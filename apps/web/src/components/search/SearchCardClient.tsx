@@ -44,6 +44,7 @@ import { useDhakaToday } from "./useDhakaToday";
 import { useIsDesktop } from "./useIsDesktop";
 import { useRecentSearches } from "./useRecentSearches";
 import { VisaPanel } from "./VisaPanel";
+import { track } from "@/lib/analytics/track";
 
 type SearchCardClientProps = {
   data: SearchCardData;
@@ -207,6 +208,7 @@ function SearchCardClient({
     sendSearchLog(
       JSON.stringify(toSearchLog(submission, deviceForWidth(window.innerWidth), source)),
     );
+    track("search", { module: source });
     saveRecent(toRecentSearch(submission, Date.now()));
     try {
       sessionStore()?.setItem(draftSnapshotKey(source), serializeDraft(state));

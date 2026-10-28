@@ -21,6 +21,7 @@ import type { Prisma } from "../generated/prisma/client";
 import { NotificationService } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
+import { lowResources, readResources } from "./resourceAlert";
 import { ContentService } from "../content/content.service";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
@@ -70,6 +71,9 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
   private timer: NodeJS.Timeout | null = null;
   private running = false;
   private last = new Date();
+
+  private resourcesCheckedAt = 0;
+  private readonly resourceAlertedAt = new Map<string, number>();
 
   constructor(
     @Inject(ENV) private readonly env: Env,
@@ -122,6 +126,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
       if (keys.size > 0) this.revalidate.request([...keys]);
       const overdue = await this.alertOverdue(now);
       const files = await this.files.purge(now);
+      await this.alertResources(now);
       return { published: result.published, windows, purged: result.purged, overdue, files };
     } finally {
       this.running = false;
@@ -214,6 +219,29 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /** Each lead still new and unanswered past the reply target alerts the desk once (marked on its timeline). */
+  /**
+   * Disk or memory running low (issue 239): checked every ten minutes, one email to the "system" alert recipients at
+   * most every six hours per problem. Never stops the minute job.
+   */
+  private async alertResources(now: Date): Promise<void> {
+    if (now.getTime() - this.resourcesCheckedAt < 10 * 60_000) return;
+    this.resourcesCheckedAt = now.getTime();
+    try {
+      for (const item of lowResources(await readResources())) {
+        const last = this.resourceAlertedAt.get(item.what) ?? 0;
+        if (now.getTime() - last < 6 * 60 * 60_000) continue;
+        this.resourceAlertedAt.set(item.what, now.getTime());
+        await this.notifications.notifyStaff("system-alert-staff", "system", {
+          what: item.what,
+          detail: item.detail,
+          link: this.notifications.adminLink("/status"),
+        });
+      }
+    } catch {
+      // A failed check is tried again in ten minutes.
+    }
+  }
+
   private async alertOverdue(now: Date): Promise<number> {
     let sla = 30;
     try {

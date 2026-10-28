@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import type { PaymentProofFormValues } from "@/lib/leads/paymentProofForm";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
 import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
+import { track } from "@/lib/analytics/track";
 
 // zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
 const formResolver = lazyResolver(async () => {
@@ -99,6 +100,7 @@ function PaymentProofForm({ accounts, countries }: PaymentProofFormProps) {
         return;
       }
       const body = (await response.json()) as { reference: string };
+      track("payment_proof_sent", { reference: body.reference });
       setSent(body.reference);
       once.renew();
     } catch {

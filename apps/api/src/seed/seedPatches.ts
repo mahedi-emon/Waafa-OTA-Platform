@@ -324,6 +324,21 @@ async function newDeviceTemplate(prisma: PrismaClient): Promise<number> {
 }
 
 /** The code-step lock template joins the live list the same way. */
+/** Issue 239: disk and memory alerts to the people who get "system" alerts (STAFF_ALERT_EMAIL until someone is chosen). */
+const SYSTEM_ALERT_TEMPLATE = {
+  key: "system-alert-staff",
+  audience: "Admins, system alerts",
+  channel: "email",
+  subject: "Server running low: {{what}}",
+  body: "The website server is running low on {{what}}: {{detail}}.\n\nOpen Settings › System status for the details: {{link}}.",
+  variables: ["{{what}}", "{{detail}}", "{{link}}"],
+  enabled: true,
+};
+
+async function systemAlertTemplate(prisma: PrismaClient): Promise<number> {
+  return appendTemplate(prisma, SYSTEM_ALERT_TEMPLATE);
+}
+
 async function codeLockedTemplate(prisma: PrismaClient): Promise<number> {
   return appendTemplate(prisma, CODE_LOCKED_TEMPLATE);
 }
@@ -451,6 +466,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-26-code-locked-template", apply: codeLockedTemplate },
   { id: "2026-10-27-customer-code-template", apply: customerCodeTemplate },
   { id: "2026-10-28-integration-cards", apply: integrationCards },
+  { id: "2026-10-29-system-alert-template", apply: systemAlertTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

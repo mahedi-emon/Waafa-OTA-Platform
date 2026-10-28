@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { LeadCreateInputSchema, type LeadCreated } from "@waafa/shared";
+import { cookies } from "next/headers";
+import { readSource } from "@/lib/analytics/attribution";
 import { createLead } from "@/lib/data/leads";
 import { intakeFailure } from "@/lib/http/intakeFailure";
 import { isSameSite, readCappedBody } from "@/lib/http/readCappedBody";
@@ -8,7 +10,8 @@ import { verifyTurnstile } from "@/lib/leads/turnstile";
 import { clientKey, createRateLimiter } from "@/lib/rateLimit";
 
 const MAX_BODY_BYTES = 16_384;
-const allow = createRateLimiter({ limit: 10, windowMs: 60_000 });
+// PRD §13 (NFR-SEC): 5 lead submits a minute per address (issue 239).
+const allow = createRateLimiter({ limit: 5, windowMs: 60_000 });
 const once = createIdempotencyStore<LeadCreated>({ ttlMs: 10 * 60_000 });
 
 /**
@@ -47,9 +50,12 @@ export async function POST(request: Request) {
 
   try {
     const key = body.idempotencyKey;
-    const created = await once(key, () =>
-      createLead(parsed.data, { clientIp: ip, idempotencyKey: key }),
-    );
+    // Where the visitor came from (UTM, referrer, landing page), remembered by the proxy (issue 237).
+    const lead = {
+      ...parsed.data,
+      source: { ...readSource(await cookies()), ...parsed.data.source },
+    };
+    const created = await once(key, () => createLead(lead, { clientIp: ip, idempotencyKey: key }));
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
     return intakeFailure(error);

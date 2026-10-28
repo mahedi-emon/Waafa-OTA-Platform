@@ -4043,7 +4043,17 @@
       },
       "searches": "What people searched",
       "searchesLead": "{total, plural, one {# search} other {# searches}} on the site; {rate}% became a request.",
-      "allSearches": "All searches"
+      "allSearches": "All searches",
+      "sources": {
+        "title": "Where leads come from",
+        "lead": "Each lead and order by the ad, post or site that brought the visitor (UTM tags, the referring site, or how staff took it).",
+        "source": "Source",
+        "campaign": "Campaign",
+        "leads": "Leads",
+        "booked": "Booked",
+        "orders": "Orders",
+        "revenue": "Revenue"
+      }
     },
     "customers": {
       "metaTitle": "Customers",
@@ -5681,7 +5691,8 @@
         "staff-invite": "Invite to Admin",
         "low-stock-staff": "Low stock (to the store team)",
         "staff-new-device": "New device sign-in (to that staff member)",
-        "staff-code-locked": "Sign-in paused at the code (to that staff member)"
+        "staff-code-locked": "Sign-in paused at the code (to that staff member)",
+        "system-alert-staff": "Server running low (to admins)"
       },
       "tone": {
         "default": "Normal",
@@ -5717,7 +5728,8 @@
         "orders": "Store orders",
         "payments": "Payment proofs",
         "feedback": "Feedback",
-        "stock": "Low stock"
+        "stock": "Low stock",
+        "system": "Server running low (disk, memory)"
       }
     },
     "blueprints": {

@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CONTACT_TOPICS } from "@/lib/leads/contactLeadFormFields";
 import type { ContactFormValues } from "@/lib/leads/contactLeadForm";
 import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
+import { track } from "@/lib/analytics/track";
 
 // zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
 const formResolver = lazyResolver(async () => {
@@ -91,7 +92,9 @@ function ContactForm({ countries, whatsappE164 }: ContactFormProps) {
         setFailure(response.status === 429 ? "rate" : "retry");
         return;
       }
-      setSent({ name: values.name.split(/\s+/)[0] ?? values.name, created: await response.json() });
+      const created = (await response.json()) as LeadCreated;
+      track("lead_submit", { reference: created.reference, module: "contact" });
+      setSent({ name: values.name.split(/\s+/)[0] ?? values.name, created });
       once.renew();
     } catch {
       setFailure("retry");

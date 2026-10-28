@@ -8,6 +8,7 @@ import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
 import { useTurnstile } from "@/components/forms/useTurnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { track } from "@/lib/analytics/track";
 
 export type EmailSignInLabels = {
   email: string;
@@ -161,6 +162,7 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
     try {
       const { status, json } = await post("/api/auth/email/verify", { email, code: clean });
       if (status === 200 && json.status === "signed-in") {
+        track("login");
         window.location.assign(next);
         return;
       }
@@ -208,6 +210,7 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
     try {
       const { status, json } = await post("/api/auth/password", { email: email.trim(), password });
       if (status === 200 && json.status === "signed-in") {
+        track("login");
         window.location.assign(next);
         return;
       }
@@ -252,6 +255,7 @@ function EmailSignIn({ labels, next, countries, defaultCountry }: EmailSignInPro
         phoneCountry: country,
       });
       if (status === 200 && json.status === "signed-in") {
+        track("sign_up");
         window.location.assign(next);
         return;
       }

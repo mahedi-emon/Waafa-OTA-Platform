@@ -28,6 +28,26 @@ open. Unclaimed uploads are deleted after 6 hours and visa documents 90 days aft
 slips, attachments and feedback photos stay with their record. Nightly backups keep the private files for 14 days in
 owner-only archives; copy them off the server only to an encrypted place (the off-site copy in #239 encrypts them).
 
+## Content Security Policy: inline scripts without a nonce (documented exception, issue 239)
+
+`script-src` allows `'self'`, Cloudflare Turnstile, Google Tag Manager and the Meta Pixel, plus `'unsafe-inline'`, with no
+nonce or hash. Reason: a nonce must be new on every response, so every page would have to render on every request;
+the public pages are prerendered and cached (Cache Components, PPR), which keeps first load and LCP inside the PRD
+budgets (NFR-PERF). Next.js writes its own inline bootstrap scripts into those cached pages, and hashes change with
+every build and every cached segment. Decision D151, confirmed in #239.
+
+What keeps the risk low instead:
+- No visitor-supplied HTML is ever rendered: admin rich text is sanitised on the server with an allow-list
+  (`components/content/RichText.tsx`), structured data is serialised by `components/seo/JsonLd.tsx`; ESLint
+  `react/no-danger` allows only those two files.
+- `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors` limited, and `connect-src` limited to
+  our origin and the named analytics hosts, so injected script could not post data to another site.
+- Third-party scripts (GTM, GA4, Pixel) load only after cookie consent and only with IDs from Admin › Integrations
+  that match a strict form.
+- Admin pages are `noindex`, `frame-ancestors 'none'`, and need a staff session with two-step sign-in.
+
+Revisit when Next.js supports nonces on cached pages (or with a strict-dynamic hash list per build).
+
 ## Dependency audit (11 Oct 2026, `pnpm audit --prod`)
 
 | Package | Severity | Path | Assessment |

@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 28 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 integration hub 🟡 in review, then #285 release note and upgrade rehearsal, #237, #238/#239, #242–#244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 29 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, then #285 release note and upgrade rehearsal (in review), #237, #238/#239, #242–#244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,26 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #284 · Integration hub: every outside service set up from Admin › Integrations — 🟡 In review
+### #285 · Release note and upgrade rehearsal from the live release — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct (D303): no deploys during development; docs/RELEASE.md as one cumulative note from the live release to main; an upgrade rehearsal in the VPS deploy smoke (main, nightly, full-ci); hands-on checks in docs/qa/UAT.md |
+| Built | `docs/RELEASE.md` (from → to, migrations in order since the assumed live release, containers and memory, deploy/server files to copy, moved settings, keys for Admin, deploy steps with backup first); `deploy/LIVE_RELEASE` (541bd21 until the owner confirms the tag: on 28 Oct /track answered 404, so the live release is older than #280); `scripts/upgrade-rehearsal.sh` (starts the stack at the live release, adds a lead and an order through the public API, deploys this commit over it, checks leads, orders, staff accounts and the first password hash unchanged, content and settings not fewer, every migration finished) wired into the VPS deploy smoke (ci.yml: labelled PRs and nightly) and the Docker images workflow (main); `docs/qa/UAT.md` U-01..09 |
+| Tests | the rehearsal itself in CI (no Docker on the build machine) |
+| Migration | none |
+| Tools and skills | Serena; no UI |
+| Decision | D303 |
+
+### #287 · Sitemap index per area and share cards for visa countries without a photo — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Split out of #237 (owner's order of 28 Oct, step 4): split sitemap, generated share images where a record has no photo |
+| Built | `/sitemap.xml` route = sitemap index; `/sitemap/{pages,travel,visa,store,blog}.xml` route handlers over `lib/seo/sitemapEntries.ts` (the metadata sitemap file cannot sit beside a /sitemap.xml route); visa countries share their cover photo, or `/og/visa/<slug>.png` (next/og, text in the brand colours, no image; the .png keeps it out of the locale proxy) |
+| Tests | `sitemap.test.ts` (every URL in one part); `seo.spec.ts` (index and parts, the India card 200 image/png under 300 KB) |
+| PR · CI minutes | #290 (47d58cd) · 10 |
+| Decision | D306 |
+
+### #284 · Integration hub: every outside service set up from Admin › Integrations — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct (D303): one place for email, Google, Turnstile, GA4, GTM, Meta Pixel, Search Console, Bing, error tracking, off-site storage, payments, SMS, Telegram, couriers and the travel APIs; cards in plain words with a keys link, Test, Sandbox or Live, On or Off, a status chip and who changed it; secrets sealed and never sent to the browser; changes without a redeploy; Turnstile off the build-time variable; .env keeps infrastructure only |
@@ -48,6 +67,7 @@ Serena memory `audit_findings`.
 | Migration | none (seed patch only); deploy/ changed: copy compose.yml, deploy.sh and check.sh to /opt/waafa |
 | Tools and skills | Serena (symbols and edits), existing shadcn primitives (Badge, ToggleGroup, Switch); Context7, ui-ux-pro-max, design-taste-frontend, frontend-design and design-superpowers not run in this session (no new visual pattern: the existing admin card gained a link, a chip and a line); design review owed in #259 |
 | Decision | D304 |
+| PR · CI minutes | #286 (0411c71) · 341 billed minutes over six runs (axe 4.14 findings on main fixed under #288: ask-for-price link, admin account, search, notifications and weekday buttons) |
 
 ### #282 · Dependabot: minor and patch updates with the axe 4.14 link-name fix — ✅ Done
 | Field | Value |
@@ -1889,6 +1909,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D302 | 27 Oct | My account (issue 278): offer emails are opt-in (off until the customer turns them on); service emails about requests and orders always go. Saved travellers keep the passport number sealed with AES-256-GCM (key from the server secret) and only its last 4 digits readable, shown masked even to the owner; editing without a new number keeps the old one. A password is optional (argon2id, 10 to 128 characters), never required; a forgotten one is replaced by an email code sign-in; 5 wrong passwords per email and address in 15 minutes are refused with one neutral message. Save buttons and checkout prefill read `/api/account/summary` after hydration so package, product and checkout pages stay static | Owner, 27 Oct: optional password later, reset by email code; passport fields encrypted at rest | #278 |
 | D303 | 28 Oct | Owner's order of 28 Oct replaces D300: finish every P0 and P1 PRD row (exceptions: waiting for an owner account with the adapter built and off; Phase E and P3 rows); no deploys during development, one release at the end with docs/RELEASE.md and an upgrade rehearsal; an integration hub before D and E; checkpoints with local screenshot paths; hands-on checks in docs/qa/UAT.md; QA numbers in docs/qa/SUMMARY.md | Owner, 28 Oct | #284, #285 |
 | D304 | 28 Oct | Integration hub: every outside service is a provider card (new kinds captcha, analytics, monitoring, storage, alerts, courier). The site reads only catalog-listed public fields through `GET /public/integrations/status` in a cached accessor that every save expires (hours lifetime, seconds when the API is unreachable), so a change needs no rebuild and pages stay static. Turnstile tokens are checked by the API with the sealed secret; the web image carries no key. Saved secrets never come back (the audited reveal is removed; last 4 only). Measurement, monitoring, storage and Telegram cards have one Live set. A service whose last test failed is not used until a test passes. Settings › Tracking and the two verification fields retire (kept in the record, hidden); a seed patch moves their values and .env Turnstile keys onto the cards once | Owner, 28 Oct: one place, no redeploy, secrets never in the browser | #284 |
+| D306 | 29 Oct | Sitemap: /sitemap.xml is a route-handler index of five parts (/sitemap/<part>.xml); Next cannot serve a metadata sitemap beside it. Share images: a record photo when there is one (visa countries now share their cover), else a next/og text card in the brand colours at /og/<kind>/<slug>.png (text only, so no drawn or generated picture; the extension keeps it out of the locale proxy) | Owner, 28 Oct | #287 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
