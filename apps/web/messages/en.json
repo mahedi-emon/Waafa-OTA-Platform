@@ -4043,7 +4043,17 @@
       },
       "searches": "What people searched",
       "searchesLead": "{total, plural, one {# search} other {# searches}} on the site; {rate}% became a request.",
-      "allSearches": "All searches"
+      "allSearches": "All searches",
+      "sources": {
+        "title": "Where leads come from",
+        "lead": "Each lead and order by the ad, post or site that brought the visitor (UTM tags, the referring site, or how staff took it).",
+        "source": "Source",
+        "campaign": "Campaign",
+        "leads": "Leads",
+        "booked": "Booked",
+        "orders": "Orders",
+        "revenue": "Revenue"
+      }
     },
     "customers": {
       "metaTitle": "Customers",
