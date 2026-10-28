@@ -58,6 +58,11 @@ function subscribe(listener: () => void): () => void {
   };
 }
 
+/** Adds a line outside React (the card button before its control has loaded, issue 295). */
+export function addToCart(line: CartLine): void {
+  write(addLine(read(), line));
+}
+
 export function useCart() {
   const lines = useSyncExternalStore(subscribe, read, () => EMPTY);
   return {
