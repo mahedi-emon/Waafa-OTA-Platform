@@ -20,11 +20,11 @@ async function allProducts(): Promise<Product[]> {
 }
 
 /**
- * sitemap.xml (FR-SEO): every indexable public route. Records the admin set to SEO › noindex (issue 183), empty
- * categories and pages that do not exist stay out; data-driven routes (packages, visa countries, products, posts,
- * albums) are listed from the data layer, with their photos as image entries (#96).
+ * Every indexable public route (FR-SEO): records the admin set to SEO › noindex (issue 183), empty categories and pages
+ * that do not exist stay out; data-driven routes (packages, visa countries, products, posts, albums) are listed from
+ * the data layer, with their photos as image entries (#96). app/sitemap.ts serves them in parts (issue 287).
  */
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export async function sitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const [
     { items: packages },
     countries,
@@ -164,4 +164,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.3,
       })),
   ];
+}
+
+/** The parts of the sitemap index (issue 287): one file per area of the site. */
+export const SITEMAP_PARTS = ["pages", "travel", "visa", "store", "blog"] as const;
+export type SitemapPart = (typeof SITEMAP_PARTS)[number];
+
+/** Which part a page belongs to, by its path; every URL lands in exactly one part. */
+export function partOf(url: string): SitemapPart {
+  const path = new URL(url).pathname;
+  if (/^\/(flights|hotels|tour-packages|plan-my-trip)(\/|$)/.test(path)) return "travel";
+  if (/^\/(visa|visa-guide)(\/|$)/.test(path)) return "visa";
+  if (/^\/shop(\/|$)/.test(path)) return "store";
+  if (/^\/(blog|gallery)(\/|$)/.test(path)) return "blog";
+  return "pages";
+}
+
+const escapeXml = (value: string) =>
+  value.replace(
+    /[<>&'"]/g,
+    (char) => `&${{ "<": "lt", ">": "gt", "&": "amp", "'": "apos", '"': "quot" }[char]};`,
+  );
+
+/** One part as sitemap XML with image entries (the same shape Next's metadata sitemap wrote). */
+export function sitemapXml(entries: MetadataRoute.Sitemap): string {
+  const urls = entries.map((entry) => {
+    const lines = [`<loc>${escapeXml(entry.url)}</loc>`];
+    if (entry.lastModified)
+      lines.push(`<lastmod>${new Date(entry.lastModified).toISOString()}</lastmod>`);
+    if (entry.changeFrequency) lines.push(`<changefreq>${entry.changeFrequency}</changefreq>`);
+    if (entry.priority !== undefined) lines.push(`<priority>${entry.priority}</priority>`);
+    for (const image of entry.images ?? [])
+      lines.push(`<image:image><image:loc>${escapeXml(image)}</image:loc></image:image>`);
+    return `<url>\n${lines.map((line) => `  ${line}`).join("\n")}\n</url>`;
+  });
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join("\n")}\n</urlset>\n`;
 }

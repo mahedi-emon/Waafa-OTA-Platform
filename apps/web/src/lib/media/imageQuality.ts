@@ -14,7 +14,14 @@ export const SHARE_IMAGE_WIDTH = 1200;
  * original; WhatsApp shows no picture for images over about 300 KB. Other URLs are returned as they are.
  */
 export function shareImageSrc(src: string): string {
-  if (!src.startsWith("/") || src.startsWith("//") || src.startsWith("/_next/")) return src;
+  // Generated share cards (/og/…) are already 1200 px PNGs.
+  if (
+    !src.startsWith("/") ||
+    src.startsWith("//") ||
+    src.startsWith("/_next/") ||
+    src.startsWith("/og/")
+  )
+    return src;
   return `/_next/image?url=${encodeURIComponent(src)}&w=${SHARE_IMAGE_WIDTH}&q=${PHOTO_QUALITY}`;
 }
 
