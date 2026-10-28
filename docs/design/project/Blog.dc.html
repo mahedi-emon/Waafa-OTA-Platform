@@ -75,10 +75,10 @@ class Component extends DCLogic {
       ['dest', 'Destinations', 'Maldives without the resort price', 'Guesthouse islands, ferries and when a water villa is worth it.', '8 min', '1 Sep 2026', 'maldives-alt'],
       ['dest', 'Destinations', 'Five days in Nepal for first-timers', 'Kathmandu, Pokhara and a gentle hike, with a day-by-day plan.', '7 min', '24 Aug 2026', 'nepal-alt'],
       ['visa', 'Visa', 'Your passport checklist before any trip', 'Validity, blank pages and the photo rules embassies are strict about.', '4 min', '17 Aug 2026', 'visa-alt'],
-      ['work', 'Waafas World', 'Original or compatible toner: what offices should buy', 'Cost per page, warranty and when the original is worth it.', '5 min', '10 Aug 2026', 'printing-alt']
+      ['work', 'Waafa’s World', 'Original or compatible toner: what offices should buy', 'Cost per page, warranty and when the original is worth it.', '5 min', '10 Aug 2026', 'printing-alt']
     ];
     const cat = st.cat || 'all';
-    const CH = [['all', 'All'], ['dest', 'Destinations'], ['tips', 'Travel tips'], ['visa', 'Visa'], ['work', 'Waafas World']];
+    const CH = [['all', 'All'], ['dest', 'Destinations'], ['tips', 'Travel tips'], ['visa', 'Visa'], ['work', 'Waafa’s World']];
     const chips = CH.map(c => ({ label: c[1], n: c[0] === 'all' ? P.length : P.filter(x => x[0] === c[0]).length, on: cat === c[0], cls: 'w-chip' + (cat === c[0] ? ' is-on' : ''), go: () => this.setState({ cat: c[0] }) }));
     const posts = P.filter(x => cat === 'all' || x[0] === cat).map(x => ({ tag: x[1], title: x[2], sub: x[3], read: x[4] + ' read', date: x[5], ph: ph(x[6]) }));
     return { L, m: !!p.m, cat, chips, posts, feat: { ph: ph('coxsbazar', 1600) }, noop: (e) => { if (e && e.preventDefault) e.preventDefault(); } };

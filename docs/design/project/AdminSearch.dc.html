@@ -71,7 +71,7 @@
           <div class="a-kpi"><span class="a-kpi-label">Leads, October<span class="i i-inbox"></span></span><span class="a-kpi-n">612</span><span class="a-kpi-d up">+18% on September</span></div>
           <div class="a-kpi"><span class="a-kpi-label">Booked<span class="i i-badge-check"></span></span><span class="a-kpi-n">38</span><span class="a-kpi-d">6.2% of leads</span></div>
           <div class="a-kpi"><span class="a-kpi-label">First response<span class="i i-timer"></span></span><span class="a-kpi-n">21 min</span><span class="a-kpi-d up">84% inside 30 minutes</span></div>
-          <div class="a-kpi"><span class="a-kpi-label">Waafas World sales<span class="i i-banknote"></span></span><span class="a-kpi-n">৳4,82,300</span><span class="a-kpi-d up">+12% · 128 orders</span></div>
+          <div class="a-kpi"><span class="a-kpi-label">Waafa’s World sales<span class="i i-banknote"></span></span><span class="a-kpi-n">৳4,82,300</span><span class="a-kpi-d up">+12% · 128 orders</span></div>
         </section>
         <div class="a-grid2">
           <section class="a-card" aria-labelledby="src-t">
@@ -91,7 +91,7 @@
         </section>
         <div class="a-grid2">
           <section class="a-card" aria-labelledby="sc-t">
-            <div class="a-card-head"><div><h3 id="sc-t">Waafas World sales by category</h3><p>October, VAT included</p></div></div>
+            <div class="a-card-head"><div><h3 id="sc-t">Waafa’s World sales by category</h3><p>October, VAT included</p></div></div>
             <div class="a-card-body"><sc-for list="{{cats}}" as="c" hint-placeholder-count="5"><div class="a-hbar" style="grid-template-columns:150px minmax(0,1fr) 84px"><span class="text-13">{{c.label}}</span><span class="a-hbar-track"><span style="{{c.w}}"></span></span><b class="text-right text-13 text-navy">{{c.v}}</b></div></sc-for></div>
           </section>
           <section class="a-card" aria-labelledby="vc-t">
@@ -131,7 +131,7 @@ class Component extends DCLogic {
     return {
       m: !!p.m, isSearch: !reports, isReports: reports, nav: reports ? 'reports' : 'search', crumb: reports ? 'Insights' : 'Sales',
       title: reports ? 'Reports' : 'Search activity',
-      desc: reports ? 'Leads by module, status, agent and source; reply times; Waafas World sales and visa cases. Export any table to CSV.' : 'Every search on the website, what people looked for and whether it became a lead. Use it to price group fares and packages.',
+      desc: reports ? 'Leads by module, status, agent and source; reply times; Waafa’s World sales and visa cases. Export any table to CSV.' : 'Every search on the website, what people looked for and whether it became a lead. Use it to price group fares and packages.',
       mods, recent, pie: 'background:conic-gradient(' + stops.join(',') + ')', sources: SRC.map(s => ({ label: s[0], n: s[1], pct: Math.round(s[1] / 612 * 100) + '%', c: 'background:' + s[2] })),
       resp, agents, cats, visa,
       navOpen: !!st.nav, openNav: () => this.setState({ nav: true }), closeNav: () => this.setState({ nav: false })

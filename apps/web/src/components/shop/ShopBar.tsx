@@ -7,7 +7,7 @@ import { CartButton } from "./CartButton";
 import { ShopSearchBox, type SearchEntry } from "./ShopSearchBox";
 
 /**
- * Store bar under the site header (Shop, Shop-suggest): "Waafas World" as text beside the one WAAFA logo in the header
+ * Store bar under the site header (Shop, Shop-suggest): "Waafa’s World" as text beside the one WAAFA logo in the header
  * (never a second mark), product search with suggestions, quick links and the cart with its count.
  */
 async function ShopBar() {

@@ -17,13 +17,13 @@ Waafa goes live on Oct 13, 2026 with one mobile-first website for two licensed b
 | Build flow | Claude Design prototype, then Claude Code builds frontend, backend, admin |
 | Stack | Next.js + Tailwind CSS + shadcn/ui + Motion; Node.js (NestJS on Fastify); PostgreSQL + Prisma; Redis |
 
-**What we are building.** Travel (flights, hotels, tour packages, visa) runs under Waafa Tours and Travel. Waafas World, an online store for any product category (printer and office supplies first), runs under Waafa International together with its printing solutions and international trading services. Manpower and recruitment is excluded until it is licensed.
+**What we are building.** Travel (flights, hotels, tour packages, visa) runs under Waafa Tours and Travel. Waafa’s World, an online store for any product category (printer and office supplies first), runs under Waafa International together with its printing solutions and international trading services. Manpower and recruitment is excluded until it is licensed.
 
 **How it works at launch.** Every flight, hotel and package search ends in a short query form. Each submission lands in the admin panel as a lead; staff quote and book off-platform with consolidators.
 
 **How it grows.** A per-module Golden Switch in admin settings moves Flights, Hotels and Packages from Manual mode to Live mode once IATA, a consolidator API or a GDS is in place. The UI layout does not change; only the provider behind it does.
 
-**Launch scope.** About 60% of the full platform ships by the deadline: every public page, lead capture for all travel modules, the Waafas World store with cash-on-delivery and offline payment, and admin for leads, content and orders. Online payment, customer accounts and Bangla follow in Phase 1B; live booking in Phase 2.
+**Launch scope.** About 60% of the full platform ships by the deadline: every public page, lead capture for all travel modules, the Waafa’s World store with cash-on-delivery and offline payment, and admin for leads, content and orders. Online payment, customer accounts and Bangla follow in Phase 1B; live booking in Phase 2.
 
 **Reading this PRD.** Requirements carry IDs (FR-AREA-nn) and a priority: P0 ships at launch, P1 within 30 days after, P2 with live booking (Phase 2), P3 later.
 
@@ -34,7 +34,7 @@ Two licensed businesses share one website, and every feature sits under the bran
 | Brand | Licensed activity (scoping only) | Where it lives on the site |
 | --- | --- | --- |
 | Waafa Tours and Travel | Tours and travels agency, air ticketing, visa processing | Flights, Hotels, Tour Packages, Visa Services, Visa Guide, Baggage Information, EMI, Offline Payment |
-| Waafa International (est. 2010) | Importer, exporter, supplier (non-chemical) | Waafas World: online store for any product category (printer and office supplies first), Printing Solutions, International Business and Trading |
+| Waafa International (est. 2010) | Importer, exporter, supplier (non-chemical) | Waafa’s World: online store for any product category (printer and office supplies first), Printing Solutions, International Business and Trading |
 | Manpower and Recruitment | Not licensed yet | Nowhere in this build (no nav item, page, footer link, SEO text or copy); planned as Phase F after the licence |
 
 **Brand identity.** WAAFA stands for "Worldwide Alliance for Advancement, Future & Achievement". The company tagline is "Connecting the World, Creating the Future." Core values: Trust, Quality, Innovation, Excellence, Integrity, Global Vision.
@@ -58,7 +58,7 @@ Two licensed businesses share one website, and every feature sits under the bran
 3. No manpower, recruitment or employment-visa processing in this build; it is planned as Phase F once its licence is issued. Visa services cover tourist, business, student, medical and transit visas only.
 4. Fares shown before live booking are labelled indicative (group fares, "from" prices). The site never fakes live availability.
 5. Passport and visa documents are personal data: private storage, role-restricted access, scheduled deletion.
-6. Waafas World lists only goods the Waafa International trade licence covers and never restricted items such as medicines, chemicals, weapons or drugs; it follows Bangladesh's digital commerce rules on pricing, delivery and refunds.
+6. Waafa’s World lists only goods the Waafa International trade licence covers and never restricted items such as medicines, chemicals, weapons or drugs; it follows Bangladesh's digital commerce rules on pricing, delivery and refunds.
 
 **Reference inputs.** Two vendor proposals for another agency (Nano IT World, Laravel; Softopark, MERN) serve as feature checklists. Their combined feature sets are merged into this PRD, minus Umrah and anything off-licence.
 
@@ -71,7 +71,7 @@ Launch succeeds if the site is live before 14 October 2026 and every search beco
 1. Ship the P0 scope on a production domain by 13 October 2026, with 14 October as buffer only.
 2. Capture demand: log every search, turn every query into a lead with phone and travel details.
 3. Earn trust at first glance: a design that matches or beats GoZayaan and ShareTrip, fast on mid-range Android phones.
-4. Sell online from day one through Waafas World, starting with printer and office supplies and open to any product category, with cash on delivery and offline payment.
+4. Sell online from day one through Waafa’s World, starting with printer and office supplies and open to any product category, with cash on delivery and offline payment.
 5. Never rebuild: GDS, consolidator and payment providers plug in behind the Golden Switch.
 
 **Success metrics** (proposed; owner reviews after 30 days)
@@ -121,7 +121,7 @@ Phase 1A ships about 60% of the platform by 13 October, inside the 50 to 70% tar
 
 | Phase | Target | Ships | Gate to start |
 | --- | --- | --- | --- |
-| 1A Launch (P0) | 13 Oct 2026 | All public pages and nav; unified search; Flights and Hotels in Manual mode with query capture and group fares; Tour Packages and Visa Services with query and apply forms; Waafas World store for any product category (with variants), cart, cash on delivery, offline payment and order tracking; printing quote and trading RFQ; Gallery; Feedback; all nine More pages; admin for leads, search activity, content, catalogue, orders and settings; Golden Switch UI with Live locked; email alerts; SEO and analytics | Owner signs off staging on 12 Oct |
+| 1A Launch (P0) | 13 Oct 2026 | All public pages and nav; unified search; Flights and Hotels in Manual mode with query capture and group fares; Tour Packages and Visa Services with query and apply forms; Waafa’s World store for any product category (with variants), cart, cash on delivery, offline payment and order tracking; printing quote and trading RFQ; Gallery; Feedback; all nine More pages; admin for leads, search activity, content, catalogue, orders and settings; Golden Switch UI with Live locked; email alerts; SEO and analytics | Owner signs off staging on 12 Oct |
 | 1B Completion (P1) | By 13 Nov 2026 | Customer accounts (email code, Google); Bangla; SSLCommerz and bKash online payment; SMS; real-time admin alerts and 2FA; quote builder and lead kanban; reminders and reports; reviews; EMI calculator; courier API | Merchant account approved for online payment |
 | 2 Live booking (P2) | When a provider contract lands | Live flight search, booking, ticketing and e-tickets through the first two provider APIs; hotel API booking; instant package booking; pricing engine; booking operations, refunds and reconciliation in admin | IATA accreditation, consolidator API or GDS contract, plus sandbox certification |
 | 3 Scale (P3) | After Phase 2 | B2B agent portal with wallet and credit; iOS and Android apps on the same API; loyalty and referrals; multi-currency checkout | Business decision per item |
@@ -151,11 +151,11 @@ Frontend and backend overlap on Sunday 11 October; owner content must arrive by 
 
 ## 6. Information architecture and navigation
 
-The navbar carries seven items; flights and hotels are reached through the search widget, and Waafas World runs as its own store sub-site under /shop.
+The navbar carries seven items; flights and hotels are reached through the search widget, and Waafa’s World runs as its own store sub-site under /shop.
 
-**Desktop header, left to right:** logo lockup (W mark + WAAFA + tagline), then Home, Tour Packages, Visa (route /visa; owner 13 Oct), Waafas World, Gallery, Feedback, More, then a hotline/WhatsApp chip and Login (Account from P1).
+**Desktop header, left to right:** logo lockup (W mark + WAAFA + tagline), then Home, Tour Packages, Visa (route /visa; owner 13 Oct), Waafa’s World, Gallery, Feedback, More, then a hotline/WhatsApp chip and Login (Account from P1).
 
-**Store label: "Waafas World".** It is the store's own name, matches the waafasworld.com domain and fits any product range, not only printing supplies. Hovering it opens a panel with the top categories plus three doors: Shop all products (store), Printing Solutions (service quote), International Trading (RFQ). Clicking the label opens the store at /shop.
+**Store label: "Waafa’s World".** It is the store's own name, matches the waafasworld.com domain and fits any product range, not only printing supplies. Hovering it opens a panel with the top categories plus three doors: Shop all products (store), Printing Solutions (service quote), International Trading (RFQ). Clicking the label opens the store at /shop.
 
 **More menu** (desktop: two-column panel, icon + title + one line, as in the reference screenshot; mobile: bottom sheet). Descriptions are our own words:
 
@@ -174,8 +174,8 @@ The navbar carries seven items; flights and hotels are reached through the searc
 **Mobile navigation (designed first).**
 
 - Top app bar: W mark + WAAFA (tagline hidden below 768 px), call and WhatsApp icons, menu button opening a full-screen drawer with every link and the contact block.
-- Bottom tab bar, always visible, five tabs: Home, Packages, Waafas World (a raised W disc in the centre), Visa, More. The tab label is always "Waafas World", on two lines if a narrow phone needs it, and opens /shop. More opens the sheet above plus Gallery, Feedback and Login.
-- Inside /shop the header keeps the WAAFA logo with "Waafas World" as text beside it, a product search field and a cart icon with a count; the bottom bar stays, with Waafas World active.
+- Bottom tab bar, always visible, five tabs: Home, Packages, Waafa’s World (a raised W disc in the centre), Visa, More. The tab label is always "Waafa’s World", on two lines if a narrow phone needs it, and opens /shop. More opens the sheet above plus Gallery, Feedback and Login.
+- Inside /shop the header keeps the WAAFA logo with "Waafa’s World" as text beside it, a product search field and a cart icon with a count; the bottom bar stays, with Waafa’s World active.
 - Breadcrumbs on every page except Home.
 
 **Sitemap**
@@ -190,7 +190,7 @@ The navbar carries seven items; flights and hotels are reached through the searc
 | /plan-my-trip | Custom tour request | P0 |
 | /visa, /visa/\[country\] | Visa list; country detail with apply form | P0 |
 | /visa-guide, /visa-guide/\[country\] | Editorial visa guides | P0 |
-| /shop and children | Waafas World home, category, brand, collection, product, search, find by model, cart, checkout, order success, track order, printing solutions, international trading | P0 |
+| /shop and children | Waafa’s World home, category, brand, collection, product, search, find by model, cart, checkout, order success, track order, printing solutions, international trading | P0 |
 | /shop/campaign/\[slug\] | Campaign and deal pages | P1 |
 | /gallery, /gallery/\[album\] | Photo and video gallery | P0 |
 | /feedback | Testimonials wall and feedback form | P0 |
@@ -217,7 +217,7 @@ Every page shares a sticky header, a WhatsApp button and a footer whose content 
 **Dynamic footer (FR-FTR)** — every link, label and contact line is edited in Admin > Settings > Footer.
 
 - FR-FTR-01 (P0) Brand column: white logo lockup, tagline "Connecting the World, Creating the Future.", two-line about text, social icons.
-- FR-FTR-02 (P0) Link columns, editable with a small menu builder: Travel (Flights, Hotels, Tour Packages, Visa Services, Group Fares, Plan My Trip); Waafas World (Shop all, top categories, Printing Solutions, International Trading, Track Order); Help (Visa Guide, Baggage Information, EMI, Offline Payment, FAQs, Refund Policy, Contact).
+- FR-FTR-02 (P0) Link columns, editable with a small menu builder: Travel (Flights, Hotels, Tour Packages, Visa Services, Group Fares, Plan My Trip); Waafa’s World (Shop all, top categories, Printing Solutions, International Trading, Track Order); Help (Visa Guide, Baggage Information, EMI, Offline Payment, FAQs, Refund Policy, Contact).
 - FR-FTR-03 (P0) Contact block: address, phone, WhatsApp, email, office hours, map link.
 - FR-FTR-04 (P0) "We accept" logos, toggled per method; only methods actually live are shown. Trust badges (ATAB, TOAB, IATA) appear only when the company holds them.
 - FR-FTR-05 (P0) Newsletter signup.
@@ -234,7 +234,7 @@ Every page shares a sticky header, a WhatsApp button and a footer whose content 
 6. Featured tour packages: cards with image, title, duration, "from" price and tags; horizontal scroll on mobile.
 7. Visa services: top countries with flag, processing time and starting fee.
 8. Why Waafa: value cards drawn from the company values; counters only for numbers the owner provides.
-9. Waafas World band: featured categories, best sellers and current deals, plus links to Printing Solutions and Trading.
+9. Waafa’s World band: featured categories, best sellers and current deals, plus links to Printing Solutions and Trading.
 10. Testimonials from approved feedback, linking to /feedback; until there are any, a Facebook reviews link and a "Leave feedback" card.
 11. Gallery strip, latest blog posts, five top FAQs.
 12. Meet our team: real staff cards managed in Admin > Team (FR-TEAM); hidden when no member is visible.
@@ -319,11 +319,11 @@ Packages and visas are admin-managed content with query and apply forms at launc
 - FR-VISA-06 (P1) Track an application with reference and phone; malware scan on uploads.
 - FR-VGD-01 (P0) Visa Guide: an editorial page per country (rich text, checklist, tips), linked both ways with its visa service page and written for searches like "Thailand visa from Bangladesh".
 
-## 10. Waafas World (Waafa International's online store)
+## 10. Waafa’s World (Waafa International's online store)
 
-Waafas World is a single-vendor store for any kind of product: it opens with printer and office supplies and can grow into any category without a redesign. It keeps the full functionality of [ShareTrip Shop](https://sharetrip.net/shop), minus marketplace parts.
+Waafa’s World is a single-vendor store for any kind of product: it opens with printer and office supplies and can grow into any category without a redesign. It keeps the full functionality of [ShareTrip Shop](https://sharetrip.net/shop), minus marketplace parts.
 
-**Name and place.** The nav label is "Waafas World", matching the waafasworld.com domain; the route stays /shop and the mobile tab also reads "Waafas World". The store header keeps the WAAFA logo with "Waafas World" as text beside it (no second mark), a product search field and the cart.
+**Name and place.** The nav label is "Waafa’s World", matching the waafasworld.com domain; the route stays /shop and the mobile tab also reads "Waafa’s World". The store header keeps the WAAFA logo with "Waafa’s World" as text beside it (no second mark), a product search field and the cart.
 
 **Functionality carried over from the reference, adapted to one vendor:** campaign banner carousel, store-wide search, category icon grid with All categories, featured brands with product counts, Top selling, New arrivals, product cards showing sale price against crossed-out MRP, category, brand, campaign and product routes, and a cart. Dropped: seller names on cards and the "Become a partner" section.
 
@@ -350,7 +350,7 @@ Waafas World is a single-vendor store for any kind of product: it opens with pri
 - FR-SHOP-09 (P0) Track order with order number and phone: Placed, Confirmed, Processing, Shipped (courier and tracking number), Delivered, Cancelled, Returned.
 - FR-SHOP-10 (P0) Inventory per variant: stock drops when an order is placed and returns when it is cancelled; low-stock alerts to the shop manager. Prices are shown VAT-inclusive.
 
-**Waafa International services inside Waafas World**
+**Waafa International services inside Waafa’s World**
 
 - FR-SHOP-11 (P0) Printing Solutions page: what Waafa offers for corporate printing, the since-2010 story, process steps, and a quote form (company, contact, service, volume and frequency, location, notes, attachment). Creates a lead (PRN-…).
 - FR-SHOP-12 (P0) International Business and Trading page: export, import, sourcing and supply, with an RFQ form (company, contact, country, product, specifications, quantity and unit, optional target price and delivery terms, timeline, attachments). Creates a lead (TRD-…).
@@ -527,7 +527,7 @@ The site must feel instant on a mid-range Android phone on 4G, pass a security r
 - Clean slugs, canonical URLs, breadcrumbs with BreadcrumbList markup.
 - JSON-LD: Organization and TravelAgency, LocalBusiness for the office, Product with Offer, TouristTrip for packages, FAQPage, BlogPosting.
 - Split sitemap.xml and robots.txt; noindex for admin, cart, checkout, account and parameterised results pages.
-- Titles stay within 60 characters (the "| Waafa" suffix only when it fits) and descriptions within 155, cut at a word, whatever an admin record holds; one h1 per page, the Home h1 names the brand; every image has alt text; info and detail pages end with "Explore more" links to visa countries, packages, routes, guides and articles. Home structured data names the brand as Waafa Tours and Travel, Waafa International, WAAFA and Waafas World.
+- Titles stay within 60 characters (the "| Waafa" suffix only when it fits) and descriptions within 155, cut at a word, whatever an admin record holds; one h1 per page, the Home h1 names the brand; every image has alt text; info and detail pages end with "Explore more" links to visa countries, packages, routes, guides and articles. Home structured data names the brand as Waafa Tours and Travel, Waafa International, WAAFA and Waafa’s World.
 - Every published record page (package, visa country or guide, blog post, flight route, product, category, brand, collection, album, page) is indexed and listed in sitemap.xml, Sample or not (owner, 14 Oct: About Us and the record pages must rank). Only the record's SEO › noindex switch in Admin sends `robots: noindex, follow` and keeps it out of the sitemap. Sample stays a visible label.
 - Dynamic Open Graph images for packages, posts and products. Every share image goes through the optimiser at 1200 px, so Facebook and WhatsApp previews load a JPEG well under 300 KB.
 - Page titles and descriptions follow what people in Bangladesh search (air tickets from Dhaka, visa processing in Dhaka, tour packages from Bangladesh, hotel booking, travel agency in Dhaka); Home structured data lists the agency's services and a contact point per office number; `/llms.txt` summarises the business, services, visa countries, guides, packages, routes and contact for AI search, from admin data and without prices.
@@ -638,7 +638,7 @@ Ribbon gradient: 120°, #020D39 to #003FBE to #0D8CEE to #39CCE9.
 
 - Header lockup: W mark, then the WAAFA wordmark in the logo's own style (crossbar-less A shapes with gold triangles), then the tagline "Worldwide Alliance for Advancement, Future & Achievement" in small caps on desktop.
 - The wordmark is an SVG traced from the logo, never a font substitute. Request the original vector files; until then trace the PNG.
-- Versions: full colour on light, white with silver edges on dark, favicon and app icon from the W mark. Inside the store, "Waafas World" is set as text in the heading font beside the main WAAFA logo; there is no second mark and no separate store logo. The raised W disc in the mobile tab bar is a navigation icon. Minimum W height 28 px; clear space of at least a quarter of the mark's height.
+- Versions: full colour on light, white with silver edges on dark, favicon and app icon from the W mark. Inside the store, "Waafa’s World" is set as text in the heading font beside the main WAAFA logo; there is no second mark and no separate store logo. The raised W disc in the mobile tab bar is a navigation icon. Minimum W height 28 px; clear space of at least a quarter of the mark's height.
 
 **Signature elements.**
 
@@ -680,7 +680,7 @@ The deadline and missing content are the two real threats; both are handled by a
 - [ ] Production domain (the email uses waafasworld.com)
 - [ ] Office floor: the Facebook page says 4th floor, the trade licence says 5th; which goes on the site?
 - [ ] Hotline and WhatsApp numbers (office hours confirmed: Saturday to Thursday, 10 am to 6 pm)
-- [ ] Waafas World: launch categories and product list with prices, stock and photos; delivery areas and charges; cash-on-delivery limit
+- [ ] Waafa’s World: launch categories and product list with prices, stock and photos; delivery areas and charges; cash-on-delivery limit
 - [ ] Offline payment accounts to publish (bank, bKash, Nagad)
 - [ ] Launch content: packages, visa countries with fees and processing times, group fares
 - [ ] Refund, privacy and terms text, or approval of drafts

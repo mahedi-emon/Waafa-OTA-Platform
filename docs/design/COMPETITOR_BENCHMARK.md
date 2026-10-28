@@ -125,10 +125,10 @@ scale instead of hover effects.
 - **Obokash** adds a utility bar with two email addresses and six social icons above an eight-item nav.
 
 **Waafa.** Seven items exactly as the PRD lists, the hotline/WhatsApp chip and a calm "Need help?" panel with live office
-hours. The header is transparent over the hero and becomes solid with a blur after 24 px. The **Waafas World mega panel**
+hours. The header is transparent over the hero and becomes solid with a blur after 24 px. The **Waafa’s World mega panel**
 opens with a short stagger (categories plus three doors: Shop all, Printing Solutions, International Trading), and the More
 panel uses two columns of icon, title and one line. On phones: a top bar with call and WhatsApp, a full-screen drawer, and a
-five-tab bottom bar whose pill slides between tabs, with the raised Waafas World disc in the middle.
+five-tab bottom bar whose pill slides between tabs, with the raised Waafa’s World disc in the middle.
 
 ### 2.6 Loading states, motion and micro-interactions
 | | Observed |

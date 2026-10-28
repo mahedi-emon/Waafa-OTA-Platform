@@ -40,7 +40,7 @@ const STEP_NOTES: Record<OrderActionInput["type"], string> = {
 };
 
 /**
- * Orders for the Waafas World team: list and search, detail with the history, steps along the workflow with what
+ * Orders for the Waafa’s World team: list and search, detail with the history, steps along the workflow with what
  * each needs (D0 R4, ADMIN.md §8.4), notes. A cancelled or returned order puts its stock back.
  */
 @Injectable()

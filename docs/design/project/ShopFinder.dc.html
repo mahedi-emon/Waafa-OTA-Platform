@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Waafas World · Find by model</title>
+<title>Waafa’s World · Find by model</title>
 <link rel="stylesheet" href="./waafa.css">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../photos.css">
@@ -23,7 +23,7 @@
   <main class="w-main" id="main">
     <section class="v-pagehead is-shop">
       <div class="w-wrap">
-        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafas World</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">Printers &amp; Supplies</a><span class="i i-chevron-right"></span><span aria-current="page">Find by model</span></nav>
+        <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><a href="{{L.Shop}}">Waafa’s World</a><span class="i i-chevron-right"></span><a href="{{L.ShopList}}">Printers &amp; Supplies</a><span class="i i-chevron-right"></span><span aria-current="page">Find by model</span></nav>
         <div class="ww-listhead">
           <div><h1>Find by model</h1><p>Pick your printer and see only what fits it. Or type the code printed on your old cartridge.</p></div>
           <span class="ww-note" style="max-width:360px"><span class="i i-info"></span><span>Shown only in categories that have compatibility data. Admin adds it per product under “Compatible with”.</span></span>
@@ -146,7 +146,7 @@ class Component extends DCLogic {
       canSave: mode === 'model', saveIcon: isSaved ? 'i i-check' : 'i i-bookmark', saveLabel: isSaved ? 'Saved' : 'Save printer',
       savePrinter: () => { if (!isSaved) this.setState({ savedList: savedList.concat([br + ' ' + md]) }); },
       saved, tabs, items: shown, hasRes: res.length > 0, noRes: res.length === 0,
-      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafas World, which cartridge fits my printer? Code: ' + pq),
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafa’s World, which cartridge fits my printer? Code: ' + pq),
       toast: st.toast || '', toastTitle: 'Added to cart'
     };
   }

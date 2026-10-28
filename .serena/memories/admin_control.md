@@ -5,7 +5,7 @@
   verified (Phase C). An issue is not done until its rows exist; new fields need a schema in packages/shared, a
   fixture, a repository method, a cached accessor and the admin screen that edits it (A18–A21).
 - Admin screens (AdminSide board names): Sales (Leads, Group fares, Bookings, Search activity), Travel (Tour packages,
-  Visa), Waafas World (Products, Categories, Collections, Coupons, Orders), Content (Pages/blog/FAQs, Home and
+  Visa), Waafa’s World (Products, Categories, Collections, Coupons, Orders), Content (Pages/blog/FAQs, Home and
   banners, Gallery, Feedback, Team, Media library), Settings (General, Footer and menus, Booking modes, Payments and
   delivery, Notifications, Users and roles).
 - Phase A fixture repositories are read-write in memory (reset on restart) so admin edits show on the public site and

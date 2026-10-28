@@ -1,7 +1,7 @@
 # WAAFA OTA Platform
 
 One mobile-first website for two brands: **Waafa Tours and Travel** (flights, hotels, tour packages, visa) and
-**Waafas World** by Waafa International (online store at `/shop`, Printing Solutions, International Trading),
+**Waafa’s World** by Waafa International (online store at `/shop`, Printing Solutions, International Trading),
 plus the admin panel and the API. Go-live: 13 October 2026. Progress: [`docs/TRACKER.md`](docs/TRACKER.md).
 
 ## Requirements
@@ -70,7 +70,7 @@ Sample fixtures.
 | Path | What |
 | --- | --- |
 | [`CLAUDE.md`](CLAUDE.md) | Working rules for every session: corrections, stack, components, admin control, git, quality gates |
-| `apps/web` | Next.js app: public site, Waafas World, admin |
+| `apps/web` | Next.js app: public site, Waafa’s World, admin |
 | `apps/api` | NestJS API on Fastify (Phase B) |
 | `packages/shared` | zod contracts, types and formatters shared by web and API |
 | `packages/config` | TypeScript, ESLint and Prettier presets |

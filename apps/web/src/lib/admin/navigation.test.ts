@@ -36,7 +36,7 @@ const keysFor = (...roles: Parameters<typeof navFor>[0]) =>
   allItems(navFor(roles), roles).map((item) => item.key);
 
 describe("admin navigation (ADMIN.md §3.1)", () => {
-  it("groups the sidebar as Home, Inbox, Travel, Waafas World and Website", () => {
+  it("groups the sidebar as Home, Inbox, Travel, Waafa’s World and Website", () => {
     expect(ADMIN_NAV.map((group) => group.label)).toEqual([
       "home",
       "inbox",

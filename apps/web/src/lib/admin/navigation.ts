@@ -86,7 +86,7 @@ const SHOP: Role[] = ["admin", "shop-manager"];
 const REPORTS: Role[] = ["admin", "accounts", "shop-manager", "travel-sales", "visa-officer"];
 
 /**
- * The sidebar (docs/design/ADMIN.md §3.1): Home, Inbox, Travel, Waafas World and Website. Settings sits in the
+ * The sidebar (docs/design/ADMIN.md §3.1): Home, Inbox, Travel, Waafa’s World and Website. Settings sits in the
  * sidebar footer. Items whose dedicated screen arrives later (R6, R7, R9) open the closest existing screen.
  */
 export const ADMIN_NAV: AdminNavGroup[] = [

@@ -16,7 +16,7 @@ type ProductCardProps = {
 };
 
 /**
- * Waafas World product card (FR-SHOP-03, DESIGN.md "Cards"): image on mist-50, percent-off and badge chips, brand,
+ * Waafa’s World product card (FR-SHOP-03, DESIGN.md "Cards"): image on mist-50, percent-off and badge chips, brand,
  * two-line title, price against MRP, stock badge, and Add to cart (a stepper once added) or Choose options. A product
  * whose price the admin keeps hidden (issue 178) shows "Price on request" and Ask for price on WhatsApp instead.
  */

@@ -2544,7 +2544,7 @@ button.w-cal-day{width:100%;padding:0;background:none;border:0;cursor:pointer;fo
   .v-gflabel{min-width:0}
 }
 /* ==========================================================================
-   v4 — Stage E: Waafas World and the remaining public screens
+   v4 — Stage E: Waafa’s World and the remaining public screens
    ========================================================================== */
 
 /* ---------------------------------------------------------------- shop bar (sub-site header) */
@@ -5904,7 +5904,7 @@ html.js .v-teamsec.is-in .v-wrib-band,html.js .v-teamsec.is-in .v-wrib-edge{anim
 .xl\:aspect-4-5{aspect-ratio:4/5}
 }
 /* ====================================================================================
-   v5 — Waafas World (store for any product), the new tab bar, photo slots, motion kit 2
+   v5 — Waafa’s World (store for any product), the new tab bar, photo slots, motion kit 2
    ==================================================================================== */
 
 /* ---------------------------------------------------------------- photo slots v5
@@ -5957,7 +5957,7 @@ html.js .v-teamsec.is-in .v-wrib-band,html.js .v-teamsec.is-in .v-wrib-edge{anim
   .ph::before,.mo-float,.ww-tw-ring,.ww-marquee-track,.ww-slide.is-on .ww-slide-media,.ww-bar-prog>span,.ww-count-n,.ww-live-dot{animation:none!important}
 }
 
-/* ---------------------------------------------------------------- mobile tab bar v5: Waafas World in the centre */
+/* ---------------------------------------------------------------- mobile tab bar v5: Waafa’s World in the centre */
 .w-tabbar.ww-tabbar{grid-template-columns:1fr 1fr 1.42fr 1fr 1fr;overflow:visible}
 .ww-tabworld{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:10px;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .ww-tw-disc{position:absolute;left:50%;top:-22px;width:58px;height:58px;margin-left:-29px;border-radius:50%;display:grid;place-items:center;background:#fff;
@@ -6795,7 +6795,7 @@ html.js .v-teamsec.is-in .v-wrib-band,html.js .v-teamsec.is-in .v-wrib-edge{anim
 .ww-cattree-svc{display:grid;gap:10px;margin-top:18px}
 @media (min-width:768px){.ww-cattree-svc{grid-template-columns:1fr 1fr}}
 .ww-catnav .is-deal.is-active{background:var(--color-danger-50,#FDECEA)}
-/* Home: Waafas World band */
+/* Home: Waafa’s World band */
 .ww-homeband-brand{display:inline-flex;align-items:center;gap:10px;align-self:flex-start}
 .ww-homeband-brand img{width:44px;height:auto}
 .ww-homeband-brand b{display:block;font:800 22px/1 var(--font-display);letter-spacing:-.03em;color:var(--color-navy-900)}

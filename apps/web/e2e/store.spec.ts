@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { collectErrors } from "./errors";
 
-/* Waafas World catalogue (A13): store home, search suggestions, attribute filters, variants, cart, finder, bulk quote. */
+/* Waafa’s World catalogue (A13): store home, search suggestions, attribute filters, variants, cart, finder, bulk quote. */
 test.use({ reducedMotion: "reduce" });
 
 async function axe(page: Page) {
@@ -19,7 +19,7 @@ test.describe("store at 390", () => {
   test("opens a product from the search suggestions", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/shop");
-    await expect(page.getByRole("heading", { name: "Waafas World", level: 1 })).toBeAttached();
+    await expect(page.getByRole("heading", { name: "Waafa’s World", level: 1 })).toBeAttached();
     await axe(page);
     const search = page.getByRole("combobox", { name: "Search products, brands and categories" });
     await search.fill("cf280a");

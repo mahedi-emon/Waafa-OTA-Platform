@@ -3,6 +3,7 @@ import { contactPhones } from "@waafa/shared";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
 import { schemaId } from "@/lib/seo/schemaIds";
+import { formerStoreNames, schemaName } from "@/lib/seo/schemaNames";
 import { defaultShareImage } from "@/lib/seo/withSocial";
 import { absoluteUrl } from "@/lib/siteUrl";
 
@@ -35,7 +36,7 @@ const SERVICES = [
 /**
  * WebSite, Organization and TravelAgency + LocalBusiness for Home (FR-SEO, #96), built only from admin settings: the
  * site name Google shows, the logo, the office with hours, phone, map and the share photo. Each entity also carries
- * the other brand names (WAAFA, Waafa Tours and Travel, Waafa International, Waafas World) so a search for any of them
+ * the other brand names (WAAFA, Waafa Tours and Travel, Waafa International, Waafa’s World) so a search for any of them
  * finds the site (issue 173), and the agency lists what it sells (air tickets, hotels, tour packages, visa
  * processing) with a contact point per office number, so travel searches match it (issue 184).
  */
@@ -76,7 +77,13 @@ async function HomeJsonLd() {
             "@id": schemaId("website"),
             url,
             name: site.travelBrand,
-            alternateName: otherNames(site.travelBrand, "WAAFA", site.companyName, site.storeName),
+            alternateName: otherNames(
+              site.travelBrand,
+              "WAAFA",
+              site.companyName,
+              schemaName(site.storeName),
+              ...formerStoreNames(site.storeName),
+            ),
             inLanguage: "en-BD",
             publisher: { "@id": schemaId("organization") },
           },

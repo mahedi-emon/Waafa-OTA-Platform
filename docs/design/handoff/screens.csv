@@ -79,7 +79,7 @@ page,screen,file,width,height,title
 02 · Brand & design system,MotionKit,project/MotionKit.dc.html,200,120,MotionKit (no visible UI: scroll reveals and springs)
 02 · Brand & design system,PCard,project/PCard.dc.html,260,480,Product card (live component: Add → stepper)
 02 · Brand & design system,Footer,project/Footer.dc.html,1440,707,Footer (live component)
-02 · Brand & design system,ShopBar,project/ShopBar.dc.html,1440,600,Waafas World bar with cart drawer (live component)
+02 · Brand & design system,ShopBar,project/ShopBar.dc.html,1440,600,Waafa’s World bar with cart drawer (live component)
 "09 · Gallery, feedback & More pages",Gallery-m,project/Gallery-m.dc.html,390,844,Phone · Gallery
 "09 · Gallery, feedback & More pages",Gallery-album-m,project/Gallery-album-m.dc.html,390,844,Phone · album
 "09 · Gallery, feedback & More pages",Gallery-m-photo,project/Gallery-m-photo.dc.html,390,844,Phone · photo viewer
@@ -159,7 +159,7 @@ page,screen,file,width,height,title
 03 · Home & navigation,Home-t,project/Home-t.dc.html,768,1024,Home · tablet (scroll inside)
 03 · Home & navigation,Home,project/Home.dc.html,1440,8000,Home · desktop (Play to scroll the whole page)
 03 · Home & navigation,Home-help,project/Home-help.dc.html,1440,900,Desktop · Need help? panel
-03 · Home & navigation,Home-shopmenu,project/Home-shopmenu.dc.html,1440,900,"Desktop · Waafas World menu (top categories, shop all, Printing Solutions, International Trading)"
+03 · Home & navigation,Home-shopmenu,project/Home-shopmenu.dc.html,1440,900,"Desktop · Waafa’s World menu (top categories, shop all, Printing Solutions, International Trading)"
 03 · Home & navigation,Home-mfull,project/Home-mfull.dc.html,390,8000,"Home · phone, full length (1 of 2)"
 03 · Home & navigation,Home-mfull2,project/Home-mfull2.dc.html,390,5140,"Home · phone, full length (2 of 2)"
 03 · Home & navigation,Home-moremenu,project/Home-moremenu.dc.html,1440,900,Desktop · More menu
@@ -193,60 +193,60 @@ page,screen,file,width,height,title
 01 · Research & moodboard,Main,project/Main.dc.html,1440,6342,Research summary
 01 · Research & moodboard,Moodboard,project/Moodboard.dc.html,1440,1960,Moodboard
 01 · Research & moodboard,PhotoBrief,project/PhotoBrief.dc.html,1440,4697,"Photo brief & credits (prototype stand-ins, real photos in the build)"
-08 · Waafas World,Shop-m,project/Shop-m.dc.html,390,844,Phone · Waafas World home
-08 · Waafas World,Shop-m-mini,project/Shop-m-mini.dc.html,390,844,Phone · cart drawer
-08 · Waafas World,ShopCats-m,project/ShopCats-m.dc.html,390,844,Phone · all categories
-08 · Waafas World,ShopCats-m-printers,project/ShopCats-m-printers.dc.html,390,844,"Phone · categories, Printers & Supplies"
-08 · Waafas World,ShopList-m,project/ShopList-m.dc.html,390,844,Phone · Electronics & Gadgets listing
-08 · Waafas World,ShopList-m-filters,project/ShopList-m-filters.dc.html,390,844,Phone · filters sheet
-08 · Waafas World,ShopList-m-fashion,project/ShopList-m-fashion.dc.html,390,844,Phone · T-shirts listing
-08 · Waafas World,ShopSearch-m,project/ShopSearch-m.dc.html,390,844,Phone · search results
-08 · Waafas World,ShopDeals-m,project/ShopDeals-m.dc.html,390,844,Phone · Deals
-08 · Waafas World,ShopProduct-m,project/ShopProduct-m.dc.html,390,844,"Phone · product page, T-shirt"
-08 · Waafas World,ShopProduct-m-hp,project/ShopProduct-m-hp.dc.html,390,844,Phone · headphones
-08 · Waafas World,ShopProduct-m-toner,project/ShopProduct-m-toner.dc.html,390,844,Phone · toner
-08 · Waafas World,ShopCart-m,project/ShopCart-m.dc.html,390,844,Phone · cart
-08 · Waafas World,ShopCart-m-empty,project/ShopCart-m-empty.dc.html,390,844,Phone · empty cart
-08 · Waafas World,ShopCheckout-m,project/ShopCheckout-m.dc.html,390,844,Phone · checkout
-08 · Waafas World,ShopDone-m,project/ShopDone-m.dc.html,390,844,"Phone · order placed, ORD-261008-0042"
-08 · Waafas World,ShopTrack-m,project/ShopTrack-m.dc.html,390,844,Phone · track order
-08 · Waafas World,ShopFinder-m,project/ShopFinder-m.dc.html,390,844,Phone · Find by model
-08 · Waafas World,Printing-m,project/Printing-m.dc.html,390,844,Phone · Printing Solutions
-08 · Waafas World,Trading-m,project/Trading-m.dc.html,390,844,Phone · International Trading
-08 · Waafas World,Shop,project/Shop.dc.html,1440,5832,"Desktop · Waafas World home (Play: carousel, countdown, Add to cart)"
-08 · Waafas World,ShopList,project/ShopList.dc.html,1440,2710,"Desktop · Electronics & Gadgets listing (filters, sort and Add work)"
-08 · Waafas World,ShopProduct,project/ShopProduct.dc.html,1440,3292,"Desktop · product page, T-shirt (Play: colour and size change price, stock, SKU)"
-08 · Waafas World,ShopCart,project/ShopCart.dc.html,1440,2315,"Desktop · cart (quantities, save for later, coupon WELCOME10)"
-08 · Waafas World,ShopCheckout,project/ShopCheckout.dc.html,1440,2702,"Desktop · checkout (delivery, payment and VAT invoice switch)"
-08 · Waafas World,ShopDone,project/ShopDone.dc.html,1440,1694,"Desktop · order placed, ORD-261008-0042"
-08 · Waafas World,ShopTrack,project/ShopTrack.dc.html,1440,1966,"Desktop · track order, out for delivery"
-08 · Waafas World,ShopFinder,project/ShopFinder.dc.html,1440,2351,"Desktop · Find by model (brand, model, part code)"
-08 · Waafas World,ShopCats,project/ShopCats.dc.html,1440,1748,Desktop · all categories
-08 · Waafas World,ShopProduct-pb,project/ShopProduct-pb.dc.html,1440,3345,"Desktop · power bank, capacity options"
-08 · Waafas World,ShopProduct-hp,project/ShopProduct-hp.dc.html,1440,3180,"Desktop · headphones, colour options"
-08 · Waafas World,ShopProduct-toner,project/ShopProduct-toner.dc.html,1440,3280,Desktop · toner with Compatible with
-08 · Waafas World,ShopSearch,project/ShopSearch.dc.html,1440,2734,Desktop · search results for “power bank”
-08 · Waafas World,ShopDeals,project/ShopDeals.dc.html,1440,2668,"Desktop · Deals, ends Sunday"
-08 · Waafas World,ShopList-printers,project/ShopList-printers.dc.html,1440,2382,Desktop · Printers & Supplies with Find by model
-08 · Waafas World,ShopList-empty,project/ShopList-empty.dc.html,1440,2215,"Desktop · listing, no match"
-08 · Waafas World,ShopFinder-part,project/ShopFinder-part.dc.html,1440,1976,Desktop · Find by part code CF280A
-08 · Waafas World,ShopFinder-none,project/ShopFinder-none.dc.html,1440,1976,Desktop · part code not found
-08 · Waafas World,Shop-mini,project/Shop-mini.dc.html,1440,900,Desktop · cart drawer open
-08 · Waafas World,Shop-mega,project/Shop-mega.dc.html,1440,900,Desktop · All categories open
-08 · Waafas World,Shop-suggest,project/Shop-suggest.dc.html,1440,900,Desktop · search suggestions while typing “pow”
-08 · Waafas World,Shop-bulk,project/Shop-bulk.dc.html,1440,900,Desktop · corporate bulk-order request
-08 · Waafas World,ShopProduct-video,project/ShopProduct-video.dc.html,1440,900,Desktop · product video open
-08 · Waafas World,ShopProduct-bulk,project/ShopProduct-bulk.dc.html,1440,900,Desktop · corporate price request
-08 · Waafas World,ShopCart-empty,project/ShopCart-empty.dc.html,1440,1803,Desktop · empty cart
-08 · Waafas World,ShopCart-coupon,project/ShopCart-coupon.dc.html,1440,2338,Desktop · coupon that has expired
-08 · Waafas World,ShopCheckout-err,project/ShopCheckout-err.dc.html,1440,2786,Desktop · checkout with errors
-08 · Waafas World,ShopDone-bank,project/ShopDone-bank.dc.html,1440,1993,"Desktop · order placed, pay by bank transfer"
-08 · Waafas World,ShopTrack-nf,project/ShopTrack-nf.dc.html,1440,1581,Desktop · order not found
-08 · Waafas World,ShopTrack-delivered,project/ShopTrack-delivered.dc.html,1440,2030,Desktop · delivered
-08 · Waafas World,Printing,project/Printing.dc.html,1440,3292,Desktop · Printing Solutions (quote form)
-08 · Waafas World,Trading,project/Trading.dc.html,1440,3493,Desktop · International Trading (RFQ form)
-08 · Waafas World,Printing-done,project/Printing-done.dc.html,1440,2100,"Desktop · quote sent, PRN-261008-0015"
-08 · Waafas World,Trading-done,project/Trading-done.dc.html,1440,2100,"Desktop · RFQ sent, TRD-261008-0009"
+08 · Waafa’s World,Shop-m,project/Shop-m.dc.html,390,844,Phone · Waafa’s World home
+08 · Waafa’s World,Shop-m-mini,project/Shop-m-mini.dc.html,390,844,Phone · cart drawer
+08 · Waafa’s World,ShopCats-m,project/ShopCats-m.dc.html,390,844,Phone · all categories
+08 · Waafa’s World,ShopCats-m-printers,project/ShopCats-m-printers.dc.html,390,844,"Phone · categories, Printers & Supplies"
+08 · Waafa’s World,ShopList-m,project/ShopList-m.dc.html,390,844,Phone · Electronics & Gadgets listing
+08 · Waafa’s World,ShopList-m-filters,project/ShopList-m-filters.dc.html,390,844,Phone · filters sheet
+08 · Waafa’s World,ShopList-m-fashion,project/ShopList-m-fashion.dc.html,390,844,Phone · T-shirts listing
+08 · Waafa’s World,ShopSearch-m,project/ShopSearch-m.dc.html,390,844,Phone · search results
+08 · Waafa’s World,ShopDeals-m,project/ShopDeals-m.dc.html,390,844,Phone · Deals
+08 · Waafa’s World,ShopProduct-m,project/ShopProduct-m.dc.html,390,844,"Phone · product page, T-shirt"
+08 · Waafa’s World,ShopProduct-m-hp,project/ShopProduct-m-hp.dc.html,390,844,Phone · headphones
+08 · Waafa’s World,ShopProduct-m-toner,project/ShopProduct-m-toner.dc.html,390,844,Phone · toner
+08 · Waafa’s World,ShopCart-m,project/ShopCart-m.dc.html,390,844,Phone · cart
+08 · Waafa’s World,ShopCart-m-empty,project/ShopCart-m-empty.dc.html,390,844,Phone · empty cart
+08 · Waafa’s World,ShopCheckout-m,project/ShopCheckout-m.dc.html,390,844,Phone · checkout
+08 · Waafa’s World,ShopDone-m,project/ShopDone-m.dc.html,390,844,"Phone · order placed, ORD-261008-0042"
+08 · Waafa’s World,ShopTrack-m,project/ShopTrack-m.dc.html,390,844,Phone · track order
+08 · Waafa’s World,ShopFinder-m,project/ShopFinder-m.dc.html,390,844,Phone · Find by model
+08 · Waafa’s World,Printing-m,project/Printing-m.dc.html,390,844,Phone · Printing Solutions
+08 · Waafa’s World,Trading-m,project/Trading-m.dc.html,390,844,Phone · International Trading
+08 · Waafa’s World,Shop,project/Shop.dc.html,1440,5832,"Desktop · Waafa’s World home (Play: carousel, countdown, Add to cart)"
+08 · Waafa’s World,ShopList,project/ShopList.dc.html,1440,2710,"Desktop · Electronics & Gadgets listing (filters, sort and Add work)"
+08 · Waafa’s World,ShopProduct,project/ShopProduct.dc.html,1440,3292,"Desktop · product page, T-shirt (Play: colour and size change price, stock, SKU)"
+08 · Waafa’s World,ShopCart,project/ShopCart.dc.html,1440,2315,"Desktop · cart (quantities, save for later, coupon WELCOME10)"
+08 · Waafa’s World,ShopCheckout,project/ShopCheckout.dc.html,1440,2702,"Desktop · checkout (delivery, payment and VAT invoice switch)"
+08 · Waafa’s World,ShopDone,project/ShopDone.dc.html,1440,1694,"Desktop · order placed, ORD-261008-0042"
+08 · Waafa’s World,ShopTrack,project/ShopTrack.dc.html,1440,1966,"Desktop · track order, out for delivery"
+08 · Waafa’s World,ShopFinder,project/ShopFinder.dc.html,1440,2351,"Desktop · Find by model (brand, model, part code)"
+08 · Waafa’s World,ShopCats,project/ShopCats.dc.html,1440,1748,Desktop · all categories
+08 · Waafa’s World,ShopProduct-pb,project/ShopProduct-pb.dc.html,1440,3345,"Desktop · power bank, capacity options"
+08 · Waafa’s World,ShopProduct-hp,project/ShopProduct-hp.dc.html,1440,3180,"Desktop · headphones, colour options"
+08 · Waafa’s World,ShopProduct-toner,project/ShopProduct-toner.dc.html,1440,3280,Desktop · toner with Compatible with
+08 · Waafa’s World,ShopSearch,project/ShopSearch.dc.html,1440,2734,Desktop · search results for “power bank”
+08 · Waafa’s World,ShopDeals,project/ShopDeals.dc.html,1440,2668,"Desktop · Deals, ends Sunday"
+08 · Waafa’s World,ShopList-printers,project/ShopList-printers.dc.html,1440,2382,Desktop · Printers & Supplies with Find by model
+08 · Waafa’s World,ShopList-empty,project/ShopList-empty.dc.html,1440,2215,"Desktop · listing, no match"
+08 · Waafa’s World,ShopFinder-part,project/ShopFinder-part.dc.html,1440,1976,Desktop · Find by part code CF280A
+08 · Waafa’s World,ShopFinder-none,project/ShopFinder-none.dc.html,1440,1976,Desktop · part code not found
+08 · Waafa’s World,Shop-mini,project/Shop-mini.dc.html,1440,900,Desktop · cart drawer open
+08 · Waafa’s World,Shop-mega,project/Shop-mega.dc.html,1440,900,Desktop · All categories open
+08 · Waafa’s World,Shop-suggest,project/Shop-suggest.dc.html,1440,900,Desktop · search suggestions while typing “pow”
+08 · Waafa’s World,Shop-bulk,project/Shop-bulk.dc.html,1440,900,Desktop · corporate bulk-order request
+08 · Waafa’s World,ShopProduct-video,project/ShopProduct-video.dc.html,1440,900,Desktop · product video open
+08 · Waafa’s World,ShopProduct-bulk,project/ShopProduct-bulk.dc.html,1440,900,Desktop · corporate price request
+08 · Waafa’s World,ShopCart-empty,project/ShopCart-empty.dc.html,1440,1803,Desktop · empty cart
+08 · Waafa’s World,ShopCart-coupon,project/ShopCart-coupon.dc.html,1440,2338,Desktop · coupon that has expired
+08 · Waafa’s World,ShopCheckout-err,project/ShopCheckout-err.dc.html,1440,2786,Desktop · checkout with errors
+08 · Waafa’s World,ShopDone-bank,project/ShopDone-bank.dc.html,1440,1993,"Desktop · order placed, pay by bank transfer"
+08 · Waafa’s World,ShopTrack-nf,project/ShopTrack-nf.dc.html,1440,1581,Desktop · order not found
+08 · Waafa’s World,ShopTrack-delivered,project/ShopTrack-delivered.dc.html,1440,2030,Desktop · delivered
+08 · Waafa’s World,Printing,project/Printing.dc.html,1440,3292,Desktop · Printing Solutions (quote form)
+08 · Waafa’s World,Trading,project/Trading.dc.html,1440,3493,Desktop · International Trading (RFQ form)
+08 · Waafa’s World,Printing-done,project/Printing-done.dc.html,1440,2100,"Desktop · quote sent, PRN-261008-0015"
+08 · Waafa’s World,Trading-done,project/Trading-done.dc.html,1440,2100,"Desktop · RFQ sent, TRD-261008-0009"
 06 · Packages & group fares,Packages-m,project/Packages-m.dc.html,390,844,Phone · tour packages
 06 · Packages & group fares,Packages-m-filters,project/Packages-m-filters.dc.html,390,844,Phone · filters sheet
 06 · Packages & group fares,PackageDetail-m,project/PackageDetail-m.dc.html,390,844,Phone · package page with booking bar

@@ -51,8 +51,8 @@ Install shadcn/ui components with the CLI into `components/ui`. Copy 21st.dev co
 
 | Piece | shadcn/ui and libraries | 21st.dev reference | Notes |
 | --- | --- | --- | --- |
-| Header, More menu, Waafas World panel | NavigationMenu, DropdownMenu, Sheet | Mega Menu | Logo is never recoloured. The WAAFA logo appears once, in the main header; the Waafas World name in the store bar, mega menu, Home band and emails is text only (no second mark) |
-| Bottom tab bar | Custom nav, Motion layoutId pill | — | Tabs: Home, Packages, **Waafas World** (raised W disc), Visa, More |
+| Header, More menu, Waafa’s World panel | NavigationMenu, DropdownMenu, Sheet | Mega Menu | Logo is never recoloured. The WAAFA logo appears once, in the main header; the Waafa’s World name in the store bar, mega menu, Home band and emails is text only (no second mark) |
+| Bottom tab bar | Custom nav, Motion layoutId pill | — | Tabs: Home, Packages, **Waafa’s World** (raised W disc), Visa, More |
 | Search card and pickers | Tabs, Popover, Command, Calendar (range), Drawer (vaul) | — | Phones: full-screen pickers; desktop: popovers |
 | Travellers and quantity | Popover + button group | Quantity Stepper (#29940) | Infants ≤ adults |
 | Forms | Form (react-hook-form + zod), Input, Select, RadioGroup, Checkbox, Switch, Textarea | OTP Input | One zod schema with the API; Turnstile on submit |
@@ -123,7 +123,7 @@ and check keyboard use, reduced motion and bundle size before shipping. The full
 1. **Thu 8 – Fri 9 Oct · foundation** — monorepo, Next.js, Tailwind tokens, fonts, shadcn init; layout shell (Header, Footer, TabBar, MotionKit, breadcrumbs); Home with static data.
 2. **Sat 10 Oct · search and Manual mode** — SearchCard and pickers; one results shell; Manual query forms for flights and hotels; group fares; success pages; `POST /leads` with an idempotency key.
 3. **Sun 11 Oct · packages, visa, content** — packages and detail, Plan my trip, visa list/country/apply/track, Visa Guide; Gallery, Feedback, About, Contact, FAQs, Blog and policies.
-4. **Mon 12 Oct · Waafas World and Admin** — store home, listing, product with variants, cart, checkout (COD and offline), order success and tracking, Find by model, printing and trading forms; Admin sign-in, leads, booking modes, catalogue, orders, content. Staging sign-off.
+4. **Mon 12 Oct · Waafa’s World and Admin** — store home, listing, product with variants, cart, checkout (COD and offline), order success and tracking, Find by model, printing and trading forms; Admin sign-in, leads, booking modes, catalogue, orders, content. Staging sign-off.
 5. **Tue 13 Oct · launch** — SEO and sitemap, GA4 and Pixel after consent, Lighthouse CI, Playwright smoke tests on phone sizes, go live. Then P1 (accounts, online payment, Bangla) and P2 (Live bodies against fixtures).
 
 ## Kick-off prompt for Claude Code
@@ -151,11 +151,11 @@ Never:
 - fake live availability — Manual mode fares are indicative and confirmed by an expert before payment;
 - invent reviews or testimonials — the feedback wall shows approved submissions only;
 - make passport or visa documents public — private bucket, signed and logged links;
-- list restricted items in Waafas World.
+- list restricted items in Waafa’s World.
 
 Always:
-- keep every page usable on a 320 px phone with the bottom tab bar; the tab label is **Waafas World** and the route is `/shop`;
-- show the WAAFA logo once per page (main header); write "Waafas World" as text next to it, never with a second logo;
+- keep every page usable on a 320 px phone with the bottom tab bar; the tab label is **Waafa’s World** and the route is `/shop`;
+- show the WAAFA logo once per page (main header); write "Waafa’s World" as text next to it, never with a second logo;
 - show prices in taka with VAT included, ৳ sign and lakh grouping (৳1,46,480); show online payment only when it is live;
 - use photos from Unsplash with credits (Photo brief) or Waafa's own product shots;
 - turn movement into short fades under reduced motion;

@@ -80,7 +80,7 @@ footer's calm. The work surface stays light (mist-50 page, white panels).
 | | Visa countries | `/content/visaCountries` | — | admin, visa-officer, content-editor |
 | | Visa guides | `/content/visaGuides` | — | admin, visa-officer, content-editor |
 | | Airlines and airports (baggage rules as a tab) | `/content/airlines` | — | admin, travel-sales |
-| **Waafas World** | Products | `/content/products` | low stock | admin, shop-manager |
+| **Waafa’s World** | Products | `/content/products` | low stock | admin, shop-manager |
 | | Categories | `/content/categories` | — | admin, shop-manager |
 | | Brands | `/content/brands` | — | admin, shop-manager |
 | | Collections | `/content/collections` | — | admin, shop-manager |
@@ -328,14 +328,14 @@ Grid (default) and list views; search; filters Photos, Videos, Unused; multi-upl
   (its media slot), and the same preview.
 - **Website › Menus** (`/website/menus`, D245):
   - the ten menus grouped the way the site shows them:
-    - Header: links, the More panel and the Waafas World panel cards
+    - Header: links, the More panel and the Waafa’s World panel cards
     - Phone: the menu, the tab bar and the More sheet
     - Footer: three columns and the policy links, with a link to the footer settings
   - each item says where it goes in words and has a Show switch, Edit, and a menu with Move up, Move down and
     Remove (Undo puts it back where it was); Add an item; drag to reorder; every change saves at once, one after
     another
   - the item sheet shows only what that menu uses (icon, one line under it, card link words)
-  - the tab bar keeps its five tabs in fixed places, always on show; the middle one (Waafas World) is locked
+  - the tab bar keeps its five tabs in fixed places, always on show; the middle one (Waafa’s World) is locked
 - **Link picker** (`components/admin/schema/LinkPicker`, D246): every link field in every editor, and every menu item,
   picks where it goes by name:
   - a site page

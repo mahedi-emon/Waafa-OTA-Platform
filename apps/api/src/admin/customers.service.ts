@@ -59,7 +59,7 @@ export function sortCustomers(groups: Group[], sort: CustomerSort | undefined): 
 }
 
 /**
- * Customers (#111): one row per phone number across leads and Waafas World orders, for the modules this person
+ * Customers (#111): one row per phone number across leads and Waafa’s World orders, for the modules this person
  * works on; orders only for store and accounts roles. Customer accounts arrive in Phase D, so the phone is the key.
  */
 @Injectable()

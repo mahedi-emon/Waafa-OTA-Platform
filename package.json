@@ -1,7 +1,7 @@
 {
   "name": "waafa-ota-platform",
   "private": true,
-  "description": "WAAFA: Waafa Tours and Travel + Waafas World — public site, store, admin and API",
+  "description": "WAAFA: Waafa Tours and Travel + Waafa’s World — public site, store, admin and API",
   "packageManager": "pnpm@12.10.1",
   "engines": {
     "node": ">=20.9.0"

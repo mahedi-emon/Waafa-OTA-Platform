@@ -381,7 +381,7 @@ export type EmiBank = z.infer<typeof EmiBankSchema>;
 export const ServicePageKeySchema = z.enum(["printing", "trading"]);
 
 /**
- * A Waafa International service page inside Waafas World (Printing Solutions, International Trading): the hero, the
+ * A Waafa International service page inside Waafa’s World (Printing Solutions, International Trading): the hero, the
  * services, the process steps and the questions, all admin-edited. Form field labels and option lists are UI chrome
  * (next-intl); the lead goes out with the PRN or TRD module.
  */

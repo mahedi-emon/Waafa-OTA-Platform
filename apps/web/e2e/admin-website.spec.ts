@@ -306,8 +306,8 @@ test("the phone tab bar keeps its five tabs in place, with the middle one locked
   await page.goto("/secure-admin-control/website/menus");
   const tabs = page.getByRole("region", { name: "Phone tab bar" });
   await expect(tabs.getByRole("listitem")).toHaveCount(5);
-  await expect(tabs.getByText("Always Waafas World, in the middle")).toBeVisible();
-  await expect(tabs.getByRole("button", { name: "Edit Waafas World" })).toHaveCount(0);
+  await expect(tabs.getByText("Always Waafa’s World, in the middle")).toBeVisible();
+  await expect(tabs.getByRole("button", { name: "Edit Waafa’s World" })).toHaveCount(0);
   await expect(tabs.getByRole("button", { name: /^Drag to reorder/ })).toHaveCount(0);
   await expect(tabs.getByRole("switch")).toHaveCount(0);
   await expect(tabs.getByRole("button", { name: "Add an item" })).toHaveCount(0);

@@ -4,7 +4,7 @@
 > here or in a page file disagrees with `docs/design/DESIGN.md` or PRD §16, those win (Decision D6).
 > Tokens live in `apps/web/src/app/globals.css`; never hard-code a value from this file.
 
-**Project:** WAAFA (Waafa Tours and Travel + Waafas World) · **Category:** travel agency + single-vendor store ·
+**Project:** WAAFA (Waafa Tours and Travel + Waafa’s World) · **Category:** travel agency + single-vendor store ·
 **Generated:** 9 Oct 2026 with `search.py --design-system --persist -p "WAAFA"`, then reconciled by hand (A1b, #34).
 
 ## What the generator proposed, and what we kept

@@ -27,7 +27,7 @@
           <div class="flex flex-col gap-4">
             <span class="v-eyebrow">About us</span>
             <h1 class="v-h1 v-h1-page">Connecting the world, creating the future</h1>
-            <p class="v-lead">WAAFA stands for Worldwide Alliance for Advancement, Future &amp; Achievement. Waafa International began in 2010 serving Dhaka’s offices with printing and toner. In 2026 we opened Waafa Tours and Travel and Waafas World, our online store, with the same promise: people you can call, and an office you can visit.</p>
+            <p class="v-lead">WAAFA stands for Worldwide Alliance for Advancement, Future &amp; Achievement. Waafa International began in 2010 serving Dhaka’s offices with printing and toner. In 2026 we opened Waafa Tours and Travel and Waafa’s World, our online store, with the same promise: people you can call, and an office you can visit.</p>
             <div class="flex flex-wrap gap-2"><a class="w-btn w-btn-primary" href="{{L.Contact}}"><span class="i i-map-pin"></span>Visit our office</a><a class="w-btn w-btn-secondary" href="{{L.Packages}}">See our tours</a></div>
           </div>
           <div class="wc-abouthero-media">
@@ -44,7 +44,7 @@
         <div class="wc-lines">
           <a class="wc-line" href="{{L.Packages}}"><span class="w-tile"><span class="i i-plane"></span></span><h3>Waafa Tours and Travel</h3><p>Flights, hotels, tour packages and group fares, with an expert who confirms every fare before you pay.</p><span class="v-link">Plan a trip<span class="i i-arrow-right"></span></span></a>
           <a class="wc-line" href="{{L.Visa}}"><span class="w-tile"><span class="i i-passport"></span></span><h3>Visa services</h3><p>Tourist, business, student, medical and transit visas, with a document check before anything reaches an embassy.</p><span class="v-link">Check a country<span class="i i-arrow-right"></span></span></a>
-          <a class="wc-line" href="{{L.Shop}}"><span class="w-tile"><span class="i i-shopping-bag"></span></span><h3>Waafas World</h3><p>Our online store at waafasworld.com: office supplies, electronics, fashion and more, with cash on delivery.</p><span class="v-link">Open the store<span class="i i-arrow-right"></span></span></a>
+          <a class="wc-line" href="{{L.Shop}}"><span class="w-tile"><span class="i i-shopping-bag"></span></span><h3>Waafa’s World</h3><p>Our online store at waafasworld.com: office supplies, electronics, fashion and more, with cash on delivery.</p><span class="v-link">Open the store<span class="i i-arrow-right"></span></span></a>
           <a class="wc-line" href="{{L.Trading}}"><span class="w-tile"><span class="i i-ship"></span></span><h3>Printing and trading</h3><p>Printing Solutions for offices, and International Trading: import, export and sourcing on request.</p><span class="v-link">Get a quote<span class="i i-arrow-right"></span></span></a>
         </div>
       </div>
@@ -70,7 +70,7 @@
         <div class="wc-tl">
           <div class="wc-tl-item"><b>2010</b><p>Waafa International starts in Motijheel, supplying printing products and toner to Dhaka’s offices.</p></div>
           <div class="wc-tl-item"><b>2010–2025</b><p>Long-term corporate clients, built on trust, delivery on time and honest prices.</p></div>
-          <div class="wc-tl-item"><b>2026</b><p>A new chapter: Waafa Tours and Travel, visas, international trading and the Waafas World store.</p></div>
+          <div class="wc-tl-item"><b>2026</b><p>A new chapter: Waafa Tours and Travel, visas, international trading and the Waafa’s World store.</p></div>
           <div class="wc-tl-item is-next"><b>Next</b><p>Live flight booking, and more of Bangladesh connected with the world.</p></div>
         </div>
         <div class="v-values wc-vals w-stagger-in">
@@ -81,7 +81,7 @@
 
     <section class="v-sec is-tint">
       <div class="w-wrap flex flex-col gap-6">
-        <div class="v-head"><div class="v-head-text"><span class="v-eyebrow on-tint">Our team</span><h2 class="v-h2">The people behind WAAFA</h2><p class="v-lead">Trip planners, visa specialists and the Waafas World team, all in one Motijheel office.</p></div><span class="v-sample">Sample team</span></div>
+        <div class="v-head"><div class="v-head-text"><span class="v-eyebrow on-tint">Our team</span><h2 class="v-h2">The people behind WAAFA</h2><p class="v-lead">Trip planners, visa specialists and the Waafa’s World team, all in one Motijheel office.</p></div><span class="v-sample">Sample team</span></div>
         <div class="wc-team">
           <sc-for list="{{team}}" as="t" hint-placeholder-count="6"><article class="wc-member"><div class="wc-member-pic">{{t.ini}}<small>Photo from Admin · 3:4</small></div><div><b>{{t.name}}</b><span>{{t.role}}</span></div><p>{{t.bio}}</p></article></sc-for>
         </div>
@@ -117,7 +117,7 @@ class Component extends DCLogic {
     const open = _dow !== 5 && _mins >= 600 && _mins < 1080;
     const hours = { cls: 'v-hours ' + (open ? 'is-open' : 'is-closed'), label: open ? 'Open now · until 6 pm' : (_dow === 4 || _dow === 5 ? 'Closed · opens Saturday at 10 am' : 'Closed · opens at 10 am') };
     const values = [['i i-shield-check', 'Trust', 'Every relationship starts with it. We tell you the price and the rules before you pay.'], ['i i-award', 'Quality', 'Dependable products and service that meet office and traveller expectations.'], ['i i-lightbulb', 'Innovation', 'Smarter tools and new services, from Find by model to online visa tracking.'], ['i i-gem', 'Excellence', 'Care in every step: product, service, communication and follow-up.'], ['i i-handshake', 'Integrity', 'Honest, ethical business. Prices labelled clearly, nothing hidden.'], ['i i-globe', 'Global vision', 'Connecting Bangladesh with the wider world through travel and trade.']].map(v => ({ icon: v[0], t: v[1], p: v[2] }));
-    const team = [['Arif Hossain', 'AH', 'Managing Director', 'Has led Waafa International since 2010 and opened Waafa Tours and Travel in 2026. Still visits clients himself.'], ['Nusrat Jahan', 'NJ', 'Head of Travel Sales', 'Plans family holidays and group trips. Her favourite: a slow week in Pokhara.'], ['Tanvir Ahmed', 'TA', 'Visa Officer', 'Checks every page of your file before it reaches an embassy, so nothing comes back for a missing paper.'], ['Sadia Rahman', 'SR', 'Travel Consultant', 'Finds the fare that fits your dates and explains baggage and change rules in plain words.'], ['Mahmudul Karim', 'MK', 'Store Manager', 'Runs Waafas World, from office supplies to gadgets, and still knows which toner fits which printer.'], ['Farzana Haque', 'FH', 'Accounts and Payments', 'Confirms bKash, Nagad and bank payments and makes sure every receipt is right.']].map(t => ({ name: t[0], ini: t[1], role: t[2], bio: t[3] }));
+    const team = [['Arif Hossain', 'AH', 'Managing Director', 'Has led Waafa International since 2010 and opened Waafa Tours and Travel in 2026. Still visits clients himself.'], ['Nusrat Jahan', 'NJ', 'Head of Travel Sales', 'Plans family holidays and group trips. Her favourite: a slow week in Pokhara.'], ['Tanvir Ahmed', 'TA', 'Visa Officer', 'Checks every page of your file before it reaches an embassy, so nothing comes back for a missing paper.'], ['Sadia Rahman', 'SR', 'Travel Consultant', 'Finds the fare that fits your dates and explains baggage and change rules in plain words.'], ['Mahmudul Karim', 'MK', 'Store Manager', 'Runs Waafa’s World, from office supplies to gadgets, and still knows which toner fits which printer.'], ['Farzana Haque', 'FH', 'Accounts and Payments', 'Confirms bKash, Nagad and bank payments and makes sure every receipt is right.']].map(t => ({ name: t[0], ini: t[1], role: t[2], bio: t[3] }));
     return { L, m: !!p.m, hours, values, team };
   }
 }

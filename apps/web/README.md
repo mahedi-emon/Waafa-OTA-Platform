@@ -1,6 +1,6 @@
 # @waafa/web
 
-The public site, Waafas World (`/shop`) and the admin (`/secure-admin-control`; `/admin` is a 404) in one Next.js App Router app.
+The public site, Waafa’s World (`/shop`) and the admin (`/secure-admin-control`; `/admin` is a 404) in one Next.js App Router app.
 Rules live in the repo-root `CLAUDE.md`; design in `docs/design/DESIGN.md` and `docs/design/MOTION.md`.
 
 ## Commands (run from the repo root)

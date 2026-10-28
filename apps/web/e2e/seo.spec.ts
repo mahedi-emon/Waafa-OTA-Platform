@@ -89,7 +89,8 @@ test("store, About, Gallery, Visa Guide and visa services describe themselves (i
 }) => {
   await page.goto("/shop");
   let nodes = await structuredData(page);
-  expect(typed(nodes, "OnlineStore")?.name).toBe("Waafas World");
+  expect(typed(nodes, "OnlineStore")?.name).toBe("Waafa's World");
+  expect(typed(nodes, "OnlineStore")?.alternateName).toEqual(["Waafas World"]);
   expect(typed(nodes, "ItemList")?.numberOfItems).toBeGreaterThan(0);
 
   await page.goto("/about-us");
@@ -97,7 +98,7 @@ test("store, About, Gallery, Visa Guide and visa services describe themselves (i
   expect(typed(nodes, "AboutPage")).toBeTruthy();
   const organization = typed(nodes, "Organization");
   expect(organization?.["@id"]).toMatch(/#organization$/);
-  expect(JSON.stringify(organization?.brand)).toContain("Waafas World");
+  expect(JSON.stringify(organization?.brand)).toContain("Waafa's World");
 
   await page.goto("/gallery");
   nodes = await structuredData(page);
@@ -210,7 +211,13 @@ test("Home names the brand in its h1 and its structured data (issue 173)", async
     node.name,
     ...((node.alternateName as string[] | undefined) ?? []),
   ]);
-  for (const name of ["Waafa Tours and Travel", "Waafa International", "WAAFA", "Waafas World"]) {
+  for (const name of [
+    "Waafa Tours and Travel",
+    "Waafa International",
+    "WAAFA",
+    "Waafa's World",
+    "Waafas World",
+  ]) {
     expect(names, name).toContain(name);
   }
 });
@@ -280,7 +287,7 @@ test("llms.txt sums up the business for AI search, without prices (issue 184)", 
   expect(body.startsWith("# Waafa Tours and Travel\n")).toBe(true);
   for (const text of [
     "Waafa International",
-    "Waafas World",
+    "Waafa’s World",
     "/visa/thailand)",
     "/tour-packages/maldives-island-stay)",
     "+880 1823-232241, +880 1823-232242",

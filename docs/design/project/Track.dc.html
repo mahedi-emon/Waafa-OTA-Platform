@@ -24,7 +24,7 @@
       <svg class="wc-head-rib" viewBox="0 0 760 260" aria-hidden="true"><defs><linearGradient id="wc-rib" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#003FBE" stop-opacity="0"></stop><stop offset=".5" stop-color="#0D8CEE" stop-opacity=".45"></stop><stop offset="1" stop-color="#39CCE9" stop-opacity=".7"></stop></linearGradient></defs><path d="M10 230 C 220 230 300 60 480 60 C 620 60 660 140 750 40"></path></svg>
       <div class="w-wrap">
         <nav class="w-crumbs" aria-label="Breadcrumb"><a href="{{L.Home}}">Home</a><span class="i i-chevron-right"></span><span aria-current="page">Track</span></nav>
-        <div class="flex flex-col gap-3" style="max-width:720px;margin-top:20px"><span class="v-eyebrow">Track</span><h1 class="v-h1 v-h1-page">Where is my request?</h1><p class="v-lead">One box for every reference: flights, hotels, packages, visas, Waafas World orders and quotes.</p></div>
+        <div class="flex flex-col gap-3" style="max-width:720px;margin-top:20px"><span class="v-eyebrow">Track</span><h1 class="v-h1 v-h1-page">Where is my request?</h1><p class="v-lead">One box for every reference: flights, hotels, packages, visas, Waafa’s World orders and quotes.</p></div>
         <form class="wd-trackform" onSubmit="{{find}}">
           <label class="w-field"><span class="w-label">Reference number</span><input class="w-input" value="{{ref}}" onInput="{{typeRef}}" placeholder="e.g. PKG-261008-0021" autocapitalize="characters"><span class="wd-detect"><span class="i i-sparkles" style="width:14px;height:14px;color:var(--color-brand-700)"></span>Looks like <b>{{detected}}</b></span></label>
           <label class="w-field"><span class="w-label">Mobile number</span><input class="w-input" value="01712-345678" inputmode="tel"><span class="wd-detect">The one you gave us</span></label>
@@ -54,7 +54,7 @@
         </div>
         <aside class="flex flex-col gap-4">
           <div class="w-panel flex flex-col gap-3"><b class="text-navy" style="font:700 15px/1.2 var(--font-sans)">Which reference is which?</b>
-            <div class="wd-prefix"><div><code>FLT-</code>Flight</div><div><code>HTL-</code>Hotel</div><div><code>PKG-</code>Tour package</div><div><code>CTR-</code>Plan my trip</div><div><code>VSA-</code>Visa</div><div><code>ORD-</code>Waafas World order</div><div><code>QTE-</code>Corporate quote</div><div><code>PRN-</code>Printing quote</div><div><code>TRD-</code>Trading RFQ</div></div>
+            <div class="wd-prefix"><div><code>FLT-</code>Flight</div><div><code>HTL-</code>Hotel</div><div><code>PKG-</code>Tour package</div><div><code>CTR-</code>Plan my trip</div><div><code>VSA-</code>Visa</div><div><code>ORD-</code>Waafa’s World order</div><div><code>QTE-</code>Corporate quote</div><div><code>PRN-</code>Printing quote</div><div><code>TRD-</code>Trading RFQ</div></div>
           </div>
           <a class="v-gfnote" href="{{L.Login}}" style="margin:0"><span class="w-tile"><span class="i i-circle-user"></span></span><p><b>See everything at once.</b> Log in with your mobile number to see all your requests and orders.</p></a>
         </aside>
@@ -76,7 +76,7 @@ class Component extends DCLogic {
     ['Home','OfflinePay','Login'].forEach(k => { L[k] = k + sx + '.dc.html'; });
     const nf = st.nf !== undefined ? st.nf : !!p.nf;
     const ref = st.ref !== undefined ? st.ref : (nf ? 'PKG-261008-0099' : 'PKG-261008-0021');
-    const PFX = { FLT: 'a flight request', HTL: 'a hotel request', PKG: 'a tour package request', CTR: 'a Plan my trip request', VSA: 'a visa application', ORD: 'a Waafas World order', QTE: 'a corporate quote', PRN: 'a printing quote', TRD: 'a trading RFQ' };
+    const PFX = { FLT: 'a flight request', HTL: 'a hotel request', PKG: 'a tour package request', CTR: 'a Plan my trip request', VSA: 'a visa application', ORD: 'a Waafa’s World order', QTE: 'a corporate quote', PRN: 'a printing quote', TRD: 'a trading RFQ' };
     const pf = (ref || '').toUpperCase().slice(0, 3);
     return {
       L, m: !!p.m, ref, found: !nf, nf, detected: PFX[pf] || 'not a reference yet',

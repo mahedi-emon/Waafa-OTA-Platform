@@ -1,6 +1,6 @@
 /**
  * Whether a nav link points at the current section: Home only on "/", every other link on its route and below
- * (so "/shop/c/printers-and-supplies" keeps Waafas World active).
+ * (so "/shop/c/printers-and-supplies" keeps Waafa’s World active).
  */
 export function isActivePath(pathname: string | null, href?: string): boolean {
   if (pathname === null) return false;

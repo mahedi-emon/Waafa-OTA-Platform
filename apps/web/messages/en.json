@@ -2,7 +2,7 @@
   "Metadata": {
     "title": "Waafa Tours and Travel",
     "titleTemplate": "%s | Waafa",
-    "description": "Air tickets, visa processing, tour packages and hotel booking in Motijheel, Dhaka, plus Waafas World by Waafa International.",
+    "description": "Air tickets, visa processing, tour packages and hotel booking in Motijheel, Dhaka, plus Waafa’s World by Waafa International.",
     "services": {
       "catalogue": "Travel services",
       "flights": "Air tickets",
@@ -120,7 +120,7 @@
       "journey": "Our journey"
     },
     "store": {
-      "open": "Open Waafas World",
+      "open": "Open Waafa’s World",
       "bestSellers": "Best sellers this week",
       "categories": "Shop by category",
       "services": "Waafa International services",
@@ -1326,11 +1326,11 @@
     }
   },
   "Shop": {
-    "name": "Waafas World",
-    "metaTitle": "Waafas World: printer supplies and office products",
-    "metaDescription": "Waafas World by Waafa International. Genuine and compatible printer supplies, office products and everyday items, cash on delivery across Bangladesh.",
+    "name": "Waafa’s World",
+    "metaTitle": "Waafa’s World: printer supplies and office products",
+    "metaDescription": "Waafa’s World by Waafa International. Genuine and compatible printer supplies, office products and everyday items, cash on delivery across Bangladesh.",
     "bar": {
-      "label": "Waafas World",
+      "label": "Waafa’s World",
       "search": "Search products, brands and categories",
       "searchButton": "Search",
       "suggestions": "Suggestions",
@@ -1367,14 +1367,14 @@
       "brandsLead": "Brand pages list every product we stock.",
       "brandCount": "{count, plural, one {# product} other {# products}}",
       "newArrivals": "New arrivals",
-      "newArrivalsLead": "Added to Waafas World in the last 30 days.",
+      "newArrivalsLead": "Added to Waafa’s World in the last 30 days.",
       "recentlyViewed": "Recently viewed",
       "clear": "Clear",
       "services": "Waafa International services",
       "servicesLead": "Beyond the store: printing for offices, and trade across borders.",
       "corporateWhatsapp": "WhatsApp",
-      "corporateMessage": "Hi Waafa, I’d like a corporate quote for Waafas World products.",
-      "trust": "Why buy from Waafas World",
+      "corporateMessage": "Hi Waafa, I’d like a corporate quote for Waafa’s World products.",
+      "trust": "Why buy from Waafa’s World",
       "corporateCta": "Request a corporate quote"
     },
     "card": {
@@ -1408,14 +1408,14 @@
       "deal": "Deal"
     },
     "list": {
-      "breadcrumb": "Waafas World",
+      "breadcrumb": "Waafa’s World",
       "categoryLead": "Prices include VAT. Cash on delivery across Bangladesh.",
       "brandTitle": "{brand}",
       "brandLead": "Every {brand} product we stock.",
       "dealsTitle": "Deals of the week",
       "dealsLead": "Prices go back to normal when the timer ends.",
       "searchTitle": "Results for “{query}”",
-      "searchEmptyTitle": "Search Waafas World",
+      "searchEmptyTitle": "Search Waafa’s World",
       "searchLead": "Products, brands and categories.",
       "categoriesTitle": "All categories",
       "categoriesLead": "Everything we stock, by category.",
@@ -1445,7 +1445,7 @@
       "emptyBody": "Try removing a filter, or ask us on WhatsApp and we’ll source it for you.",
       "emptyClear": "Clear filters",
       "emptyWhatsapp": "Ask on WhatsApp",
-      "emptyMessage": "Hi Waafa, I’m looking for a product that isn’t on Waafas World yet: ",
+      "emptyMessage": "Hi Waafa, I’m looking for a product that isn’t on Waafa’s World yet: ",
       "bulkTitle": "Buying 20 or more?",
       "bulkBody": "Ask for a corporate price, delivered on your schedule with VAT invoices.",
       "bulkCta": "Get a corporate price",
@@ -1456,8 +1456,8 @@
       "endsIn": "Ends in",
       "any": "Any",
       "anyBrand": "Any brand",
-      "categoryMeta": "{category} at Waafas World. Prices include VAT, with cash on delivery across Bangladesh.",
-      "collectionMeta": "{name} at Waafas World: prices include VAT, with cash on delivery across Bangladesh."
+      "categoryMeta": "{category} at Waafa’s World. Prices include VAT, with cash on delivery across Bangladesh.",
+      "collectionMeta": "{name} at Waafa’s World: prices include VAT, with cash on delivery across Bangladesh."
     },
     "countdown": {
       "days": "days",
@@ -1553,7 +1553,7 @@
         "step3Title": "Delivered and billed",
         "step3Body": "On your schedule, with VAT invoices.",
         "whatsappMessage": "Hi Waafa, my corporate quote reference is {reference}",
-        "again": "Back to Waafas World"
+        "again": "Back to Waafa’s World"
       },
       "errors": {
         "companyRequired": "Tell us the company name",
@@ -1618,7 +1618,7 @@
       "minimum": "The minimum order is {amount}. Add {short} more to check out.",
       "payWith": "Pay with",
       "cod": "Cash on delivery",
-      "pricesNote": "Prices include VAT. Delivery charges are set by Waafas World.",
+      "pricesNote": "Prices include VAT. Delivery charges are set by Waafa’s World.",
       "loading": "Updating prices",
       "error": "We couldn’t update prices just now. Your cart is safe.",
       "retry": "Try again"
@@ -1750,7 +1750,7 @@
       "copied": "Copied",
       "copyFailed": "Copy failed",
       "step1Title": "We confirm your order",
-      "step1Cod": "A Waafas World teammate calls or messages you on {phone} to confirm the address.",
+      "step1Cod": "A Waafa’s World teammate calls or messages you on {phone} to confirm the address.",
       "step1Offline": "We check your transaction {trx} and confirm the payment, usually within one working day.",
       "step2Title": "We pack and ship",
       "step2Body": "You get the courier’s tracking number as soon as it ships.",
@@ -1761,14 +1761,14 @@
       "track": "Track this order",
       "continue": "Continue shopping",
       "whatsapp": "Message us on WhatsApp",
-      "whatsappMessage": "Hi Waafas World, my order number is {reference}.",
+      "whatsappMessage": "Hi Waafa’s World, my order number is {reference}.",
       "email": "A receipt goes to {email}."
     }
   },
   "Track": {
     "metaTitle": "Track a request or order",
     "title": "Track a request or order",
-    "lead": "Enter the reference from your confirmation and the phone number you gave us: a flight, hotel, holiday or visa request, or a Waafas World order.",
+    "lead": "Enter the reference from your confirmation and the phone number you gave us: a flight, hotel, holiday or visa request, or a Waafa’s World order.",
     "reference": "Reference",
     "referencePlaceholder": "FLT-261027-0042 or ORD-261008-0042",
     "phone": "Phone number",
@@ -1920,7 +1920,7 @@
         "step3Title": "You approve a fixed price",
         "step3Body": "No surprise charges.",
         "whatsappMessage": "Hi Waafa, my printing quote reference is {reference}.",
-        "again": "Back to Waafas World"
+        "again": "Back to Waafa’s World"
       }
     },
     "trading": {
@@ -1978,14 +1978,14 @@
         "step3Title": "You choose and confirm",
         "step3Body": "Price, terms and delivery date, before you pay.",
         "whatsappMessage": "Hi Waafa, my RFQ reference is {reference}.",
-        "again": "Back to Waafas World"
+        "again": "Back to Waafa’s World"
       }
     },
     "questions": "Good to know"
   },
   "About": {
     "metaTitle": "About Waafa Tours and Travel and Waafa International",
-    "metaDescription": "Waafa International has served Dhaka’s offices since 2010. Meet the team behind Waafa Tours and Travel and Waafas World in Motijheel.",
+    "metaDescription": "Waafa International has served Dhaka’s offices since 2010. Meet the team behind Waafa Tours and Travel and Waafa’s World in Motijheel.",
     "kicker": "About us",
     "visit": "Visit our office",
     "tours": "See our tours",
@@ -1997,7 +1997,7 @@
     "valuesTitle": "What we stand for",
     "teamKicker": "Our team",
     "teamTitle": "The people behind WAAFA",
-    "teamLead": "Trip planners, visa specialists and the Waafas World team, all in one Motijheel office.",
+    "teamLead": "Trip planners, visa specialists and the Waafa’s World team, all in one Motijheel office.",
     "sampleTeam": "Sample team",
     "sampleTeamNote": "Initials stand in until our team’s own photos are added in Admin.",
     "visitKicker": "Visit us",
@@ -2011,10 +2011,10 @@
     "metaDescription": "Call, WhatsApp, email or visit Waafa in Motijheel, Dhaka. Saturday to Thursday, 10 am to 6 pm.",
     "kicker": "Contact",
     "title": "Talk to a person, not a bot",
-    "lead": "One number for travel, visas, Waafas World orders, printing and trading. Call, WhatsApp, email or come to our office in Motijheel.",
+    "lead": "One number for travel, visas, Waafa’s World orders, printing and trading. Call, WhatsApp, email or come to our office in Motijheel.",
     "channels": {
       "call": "Call {phone}",
-      "callBody": "Ask for travel, visa or Waafas World.",
+      "callBody": "Ask for travel, visa or Waafa’s World.",
       "whatsapp": "Message us on WhatsApp",
       "whatsappBody": "Best for photos of documents, printer labels and order questions. We reply in office hours.",
       "email": "Email {email}",
@@ -2034,7 +2034,7 @@
         "flights": "Flights",
         "packages": "Tour packages",
         "visa": "Visa",
-        "shop": "Waafas World order",
+        "shop": "Waafa’s World order",
         "printing": "Printing",
         "trading": "Trading",
         "other": "Something else"
@@ -2078,7 +2078,7 @@
   },
   "Faqs": {
     "metaTitle": "FAQs: Air Tickets, Visas, Tours and Orders",
-    "metaDescription": "Answers on payments, refunds, visas, deliveries and how a booking works at Waafa Tours and Travel and Waafas World.",
+    "metaDescription": "Answers on payments, refunds, visas, deliveries and how a booking works at Waafa Tours and Travel and Waafa’s World.",
     "kicker": "FAQs",
     "title": "Answers before you ask",
     "lead": "Payments, refunds, visas, deliveries and how a booking works here. Can’t find it? We’re one call away.",
@@ -2093,7 +2093,7 @@
       "packages": "Tour packages",
       "visa": "Visa",
       "payments": "Payments",
-      "shop": "Waafas World",
+      "shop": "Waafa’s World",
       "account": "Your account"
     },
     "results": "{count, plural, =0 {No questions} one {# question} other {# questions}}",
@@ -2152,9 +2152,9 @@
           "action": "Check a country"
         },
         "shop": {
-          "title": "Get it from Waafas World",
+          "title": "Get it from Waafa’s World",
           "body": "Cash on delivery across Bangladesh, with prices that include VAT.",
-          "action": "Open Waafas World"
+          "action": "Open Waafa’s World"
         },
         "contact": {
           "title": "Questions about your trip?",
@@ -2169,14 +2169,14 @@
       "metaTitle": "Log in",
       "kicker": "My account",
       "title": "Log in to WAAFA",
-      "lead": "Sign in with your email or Google to see every request and order you have sent us. Booking, visas and Waafas World all work without an account too.",
+      "lead": "Sign in with your email or Google to see every request and order you have sent us. Booking, visas and Waafa’s World all work without an account too.",
       "google": "Continue with Google",
       "notReady": "Sign-in opens soon. Until then, every booking, visa request and order works as a guest, and we keep you posted by phone and email.",
       "guest": "Continue as a guest",
       "privacy": "We email a one-time code; there is no password to remember. With Google we only read your name and email address.",
       "benefitsTitle": "With an account",
       "benefit1": "Your flight, holiday and visa requests with their status",
-      "benefit2": "Your Waafas World orders and their progress",
+      "benefit2": "Your Waafa’s World orders and their progress",
       "benefit3": "One tap to sign in again on this phone",
       "deleted": "Your account is deleted. Your past requests and orders stay with our team so we can still help with them.",
       "errors": {
@@ -2238,14 +2238,14 @@
       "requestsTitle": "Your requests",
       "requestsLead": "Flights, hotels, holidays, visas and quotes on your account: sent with {email}, or with your phone number when they had no email.",
       "requestsEmpty": "No requests on your account yet. When you send one, it shows here with its status.",
-      "ordersTitle": "Your Waafas World orders",
+      "ordersTitle": "Your Waafa’s World orders",
       "ordersEmpty": "No orders on your account yet.",
       "reference": "Reference",
       "sent": "Sent {date}",
       "placed": "Placed {date}",
       "total": "Total {total}",
       "explore": "Find a trip",
-      "shop": "Visit Waafas World",
+      "shop": "Visit Waafa’s World",
       "phoneNote": "A request sent with another email does not show here. Call or WhatsApp us with its reference and we will add it to your account.",
       "deleteTitle": "Delete account",
       "deleteBody": "This removes your account and signs you out everywhere. Your requests and orders stay with our team so we can finish them.",
@@ -2312,7 +2312,7 @@
         "removed": "Removed from your wishlist.",
         "gone": "No longer available",
         "from": "From {price}",
-        "store": "Waafas World"
+        "store": "Waafa’s World"
       },
       "travellers": {
         "title": "Saved travellers",
@@ -2442,7 +2442,7 @@
       "hotels": "Hotel",
       "packages": "Tour package",
       "visa": "Visa",
-      "shop": "Waafas World order",
+      "shop": "Waafa’s World order",
       "printing": "Printing or trading",
       "other": "Something else"
     },
@@ -2544,10 +2544,10 @@
   },
   "Emi": {
     "metaTitle": "EMI: travel now, pay monthly",
-    "metaDescription": "Split a trip or a large Waafas World order into monthly instalments on a partner bank credit card. See the monthly amount first.",
+    "metaDescription": "Split a trip or a large Waafa’s World order into monthly instalments on a partner bank credit card. See the monthly amount first.",
     "kicker": "EMI",
     "title": "Travel now, pay monthly",
-    "lead": "Split a trip or a large Waafas World order into {min} to {max} monthly instalments on a credit card from a partner bank. See your monthly amount before you ask.",
+    "lead": "Split a trip or a large Waafa’s World order into {min} to {max} monthly instalments on a credit card from a partner bank. See your monthly amount before you ask.",
     "sample": "Sample terms · set in Admin",
     "calculator": "EMI calculator",
     "amount": "Amount",
@@ -2592,7 +2592,7 @@
       "bank": "Your credit card's bank",
       "bankUnsure": "Not sure yet",
       "notes": "What is it for? (optional)",
-      "notesPlaceholder": "A tour package, flight tickets or a Waafas World order",
+      "notesPlaceholder": "A tour package, flight tickets or a Waafa’s World order",
       "submit": "Send my EMI request",
       "contactTitle": "Who should we call?",
       "emailHint": "We send the plan here too.",
@@ -2689,7 +2689,7 @@
       "home": "Home",
       "packages": "Tour packages",
       "visa": "Visa services",
-      "store": "Waafas World",
+      "store": "Waafa’s World",
       "track": "Track an order",
       "contact": "Contact us"
     },
@@ -2733,7 +2733,7 @@
     },
     "brand": {
       "name": "Waafa Admin",
-      "sub": "Tours and Travel · Waafas World"
+      "sub": "Tours and Travel · Waafa’s World"
     },
     "unavailable": {
       "title": "Connect the API",
@@ -2770,7 +2770,7 @@
       "panelPoints": {
         "inbox": "Reply to every request in time, with the reply timer",
         "website": "Change the website section by section, with a preview",
-        "store": "Confirm, pack and ship Waafas World orders"
+        "store": "Confirm, pack and ship Waafa’s World orders"
       },
       "noindex": "This page is private and never shown in search engines.",
       "welcome": "Your password is set. Sign in with your work email and the new password.",
@@ -2830,7 +2830,7 @@
       "home": "Home",
       "inbox": "Inbox",
       "travel": "Travel",
-      "store": "Waafas World",
+      "store": "Waafa’s World",
       "website": "Website",
       "dashboard": "Dashboard",
       "reports": "Reports",
@@ -3291,7 +3291,7 @@
           "flights": "Flights",
           "packages": "Tour packages",
           "visa": "Visa",
-          "shop": "Waafas World",
+          "shop": "Waafa’s World",
           "printing": "Printing Solutions",
           "trading": "International Trading",
           "other": "Something else"
@@ -3355,7 +3355,7 @@
     "orders": {
       "metaTitle": "Orders",
       "title": "Orders",
-      "lead": "Waafas World orders. Confirm by phone before shipping; cash on delivery is paid to the courier.",
+      "lead": "Waafa’s World orders. Confirm by phone before shipping; cash on delivery is paid to the courier.",
       "searchPlaceholder": "Order number, name or phone",
       "statusAll": "All",
       "statuses": {
@@ -3401,7 +3401,7 @@
       "updated": "Order updated",
       "final": "This order is closed.",
       "emptyTitle": "No orders yet",
-      "emptyBody": "Orders from Waafas World appear here.",
+      "emptyBody": "Orders from Waafa’s World appear here.",
       "slip": "Slip only",
       "bin": "BIN {bin}",
       "call": "Call",
@@ -3797,7 +3797,7 @@
         "content": "Pages and content",
         "travel": "Travel",
         "visa": "Visa",
-        "shop": "Waafas World",
+        "shop": "Waafa’s World",
         "payments": "Payments and delivery"
       },
       "records": "{count, plural, one {# record} other {# records}}",
@@ -3843,7 +3843,7 @@
         "hotelPlaces": "Hotel places",
         "visaCountries": "Visa countries",
         "visaGuides": "Visa guides",
-        "shopContent": "Waafas World copy",
+        "shopContent": "Waafa’s World copy",
         "attributeSets": "Product attributes",
         "categories": "Categories",
         "brands": "Brands",
@@ -4407,7 +4407,7 @@
       "reports": "Leads, bookings, orders and searches by date",
       "leads": "Every request from the website, WhatsApp and calls",
       "visaApplications": "Visa requests with their documents",
-      "orders": "Waafas World orders to confirm, pack and ship",
+      "orders": "Waafa’s World orders to confirm, pack and ship",
       "proofs": "Bank and mobile transfers to check",
       "customers": "Everyone who asked or ordered, by phone number",
       "feedback": "What customers wrote, to approve for the website",
@@ -4418,12 +4418,12 @@
       "visaCountries": "Countries on /visa with fees and documents",
       "visaGuides": "Step-by-step visa guides",
       "airlines": "Airline names, logos, airports and baggage rules",
-      "products": "Everything for sale in Waafas World",
+      "products": "Everything for sale in Waafa’s World",
       "categories": "Store aisles and their order",
       "brands": "Brands shown on products and filters",
       "collections": "Hand-picked groups of products",
       "deals": "Time-limited prices in the store",
-      "storeRows": "Rows on the Waafas World home page",
+      "storeRows": "Rows on the Waafa’s World home page",
       "coupons": "Discount codes for checkout",
       "attributes": "Filters such as colour, size or yield",
       "compatibleModels": "Printers each toner fits, for Find by model",
@@ -4443,7 +4443,7 @@
     },
     "newMenu": {
       "travel": "Travel",
-      "store": "Waafas World",
+      "store": "Waafa’s World",
       "website": "Website",
       "tourPackage": "Tour package",
       "groupFare": "Group fare",
@@ -5363,8 +5363,8 @@
       "stepsTitle": "Steps title",
       "stock": "In stock",
       "stops": "Stops",
-      "store": "Waafas World block",
-      "storeIntro": "Waafas World intro",
+      "store": "Waafa’s World block",
+      "storeIntro": "Waafa’s World intro",
       "storeName": "Store name",
       "sub": "Subtitle",
       "subject": "Subject",
@@ -5469,7 +5469,7 @@
         "flights": "Search flights",
         "packages": "See tour packages",
         "visa": "Get visa help",
-        "shop": "Shop Waafas World",
+        "shop": "Shop Waafa’s World",
         "contact": "Talk to us"
       },
       "bookingMode": {
@@ -5480,7 +5480,7 @@
         "flights": "Flights",
         "hotels": "Hotels",
         "packages": "Tour packages",
-        "shopPayment": "Waafas World payment"
+        "shopPayment": "Waafa’s World payment"
       },
       "cabin": {
         "economy": "Economy",
@@ -5515,7 +5515,7 @@
         "packages": "Tour packages",
         "visa": "Visa",
         "payments": "Payments",
-        "shop": "Waafas World",
+        "shop": "Waafa’s World",
         "account": "Account"
       },
       "flightScope": {
@@ -5541,7 +5541,7 @@
         "packages": "Tour packages",
         "visa": "Visa",
         "why": "Why Waafa",
-        "store": "Waafas World",
+        "store": "Waafa’s World",
         "testimonials": "Customer feedback",
         "galleryBlogFaq": "Gallery, blog and FAQ",
         "team": "Meet our team",
@@ -5565,8 +5565,8 @@
         "printing-quote-side": "Printing Solutions: beside the quote form",
         "trading-header": "International Trading: header",
         "trading-rfq-side": "International Trading: beside the request form",
-        "shop-service-printing": "Waafas World: printing service card",
-        "shop-service-trading": "Waafas World: trading service card",
+        "shop-service-printing": "Waafa’s World: printing service card",
+        "shop-service-trading": "Waafa’s World: trading service card",
         "office": "Our office"
       },
       "menuKey": {
@@ -5575,14 +5575,14 @@
         "drawer": "Phone menu",
         "tabbar": "Bottom tab bar",
         "more-phone": "More menu on phones",
-        "shop-panel": "Waafas World menu",
+        "shop-panel": "Waafa’s World menu",
         "footer-travel": "Footer: travel",
-        "footer-shop": "Footer: Waafas World",
+        "footer-shop": "Footer: Waafa’s World",
         "footer-help": "Footer: help",
         "legal": "Footer: legal"
       },
       "menuPanel": {
-        "shop": "Waafas World panel",
+        "shop": "Waafa’s World panel",
         "more": "More panel"
       },
       "network": {
@@ -5625,8 +5625,8 @@
       },
       "placement": {
         "home-offers": "Home: offers",
-        "shop-hero": "Waafas World: top banner",
-        "shop-campaign": "Waafas World: campaign row",
+        "shop-hero": "Waafa’s World: top banner",
+        "shop-campaign": "Waafa’s World: campaign row",
         "flights-results": "Flights: results"
       },
       "productBadge": {
@@ -5749,7 +5749,7 @@
         },
         "help": {
           "travelBrand": "Used in the header and in page titles.",
-          "storeIntro": "One or two sentences about Waafas World.",
+          "storeIntro": "One or two sentences about Waafa’s World.",
           "googleSiteVerification": "The code from Google Search Console, without the quotes.",
           "accountsLive": "Turn on when customers may sign in to see their bookings and orders."
         }
@@ -5845,7 +5845,7 @@
       "shippingSettings": {
         "one": "delivery setting",
         "other": "delivery settings",
-        "intro": "Delivery zones, charges and the order rules of Waafas World.",
+        "intro": "Delivery zones, charges and the order rules of Waafa’s World.",
         "sections": {
           "zones": "Delivery zones",
           "rules": "Order rules"
@@ -5983,7 +5983,7 @@
         "sections": {
           "hero": "Top of the page",
           "why": "Why Waafa",
-          "store": "Waafas World block",
+          "store": "Waafa’s World block",
           "reviews": "Reviews",
           "cta": "Closing call"
         },
@@ -6414,7 +6414,7 @@
       "shopContent": {
         "one": "store text",
         "other": "store texts",
-        "intro": "The words of the Waafas World home: strips, the corporate block, services and trust points.",
+        "intro": "The words of the Waafa’s World home: strips, the corporate block, services and trust points.",
         "sections": {
           "tagline": "Tagline",
           "bulk": "Bulk order strip",
@@ -6463,7 +6463,7 @@
       "brands": {
         "one": "brand",
         "other": "brands",
-        "intro": "Brands in Waafas World.",
+        "intro": "Brands in Waafa’s World.",
         "sections": {
           "brand": "Brand",
           "logo": "Logo"
@@ -6486,7 +6486,7 @@
       "products": {
         "one": "product",
         "other": "products",
-        "intro": "Products in Waafas World, with photos, variants, prices and stock.",
+        "intro": "Products in Waafa’s World, with photos, variants, prices and stock.",
         "sections": {
           "basics": "Basics",
           "photos": "Photos and video",
@@ -6547,7 +6547,7 @@
       "storeRows": {
         "one": "store row",
         "other": "store rows",
-        "intro": "The rows of the Waafas World home: their titles, their order and whether they show.",
+        "intro": "The rows of the Waafa’s World home: their titles, their order and whether they show.",
         "sections": {
           "row": "Row"
         },
@@ -6997,7 +6997,7 @@
         "planTrip": "Plan my trip",
         "visa": "Visa",
         "visaGuide": "Visa guide",
-        "shop": "Waafas World",
+        "shop": "Waafa’s World",
         "shopCategories": "All store categories",
         "deals": "Deals",
         "finder": "Find by printer model",
@@ -7074,7 +7074,7 @@
           "lead": "The big figure, a short story and the company's values."
         },
         "store": {
-          "name": "Waafas World",
+          "name": "Waafa’s World",
           "lead": "The store's pitch with a few products."
         },
         "testimonials": {
@@ -7174,8 +7174,8 @@
           "lead": "The panel that opens from More in the top bar: an icon, a title and one line each."
         },
         "shop-panel": {
-          "name": "Waafas World panel cards",
-          "lead": "The service cards in the Waafas World panel of the top bar."
+          "name": "Waafa’s World panel cards",
+          "lead": "The service cards in the Waafa’s World panel of the top bar."
         },
         "drawer": {
           "name": "Phone menu",
@@ -7183,7 +7183,7 @@
         },
         "tabbar": {
           "name": "Phone tab bar",
-          "lead": "The five tabs at the bottom of the phone screen, in fixed places. Waafas World stays in the middle and More last."
+          "lead": "The five tabs at the bottom of the phone screen, in fixed places. Waafa’s World stays in the middle and More last."
         },
         "more-phone": {
           "name": "Phone More sheet",
@@ -7194,7 +7194,7 @@
           "lead": "The travel column of the footer."
         },
         "footer-shop": {
-          "name": "Footer: Waafas World",
+          "name": "Footer: Waafa’s World",
           "lead": "The store column of the footer."
         },
         "footer-help": {
@@ -7227,7 +7227,7 @@
       "moveUp": "Move up",
       "moveDown": "Move down",
       "remove": "Remove",
-      "centreTab": "Always Waafas World, in the middle"
+      "centreTab": "Always Waafa’s World, in the middle"
     },
     "staffTools": {
       "region": "Staff tools",

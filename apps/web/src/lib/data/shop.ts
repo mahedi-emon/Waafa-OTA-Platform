@@ -4,7 +4,7 @@ import { repositories } from "./source";
 import { CACHE_TAGS } from "./tags";
 import type { ProductQuery } from "./types";
 
-/* Cached Waafas World accessors. Stock and prices change often, so catalogue reads refresh in minutes. */
+/* Cached Waafa’s World accessors. Stock and prices change often, so catalogue reads refresh in minutes. */
 
 export async function listCategories() {
   "use cache";

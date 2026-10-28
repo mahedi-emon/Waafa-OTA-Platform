@@ -560,7 +560,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "steadfast",
     name: "Steadfast Courier",
     kind: "courier",
-    summary: "Books Waafas World deliveries and shows the parcel status to the customer",
+    summary: "Books Waafa’s World deliveries and shows the parcel status to the customer",
     keysUrl: "https://steadfast.com.bd",
     fields: [
       url("https://portal.packzy.com/api/v1"),
@@ -572,7 +572,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "pathao",
     name: "Pathao Courier",
     kind: "courier",
-    summary: "Books Waafas World deliveries and shows the parcel status to the customer",
+    summary: "Books Waafa’s World deliveries and shows the parcel status to the customer",
     keysUrl: "https://merchant.pathao.com",
     fields: [
       url("Sandbox: https://courier-api-sandbox.pathao.com; live: https://api-hermes.pathao.com"),
@@ -587,7 +587,7 @@ export const PROVIDER_CATALOG: Record<ProviderId, ProviderDefinition> = {
     id: "redx",
     name: "RedX",
     kind: "courier",
-    summary: "Books Waafas World deliveries and shows the parcel status to the customer",
+    summary: "Books Waafa’s World deliveries and shows the parcel status to the customer",
     keysUrl: "https://redx.com.bd",
     fields: [
       url(
