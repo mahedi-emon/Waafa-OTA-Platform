@@ -7,6 +7,7 @@ import {
   Logger,
 } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type { ErrorReporter } from "./errorReporter";
 import { ZodError, type ZodType, type z } from "zod";
 
 /** An RFC 7807 problem with an optional list of field errors and extension members (e.g. who saved first). */
@@ -74,6 +75,8 @@ export function validationProblem(error: ZodError): ProblemException {
 export class ProblemFilter implements ExceptionFilter {
   private readonly logger = new Logger("Problem");
 
+  constructor(private readonly reporter?: ErrorReporter) {}
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const http = host.switchToHttp();
     const request = http.getRequest<FastifyRequest>();
@@ -103,6 +106,9 @@ export class ProblemFilter implements ExceptionFilter {
       };
     } else {
       this.logger.error(exception instanceof Error ? exception.stack : String(exception));
+      this.reporter?.report(exception, {
+        path: request.routeOptions?.url ?? request.url.split("?")[0],
+      });
     }
 
     void reply

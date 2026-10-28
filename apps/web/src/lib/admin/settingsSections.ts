@@ -28,6 +28,7 @@ export type SettingsSectionId =
   | "integrations"
   | "users"
   | "audit"
+  | "status"
   | "maintenance"
   | "advanced";
 
@@ -76,6 +77,7 @@ export const SETTINGS_SECTIONS: readonly SettingsSection[] = [
   { id: "integrations", tabs: [{ id: "integrations", href: `${ADMIN}/integrations`, roles: [] }] },
   { id: "users", tabs: [{ id: "users", href: `${ADMIN}/users`, roles: [] }] },
   { id: "audit", tabs: [{ id: "audit", href: `${ADMIN}/audit`, roles: ["admin"] }] },
+  { id: "status", tabs: [{ id: "status", href: `${ADMIN}/status`, roles: ["admin"] }] },
   { id: "maintenance", tabs: [{ id: "maintenance", setting: "maintenanceSettings" }] },
   { id: "advanced", tabs: [{ id: "content", href: `${ADMIN}/content`, roles: [] }] },
 ];

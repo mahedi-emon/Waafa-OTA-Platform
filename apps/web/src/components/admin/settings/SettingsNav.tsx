@@ -1,4 +1,5 @@
 import {
+  Activity,
   Building2,
   Clock,
   Construction,
@@ -32,6 +33,7 @@ const ICONS: Record<SettingsSectionId, LucideIcon> = {
   integrations: PlugZap,
   users: ShieldCheck,
   audit: FileClock,
+  status: Activity,
   maintenance: Construction,
   advanced: LayoutList,
 };

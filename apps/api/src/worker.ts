@@ -1,6 +1,7 @@
 import path from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Worker } from "bullmq";
+import { Redis } from "ioredis";
 import { loadEnv } from "./config/env";
 import { ClamdClient, parseClamdUrl } from "./files/clamd";
 import { scanPendingFiles } from "./files/fileScan";
@@ -8,6 +9,8 @@ import { PrismaClient } from "./generated/prisma/client";
 import { IntegrationMailer } from "./notifications/integrationMailer";
 import { TRANSACTION_OPTIONS, warmUp } from "./prisma/prisma.service";
 import { createMailer } from "./notifications/mailer";
+import { HEARTBEAT_INTERVAL_MS, WORKER_HEARTBEAT_KEY } from "./common/heartbeat";
+import { activeDsn, ErrorReporter } from "./common/errorReporter";
 import {
   NOTIFICATION_QUEUE,
   deliverEmail,
@@ -37,7 +40,22 @@ async function main() {
     async (job) => deliverEmail(prisma, mailer, job.data),
     { connection: { url: env.REDIS_URL, maxRetriesPerRequest: null }, concurrency: 4 },
   );
-  worker.on("failed", (job, error) => console.error(`Job ${job?.id} failed: ${error.message}`));
+  // Unexpected failures reach Sentry or GlitchTip when that card is On (issue 238); an email is reported once it
+  // has used every try, not on each retry.
+  const reporter = new ErrorReporter("worker");
+  const stopReporter = reporter.watch(() => activeDsn(prisma));
+  worker.on("failed", (job, error) => {
+    console.error(`Job ${job?.id} failed: ${error.message}`);
+    if (job && job.attemptsMade >= (job.opts.attempts ?? 1))
+      reporter.report(error, { path: `queue:${job.name}` });
+  });
+  // The Status page shows the worker as running while this beat is fresh (issue 238).
+  const beats = new Redis(env.REDIS_URL, { maxRetriesPerRequest: 1 });
+  beats.on("error", () => undefined);
+  const beat = () =>
+    void beats.set(WORKER_HEARTBEAT_KEY, String(Date.now()), "EX", 600).catch(() => undefined);
+  beat();
+  const heartbeat = setInterval(beat, HEARTBEAT_INTERVAL_MS);
 
   // Malware scan of customer files (issue 235): a pass every 10 seconds while CLAMAV_URL is set.
   const clamd = parseClamdUrl(env.CLAMAV_URL);
@@ -62,6 +80,7 @@ async function main() {
         }
       } catch (error) {
         console.error(`Malware scan pass failed: ${String(error)}`);
+        reporter.report(error, { path: "malware-scan" });
       } finally {
         busy = false;
       }
@@ -72,6 +91,9 @@ async function main() {
 
   const stop = async () => {
     if (scanTimer) clearInterval(scanTimer);
+    clearInterval(heartbeat);
+    stopReporter();
+    beats.disconnect();
     await worker.close();
     await prisma.$disconnect();
     process.exit(0);
