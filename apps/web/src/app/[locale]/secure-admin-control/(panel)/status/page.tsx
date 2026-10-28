@@ -160,8 +160,8 @@ async function Status() {
         {failed.length === 0 ? (
           <p className="text-sm text-mist-600">{t("failedEmpty")}</p>
         ) : (
-          <div className="min-w-0 overflow-x-auto">
-            <Table>
+          <div className="min-w-0">
+            <Table scrollLabel={t("failedTitle")}>
               <TableHeader>
                 <TableRow>
                   <TableHead scope="col">{t("to")}</TableHead>
