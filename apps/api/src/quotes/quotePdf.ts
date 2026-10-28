@@ -1,22 +1,13 @@
-import { existsSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import PDFDocument from "pdfkit";
-import { formatDate, formatTaka, type QuoteOption } from "@waafa/shared";
-
-/** Brand colours (PRD §16), the same values as the web tokens. */
-const COLOUR = {
-  midnight: "#020D39",
-  navy: "#00185B",
-  brand: "#003FBE",
-  sky: "#0D8CEE",
-  cyan: "#39CCE9",
-  ink: "#0E1424",
-  mist600: "#556078",
-  mist200: "#E3E8F0",
-  mist50: "#F6F8FB",
-  success: "#0B7A54",
-} as const;
+import { formatDate, type QuoteOption } from "@waafa/shared";
+import {
+  brandFooter,
+  COLOUR,
+  CONTENT,
+  fontFor,
+  PAGE,
+  printable,
+  startBrandPdf,
+} from "../pdf/brandPdf";
 
 export type QuotePdfData = {
   reference: string;
@@ -31,106 +22,26 @@ export type QuotePdfData = {
 };
 
 /**
- * The fonts and logo ship in apps/api/assets: next to src/ in development and tests, next to dist/ in the image
- * (the working folder in both).
- */
-function assetsDir(): string {
-  const here = path.dirname(fileURLToPath(import.meta.url));
-  const candidates = [
-    path.resolve(process.cwd(), "assets"),
-    path.resolve(here, "../assets"),
-    path.resolve(here, "../../assets"),
-  ];
-  const found = candidates.find((dir) => existsSync(path.join(dir, "fonts", "inter-400.woff")));
-  if (!found) throw new Error("PDF assets are missing (apps/api/assets)");
-  return found;
-}
-
-/** The Latin fonts have no arrow; route summaries use one ("DAC → DXB"). */
-const printable = (text: string) => text.replace(/→/g, "–").replace(/\s+/g, " ").trim();
-
-const PAGE = { width: 595.28, height: 841.89, margin: 48 };
-const CONTENT = PAGE.width - PAGE.margin * 2;
-
-/**
  * The branded quote PDF (issue 298): the WAAFA logo, the customer, the options with baggage and a price in taka
  * (lakh grouping, VAT included), the last valid day, and the reminder that fares are indicative until an expert
  * confirms them. A4, Inter and Plus Jakarta Sans, the taka sign from Hind Siliguri.
  */
 export function renderQuotePdf(data: QuotePdfData): Promise<Buffer> {
-  const assets = assetsDir();
-  const doc = new PDFDocument({
-    size: "A4",
-    margin: PAGE.margin,
-    bufferPages: true,
-    info: {
-      Title: `Quote ${data.reference}`,
-      Author: "Waafa Tours and Travel",
-      Subject: printable(data.summary),
-    },
+  const { doc, done, top, money, moneyWidth } = startBrandPdf({
+    title: `Quote ${data.reference}`,
+    subject: data.summary,
+    author: "Waafa Tours and Travel",
+    label: "Quote",
+    reference: data.reference,
   });
-  doc.registerFont("body", path.join(assets, "fonts", "inter-400.woff"));
-  doc.registerFont("strong", path.join(assets, "fonts", "inter-600.woff"));
-  doc.registerFont("display", path.join(assets, "fonts", "plus-jakarta-sans-700.woff"));
-  doc.registerFont("taka", path.join(assets, "fonts", "hind-siliguri-600-bengali.woff"));
-
-  const chunks: Buffer[] = [];
-  const done = new Promise<Buffer>((resolve, reject) => {
-    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
-    doc.on("error", reject);
-  });
-
-  /** "৳1,46,480": the sign in the taka font, the figures in the given font. Returns the width drawn. */
-  const moneyWidth = (amount: number, font: string, size: number) => {
-    const figures = formatTaka(amount).replace("৳", "");
-    return (
-      doc.font("taka").fontSize(size).widthOfString("৳") +
-      doc.font(font).fontSize(size).widthOfString(figures)
-    );
-  };
-  const money = (amount: number, x: number, y: number, font: string, size: number) => {
-    const figures = formatTaka(amount).replace("৳", "");
-    doc.font("taka").fontSize(size).text("৳", x, y, { lineBreak: false });
-    const sign = doc.widthOfString("৳");
-    doc
-      .font(font)
-      .fontSize(size)
-      .text(figures, x + sign, y, { lineBreak: false });
-  };
-
-  // Header: the logo on white, the quote's reference on the right, the ribbon under both.
-  const top = PAGE.margin;
-  doc.image(path.join(assets, "brand", "waafa-mark.png"), PAGE.margin, top, { height: 34 });
-  doc.image(path.join(assets, "brand", "waafa-wordmark.png"), PAGE.margin + 62, top + 10, {
-    height: 15,
-  });
-  doc
-    .fillColor(COLOUR.mist600)
-    .font("strong")
-    .fontSize(9)
-    .text("QUOTE", PAGE.margin, top + 2, { width: CONTENT, align: "right", characterSpacing: 1.5 });
-  doc
-    .fillColor(COLOUR.navy)
-    .font("display")
-    .fontSize(15)
-    .text(data.reference, PAGE.margin, top + 14, { width: CONTENT, align: "right" });
-  const ribbonY = top + 48;
-  const ribbon = doc.linearGradient(PAGE.margin, 0, PAGE.margin + CONTENT, 0);
-  ribbon
-    .stop(0, COLOUR.midnight)
-    .stop(0.4, COLOUR.brand)
-    .stop(0.75, COLOUR.sky)
-    .stop(1, COLOUR.cyan);
-  doc.rect(PAGE.margin, ribbonY, CONTENT, 3).fill(ribbon);
 
   // Who it is for and how long it holds.
-  let y = ribbonY + 22;
+  let y = top;
   doc.fillColor(COLOUR.mist600).font("body").fontSize(10).text(`Prepared for`, PAGE.margin, y);
   doc
     .fillColor(COLOUR.ink)
     // A name written in Bangla prints in Hind Siliguri (the Latin fonts have no Bangla letters).
-    .font(/[\u0980-\u09FF]/.test(data.customerName) ? "taka" : "display")
+    .font(fontFor(data.customerName, "display"))
     .fontSize(20)
     .text(printable(data.customerName), PAGE.margin, y + 13, { width: CONTENT * 0.62 });
   doc
@@ -246,46 +157,11 @@ export function renderQuotePdf(data: QuotePdfData): Promise<Buffer> {
   }
 
   // Footer on every page: the fare rule, how to reach us, page numbers.
-  const range = doc.bufferedPageRange();
-  for (let page = range.start; page < range.start + range.count; page += 1) {
-    doc.switchToPage(page);
-    const footY = PAGE.height - PAGE.margin - 66;
-    doc
-      .moveTo(PAGE.margin, footY)
-      .lineTo(PAGE.margin + CONTENT, footY)
-      .lineWidth(0.75)
-      .strokeColor(COLOUR.mist200)
-      .stroke();
-    doc
-      .fillColor(COLOUR.mist600)
-      .font("body")
-      .fontSize(8.5)
-      .text(
-        "Prices are in taka for everyone travelling, VAT included. Fares and rooms are indicative until our travel expert confirms them with the airline or hotel before payment.",
-        PAGE.margin,
-        footY + 10,
-        { width: CONTENT, lineGap: 1.5, lineBreak: true },
-      );
-    doc
-      .fillColor(COLOUR.ink)
-      .font("strong")
-      .fontSize(9)
-      .text(
-        `Waafa Tours and Travel · ${data.contact.phone} · ${data.contact.email} · ${data.contact.website}`,
-        PAGE.margin,
-        footY + 40,
-        { width: CONTENT - 60, lineBreak: false },
-      );
-    doc
-      .fillColor(COLOUR.mist600)
-      .font("body")
-      .fontSize(8.5)
-      .text(`${page - range.start + 1} of ${range.count}`, PAGE.margin, footY + 40, {
-        width: CONTENT,
-        align: "right",
-        lineBreak: false,
-      });
-  }
+  brandFooter(
+    doc,
+    "Prices are in taka for everyone travelling, VAT included. Fares and rooms are indicative until our travel expert confirms them with the airline or hotel before payment.",
+    `Waafa Tours and Travel · ${data.contact.phone} · ${data.contact.email} · ${data.contact.website}`,
+  );
   doc.end();
   return done;
 }
