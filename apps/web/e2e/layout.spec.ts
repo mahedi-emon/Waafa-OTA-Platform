@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 /*
- * Layout shell (A6): header, Waafas World and More panels, help menu, phone drawer, tab bar, More sheet, footer,
+ * Layout shell (A6): header, Waafa’s World and More panels, help menu, phone drawer, tab bar, More sheet, footer,
  * announcement and the floating WhatsApp button. Reduced motion keeps runs stable (MOTION.md §4).
  */
 test.use({ reducedMotion: "reduce" });
@@ -29,7 +29,7 @@ test.describe("desktop header (1440)", () => {
       "Home",
       "Tour Packages",
       "Visa",
-      "Waafas World",
+      "Waafa’s World",
       "Gallery",
       "Feedback",
       "More",
@@ -40,9 +40,9 @@ test.describe("desktop header (1440)", () => {
     await expect(nav.getByRole("link", { name: /^Home\s*\(current page\)$/ })).toBeVisible();
   });
 
-  test("opens the Waafas World panel by keyboard and closes it with Escape", async ({ page }) => {
+  test("opens the Waafa’s World panel by keyboard and closes it with Escape", async ({ page }) => {
     await page.goto("/");
-    const trigger = page.getByRole("button", { name: "Waafas World" });
+    const trigger = page.getByRole("button", { name: "Waafa’s World" });
     await trigger.focus();
     await page.keyboard.press("Enter");
     const shopAll = page.locator("header").getByRole("link", { name: "Shop all products" });
@@ -115,12 +115,15 @@ test.describe("desktop header (1440)", () => {
 test.describe("phone shell (390)", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("shows five tabs with Waafas World in the middle", async ({ page }) => {
+  test("shows five tabs with Waafa’s World in the middle", async ({ page }) => {
     await page.goto("/");
     const tabs = page.getByRole("navigation", { name: "Main sections" });
     await expect(tabs.getByRole("link", { name: /^Home\s*\(current page\)$/ })).toBeVisible();
-    await expect(tabs.getByRole("link", { name: "Waafas World" })).toHaveAttribute("href", "/shop");
-    await expect(tabs.getByText("Waafas World")).toBeVisible();
+    await expect(tabs.getByRole("link", { name: "Waafa’s World" })).toHaveAttribute(
+      "href",
+      "/shop",
+    );
+    await expect(tabs.getByText("Waafa’s World")).toBeVisible();
     await expect(tabs.getByRole("link")).toHaveCount(4);
     await expect(tabs.getByRole("button", { name: "More" })).toBeVisible();
   });
@@ -188,7 +191,7 @@ test.describe("phone shell (390)", () => {
 test("the tab bar label wraps at 320 px instead of being cut", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.goto("/");
-  const label = page.getByRole("navigation", { name: "Main sections" }).getByText("Waafas World");
+  const label = page.getByRole("navigation", { name: "Main sections" }).getByText("Waafa’s World");
   const box = await label.boundingBox();
   expect(box?.width ?? 0).toBeLessThanOrEqual(72);
   const scroll = await label.evaluate((element) => element.scrollWidth - element.clientWidth);

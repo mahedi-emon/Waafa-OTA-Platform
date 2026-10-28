@@ -1,4 +1,4 @@
-WAAFA — Website, Waafas World and Admin · design prototype
+WAAFA — Website, Waafa’s World and Admin · design prototype
 ==========================================================
 
 OPEN IT
@@ -54,7 +54,7 @@ FIGMA
   The Figma file (figma.com/design/KjT8dfjEAMR55wRR7ar1Ws) holds the design
   tokens as variables (colours, radius, spacing, sizes, with code names from
   tokens.css), the text and shadow styles, the core components (buttons, chips,
-  badges, input, package card, logo and the phone tab bar with the Waafas World
+  badges, input, package card, logo and the phone tab bar with the Waafa’s World
   disc) and a Screens page with one section per part of the site.
   Every screen as an image is in the three Waafa-Screens zips (1 to 3): drag a
   folder's images onto its section in the Screens page. Figma shrinks images taller than 4096 px, so

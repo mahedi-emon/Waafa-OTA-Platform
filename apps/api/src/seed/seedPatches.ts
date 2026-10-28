@@ -2,6 +2,7 @@ import { PROVIDER_CATALOG, validateProviderConnection, type ProviderId } from "@
 import type { Prisma, PrismaClient } from "../generated/prisma/client";
 import { nextReference } from "../common/references";
 import { SecretBox } from "../providers/secretBox";
+import { OLD_STORE_TEXTS } from "./storeRenameTexts";
 
 /** The patches already applied to this database; each runs once, on the first deploy that carries it. */
 export const PATCH_MARKER = "_seedPatches";
@@ -534,6 +535,48 @@ async function bookingsForBookedLeads(prisma: PrismaClient): Promise<number> {
   return leads.length;
 }
 
+const STORE_RENAMES = new Map(
+  OLD_STORE_TEXTS.map((text) => [text, text.replaceAll("Waafas World", "Waafa’s World")]),
+);
+
+/** Every string in a stored JSON value that still equals a pre-302 default, renamed; other values are kept. */
+export function renameStore(value: unknown): unknown {
+  if (typeof value === "string") return STORE_RENAMES.get(value) ?? value;
+  if (Array.isArray(value)) return value.map(renameStore);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, renameStore(item)]));
+  }
+  return value;
+}
+
+/**
+ * Issue 302: the store is "Waafa’s World". Stored menus, home and store copy, pages, team, timeline and message
+ * templates follow, but only where a text still equals the default it shipped with; staff wording stays as it is.
+ */
+async function storeName(prisma: PrismaClient): Promise<number> {
+  let changed = 0;
+  for (const row of await prisma.contentDocument.findMany()) {
+    const data = renameStore(row.data);
+    if (same(data, row.data)) continue;
+    await prisma.contentDocument.update({
+      where: { collection_docId: { collection: row.collection, docId: row.docId } },
+      data: { data: json(data), version: { increment: 1 }, updatedBy: "seed-patch" },
+    });
+    changed += 1;
+  }
+  for (const row of await prisma.setting.findMany()) {
+    if (INTERNAL_KEYS.has(row.key)) continue;
+    const value = renameStore(row.value);
+    if (same(value, row.value)) continue;
+    await prisma.setting.update({
+      where: { key: row.key },
+      data: { value: json(value), version: { increment: 1 }, updatedBy: "seed-patch" },
+    });
+    changed += 1;
+  }
+  return changed;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -552,6 +595,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-29-system-alert-template", apply: systemAlertTemplate },
   { id: "2026-10-30-bookings-for-booked-leads", apply: bookingsForBookedLeads },
   { id: "2026-10-31-quote-templates", apply: quoteTemplates },
+  { id: "2026-10-28-store-name", apply: storeName },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

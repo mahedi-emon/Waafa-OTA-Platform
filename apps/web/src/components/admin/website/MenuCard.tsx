@@ -23,7 +23,7 @@ import { movedOrder } from "@/lib/admin/homeSections";
 import { MenuItemSheet } from "./MenuItemSheet";
 import type { ManagedMenu, MenuItemValue } from "./menuTypes";
 
-/** The tab bar's middle tab: always Waafas World, always there (correction 3). */
+/** The tab bar's middle tab: always Waafa’s World, always there (correction 3). */
 const CENTRE_TAB = 2;
 
 /**

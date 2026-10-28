@@ -57,7 +57,7 @@ Admin-er thikana: `https://waafasworld.com/secure-admin-control` (bookmark kore 
 - Jama dile tarikh ar reference din (**Submitted**), por e result (**Approved / Rejected**), passport ferot dile
   **Passport returned**.
 
-## 5. Orders ar payment proof (Waafas World)
+## 5. Orders ar payment proof (Waafa’s World)
 
 - **Payment proofs**: customer-er pathano proof order-er sathe nijei mile jay ("Matched"). **Verify** chaplei order
   paid ar confirmed hoye jay. Na mille **Reject** din ar karon likhun (customer email pan).
@@ -82,7 +82,7 @@ Admin-er thikana: `https://waafasworld.com/secure-admin-control` (bookmark kore 
   tarikh thik korun.
 - Bhul save hoye gele? **History** tab › **Restore this version**. Purono dam firot ase.
 
-## 8. Product jog kora (Waafas World)
+## 8. Product jog kora (Waafa’s World)
 
 ![Variants matrix](admin-guide/product.png)
 

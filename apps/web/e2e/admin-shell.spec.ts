@@ -64,7 +64,7 @@ test("a new request shows up as a badge, in the bell and in Ctrl K", async ({ pa
   await signIn(page);
 
   const sidebar = page.getByRole("navigation", { name: "Admin" });
-  for (const group of ["Home", "Inbox", "Travel", "Waafas World", "Website"])
+  for (const group of ["Home", "Inbox", "Travel", "Waafa’s World", "Website"])
     await expect(sidebar.getByRole("button", { name: group, exact: true })).toBeVisible();
   await expect(sidebar.getByRole("link", { name: /^Leads, \d+ new leads?/ })).toBeVisible();
 
@@ -123,7 +123,7 @@ test("Ctrl K finds pages and actions, + New creates, breadcrumbs say where you a
 
   // Folding a group is remembered on this device.
   const sidebar = page.getByRole("navigation", { name: "Admin" });
-  await sidebar.getByRole("button", { name: "Waafas World", exact: true }).click();
+  await sidebar.getByRole("button", { name: "Waafa’s World", exact: true }).click();
   await expect(sidebar.getByRole("link", { name: "Products" })).toBeHidden();
   await page.reload();
   await expect(
@@ -131,7 +131,7 @@ test("Ctrl K finds pages and actions, + New creates, breadcrumbs say where you a
   ).toBeHidden();
   await page
     .getByRole("navigation", { name: "Admin" })
-    .getByRole("button", { name: "Waafas World", exact: true })
+    .getByRole("button", { name: "Waafa’s World", exact: true })
     .click();
 
   // Settings is one page: its sections on the left, each opening beside them (D0 R9).

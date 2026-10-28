@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Waafas World · Order placed</title>
+<title>Waafa’s World · Order placed</title>
 <link rel="stylesheet" href="./waafa.css">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../photos.css">
@@ -103,7 +103,7 @@ class Component extends DCLogic {
       L, m: !!p.m, bits, pay: PAY[pk], isBank: pk === 'bank', payCls: 'v-paidbox' + (pk === 'bank' ? ' is-bank' : ''),
       steps: STEPS[pk].map((s, i) => ({ n: i + 1, t: s[0], p: s[1] })),
       totalLabel: pk === 'cod' ? 'To pay on delivery' : pk === 'mobile' ? 'Paid by bKash' : 'Total',
-      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafas World, my order number is ORD-261008-0042'),
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent('Hi Waafa’s World, my order number is ORD-261008-0042'),
       copyCls: 'w-btn w-btn-xs ' + (copied ? 'w-btn-navy' : 'w-btn-soft'), copyIc: 'i ' + (copied ? 'i-check' : 'i-copy'), copyLabel: copied ? 'Copied' : 'Copy',
       copyRef: () => { try { if (navigator.clipboard) navigator.clipboard.writeText('ORD-261008-0042'); } catch (x) {} clearTimeout(this._t); this.setState({ copied: true }); this._t = setTimeout(() => this.setState({ copied: false }), 1600); }
     };

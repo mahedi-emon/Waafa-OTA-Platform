@@ -105,7 +105,7 @@ white space, exact with numbers. It must feel premium without feeling expensive,
 you") rather than automated.
 
 **Dials** (taste skill): `DESIGN_VARIANCE 6 · MOTION_INTENSITY 5 · VISUAL_DENSITY 4`. Trust-first commerce pulls variance
-and motion below the landing-page default; asymmetry is used in a few places (hero, team bento, Waafas World band), never
+and motion below the landing-page default; asymmetry is used in a few places (hero, team bento, Waafa’s World band), never
 in forms or results.
 
 **Three signatures, used with restraint.**
@@ -210,16 +210,16 @@ All primitives are shadcn/ui (Radix) restyled with these tokens; effects come fr
   small caps from 768 px. Header: W 40 px, wordmark 19 px; phone: W 32 px, wordmark 15 px, no tagline; minimum W 28 px
   (PRD), below that the favicon. Clear space ¼ of the W height. Full colour only, on white or mist-50 only: never on navy or
   photos, never recoloured, no white/silver/mono versions (CLAUDE.md, Brand board). The WAAFA logo appears once per page,
-  in the header; "Waafas World" is always text in the heading font, never a second mark.
+  in the header; "Waafa’s World" is always text in the heading font, never a second mark.
 - **Header.** 64 px phone, 72 px desktop. Transparent (no fill, no hairline) at the top of the page over the white hero;
   solid white with backdrop blur and a mist-100 hairline after 24 px of scroll. The home hero puts the headline on white and
   the photo or video in an inset rounded panel below it (the search card overlaps its lower edge), so the logo always sits
   on white. Desktop nav: Home, Tour Packages, Visa
-  Services, Waafas World, Gallery, Feedback, More; then a hotline/WhatsApp chip, "Need help?" panel and Log in (P1).
+  Services, Waafa’s World, Gallery, Feedback, More; then a hotline/WhatsApp chip, "Need help?" panel and Log in (P1).
   Between 768 and 1279 px the nav folds into the drawer; from 1280 px it shows in full.
-- **Mega panel (Waafas World)** and **More panel**: popover panels on desktop (NavigationMenu), staggered entrance, icon +
+- **Mega panel (Waafa’s World)** and **More panel**: popover panels on desktop (NavigationMenu), staggered entrance, icon +
   title + one line per item; bottom sheets on phones.
-- **Bottom tab bar** (phones, below 768 px): Home, Packages, Waafas World (raised W disc), Visa, More; ribbon pill moves with
+- **Bottom tab bar** (phones, below 768 px): Home, Packages, Waafa’s World (raised W disc), Visa, More; ribbon pill moves with
   `layoutId`; 64 px tall plus safe-area inset; the WhatsApp button floats above it.
 - **Search card.** Glass, radius 28, four tabs, fields 56-64 px tall on phones, Search button 56 px, swap button 40 px circle
   that rotates 180°. Phone pickers are vaul drawers or full-screen sheets; desktop pickers are popovers.
@@ -253,7 +253,7 @@ All primitives are shadcn/ui (Radix) restyled with these tokens; effects come fr
 **Don't**
 - Show trade licence numbers, owner details, ID numbers or fees; offer Hajj, Umrah, manpower or employment visas.
 - Fake availability, urgency or reviews; add review rich results for our own testimonials.
-- Recolour, outline, glow or retype the logo; place it on navy or photos; add a second logo beside "Waafas World".
+- Recolour, outline, glow or retype the logo; place it on navy or photos; add a second logo beside "Waafa’s World".
 - Use AI-generated, painted or drawn images; emoji as icons; icons in coloured circles; gradient blobs; purple; neon.
 - Put an eyebrow above every heading, accent one word of a headline, add SEO filler under headings, or repeat a section
   layout. No em dashes in UI copy (use a comma, colon or full stop). No "elevate", "seamless", "unleash", "discover".
@@ -305,8 +305,8 @@ Every visual deviation from the prototype, with the reason (correction 11: the p
 | Blur-in hero headline (filter) | Opacity + small rise in CSS | Transform/opacity rule; LCP off the hydration path | D11 |
 | Accordion height animation | Fade | Transform/opacity rule | D21 |
 | Drawn scenery stand-ins and motion-graphic loops (route map, passport, product animations) | Real photos and real footage; the route map becomes a live SVG | Correction 7: real media only | D37 |
-| Store bar with a W mark beside "Waafas World" | One WAAFA logo in the header, "Waafas World" as text | Corrections 2 and 4 | D36 |
-| Mobile tab labelled "Shop" | "Waafas World", two lines allowed at 320 px | Correction 3 | D36 |
+| Store bar with a W mark beside "Waafa’s World" | One WAAFA logo in the header, "Waafa’s World" as text | Corrections 2 and 4 | D36 |
+| Mobile tab labelled "Shop" | "Waafa’s World", two lines allowed at 320 px | Correction 3 | D36 |
 | "Log in" in the header at launch | Hidden until customer accounts ship (P1) | No dead buttons at launch | A6 |
 | Package query in a modal (PackageDetail-query) | Inline section under the questions, reached by Send query from the booking card or the phone bar | One shared request card for every module; deep-linkable; no focus trap on phones (D79) | A11 |
 | Plan my trip asks contact last, with a "Your trip so far" summary | Contact first in the shared two-step card; the help card sits beside it | Lead captured early, one flow everywhere (D80); live summary in A22 | A11 |

@@ -1,7 +1,7 @@
 # WAAFA — instructions for Claude Code
 
 One mobile-first website for two brands: **Waafa Tours and Travel** (flights, hotels, tour packages, visa) and
-**Waafas World** by Waafa International (store at `/shop`, Printing Solutions, International Trading), plus the admin
+**Waafa’s World** by Waafa International (store at `/shop`, Printing Solutions, International Trading), plus the admin
 panel and the API. Live at https://waafasworld.com since 13 Oct 2026; Phase D (PRD P1) is due 13 Nov 2026. Mission: ship everything in `docs/PRD.md`
 as the best-designed and fastest OTA in Bangladesh, visibly better in design, motion and speed than gozayaan.com,
 sharetrip.net, akijair.com and obokash.com, and 100% original.
@@ -31,11 +31,14 @@ Conflicts: log under Decisions and fix the losing document in the same PR.
 
 ## Corrections already decided (apply everywhere: docs, code, copy, fixtures)
 1. Authorship: every commit, PR and issue is authored by the owner (Mahedi Hasan Emon, GitHub `mahedi-emon`). No co-author, ever.
-2. Store name: "Waafas World" everywhere, never "Waafa Shop" and never "Shop" as a visible label. Route `/shop`. It sells
-   any category (printer and office supplies first); no copy or layout may assume toner.
-3. Bottom tab bar: Home, Packages, Waafas World (raised W disc in the centre), Visa, More. The label is always
-   "Waafas World"; on a 320 px phone it may wrap to two lines, never cut.
-4. Logo: one WAAFA logo per page, in the main header. In the store, "Waafas World" is text beside that logo, never a
+2. Store name: "Waafa’s World" everywhere, never "Waafa Shop" and never "Shop" as a visible label. Route `/shop`. It sells
+   any category (printer and office supplies first); no copy or layout may assume toner. Renamed from "Waafas World"
+   on 28 Oct 2026 (D311): visible copy uses the typographic apostrophe (’); structured data writes "Waafa's World"
+   with `alternateName` "Waafas World" (`lib/seo/schemaNames.ts`, the only place the old name may appear). The domain
+   waafasworld.com stays. Brand names stay in Latin letters on Bangla pages.
+3. Bottom tab bar: Home, Packages, Waafa’s World (raised W disc in the centre), Visa, More. The label is always
+   "Waafa’s World"; on a 320 px phone it may wrap to two lines, never cut.
+4. Logo: one WAAFA logo per page, in the main header. In the store, "Waafa’s World" is text beside that logo, never a
    second mark. The tab-bar W disc is a navigation icon and stays.
 5. Office hours: Saturday to Thursday, 10:00 am to 6:00 pm Asia/Dhaka, closed Friday; admin-editable; live
    "Open now / Closed" chip computed on the client.
@@ -226,7 +229,7 @@ Performance 90+, Accessibility 95+, Best Practices 95+, SEO 95+, and above every
 - Fake live availability: Manual-mode fares are indicative and confirmed by an expert before payment.
 - Invent reviews or testimonials; the feedback wall shows approved submissions only.
 - Make passport or visa documents public (private bucket, signed and logged links).
-- List restricted items in Waafas World; show IATA, ATAB or TOAB badges the company does not hold.
+- List restricted items in Waafa’s World; show IATA, ATAB or TOAB badges the company does not hold.
 - Recolour the logo or put a second logo on a page.
 - Use AI-generated, painted or drawn images or loops, or competitor assets, on the live site.
 - Show online payment before it is live.

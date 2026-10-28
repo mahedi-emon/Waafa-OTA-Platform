@@ -48,7 +48,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-GLB-06 | P0 | One shared style for toasts, skeletons, empty and error states | done | web/components/feedback/*; site/styleguide; e2e/system.spec.ts | — | — |
 | FR-GLB-07 | P1 | English/Bangla switch; ৳ with lakh grouping | partial | shared/format (formatTaka); web/i18n/routing.ts | Bangla: `locales: ["en"]`, only messages/en.json, no /bn, no switch, no Bengali font | #254 |
 | FR-FTR-01 | P0 | Footer brand column: white lockup, tagline, about, socials | done | web/components/layout/SiteFooter.tsx | — | — |
-| FR-FTR-02 | P0 | Admin menu-builder link columns (Travel, Waafas World, Help) | done | SiteFooter.tsx; menus footer-travel/-shop/-help; adm/website/menus | — | — |
+| FR-FTR-02 | P0 | Admin menu-builder link columns (Travel, Waafa’s World, Help) | done | SiteFooter.tsx; menus footer-travel/-shop/-help; adm/website/menus | — | — |
 | FR-FTR-03 | P0 | Contact block: address, phone, WhatsApp, email, hours, map | done | SiteFooter.tsx; ContactRow.tsx; OfficeStatusChip.tsx | — | — |
 | FR-FTR-04 | P0 | "We accept" logos per live method; trust badges only if held | done | SiteFooter.tsx (PAYMENT_ICONS, weAccept) | — | — |
 | FR-FTR-05 | P0 | Newsletter signup | done | web/components/layout/NewsletterForm.tsx; app/api/newsletter; adm/subscribers | — | — |
@@ -107,7 +107,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-VISA-06 | P1 | Track application by reference + phone; malware scan | done | api/files/{clamd,fileScan}.ts; worker.ts; api/public/intake.service.ts (track); site/track; api/test/track.test.ts | — | #240 |
 | FR-VGD-01 | P0 | Visa Guide per country, linked both ways with visa page | done | site/visa-guide, site/visa-guide/[slug] | — | — |
 
-## §10 Waafas World
+## §10 Waafa’s World
 
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |

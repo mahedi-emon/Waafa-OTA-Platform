@@ -9,7 +9,7 @@
   panel (real video loop, poster = LCP image), glass search card overlapping the panel's lower edge. On a 390 px
   phone the search card's first field and the Search button sit above the fold.
 - Then, in admin order and visibility: trust strip, offers carousel, group fares rail, destinations grid, featured
-  packages (horizontal scroll on phones), visa countries, Why Waafa (bento), Waafas World band (text name, no second
+  packages (horizontal scroll on phones), visa countries, Why Waafa (bento), Waafa’s World band (text name, no second
   logo), testimonials (approved only, else the Facebook link and a Leave feedback card), gallery strip + latest posts
   + five FAQs, Meet our team (bento on desktop, snap carousel on phones; hidden when empty), newsletter + WhatsApp band.
 - At least four different layout families across the sections; no two adjacent sections share one.

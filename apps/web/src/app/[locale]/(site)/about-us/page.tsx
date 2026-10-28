@@ -30,6 +30,7 @@ import {
 } from "@/lib/data/content";
 import { getContactSettings, getHomeContent, getSiteSettings } from "@/lib/data/settings";
 import { schemaId } from "@/lib/seo/schemaIds";
+import { formerStoreNames, schemaName } from "@/lib/seo/schemaNames";
 import { recordRobots } from "@/lib/seo/indexing";
 import { withSocial } from "@/lib/seo/withSocial";
 import { absoluteUrl } from "@/lib/siteUrl";
@@ -113,7 +114,11 @@ export default async function AboutPage() {
         },
         brand: [
           { "@type": "Brand", name: site.travelBrand },
-          { "@type": "Brand", name: site.storeName },
+          {
+            "@type": "Brand",
+            name: schemaName(site.storeName),
+            alternateName: formerStoreNames(site.storeName),
+          },
         ],
         subOrganization: { "@id": schemaId("agency") },
         sameAs: contact.socials.map((social) => social.url),

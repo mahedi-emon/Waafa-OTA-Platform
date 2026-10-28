@@ -1,6 +1,6 @@
 # WAAFA platform — overview
 One mobile-first website for two brands: Waafa Tours and Travel (flights, hotels, tour packages, visa) and
-Waafas World by Waafa International (store at /shop, Printing Solutions, International Trading), plus Admin and API.
+Waafa’s World by Waafa International (store at /shop, Printing Solutions, International Trading), plus Admin and API.
 Go-live 13 Oct 2026 (hard deadline before 14 Oct). Goal: beat gozayaan, sharetrip, akijair, obokash on design, motion, speed.
 
 Sources of truth: docs/PRD.md (scope P0/P1/P2), docs/design/handoff/HANDOFF.md (route -> screens),

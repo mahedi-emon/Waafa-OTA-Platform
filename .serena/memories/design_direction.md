@@ -10,7 +10,7 @@
   on the search card. Container 1320, gutters 16/28/40, sections 44/64/88.
 - Logo: full colour on white or mist-50 only; never on navy/photos; footer is light (mist-50); header 64/72 px,
   transparent at top over the white hero, solid + blur after 24 px. Home hero = headline on white + inset rounded media
-  panel + search card overlapping its lower edge. "Waafas World" is text, never a second logo.
+  panel + search card overlapping its lower edge. "Waafa’s World" is text, never a second logo.
 - Cards: boarding-pass fare cards (big IATA, dashed path, stub notch, Indicative label); product cards with labelled
   Save ৳ and Add -> stepper; package cards with nights per city and "from ৳ per person, twin sharing".
 - Motion: transform/opacity only; above-the-fold motion is CSS (word reveal) so LCP never waits for JS; Reveal never on

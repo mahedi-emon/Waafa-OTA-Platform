@@ -60,7 +60,7 @@ async function HomeManager({
     adminGet<ContentRecordsPage>("/admin/content/homeSections/records", { pageSize: 100 }),
     adminGet<ContentSingleton>("/admin/content/homeContent"),
     adminGet<ContentRecordResponse>("/admin/content/mediaSlots/home-hero").catch(() => null),
-    // The store's name is the Waafas World section's standard small line; settings may be closed to this role.
+    // The store's name is the Waafa’s World section's standard small line; settings may be closed to this role.
     adminGet<ContentSingleton>("/admin/content/siteSettings").catch(() => null),
     Promise.all(
       THUMB_SOURCES.map((key) =>

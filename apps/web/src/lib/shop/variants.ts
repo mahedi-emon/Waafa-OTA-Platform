@@ -1,7 +1,7 @@
 import type { Product, ProductOption, Variant } from "@waafa/shared";
 
 /*
- * Variant maths for Waafas World (FR-CAT-03, FR-SHOP-03/04): which variant a set of choices points at, which values
+ * Variant maths for Waafa’s World (FR-CAT-03, FR-SHOP-03/04): which variant a set of choices points at, which values
  * can still be chosen, the price against MRP and the stock badge. Prices are VAT-inclusive taka.
  */
 

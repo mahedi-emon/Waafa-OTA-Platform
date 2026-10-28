@@ -23,7 +23,7 @@
     <main class="a-content">
       <div class="a-head">
         <div>
-          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Waafas World</span></div>
+          <div class="a-crumbs"><a href="AdminDash.dc.html">Dashboard</a><span class="i i-chevron-right"></span><span>Waafa’s World</span></div>
           <h1 class="a-title">Categories</h1>
           <p>Up to three levels. Each category has an icon, a banner, SEO fields and an attribute set that drives the product form, the filters and the specification table.</p>
         </div>
@@ -150,7 +150,7 @@ class Component extends DCLogic {
       cur: { name: curT[2], path: path.join(' › ') + ' · ' + curT[4] + ' products', slug, parent: path.length > 1 ? path[path.length - 2] : 'None (top level)',
         banner: isPrinter ? 'printing-alt' : isFashion ? 'prod-tshirt' : 'cat-stationery', bannerCap: curT[2] + ' banner',
         set: isPrinter ? 'Toner and ink' : isFashion ? 'Apparel' : 'General product', setUse: isPrinter ? '3 categories, 59 products' : isFashion ? '2 categories, 31 products' : '9 categories',
-        seo: curT[2] + ' in Bangladesh | Waafas World', seoD: 'Shop ' + curT[2].toLowerCase() + ' with cash on delivery across Bangladesh. Genuine products, clear prices and fast delivery.' },
+        seo: curT[2] + ' in Bangladesh | Waafa’s World', seoD: 'Shop ' + curT[2].toLowerCase() + ' with cash on delivery across Bangladesh. Genuine products, clear prices and fast delivery.' },
       icons: ICONS.map(n => ({ name: n, icon: 'i i-' + n, on: n === icon, cls: n === icon ? 'is-on' : '', go: () => this.setState({ icon: n }) })),
       attrs: ATTRS.map(a => ({ name: a[0], type: a[1], vals: a[2], f: chk(a[3]), s: chk(a[4]) })),
       compat, noCompat: !compat, compatCls: 'w-switch' + (compat ? ' is-on' : ''), toggleCompat: () => this.setState({ compat: !compat }),

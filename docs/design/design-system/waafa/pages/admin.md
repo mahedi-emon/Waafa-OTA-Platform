@@ -7,7 +7,7 @@
 > (marketing-page rules) does not apply: the admin is a dense working tool.
 
 ## Layout
-- shadcn Sidebar (midnight-950) with grouped sections (Sales, Travel, Waafas World, Content, Settings), top bar with
+- shadcn Sidebar (midnight-950) with grouped sections (Sales, Travel, Waafa’s World, Content, Settings), top bar with
   breadcrumbs and Ctrl+K command palette; content max width 1440 px.
 - Data tables (TanStack Table): sticky header, row selection with a bulk bar, column visibility, CSV export,
   pagination; filters in the URL. Charts (shadcn Chart / Recharts) with a table alternative.

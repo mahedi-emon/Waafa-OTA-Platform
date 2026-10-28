@@ -85,7 +85,7 @@ export const SiteSettingsSchema = z
     companyName: z.string().min(1),
     footerTagline: z.string().min(1),
     footerAbout: z.string().min(1).max(320),
-    /** Two or three sentences introducing the store in the Waafas World menu panel. */
+    /** Two or three sentences introducing the store in the Waafa’s World menu panel. */
     storeIntro: z.string().min(1).max(220),
     /** Customer accounts (P1). Off at launch: the header shows no Log in until accounts ship. */
     accountsLive: z.boolean().default(false),
@@ -109,9 +109,9 @@ export const MenuItemSchema = z
     description: z.string().max(80).optional(),
     /** Lucide icon name, e.g. "book-open". */
     icon: z.string().optional(),
-    /** Opens the Waafas World mega panel or the More panel instead of navigating on hover/tap. */
+    /** Opens the Waafa’s World mega panel or the More panel instead of navigating on hover/tap. */
     panel: z.enum(["shop", "more"]).optional(),
-    /** Link text on panel cards, e.g. "Get a quote" (Waafas World panel services). */
+    /** Link text on panel cards, e.g. "Get a quote" (Waafa’s World panel services). */
     cta: z.string().min(1).max(24).optional(),
     visible: z.boolean().default(true),
   })
@@ -128,11 +128,11 @@ export const MenuSchema = z
       "more",
       /** Phone drawer: the main links above the More grid. */
       "drawer",
-      /** Phone bottom tab bar: exactly five items; the third is the Waafas World disc (correction 3). */
+      /** Phone bottom tab bar: exactly five items; the third is the Waafa’s World disc (correction 3). */
       "tabbar",
       /** Extra items on the phone More sheet after the More menu (Gallery, Feedback, Track order). */
       "more-phone",
-      /** Service cards in the Waafas World menu panel (Printing Solutions, International Trading, Find by model). */
+      /** Service cards in the Waafa’s World menu panel (Printing Solutions, International Trading, Find by model). */
       "shop-panel",
       "footer-travel",
       "footer-shop",
@@ -149,7 +149,7 @@ export const MenuSchema = z
         menu.items[2]?.href === "/shop" &&
         menu.items[4]?.panel === "more"),
     {
-      message: "The tab bar has five tabs: Waafas World (/shop) in the middle and More last",
+      message: "The tab bar has five tabs: Waafa’s World (/shop) in the middle and More last",
       path: ["items"],
     },
   );
@@ -446,7 +446,7 @@ export const HomeSectionSchema = z
   })
   .strict();
 
-/** Waafas World copy that is not a list (Content › Store): strips, corporate band, service cards and trust row. */
+/** Waafa’s World copy that is not a list (Content › Store): strips, corporate band, service cards and trust row. */
 export const ShopContentSchema = z
   .object({
     tagline: z.string().min(1).max(60),

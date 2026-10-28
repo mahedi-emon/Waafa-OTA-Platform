@@ -8,7 +8,7 @@ describe("parseSnapshot (D130)", () => {
     const wire = JSON.parse(JSON.stringify(loadFixtures())) as Record<string, unknown>;
     const data = parseSnapshot(wire);
     const repositories = createFixtureRepositories(data);
-    expect((await repositories.settings.getSiteSettings()).storeName).toBe("Waafas World");
+    expect((await repositories.settings.getSiteSettings()).storeName).toBe("Waafa’s World");
     expect((await repositories.travel.listPackages()).total).toBeGreaterThan(0);
   });
 

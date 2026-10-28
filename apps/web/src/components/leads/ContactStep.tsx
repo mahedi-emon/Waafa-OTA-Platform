@@ -14,7 +14,7 @@ type ContactStepProps = {
   emailRequired: boolean;
   countries: Array<{ code: string; name: string; dial: string }>;
   onSubmit: (values: ContactStepValues) => void;
-  /** Module copy that replaces the travel defaults, e.g. for Waafas World quotes. */
+  /** Module copy that replaces the travel defaults, e.g. for Waafa’s World quotes. */
   copy?: { title?: string; emailHint?: string };
 };
 

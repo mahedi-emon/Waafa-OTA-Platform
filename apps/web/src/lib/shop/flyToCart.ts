@@ -1,6 +1,6 @@
 /**
  * Store add to cart (MOTION.md §8): a 40 px ghost leaves the Add button and flies along an arc (x linear, y eased in)
- * to the visible cart target, the header cart on desktop or the tab bar's Waafas World disc on phones, in 600 ms.
+ * to the visible cart target, the header cart on desktop or the tab bar's Waafa’s World disc on phones, in 600 ms.
  * Transform and opacity only; nothing happens under reduced motion or when no target is on screen.
  */
 export function flyToCart(from: Element): void {

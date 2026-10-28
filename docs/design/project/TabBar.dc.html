@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Mobile tab bar with Waafas World and WhatsApp button</title>
+<title>Mobile tab bar with Waafa’s World and WhatsApp button</title>
 <link rel="stylesheet" href="./waafa.css">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../photos.css">
@@ -25,7 +25,7 @@
     <a class="{{t.packages}}" href="{{L.Packages}}"><span class="i i-map"></span>Packages</a>
     <a class="{{t.shop}}" href="{{L.Shop}}" aria-label="{{shopAria}}">
       <span class="ww-tw-disc"><span class="ww-tw-ring" aria-hidden="true"></span><img src="../assets/1c6076c8f14a42d9ff11739f2c69d99d.png" alt=""><sc-if value="{{hasCart}}" hint-placeholder-val="{{ false }}"><span class="ww-tw-badge">{{cart}}</span></sc-if></span>
-      <span class="ww-tw-label">Waafas World</span>
+      <span class="ww-tw-label">Waafa’s World</span>
     </a>
     <a class="{{t.visa}}" href="{{L.Visa}}"><span class="i i-passport"></span>Visa</a>
     <button class="{{t.more}}" type="button" aria-expanded="{{moreOpen}}" onClick="{{openMore}}"><span class="i i-layout-grid"></span>More</button>
@@ -88,10 +88,10 @@ class Component extends DCLogic {
     if (st.flung) sheetStyle = 'transform:translateY(105%);transition:transform .26s cubic-bezier(.4,0,1,1)';
     return {
       L, t, moreOpen, cart, hasCart: cart > 0,
-      shopAria: 'Waafas World, our online store' + (cart ? ', ' + cart + (cart === 1 ? ' item' : ' items') + ' in your cart' : ''),
+      shopAria: 'Waafa’s World, our online store' + (cart ? ', ' + cart + (cart === 1 ? ' item' : ' items') + ' in your cart' : ''),
       showFab: p.fab !== false && p.fab !== 'false',
-      waLabel: inShop ? 'Ask the Waafas World team' : 'Chat with a travel expert',
-      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent(inShop ? 'Hi Waafas World, I have a question about a product' : 'Hi Waafa, I’m on your website'),
+      waLabel: inShop ? 'Ask the Waafa’s World team' : 'Chat with a travel expert',
+      waHref: 'https://wa.me/8801823232241?text=' + encodeURIComponent(inShop ? 'Hi Waafa’s World, I have a question about a product' : 'Hi Waafa, I’m on your website'),
       ovCls: 'w-overlay wa-r' + (st.out ? ' is-out' : ''),
       sheetCls: 'w-sheet' + (st.dragging ? ' is-dragging' : ''),
       sheetStyle,

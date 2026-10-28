@@ -196,7 +196,7 @@ class Component extends DCLogic {
       ? { id: 'bd1', title, brand: 'Better Day', spec: 'Up to 2,700 pages · fits HP LaserJet P2035', price: 1450, mrp: 1800, stock: 'in', img: '../assets/c9ea845b540e931548117afdb5ae8a65.jpg', ph: 'printing-alt', icon: 'printer', options: false, sample: false, badge: 'Best seller' }
       : { id: 'tee', title, brand: 'Tessra', spec: 'Sizes S to XXL · 4 colours', price, mrp: 850, stock: 'in', img: '', ph: 'prod-tshirt', icon: 'shirt', phCap: 'Photo: T-shirt', options: true, sample: true };
     const slug = toner ? 'better-day-ce505a-cf280a-black-toner' : 'classic-cotton-crew-t-shirt';
-    const seoTitle = toner ? 'Better Day CE505A / CF280A Toner for HP LaserJet | Waafas World' : 'Classic Cotton Crew T-shirt, 180 GSM | Waafas World';
+    const seoTitle = toner ? 'Better Day CE505A / CF280A Toner for HP LaserJet | Waafa’s World' : 'Classic Cotton Crew T-shirt, 180 GSM | Waafa’s World';
     const seoDesc = toner ? 'Compatible CE505A / CF280A toner for HP LaserJet P2035, P2055 and Pro 400. Up to 2,700 pages. Cash on delivery across Bangladesh.' : 'Soft 180 GSM combed-cotton crew neck in sizes S to XXL and four colours. Cash on delivery across Bangladesh.';
     return {
       m: !!p.m, title, onTitle: e => this.setState({ title: e && e.target ? e.target.value : '', dirty: true }), titleCount: title.length, titleCountCls: 'a-count' + (title.length <= 90 ? ' is-ok' : ''),

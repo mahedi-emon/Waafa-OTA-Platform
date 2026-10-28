@@ -35,7 +35,9 @@ One-time data patches (`_seedPatches`, never over staff edits) run after the mig
 new-device, code-locked and customer sign-in email templates; #284 adds `2026-10-28-integration-cards`; #239 adds
 `2026-10-29-system-alert-template` (disk and memory alerts); #242 adds `2026-10-30-bookings-for-booked-leads` (one
 Confirmed, Unpaid booking for every lead already Booked, amount from the lead); #298 adds `2026-10-31-quote-templates`
-(the quote email to the customer and the "quote accepted" staff alert).
+(the quote email to the customer and the "quote accepted" staff alert); #302 adds `2026-10-28-store-name` (every
+stored text that still equals an old "Waafas World" default becomes "Waafa’s World": store name, menus, footer column,
+COD note, pages, team, timeline, email templates; anything staff wrote stays as it is).
 
 ## Image sizes (issue 303)
 

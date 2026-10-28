@@ -1,11 +1,11 @@
-# Waafas World overrides (WAAFA)
+# Waafa’s World overrides (WAAFA)
 
 > Overrides `../MASTER.md` for `/shop` and its children. Source: PRD §10, HANDOFF route table (Shop*, ShopList*,
 > ShopProduct*, ShopFinder*, ShopCart*, ShopCheckout*, ShopTrack*), DESIGN.md (cards), MOTION.md §8.
 
 ## Identity
-- The header keeps the one WAAFA logo with "Waafas World" set as text beside it (heading font); no second mark.
-  The phone tab bar's centre item is always labelled "Waafas World" (two lines allowed at 320 px) with Waafas World
+- The header keeps the one WAAFA logo with "Waafa’s World" set as text beside it (heading font); no second mark.
+  The phone tab bar's centre item is always labelled "Waafa’s World" (two lines allowed at 320 px) with Waafa’s World
   active inside the store.
 - The store sells any category; no copy or layout may assume toner. Category filters come from each category's
   attribute set.
