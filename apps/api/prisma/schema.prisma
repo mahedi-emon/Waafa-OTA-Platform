@@ -154,6 +154,7 @@ model Lead {
   createdAt       DateTime       @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
   activities      LeadActivity[]
+  booking         Booking?
   /// The customer account the request belongs to (#241): set when the same email is verified, by phone when the
   /// request has no email, or by staff. Cleared if the account is deleted.
   customerId      String?
@@ -597,4 +598,34 @@ model CustomerFile {
   @@index([ownerType, ownerId])
   @@index([status, createdAt])
   @@index([deleteAfter])
+}
+
+/// A booking made from a converted lead (issue 242, FR-ADM Bookings): the manual record of what was sold. Documents
+/// (e-tickets, vouchers, invoices) are CustomerFile rows with ownerType "booking".
+model Booking {
+  id            String    @id @default(cuid())
+  /// "BKG-261030-0001", a per-day sequence in Asia/Dhaka.
+  reference     String    @unique
+  leadId        String    @unique
+  lead          Lead      @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  module        String
+  /// confirmed, ticketed, travelled, cancelled
+  status        String    @default("confirmed")
+  /// unpaid, partial, paid, refunded
+  paymentStatus String    @default("unpaid")
+  /// Taka, VAT included.
+  amount        Int
+  paid          Int       @default(0)
+  pnr           String?
+  tickets       String[]  @default([])
+  supplier      String?
+  travelDate    DateTime? @db.Date
+  notes         String?
+  createdBy     String?
+  updatedBy     String?
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@index([status, createdAt])
+  @@index([paymentStatus, createdAt])
 }

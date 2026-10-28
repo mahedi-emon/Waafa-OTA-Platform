@@ -1,5 +1,6 @@
 import { PROVIDER_CATALOG, validateProviderConnection, type ProviderId } from "@waafa/shared";
 import type { Prisma, PrismaClient } from "../generated/prisma/client";
+import { nextReference } from "../common/references";
 import { SecretBox } from "../providers/secretBox";
 
 /** The patches already applied to this database; each runs once, on the first deploy that carries it. */
@@ -451,6 +452,46 @@ async function integrationCards(prisma: PrismaClient, env: PatchEnv): Promise<nu
   return changed;
 }
 
+/**
+ * Issue 242: leads that were booked before the Bookings module get their booking record (amount from the lead, status
+ * confirmed, unpaid), so staff can add the PNR and payments. Leads that already have one are skipped.
+ */
+async function bookingsForBookedLeads(prisma: PrismaClient): Promise<number> {
+  const leads = await prisma.lead.findMany({
+    where: { status: "booked", booking: null },
+    select: {
+      id: true,
+      module: true,
+      amount: true,
+      travelDate: true,
+      closedAt: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "asc" },
+  });
+  for (const lead of leads) {
+    const when = lead.closedAt ?? lead.createdAt;
+    await prisma.$transaction(async (tx) => {
+      const travel = /^d{4}-d{2}-d{2}$/.test(lead.travelDate ?? "")
+        ? new Date(`${lead.travelDate}T00:00:00Z`)
+        : null;
+      await tx.booking.create({
+        data: {
+          reference: await nextReference(tx, "BKG", when),
+          leadId: lead.id,
+          module: lead.module,
+          amount: lead.amount ?? 0,
+          ...(travel ? { travelDate: travel } : {}),
+          createdBy: "seed-patch",
+          updatedBy: "seed-patch",
+          createdAt: when,
+        },
+      });
+    });
+  }
+  return leads.length;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -467,6 +508,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-27-customer-code-template", apply: customerCodeTemplate },
   { id: "2026-10-28-integration-cards", apply: integrationCards },
   { id: "2026-10-29-system-alert-template", apply: systemAlertTemplate },
+  { id: "2026-10-30-bookings-for-booked-leads", apply: bookingsForBookedLeads },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

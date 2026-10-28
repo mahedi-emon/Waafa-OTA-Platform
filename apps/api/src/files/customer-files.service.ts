@@ -25,6 +25,7 @@ import { assertLeadAccess, canSeeOrders } from "../admin/access";
 import { ENV, type Env } from "../config/env";
 import { ProblemException, problems } from "../common/problem";
 import type { Prisma } from "../generated/prisma/client";
+import { bookingModulesFor } from "../admin/bookings.service";
 import { PrismaService } from "../prisma/prisma.service";
 
 const EXTENSION: Record<CustomerFileType, string> = {
@@ -61,7 +62,7 @@ export type OpenedFile = {
 };
 
 /** Roles that may open files of each owner type, beside Super Admin (PRD §4; matches the admin screens). */
-const OWNER_ROLES: Record<Exclude<CustomerFileOwner, "lead" | "order">, string[]> = {
+const OWNER_ROLES: Record<Exclude<CustomerFileOwner, "lead" | "order" | "booking">, string[]> = {
   "payment-proof": ["admin", "accounts", "shop-manager"],
   feedback: ["admin", "content-editor"],
 };
@@ -421,6 +422,37 @@ export class CustomerFilesService {
     return createHmac("sha256", this.linkKey).update(payload).digest("base64url");
   }
 
+  /**
+   * Staff add a document to a record they may open (issue 242: e-tickets, vouchers and invoices on a booking). The file
+   * is stored and scanned like a customer upload and attached at once; the audit log names it.
+   */
+  async attachForStaff(
+    staff: StaffPrincipal,
+    owner: CustomerFileOwner,
+    ownerId: string,
+    bytes: Buffer,
+    declaredType: string,
+    query: CustomerFileUploadQuery,
+    ip: string,
+  ): Promise<CustomerFileRow[]> {
+    await this.assertOwnerAccess(staff, owner, ownerId);
+    const stored = await this.store(bytes, declaredType, query, ip);
+    await this.prisma.$transaction(async (tx) => {
+      await this.claim(tx, [stored], owner, ownerId);
+      await this.audit.record(
+        {
+          actor: staff,
+          action: "file.attach",
+          entity: owner,
+          entityId: ownerId,
+          after: { fileName: stored.fileName, kind: query.kind },
+        },
+        tx,
+      );
+    });
+    return this.list(staff, owner, ownerId);
+  }
+
   private async assertOwnerAccess(
     staff: StaffPrincipal,
     owner: CustomerFileOwner,
@@ -438,6 +470,16 @@ export class CustomerFilesService {
     }
     if (owner === "order") {
       if (!canSeeOrders(staff)) throw problems.notFound("File not found");
+      return;
+    }
+    if (owner === "booking") {
+      // Booking documents follow the booking: its lead's module, or Accounts (issue 242).
+      const booking = await this.prisma.booking.findUnique({
+        where: { id: ownerId },
+        select: { module: true },
+      });
+      if (!booking || !bookingModulesFor(staff).includes(booking.module as never))
+        throw problems.notFound("File not found");
       return;
     }
     if (!OWNER_ROLES[owner].some((role) => staff.roles.includes(role as never))) {

@@ -25,6 +25,7 @@ import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { assertLeadAccess, canSeeOrders, dhakaDate, leadModulesFor } from "./access";
+import { AdminBookingsService } from "./bookings.service";
 import { checklistOf, progressOf, visaFacts } from "../common/visaProgress";
 
 const CLOSED: LeadStatus[] = ["booked", "cancelled", "lost", "spam"];
@@ -144,6 +145,7 @@ export class AdminLeadsService {
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
     @Inject(NotificationService) private readonly notifications: NotificationService,
+    @Inject(AdminBookingsService) private readonly bookings: AdminBookingsService,
   ) {}
 
   private async slaMinutes(): Promise<number> {
@@ -355,6 +357,11 @@ export class AdminLeadsService {
       travelDate: lead.travelDate,
       travellers: lead.travellers,
       amount: lead.amount,
+      // The booking made when it was converted (issue 242), for the link on the lead page.
+      booking: await this.prisma.booking.findUnique({
+        where: { leadId: lead.id },
+        select: { id: true, reference: true, status: true, paymentStatus: true },
+      }),
       reason: lead.reason,
       assignee: lead.assigneeId
         ? { id: lead.assigneeId, name: names.get(lead.assigneeId) ?? "Former staff" }
@@ -433,6 +440,9 @@ export class AdminLeadsService {
     if (notes.length === 0) return this.detail(staff, id);
     await this.prisma.$transaction(async (tx) => {
       await tx.lead.update({ where: { id }, data });
+      // A corrected booked amount is the booking's amount too (issue 242).
+      if (typeof data.amount === "number")
+        await this.bookings.fromLead(tx, staff, lead, data.amount, now);
       // One millisecond apart, so the timeline keeps the order of the changes.
       for (const [index, note] of notes.entries()) {
         await tx.leadActivity.create({
@@ -496,7 +506,11 @@ export class AdminLeadsService {
           createdAt: now,
         },
       });
-      if (input.type === "convert") seats = await this.takeSeats(tx, staff, lead);
+      if (input.type === "convert") {
+        seats = await this.takeSeats(tx, staff, lead);
+        // The booking record (issue 242): PNR, tickets and payments are added on it afterwards.
+        await this.bookings.fromLead(tx, staff, lead, input.amount, now);
+      }
       await this.audit.record(
         {
           actor: staff,

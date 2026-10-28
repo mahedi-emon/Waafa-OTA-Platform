@@ -30,6 +30,7 @@ export * from "./schemas/media";
 export * from "./schemas/files";
 export * from "./schemas/workflow";
 export * from "./schemas/track";
+export * from "./schemas/bookings";
 
 export * from "./content/registry";
 export * from "./content/publicPaths";

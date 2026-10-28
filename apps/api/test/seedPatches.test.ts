@@ -18,6 +18,7 @@ const ALL_PATCHES = [
   "2026-10-27-customer-code-template",
   "2026-10-28-integration-cards",
   "2026-10-29-system-alert-template",
+  "2026-10-30-bookings-for-booked-leads",
 ];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */
