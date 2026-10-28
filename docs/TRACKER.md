@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 28 Oct (evening) Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename 🟡, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 28 Oct (evening) Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise 🟡, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -51,7 +51,7 @@ Serena memory `audit_findings`.
 | Tools and skills | Context7 (Next `images.maximumDiskCacheSize`); clamav-docker sources (CLAMD_CONF_ env); Docker Hub API; Serena memories |
 | PR · CI minutes | (PR open) |
 
-### #302 · Store renamed to Waafa’s World — 🟡 In review
+### #302 · Store renamed to Waafa’s World — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's decisions of 28 Oct (evening), item 4 and RENAME (first issue) |
