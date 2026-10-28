@@ -38,12 +38,12 @@ wait_healthy() {
   echo "$1 ready"
 }
 
-# A pulled web image is built for one address and one Turnstile site key (both public, stored as image labels).
+# A pulled web image is built for one address (public, stored as an image label). Turnstile keys live in Admin ›
+# Integrations since issue 284, so the image no longer carries a site key.
 check_web_image() {
   image="$REPO:web-$TAG"
   label() { docker image inspect -f "{{ index .Config.Labels \"$1\" }}" "$image" 2>/dev/null | sed 's/<no value>//'; }
   built_url=$(label org.waafa.site-url)
-  built_key=$(label org.waafa.turnstile-site-key)
   site_url=$(setting SITE_URL)
   if [ "$built_url" != "$site_url" ]; then
     if [ "$DOMAIN" = "localhost" ]; then
@@ -53,14 +53,6 @@ check_web_image() {
       echo "and run the Docker images workflow again, or fix SITE_URL in deploy/.env." >&2
       exit 1
     fi
-  fi
-  if [ -n "$(setting TURNSTILE_SECRET_KEY)" ] && [ -z "$built_key" ]; then
-    echo "TURNSTILE_SECRET_KEY is set but the web image has no Turnstile site key, so every form would be refused." >&2
-    echo "Set the GitHub variable TURNSTILE_SITE_KEY and run the Docker images workflow, or empty the secret." >&2
-    exit 1
-  fi
-  if [ -n "$built_key" ] && [ -z "$(setting TURNSTILE_SECRET_KEY)" ]; then
-    echo "Note: the web image shows Turnstile; set TURNSTILE_SECRET_KEY in deploy/.env so the server checks it."
   fi
 }
 

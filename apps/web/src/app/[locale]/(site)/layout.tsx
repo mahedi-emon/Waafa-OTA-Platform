@@ -16,7 +16,9 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { TabBar } from "@/components/layout/TabBar";
 import { StaffToolsLoader } from "@/components/staff/StaffToolsLoader";
+import { TurnstileKeyProvider } from "@/components/forms/TurnstileKeyProvider";
 import { pickMessages } from "@/i18n/pickMessages";
+import { getIntegrations } from "@/lib/data/integrations";
 import { getContactSettings, getMenu, getPublicConfig } from "@/lib/data/settings";
 
 /**
@@ -25,16 +27,18 @@ import { getContactSettings, getMenu, getPublicConfig } from "@/lib/data/setting
  * tab bar on phones. For staff only: the preview banner (draft mode) and the staff tools (D0 R7).
  */
 export default async function SiteLayout({ children }: LayoutProps<"/[locale]">) {
-  const [contact, config, tabbar, more, morePhone, messages, t, tErrors] = await Promise.all([
-    getContactSettings(),
-    getPublicConfig(),
-    getMenu("tabbar"),
-    getMenu("more"),
-    getMenu("more-phone"),
-    getMessages(),
-    getTranslations("Layout"),
-    getTranslations("Errors.offline"),
-  ]);
+  const [contact, config, integrations, tabbar, more, morePhone, messages, t, tErrors] =
+    await Promise.all([
+      getContactSettings(),
+      getPublicConfig(),
+      getIntegrations(),
+      getMenu("tabbar"),
+      getMenu("more"),
+      getMenu("more-phone"),
+      getMessages(),
+      getTranslations("Layout"),
+      getTranslations("Errors.offline"),
+    ]);
   if (config.maintenance.enabled) {
     return <MaintenanceScreen maintenance={config.maintenance} contact={contact} />;
   }
@@ -61,7 +65,9 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
       >
         {/* The error boundary sits between this layout and the page, so its strings come from here. */}
         <NextIntlClientProvider messages={pickMessages(messages, ["Errors"])}>
-          <div className="flex flex-1 flex-col">{children}</div>
+          <TurnstileKeyProvider siteKey={integrations.public.turnstileSiteKey}>
+            <div className="flex flex-1 flex-col">{children}</div>
+          </TurnstileKeyProvider>
         </NextIntlClientProvider>
       </SupportContactProvider>
       <SiteFooter />

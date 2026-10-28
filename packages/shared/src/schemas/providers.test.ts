@@ -6,6 +6,8 @@ import {
   PROVIDER_IDS,
   ProviderConnectionInputSchema,
   ProviderKeySchema,
+  SUPPLIER_KINDS,
+  type ProviderId,
   customProviderKey,
   customProviderKind,
   providerDefinition,
@@ -17,13 +19,70 @@ describe("provider catalog", () => {
     for (const id of PROVIDER_IDS) {
       const definition = PROVIDER_CATALOG[id];
       expect(definition.id).toBe(id);
-      // HTTP APIs have a base URL; SMTP has a host and port; Google sign-in a client ID (Google's hosts are fixed).
-      const address = id === "smtp" ? "host" : id === "google" ? "clientId" : "baseUrl";
-      expect(definition.fields.some((field) => field.key === address)).toBe(true);
-      expect(definition.fields.some((field) => field.secret)).toBe(true);
       const keys = definition.fields.map((field) => field.key);
       expect(new Set(keys).size).toBe(keys.length);
+      // Supplier APIs: a base URL (SMTP a host, Google a client ID) and a secret. Services added in issue 284 have
+      // fixed hosts or only public IDs.
+      if (!(SUPPLIER_KINDS as readonly string[]).includes(definition.kind) && id !== "google")
+        continue;
+      const address = id === "smtp" ? "host" : id === "google" ? "clientId" : "baseUrl";
+      expect(keys).toContain(address);
+      expect(definition.fields.some((field) => field.secret)).toBe(true);
     }
+  });
+
+  it("gives every service a keys link, and lets the browser see only plain fields (issue 284)", () => {
+    for (const id of PROVIDER_IDS) {
+      const definition = PROVIDER_CATALOG[id];
+      expect(definition.keysUrl, id).toMatch(/^https:\/\//);
+      for (const key of definition.publicFields ?? []) {
+        const field = definition.fields.find((item) => item.key === key);
+        expect(field?.secret, `${id}.${key}`).toBe(false);
+      }
+    }
+    const services = [
+      "turnstile",
+      "ga4",
+      "gtm",
+      "meta-pixel",
+      "search-console",
+      "bing",
+      "sentry",
+      "glitchtip",
+      "r2",
+      "b2",
+      "telegram",
+      "steadfast",
+      "pathao",
+      "redx",
+    ];
+    expect(services.every((id) => PROVIDER_IDS.includes(id as never))).toBe(true);
+  });
+
+  it("checks the shape of IDs and tokens before saving (issue 284)", () => {
+    const bad = (provider: ProviderId, settings: Record<string, string>, secrets = {}) =>
+      validateProviderConnection(provider, { settings, secrets }).map((item) => item.path);
+    expect(bad("ga4", { measurementId: "UA-12345-1" })).toEqual(["settings.measurementId"]);
+    expect(bad("ga4", { measurementId: "G-ABC1234567" })).toEqual([]);
+    expect(bad("gtm", { containerId: "ABC" })).toEqual(["settings.containerId"]);
+    expect(bad("meta-pixel", { pixelId: "12ab" })).toEqual(["settings.pixelId"]);
+    expect(bad("bing", { token: "xyz" })).toEqual(["settings.token"]);
+    expect(bad("turnstile", { siteKey: "1x00000000000000000000AA" }, { secretKey: "s" })).toEqual(
+      [],
+    );
+    expect(bad("telegram", { chatId: "-1001234567890" }, { botToken: "not-a-token" })).toEqual([
+      "secrets.botToken",
+    ]);
+    expect(bad("sentry", { dsn: "https://abc123@o123.ingest.sentry.io/456" })).toEqual([]);
+  });
+
+  it("takes custom suppliers only for supplier kinds", () => {
+    expect(CustomProviderInputSchema.safeParse({ kind: "courier", name: "Paperfly" }).success).toBe(
+      false,
+    );
+    expect(CustomProviderInputSchema.safeParse({ kind: "flight", name: "Galileo" }).success).toBe(
+      true,
+    );
   });
 
   it("covers the PRD providers: three GDS, consolidators, hotels and three payment gateways", () => {

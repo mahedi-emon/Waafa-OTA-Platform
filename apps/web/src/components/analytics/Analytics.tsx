@@ -1,17 +1,18 @@
 import { getTranslations } from "next-intl/server";
-import { getTrackingSettings } from "@/lib/data/settings";
+import { getIntegrations } from "@/lib/data/integrations";
 import { ConsentBar } from "./ConsentBar";
 
 /**
- * Analytics from Settings › Tracking (issue 102): renders the consent bar only when at least one ID is set, so a site
- * without analytics shows no bar and loads no third-party script.
+ * Analytics from Admin › Integrations (issues 102 and 284): renders the consent bar only when at least one of GA4,
+ * GTM and Meta Pixel is On, so a site without analytics shows no bar and loads no third-party script.
  */
 async function Analytics() {
-  const [tracking, t] = await Promise.all([getTrackingSettings(), getTranslations("Consent")]);
+  const [integrations, t] = await Promise.all([getIntegrations(), getTranslations("Consent")]);
+  const { gtmId, ga4Id, metaPixelId } = integrations.public;
   const ids = {
-    ...(tracking.gtmId ? { gtmId: tracking.gtmId } : {}),
-    ...(tracking.ga4Id ? { ga4Id: tracking.ga4Id } : {}),
-    ...(tracking.metaPixelId ? { metaPixelId: tracking.metaPixelId } : {}),
+    ...(gtmId ? { gtmId } : {}),
+    ...(ga4Id ? { ga4Id } : {}),
+    ...(metaPixelId ? { metaPixelId } : {}),
   };
   if (Object.keys(ids).length === 0) return null;
   return (

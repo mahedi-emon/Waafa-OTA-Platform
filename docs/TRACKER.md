@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 27 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov): Step 0 ✅ (#231, #232, #233), A ✅ (#229, #219, #224), B ✅ (#234, #235), C ✅ (#236; follow-up #271), F accounts and /track 🟡 (#240 ✅, #241 ✅, #278 in review), then D #237 measurement · Status: live; the owner deploys with `sh deploy.sh` after the Docker images workflow is green
+Updated: 28 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 integration hub 🟡 in review, then #285 release note and upgrade rehearsal, #237, #238/#239, #242–#244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,26 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #278 · D F2 · My account sections and the optional password — 🟡 In review
+### #284 · Integration hub: every outside service set up from Admin › Integrations — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct (D303): one place for email, Google, Turnstile, GA4, GTM, Meta Pixel, Search Console, Bing, error tracking, off-site storage, payments, SMS, Telegram, couriers and the travel APIs; cards in plain words with a keys link, Test, Sandbox or Live, On or Off, a status chip and who changed it; secrets sealed and never sent to the browser; changes without a redeploy; Turnstile off the build-time variable; .env keeps infrastructure only |
+| Built | Shared: provider kinds captcha, analytics, monitoring, storage, alerts, courier; 14 new catalog cards (turnstile, ga4, gtm, meta-pixel, search-console, bing, sentry, glitchtip, r2, b2, telegram, steadfast, pathao, redx) with `keysUrl`, `liveOnly`, `publicFields` and field patterns checked before saving; custom providers only for supplier kinds; `IntegrationStatus.public` (site key, IDs, codes, DSN) and `.features` (online payment, courier tracking, Telegram, off-site backup). API: `serviceChecks.ts` (Turnstile secret check at Cloudflare, Telegram getMe, DSN and storage reachability, shape checks), a failing last test keeps a service out of use, live-only cards always use the Live set, every change expires the site's `integrations` tag, `POST /public/integrations/turnstile/verify`, the reveal route removed, seed patch `2026-10-28-integration-cards` (Tracking IDs, verification codes and .env Turnstile keys onto their cards, never over staff edits). Web: `lib/data/integrations.ts` (cached, tag-expired), TurnstileKeyProvider in the site layout, Analytics and verification meta from the cards, setup checklist links to Integrations, Settings › Tracking tab and the two verification fields retired; Integrations page in eight tabs with keys links, status chips (Off, No keys saved, Not tested, Connected, Failing with error and time), Changed by, write-only secrets; ADMIN_GUIDE §11.1 in Banglish. Deploy: the web image no longer carries a Turnstile key (Dockerfile, compose, docker.yml, deploy.sh); check.sh says to empty the .env lines after the first deploy |
+| Tests | shared `providers.test.ts` (keys links, public fields never secret, shapes, supplier-only custom); API `serviceChecks.unit.test.ts` 4, `providers.test.ts` (reveal gone, cards, live-only, public status without secrets, failing Telegram, Turnstile verify with and without keys), `seedPatches.test.ts` (import once, staff edit kept, bad Pixel left); web `cardStatus.test.ts`, `setupChecklist.test.ts`; e2e `api-mode.spec.ts` (tabs, write-only secret, Not tested chip, Changed by, keys link in a new tab, Search Console code reaches the home page HTML without a rebuild); QA plan `docs/qa/284-integration-hub.md` (IH-01..22) |
+| Verify | guards, lint, typecheck, format, shared 157, web 691, API unit 117; web build; first-load JS / 200, /flights 192, package 190, visa apply 186, /login 182, /shop 195 KB. API database tests and the admin screen (API-mode e2e) run in CI only; no local Playwright MCP pass on the admin screen (no Docker or API on this machine) |
+| Migration | none (seed patch only); deploy/ changed: copy compose.yml, deploy.sh and check.sh to /opt/waafa |
+| Tools and skills | Serena (symbols and edits), existing shadcn primitives (Badge, ToggleGroup, Switch); Context7, ui-ux-pro-max, design-taste-frontend, frontend-design and design-superpowers not run in this session (no new visual pattern: the existing admin card gained a link, a chip and a line); design review owed in #259 |
+| Decision | D304 |
+
+### #282 · Dependabot: minor and patch updates with the axe 4.14 link-name fix — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct (D303) step 1: merge #188; fix what breaks the home smoke in #275 |
+| Built | #188 (docker/login-action v4) merged as is. #275's 37 updates taken on an owner branch; axe-core 4.14 adds label-content-name-mismatch (WCAG 2.5.3), which flagged the header logo link (tagline words inside the "WAAFA home" link): LogoLockup keeps the tagline beside the link, same look. #275 closed |
+| PR · CI minutes | #283 (2b3f05a) · 14 billed minutes |
+| Migration | none |
+
+### #278 · D F2 · My account sections and the optional password — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 27 Oct (D300): My account with requests and their status timeline, visa applications, orders, wishlist, saved travellers (passport encrypted at rest), addresses, notification preferences, sign-in history, delete; an optional password (reset by email code) |
@@ -46,6 +65,7 @@ Serena memory `audit_findings`.
 | Tests | API `customerAccount.test.ts` 7 (view with progress, wishlist, sealed passport never stored plain, address default rules, preferences and sign-out-others, password set, sign-in, wrong and unknown, limits, remove); shared schema tests; web unit `checkoutPrefill.test.ts` 5; e2e `account-sections.spec.ts` (API mode, Mailpit) at 390 (wishlist from a package page, traveller masked, address default and a refused phone) and 1440 (offers, password, a second browser signed out from the first) with axe |
 | Migration | yes: owner runs `sh backup.sh` before `sh deploy.sh` |
 | Decision | D302 |
+| PR · CI minutes | #281 (606280a) · 105 billed minutes; review fixes: account code lazy (lazyAccountSections, lazy notify) so package, product and /account stay ≤ 200 KB; soft navigation into /account covered by e2e |
 
 ### #241 · D F1 · Email code sign-in and sign-up, guest records attach, admin account controls — ✅ Done
 | Field | Value |
@@ -1411,6 +1431,10 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-152 | Sign-in code email (/login) | template `customer-sign-in-code` (`{{code}}` required) | Settings › Notifications | `PUT /api/v1/admin/content/notificationTemplates/:id` | ✅ 27 Oct · customerCodes.test, account-email e2e |
 | AC-153 | Customer accounts: verified, sign-in method (code, Google, password), last sign-in, Disable, Sign out everywhere, attach a record | `Customer` + `CustomerSession` | Customers › Accounts | `GET/POST /api/v1/admin/customers/accounts…` | ✅ 27 Oct · customerCodes.test, admin-screens e2e |
 | AC-154 | My account wishlist, saved travellers, addresses, offer emails, password, sign-ins (the customer's own data, not admin content; staff see the account and its sign-ins) | `CustomerWishlistItem`, `CustomerTraveller`, `CustomerAddress`, `Customer.notifyOffers`, `Customer.passwordHash` | Customers › Accounts (account page) | `POST /api/v1/public/account/…` | ✅ 27 Oct · customerAccount.test, account-sections e2e |
+| AC-155 | Turnstile widget and check on every public form (site key, secret) | `IntegrationSetting` + `ProviderCredential` turnstile | Settings › Integrations › Sign-in and security | `GET /public/integrations/status`, `POST /public/integrations/turnstile/verify`, `/admin/providers/turnstile/*` | ✅ API test + e2e (#284) |
+| AC-156 | GA4, GTM, Meta Pixel IDs (consent bar and scripts) | provider cards ga4, gtm, meta-pixel | Settings › Integrations › Measurement | `GET /public/integrations/status` | ✅ API test (#284) |
+| AC-157 | Search Console and Bing verification meta tags | provider cards search-console, bing | Settings › Integrations › Measurement | `GET /public/integrations/status` | ✅ e2e: code reaches the home page HTML (#284) |
+| AC-158 | Features that need an outside service (online payment, courier tracking, Telegram alerts, off-site backup) shown only when On and healthy | `IntegrationStatus.features` | Settings › Integrations (each card) | `GET /public/integrations/status` | ✅ API test (#284); used by #238, #239, #251–#253 |
 | AC-149 | EMI request form: minimum, months, bank choices | `getEmiSettings()` → minimumAmount, tenuresMonths; `listEmiBanks()` → name | Settings › Payments and delivery › EMI, EMI banks | snapshot | e2e content.spec (issue 233) |
 
 ## 5. Components inventory
@@ -1863,6 +1887,8 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D300 | 27 Oct | Owner's work order replaces D268: #276 flaky test, F (accounts and /track, email code sign-in), then D, E, G, H, I, J, K, #271, L, M, content readiness; PRs touching public pages carry `full-ci` (CI Lighthouse) | Owner, 27 Oct: accounts and tracking before measurement; no SMS for sign-in | #276 |
 | D301 | 27 Oct | Customers sign in with an email one-time code (6 digits, 10 minutes, single use, 5 tries, HMAC-stored, newest code only) or Google; no phone OTP or SMS for sign-in. Sign-up on the same screen (code, then a 15-minute ticket in an httpOnly cookie, then name and phone; phone not verified). Every code request gets the same answer; limits 5 an hour per email and 20 per address. Guest records attach by verified email, or by phone only when the record has no email; staff attach by hand (audited). Header, drawer and More read a readable hint cookie so the page shell stays static. Admin can turn an account off and sign it out everywhere | Owner, 27 Oct: no SMS cost or sender approval for sign-in; one screen for sign-in and sign-up; no enumeration | #241 |
 | D302 | 27 Oct | My account (issue 278): offer emails are opt-in (off until the customer turns them on); service emails about requests and orders always go. Saved travellers keep the passport number sealed with AES-256-GCM (key from the server secret) and only its last 4 digits readable, shown masked even to the owner; editing without a new number keeps the old one. A password is optional (argon2id, 10 to 128 characters), never required; a forgotten one is replaced by an email code sign-in; 5 wrong passwords per email and address in 15 minutes are refused with one neutral message. Save buttons and checkout prefill read `/api/account/summary` after hydration so package, product and checkout pages stay static | Owner, 27 Oct: optional password later, reset by email code; passport fields encrypted at rest | #278 |
+| D303 | 28 Oct | Owner's order of 28 Oct replaces D300: finish every P0 and P1 PRD row (exceptions: waiting for an owner account with the adapter built and off; Phase E and P3 rows); no deploys during development, one release at the end with docs/RELEASE.md and an upgrade rehearsal; an integration hub before D and E; checkpoints with local screenshot paths; hands-on checks in docs/qa/UAT.md; QA numbers in docs/qa/SUMMARY.md | Owner, 28 Oct | #284, #285 |
+| D304 | 28 Oct | Integration hub: every outside service is a provider card (new kinds captcha, analytics, monitoring, storage, alerts, courier). The site reads only catalog-listed public fields through `GET /public/integrations/status` in a cached accessor that every save expires (hours lifetime, seconds when the API is unreachable), so a change needs no rebuild and pages stay static. Turnstile tokens are checked by the API with the sealed secret; the web image carries no key. Saved secrets never come back (the audited reveal is removed; last 4 only). Measurement, monitoring, storage and Telegram cards have one Live set. A service whose last test failed is not used until a test passes. Settings › Tracking and the two verification fields retire (kept in the record, hidden); a seed patch moves their values and .env Turnstile keys onto the cards once | Owner, 28 Oct: one place, no redeploy, secrets never in the browser | #284 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -1965,6 +1991,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 28 Oct | Owner's order of 28 Oct (D303): Dependabot done (#188, #283 with the axe 4.14 logo fix); #278 merged after budget and test fixes; #284 integration hub built (API, web, deploy, seed patch) | #282, #278, #284, #285 | #283, #281 | shared 157, web 691, API unit 117; API DB tests and API-mode e2e in CI (no Docker locally) |
 | 27 Oct (night) | #279 merged (#241 F1 email code sign-in, 182 min, migration). #278 F2 built: My account sections (timeline, visa, wishlist, travellers sealed, addresses, offers opt-in, password, sign-ins, sign out other devices), Save on package and product pages, checkout prefill, password sign-in; API-mode e2e with a local Mailpit | #241, #278 | #279 | API account 7 · web unit 695 · e2e account-sections |
 | 27 Oct | #236 merged (PR #272, 5583bf7, 379 min): all public routes ≤ 200 KB, 8 of 11 key routes at Lighthouse 90+ in CI; CI caught record pages failing in API mode without Suspense (D299) before merge; #271 follow-up, #273 manual Lighthouse dispatch-only. Letter C done | #236, #271, #273 | #272 | unit 689 · e2e public + API mode green · CI Lighthouse budgets pass |
 | 26 Oct evening | #236 on chore/236-speed: every public route ≤ 200 KB first-load JS (native form controls and tabs, compiled messages, lazy dialogs and second steps); three branch bugs found and fixed (cart/checkout crash, double-tap keys, compiled messages) with a client-boundary guard; Lighthouse local run stopped for low memory | #236 | — | unit 689 · public e2e green · budget 31 routes |
@@ -2033,23 +2060,22 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 ## 14. Next steps
 
-Owner's work order (27 Oct, replaces the PROMPT 10 letter order D268; every session follows it, D300):
-1. #276 flaky API-mode hero photo test: real cause fixed with stable waits (no retries).
-2. Letter F, customer accounts and /track (before D): email one-time code (6 digits via Resend, 10 minutes, single
-   use, 5 tries) or Google; no phone OTP or SMS for sign-in; optional password later in My account (reset by email
-   code). Sign-up on the same screen (email, code, name and phone; phone is a contact field). Guest flows stay; guest
-   leads and orders attach on the same verified email (or phone when the old record has no email); staff can attach.
-   My account: requests with status timeline, visa applications, orders, wishlist, saved travellers (passport fields
-   encrypted at rest), addresses, notification preferences, sign-in history, delete account. Header, phone drawer and
-   More sheet show the state; admin and customer sessions separate. One /track for any request, visa application or
-   order (reference and phone); /shop/track redirects. Admin Customers: verified, sign-in method, last sign-in,
-   Disable account, Sign out everywhere. Security: rate limits per email and IP, Turnstile on the code request, no
-   enumeration, the code email editable in Admin › Forms and notifications; e2e on phone and desktop. PRD FR-ACC and
-   PRD_COVERAGE updated in the same PR. Checkpoint after F.
-3. Then D (#237 measurement), E (operations), G (sales tools), H (store and trust), I (travel), J (outside accounts,
-   sandbox and off; SMS later and only for status messages), K (Bangla), #271 (Home, Hotels, Blog to 90+ and LCP
-   2.5 s; then performance and LCP assertions to error), L (best-OTA bar), M (Phase D QA), content-readiness checklist.
-4. Senior-QA rule on every step: test cases in docs/qa first, P0/P1 automated, exploratory pass, full regression, QA
-   line at each checkpoint.
-5. Lighthouse (manual) stays dispatch-only; PRs that touch public pages carry the `full-ci` label so the CI
-   Lighthouse job catches speed regressions before merge.
+Owner's order of 28 Oct (D303). One issue per PR; start the next issue while CI runs; never deploy between issues.
+1. ✅ Dependabot (#188, #282). 2. ✅ #278 My account. 3. 🟡 #284 integration hub (PR open, full-ci). Checkpoint.
+4. #285 docs/RELEASE.md (live release predates #280: /track answered 404 on 28 Oct; the owner confirms IMAGE_TAG) and
+   the upgrade rehearsal in the VPS deploy smoke.
+5. #237 measurement (events after consent, UTM on leads and orders, Where leads come from, split sitemap, share images).
+6. #238 error tracking, Status page, dead-letter queues; #239 backups, off-site copy, restore drill, alerts, per-IP lead
+   limit, CSP nonce or documented exception, staging bundle. Checkpoint.
+7. #242 bookings and quote builder; #243 reminders, mentions, round-robin, real-time alerts; #244 reports and roles.
+   Checkpoint.
+8. #245 reviews and Q&A (approved feedback photos); #246 wishlist extras; #247 campaigns and flash sales; #248 PDFs and
+   CSV import. Checkpoint.
+9. #249 curated hotels; #250 partial lead capture.
+10. #251 payments, #252 SMS and Telegram, #253 couriers: through the hub, sandbox-tested, off. Checkpoint.
+11. #254 Bangla at /bn, #255 bilingual content. Checkpoint.
+12. #271 Lighthouse 90+ and LCP 2.5 s on every key route; then assertions to error.
+13. #256 transitions, #257 admin dark mode, #258 benchmark re-run.
+14. #259 Phase D QA (Chromium, Firefox, WebKit; UAT.md; ADMIN_GUIDE, DEPLOY; content readiness).
+15. Release candidate: tag, RELEASE.md, rehearsal, full suite; deploy steps for the owner in Banglish. Checkpoint.
+Senior-QA rule on every issue: test cases in docs/qa first, P0/P1 automated, exploratory pass, full regression.

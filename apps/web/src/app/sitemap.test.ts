@@ -46,7 +46,7 @@ vi.mock("@/lib/data/shop", () => ({
   listCollections: async () => data.collections,
 }));
 
-const { default: sitemap } = await import("./sitemap");
+const { sitemapEntries: sitemap, partOf, SITEMAP_PARTS } = await import("@/lib/seo/sitemapEntries");
 
 const seo = { noIndex: false };
 const hidden = { noIndex: true };
@@ -195,5 +195,19 @@ describe("sitemap (issue 183)", () => {
     expect(images.some((src) => src.endsWith("/x.jpg"))).toBe(true);
     expect(images.some((src) => src.endsWith("/b.jpg"))).toBe(false);
     expect(images.some((src) => src.endsWith("/y.jpg"))).toBe(false);
+  });
+
+  it("splits into parts by area, each URL in exactly one part (issue 287)", async () => {
+    const entries = await sitemap();
+    const byPart = new Map(SITEMAP_PARTS.map((part) => [part, 0]));
+    for (const entry of entries)
+      byPart.set(partOf(entry.url), (byPart.get(partOf(entry.url)) ?? 0) + 1);
+    expect([...byPart.values()].reduce((sum, count) => sum + count, 0)).toBe(entries.length);
+    expect(SITEMAP_PARTS.every((part) => (byPart.get(part) ?? 0) > 0)).toBe(true);
+    expect(partOf("https://waafasworld.com/visa-guide/thailand")).toBe("visa");
+    expect(partOf("https://waafasworld.com/shop/p/x")).toBe("store");
+    expect(partOf("https://waafasworld.com/flights/dhaka-to-dubai")).toBe("travel");
+    expect(partOf("https://waafasworld.com/gallery")).toBe("blog");
+    expect(partOf("https://waafasworld.com/about-us")).toBe("pages");
   });
 });

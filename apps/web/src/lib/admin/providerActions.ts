@@ -86,14 +86,3 @@ export async function removeCustomProvider(provider: string): Promise<AdminResul
   if (!at) return invalid("Unknown provider");
   return adminWrite<null>(at, "DELETE");
 }
-
-/** One saved secret for the Super Admin; the API writes the reveal to the audit log. */
-export async function revealProviderSecret(
-  provider: string,
-  environment: ProviderEnvironment,
-  field: string,
-): Promise<AdminResult<{ field: string; value: string }>> {
-  const at = path(provider, environment);
-  if (!at || !/^[A-Za-z][A-Za-z0-9]{0,39}$/.test(field)) return invalid("Unknown field");
-  return adminWrite<{ field: string; value: string }>(`${at}/reveal/${field}`, "POST");
-}

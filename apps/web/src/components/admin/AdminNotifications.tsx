@@ -55,15 +55,16 @@ function AdminNotifications() {
       variant="ghost"
       size="icon"
       className="relative shrink-0 text-navy-900 lg:size-10"
-      aria-label={
-        unseen.length > 0
-          ? `${t("title")}, ${t("unseenCount", { count: unseen.length })}`
-          : t("title")
-      }
       onPointerEnter={() => void (isMobile ? loadDrawer() : loadBody())}
       {...(isMobile ? { onClick: () => toggle(true) } : {})}
     >
       <Bell aria-hidden="true" className="size-5" />
+      {/* Named by words, not an aria-label: the badge shows "9+" while the name says the real count (axe 4.14). */}
+      <span className="sr-only">
+        {unseen.length > 0
+          ? `${t("title")}, ${t("unseenCount", { count: unseen.length })}`
+          : t("title")}
+      </span>
       {unseen.length > 0 ? (
         <span
           aria-hidden="true"

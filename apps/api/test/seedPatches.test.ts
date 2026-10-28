@@ -16,6 +16,7 @@ const ALL_PATCHES = [
   "2026-10-26-new-device-template",
   "2026-10-26-code-locked-template",
   "2026-10-27-customer-code-template",
+  "2026-10-28-integration-cards",
   "2026-10-29-system-alert-template",
 ];
 
@@ -313,5 +314,47 @@ describe.skipIf(!dbAvailable)("seed patches (issue 176)", () => {
     });
     const kept = await prisma.contentDocument.findUniqueOrThrow({ where });
     expect((kept.data as { subject: string }).subject).toBe("Your code for Waafa");
+  });
+  it("moves measurement IDs, verification codes and the .env Turnstile keys onto their cards once (issue 284)", async () => {
+    await prisma.providerCredential.deleteMany({});
+    await prisma.integrationSetting.deleteMany({});
+    await prisma.setting.upsert({
+      where: { key: "trackingSettings" },
+      update: { value: { ga4Id: "G-ABC1234567", gtmId: "GTM-AB12CD3", metaPixelId: "12" } },
+      create: {
+        key: "trackingSettings",
+        value: { ga4Id: "G-ABC1234567", gtmId: "GTM-AB12CD3", metaPixelId: "12" },
+        updatedBy: "staff",
+      },
+    });
+    // Staff already set GTM on its card: the patch leaves it alone.
+    await prisma.integrationSetting.create({
+      data: { provider: "gtm", kind: "analytics", name: "Google Tag Manager", updatedBy: "Owner" },
+    });
+    const others = ALL_PATCHES.filter((id) => id !== "2026-10-28-integration-cards");
+    await prisma.setting.update({ where: { key: PATCH_MARKER }, data: { value: others } });
+
+    const result = await applySeedPatches(prisma, {
+      PROVIDER_SECRET_KEY: "test-provider-secret-key-0123456789-abcdef",
+      TURNSTILE_SITE_KEY: "0x4AAAAAAAAbcdefghijkl",
+      TURNSTILE_SECRET_KEY: "0x4AAAAAAAsecret",
+    });
+    expect(result).toEqual({ applied: ["2026-10-28-integration-cards"], changed: 2 });
+    const cards = await prisma.integrationSetting.findMany({ orderBy: { provider: "asc" } });
+    expect(
+      cards.map((card) => [card.provider, card.isActive, card.isLive, card.updatedBy]),
+    ).toEqual([
+      ["ga4", true, true, "seed-patch"],
+      ["gtm", false, false, "Owner"],
+      ["turnstile", true, true, "seed-patch"],
+    ]);
+    const turnstile = await prisma.providerCredential.findUniqueOrThrow({
+      where: { provider_environment: { provider: "turnstile", environment: "production" } },
+    });
+    expect(JSON.stringify(turnstile.secrets)).not.toContain("0x4AAAAAAAsecret");
+    // The Pixel ID "12" is not a Pixel ID: left for staff to type.
+    expect(
+      await prisma.integrationSetting.findUnique({ where: { provider: "meta-pixel" } }),
+    ).toBeNull();
   });
 });

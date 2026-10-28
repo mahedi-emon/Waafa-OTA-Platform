@@ -26,7 +26,7 @@ async function main() {
       }.`,
     );
     // One-time data changes that ship with the code (issue 176); each runs once per database.
-    const patches = await applySeedPatches(prisma);
+    const patches = await applySeedPatches(prisma, process.env);
     if (patches.applied.length > 0) {
       console.warn(
         `Seed patches: ${patches.applied.join(", ")} (${patches.changed} records changed).`,

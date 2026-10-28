@@ -1,4 +1,6 @@
+import { PROVIDER_CATALOG, validateProviderConnection, type ProviderId } from "@waafa/shared";
 import type { Prisma, PrismaClient } from "../generated/prisma/client";
+import { SecretBox } from "../providers/secretBox";
 
 /** The patches already applied to this database; each runs once, on the first deploy that carries it. */
 export const PATCH_MARKER = "_seedPatches";
@@ -370,10 +372,89 @@ async function appendTemplate(
   return 1;
 }
 
+/** Server values a patch may read (issue 284): only to move keys from the .env into Admin. */
+export type PatchEnv = {
+  PROVIDER_SECRET_KEY?: string | undefined;
+  TURNSTILE_SITE_KEY?: string | undefined;
+  TURNSTILE_SECRET_KEY?: string | undefined;
+};
+
+/** One integration card from values staff typed elsewhere before issue 284; an existing card is never touched. */
+async function importCard(
+  prisma: PrismaClient,
+  provider: ProviderId,
+  settings: Record<string, string>,
+  secrets: Record<string, string> = {},
+): Promise<number> {
+  const definition = PROVIDER_CATALOG[provider];
+  if (validateProviderConnection(definition, { settings, secrets }).length > 0) return 0;
+  const existing = await prisma.integrationSetting.findUnique({ where: { provider } });
+  if (existing) return 0;
+  await prisma.providerCredential.upsert({
+    where: { provider_environment: { provider, environment: "production" } },
+    create: {
+      provider,
+      environment: "production",
+      settings: json(settings),
+      secrets: json(secrets),
+      updatedBy: "seed-patch",
+    },
+    update: {},
+  });
+  await prisma.integrationSetting.create({
+    data: {
+      provider,
+      kind: definition.kind,
+      name: definition.name,
+      isActive: true,
+      isLive: true,
+      updatedBy: "seed-patch",
+    },
+  });
+  return 1;
+}
+
+/**
+ * Issue 284: Admin › Integrations becomes the one place for outside services. The measurement IDs from Settings ›
+ * Tracking, the verification codes from Site settings and the Turnstile keys from the server .env move onto their
+ * cards (On, Live). Values that do not match the card's form are left for staff to type.
+ */
+async function integrationCards(prisma: PrismaClient, env: PatchEnv): Promise<number> {
+  const rows = await prisma.setting.findMany({
+    where: { key: { in: ["trackingSettings", "siteSettings"] } },
+  });
+  const value = (key: string, field: string): string => {
+    const record = rows.find((row) => row.key === key)?.value as
+      Record<string, unknown> | undefined;
+    const item = record?.[field];
+    return typeof item === "string" ? item.trim() : "";
+  };
+  let changed = 0;
+  const ga4 = value("trackingSettings", "ga4Id");
+  if (ga4) changed += await importCard(prisma, "ga4", { measurementId: ga4 });
+  const gtm = value("trackingSettings", "gtmId");
+  if (gtm) changed += await importCard(prisma, "gtm", { containerId: gtm });
+  const pixel = value("trackingSettings", "metaPixelId");
+  if (pixel) changed += await importCard(prisma, "meta-pixel", { pixelId: pixel });
+  const google =
+    value("siteSettings", "googleSiteVerification") ||
+    value("trackingSettings", "searchConsoleToken");
+  if (google) changed += await importCard(prisma, "search-console", { token: google });
+  const bing = value("siteSettings", "bingSiteVerification");
+  if (bing) changed += await importCard(prisma, "bing", { token: bing });
+  const siteKey = env.TURNSTILE_SITE_KEY?.trim();
+  const secret = env.TURNSTILE_SECRET_KEY?.trim();
+  if (siteKey && secret && env.PROVIDER_SECRET_KEY) {
+    const box = new SecretBox(env.PROVIDER_SECRET_KEY);
+    changed += await importCard(prisma, "turnstile", { siteKey }, { secretKey: box.seal(secret) });
+  }
+  return changed;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
-  apply: (prisma: PrismaClient) => Promise<number>;
+  apply: (prisma: PrismaClient, env: PatchEnv) => Promise<number>;
 }> = [
   { id: "2026-10-13-visa-route", apply: visaRoute },
   { id: "2026-10-14-second-phone", apply: secondPhone },
@@ -384,6 +465,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-26-new-device-template", apply: newDeviceTemplate },
   { id: "2026-10-26-code-locked-template", apply: codeLockedTemplate },
   { id: "2026-10-27-customer-code-template", apply: customerCodeTemplate },
+  { id: "2026-10-28-integration-cards", apply: integrationCards },
   { id: "2026-10-29-system-alert-template", apply: systemAlertTemplate },
 ];
 
@@ -393,14 +475,17 @@ export type PatchResult = { applied: string[]; changed: number };
  * Runs the patches this database has not had yet and records each one (issue 176). Safe on every deploy: an applied
  * patch is skipped, and each one changes only the values it names. Every changed record gets an audit log entry.
  */
-export async function applySeedPatches(prisma: PrismaClient): Promise<PatchResult> {
+export async function applySeedPatches(
+  prisma: PrismaClient,
+  env: PatchEnv = {},
+): Promise<PatchResult> {
   const marker = await prisma.setting.findUnique({ where: { key: PATCH_MARKER } });
   const done = new Set(Array.isArray(marker?.value) ? (marker.value as string[]) : []);
   const applied: string[] = [];
   let changed = 0;
   for (const patch of SEED_PATCHES) {
     if (done.has(patch.id)) continue;
-    const count = await patch.apply(prisma);
+    const count = await patch.apply(prisma, env);
     changed += count;
     done.add(patch.id);
     applied.push(patch.id);
