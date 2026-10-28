@@ -269,36 +269,39 @@ export class MediaService {
     action: string,
     now: Date,
   ): Promise<MediaView> {
-    const created = await this.prisma.mediaAsset.create({
-      data: {
-        // Placeholder until the id is known; replaced in the same request below.
-        path: `pending/${now.getTime()}-${Math.random().toString(36).slice(2)}`,
-        alt: record.alt,
-        width: record.width,
-        height: record.height,
-        bytes: data.byteLength,
-        mime: record.mime,
-        originalName: record.originalName ?? null,
-        uploadedBy: staff.name,
-        credit: record.credit ?? null,
-        creditUrl: record.creditUrl ?? null,
-      },
-    });
     const year = String(now.getUTCFullYear());
     const month = String(now.getUTCMonth() + 1).padStart(2, "0");
-    const relative = `${year}/${month}/${created.id}.${extension}`;
-    try {
-      await mkdir(path.join(this.root, year, month), { recursive: true });
-      // codeql[js/http-to-file-access] Saving staff uploads is the point: type checked by its bytes, named by its id.
-      await writeFile(path.join(this.root, relative), data, { flag: "wx" });
-    } catch (error) {
-      await this.prisma.mediaAsset.delete({ where: { id: created.id } });
-      throw error;
-    }
-    const row = await this.prisma.mediaAsset.update({
-      where: { id: created.id },
-      data: { path: relative },
-    });
+    // One transaction (issue 308): the row is seen by other requests only with its real path, never the placeholder;
+    // a failed write rolls the row back.
+    const { row, relative } = await this.prisma.$transaction(
+      async (tx) => {
+        const created = await tx.mediaAsset.create({
+          data: {
+            // Placeholder until the id is known; replaced before the transaction commits.
+            path: `pending/${now.getTime()}-${Math.random().toString(36).slice(2)}`,
+            alt: record.alt,
+            width: record.width,
+            height: record.height,
+            bytes: data.byteLength,
+            mime: record.mime,
+            originalName: record.originalName ?? null,
+            uploadedBy: staff.name,
+            credit: record.credit ?? null,
+            creditUrl: record.creditUrl ?? null,
+          },
+        });
+        const file = `${year}/${month}/${created.id}.${extension}`;
+        await mkdir(path.join(this.root, year, month), { recursive: true });
+        // codeql[js/http-to-file-access] Saving staff uploads is the point: type checked by its bytes, named by its id.
+        await writeFile(path.join(this.root, file), data, { flag: "wx" });
+        const updated = await tx.mediaAsset.update({
+          where: { id: created.id },
+          data: { path: file },
+        });
+        return { row: updated, relative: file };
+      },
+      { timeout: 60_000 },
+    );
     await this.audit.record({
       actor: staff,
       action,
