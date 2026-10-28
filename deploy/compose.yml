@@ -23,6 +23,9 @@ x-api-env: &api-env
   STAFF_ALERT_EMAIL: ${STAFF_ALERT_EMAIL:-}
   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
   GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  # Read once by the seed patch that moves them into Admin › Integrations (issue 284); not used after that.
+  TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+  TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
   SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
   SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
   PROVIDER_SECRET_KEY: ${PROVIDER_SECRET_KEY:-}
@@ -125,7 +128,6 @@ services:
       network: host
       args:
         NEXT_PUBLIC_SITE_URL: ${SITE_URL:?set SITE_URL}
-        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
         WAAFA_API_URL: http://127.0.0.1:4000
         WAAFA_INTAKE_KEY: ${INTAKE_KEY:?set INTAKE_KEY}
     image: ${IMAGE_REPO:-waafa}:web-${IMAGE_TAG:-latest}
@@ -135,7 +137,6 @@ services:
       WAAFA_INTAKE_KEY: ${INTAKE_KEY:?set INTAKE_KEY}
       REVALIDATE_SECRET: ${REVALIDATE_SECRET:?set REVALIDATE_SECRET}
       NEXT_PUBLIC_SITE_URL: ${SITE_URL:?set SITE_URL}
-      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
       NODE_OPTIONS: --max-old-space-size=512
     depends_on:
       api: { condition: service_healthy }

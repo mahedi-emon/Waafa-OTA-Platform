@@ -24,10 +24,13 @@ export const siteSettingsBlueprint = {
     { id: "search", fields: ["defaultSeo"] },
     {
       id: "connections",
-      fields: ["googleSiteVerification", "bingSiteVerification", "reviewsUrl", "accountsLive"],
+      fields: ["reviewsUrl", "accountsLive"],
     },
   ],
   fields: {
+    // Search engine codes live on their Admin › Integrations cards (issue 284).
+    googleSiteVerification: { retired: true },
+    bingSiteVerification: { retired: true },
     storeIntro: textarea,
     footerAbout: textarea,
     ...seoAt("defaultSeo"),

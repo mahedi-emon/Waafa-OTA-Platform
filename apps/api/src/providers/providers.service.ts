@@ -29,7 +29,9 @@ import type { IntegrationSetting, ProviderCredential } from "../generated/prisma
 import { PrismaService } from "../prisma/prisma.service";
 import type { ProviderAdapter, ProviderContext } from "./adapters";
 import { adapterFor, type Fetcher, type PortProbe } from "./catalogAdapters";
+import { RevalidateService } from "../revalidate/revalidate.service";
 import { lastFour, SecretBox } from "./secretBox";
+import { TURNSTILE_VERIFY_URL } from "./serviceChecks";
 
 export const PROVIDER_FETCH = Symbol("PROVIDER_FETCH");
 export const PROVIDER_PROBE = Symbol("PROVIDER_PROBE");
@@ -50,7 +52,7 @@ export type IntegrationConfig = {
 
 /** Why a provider cannot be used right now. */
 export type IntegrationUnavailable = {
-  status: "inactive" | "missing-credentials" | "locked-secrets" | "unknown";
+  status: "inactive" | "missing-credentials" | "locked-secrets" | "failing" | "unknown";
   provider: string;
   message: string;
 };
@@ -64,7 +66,7 @@ const environmentOf = (isLive: boolean): ProviderEnvironment => (isLive ? "produ
 /**
  * External API connections (#82, #107): the Super Admin adds providers, saves credentials per environment, turns
  * providers on and off, picks Sandbox or Live credentials and sets the markup. Secrets are sealed with AES-256-GCM
- * and only opened inside the API to call the provider, or for the audited reveal. Every change goes to the audit log
+ * and only opened inside the API to call the provider (never shown again, issue 284). Every change goes to the audit log
  * without secret values.
  */
 @Injectable()
@@ -77,6 +79,7 @@ export class ProvidersService {
     @Inject(AuditService) private readonly audit: AuditService,
     @Inject(PROVIDER_FETCH) private readonly fetcher: Fetcher,
     @Inject(PROVIDER_PROBE) private readonly probe: PortProbe,
+    @Inject(RevalidateService) private readonly revalidate: RevalidateService,
   ) {
     this.box = env.PROVIDER_SECRET_KEY ? new SecretBox(env.PROVIDER_SECRET_KEY) : null;
   }
@@ -159,8 +162,10 @@ export class ProvidersService {
     const markupAllowed = MARKUP_KINDS.includes(definition.kind);
     const markupType: MarkupType = markupAllowed ? input.markupType : "none";
     const markupValue = markupType === "none" ? 0 : input.markupValue;
+    // One set of values (measurement IDs, DSNs, storage, Telegram): always the Live set (issue 284).
+    const isLive = definition.liveOnly ? true : input.isLive;
     if (input.isActive) {
-      const environment = environmentOf(input.isLive);
+      const environment = environmentOf(isLive);
       const credential = await this.prisma.providerCredential.findUnique({
         where: { provider_environment: { provider, environment } },
       });
@@ -176,7 +181,7 @@ export class ProvidersService {
     const row = await this.prisma.$transaction(async (tx) => {
       const data = {
         isActive: input.isActive,
-        isLive: input.isLive,
+        isLive,
         markupType,
         markupValue,
         updatedBy: staff.name,
@@ -206,6 +211,7 @@ export class ProvidersService {
       );
       return next;
     });
+    this.changed();
     return this.settingView(definition, row);
   }
 
@@ -229,6 +235,7 @@ export class ProvidersService {
         tx,
       );
     });
+    this.changed();
   }
 
   // Credentials per environment ----------------------------------------------------------------------------------
@@ -241,6 +248,8 @@ export class ProvidersService {
   ): Promise<ProviderConnectionView> {
     const setting = await this.prisma.integrationSetting.findUnique({ where: { provider } });
     const definition = this.definitionOrThrow(provider, setting);
+    if (definition.liveOnly && environment === "sandbox")
+      throw problems.badRequest(`${definition.name} has one set of values: save them as Live`);
     const existing = await this.prisma.providerCredential.findUnique({
       where: { provider_environment: { provider, environment } },
     });
@@ -304,6 +313,7 @@ export class ProvidersService {
       );
       return next;
     });
+    this.changed();
     return this.view(row);
   }
 
@@ -334,41 +344,8 @@ export class ProvidersService {
       entityId: `${provider}:${environment}`,
       after: result,
     });
+    this.changed();
     return this.view(next);
-  }
-
-  /**
-   * Shows one saved secret to the Super Admin (#107). The value is returned once, never stored in a log; the audit
-   * entry records who looked at which field and when.
-   */
-  async reveal(
-    staff: StaffPrincipal,
-    provider: string,
-    environment: ProviderEnvironment,
-    field: string,
-  ): Promise<{ field: string; value: string }> {
-    const row = await this.find(provider, environment);
-    const sealed = (row.secrets as Sealed)[field];
-    if (!sealed) throw problems.notFound("This secret is not saved");
-    if (!this.box)
-      throw problems.conflict("PROVIDER_SECRET_KEY is missing on the server", "no-encryption-key");
-    let value: string;
-    try {
-      value = this.box.open(sealed);
-    } catch {
-      throw problems.conflict(
-        "The saved secret cannot be opened: PROVIDER_SECRET_KEY changed",
-        "locked-secret",
-      );
-    }
-    await this.audit.record({
-      actor: staff,
-      action: "provider.reveal",
-      entity: "provider",
-      entityId: `${provider}:${environment}`,
-      after: { field },
-    });
-    return { field, value };
   }
 
   async remove(staff: StaffPrincipal, provider: string, environment: ProviderEnvironment) {
@@ -391,6 +368,7 @@ export class ProvidersService {
         tx,
       );
     });
+    this.changed();
   }
 
   // Server-side use: helpers for API calls ------------------------------------------------------------------------
@@ -440,14 +418,37 @@ export class ProvidersService {
     };
   }
 
-  /** What the public site may know: no names, no keys (#107). */
+  /**
+   * What the public site may know (#107, issue 284): modes, ready flags and the plain values a browser needs (site
+   * key, measurement IDs, verification codes, DSN). Never a secret: only fields listed as public in the catalog.
+   */
   async publicStatus(): Promise<IntegrationStatus> {
-    const [flight, hotel, payment, sms, email] = await Promise.all(
-      (["flight", "hotel", "payment", "sms", "email"] as const).map((kind) =>
+    const [flight, hotel, payment, sms, email, courier, storage] = await Promise.all(
+      (["flight", "hotel", "payment", "sms", "email", "courier", "storage"] as const).map((kind) =>
         this.resolveCategory(kind),
       ),
     );
-    const google = await this.getIntegrationConfig("auth", "google");
+    const [google, telegram] = await Promise.all([
+      this.getIntegrationConfig("auth", "google"),
+      this.getIntegrationConfig("alerts", "telegram"),
+    ]);
+    const value = async (kind: ProviderKind, provider: string, field: string) => {
+      const config = await this.getIntegrationConfig(kind, provider);
+      const allowed = providerDefinition(provider)?.publicFields?.includes(field) ?? false;
+      return config.status === "ready" && allowed ? (config.settings[field] ?? null) : null;
+    };
+    const [turnstile, ga4, gtm, pixel, googleCode, bingCode, sentry, glitchtip] = await Promise.all(
+      [
+        value("captcha", "turnstile", "siteKey"),
+        value("analytics", "ga4", "measurementId"),
+        value("analytics", "gtm", "containerId"),
+        value("analytics", "meta-pixel", "pixelId"),
+        value("analytics", "search-console", "token"),
+        value("analytics", "bing", "token"),
+        value("monitoring", "sentry", "dsn"),
+        value("monitoring", "glitchtip", "dsn"),
+      ],
+    );
     return {
       flight: { mode: flight?.mode === "provider" ? "provider" : "manual" },
       hotel: { mode: hotel?.mode === "provider" ? "provider" : "manual" },
@@ -455,7 +456,48 @@ export class ProvidersService {
       sms: { ready: sms?.mode === "provider" },
       email: { ready: email?.mode === "provider" },
       auth: { google: google.status === "ready" },
+      public: {
+        turnstileSiteKey: turnstile,
+        ga4Id: ga4,
+        gtmId: gtm,
+        metaPixelId: pixel,
+        googleVerification: googleCode,
+        bingVerification: bingCode,
+        errorTrackingDsn: sentry ?? glitchtip,
+      },
+      features: {
+        onlinePayment: payment?.mode === "provider",
+        courierTracking: courier?.mode === "provider",
+        telegramAlerts: telegram.status === "ready",
+        offsiteBackup: storage?.mode === "provider",
+      },
     };
+  }
+
+  /**
+   * Cloudflare Turnstile for a public form (issue 284): the web server sends the visitor's token here, so the secret
+   * stays in the API. While Turnstile is off (or not saved) every token passes, as before.
+   */
+  async verifyTurnstile(
+    token: string,
+    ip: string | undefined,
+  ): Promise<{ ok: boolean; checked: boolean }> {
+    const config = await this.getIntegrationConfig("captcha", "turnstile");
+    if (config.status !== "ready") return { ok: true, checked: false };
+    if (!token) return { ok: false, checked: true };
+    const body = new URLSearchParams({ secret: config.secrets.secretKey ?? "", response: token });
+    if (ip && ip !== "unknown") body.set("remoteip", ip);
+    try {
+      const response = await this.fetcher(TURNSTILE_VERIFY_URL, {
+        method: "POST",
+        body,
+        signal: AbortSignal.timeout(5_000),
+      });
+      const result = ((await response.json?.()) ?? {}) as { success?: boolean };
+      return { ok: result.success === true, checked: true };
+    } catch {
+      return { ok: false, checked: true };
+    }
   }
 
   /**
@@ -486,6 +528,11 @@ export class ProvidersService {
 
   // Internals ----------------------------------------------------------------------------------------------------
 
+  /** The site reads the public part at run time: expire its cache so a change shows without a redeploy (issue 284). */
+  private changed(): void {
+    this.revalidate.request(["integrations"]);
+  }
+
   private adapter(definition: ProviderDefinition): ProviderAdapter {
     return adapterFor(definition, this.fetcher, this.probe);
   }
@@ -503,6 +550,14 @@ export class ProvidersService {
         status: "missing-credentials",
         provider: setting.provider,
         message: `${definition.name} has no ${environment === "production" ? "Live" : "Sandbox"} credentials`,
+      };
+    }
+    // A failing last test keeps the service out of use until a test passes (issue 284); untested saves are used.
+    if (row.healthOk === false) {
+      return {
+        status: "failing",
+        provider: setting.provider,
+        message: `${definition.name} failed its last test: ${row.healthMessage ?? "no answer"}`,
       };
     }
     const context = this.context(row);

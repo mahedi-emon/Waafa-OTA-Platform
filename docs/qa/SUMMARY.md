@@ -7,5 +7,6 @@ checkpoint updates this table.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | C · speed (#236) | [C-speed.md](C-speed.md) | 23 | 21 | 2 (live site after deploy; slow-network feel) | 21 of 21 automated (C-01 performance 90 met on 8 of 11 routes; rest in #271) | 5 | 5 | 0 |
 | F · accounts and /track (#241, #278, #240) | [F-accounts.md](F-accounts.md) | 41 | 39 | 2 (real inbox on staging; exploratory) | F1: 22 of 24 cases automated and passing locally (API); e2e runs in CI API mode | 0 | 0 | 0 |
+| Integration hub (#284) | [284-integration-hub.md](284-integration-hub.md) | 22 | 18 | 4 (IH-09 runtime Turnstile on the real stack, IH-17 help words, IH-19 widths, IH-20 double submit: UAT and #259) | shared, API unit and web unit passing locally; API database tests and API-mode e2e in CI | 0 | 0 | 0 |
 
-Totals: 64 cases · 60 automated · 4 manual · 6 bugs found and fixed (5 in C, the flaky hero test #276) · 0 open (performance target follow-up #271).
+Totals: 86 cases · 78 automated · 8 manual · 6 bugs found and fixed (5 in C, the flaky hero test #276) · 0 open (performance target follow-up #271).

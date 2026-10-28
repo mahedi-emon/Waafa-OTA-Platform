@@ -137,7 +137,24 @@ test("store, About, Gallery, Visa Guide and visa services describe themselves (i
 test("the sitemap lists the public pages and every record page, Sample ones too (issue 183)", async ({
   request,
 }) => {
-  const body = await (await request.get("/sitemap.xml")).text();
+  // Issue 287: /sitemap.xml is an index of one sitemap per area; read every part.
+  const index = await (await request.get("/sitemap.xml")).text();
+  const parts = [...index.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+    (match) => new URL(match[1] ?? "").pathname,
+  );
+  expect(parts).toEqual([
+    "/sitemap/pages.xml",
+    "/sitemap/travel.xml",
+    "/sitemap/visa.xml",
+    "/sitemap/store.xml",
+    "/sitemap/blog.xml",
+  ]);
+  let body = "";
+  for (const part of parts) {
+    const answer = await request.get(part);
+    expect(answer.status(), part).toBe(200);
+    body += await answer.text();
+  }
   for (const route of [...INDEXED.filter((path) => path !== "/"), ...RECORDS]) {
     expect(body, route).toContain(`${route}</loc>`);
   }
@@ -293,4 +310,17 @@ test("share previews load a small resized image that WhatsApp can show (issue 18
     expect(response.headers()["content-type"], route).toBe("image/jpeg");
     expect((await response.body()).length, route).toBeLessThan(300_000);
   }
+});
+
+test("a visa country without a photo shares a card in the brand colours (issue 287)", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/visa/india");
+  const image = await page.locator('meta[property="og:image"]').getAttribute("content");
+  expect(image).toMatch(/\/og\/visa\/india\.png$/);
+  const answer = await request.get(new URL(image ?? "").pathname);
+  expect(answer.status()).toBe(200);
+  expect(answer.headers()["content-type"]).toBe("image/png");
+  expect((await answer.body()).length).toBeLessThan(300 * 1024);
 });

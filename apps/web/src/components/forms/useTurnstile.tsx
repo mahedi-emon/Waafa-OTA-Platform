@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
+import { useTurnstileSiteKey } from "./TurnstileKeyProvider";
 import { TurnstileWidget } from "./TurnstileWidget";
 
-const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || undefined;
 const WAIT_MS = 10_000;
 
 export type TurnstileControls = {
@@ -17,8 +17,9 @@ export type TurnstileControls = {
   field: ReactNode;
 };
 
-/** Turnstile for a public form; everything is a no-op until NEXT_PUBLIC_TURNSTILE_SITE_KEY is set (#69). */
+/** Turnstile for a public form; everything is a no-op until Turnstile is On in Admin › Integrations (issues 69 and 284). */
 export function useTurnstile(): TurnstileControls {
+  const SITE_KEY = useTurnstileSiteKey();
   const [active, setActive] = useState(false);
   const [resetSignal, setResetSignal] = useState(0);
   const token = useRef<string | undefined>(undefined);

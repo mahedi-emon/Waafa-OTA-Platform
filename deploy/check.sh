@@ -56,10 +56,12 @@ else
   if [ -n "$(setting GOOGLE_CLIENT_ID)" ] && [ -n "$(setting GOOGLE_CLIENT_SECRET)" ]; then ok "Google sign-in keys set"; elif [ -z "$(setting GOOGLE_CLIENT_ID)$(setting GOOGLE_CLIENT_SECRET)" ]; then ok "Google sign-in keys not set (Admin › Integrations › Sign-in can add them)"; else fix "Set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET, or neither"; fi
   site_key=$(setting TURNSTILE_SITE_KEY)
   site_secret=$(setting TURNSTILE_SECRET_KEY)
-  if { [ -n "$site_key" ] && [ -z "$site_secret" ]; } || { [ -z "$site_key" ] && [ -n "$site_secret" ]; }; then
-    fix "Turnstile: set both TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY, or neither"
+  if [ -n "$site_key" ] && [ -n "$site_secret" ]; then
+    ok "Turnstile keys in .env: the first deploy moves them to Admin › Integrations; empty both lines afterwards"
+  elif [ -n "$site_key$site_secret" ]; then
+    fix "Turnstile: set both TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY, or neither (better: enter them in Admin › Integrations)"
   else
-    ok "Turnstile keys consistent"
+    ok "Turnstile set in Admin › Integrations (not in .env)"
   fi
   if ! docker volume ls --format '{{.Name}}' 2>/dev/null | grep -q waafa_pgdata; then
     if [ -n "$(setting SEED_ADMIN_EMAIL)" ] && [ "$(setting SEED_ADMIN_PASSWORD | wc -c)" -gt 12 ]; then ok "First Super Admin set (12+ characters)"; else fix "First start: set SEED_ADMIN_EMAIL and a SEED_ADMIN_PASSWORD of 12+ characters"; fi
