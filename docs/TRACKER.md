@@ -2123,6 +2123,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 28 Oct (evening) | Owner's decisions D312 logged. #302 rename merged (#304, 61 min). #303 optimise merged (#306, 143 min): api 182 MB, web 321 MB, nginx 45 MB, stack 1.29 GB, rehearsal from 7af26e7. #243 reminders, mentions, round-robin and SSE alerts built and in CI (#307, full-ci; local API-mode e2e 11/11; CI found an axe aria-allowed-role on the note box, fixed). #244 started on feat/244-reports-customers-roles (reports by agent, visa cases, searches per day and funnel pushed) | #302 #303 #305 #243 #244 | #304 #306 #307 | API 316, web 717, shared 166 locally; API-mode e2e 85/86 then fixed |
 | 30–31 Oct | #300 merged (#242 bookings, 68 min); #298 quote builder built (API, PDF, admin, customer page, e2e) and PR opened with full-ci; RELEASE, PRD_COVERAGE (FR-ADM Bookings and convert done) and UAT updated | #242 #298 | #300 | shared 162, web 707, API unit 136; API DB tests and API-mode e2e in CI |
 | 29 Oct | Steps 3–5 of the owner's order: #284 hub merged after axe 4.14 fixes (#288); #287 sitemap index and share cards; #295 Home back under 200 KB; #285 release note and upgrade rehearsal (passed in CI from 541bd21); #237 measurement; #238 error tracking, System status, dead letters; #239 backups, drill, off-site copy, alerts, lead limit, CSP doc, staging | #284 #285 #287 #288 #289 #295 #237 #238 #239 | #286 #290 #296 #291 #292 #293 #294 | full suite green on each; rehearsal and backup drill run in the VPS smoke |
 | 28 Oct | Owner's order of 28 Oct (D303): Dependabot done (#188, #283 with the axe 4.14 logo fix); #278 merged after budget and test fixes; #284 integration hub built (API, web, deploy, seed patch) | #282, #278, #284, #285 | #283, #281 | shared 157, web 691, API unit 117; API DB tests and API-mode e2e in CI (no Docker locally) |
@@ -2194,22 +2195,23 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 ## 14. Next steps
 
-Owner's order of 28 Oct (D303). One issue per PR; start the next issue while CI runs; never deploy between issues.
-1. ✅ Dependabot (#188, #282). 2. ✅ #278 My account. 3. 🟡 #284 integration hub (PR open, full-ci). Checkpoint.
-4. #285 docs/RELEASE.md (live release predates #280: /track answered 404 on 28 Oct; the owner confirms IMAGE_TAG) and
-   the upgrade rehearsal in the VPS deploy smoke.
-5. #237 measurement (events after consent, UTM on leads and orders, Where leads come from, split sitemap, share images).
-6. #238 error tracking, Status page, dead-letter queues; #239 backups, off-site copy, restore drill, alerts, per-IP lead
-   limit, CSP nonce or documented exception, staging bundle. Checkpoint.
-7. ✅ #242 bookings; ✅ #298 quote builder; 🟡 #243 reminders, mentions, round-robin, real-time alerts; #244 reports and roles.
-   Checkpoint.
-8. #245 reviews and Q&A (approved feedback photos); #246 wishlist extras; #247 campaigns and flash sales; #248 PDFs and
-   CSV import. Checkpoint.
-9. #249 curated hotels; #250 partial lead capture.
-10. #251 payments, #252 SMS and Telegram, #253 couriers: through the hub, sandbox-tested, off. Checkpoint.
-11. #254 Bangla at /bn, #255 bilingual content. Checkpoint.
-12. #271 Lighthouse 90+ and LCP 2.5 s on every key route; then assertions to error.
-13. #256 transitions, #257 admin dark mode, #258 benchmark re-run.
-14. #259 Phase D QA (Chromium, Firefox, WebKit; UAT.md; ADMIN_GUIDE, DEPLOY; content readiness).
-15. Release candidate: tag, RELEASE.md, rehearsal, full suite; deploy steps for the owner in Banglish. Checkpoint.
+Owner's decisions of 28 Oct evening (D312) on top of D303. One issue per PR; start the next while CI runs.
+1. ✅ #302 rename (#304). 2. ✅ #303 optimise (#306).
+3. 🟡 #243: PR #307 in CI (full-ci). When green: squash-merge, close-out, Project Done, PRD_COVERAGE rows already done.
+4. 🟡 #244 on feat/244-reports-customers-roles (branched from #243; merge main after #307). Done: reports by agent, visa
+   cases, searches per day, funnel (API reportBreakdowns.ts + web reports page). Left: (a) customers notes, tags,
+   CSV export and merge (CustomerProfile {phone, tags, mergedInto}, CustomerNote; fold aliases in list/detail; merge and
+   unmerge audited, admin only); (b) daily and weekly summary emails (areas daily-report/weekly-report in
+   STAFF_ALERT_AREAS, templates + seed patch, minute job at 09:00 Dhaka, Saturday weekly, marker setting _reportsSent);
+   (c) custom roles (CustomRole {name, grants: built-in roles}, StaffUser.customRoleIds, effective roles expanded where
+   the access token is signed, Settings or Users › Roles screen with the PermissionMatrix showing custom columns);
+   QA plan docs/qa/244-*.md, migration, tests, docs. Then checkpoint.
+5. #245 reviews and Q&A; #246 wishlist extras; #247 campaigns and flash sales; #248 PDFs and CSV import. Checkpoint.
+6. #249 curated hotels; #250 partial lead capture.
+7. #251 payments, #252 SMS and Telegram, #253 couriers, plus every existing integration card: Banglish steps, copy-able
+   provider URLs (callback, IPN, success, fail, cancel, webhook), server IP, Telegram "Find my group", plain Test errors.
+   Checkpoint with the accounts to open.
+8. #254 Bangla at /bn, #255 bilingual content. Checkpoint.
+9. #271 Lighthouse 90+ (also the web image: prerender size, D313). 10. #256, #257 (admin JS splitting, D315), #258.
+11. #259 Phase D QA. Checkpoint. 12. Release candidate from 7af26e7. Checkpoint.
 Senior-QA rule on every issue: test cases in docs/qa first, P0/P1 automated, exploratory pass, full regression.
