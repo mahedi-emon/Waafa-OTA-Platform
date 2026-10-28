@@ -18,6 +18,7 @@ const ROUTES: Array<{ name: string; path: string }> = [
   { name: "Hotels", path: "/hotels" },
   { name: "Packages", path: "/tour-packages" },
   { name: "PackageDetail", path: "/tour-packages/maldives-island-stay" },
+  { name: "HotelDetail", path: "/hotels/sample-beach-resort-coxs-bazar" },
   { name: "PlanTrip", path: "/plan-my-trip" },
   { name: "Visa", path: "/visa" },
   { name: "VisaCountry", path: "/visa/thailand" },

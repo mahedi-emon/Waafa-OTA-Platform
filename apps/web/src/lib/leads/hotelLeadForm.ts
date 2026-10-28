@@ -13,7 +13,7 @@ import { z } from "zod";
 import { contactToLead, type ContactStepValues } from "./contactForm";
 import { distributeGuests } from "../search/hotelParams";
 import { ADULTS_PER_ROOM, CHILDREN_PER_ROOM } from "./hotelLeadFormFields";
-import type { ChosenHotel } from "./hotelStay";
+import { chosenHotelPlace, type ChosenHotel } from "./hotelStay";
 export { ADULTS_PER_ROOM, CHILDREN_PER_ROOM } from "./hotelLeadFormFields";
 
 /*
@@ -82,7 +82,9 @@ export function buildHotelLead(args: {
   hotel?: ChosenHotel | null;
 }): LeadCreateInput {
   const { contact, stay, search, preferences } = args;
-  const samePlace = search && search.placeLabel === stay.place;
+  // The curated hotel counts only while the place still names it (the customer may type another).
+  const hotel = args.hotel && stay.place === chosenHotelPlace(args.hotel) ? args.hotel : null;
+  const samePlace = search && (search.placeLabel === stay.place || hotel !== null);
   const hotelSearch = HotelSearchSchema.parse({
     placeId: samePlace ? search.placeId : "typed",
     placeLabel: stay.place,
@@ -105,11 +107,11 @@ export function buildHotelLead(args: {
       meals: stay.meals,
       seaView: preferences.seaView,
       freeCancellation: preferences.freeCancellation,
-      ...(args.hotel
+      ...(hotel
         ? {
-            hotelId: args.hotel.id,
-            hotelName: args.hotel.name,
-            ...(args.hotel.roomType ? { roomType: args.hotel.roomType } : {}),
+            hotelId: hotel.id,
+            hotelName: hotel.name,
+            ...(hotel.roomType ? { roomType: hotel.roomType } : {}),
           }
         : {}),
       ...(stay.notes.trim() ? { notes: stay.notes.trim() } : {}),

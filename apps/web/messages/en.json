@@ -844,13 +844,14 @@
       "checkIn": "Check-in {time}",
       "checkOut": "Check-out {time}",
       "indicative": "Prices are indicative for one room per night. An expert confirms the room, the rate and the cancellation rules with the hotel before you pay.",
-      "photos": "All photos",
-      "gallery": "Photos of {hotel}",
+      "photos": "{count, plural, one {# photo} other {All # photos}}",
+      "gallery": "Photos",
       "previous": "Previous photo",
       "next": "Next photo",
       "more": "More hotels we recommend",
       "askWhatsApp": "Ask on WhatsApp",
-      "whatsappText": "Hello Waafa, I would like the rate for {hotel}."
+      "whatsappText": "Hello Waafa, I would like the rate for {hotel}.",
+      "sample": "Sample"
     },
     "amenities": {
       "wifi": "Free Wi-Fi",
@@ -2910,7 +2911,7 @@
       "packages": "Tour packages",
       "groupFares": "Group fares",
       "flightRoutes": "Flight routes",
-      "hotelPlaces": "Hotels and places",
+      "hotelPlaces": "Hotel search places",
       "visaCountries": "Visa countries",
       "visaGuides": "Visa guides",
       "airlines": "Airlines and airports",
@@ -2935,7 +2936,8 @@
       "mediaLibrary": "Media library",
       "settings": "Settings",
       "trash": "Trash",
-      "bookings": "Bookings"
+      "bookings": "Bookings",
+      "hotels": "Curated hotels"
     },
     "common": {
       "save": "Save",
@@ -3243,7 +3245,9 @@
         "amount": "Amount",
         "tenure": "Months",
         "items": "Items",
-        "notes": "Notes"
+        "notes": "Notes",
+        "hotel": "Curated hotel",
+        "roomType": "Room type"
       },
       "values": {
         "tripType": {
@@ -3946,7 +3950,8 @@
         "campaigns": "Campaign pages",
         "storeRows": "Store home rows",
         "coupons": "Coupons",
-        "flightRoutes": "Flight routes"
+        "flightRoutes": "Flight routes",
+        "hotels": "Curated hotels"
       },
       "richText": {
         "toolbar": "Text formatting",
@@ -4609,7 +4614,8 @@
       "mediaLibrary": "Every photo and video, ready to reuse",
       "settings": "Contact details, payments, booking modes, users and more",
       "trash": "Deleted records, restorable for 30 days",
-      "bookings": "Every sale from a converted lead: PNR, tickets, payments and documents."
+      "bookings": "Every sale from a converted lead: PNR, tickets, payments and documents.",
+      "hotels": "Hotels the team recommends, with rooms and from prices"
     },
     "newMenu": {
       "travel": "Travel",
@@ -4633,7 +4639,8 @@
       "faq": "FAQ",
       "page": "Page",
       "galleryAlbum": "Gallery album",
-      "teamMember": "Team member"
+      "teamMember": "Team member",
+      "hotel": "Curated hotel"
     },
     "reviewsAdmin": {
       "metaTitle": "Reviews and questions",
@@ -5649,7 +5656,19 @@
       "video_credit": "Video credit",
       "video_creditUrl": "Credit link",
       "maxUses": "Use limit",
-      "vatPercent": "VAT rate inside the prices (%)"
+      "vatPercent": "VAT rate inside the prices (%)",
+      "stars": "Stars",
+      "placeId": "Search place for its city",
+      "amenities": "What the hotel offers",
+      "rooms": "Room types",
+      "beds": "Beds",
+      "sleeps": "Sleeps",
+      "size": "Room size",
+      "features": "Room features",
+      "checkIn": "Check-in time",
+      "checkOut": "Check-out time",
+      "area": "Area",
+      "order": "Position in the list"
     },
     "fieldHelp": {
       "alt": "Describe the photo for people who can't see it, like \"Beach at Patong, Phuket\".",
@@ -5972,6 +5991,22 @@
         "system": "Server running low (disk, memory)",
         "daily-report": "Daily summary (leads, bookings, orders)",
         "weekly-report": "Weekly summary (every Saturday)"
+      },
+      "hotelAmenity": {
+        "wifi": "Free Wi-Fi",
+        "breakfast": "Breakfast",
+        "pool": "Swimming pool",
+        "beach": "Near the beach",
+        "sea-view": "Sea view rooms",
+        "spa": "Spa",
+        "gym": "Gym",
+        "restaurant": "Restaurant",
+        "room-service": "Room service",
+        "air-conditioning": "Air conditioning",
+        "parking": "Parking",
+        "airport-transfer": "Airport transfer",
+        "family-rooms": "Family rooms",
+        "prayer-room": "Prayer room"
       }
     },
     "blueprints": {
@@ -6825,6 +6860,29 @@
           "code": "Capital letters and digits, like EID500.",
           "value": "A percent, like 10, or taka, like 500, as the type says."
         }
+      },
+      "hotels": {
+        "one": "curated hotel",
+        "other": "curated hotels",
+        "intro": "Hotels the team recommends on /hotels, each with its own page: photos, what it offers, room types and from prices per night. Request booking sends a hotel request with the hotel and room.",
+        "sections": {
+          "basics": "Hotel",
+          "photos": "Photos",
+          "offers": "What it offers",
+          "rooms": "Room types and prices",
+          "seo": "Search engines"
+        },
+        "fields": {
+          "rooms_item": "Room type"
+        },
+        "help": {
+          "summary": "One line on the card and under the name.",
+          "description": "A few short paragraphs about the hotel.",
+          "placeId": "The city in Hotel search places, so a request starts there.",
+          "rooms_fromPrice": "The lowest rate per night for one room, in taka with VAT. It is shown as indicative.",
+          "rooms_features": "Up to 6 short notes, e.g. Breakfast for two.",
+          "checkIn": "e.g. 2:00 pm"
+        }
       }
     },
     "trash": {
@@ -7218,6 +7276,10 @@
         "collections": {
           "one": "Collection",
           "other": "Collections"
+        },
+        "hotels": {
+          "one": "Curated hotel",
+          "other": "Curated hotels"
         }
       },
       "other": {

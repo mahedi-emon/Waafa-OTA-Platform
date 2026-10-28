@@ -28,6 +28,7 @@ const data = {
 vi.mock("@/lib/data/travel", () => ({
   listPackages: async () => ({ items: data.packages }),
   listFlightRoutes: async () => data.routes,
+  listHotels: async () => [],
 }));
 vi.mock("@/lib/data/visa", () => ({
   listVisaCountries: async () => data.countries,

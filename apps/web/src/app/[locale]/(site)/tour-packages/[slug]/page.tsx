@@ -32,7 +32,7 @@ import { BookingBar } from "./_components/BookingBar";
 import { BookingCard } from "./_components/BookingCard";
 import { ItineraryDays } from "./_components/ItineraryDays";
 import { PackageBookingProvider } from "./_components/PackageBookingProvider";
-import { PackageGallery } from "./_components/PackageGallery";
+import { PhotoGallery } from "@/components/travel/PhotoGallery";
 import { PackageQuery } from "./_components/PackageQuery";
 import { ShareButton } from "./_components/ShareButton";
 import { WishlistButton } from "@/components/account/WishlistButton";
@@ -180,7 +180,7 @@ async function PackagePageContent({
         items={[{ label: t("breadcrumb"), href: "/tour-packages" }, { label: pkg.title }]}
       />
       <div className="flex flex-col">
-        <PackageGallery
+        <PhotoGallery
           images={images}
           title={pkg.title}
           labels={{

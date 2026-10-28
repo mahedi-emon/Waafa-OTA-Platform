@@ -8,7 +8,7 @@ import {
   listCollections,
   listProducts,
 } from "@/lib/data/shop";
-import { listFlightRoutes, listPackages } from "@/lib/data/travel";
+import { listFlightRoutes, listHotels, listPackages } from "@/lib/data/travel";
 import { listVisaCountries, listVisaGuides } from "@/lib/data/visa";
 import { isIndexable } from "@/lib/seo/indexing";
 import { absoluteUrl } from "@/lib/siteUrl";
@@ -45,6 +45,7 @@ export async function sitemapEntries(): Promise<MetadataRoute.Sitemap> {
     printing,
     trading,
     routes,
+    hotels,
     ...policies
   ] = await Promise.all([
     listPackages({ limit: 100 }),
@@ -60,6 +61,7 @@ export async function sitemapEntries(): Promise<MetadataRoute.Sitemap> {
     getServicePage("printing"),
     getServicePage("trading"),
     listFlightRoutes(),
+    listHotels(),
     getPage("about-us"),
     getPage("refund-policy"),
     getPage("privacy-policy"),
@@ -107,6 +109,7 @@ export async function sitemapEntries(): Promise<MetadataRoute.Sitemap> {
     })),
     page("/plan-my-trip", 0.7, "monthly"),
     page("/visa", 0.9, "weekly"),
+    ...hotels.filter(isIndexable).map((hotel) => page(`/hotels/${hotel.slug}`, 0.7, "weekly")),
     ...countries.filter(isIndexable).map((country) => page(`/visa/${country.slug}`, 0.8, "weekly")),
     page("/visa-guide", 0.6, "weekly"),
     ...guides.filter(isIndexable).map((guide) => ({

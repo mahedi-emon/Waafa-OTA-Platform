@@ -229,6 +229,7 @@ export const PICKER_KEYS = [
   "categories",
   "collections",
   "compatibleModels",
+  "hotelPlaces",
   "products",
   "tourPackages",
   "visaCountries",

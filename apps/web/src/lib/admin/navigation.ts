@@ -202,6 +202,13 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         roles: TRAVEL,
       },
       {
+        key: "hotels",
+        label: "hotels",
+        href: content("hotels"),
+        icon: "hotels",
+        roles: TRAVEL,
+      },
+      {
         key: "hotelPlaces",
         label: "hotelPlaces",
         href: content("hotelPlaces"),
@@ -411,6 +418,7 @@ export const NEW_RECORDS: NewRecordGroup[] = [
     items: [
       { key: "tourPackages", label: "tourPackage", icon: "packages" },
       { key: "groupFares", label: "groupFare", icon: "fares" },
+      { key: "hotels", label: "hotel", icon: "hotels" },
       { key: "flightRoutes", label: "flightRoute", icon: "routes" },
       { key: "visaCountries", label: "visaCountry", icon: "visa" },
       { key: "visaGuides", label: "visaGuide", icon: "guide" },

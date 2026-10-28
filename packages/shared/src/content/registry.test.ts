@@ -36,6 +36,7 @@ describe("hasRecordOrder", () => {
         "faqs",
         "flightRoutes",
         "homeSections",
+        "hotels",
         "pageBlocks",
         "storeRows",
         "team",
