@@ -26,6 +26,8 @@ type NoteFormProps = {
     failed: string;
     mentionHint: string;
     mentionList: string;
+    /** "@{name}, {position} of {count}. Enter picks, Escape closes." */
+    mentionPick: string;
   };
 };
 
@@ -117,12 +119,8 @@ function NoteForm({ id, types, people, strings }: NoteFormProps) {
           id="lead-note"
           value={body}
           maxLength={2000}
-          role="combobox"
-          aria-autocomplete="list"
-          aria-expanded={open}
           aria-controls={listId}
           aria-describedby={hintId}
-          {...(open ? { "aria-activedescendant": `${listId}-${current}` } : {})}
           onChange={(event) => {
             setBody(event.target.value);
             setCaret(event.target.selectionStart);
@@ -174,6 +172,15 @@ function NoteForm({ id, types, people, strings }: NoteFormProps) {
           ))}
         </ul>
       </div>
+      {/* A textarea cannot be a combobox (axe aria-allowed-role): the highlighted name is read out instead. */}
+      <p role="status" aria-live="polite" className="sr-only">
+        {open && matches[current]
+          ? strings.mentionPick
+              .replace("{name}", matches[current].name)
+              .replace("{position}", String(current + 1))
+              .replace("{count}", String(matches.length))
+          : ""}
+      </p>
       <p id={hintId} className="text-[12.5px] text-mist-600">
         {strings.mentionHint}
       </p>

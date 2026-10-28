@@ -3079,6 +3079,7 @@
       "notePlaceholder": "What happened? (visible to staff only)",
       "mentionHint": "Type @ and a name to tell a colleague; they get an alert.",
       "mentionList": "Colleagues to mention",
+      "mentionPick": "@{name}, {position} of {count}. Enter picks, Escape closes.",
       "addNote": "Add to timeline",
       "noteAdded": "Added to the timeline",
       "amount": "Booked amount (৳)",

@@ -459,6 +459,11 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
                 failed: tc("unavailable"),
                 mentionHint: t("mentionHint"),
                 mentionList: t("mentionList"),
+                mentionPick: t("mentionPick", {
+                  name: "{name}",
+                  position: "{position}",
+                  count: "{count}",
+                }),
               }}
             />
             <div className="mt-5">
