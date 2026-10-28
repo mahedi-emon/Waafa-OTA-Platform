@@ -4572,6 +4572,10 @@
         "advanced": {
           "title": "Advanced",
           "body": "Every content list in one place, for Super Admins only."
+        },
+        "status": {
+          "title": "System status",
+          "body": "Whether the site, database, queue and worker are healthy, emails that failed, memory and disk."
         }
       },
       "tabs": {
@@ -4594,7 +4598,8 @@
         "audit": "Audit log",
         "maintenance": "Maintenance",
         "content": "All content",
-        "connections": "Verification, reviews and accounts"
+        "connections": "Verification, reviews and accounts",
+        "status": "System status"
       }
     },
     "states": {
@@ -7397,6 +7402,45 @@
       "noOrders": "No orders on this account yet.",
       "profileAccount": "Has an account",
       "profileOpen": "Open the account"
+    },
+    "status": {
+      "metaTitle": "System status",
+      "title": "System status",
+      "lead": "Checked when you open this page. Anything red needs a look; emails that failed every try wait below for Retry or Discard.",
+      "release": "Release",
+      "startedAt": "Running since {time}",
+      "checkedAt": "Checked {time}",
+      "parts": "Parts of the system",
+      "database": "Database",
+      "redis": "Queue store (Redis)",
+      "worker": "Background worker",
+      "up": "Working ({ms} ms)",
+      "down": "Not answering",
+      "workerUp": "Working, last seen {time}",
+      "workerDown": "Stopped",
+      "workerNever": "Never seen",
+      "queue": "Email queue",
+      "waiting": "Waiting",
+      "active": "Sending",
+      "delayed": "Retrying later",
+      "failedCount": "Failed",
+      "memory": "Memory",
+      "disk": "Disk",
+      "free": "{free} free of {total}",
+      "unknown": "Not available",
+      "failedTitle": "Emails that failed",
+      "failedLead": "Each tried several times. Retry sends again; Discard removes it (the message stays in Sent messages).",
+      "failedEmpty": "No failed emails.",
+      "to": "To",
+      "subject": "Subject",
+      "reason": "Why it failed",
+      "failedAt": "Failed",
+      "retry": "Retry",
+      "discard": "Discard",
+      "discardConfirm": "Remove this failed email for good?",
+      "retried": "Back in the queue",
+      "discarded": "Removed",
+      "failed": "That did not work. Try again."
     },
     "bookings": {
       "metaTitle": "Bookings",

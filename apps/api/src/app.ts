@@ -10,6 +10,7 @@ import type { Env } from "./config/env";
 import { redactToken } from "./common/redact";
 import { CoreModule } from "./core.module";
 import { HealthController } from "./health/health.controller";
+import { ErrorReporter } from "./common/errorReporter";
 import { ProblemFilter } from "./common/problem";
 
 @Module({})
@@ -116,7 +117,15 @@ export async function createApp(
     .addHook("onSend", async (request, reply) => {
       reply.header("x-request-id", request.id);
     });
-  app.useGlobalFilters(new ProblemFilter());
+  // Unexpected errors go to Sentry or GlitchTip when that card is On in Admin › Integrations (issue 238).
+  // Apps built without the services module (some tests) have no reporter: errors are only logged there.
+  let reporter: ErrorReporter | undefined;
+  try {
+    reporter = app.get(ErrorReporter);
+  } catch {
+    reporter = undefined;
+  }
+  app.useGlobalFilters(new ProblemFilter(reporter));
   app.enableShutdownHooks();
   return app;
 }

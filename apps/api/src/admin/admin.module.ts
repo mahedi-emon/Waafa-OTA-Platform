@@ -26,6 +26,8 @@ import { AdminCustomersController, AdminReportsController } from "./reports.cont
 import { AdminReportsService } from "./reports.service";
 import { AdminBookingsController } from "./bookings.controller";
 import { AdminBookingsService } from "./bookings.service";
+import { AdminStatusController } from "./status.controller";
+import { StatusService } from "./status.service";
 import { ContentScheduler } from "./scheduler.service";
 import { AdminUsersService } from "./users.service";
 import { StaffInviteController } from "./invite.controller";
@@ -38,6 +40,7 @@ import { AdminWorkbenchService } from "./workbench.service";
   imports: [MediaCoreModule, FilesCoreModule],
   controllers: [
     AdminBookingsController,
+    AdminStatusController,
     AdminLeadsController,
     AdminVisaApplicationsController,
     AdminMediaReplaceController,
@@ -55,6 +58,7 @@ import { AdminWorkbenchService } from "./workbench.service";
   ],
   providers: [
     AdminBookingsService,
+    StatusService,
     AdminLeadsService,
     MediaReplaceService,
     AdminOrdersService,
