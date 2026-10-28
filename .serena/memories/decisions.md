@@ -152,3 +152,18 @@
 - D262–D265 (R10, 25 Oct): lists named by headingOf, columns only with data; banner/deal/announcement editor states
   startsLater/ended + group fares endingSoon (<= 7 days); system editors in words (editorName); sentence-case admin
   chrome, Table scrollLabel → named focusable region, tab rows wrap or fade.
+- D300–D302 (27 Oct): owner order (accounts first), email code sign-in (no SMS), My account (offers opt-in, passport
+  sealed, optional password). See TRACKER.
+- D303 (28 Oct): owner's order replaces D300: finish all P0/P1; no deploys until ONE release (docs/RELEASE.md
+  cumulative, deploy/LIVE_RELEASE + scripts/upgrade-rehearsal.sh in the VPS smoke and Docker images workflow);
+  integration hub before D/E; checkpoints with local screenshot paths; docs/qa/UAT.md; docs/qa/SUMMARY.md.
+- D304 (#284): every outside service = provider card (kinds captcha, analytics, monitoring, storage, alerts,
+  courier); site reads only catalog `publicFields` via GET /public/integrations/status in a cached accessor (hours,
+  seconds when API down) expired by saves (tag `integrations`); Turnstile verified in the API; reveal removed (last 4
+  only); liveOnly cards; failing last test = not used; Settings › Tracking + verification fields retired (blueprint
+  `retired`); seed patch 2026-10-28-integration-cards. Supersedes D161's Turnstile build-time key and D155's reveal.
+- D305 (#237): UTM/referrer/landing remembered by the proxy in httpOnly cookie waafa_src (no client JS; UTM replaces,
+  referrer only fills, own host = SITE_URL); lead/order routes add it; Order.source JSONB; conversions via track() →
+  EventBridge mounted only inside consented scripts (dataLayer + gtag beacon + Pixel, once per reference); Reports
+  "Where leads come from" (admin/leadSources.ts). Sitemap split + share images → #287.
+- axe 4.14 (label-content-name-mismatch): a link's aria-label must contain its visible words (#283 logo, #288 ask-for-price).

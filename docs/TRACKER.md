@@ -48,7 +48,7 @@ Serena memory `audit_findings`.
 | Decision | D308 |
 | PR · CI minutes | #294 (1ab66f5) · 99 |
 
-### #238 · Error tracking, System status page, dead-letter list — 🟡 In review (PR #293)
+### #238 · Error tracking, System status page, dead-letter list — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 5: error tracking for web, API and worker with release tags, a staff Status page, dead-letter handling for every queue |
@@ -56,6 +56,7 @@ Serena memory `audit_findings`.
 | Tests | API unit `errorReporter.unit.test.ts` 3; admin-screens sweep includes the Status page; QA plan `docs/qa/238-status-errors.md` (E-01..14) |
 | Migration | none; `deploy/compose.yml` api build arg RELEASE |
 | Decision | D307 |
+| PR · CI minutes | #293 (d02680e) · 129 |
 
 ### #237 · D measurement: conversion events after consent, UTM on leads and orders, Where leads come from — ✅ Done
 | Field | Value |

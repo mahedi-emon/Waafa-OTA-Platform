@@ -1,4 +1,9 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-29 — Owner's order of 28 Oct (D303): steps 1–5 merged except #238 (PR #293 in CI). #283 deps + axe 4.14
+  logo (14 min), #281 My account (105), #286 integration hub + #288 axe names (341), #290 sitemap index + visa share
+  cards (10), #296 Home back under 200 KB (61), #291 RELEASE.md + upgrade rehearsal (105; passed from 541bd21), #292
+  measurement (90; migration order_source), #294 backups/drill/off-site/alerts/lead limit/staging (99). Docs PR for
+  #297 waits on #293. Next: #242 bookings + quote builder.
 - 2026-10-27 — Letter C done: #236 merged (PR #272, 5583bf7, 379 min incl. 150 manual Lighthouse): every public route
   ≤ 200 KB first-load JS; CI Lighthouse 8/11 at 90+ (Home 88, Hotels 85, Blog 88 → #271), A11y/BP/SEO 100, CLS 0;
   budgets fail CI, targets warn (D298); D293–D299. #273 makes the manual Lighthouse workflow dispatch-only.
