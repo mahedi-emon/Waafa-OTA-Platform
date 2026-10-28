@@ -1,6 +1,9 @@
 # WAAFA reverse proxy (deploy/compose.yml): nginx in front of the web, HTTPS from Let's Encrypt (certbot service).
 # Until a certificate exists the HTTP-only site is served (ACME challenge + the site); after it, HTTPS with redirects.
 FROM nginx:1.27-alpine
+# The commit this image was built from (issue 303).
+ARG REVISION=unknown
+LABEL org.opencontainers.image.revision="$REVISION"
 COPY site-http.conf.template site-https.conf.template /etc/nginx/waafa/
 COPY 15-waafa-site.sh 40-waafa-reload.sh /docker-entrypoint.d/
 RUN chmod +x /docker-entrypoint.d/15-waafa-site.sh /docker-entrypoint.d/40-waafa-reload.sh \

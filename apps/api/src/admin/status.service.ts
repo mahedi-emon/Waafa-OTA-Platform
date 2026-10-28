@@ -11,10 +11,13 @@ import { problems } from "../common/problem";
 import { ENV, type Env } from "../config/env";
 import { NOTIFICATION_QUEUE } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { type DiskUsage, folderBytes } from "./diskUsage";
 
 /** Older than two minutes means the worker stopped. */
 const HEARTBEAT_STALE_MS = 2 * 60_000;
 const STARTED = new Date();
+/** Folder sizes are counted at most every ten minutes (a big uploads folder takes a moment). */
+const USAGE_TTL_MS = 10 * 60_000;
 
 export type FailedJobView = {
   id: string;
@@ -35,9 +38,10 @@ export type FailedJobView = {
 export class StatusService implements OnModuleDestroy {
   private readonly queue: Queue | null;
   private readonly redis: Redis | null;
+  private usageCache: { at: number; value: DiskUsage } | null = null;
 
   constructor(
-    @Inject(ENV) env: Env,
+    @Inject(ENV) private readonly env: Env,
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(AuditService) private readonly audit: AuditService,
   ) {
@@ -91,6 +95,7 @@ export class StatusService implements OnModuleDestroy {
     }
     return {
       release: process.env.WAAFA_RELEASE?.trim() || "development",
+      revision: process.env.WAAFA_REVISION?.trim() || null,
       startedAt: toDhakaIsoString(STARTED),
       checkedAt: toDhakaIsoString(now),
       database,
@@ -99,7 +104,32 @@ export class StatusService implements OnModuleDestroy {
       queue,
       memory: { totalBytes: totalmem(), freeBytes: freemem() },
       disk,
+      usage: await this.usage(now),
     };
+  }
+
+  /** What fills the disk (issue 303): the database, uploads, customer files and backups. */
+  private async usage(now: Date): Promise<DiskUsage> {
+    if (this.usageCache && now.getTime() - this.usageCache.at < USAGE_TTL_MS) {
+      return this.usageCache.value;
+    }
+    let database: number | null = null;
+    try {
+      const rows = await this.prisma.$queryRaw<
+        Array<{ bytes: bigint }>
+      >`SELECT pg_database_size(current_database()) AS bytes`;
+      database = Number(rows[0]?.bytes ?? 0);
+    } catch {
+      database = null;
+    }
+    const [uploads, customerFiles, backups] = await Promise.all([
+      folderBytes(this.env.MEDIA_DIR),
+      folderBytes(this.env.PRIVATE_FILES_DIR),
+      folderBytes(this.env.BACKUPS_DIR),
+    ]);
+    const value = { database, uploads, customerFiles, backups };
+    this.usageCache = { at: now.getTime(), value };
+    return value;
   }
 
   /** The dead-letter list: emails that failed every try, newest first. */

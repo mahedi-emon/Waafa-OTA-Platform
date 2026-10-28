@@ -1,8 +1,9 @@
 // Keeps the newest releases on Docker Hub and deletes older sha tags (issue 231).
 // Every release pushes api-<sha7>, web-<sha7> and nginx-<sha7> (plus the moving *-latest tags, never touched here).
-// The newest KEEP releases (by push time) stay so `IMAGE_TAG=<sha> sh deploy.sh` can roll back to any of them.
+// The newest KEEP releases (by push time) stay so `IMAGE_TAG=<sha> sh deploy.sh` can roll back to any of them, and
+// every --protect release (the one live on the server, deploy/LIVE_RELEASE) stays whatever its age (issue 303).
 //
-//   DOCKERHUB_USERNAME=... DOCKERHUB_TOKEN=... node scripts/dockerhub-cleanup.mjs <namespace/repo> [--keep 15] [--dry-run]
+//   DOCKERHUB_USERNAME=... DOCKERHUB_TOKEN=... node scripts/dockerhub-cleanup.mjs <namespace/repo> [--keep 10] [--protect <sha7>] [--dry-run]
 //
 // The token needs Read, Write and Delete access. Without delete rights the script reports it and exits 0, so a
 // release push never fails because of the clean-up.
@@ -10,7 +11,10 @@
 const args = process.argv.slice(2);
 const repoArg = args.find((arg) => !arg.startsWith("--") && arg.includes("/"));
 const keepIndex = args.indexOf("--keep");
-const KEEP = keepIndex >= 0 ? Number(args[keepIndex + 1]) : 15;
+const KEEP = keepIndex >= 0 ? Number(args[keepIndex + 1]) : 10;
+const PROTECTED = new Set(
+  args.flatMap((arg, index) => (args[index - 1] === "--protect" ? [arg.trim().slice(0, 7)] : [])),
+);
 const DRY_RUN = args.includes("--dry-run");
 const HUB = "https://hub.docker.com/v2";
 const SHA_TAG = /^(api|web|nginx)-([0-9a-f]{7})$/;
@@ -21,7 +25,9 @@ function fail(message) {
 }
 
 if (!repoArg)
-  fail("Usage: node scripts/dockerhub-cleanup.mjs <namespace/repo> [--keep 15] [--dry-run]");
+  fail(
+    "Usage: node scripts/dockerhub-cleanup.mjs <namespace/repo> [--keep 10] [--protect <sha7>] [--dry-run]",
+  );
 if (!Number.isInteger(KEEP) || KEEP < 3) fail("--keep must be a whole number of at least 3");
 const [namespace, repo] = repoArg.split("/");
 const username = process.env.DOCKERHUB_USERNAME;
@@ -52,7 +58,10 @@ function releasesToDelete(tags, keep) {
     release.tags.push(tag.name);
     releases.set(sha, release);
   }
-  return [...releases.values()].sort((a, b) => b.at - a.at).slice(keep);
+  return [...releases.values()]
+    .sort((a, b) => b.at - a.at)
+    .slice(keep)
+    .filter((release) => !PROTECTED.has(release.sha));
 }
 
 async function listTags(auth) {

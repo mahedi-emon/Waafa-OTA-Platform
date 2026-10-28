@@ -45,6 +45,8 @@ export const EnvSchema = z
     MEDIA_DIR: z.string().min(1).default("./.media"),
     /** Customer files (issue 232): the `privatedata` volume in Docker; nginx never serves it. */
     PRIVATE_FILES_DIR: z.string().min(1).default("./.private-files"),
+    /** The backups folder, mounted read only so the Status page can show its size (issue 303). */
+    BACKUPS_DIR: z.string().min(1).default("/data/backups"),
     /**
      * How often the minute job runs (D0 R4, D215): scheduled records go live, window lists refresh, Trash is purged.
      * Default 60 s; 0 turns it off (API tests call it themselves).

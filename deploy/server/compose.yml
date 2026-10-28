@@ -5,6 +5,11 @@
 # the API and the worker stay on the private network.
 name: waafa
 
+# Container logs rotate at 10 MB, three files each (issue 303), so logs never fill the disk.
+x-logging: &logging
+  driver: json-file
+  options: { max-size: 10m, max-file: "3" }
+
 x-api-env: &api-env
   NODE_ENV: production
   PORT: "4000"
@@ -53,6 +58,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+    logging: *logging
     mem_limit: 640m
 
   redis:
@@ -66,6 +72,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+    logging: *logging
     mem_limit: 160m
 
   api:
@@ -73,7 +80,11 @@ services:
     restart: unless-stopped
     environment: *api-env
     # Uploaded photos (Admin › Media library); backed up by backup.sh.
-    volumes: [mediadata:/data/media, privatedata:/data/private]
+    volumes:
+      - mediadata:/data/media
+      - privatedata:/data/private
+      # Read only, for the disk sizes on Settings › System status (issue 303).
+      - ./backups:/data/backups:ro
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -87,7 +98,8 @@ services:
       timeout: 5s
       start_period: 90s
       retries: 6
-    mem_limit: 640m
+    logging: *logging
+    mem_limit: 512m
 
   worker:
     image: ${IMAGE_REPO:?set IMAGE_REPO}:api-${IMAGE_TAG:-latest}
@@ -100,6 +112,7 @@ services:
     volumes: [privatedata:/data/private]
     depends_on:
       api: { condition: service_healthy }
+    logging: *logging
     mem_limit: 384m
 
   # ClamAV (issue 235): clamd answers the worker on the private network; freshclam inside the image keeps the
@@ -109,7 +122,11 @@ services:
     restart: unless-stopped
     environment:
       CLAMAV_NO_MILTERD: "true"
+      # One signature set in memory: the daily reload swaps in place (scans wait about a minute) instead of loading a
+      # second copy beside the first, which doubled the peak (issue 303, D314).
+      CLAMD_CONF_ConcurrentDatabaseReload: "no"
     volumes: [clamdata:/var/lib/clamav]
+    logging: *logging
     mem_limit: 1600m
 
   web:
@@ -123,6 +140,7 @@ services:
       NODE_OPTIONS: --max-old-space-size=512
     depends_on:
       api: { condition: service_healthy }
+    logging: *logging
     mem_limit: 1g
 
   # The site's nginx (reverse proxy, HTTPS, www → apex, gzip, caching, security headers): configured inside the image,
@@ -138,6 +156,7 @@ services:
       - certbot_www:/var/www/certbot:ro
       - nginxcache:/var/cache/nginx
     depends_on: [web]
+    logging: *logging
     mem_limit: 96m
 
   # Renews the certificate twice a day when it is due; nginx reloads every 6 hours to pick it up.
@@ -153,6 +172,7 @@ services:
     volumes:
       - letsencrypt:/etc/letsencrypt
       - certbot_www:/var/www/certbot
+    logging: *logging
     mem_limit: 128m
 
 volumes:

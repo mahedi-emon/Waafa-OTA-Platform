@@ -108,8 +108,12 @@ jobs:
             echo "$found" >&2
             exit 1
           fi
-          docker run --rm --entrypoint sh "$image" -c 'test -f dist/main.js && test -f dist/worker.js && test -f dist/seed.js && test ! -e src && test ! -e test && test ! -e /app/packages/shared/src && test ! -e /app/fixtures/src'
+          docker run --rm --entrypoint sh "$image" -c 'test -f dist/main.js && test -f dist/worker.js && test -f dist/seed.js && test -f dist/migrate.js && test ! -e node_modules/prisma && test ! -e node_modules/typescript && test ! -e src && test ! -e test && test ! -e /app/packages/shared/src && test ! -e /app/fixtures/src'
           echo "API image: compiled dist only"
+
+      # Issue 303: image sizes, revision labels and the memory of every container, against their budgets.
+      - name: Image sizes and memory
+        run: sh scripts/measure-stack.sh
 
       - name: No secrets in the images
         run: |
@@ -150,14 +154,15 @@ jobs:
             echo "On the server: \`git pull && sh deploy/deploy.sh\` (IMAGE_TAG=latest) or pin IMAGE_TAG=$TAG."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # Keep the newest 15 releases on Docker Hub (rollback targets); older sha tags go (issue 231).
+      # Keep the newest 10 releases on Docker Hub (rollback targets) and always the one live on the server
+      # (deploy/LIVE_RELEASE); older sha tags go (issues 231 and 303).
       - name: Docker Hub clean-up
         if: github.ref == 'refs/heads/main'
         continue-on-error: true
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: node scripts/dockerhub-cleanup.mjs "$IMAGE_REPO" --keep 15
+        run: node scripts/dockerhub-cleanup.mjs "$IMAGE_REPO" --keep 10 --protect "$(tr -d '[:space:]' < deploy/LIVE_RELEASE)"
 
       - name: Logs
         if: failure()
