@@ -3077,6 +3077,8 @@
         "whatsapp": "WhatsApp"
       },
       "notePlaceholder": "What happened? (visible to staff only)",
+      "mentionHint": "Type @ and a name to tell a colleague; they get an alert.",
+      "mentionList": "Colleagues to mention",
       "addNote": "Add to timeline",
       "noteAdded": "Added to the timeline",
       "amount": "Booked amount (৳)",
@@ -3743,6 +3745,10 @@
       "twoStepReset": "Two-step sign-in reset",
       "recentSignIns": "Recent sign-ins",
       "noSignIns": "No sign-ins recorded yet.",
+      "takesLeads": "Takes new leads in turn",
+      "takesLeadsHint": "During office hours, new requests for the services this person's roles open go to them in turn with others who have this on.",
+      "takesLeadsOn": "Yes, in turn",
+      "takesLeadsOff": "No",
       "resetTwoStepLeadOptional": "For someone who lost their phone and their recovery codes. Two-step sign-in turns off; they can turn it on again in My account."
     },
     "account": {
@@ -4464,6 +4470,34 @@
       "galleryAlbum": "Gallery album",
       "teamMember": "Team member"
     },
+    "reminders": {
+      "title": "Your reminders",
+      "leadLead": "Only you see these. The bell tells you when one is due.",
+      "dashLead": "Follow-ups you set, soonest first. The bell tells you when one is due.",
+      "overdue": "Overdue",
+      "today": "Today",
+      "later": "Coming up",
+      "done": "Done",
+      "snooze": "In an hour",
+      "remove": "Remove reminder",
+      "failed": "That did not work. Try again.",
+      "doneToast": "Marked done",
+      "snoozed": "Moved to an hour from now",
+      "removed": "Reminder removed",
+      "empty": "No reminders on this lead. Set one below so a follow-up is never missed.",
+      "dashEmpty": "No reminders. Set them from any lead.",
+      "note": "Remind me to",
+      "notePlaceholder": "Call back with the Emirates fare",
+      "when": "When",
+      "inHour": "In 1 hour",
+      "inThreeHours": "In 3 hours",
+      "tomorrowMorning": "Tomorrow at 10 am",
+      "custom": "Pick a day and time",
+      "customLabel": "Day and time (Dhaka)",
+      "submit": "Set reminder",
+      "added": "Reminder set",
+      "past": "Pick a time that has not passed yet"
+    },
     "bell": {
       "title": "Notifications",
       "all": "All",
@@ -4477,7 +4511,19 @@
       "today": "Today",
       "earlier": "Earlier",
       "unseenCount": "{count, plural, one {# new notification} other {# new notifications}}",
-      "openInbox": "Open the inbox"
+      "openInbox": "Open the inbox",
+      "mine": "Your alerts",
+      "markRead": "Mark all read",
+      "unread": "not read yet",
+      "alertsEmpty": "Nothing for you yet",
+      "alertsEmptyBody": "Mentions, reminders that fall due and leads handed to you show up here.",
+      "kind": {
+        "mention": "Mentioned you",
+        "reminder": "Reminder",
+        "assigned": "Lead for you"
+      },
+      "sound": "Sound for new alerts",
+      "soundHint": "Plays after your first click on the page"
     },
     "counts": {
       "newLeads": "{count, plural, one {# new lead} other {# new leads}}",

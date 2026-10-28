@@ -32,6 +32,8 @@ import { CustomerFilesService, type FileRef } from "../files/customer-files.serv
 import type { Prisma } from "../generated/prisma/client";
 import { NotificationService } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { adminHref, LiveBus } from "../realtime/liveBus";
+import { RoundRobinService } from "../realtime/roundRobin.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
@@ -70,6 +72,8 @@ export class IntakeService {
     @Inject(NotificationService) private readonly notifications: NotificationService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
     @Inject(CustomerFilesService) private readonly files: CustomerFilesService,
+    @Inject(LiveBus) private readonly live: LiveBus,
+    @Inject(RoundRobinService) private readonly roundRobin: RoundRobinService,
   ) {}
 
   private adminLink(path: string): string {
@@ -145,6 +149,18 @@ export class IntakeService {
     };
     void this.notifications.notify("lead-received-customer", input.contact.email, vars);
     void this.notifications.notifyStaff("lead-alert-staff", module, vars);
+    // Issue 243: the open admin tabs of that service hear it at once, then it goes to the next person in turn.
+    this.live.publish({
+      audience: { module },
+      event: {
+        type: "lead",
+        title: `${input.contact.name} · ${created.reference}`,
+        detail: digest.summary.slice(0, 300),
+        href: adminHref(`/leads/${created.id}`),
+        at: toDhakaIsoString(now),
+      },
+    });
+    await this.roundRobin.assign(created.id, now).catch(() => null);
     return { reference: created.reference, createdAt: toDhakaIsoString(now) };
   }
 
@@ -300,6 +316,16 @@ export class IntakeService {
     };
     void this.notifications.notify("order-placed-customer", input.address.email, vars);
     void this.notifications.notifyStaff("order-placed-staff", "orders", vars);
+    this.live.publish({
+      audience: { roles: ["shop-manager", "accounts"] },
+      event: {
+        type: "order",
+        title: `${input.address.name} · ${result.order.reference}`,
+        detail: `${formatTaka(result.order.total)}, ${vars.method}`,
+        href: adminHref(`/orders/${result.id}`),
+        at: toDhakaIsoString(now),
+      },
+    });
     // Variants that this order took down to their low-stock mark (FR-SHOP-10, issue 233).
     for (const item of result.lowStock) {
       void this.notifications.notifyStaff("low-stock-staff", "stock", {
@@ -454,6 +480,16 @@ export class IntakeService {
       });
       if (input.proof) await this.files.claim(tx, [input.proof], "payment-proof", proof.id, now);
       return proof;
+    });
+    this.live.publish({
+      audience: { roles: ["accounts"] },
+      event: {
+        type: "proof",
+        title: `${input.name} · ${input.reference}`,
+        detail: formatTaka(input.amount),
+        href: adminHref("/payments"),
+        at: toDhakaIsoString(now),
+      },
     });
     void this.notifications.notifyStaff("payment-proof-staff", "payments", {
       name: input.name,
