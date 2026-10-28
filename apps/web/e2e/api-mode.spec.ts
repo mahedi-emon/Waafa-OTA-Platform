@@ -41,6 +41,29 @@ test("the public site renders from the API snapshot", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test("a visit from a campaign is credited on the lead and in Where leads come from (issue 237)", async ({
+  page,
+}) => {
+  test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  const campaign = `e2e-${String(Date.now()).slice(-6)}`;
+  // The proxy remembers the UTM tags in a first-party cookie the page never reads.
+  await page.goto(`/contact?utm_source=newsletter&utm_medium=email&utm_campaign=${campaign}`);
+  const cookies = await page.context().cookies();
+  expect(cookies.find((cookie) => cookie.name === "waafa_src")).toMatchObject({ httpOnly: true });
+  await page.getByLabel("Your name").fill("Sample Campaign Customer");
+  await page.locator("#contact-phone").fill("01712-345679");
+  await page.locator("label", { hasText: "Visa" }).first().click();
+  await page.locator("#contact-message").fill("Saw your newsletter: Thailand visa for two.");
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.getByRole("heading", { name: "Message sent" })).toBeVisible();
+
+  await signIn(page);
+  await page.goto("/secure-admin-control/reports");
+  const sources = page.getByRole("region", { name: "Where leads come from" });
+  const row = sources.getByRole("row").filter({ hasText: campaign });
+  await expect(row.getByRole("cell").first()).toHaveText("Newsletter (email)");
+});
+
 test("a contact message becomes a lead with a CNT reference", async ({ page }) => {
   await page.goto("/contact");
   await page.getByLabel("Your name").fill("Sample Integration Customer");

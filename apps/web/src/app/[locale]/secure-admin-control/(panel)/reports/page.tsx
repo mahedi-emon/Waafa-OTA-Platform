@@ -12,6 +12,7 @@ import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { dhakaToday, rangePresets } from "@/lib/admin/dateRanges";
 import { ReportBars } from "./_components/ReportBars";
 import { ReportList } from "./_components/ReportList";
+import { ReportSources, type SourceRow } from "./_components/ReportSources";
 import { ReportRange } from "./_components/ReportRange";
 import { dateRangeStrings } from "@/lib/admin/dateRangeStrings";
 
@@ -43,6 +44,7 @@ type Summary = {
   feedback: Array<{ status: string; count: number }>;
   signUps: number;
   days: Array<{ day: string; leads: number; orders: number; revenue: number }>;
+  sources?: SourceRow[];
 };
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -183,6 +185,21 @@ async function Reports({
             />
           </>
         ) : null}
+        <ReportSources
+          rows={summary.sources ?? []}
+          showOrders={summary.orders !== null}
+          strings={{
+            title: t("sources.title"),
+            lead: t("sources.lead"),
+            source: t("sources.source"),
+            campaign: t("sources.campaign"),
+            leads: t("sources.leads"),
+            booked: t("sources.booked"),
+            orders: t("sources.orders"),
+            revenue: t("sources.revenue"),
+            empty: t("empty"),
+          }}
+        />
         {activity ? (
           <section
             aria-labelledby="report-searches"

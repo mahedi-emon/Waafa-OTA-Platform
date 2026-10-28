@@ -1,6 +1,8 @@
 import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
+import { rememberSource } from "./lib/analytics/attribution";
+import { SITE_URL } from "./lib/siteUrl";
 import {
   ACCESS_COOKIE,
   REFRESH_COOKIE,
@@ -15,6 +17,8 @@ import {
 import { PREVIEW_HINT_COOKIE, STAFF_HINT_COOKIE } from "./lib/staffHint";
 
 const intl = createMiddleware(routing);
+/** Our own address: a visit from our own pages is not a source (behind nginx the request host is the container). */
+const SITE_HOST = new URL(SITE_URL).hostname;
 
 /** Next.js keeps draft mode in this cookie (`draftMode().enable()`). */
 const DRAFT_MODE_COOKIE = "__prerender_bypass";
@@ -60,6 +64,16 @@ export default async function proxy(request: NextRequest) {
     if (stalePreview) request.cookies.delete(DRAFT_MODE_COOKIE);
     const response = intl(request);
     if (stalePreview) endPreview(response);
+    // Where a visitor came from (UTM tags or another site) for leads and orders; no script on the page (issue 237).
+    if (!isAdminPath(pathname))
+      rememberSource(
+        request.nextUrl,
+        request.headers.get("referer"),
+        SITE_HOST,
+        request.cookies,
+        response.cookies,
+        request.nextUrl.protocol === "https:",
+      );
     if (isAdminPath(pathname)) response.headers.set("x-robots-tag", "noindex, nofollow");
     return response;
   }

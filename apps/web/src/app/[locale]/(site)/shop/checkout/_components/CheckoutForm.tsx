@@ -31,6 +31,7 @@ import type { CheckoutValues } from "@/lib/shop/checkoutForm";
 import { useHydrated } from "@/lib/useHydrated";
 import { uploadsInFlight } from "@/lib/forms/uploadsInFlight";
 import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
+import { track } from "@/lib/analytics/track";
 
 // zod, the schema and the phone rules load on the form's first check, not with the page (issue 236).
 const formResolver = lazyResolver(async () => {
@@ -185,6 +186,9 @@ function CheckoutForm({
   const codChosenButBlocked = payment === COD && codBlocked !== null;
   const firstAccount = accounts[0]?.id;
 
+  // Issue 237: a visit to checkout counts as begin_checkout (sent only after cookie consent).
+  useEffect(() => track("begin_checkout"), []);
+
   // Cash on delivery stops being offered (over the limit, pick-up): move the choice to the first transfer account.
   useEffect(() => {
     if (codChosenButBlocked && firstAccount) form.setValue("payment", firstAccount);
@@ -237,6 +241,7 @@ function CheckoutForm({
         return;
       }
       const created = (await response.json()) as { reference: string; total: number };
+      track("order_placed", { reference: created.reference, value: created.total });
       const account = accounts.find((item) => item.id === values.payment) ?? null;
       setPlaced({
         reference: created.reference,

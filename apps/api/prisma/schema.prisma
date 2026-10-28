@@ -215,6 +215,8 @@ model Order {
   email           String?
   pickup          Boolean      @default(false)
   invoice         Json?
+  /// Where the buyer came from: UTM, referrer, landing page (issue 237).
+  source          Json?
   createdAt       DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime     @updatedAt @db.Timestamptz(3)
   history         OrderEvent[]

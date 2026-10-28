@@ -51,7 +51,8 @@ for service in api web nginx; do
 done
 # The web image is built for one address (an image label); a mismatch would put wrong canonical links on every page.
 built_url=$(docker image inspect -f '{{ index .Config.Labels "org.waafa.site-url" }}' "$REPO:web-$TAG" 2>/dev/null | sed 's/<no value>//')
-if [ -n "$built_url" ] && [ "$built_url" != "$(setting SITE_URL)" ] && [ "$DOMAIN" != "localhost" ]; then
+# Staging (deploy/staging, STAGING=1) runs the live images on purpose: its canonical links point at the live site.
+if [ -n "$built_url" ] && [ "$built_url" != "$(setting SITE_URL)" ] && [ "$DOMAIN" != "localhost" ] && [ "$(setting STAGING)" != "1" ]; then
   echo "The web image was built for '$built_url' but SITE_URL in .env is '$(setting SITE_URL)'." >&2
   echo "Set the GitHub variable SITE_URL, run the Docker images workflow again, then deploy." >&2
   exit 1
@@ -82,6 +83,19 @@ if [ -n "$EMAIL" ] && [ "$DOMAIN" != "localhost" ]; then
   fi
 else
   echo "Skipped (ACME_EMAIL empty or localhost): the site answers over HTTP only"
+fi
+
+# Issue 239: the daily backup (03:15) and the monthly restore drill (1st, 04:30) install themselves; BACKUP_CRON=off in
+# .env leaves the crontab alone. Re-running replaces only the lines marked "waafa-backup".
+if [ "$(setting BACKUP_CRON)" != "off" ] && command -v crontab > /dev/null 2>&1; then
+  here=$(pwd)
+  mkdir -p backups
+  {
+    crontab -l 2>/dev/null | grep -v "# waafa-backup" || true
+    echo "15 3 * * * cd $here && sh backup.sh >> backups/backup.log 2>&1 # waafa-backup"
+    echo "30 4 1 * * cd $here && sh backup.sh --drill >> backups/drill.log 2>&1 # waafa-backup"
+  } | crontab -
+  echo "Backups: daily at 03:15 and a restore drill on the 1st (crontab; BACKUP_CRON=off to skip)"
 fi
 
 docker image prune -f > /dev/null

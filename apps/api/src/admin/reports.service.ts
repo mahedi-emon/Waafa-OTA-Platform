@@ -5,6 +5,7 @@ import { toCsv } from "../common/csv";
 import { toXlsx } from "../common/xlsx";
 import { problems } from "../common/problem";
 import { PrismaService } from "../prisma/prisma.service";
+import { groupBySource } from "./leadSources";
 import { canSeeOrders, dhakaDate, leadModulesFor } from "./access";
 
 const NOT_SOLD = ["cancelled", "returned"];
@@ -100,12 +101,18 @@ export class AdminReportsService {
     const [leads, orderRows, feedback, signUps] = await Promise.all([
       this.prisma.lead.findMany({
         where: leadWhere,
-        select: { module: true, status: true, createdAt: true, firstResponseAt: true },
+        select: {
+          module: true,
+          status: true,
+          createdAt: true,
+          firstResponseAt: true,
+          source: true,
+        },
       }),
       orders
         ? this.prisma.order.findMany({
             where: { createdAt: { gte: start, lt: end } },
-            select: { status: true, total: true, items: true, createdAt: true },
+            select: { status: true, total: true, items: true, createdAt: true, source: true },
           })
         : Promise.resolve([]),
       this.prisma.feedback.groupBy({
@@ -186,6 +193,8 @@ export class AdminReportsService {
       feedback: feedback.map((row) => ({ status: row.status, count: row._count._all })),
       signUps,
       days,
+      // Where leads come from (issue 237): UTM source, referring site or channel, with orders when this person sees them.
+      sources: groupBySource(leads, sold),
     };
   }
 
