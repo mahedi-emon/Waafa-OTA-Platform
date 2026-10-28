@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { dhakaToday, rangePresets } from "@/lib/admin/dateRanges";
+import { ReportAgents, type AgentRow } from "./_components/ReportAgents";
 import { ReportBars } from "./_components/ReportBars";
 import { ReportList } from "./_components/ReportList";
 import { ReportSources, type SourceRow } from "./_components/ReportSources";
@@ -43,8 +44,19 @@ type Summary = {
   } | null;
   feedback: Array<{ status: string; count: number }>;
   signUps: number;
-  days: Array<{ day: string; leads: number; orders: number; revenue: number }>;
+  days: Array<{ day: string; leads: number; orders: number; revenue: number; searches?: number }>;
   sources?: SourceRow[];
+  /** Issue 244: leads by agent, the funnel from search to booking, visa cases. */
+  byAgent?: AgentRow[];
+  funnel?: Array<{
+    step: "searches" | "requests" | "replied" | "quoted" | "booked";
+    count: number;
+  }>;
+  visa?: {
+    total: number;
+    byStage: Array<{ stage: string; count: number }>;
+    byCountry: Array<{ country: string; count: number; approved: number; rejected: number }>;
+  } | null;
 };
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -67,12 +79,13 @@ async function Reports({
   const from =
     typeof params.from === "string" && DAY.test(params.from) ? params.from : fallback.from;
   const to = typeof params.to === "string" && DAY.test(params.to) ? params.to : fallback.to;
-  const [t, tm, ts, to2, staff] = await Promise.all([
+  const [t, tm, ts, to2, staff, tvs] = await Promise.all([
     getTranslations("Admin.reports"),
     getTranslations("Admin.modules"),
     getTranslations("Admin.statuses"),
     getTranslations("Admin.orders.statuses"),
     requireStaff(),
+    getTranslations("Admin.visaProgress.stages"),
   ]);
   // What people searched on the site in the same days (search activity, D0 R9).
   const searches = hasRole(staff, "admin", "travel-sales");
@@ -147,7 +160,85 @@ async function Reports({
         }}
       />
 
+      {searches && summary.funnel ? (
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <ReportBars
+            id="report-searches-per-day"
+            title={t("searchesPerDay")}
+            days={summary.days.map((day) => ({
+              day: day.day,
+              leads: day.searches ?? 0,
+              orders: 0,
+              revenue: 0,
+            }))}
+            showRevenue={false}
+            strings={{
+              date: t("date"),
+              leads: t("searchesSeries"),
+              orders: t("orders"),
+              revenue: t("revenue"),
+              empty: t("empty"),
+            }}
+          />
+          <ReportList
+            title={t("funnel.title")}
+            rows={summary.funnel.map((step, index, all) => {
+              const before = index === 0 ? step.count : (all[index - 1]?.count ?? 0);
+              const share = before === 0 ? 0 : Math.round((step.count / before) * 100);
+              return {
+                label: t(`funnel.${step.step}`),
+                value: step.count,
+                display: index === 0 ? String(step.count) : `${step.count} · ${share}%`,
+              };
+            })}
+            empty={t("empty")}
+          />
+        </div>
+      ) : null}
+
+      {summary.byAgent ? (
+        <ReportAgents
+          rows={summary.byAgent}
+          strings={{
+            title: t("agents.title"),
+            lead: t("agents.lead"),
+            agent: t("agents.agent"),
+            leads: t("leads"),
+            booked: t("won"),
+            wonRate: t("agents.wonRate"),
+            reply: t("firstResponse"),
+            minutes: (count) => t("minutes", { count }),
+            empty: t("empty"),
+          }}
+        />
+      ) : null}
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {summary.visa && summary.visa.total > 0 ? (
+          <>
+            <ReportList
+              title={t("visa.byStage")}
+              rows={summary.visa.byStage.map((row) => ({
+                label: label(tvs as unknown as typeof tm, row.stage),
+                value: row.count,
+              }))}
+              empty={t("empty")}
+            />
+            <ReportList
+              title={t("visa.byCountry")}
+              rows={summary.visa.byCountry.map((row) => ({
+                label: row.country,
+                value: row.count,
+                display: t("visa.outcomes", {
+                  count: row.count,
+                  approved: row.approved,
+                  rejected: row.rejected,
+                }),
+              }))}
+              empty={t("empty")}
+            />
+          </>
+        ) : null}
         <ReportList
           title={t("byModule")}
           rows={summary.leads.byModule.map((row) => ({

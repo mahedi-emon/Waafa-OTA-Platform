@@ -4003,6 +4003,27 @@
     },
     "reports": {
       "metaTitle": "Reports",
+      "searchesPerDay": "Searches per day",
+      "searchesSeries": "Searches",
+      "funnel": {
+        "title": "From search to booking",
+        "searches": "Searches on the site",
+        "requests": "Requests sent",
+        "replied": "Answered",
+        "quoted": "Quoted",
+        "booked": "Booked"
+      },
+      "agents": {
+        "title": "By agent",
+        "lead": "Leads in this range by the person they are assigned to.",
+        "agent": "Agent",
+        "wonRate": "Won rate"
+      },
+      "visa": {
+        "byStage": "Visa applications by stage",
+        "byCountry": "Visa applications by country",
+        "outcomes": "{count} · {approved} approved · {rejected} refused"
+      },
       "title": "Reports",
       "lead": "How the business did in a date range (Bangladesh time), with downloads for Excel and Google Sheets.",
       "from": "From",
