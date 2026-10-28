@@ -154,6 +154,21 @@ export const AccountViewSchema = z
           status: z.string(),
           total: z.number().int(),
           createdAt: IsoDateTimeSchema,
+          /** What was bought (issue 246, Buy again): ids, words and quantities, never prices to reuse. */
+          items: z
+            .array(
+              z
+                .object({
+                  productId: z.string(),
+                  variantId: z.string(),
+                  title: z.string(),
+                  variantLabel: z.string().optional(),
+                  sku: z.string(),
+                  quantity: z.number().int().positive(),
+                })
+                .strict(),
+            )
+            .default([]),
         })
         .strict(),
     ),

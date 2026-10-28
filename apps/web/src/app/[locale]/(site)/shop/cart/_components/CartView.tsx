@@ -8,7 +8,8 @@ import { CartLineRow } from "@/components/shop/CartLineRow";
 import { CartSummary } from "@/components/shop/CartSummary";
 import { EmptyCart } from "@/components/shop/EmptyCart";
 import { FreeDeliveryBar } from "@/components/shop/FreeDeliveryBar";
-import { useCart } from "@/components/shop/useCart";
+import { SavedForLater } from "@/components/shop/SavedForLater";
+import { useCart, useSavedForLater } from "@/components/shop/useCart";
 import { useCartPrefs } from "@/components/shop/useCartPrefs";
 import { useQuote } from "@/components/shop/useQuote";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ function CartView({ storeName, zones, freeDeliveryThreshold, payWith, categories
   const t = useTranslations("Cart");
   const hydrated = useHydrated();
   const { lines, setQty, remove } = useCart();
+  const saved = useSavedForLater();
   const prefs = useCartPrefs();
   const zoneId = zones.some((zone) => zone.id === prefs.zoneId)
     ? prefs.zoneId
@@ -62,7 +64,13 @@ function CartView({ storeName, zones, freeDeliveryThreshold, payWith, categories
   }, [quote, lines, setQty, remove]);
 
   if (!hydrated) return <Skeleton className="h-96 rounded-2xl" aria-label={t("summary.loading")} />;
-  if (lines.length === 0) return <EmptyCart storeName={storeName} categories={categories} />;
+  if (lines.length === 0)
+    return (
+      <div className="flex flex-col gap-8">
+        <EmptyCart storeName={storeName} categories={categories} />
+        <SavedForLater lines={saved.lines} onMove={saved.moveToCart} onRemove={saved.remove} />
+      </div>
+    );
 
   const ready = quote !== null && quote.lines.length > 0;
 
@@ -80,9 +88,11 @@ function CartView({ storeName, zones, freeDeliveryThreshold, payWith, categories
               priced={priced.get(line.variantId)}
               onQty={(qty) => setQty(line.variantId, qty)}
               onRemove={() => remove(line.variantId)}
+              onSave={() => saved.save(line.variantId)}
             />
           ))}
         </ul>
+        <SavedForLater lines={saved.lines} onMove={saved.moveToCart} onRemove={saved.remove} />
         <Button asChild variant="ghost" className="self-start">
           <Link href="/shop">
             <ArrowLeft aria-hidden="true" />

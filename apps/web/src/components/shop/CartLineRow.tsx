@@ -16,10 +16,12 @@ type CartLineRowProps = {
   priced?: PricedLine;
   onQty: (qty: number) => void;
   onRemove: () => void;
+  /** Moves the line to "Saved for later" (issue 246). */
+  onSave?: () => void;
 };
 
 /** One cart line (ShopCart): photo, title, variant, unit price, stock note, quantity stepper and the line total. */
-function CartLineRow({ line, priced, onQty, onRemove }: CartLineRowProps) {
+function CartLineRow({ line, priced, onQty, onRemove, onSave }: CartLineRowProps) {
   const t = useTranslations("Cart.line");
   const unit = priced?.unitPrice ?? line.price;
   const max = priced?.maxQuantity ?? line.maxQty;
@@ -75,7 +77,7 @@ function CartLineRow({ line, priced, onQty, onRemove }: CartLineRowProps) {
         ) : null}
       </div>
 
-      <div className="col-span-2 flex items-center justify-between gap-3 border-t border-mist-100 pt-3 sm:col-span-1 sm:flex-col sm:items-end sm:justify-between sm:border-0 sm:pt-0">
+      <div className="col-span-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-mist-100 pt-3 sm:col-span-1 sm:flex-col sm:flex-nowrap sm:items-end sm:justify-between sm:border-0 sm:pt-0">
         <div
           role="group"
           aria-label={`${t("quantity")}: ${line.title}`}
@@ -110,6 +112,18 @@ function CartLineRow({ line, priced, onQty, onRemove }: CartLineRowProps) {
         <p className="font-display text-[18px] font-extrabold text-navy-900 tabular-nums">
           {formatTaka(unit * qty)}
         </p>
+        {onSave ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label={t("saveLabel", { title: line.title })}
+            onClick={onSave}
+            className="text-mist-700"
+          >
+            {t("save")}
+          </Button>
+        ) : null}
         <Button
           type="button"
           variant="ghost"

@@ -15,5 +15,6 @@ checkpoint updates this table.
 | Reminders and alerts (#243) | [243-reminders-alerts.md](243-reminders-alerts.md) | 21 | 18 | 3 (chime by ear, three browsers in #259, exploratory) | API DB 5 + unit 13 passing locally; e2e admin-alerts in CI API mode | 0 | 0 | 0 |
 | Reports, customers, roles (#244) | [244-reports-customers-roles.md](244-reports-customers-roles.md) | 21 | 19 | 2 (real summary email in an inbox, exploratory) | unit 2 + API DB 6 (+1 auth) passing locally | 1 (media upload race #308, found by #307's CI) | 1 | 0 |
 | Reviews and Q&A (#245) | [245-reviews-qa.md](245-reviews-qa.md) | 17 | 15 | 2 (Rich Results test on the live site, exploratory) | API DB 4 + shared 2 + e2e admin-reviews 1 (locally, API mode) + budget 194 KB | 0 | 0 | 0 |
+| Save for later, Buy again (#246) | [246-save-for-later.md](246-save-for-later.md) | 10 | 9 | 1 (exploratory) | unit 3 + e2e cart-saved 2 (390, 1440) + budget cart 191 KB, account 182 KB | 2 (axe label mismatch on the new buttons; 84 px overflow at 390 px) | 2 | 0 |
 
-Totals: 201 cases · 171 automated · 30 manual · 12 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5) · 0 open (performance target follow-up #271).
+Totals: 211 cases · 180 automated · 31 manual · 12 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5) · 0 open (performance target follow-up #271).

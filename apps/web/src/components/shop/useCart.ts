@@ -2,77 +2,58 @@
 
 import { useSyncExternalStore } from "react";
 import { track } from "@/lib/analytics/track";
-import {
-  addLine,
-  cartCount,
-  parseLines,
-  removeLine,
-  setLineQty,
-  type CartLine,
-} from "@/lib/shop/cart";
+import { addLine, cartCount, removeLine, setLineQty, type CartLine } from "@/lib/shop/cart";
+import { createLineStore } from "./lineStore";
 
 /*
  * Guest cart in localStorage (FR-SHOP-06: carts persist across visits), shared by every tab through the storage
- * event. Storage can be missing or blocked (private windows); the cart then lives for the page only.
+ * event. "Saved for later" (issue 246) is a second list on the same device; moving a line keeps its quantity.
  */
 
-const KEY = "waafa:cart:v1";
-const EMPTY: CartLine[] = [];
-const listeners = new Set<() => void>();
-let memory: CartLine[] | null = null;
-let cachedRaw: string | null | undefined;
-let cachedLines: CartLine[] = EMPTY;
+const cart = createLineStore("waafa:cart:v1");
+const saved = createLineStore("waafa:saved:v1");
 
-function read(): CartLine[] {
-  let raw: string | null = null;
-  try {
-    raw = window.localStorage.getItem(KEY);
-  } catch {
-    return memory ?? EMPTY;
-  }
-  if (raw !== cachedRaw) {
-    cachedRaw = raw;
-    cachedLines = parseLines(raw);
-  }
-  return memory ?? cachedLines;
-}
-
-function write(lines: CartLine[]) {
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(lines));
-    memory = null;
-  } catch {
-    memory = lines;
-  }
-  listeners.forEach((listener) => listener());
-}
-
-function subscribe(listener: () => void): () => void {
-  listeners.add(listener);
-  const onStorage = (event: StorageEvent) => {
-    if (event.key === KEY) listener();
-  };
-  window.addEventListener("storage", onStorage);
-  return () => {
-    listeners.delete(listener);
-    window.removeEventListener("storage", onStorage);
-  };
-}
-
-/** Adds a line outside React (the card button before its control has loaded, issue 295). */
+/** Adds a line outside React (the card button before its control has loaded, issue 295; Buy again, issue 246). */
 export function addToCart(line: CartLine): void {
-  write(addLine(read(), line));
+  cart.write(addLine(cart.read(), line));
   track("add_to_cart", { item_id: line.variantId });
 }
 
+/** Moves a cart line to "Saved for later" (issue 246). */
+export function saveForLater(variantId: string): void {
+  const line = cart.read().find((item) => item.variantId === variantId);
+  if (!line) return;
+  saved.write([line, ...removeLine(saved.read(), variantId)]);
+  cart.write(removeLine(cart.read(), variantId));
+}
+
+/** Moves a saved line back into the cart. */
+export function moveToCart(variantId: string): void {
+  const line = saved.read().find((item) => item.variantId === variantId);
+  if (!line) return;
+  cart.write(addLine(cart.read(), line));
+  saved.write(removeLine(saved.read(), variantId));
+}
+
 export function useCart() {
-  const lines = useSyncExternalStore(subscribe, read, () => EMPTY);
+  const lines = useSyncExternalStore(cart.subscribe, cart.read, cart.empty);
   return {
     lines,
     count: cartCount(lines),
     add: addToCart,
-    setQty: (variantId: string, qty: number) => write(setLineQty(read(), variantId, qty)),
-    remove: (variantId: string) => write(removeLine(read(), variantId)),
-    clear: () => write([]),
+    setQty: (variantId: string, qty: number) => cart.write(setLineQty(cart.read(), variantId, qty)),
+    remove: (variantId: string) => cart.write(removeLine(cart.read(), variantId)),
+    clear: () => cart.write([]),
+  };
+}
+
+/** The "Saved for later" list on this device (issue 246). */
+export function useSavedForLater() {
+  const lines = useSyncExternalStore(saved.subscribe, saved.read, saved.empty);
+  return {
+    lines,
+    save: saveForLater,
+    moveToCart,
+    remove: (variantId: string) => saved.write(removeLine(saved.read(), variantId)),
   };
 }
