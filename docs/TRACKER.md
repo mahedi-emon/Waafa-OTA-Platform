@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 31 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 🟡 (PR open), next #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 31 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅, next #243 🟡, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,7 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #298 · Quote builder: options, baggage, validity, branded PDF, accept page — 🟡 In review
+### #298 · Quote builder: options, baggage, validity, branded PDF, accept page — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 6 (split from #242); PRD §6 leads P1, FR-ADM-LEAD P1 |
@@ -47,7 +47,7 @@ Serena memory `audit_findings`.
 | Migration | `20261031010000_quotes` (additive) and seed patch `2026-10-31-quote-templates`; API image copies `apps/api/assets` |
 | Decision | D310 |
 | Tools and skills | Context7 (pdfkit fonts and rich text); Playwright MCP for the PDF render (৳ glyph caught missing with the WOFF2 subset, fixed with Hind Siliguri WOFF); Serena not used (edits by script); ui-ux-pro-max, design-review and shadcn MCP not run: design review owed in #259 |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #301 · 149 (three full runs: server icons, the added-option key bug caught by the e2e, seed patch list and staff alert address in the API tests) |
 
 ### #242 · Bookings from converted leads: PNR, tickets, payments, documents — ✅ Done
 | Field | Value |
@@ -2160,7 +2160,7 @@ Owner's order of 28 Oct (D303). One issue per PR; start the next issue while CI 
 5. #237 measurement (events after consent, UTM on leads and orders, Where leads come from, split sitemap, share images).
 6. #238 error tracking, Status page, dead-letter queues; #239 backups, off-site copy, restore drill, alerts, per-IP lead
    limit, CSP nonce or documented exception, staging bundle. Checkpoint.
-7. ✅ #242 bookings; 🟡 #298 quote builder (PR open); #243 reminders, mentions, round-robin, real-time alerts; #244 reports and roles.
+7. ✅ #242 bookings; ✅ #298 quote builder; 🟡 #243 reminders, mentions, round-robin, real-time alerts; #244 reports and roles.
    Checkpoint.
 8. #245 reviews and Q&A (approved feedback photos); #246 wishlist extras; #247 campaigns and flash sales; #248 PDFs and
    CSV import. Checkpoint.
