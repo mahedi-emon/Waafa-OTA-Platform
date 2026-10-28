@@ -95,6 +95,26 @@ describe.skipIf(!dbAvailable)("media library (#109)", () => {
     expect(await prisma.auditLog.count({ where: { action: "media.upload" } })).toBe(1);
   });
 
+  it("never shows a new upload with its placeholder path while it is being saved (issue 308)", async () => {
+    const big = await sharp({
+      create: { width: 2560, height: 1700, channels: 3, background: { r: 200, g: 120, b: 40 } },
+    })
+      .jpeg()
+      .toBuffer();
+    let done = false;
+    const uploading = upload(editor, big, "image/jpeg", "Race check").finally(() => {
+      done = true;
+    });
+    const seen: string[] = [];
+    while (!done) {
+      const rows = await prisma.mediaAsset.findMany({ select: { path: true } });
+      seen.push(...rows.map((row) => row.path));
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+    expect((await uploading).statusCode).toBe(201);
+    expect(seen.filter((value) => value.startsWith("pending/"))).toEqual([]);
+  });
+
   it("refuses files that are not photos, mislabelled files and missing alt text", async () => {
     const svg = Buffer.from(
       "<svg xmlns='http://www.w3.org/2000/svg'><script>alert(1)</script></svg>",
