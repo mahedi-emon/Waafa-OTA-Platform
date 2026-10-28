@@ -357,7 +357,12 @@ for (const width of [390, 1440]) {
       const results = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
         .analyze();
-      expect(results.violations.map((violation) => violation.id)).toEqual([]);
+      expect(
+        results.violations.map(
+          (violation) =>
+            `${violation.id}: ${violation.nodes.map((node) => node.target.join(" ")).join(", ")}`,
+        ),
+      ).toEqual([]);
       const width = await page.evaluate(() => document.documentElement.scrollWidth);
       expect(width).toBeLessThanOrEqual(await page.evaluate(() => window.innerWidth));
     }

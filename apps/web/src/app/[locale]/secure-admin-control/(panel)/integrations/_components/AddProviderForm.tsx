@@ -3,7 +3,7 @@
 import { useId, useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import type { ProviderKind } from "@waafa/shared";
+import type { SUPPLIER_KINDS } from "@waafa/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,7 @@ import { addCustomProvider } from "@/lib/admin/providerActions";
 import { fill } from "./integrationStrings";
 
 /** Sign-in providers take no custom entries (issue 134). */
-type SupplierKind = Exclude<ProviderKind, "auth">;
+type SupplierKind = (typeof SUPPLIER_KINDS)[number];
 
 type AddProviderFormProps = {
   /** The categories this tab adds to; more than one shows a category choice (SMS or email). */

@@ -42,7 +42,6 @@ function WeekdaysField({ path, value }: WeekdaysFieldProps) {
               <button
                 type="button"
                 aria-pressed={on}
-                aria-label={t(`long.${day}`)}
                 onClick={() => toggle(day)}
                 onBlur={meta.touch}
                 className={cn(
@@ -54,7 +53,9 @@ function WeekdaysField({ path, value }: WeekdaysFieldProps) {
               >
                 {/* A tick as well as the colour, so an open day never depends on colour alone. */}
                 {on ? <Check aria-hidden="true" className="size-3.5" /> : null}
-                {t(`short.${day}`)}
+                {/* The full name is read out; the short one is shown (no aria-label: axe 4.14 wants the shown words in it). */}
+                <span aria-hidden="true">{t(`short.${day}`)}</span>
+                <span className="sr-only">{t(`long.${day}`)}</span>
               </button>
             </li>
           );

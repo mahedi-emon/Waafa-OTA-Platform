@@ -26,6 +26,8 @@ export const CACHE_TAGS = {
   packages: "packages",
   visa: "visa",
   catalogue: "catalogue",
+  /** Outside services from Admin › Integrations: public keys, IDs and feature switches (issue 284). */
+  integrations: "integrations",
   /** Old record addresses that redirect after a link change (D0 R4). */
   redirects: "redirects",
 } as const;

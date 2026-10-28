@@ -24,22 +24,19 @@ COPY fixtures fixtures
 COPY apps/web apps/web
 
 ARG NEXT_PUBLIC_SITE_URL
-ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY=""
 ARG WAAFA_API_URL
 ARG WAAFA_INTAKE_KEY
 ENV NODE_ENV=production NEXT_OUTPUT=standalone REQUIRE_SITE_URL=1 \
-  NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY \
+  NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
   NODE_OPTIONS=--max-old-space-size=2048
 RUN WAAFA_API_URL=$WAAFA_API_URL WAAFA_INTAKE_KEY=$WAAFA_INTAKE_KEY pnpm --filter @waafa/web build
 
 # Runtime: the traced standalone server plus the static files and public media it serves.
 FROM node:22-slim AS app
-# Both values are public and baked into the pages; deploy.sh reads them to refuse an image built for another domain
-# or with a different Turnstile site key than the server's secret (issue 130).
+# The address is public and baked into the pages; deploy.sh reads it to refuse an image built for another domain
+# (issue 130). Turnstile keys come from Admin › Integrations at run time (issue 284).
 ARG NEXT_PUBLIC_SITE_URL
-ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY=""
-LABEL org.waafa.site-url="$NEXT_PUBLIC_SITE_URL" \
-  org.waafa.turnstile-site-key="$NEXT_PUBLIC_TURNSTILE_SITE_KEY"
+LABEL org.waafa.site-url="$NEXT_PUBLIC_SITE_URL"
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 WORKDIR /app
 COPY --from=build --chown=node:node /app/apps/web/.next/standalone ./
