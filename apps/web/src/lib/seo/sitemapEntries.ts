@@ -1,7 +1,13 @@
 import type { MetadataRoute } from "next";
 import type { Product } from "@waafa/shared";
 import { getPage, getServicePage, listBlogPosts, listGalleryAlbums } from "@/lib/data/content";
-import { listBrands, listCategories, listCollections, listProducts } from "@/lib/data/shop";
+import {
+  listBrands,
+  listCategories,
+  listCampaigns,
+  listCollections,
+  listProducts,
+} from "@/lib/data/shop";
 import { listFlightRoutes, listPackages } from "@/lib/data/travel";
 import { listVisaCountries, listVisaGuides } from "@/lib/data/visa";
 import { isIndexable } from "@/lib/seo/indexing";
@@ -32,6 +38,7 @@ export async function sitemapEntries(): Promise<MetadataRoute.Sitemap> {
     categories,
     brands,
     collections,
+    campaigns,
     products,
     { items: posts },
     albums,
@@ -46,6 +53,7 @@ export async function sitemapEntries(): Promise<MetadataRoute.Sitemap> {
     listCategories(),
     listBrands(),
     listCollections(),
+    listCampaigns(),
     allProducts(),
     listBlogPosts({ limit: 100 }),
     listGalleryAlbums(),
@@ -129,6 +137,10 @@ export async function sitemapEntries(): Promise<MetadataRoute.Sitemap> {
     ...collections
       .filter(isIndexable)
       .map((collection) => page(`/shop/collection/${collection.slug}`, 0.5, "weekly")),
+    // Campaign pages (issue 247); one that ended says so and keeps its products.
+    ...campaigns
+      .filter(isIndexable)
+      .map((campaign) => page(`/shop/campaign/${campaign.slug}`, 0.6, "daily")),
     ...indexedProducts.map((product) => ({
       ...page(`/shop/p/${product.slug}`, 0.8, "daily"),
       images: product.images.slice(0, 3).map((image) => absoluteUrl(image.src)),

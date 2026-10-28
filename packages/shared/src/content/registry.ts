@@ -52,6 +52,7 @@ import {
   CollectionSchema,
   CompatibleModelSchema,
   CouponSchema,
+  CampaignSchema,
   DealSchema,
   ProductSchema,
   StoreRowSchema,
@@ -146,6 +147,8 @@ export const CONTENT_MODEL = {
   products: collection("shop", ProductSchema, "slug", "title"),
   collections: collection("shop", CollectionSchema, "slug", "name"),
   deals: collection("shop", DealSchema, "id", "id"),
+  // Campaign pages (issue 247).
+  campaigns: collection("shop", CampaignSchema, "slug", "title"),
   storeRows: collection("shop", StoreRowSchema, "key", "key"),
   coupons: collection("shop", CouponSchema, "code", "code"),
 };

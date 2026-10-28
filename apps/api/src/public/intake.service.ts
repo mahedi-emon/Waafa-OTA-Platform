@@ -24,6 +24,8 @@ import {
   type SearchLogInput,
   type TrackResult,
   type TrackedRequest,
+  dealIsLive,
+  dealsWithinCap,
 } from "@waafa/shared";
 import { nextReference } from "../common/references";
 import { visaTrack } from "../common/visaProgress";
@@ -58,6 +60,30 @@ const missingNote = (names: string[]) =>
 
 /** Last ten digits, so +8801712345678 and 01712-345678 match (Track order). */
 const phoneTail = (value: string) => value.replace(/\D/g, "").slice(-10);
+
+/**
+ * Units each capped flash sale has sold at its price (issue 247): order lines of the deal's variant at the deal price
+ * since the deal started, from orders that were not cancelled. Read inside the order transaction, after the products
+ * are locked, so two orders can never both take the last units.
+ */
+async function soldAtDealPrice(
+  tx: Prisma.TransactionClient,
+  deals: readonly Deal[],
+): Promise<Map<string, number>> {
+  const sold = new Map<string, number>();
+  for (const deal of deals) {
+    if (deal.stockCap === undefined) continue;
+    const since = deal.startsAt ? new Date(deal.startsAt) : new Date(0);
+    const rows = await tx.$queryRaw<Array<{ units: bigint | null }>>`
+      SELECT sum((item->>'quantity')::int)::bigint AS units
+      FROM "Order", jsonb_array_elements("items") AS item
+      WHERE "status" <> 'cancelled' AND "createdAt" >= ${since}
+        AND item->>'variantId' = ${deal.variantId}
+        AND (item->>'unitPrice')::int = ${deal.dealPrice}`;
+    sold.set(deal.id, Number(rows[0]?.units ?? 0));
+  }
+  return sold;
+}
 
 /**
  * Everything a visitor submits (B3): leads for every module with atomic references and a duplicate flag, orders priced
@@ -191,9 +217,15 @@ export class IntakeService {
         tx.contentDocument.findMany({ where: { collection: "deals" } }),
         tx.contentDocument.findMany({ where: { collection: "coupons" } }),
       ]);
-      const activeDeals = deals
+      // Flash sales (issue 247): only deals inside their window, and a capped one only while units remain at its price.
+      const liveDeals = deals
         .map((row) => row.data as Deal)
-        .filter((deal) => Date.parse(deal.endsAt) > now.getTime());
+        .filter((deal) => dealIsLive(deal, now));
+      const activeDeals = dealsWithinCap(
+        liveDeals,
+        await soldAtDealPrice(tx, liveDeals),
+        input.lines,
+      );
       const code = input.couponCode?.trim().toUpperCase();
       const found = code
         ? (coupons
