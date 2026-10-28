@@ -204,7 +204,10 @@ export const collectionsBlueprint = {
 
 export const dealsBlueprint = {
   key: "deals",
-  sections: [{ id: "deal", fields: ["productId", "variantId", "dealPrice", "endsAt"] }],
+  sections: [
+    { id: "deal", fields: ["productId", "variantId", "dealPrice", "endsAt"] },
+    { id: "flash", fields: ["startsAt", "stockCap"] },
+  ],
   fields: {
     id: recordId,
     productId: { widget: "reference", ref: { key: "products", value: "id" } },
@@ -213,6 +216,26 @@ export const dealsBlueprint = {
     ...sample,
   },
   url: "/shop/deals",
+} satisfies Blueprint;
+
+export const campaignsBlueprint = {
+  key: "campaigns",
+  sections: [
+    { id: "campaign", fields: ["title", "slug", "intro"] },
+    { id: "photo", fields: ["image"] },
+    { id: "when", fields: ["startsAt", "endsAt"] },
+    { id: "products", fields: ["productIds"] },
+  ],
+  fields: {
+    id: recordId,
+    slug: { widget: "slug", prefix: "/shop/campaign/", source: "title" },
+    intro: textarea,
+    ...photoAt("image", { ...FRAME.landscape, minWidth: 1000 }),
+    productIds: { widget: "references", ref: { key: "products", value: "id" } },
+    order: listOrder,
+    ...sample,
+  },
+  url: "/shop/campaign/{slug}",
 } satisfies Blueprint;
 
 export const storeRowsBlueprint = {

@@ -236,7 +236,27 @@ export const DealSchema = z
     productId: IdSchema,
     variantId: IdSchema,
     dealPrice: TakaSchema,
+    /** Flash sale (issue 247): the price starts here (empty = at once). */
+    startsAt: IsoDateTimeSchema.optional(),
     endsAt: IsoDateTimeSchema,
+    /** Flash sale: how many units sell at the deal price; the API counts orders and stops at it. */
+    stockCap: z.number().int().positive().max(100_000).optional(),
+    sample: SampleFlagSchema,
+  })
+  .strict();
+
+/** A store campaign page at /shop/campaign/<slug> (issue 247): a banner, words, a countdown and its products. */
+export const CampaignSchema = z
+  .object({
+    id: IdSchema,
+    slug: SlugSchema,
+    title: z.string().min(1).max(80),
+    intro: z.string().max(400).optional(),
+    image: ImageSchema.optional(),
+    startsAt: IsoDateTimeSchema,
+    endsAt: IsoDateTimeSchema.optional(),
+    productIds: z.array(IdSchema).min(1).max(60),
+    order: z.number().int().min(0),
     sample: SampleFlagSchema,
   })
   .strict();
@@ -440,6 +460,7 @@ export type Product = z.infer<typeof ProductSchema>;
 export type Collection = z.infer<typeof CollectionSchema>;
 export type CompatibleModel = z.infer<typeof CompatibleModelSchema>;
 export type Deal = z.infer<typeof DealSchema>;
+export type Campaign = z.infer<typeof CampaignSchema>;
 export type StoreRowKey = z.infer<typeof StoreRowKeySchema>;
 export type StoreRow = z.infer<typeof StoreRowSchema>;
 export type Coupon = z.infer<typeof CouponSchema>;

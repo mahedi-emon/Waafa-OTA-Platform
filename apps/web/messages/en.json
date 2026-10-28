@@ -1326,6 +1326,15 @@
     }
   },
   "Shop": {
+    "campaign": {
+      "lead": "A store campaign with prices for a limited time.",
+      "ends": "On now · ends {date}",
+      "open": "On now",
+      "notYet": "Opens {date}",
+      "over": "This campaign has ended. The products are at their normal prices.",
+      "empty": "The products of this campaign are not available right now.",
+      "products": "In this campaign"
+    },
     "name": "Waafa’s World",
     "metaTitle": "Waafa’s World: printer supplies and office products",
     "metaDescription": "Waafa’s World by Waafa International. Genuine and compatible printer supplies, office products and everyday items, cash on delivery across Bangladesh.",
@@ -3887,6 +3896,7 @@
         "products": "Products",
         "collections": "Collections",
         "deals": "Deals",
+        "campaigns": "Campaign pages",
         "storeRows": "Store home rows",
         "coupons": "Coupons",
         "flightRoutes": "Flight routes"
@@ -4568,6 +4578,7 @@
       "brand": "Brand",
       "collection": "Collection",
       "deal": "Deal",
+      "campaign": "Campaign page",
       "coupon": "Coupon",
       "banner": "Banner or offer",
       "announcement": "Announcement",
@@ -5269,6 +5280,7 @@
       }
     },
     "fieldNames": {
+      "stockCap": "Units at this price (flash sale cap)",
       "abroad": "Places abroad",
       "accountsLive": "Customer accounts are open",
       "addressLines": "Address",
@@ -6720,9 +6732,21 @@
       "deals": {
         "one": "deal",
         "other": "deals",
-        "intro": "Time-limited prices on Deals.",
+        "intro": "Time-limited prices on Deals. Add a start and a stock cap to run a flash sale.",
         "sections": {
-          "deal": "Deal"
+          "deal": "Deal",
+          "flash": "Flash sale (optional)"
+        }
+      },
+      "campaigns": {
+        "one": "campaign page",
+        "other": "campaign pages",
+        "intro": "A page for a store campaign at /shop/campaign/…: a banner, a few words, a countdown and its products.",
+        "sections": {
+          "campaign": "Campaign",
+          "photo": "Banner",
+          "when": "When it runs",
+          "products": "Products"
         }
       },
       "storeRows": {

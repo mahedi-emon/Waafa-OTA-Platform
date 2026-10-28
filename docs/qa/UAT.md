@@ -32,3 +32,5 @@ lines here; automated tests already cover the same flows, these are the checks o
 | U-24 | Feedback photos (#245) | /feedback with a photo, then Admin › Feedback | Approve it | The photo shows on the wall; before approval it is nowhere public | ☐ |
 | U-25 | Save for later (#246) | /shop/cart on the phone with two items | Tap "Save for later" on one, then "Move to cart" | It moves below as Saved for later and back; totals follow | ☐ |
 | U-26 | Buy again (#246) | My account › Orders, a delivered order | Tap "Buy again" | The cart opens with the same items at today's prices (sold-out or hidden-price items left out) | ☐ |
+| U-27 | Flash sale (#247) | Admin › Deals | Give a deal a start an hour from now, a cap of 2; after the start order 2 at the flash price, then try 1 more | Before the start: normal price; then the flash price for 2 units; the third unit is charged the normal price | ☐ |
+| U-28 | Campaign page (#247) | Admin › Campaign pages, then /shop/campaign/<slug> on the phone | Make a campaign with a banner and 4 products | The page shows the banner, "On now · ends …" with a countdown and the products | ☐ |

@@ -5,6 +5,7 @@ import type {
   CollectionSchema,
   CompatibleModelSchema,
   CouponSchema,
+  CampaignSchema,
   DealSchema,
   OrderSchema,
   ProductSchema,
@@ -767,6 +768,23 @@ export const collections: In<typeof CollectionSchema>[] = [
     image: photo("prod-tshirt"),
     rule: { type: "manual", productIds: ["prod-tee", "prod-power-bank", "prod-headphones"] },
     order: 3,
+    sample: true,
+  },
+];
+
+/** A store campaign page (issue 247), Sample until the owner writes a real one. */
+export const campaigns: In<typeof CampaignSchema>[] = [
+  {
+    id: "campaign-winter-office",
+    slug: "winter-office-week",
+    title: "Winter office week",
+    intro:
+      "Power banks and headphones for long winter days at the desk, at campaign prices while it lasts.",
+    image: photo("prod-powerbank", "A power bank charging a phone on a desk"),
+    startsAt: "2026-10-01T00:00:00+06:00",
+    endsAt: "2027-01-31T23:59:00+06:00",
+    productIds: ["prod-power-bank", "prod-headphones"],
+    order: 0,
     sample: true,
   },
 ];

@@ -38,7 +38,17 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #246 · Save for later and Buy again — 🟡 In review
+### #247 · Campaign pages and flash sales — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 7 (FR-SHOP-13) |
+| Built | Deals gain an optional start and a stock cap (a flash sale): `dealIsLive` (started, not ended) everywhere the site lists deals; the API prices orders with live deals only and, inside the order transaction after the product lock, counts units already sold at the deal price since the start (`soldAtDealPrice`, cancelled orders give units back) so a capped deal never sells past its cap (`dealsWithinCap`). New content list `campaigns` (title, slug, words, banner, start, end, products) with an Admin editor and a public page /shop/campaign/<slug>: banner, a strip read at request time ("On now · ends …" with the countdown, "Opens …" or "This campaign has ended"), its products priced like everywhere else; in the sitemap; Sample campaign in the fixtures |
+| Tests | shared `flashSales.test.ts` 2; API DB `flashSales.test.ts` 2 (window, cap with cancelled units back); e2e `campaign.spec.ts` at 390 and 1440 with axe and scroll width + not found; budget 184 KB; QA plan `docs/qa/247-campaigns-flash-sales.md` (FS-01..11); UAT U-27, U-28 |
+| Migration | none (deals and campaigns are content documents) |
+| Decision | D319 |
+| PR · CI minutes | (PR open) |
+
+### #246 · Save for later and Buy again — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 6 (FR-SHOP-13; the wishlist itself shipped in #278) |
@@ -46,9 +56,9 @@ Serena memory `audit_findings`.
 | Tests | web unit `useCart.test.ts` 2, `buyAgain.test.ts` 1; e2e `cart-saved.spec.ts` at 390 and 1440 with axe and scroll width; budget cart 191 KB, account 182 KB; QA plan `docs/qa/246-save-for-later.md` (SL-01..10); UAT U-25, U-26. Found and fixed on the way: axe label-content-name-mismatch on the new buttons, an 84 px overflow at 390 px in the cart line row; and on #245 the admin Reviews page prerendering at build without the API |
 | Migration | none |
 | Tools and skills | Playwright e2e and budget; no new library |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #311 · 62 min |
 
-### #245 · Reviews from real customers, product Q&A, feedback photos — 🟡 In review
+### #245 · Reviews from real customers, product Q&A, feedback photos — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 5 (FR-PKG-08, FR-SHOP-13; approved feedback photos on the wall) |
@@ -57,9 +67,9 @@ Serena memory `audit_findings`.
 | Migration | `20261103010000_reviews_questions` (additive) |
 | Decision | D318 |
 | Tools and skills | Serena (memories); Playwright e2e and budget; no new library |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #310 · 93 min |
 
-### #244 · Reports, summaries, customers and custom roles — 🟡 In review
+### #244 · Reports, summaries, customers and custom roles — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 4 (PROMPT 10 letter G; FR-ADM Reports, Search activity, Customers, Users P0 partials and FR-ADM later P1) |
@@ -68,9 +78,9 @@ Serena memory `audit_findings`.
 | Migration | `20261102010000_customers_roles` (additive) and seed patch `2026-11-02-summary-template` |
 | Decision | D317 |
 | Tools and skills | Serena (memories); no new library |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #309 · 64 min |
 
-### #243 · Reminders, @mentions, round-robin and real-time alerts with sound — 🟡 In review
+### #243 · Reminders, @mentions, round-robin and real-time alerts with sound — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 3 (PROMPT 10 letter G; FR-ADM-LEAD P1, FR-NTF real time) |
@@ -79,7 +89,7 @@ Serena memory `audit_findings`.
 | Migration | `20261101010000_reminders_alerts` (additive); no seed patch (round-robin starts off for everyone) |
 | Decision | D316 |
 | Tools and skills | Serena (memories, replace_content); no new library (EventSource and Web Audio are browser APIs, ioredis already used); Playwright e2e |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #307 · 187 min |
 
 ### #303 · Lighter images, RAM and disk on the VPS — ✅ Done
 | Field | Value |
@@ -2061,6 +2071,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D316 | 28 Oct | Real-time alerts are Server-Sent Events, not WebSockets: one API stream per tab (`GET /admin/events`) passed through the web (the BFF keeps the token in an httpOnly cookie), events fanned out from one Redis channel per process and filtered per person; the 30-second inbox poll stays as the fallback and the stream only says "something arrived" (the data comes from the inbox call). Personal alerts (mention, due reminder, lead handed out) are stored per person and read in the bell; no email for them (staff alert emails by area already exist). The chime is two notes made with Web Audio (no sound file), on by default per device, playable only after the first click (browser rule). Round-robin: a per-person switch "Takes new leads in turn", the service from the person's roles, longest waiting first, only in office hours (after-hours leads at opening), and a lead ever assigned is never auto-assigned again so a deliberate unassign sticks | Owner order step 3; no new dependency; nginx and Next compression must not buffer (`no-transform`, `X-Accel-Buffering: no`) | #243 |
 | D317 | 28 Oct | Custom roles are named bundles of built-in roles (Travel sales, Visa officer, Content editor, Shop manager, Accounts), never Super Admin or Admin, expanded into the token when it is signed, so every existing role rule keeps working and two-step rules stay with built-in roles; a finer per-screen matrix would need every check in the API rewritten. Customers stay keyed by phone (D157): merge points one number at another and lists fold it in (reversible). Summary emails reuse staff alert areas and the queue (no new setting screen); 09:00 Dhaka, weekly on Saturday | Owner order step 4; safest change to access control | #244 |
 | D318 | 28 Oct | Reviews: only signed-in customers whose account holds a booked package request or a delivered order with the product (the API refuses everyone else, so no review can be invented), one per item, approved by staff before they show; names as first name + initial. Structured data: Product gets AggregateRating and Review from approved reviews only; packages (TouristTrip) get none because schema.org has no rating there. Questions: anyone may ask (Turnstile, limits), shown only with a staff answer. Feedback photos: copied into the public media library at approval only when the scan passed (or no scanner), the private upload stays private | Owner order step 5; "never invent reviews" | #245 |
+| D319 | 28 Oct | Flash sales are deals with an optional start and stock cap, enforced only by the API when it takes an order (counting units sold at the deal price since the start, inside the locked order transaction); a cart may show the flash price until the cap is reached and the order is then charged the normal price (the confirmation shows it). Campaign pages are a content list with a request-time strip in its own Suspense so the rest prerenders; no slug redirects for them (short-lived pages) | Owner order step 7: "price and cap enforced on the server" | #247 |
 
 ## 9. Bugs and known issues
 

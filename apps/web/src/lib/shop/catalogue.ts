@@ -27,3 +27,18 @@ export async function brandNames(): Promise<Map<string, string>> {
   const brands = await listBrands();
   return new Map(brands.map((brand) => [brand.id, brand.name]));
 }
+
+/** The products of a campaign page (issue 247), in the campaign's order, priced like everywhere else. */
+export async function campaignProducts(ids: readonly string[]): Promise<Product[]> {
+  const wanted = new Set(ids);
+  const found = new Map<string, Product>();
+  for (let offset = 0; offset < 5_000 && found.size < wanted.size; offset += 100) {
+    const page = await pricedProducts({ offset, limit: 100 });
+    for (const product of page.items) if (wanted.has(product.id)) found.set(product.id, product);
+    if (offset + 100 >= page.total) break;
+  }
+  return ids.flatMap((id) => {
+    const product = found.get(id);
+    return product ? [product] : [];
+  });
+}
