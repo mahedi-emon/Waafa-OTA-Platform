@@ -71,6 +71,9 @@ if [ "$MODE" = pull ]; then
   check_web_image
 
   echo "2/5 Database, Redis, API (migrations and seed run on start)"
+  # Issue 303: the API reads ./backups (read only) for the Status page. Made here, by this user, before Docker would
+  # create it as root and leave backup.sh unable to write into it.
+  mkdir -p deploy/backups
   $COMPOSE up -d --no-build postgres redis api
   wait_healthy api
 else
@@ -78,6 +81,9 @@ else
   $COMPOSE build api
 
   echo "2/5 Database, Redis, API (migrations and seed run on start)"
+  # Issue 303: the API reads ./backups (read only) for the Status page. Made here, by this user, before Docker would
+  # create it as root and leave backup.sh unable to write into it.
+  mkdir -p deploy/backups
   $COMPOSE up -d --no-build postgres redis api
   wait_healthy api
 

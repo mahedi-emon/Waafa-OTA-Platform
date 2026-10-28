@@ -59,6 +59,9 @@ if [ -n "$built_url" ] && [ "$built_url" != "$(setting SITE_URL)" ] && [ "$DOMAI
 fi
 
 echo "2/5 Database, Redis, API (migrations and seed run on start)"
+# Issue 303: the API reads ./backups (read only) for the Status page. Made here, by this user, before Docker would
+# create it as root and leave backup.sh unable to write into it.
+mkdir -p backups
 $COMPOSE up -d postgres redis api
 wait_healthy api
 
