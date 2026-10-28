@@ -129,7 +129,8 @@ export function renderQuotePdf(data: QuotePdfData): Promise<Buffer> {
   doc.fillColor(COLOUR.mist600).font("body").fontSize(10).text(`Prepared for`, PAGE.margin, y);
   doc
     .fillColor(COLOUR.ink)
-    .font("display")
+    // A name written in Bangla prints in Hind Siliguri (the Latin fonts have no Bangla letters).
+    .font(/[\u0980-\u09FF]/.test(data.customerName) ? "taka" : "display")
     .fontSize(20)
     .text(printable(data.customerName), PAGE.margin, y + 13, { width: CONTENT * 0.62 });
   doc

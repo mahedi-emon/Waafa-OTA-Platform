@@ -45,7 +45,7 @@ describe("quotes (issue 298)", () => {
   });
 
   it("accepts only a signed link and an option id", () => {
-    const token = `clquote0000000000000001.${"a".repeat(32)}`;
+    const token = `clquote0000000000000001-${"a".repeat(32)}`;
     expect(QuoteTokenSchema.safeParse(token).success).toBe(true);
     expect(QuoteTokenSchema.safeParse("clquote0000000000000001").success).toBe(false);
     expect(QuoteAcceptInputSchema.safeParse({ token, optionId: "o2" }).success).toBe(true);

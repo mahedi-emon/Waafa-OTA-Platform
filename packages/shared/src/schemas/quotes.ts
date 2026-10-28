@@ -20,10 +20,10 @@ export const QUOTE_MAX_OPTIONS = 5;
 /** The quote reference: "QTN-261030-0001". */
 export const QuoteReferenceSchema = z.string().regex(/^QTN-\d{6}-\d{4}$/);
 
-/** The customer's link: the quote id and its signature, "<id>.<signature>". */
+/** The customer's link: the quote id and its signature, "<id>-<signature>" (a dot would read as a file name to the site's proxy). */
 export const QuoteTokenSchema = z
   .string()
-  .regex(/^[a-z0-9]{10,40}\.[A-Za-z0-9_-]{32}$/, "Unknown quote");
+  .regex(/^[a-z0-9]{10,40}-[A-Za-z0-9_-]{32}$/, "Unknown quote");
 
 export const QuoteOptionSchema = z
   .object({

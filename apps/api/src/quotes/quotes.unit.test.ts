@@ -7,18 +7,18 @@ const SECRET = "test-jwt-secret-0123456789-0123456789-abc";
 describe("quote links (issue 298)", () => {
   it("names the quote when the signature is right", () => {
     const token = quoteToken("clquote0000000000000001", SECRET);
-    expect(token).toMatch(/^clquote0000000000000001\.[A-Za-z0-9_-]{32}$/);
+    expect(token).toMatch(/^clquote0000000000000001-[A-Za-z0-9_-]{32}$/);
     expect(quoteIdOf(token, SECRET)).toBe("clquote0000000000000001");
   });
 
   it("refuses another quote's signature, another secret and malformed links", () => {
     const token = quoteToken("clquote0000000000000001", SECRET);
-    const signature = token.split(".")[1] ?? "";
-    expect(quoteIdOf(`clquote0000000000000002.${signature}`, SECRET)).toBeNull();
+    const signature = token.slice("clquote0000000000000001-".length);
+    expect(quoteIdOf(`clquote0000000000000002-${signature}`, SECRET)).toBeNull();
     expect(quoteIdOf(token, `${SECRET}-rotated`)).toBeNull();
     expect(quoteIdOf("clquote0000000000000001", SECRET)).toBeNull();
     expect(quoteIdOf(`${token}x`, SECRET)).toBeNull();
-    expect(quoteIdOf("../etc/passwd.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", SECRET)).toBeNull();
+    expect(quoteIdOf("../etc/passwd-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", SECRET)).toBeNull();
   });
 });
 

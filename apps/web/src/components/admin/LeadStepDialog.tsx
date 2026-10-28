@@ -43,6 +43,8 @@ type LeadStepDialogProps = {
   onClose: () => void;
   /** After the step ran; the page refreshes itself. */
   onDone?: () => void;
+  /** The amount Convert starts with: the option the customer accepted on a quote (issue 298). */
+  convertAmount?: number;
 };
 
 const CHANNELS = ["call", "whatsapp", "email", "note"] as const;
@@ -55,7 +57,14 @@ type Choice = { value: string; label: string; help?: string };
  * reopen, how the customer was reached, what the lead waits for. The lead page and the board open the same dialog,
  * so a step asks for the same things wherever it starts.
  */
-function LeadStepDialog({ leadId, step, subject, onClose, onDone }: LeadStepDialogProps) {
+function LeadStepDialog({
+  leadId,
+  step,
+  subject,
+  onClose,
+  onDone,
+  convertAmount,
+}: LeadStepDialogProps) {
   const t = useTranslations("Admin.leadActions");
   const router = useRouter();
   const uid = useId();
@@ -70,7 +79,7 @@ function LeadStepDialog({ leadId, step, subject, onClose, onDone }: LeadStepDial
   // A new step starts with empty answers.
   if (step !== shown) {
     setShown(step);
-    setAmount(undefined);
+    setAmount(step === "convert" ? convertAmount : undefined);
     setNote("");
     setOutcome("lost");
     setChannel("call");

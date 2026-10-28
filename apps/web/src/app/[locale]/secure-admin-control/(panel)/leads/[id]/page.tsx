@@ -13,6 +13,7 @@ import { ReplyTimer } from "@/components/admin/inbox/ReplyTimer";
 import { Timeline } from "@/components/admin/inbox/Timeline";
 import { LeadActions } from "@/components/admin/LeadActions";
 import { LeadFacts } from "@/components/admin/LeadFacts";
+import { LeadQuotes } from "@/components/admin/quotes/LeadQuotes";
 import { CustomerFiles } from "@/components/admin/files/CustomerFiles";
 import { expectedFiles } from "@/lib/admin/expectedFiles";
 import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
@@ -119,6 +120,8 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
       getMessages(),
     ]);
   if (!lead) return <AdminNotFound />;
+  // The option the customer accepted on a quote (issue 298): Convert starts with its price.
+  const accepted = lead.quotes.find((quote) => quote.accepted)?.accepted ?? null;
   // Fact labels and value words are looked up by computed keys, so this translator is used untyped.
   const tf = t as unknown as ((key: string, values?: Record<string, number>) => string) & {
     has: (key: string) => boolean;
@@ -238,6 +241,7 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
                 email={lead.contact.email ?? null}
                 whatsappHref={whatsappHref(lead.contact.phone, whatsappText)}
                 emailSubject={lead.reference}
+                {...(accepted ? { convertAmount: accepted.price } : {})}
               />
             </NextIntlClientProvider>
             <div className="mt-5 border-t border-mist-100 pt-4">
@@ -312,6 +316,13 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
               </p>
             ) : null}
           </AdminPanel>
+
+          <LeadQuotes
+            leadId={lead.id}
+            quotes={lead.quotes}
+            closed={["booked", "lost", "cancelled", "spam"].includes(lead.status)}
+            className="@4xl:col-start-1"
+          />
 
           {lead.visa ? (
             <AdminPanel title={tv("title")} lead={tv("lead")} className="@4xl:col-start-1">

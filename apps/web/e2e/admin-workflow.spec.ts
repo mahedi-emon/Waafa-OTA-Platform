@@ -7,7 +7,8 @@ import { whenHydrated } from "./hydration";
 /*
  * Status automation (D0 R4, docs/design/ADMIN.md §8 and §9): buttons set a record's status and every chip says why,
  * Trash brings a deleted package back, a changed link keeps its old address, a WhatsApp reply moves a new lead, a
- * booking takes its amount, order steps ask for what they need, and a matched payment proof confirms its order.
+ * booking takes its amount, a quote is accepted by the customer and booked at its price, order steps ask for what they
+ * need, and a matched payment proof confirms its order.
  * Only visible, labelled controls. API mode only; every test makes its own data.
  */
 const API = process.env.WAAFA_API_URL ?? "";
@@ -264,6 +265,91 @@ test("a WhatsApp reply moves a new lead to In progress, and Convert to booking b
   await expect(page.getByLabel("PNR (airline or hotel reference)")).toHaveValue("AB12CD");
   await page.goto("/secure-admin-control/bookings?q=AB12CD");
   await expect(page.getByRole("row").filter({ hasText: "AB12CD" })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("a quote goes to the customer, who accepts an option, and the booking takes its price", async ({
+  page,
+  request,
+}) => {
+  test.setTimeout(150_000);
+  const errors = collectErrors(page);
+  const { reference } = await intake<{ reference: string }>(request, "leads", {
+    contact: {
+      name: `Sample Quote ${STAMP}`,
+      phone: "+8801712345615",
+      email: `sample.quote.${STAMP}@example.com`,
+    },
+    payload: {
+      module: "contact",
+      topic: "flights",
+      message: "Dhaka to Dubai in December, two people.",
+    },
+    consent: true,
+  });
+  await signIn(page);
+  await openLead(page, reference);
+
+  // Issue 298: write the quote from the lead, two options with a price each.
+  await page.getByRole("link", { name: "Write a quote" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "New quote" })).toBeVisible();
+  const editor = page.getByRole("form", { name: "Options" });
+  await whenHydrated(editor.getByLabel("Title", { exact: true }).first());
+  await editor.getByLabel("Title", { exact: true }).first().fill("Direct, evening departure");
+  await editor
+    .getByLabel(/^Price/)
+    .first()
+    .fill("146480");
+  await editor.getByRole("button", { name: "Add an option" }).click();
+  await editor.getByLabel("Title", { exact: true }).nth(1).fill("One stop, morning");
+  await editor.getByLabel("Baggage").nth(1).fill("30 kg checked");
+  await editor
+    .getByLabel(/^Price/)
+    .nth(1)
+    .fill("98500");
+  await editor.getByRole("button", { name: "Save quote" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/^QTN-\d{6}-\d{4}/);
+
+  await page.getByRole("button", { name: "Send by email" }).click();
+  await expect(page.getByText("Quote sent").first()).toBeVisible();
+  const link = await page.getByLabel("Customer's link").inputValue();
+  await page.screenshot({ path: "test-results/admin-shots/quote-admin.png", fullPage: true });
+
+  // The customer's page: pick the second option and accept it.
+  await page.goto(new URL(link).pathname);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("here are your options");
+  const options = page.getByRole("form", { name: "Options" });
+  await whenHydrated(options.getByRole("radio").nth(1));
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.screenshot({
+      path: `test-results/admin-shots/quote-public-${width}.png`,
+      fullPage: true,
+    });
+    const scroll = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(scroll).toBeLessThanOrEqual(width);
+  }
+  await options.getByRole("radio").nth(1).check();
+  await options.getByRole("button", { name: "Accept this option" }).click();
+  await expect(page.getByRole("heading", { name: "You accepted One stop, morning" })).toBeVisible();
+  await page.screenshot({
+    path: "test-results/admin-shots/quote-public-accepted.png",
+    fullPage: true,
+  });
+  const results = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(results.violations.map((violation) => violation.id)).toEqual([]);
+
+  // Back on the lead: the timeline says so, and Convert starts with the accepted price.
+  await openLead(page, reference);
+  await expect(page.getByText(/The customer accepted "One stop, morning"/)).toBeVisible();
+  await page.getByRole("button", { name: "Convert to booking" }).click();
+  const dialog = page.getByRole("dialog", { name: "Convert to booking" });
+  await expect(dialog.getByLabel("Booked amount")).toHaveValue("98,500");
+  await dialog.getByRole("button", { name: "Convert to booking" }).click();
+  await expect(page.getByText("Converted to a booking: ৳98,500")).toBeVisible();
+  await expect(page.getByRole("link", { name: /^BKG-\d{6}-\d{4}$/ })).toBeVisible();
   expect(errors).toEqual([]);
 });
 

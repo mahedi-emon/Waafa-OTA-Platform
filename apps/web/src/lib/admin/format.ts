@@ -133,3 +133,8 @@ export function humanize(key: string): string {
     .replace(/\bemi\b/g, "EMI");
   return fixed.charAt(0).toUpperCase() + fixed.slice(1);
 }
+
+/** The calendar day in Asia/Dhaka some days from now, YYYY-MM-DD (a quote's earliest and default last day). */
+export function dhakaDayFromNow(days = 0): string {
+  return dhakaDay(new Date(Date.now() + days * 86_400_000).toISOString());
+}

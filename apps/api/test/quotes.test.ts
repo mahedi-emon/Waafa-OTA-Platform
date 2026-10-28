@@ -141,7 +141,7 @@ describe.skipIf(!dbAvailable)("quotes (issue 298)", () => {
     expect(draft).toMatchObject({ status: "draft", expired: false, sentVia: [] });
     expect(draft.reference).toMatch(/^QTN-\d{6}-\d{4}$/);
     expect(draft.options.map((option) => option.id)).toEqual(["o1", "o2"]);
-    expect(draft.link).toMatch(/^http:\/\/localhost:3000\/quote\/[a-z0-9]+\.[A-Za-z0-9_-]{32}$/);
+    expect(draft.link).toMatch(/^http:\/\/localhost:3000\/quote\/[a-z0-9]+-[A-Za-z0-9_-]{32}$/);
     expect(draft.whatsapp).toMatch(/^https:\/\/wa\.me\/880/);
 
     // A draft is not open to the customer yet.
@@ -269,7 +269,7 @@ describe.skipIf(!dbAvailable)("quotes (issue 298)", () => {
       (await customer("POST", "/accept", { token: tokenOf(second), optionId: "o1" })).statusCode,
     ).toBe(409);
 
-    const tampered = `${second.id}.${"A".repeat(32)}`;
+    const tampered = `${second.id}-${"A".repeat(32)}`;
     expect((await customer("GET", `/${tampered}`)).statusCode).toBe(404);
     // Without the intake key the customer endpoints are closed.
     const direct = await app.inject({

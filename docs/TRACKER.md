@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 29 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, next #242–#244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 31 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 🟡 (PR open), next #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -37,6 +37,28 @@ Serena memory `audit_findings`.
 | F · Licensed modules | — · epic #33 | waits for the licences | 0 | 0 | — | 0% |
 
 ## 2. Issue log
+
+### #298 · Quote builder: options, baggage, validity, branded PDF, accept page — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 6 (split from #242); PRD §6 leads P1, FR-ADM-LEAD P1 |
+| Built | Quote model (migration `20261031010000_quotes`): QTN reference, up to five options (title, details, baggage, ৳ price), last valid day (Asia/Dhaka), note, status draft · sent · accepted · withdrawn (expired follows from the day). Admin: "Write a quote" on the lead's Quotes card → editor → quote page with Send by email (template `quote-customer`), Send on WhatsApp (wa.me with the link; recorded), the customer's link, Open the PDF, Withdraw; sending takes the lead's "Log quote" step (Quoted, timeline, audit). Customer: `/quote/<id>-<signature>` (HMAC of the id with JWT_SECRET; no dot, so the locale proxy serves it), first name only, options as native radio cards, Accept with Turnstile and limits (web 5, API 10 a minute), PDF download, WhatsApp; accepting withdraws the lead's other open quotes, writes the timeline and audit (actor Customer) and emails the staff of that service (`quote-accepted-staff`). Convert to booking starts with the accepted price. PDF: pdfkit in the API, A4, WAAFA logo, ribbon, Inter, Plus Jakarta Sans and Hind Siliguri (৳ and Bangla names) from `apps/api/assets` (OFL notice), copied into the image |
+| Tests | shared `quotes.test.ts` 4; API unit `quotes.unit.test.ts` 3 (link signatures, PDF renders); API DB `quotes.test.ts` 4 (quote → email → accept → booking with audit, PDF to staff and customer, expired/withdrawn/tampered/no email/past day, roles); web `route.test.ts` 3, `quoteBadge.test.ts` 1; e2e `admin-workflow.spec.ts` quote → accepted → booking with axe, scroll width and screenshots at 390 and 1440; QA plan `docs/qa/298-quotes.md` (QT-01..14); UAT U-11..U-13 |
+| Migration | `20261031010000_quotes` (additive) and seed patch `2026-10-31-quote-templates`; API image copies `apps/api/assets` |
+| Decision | D310 |
+| Tools and skills | Context7 (pdfkit fonts and rich text); Playwright MCP for the PDF render (৳ glyph caught missing with the WOFF2 subset, fixed with Hind Siliguri WOFF); Serena not used (edits by script); ui-ux-pro-max, design-review and shadcn MCP not run: design review owed in #259 |
+| PR · CI minutes | (PR open) |
+
+### #242 · Bookings from converted leads: PNR, tickets, payments, documents — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 6; FR-ADM Bookings and FR-ADM-LEAD convert (P0) |
+| Built | Booking model (migration `20261030010000_bookings`), made in the convert transaction (BKG reference; a second convert corrects the amount and reopens a cancelled booking); Admin › Bookings list (search by reference, PNR, ticket, lead reference, name, phone; filters by status and payment) and booking page (status, PNR, tickets, supplier, travel date, amount, paid, Refunded, notes; payment status from the amounts; audited); documents through `POST /admin/files/attach` (private, scanned, ten-minute links); Accounts see every booking, others the bookings of leads they may open; seed patch `2026-10-30-bookings-for-booked-leads` |
+| Tests | API `bookings.test.ts`; e2e `admin-workflow.spec.ts` (convert → booking → PNR and payment → search) and the admin-screens sweep; QA plan `docs/qa/242-bookings.md` (BK-01..13); UAT U-10 |
+| Migration | `20261030010000_bookings` (additive) + seed patch; nginx (inside the image) allows 6 MB on the attach route |
+| Decision | D309 |
+| Tools and skills | Context7 (Prisma relations); Serena memories; design review owed in #259 |
+| PR · CI minutes | #300 (582ea2b) · 68 |
 
 ### #239 · Backups, restore drill, off-site copy, alerts, lead limit, CSP, staging — ✅ Done
 | Field | Value |
@@ -1496,6 +1518,8 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-157 | Search Console and Bing verification meta tags | provider cards search-console, bing | Settings › Integrations › Measurement | `GET /public/integrations/status` | ✅ e2e: code reaches the home page HTML (#284) |
 | AC-158 | Features that need an outside service (online payment, courier tracking, Telegram alerts, off-site backup) shown only when On and healthy | `IntegrationStatus.features` | Settings › Integrations (each card) | `GET /public/integrations/status` | ✅ API test (#284); used by #238, #239, #251–#253 |
 | AC-149 | EMI request form: minimum, months, bank choices | `getEmiSettings()` → minimumAmount, tenuresMonths; `listEmiBanks()` → name | Settings › Payments and delivery › EMI, EMI banks | snapshot | e2e content.spec (issue 233) |
+| AC-159 | Customer quote page and PDF: options (title, details, baggage, price), last valid day, note | Quote record (options, validUntil, notes) | Admin › a lead › Quotes › the quote | `POST /admin/leads/:id/quotes`, `PATCH /admin/quotes/:id`; `GET /public/quotes/:token` | ✅ API test + e2e (#298) |
+| AC-160 | Quote email and the "quote accepted" staff alert | notificationTemplates quote-customer, quote-accepted-staff | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | ✅ API test (#298) |
 
 ## 5. Components inventory
 
@@ -1960,6 +1984,9 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D187 | 19 Oct | Record editors stay on the generic SchemaEditor with a typed blueprint per content key (no fork); React Hook Form + zod only for small fixed forms; content URLs stay `/content/[key]`, new routes for website/home, website/menus, visa-applications and settings/[section] | Owner rule (engine, not a fork); stable URLs need no redirects | #190 |
 | D182 | 14 Oct | Photos at quality 65 (AVIF ≈ 41), logo at 90, widths up to 2560, image cache 31 days, share images at 1200 px through the optimiser, shipped JPEGs at mozjpeg q80 | Owner: lighter images; 65 is 25 to 28% smaller than 75 with no visible change (side-by-side crops); WhatsApp drops previews over 300 KB | #185 |
 
+| D309 | 30 Oct | Bookings: one Booking per lead, created in the same transaction as Convert and kept when the lead is reopened (a second Convert corrects the amount); payment status follows amount and paid unless Refunded; Accounts see every booking, other roles follow lead access; documents reuse the customer files store (owner "booking") | Owner, 28 Oct | #242 |
+| D310 | 31 Oct | Quote builder: the customer's link is `<quote id>-<HMAC signature>` with JWT_SECRET (staff can copy it again; withdrawing closes it; a dot would send it past the locale proxy); emails carry the link, not an attachment (the queue stays small) and the PDF is rendered on demand by the API with pdfkit 0.20.2 (new dependency: the smallest maintained Node PDF writer that embeds fonts and mixes them in a line, needed for ৳) with Inter, Plus Jakarta Sans and Hind Siliguri WOFF files in apps/api/assets; accepting withdraws the lead's other open quotes; Convert starts with the accepted price; sending is the lead's "Log quote" step | Owner, 28 Oct | #298 |
+
 ## 9. Bugs and known issues
 
 | Issue | Severity | Where | Status |
@@ -2055,6 +2082,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 30–31 Oct | #300 merged (#242 bookings, 68 min); #298 quote builder built (API, PDF, admin, customer page, e2e) and PR opened with full-ci; RELEASE, PRD_COVERAGE (FR-ADM Bookings and convert done) and UAT updated | #242 #298 | #300 | shared 162, web 707, API unit 136; API DB tests and API-mode e2e in CI |
 | 29 Oct | Steps 3–5 of the owner's order: #284 hub merged after axe 4.14 fixes (#288); #287 sitemap index and share cards; #295 Home back under 200 KB; #285 release note and upgrade rehearsal (passed in CI from 541bd21); #237 measurement; #238 error tracking, System status, dead letters; #239 backups, drill, off-site copy, alerts, lead limit, CSP doc, staging | #284 #285 #287 #288 #289 #295 #237 #238 #239 | #286 #290 #296 #291 #292 #293 #294 | full suite green on each; rehearsal and backup drill run in the VPS smoke |
 | 28 Oct | Owner's order of 28 Oct (D303): Dependabot done (#188, #283 with the axe 4.14 logo fix); #278 merged after budget and test fixes; #284 integration hub built (API, web, deploy, seed patch) | #282, #278, #284, #285 | #283, #281 | shared 157, web 691, API unit 117; API DB tests and API-mode e2e in CI (no Docker locally) |
 | 27 Oct (night) | #279 merged (#241 F1 email code sign-in, 182 min, migration). #278 F2 built: My account sections (timeline, visa, wishlist, travellers sealed, addresses, offers opt-in, password, sign-ins, sign out other devices), Save on package and product pages, checkout prefill, password sign-in; API-mode e2e with a local Mailpit | #241, #278 | #279 | API account 7 · web unit 695 · e2e account-sections |
@@ -2132,7 +2160,7 @@ Owner's order of 28 Oct (D303). One issue per PR; start the next issue while CI 
 5. #237 measurement (events after consent, UTM on leads and orders, Where leads come from, split sitemap, share images).
 6. #238 error tracking, Status page, dead-letter queues; #239 backups, off-site copy, restore drill, alerts, per-IP lead
    limit, CSP nonce or documented exception, staging bundle. Checkpoint.
-7. #242 bookings and quote builder; #243 reminders, mentions, round-robin, real-time alerts; #244 reports and roles.
+7. ✅ #242 bookings; 🟡 #298 quote builder (PR open); #243 reminders, mentions, round-robin, real-time alerts; #244 reports and roles.
    Checkpoint.
 8. #245 reviews and Q&A (approved feedback photos); #246 wishlist extras; #247 campaigns and flash sales; #248 PDFs and
    CSV import. Checkpoint.
