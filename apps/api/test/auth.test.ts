@@ -79,6 +79,24 @@ describe.skipIf(!dbAvailable)("staff auth", () => {
     expect(session?.refreshHash).not.toBe(body.refreshToken);
   });
 
+  it("adds what a custom role grants to the token, but never a manager role (issue 244)", async () => {
+    const role = await prisma.customRole.create({
+      data: { name: "Sales and store", grants: ["shop-manager", "admin", "super-admin"] },
+    });
+    await prisma.staffUser.update({
+      where: { email: "agent@example.com" },
+      data: { customRoleIds: [role.id] },
+    });
+    const body = (await login("agent@example.com", PASSWORD)).json();
+    expect(body.user.roles).toEqual(["travel-sales", "shop-manager"]);
+    const shop = await app.inject({
+      method: "GET",
+      url: "/api/v1/test-shop",
+      headers: { authorization: `Bearer ${body.accessToken}` },
+    });
+    expect(shop.statusCode).toBe(200);
+  });
+
   it("gives one message for a wrong password and an unknown email", async () => {
     const wrong = await login("agent@example.com", "nope");
     const unknown = await login("nobody@example.com", "nope");

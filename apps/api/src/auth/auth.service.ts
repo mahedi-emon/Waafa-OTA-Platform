@@ -487,8 +487,25 @@ export class AuthService {
     });
   }
 
+  /**
+   * The roles a token carries (issue 244): the person's built-in roles plus what their custom roles grant. Grants are
+   * never Super Admin or Admin, so two-step sign-in rules stay with the built-in roles.
+   */
+  private async effectiveRoles(user: { roles: string[]; customRoleIds?: string[] }) {
+    const base = asRoles(user.roles);
+    if (!user.customRoleIds || user.customRoleIds.length === 0) return base;
+    const custom = await this.prisma.customRole.findMany({
+      where: { id: { in: user.customRoleIds } },
+      select: { grants: true },
+    });
+    const granted = asRoles(custom.flatMap((role) => role.grants)).filter(
+      (role) => role !== "super-admin" && role !== "admin",
+    );
+    return [...new Set([...base, ...granted])];
+  }
+
   private async openSession(
-    user: { id: string; name: string; email: string; roles: string[] },
+    user: { id: string; name: string; email: string; roles: string[]; customRoleIds?: string[] },
     meta: ClientMeta,
     now: Date,
   ): Promise<SessionTokens> {
@@ -503,7 +520,7 @@ export class AuthService {
         userAgent: meta.userAgent?.slice(0, 200) ?? null,
       },
     });
-    const roles = asRoles(user.roles);
+    const roles = await this.effectiveRoles(user);
     const access = await signAccessToken(
       { sub: user.id, sid: session.id, name: user.name, email: user.email, roles },
       this.env.JWT_SECRET,

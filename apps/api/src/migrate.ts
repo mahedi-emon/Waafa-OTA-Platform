@@ -10,7 +10,7 @@ async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
   const dir = resolve(process.env.MIGRATIONS_DIR ?? "prisma/migrations");
-  await applyMigrations(url, dir, (line) => console.log(`migrate: ${line}`));
+  await applyMigrations(url, dir, (line) => console.warn(`migrate: ${line}`));
 }
 
 main().catch((error: unknown) => {

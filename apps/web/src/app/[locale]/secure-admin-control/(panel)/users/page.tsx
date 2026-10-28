@@ -20,6 +20,7 @@ import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
 import { formatDhakaDateTime, initialsOf, pageParam } from "@/lib/admin/format";
 import type { StaffRow } from "@/lib/admin/types";
 import { StaffAddForm } from "./_components/StaffAddForm";
+import { CustomRolesPanel, type CustomRoleRow } from "./_components/CustomRolesPanel";
 import { StaffRowActions } from "./_components/StaffRowActions";
 import { PermissionMatrix } from "@/components/admin/settings/PermissionMatrix";
 import { SettingsFrame } from "@/components/admin/settings/SettingsFrame";
@@ -82,7 +83,11 @@ async function Users({
   if (!hasRole(staff, "super-admin")) {
     return <AdminPageHeader title={tf("title")} lead={tf("body")} />;
   }
-  const [all, search] = await Promise.all([adminGet<StaffRow[]>("/admin/users"), searchParams]);
+  const [all, search, customRoles] = await Promise.all([
+    adminGet<StaffRow[]>("/admin/users"),
+    searchParams,
+    adminGet<CustomRoleRow[]>("/admin/roles").catch(() => [] as CustomRoleRow[]),
+  ]);
   const list = pageOfStaff(all, search);
   // Recent sign-ins for the people on this page (a short list; issue 234).
   const histories = await Promise.all(
@@ -115,6 +120,8 @@ async function Users({
     failed: tc("unavailable"),
     takesLeads: t("takesLeads"),
     takesLeadsHint: t("takesLeadsHint"),
+    customRoles: t("customRoles.title"),
+    saveCustomRoles: t("customRoles.saveForPerson"),
   };
 
   const rows: DataRow[] = list.items.map((row, index) => {
@@ -156,6 +163,7 @@ async function Users({
             twoStepRequired={twoStepRequired(row.roles)}
             roleNames={roleNames}
             strings={actionStrings}
+            customRoles={customRoles.map((role) => ({ id: role.id, name: role.name }))}
           />
           <section aria-labelledby={`signins-${row.id}`} className="flex flex-col gap-1">
             <h3
@@ -231,7 +239,27 @@ async function Users({
         openLabel={tc("open")}
         empty={{ title: t("emptyTitle"), body: t("emptyBody") }}
       />
-      <PermissionMatrix roleNames={roleNames} />
+      <CustomRolesPanel
+        roles={customRoles}
+        roleNames={roleNames}
+        strings={{
+          title: t("customRoles.title"),
+          lead: t("customRoles.lead"),
+          name: t("customRoles.name"),
+          grants: t("customRoles.grants"),
+          add: t("customRoles.add"),
+          edit: t("customRoles.edit"),
+          remove: t("customRoles.remove"),
+          save: tc("save"),
+          cancel: tc("cancel"),
+          people: t("customRoles.people", { count: "{count}" }),
+          empty: t("customRoles.empty"),
+          saved: t("customRoles.saved"),
+          failed: tc("unavailable"),
+          inUse: t("customRoles.inUse"),
+        }}
+      />
+      <PermissionMatrix roleNames={roleNames} custom={customRoles} />
     </SettingsFrame>
   );
 }

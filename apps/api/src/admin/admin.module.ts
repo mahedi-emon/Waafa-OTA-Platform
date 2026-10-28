@@ -15,6 +15,9 @@ import {
 import { AdminContentService } from "./content-admin.service";
 import { AdminCustomerAccountsService } from "./customerAccounts.service";
 import { AdminCustomersService } from "./customers.service";
+import { CustomerProfilesService } from "./customerProfiles.service";
+import { SummaryReportsService } from "./summaryReports.service";
+import { AdminCustomRolesController, CustomRolesService } from "./customRoles.service";
 import { AdminDashboardService } from "./dashboard.service";
 import { AdminInboxService } from "./inbox.service";
 import { MediaCoreModule } from "../media/media.module";
@@ -46,6 +49,7 @@ import { RemindersService } from "../realtime/reminders.service";
   controllers: [
     // Reminders, personal alerts and the real-time stream (issue 243).
     AdminEventsController,
+    AdminCustomRolesController,
     AdminRemindersController,
     AdminAlertsController,
     AdminBookingsController,
@@ -82,6 +86,9 @@ import { RemindersService } from "../realtime/reminders.service";
     AdminDashboardService,
     AdminReportsService,
     AdminCustomersService,
+    CustomerProfilesService,
+    SummaryReportsService,
+    CustomRolesService,
     AdminCustomerAccountsService,
     AdminWorkbenchService,
     // The minute job: scheduled publishing, window refreshes, Trash purge, overdue alerts (D0 R4).

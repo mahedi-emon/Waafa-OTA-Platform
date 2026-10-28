@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { formatTaka } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -8,11 +9,17 @@ import { OrderStatusChip } from "@/components/admin/OrderStatusChip";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
-import { adminGet } from "@/lib/admin/adminApi";
+import { adminGet, hasRole, requireStaff } from "@/lib/admin/adminApi";
+import { CustomerExtras } from "./_components/CustomerExtras";
 import { formatDhakaDateTime } from "@/lib/admin/format";
 
 type Profile = {
   phone: string;
+  /** Set when this number was merged into another customer (issue 244): the page opens that one. */
+  mergedInto?: string | null;
+  tags?: string[];
+  notes?: Array<{ id: string; body: string; actor: string; createdAt: string }>;
+  mergedPhones?: string[];
   name: string;
   email: string | null;
   spent: number;
@@ -46,14 +53,17 @@ async function CustomerProfile({
   params: PageProps<"/[locale]/secure-admin-control/customers/[phone]">["params"];
 }) {
   const { phone } = await params;
-  const [profile, t, ta, tm, ts, to] = await Promise.all([
+  const [profile, t, ta, tm, ts, to, staff] = await Promise.all([
     adminGet<Profile>(`/admin/customers/${encodeURIComponent(decodeURIComponent(phone))}`),
     getTranslations("Admin.customers"),
     getTranslations("Admin.customerAccounts"),
     getTranslations("Admin.modules"),
     getTranslations("Admin.statuses"),
     getTranslations("Admin.orders.statuses"),
+    requireStaff(),
   ]);
+  if (profile.mergedInto)
+    redirect(`/secure-admin-control/customers/${encodeURIComponent(profile.mergedInto)}`);
   const label = (bag: typeof tm, key: string) => (bag.has(key as never) ? bag(key as never) : key);
 
   return (
@@ -106,6 +116,34 @@ async function CustomerProfile({
           </>
         ) : null}
       </ul>
+
+      <CustomerExtras
+        phone={profile.phone}
+        tags={profile.tags ?? []}
+        notes={profile.notes ?? []}
+        mergedPhones={profile.mergedPhones ?? []}
+        canMerge={hasRole(staff, "admin")}
+        strings={{
+          tags: t("extras.tags"),
+          tagsHint: t("extras.tagsHint"),
+          addTag: t("extras.addTag"),
+          removeTag: t("extras.removeTag"),
+          saveTags: t("extras.saveTags"),
+          notes: t("extras.notes"),
+          notePlaceholder: t("extras.notePlaceholder"),
+          addNote: t("extras.addNote"),
+          noNotes: t("extras.noNotes"),
+          merge: t("extras.merge"),
+          mergeHint: t("extras.mergeHint"),
+          mergePhone: t("extras.mergePhone"),
+          mergeSubmit: t("extras.mergeSubmit"),
+          merged: t("extras.merged"),
+          unmerge: t("extras.unmerge"),
+          saved: t("extras.saved"),
+          failed: t("extras.failed"),
+          badPhone: t("extras.badPhone"),
+        }}
+      />
 
       <section
         aria-labelledby="customer-leads"

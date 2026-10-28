@@ -1,6 +1,8 @@
 import { formatTaka } from "@waafa/shared";
 
 type ReportBarsProps = {
+  /** Names the section; one page may show two of these (issue 244). */
+  id?: string;
   title: string;
   days: Array<{ day: string; leads: number; orders: number; revenue: number }>;
   showRevenue: boolean;
@@ -11,15 +13,15 @@ type ReportBarsProps = {
  * Leads and orders per day as paired bars (issue 111), drawn with CSS so the admin needs no chart library; the
  * numbers are in a visually hidden table for screen readers.
  */
-function ReportBars({ title, days, showRevenue, strings }: ReportBarsProps) {
+function ReportBars({ id = "report-per-day", title, days, showRevenue, strings }: ReportBarsProps) {
   const peak = Math.max(1, ...days.map((day) => Math.max(day.leads, day.orders)));
   return (
     <section
-      aria-labelledby="report-per-day"
+      aria-labelledby={id}
       className="flex min-w-0 flex-col gap-3 rounded-2xl border border-mist-200 bg-white p-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="report-per-day" className="font-display text-lg font-bold text-navy-900">
+        <h2 id={id} className="font-display text-lg font-bold text-navy-900">
           {title}
         </h2>
         <p className="flex items-center gap-3 text-[13px] text-mist-600">

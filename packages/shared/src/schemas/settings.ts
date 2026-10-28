@@ -289,6 +289,9 @@ export const STAFF_ALERT_AREAS = [
   "stock",
   /** Disk or memory running low on the server (issue 239). */
   "system",
+  /** The daily and the weekly summary of leads, bookings and orders (issue 244). */
+  "daily-report",
+  "weekly-report",
 ] as const;
 export type StaffAlertArea = (typeof STAFF_ALERT_AREAS)[number];
 
@@ -347,6 +350,7 @@ export const NotificationTemplateSchema = z
       "system-alert-staff",
       "quote-customer",
       "quote-accepted-staff",
+      "summary-report-staff",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */
     audience: z.string().min(1).max(40),

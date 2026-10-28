@@ -349,6 +349,8 @@ export type StaffRow = {
   twoStep: boolean;
   /** Takes new leads in turn for the services their roles open (issue 243). */
   takesLeads: boolean;
+  /** Custom roles by id (issue 244). */
+  customRoleIds?: string[];
   createdAt: string;
   /** An invite email still waiting to be used (D0 R9); expired ones can be sent again. */
   invite: { expiresAt: string | null; expired: boolean } | null;

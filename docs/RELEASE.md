@@ -30,6 +30,7 @@ does not have yet, in this order, when the API starts inside `sh deploy.sh`. **T
 | `20261030010000_bookings` | #242 | a booking record per converted lead (PNR, tickets, amount, payments, documents) |
 | `20261031010000_quotes` | #298 | quotes on leads (options, last valid day, the accepted option) |
 | `20261101010000_reminders_alerts` | #243 | reminders, personal bell alerts, and the round-robin switch per staff member |
+| `20261102010000_customers_roles` | #244 | customer tags, notes and merges; custom roles |
 
 One-time data patches (`_seedPatches`, never over staff edits) run after the migrations. Live already has
 `2026-10-13-visa-route`, `2026-10-14-second-phone` and `2026-10-14-home-seo`; everything below runs at the release: workflow, invite, low-stock,
@@ -38,7 +39,7 @@ new-device, code-locked and customer sign-in email templates; #284 adds `2026-10
 Confirmed, Unpaid booking for every lead already Booked, amount from the lead); #298 adds `2026-10-31-quote-templates`
 (the quote email to the customer and the "quote accepted" staff alert); #302 adds `2026-10-28-store-name` (every
 stored text that still equals an old "Waafas World" default becomes "Waafa’s World": store name, menus, footer column,
-COD note, pages, team, timeline, email templates; anything staff wrote stays as it is).
+COD note, pages, team, timeline, email templates; anything staff wrote stays as it is); #244 adds `2026-11-02-summary-template` (the daily and weekly summary email).
 
 ## Image sizes (issue 303)
 
@@ -110,6 +111,8 @@ copy for them. Optional new `.env` lines: `BACKUP_CRON=off` (no cron), `BACKUP_K
 | GA4, GTM, Meta Pixel IDs, Search Console and Bing codes | Admin › Integrations › Measurement (#284) | check the cards are On |
 | Customer accounts | Settings › Site › Accounts live (#241) | turn on when ready |
 | Staff two-step sign-in | required for Super Admin and Admin (#234) | each of them sets up an authenticator app at first sign-in |
+| Daily and weekly summary emails | Settings › Forms and messages › staff alerts, areas "Daily summary" and "Weekly summary" (#244) | add the people who should get them |
+| Custom roles | Admin › Users › Custom roles (#244) | optional |
 | Round-robin for new leads | Admin › Users › a person › Takes new leads in turn (#243) | turn it on for the staff who should get new requests in turn (off for everyone after the deploy) |
 
 ## Keys to enter in Admin › Integrations (all off until saved)

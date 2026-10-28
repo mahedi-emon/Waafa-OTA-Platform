@@ -6,6 +6,7 @@ import { toXlsx } from "../common/xlsx";
 import { problems } from "../common/problem";
 import { PrismaService } from "../prisma/prisma.service";
 import { groupBySource } from "./leadSources";
+import { byAgent, funnel, visaCases } from "./reportBreakdowns";
 import { canSeeOrders, dhakaDate, leadModulesFor } from "./access";
 
 const NOT_SOLD = ["cancelled", "returned"];
@@ -102,11 +103,15 @@ export class AdminReportsService {
       this.prisma.lead.findMany({
         where: leadWhere,
         select: {
+          id: true,
           module: true,
           status: true,
           createdAt: true,
           firstResponseAt: true,
           source: true,
+          assigneeId: true,
+          payload: true,
+          progress: true,
         },
       }),
       orders
@@ -136,16 +141,45 @@ export class AdminReportsService {
         Math.round(((lead.firstResponseAt?.getTime() ?? 0) - lead.createdAt.getTime()) / 60_000),
       );
     const won = leads.filter((lead) => lead.status === "booked").length;
+    // Issue 244: searches per day and the funnel, leads by agent, visa cases by stage and country.
+    const [searchRows, quoted, staffRows, countryRows] = await Promise.all([
+      this.prisma.searchLog.findMany({
+        where: { module: { in: modules }, createdAt: { gte: start, lt: end } },
+        select: { createdAt: true },
+      }),
+      this.prisma.quote.findMany({
+        where: { leadId: { in: leads.map((lead) => lead.id) } },
+        select: { leadId: true },
+        distinct: ["leadId"],
+      }),
+      this.prisma.staffUser.findMany({ select: { id: true, name: true } }),
+      modules.includes("visa")
+        ? this.prisma.contentDocument.findMany({
+            where: { collection: "visaCountries" },
+            select: { docId: true, data: true },
+          })
+        : Promise.resolve([]),
+    ]);
     const sold = orderRows.filter((order) => !NOT_SOLD.includes(order.status));
 
-    const days: Array<{ day: string; leads: number; orders: number; revenue: number }> = [];
+    const days: Array<{
+      day: string;
+      leads: number;
+      orders: number;
+      revenue: number;
+      searches: number;
+    }> = [];
     for (let at = start.getTime(); at < end.getTime(); at += DAY) {
-      days.push({ day: dhakaDay(new Date(at)), leads: 0, orders: 0, revenue: 0 });
+      days.push({ day: dhakaDay(new Date(at)), leads: 0, orders: 0, revenue: 0, searches: 0 });
     }
     const byDay = new Map(days.map((entry) => [entry.day, entry]));
     for (const lead of leads) {
       const entry = byDay.get(dhakaDay(lead.createdAt));
       if (entry) entry.leads += 1;
+    }
+    for (const search of searchRows) {
+      const entry = byDay.get(dhakaDay(search.createdAt));
+      if (entry) entry.searches += 1;
     }
     for (const order of sold) {
       const entry = byDay.get(dhakaDay(order.createdAt));
@@ -195,6 +229,15 @@ export class AdminReportsService {
       days,
       // Where leads come from (issue 237): UTM source, referring site or channel, with orders when this person sees them.
       sources: groupBySource(leads, sold),
+      byAgent: byAgent(leads, new Map(staffRows.map((row) => [row.id, row.name])), "Unassigned"),
+      searches: { total: searchRows.length },
+      funnel: funnel(searchRows.length, leads, new Set(quoted.map((row) => row.leadId))),
+      visa: modules.includes("visa")
+        ? visaCases(
+            leads.filter((lead) => lead.module === "visa"),
+            new Map(countryRows.map((row) => [row.docId, row.data])),
+          )
+        : null,
     };
   }
 

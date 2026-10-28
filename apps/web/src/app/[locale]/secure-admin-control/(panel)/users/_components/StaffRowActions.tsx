@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Role } from "@waafa/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { resendStaffInvite, resetStaffPassword, updateStaff } from "@/lib/admin/opsActions";
@@ -37,14 +38,26 @@ type StaffRowActionsProps = {
     failed: string;
     takesLeads: string;
     takesLeadsHint: string;
+    customRoles: string;
+    saveCustomRoles: string;
   };
+  /** Custom roles that exist (issue 244). */
+  customRoles?: Array<{ id: string; name: string }>;
 };
 
 /**
  * One staff member's steps in the side sheet: roles, a new password, a two-step sign-in reset (issue 234), deactivate
  * or activate (never yourself).
  */
-function StaffRowActions({ row, self, twoStepRequired, roleNames, strings }: StaffRowActionsProps) {
+function StaffRowActions({
+  row,
+  self,
+  twoStepRequired,
+  roleNames,
+  strings,
+  customRoles = [],
+}: StaffRowActionsProps) {
+  const [custom, setCustom] = useState<string[]>(row.customRoleIds ?? []);
   const [roles, setRoles] = useState<Role[] | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [twoStep, setTwoStep] = useState(false);
@@ -67,6 +80,39 @@ function StaffRowActions({ row, self, twoStepRequired, roleNames, strings }: Sta
             }
           />
         </div>
+      ) : null}
+      {customRoles.length > 0 && row.status === "active" ? (
+        <fieldset className="flex flex-col gap-1 rounded-xl p-3 ring-1 ring-mist-100">
+          <legend className="px-1 text-[14px] font-semibold text-navy-900">
+            {strings.customRoles}
+          </legend>
+          {customRoles.map((role) => (
+            <div key={role.id} className="flex min-h-11 items-center gap-2.5">
+              <Checkbox
+                id={`custom-${row.id}-${role.id}`}
+                checked={custom.includes(role.id)}
+                onCheckedChange={(on) =>
+                  setCustom(on ? [...custom, role.id] : custom.filter((value) => value !== role.id))
+                }
+              />
+              <Label htmlFor={`custom-${row.id}-${role.id}`} className="font-normal">
+                {role.name}
+              </Label>
+            </div>
+          ))}
+          <div>
+            <Button
+              size="sm"
+              variant="secondary"
+              loading={pending}
+              onClick={() =>
+                run(() => updateStaff(row.id, { customRoleIds: custom }), strings.updated)
+              }
+            >
+              {strings.saveCustomRoles}
+            </Button>
+          </div>
+        </fieldset>
       ) : null}
       <div className="flex flex-wrap gap-2">
         {row.invite && !row.lastLoginAt && row.status === "active" ? (
