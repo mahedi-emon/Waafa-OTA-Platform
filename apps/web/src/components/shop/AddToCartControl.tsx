@@ -5,10 +5,9 @@ import { notify } from "@/components/feedback/notify";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import type { CartLine } from "@/lib/shop/cart";
-import { flyToCart } from "@/lib/shop/flyToCart";
 import { useCart } from "./useCart";
 
-type AddToCartControlProps = {
+export type AddToCartControlProps = {
   line: Omit<CartLine, "qty">;
   labels: { add: string; addLabel: string; decrease: string; increase: string; added: string };
   className?: string;
@@ -31,7 +30,9 @@ function AddToCartControl({ line, labels, className }: AddToCartControlProps) {
         aria-label={labels.addLabel}
         className={cn("relative z-10 w-full", className)}
         onClick={(event) => {
-          flyToCart(event.currentTarget);
+          // The arc loads on the first add, not with the page (home first-load JS, issue 295).
+          const from = event.currentTarget;
+          void import("@/lib/shop/flyToCart").then(({ flyToCart }) => flyToCart(from));
           add({ ...line, qty: 1 });
           notify("success", labels.added, { description: line.title });
         }}
