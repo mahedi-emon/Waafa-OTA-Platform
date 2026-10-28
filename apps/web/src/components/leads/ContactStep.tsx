@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { FormField } from "@/components/forms/FormField";
 import { PhoneField } from "@/components/forms/PhoneField";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import type { ContactStepValues } from "@/lib/leads/contactForm";
 
@@ -13,7 +14,10 @@ type ContactStepProps = {
   defaultValues: ContactStepValues;
   emailRequired: boolean;
   countries: Array<{ code: string; name: string; dial: string }>;
-  onSubmit: (values: ContactStepValues) => void;
+  /** `keep`: the visitor's OK to be called if they don't finish (FR-FLT-08); only asked when `offerKeep`. */
+  onSubmit: (values: ContactStepValues, keep: boolean) => void;
+  /** Ask for the OK to keep step 1 (partial capture, issue 250). */
+  offerKeep?: boolean;
   /** Module copy that replaces the travel defaults, e.g. for Waafa’s World quotes. */
   copy?: { title?: string; emailHint?: string };
 };
@@ -35,12 +39,14 @@ function ContactStep({
   countries,
   onSubmit,
   copy,
+  offerKeep = false,
 }: ContactStepProps) {
   const t = useTranslations("Leads");
   const [values, setValues] = useState<ContactStepValues>(defaultValues);
   const [errors, setErrors] = useState<Errors>({});
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
   const [submitCount, setSubmitCount] = useState(0);
+  const [keep, setKeep] = useState(false);
   const inputs = useRef<Partial<Record<Field, HTMLInputElement | null>>>({});
   // The newest values for checks that resolve after a later keystroke; every change writes it before setValues.
   const latest = useRef(defaultValues);
@@ -88,7 +94,7 @@ function ContactStep({
     const { found, data } = await check(latest.current);
     setErrors(found);
     if (data) {
-      onSubmit(data);
+      onSubmit(data, offerKeep && keep);
       return;
     }
     const first = ORDER.find((field) => found[field]);
@@ -208,6 +214,25 @@ function ContactStep({
           />
         )}
       </FormField>
+      {offerKeep ? (
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id="lead-keep"
+            checked={keep}
+            onCheckedChange={setKeep}
+            aria-describedby="lead-keep-help"
+            className="mt-0.5"
+          />
+          <div className="flex flex-col gap-0.5">
+            <label htmlFor="lead-keep" className="text-[14.5px] font-medium text-ink-900">
+              {t("keep.label")}
+            </label>
+            <p id="lead-keep-help" className="text-[13px] text-mist-600">
+              {t("keep.help")}
+            </p>
+          </div>
+        </div>
+      ) : null}
       <div className="flex flex-col-reverse items-stretch gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
         <p className="flex items-center gap-1.5 text-[13px] text-mist-600">
           <Lock aria-hidden="true" className="size-3.5" />

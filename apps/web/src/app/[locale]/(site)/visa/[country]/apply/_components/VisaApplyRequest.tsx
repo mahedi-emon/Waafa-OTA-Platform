@@ -50,6 +50,7 @@ function VisaApplyRequest({
 
   return (
     <LeadRequestCard<VisaFileValues>
+      module="visa"
       titleId="visa-apply-title"
       kicker={t("apply.cardKicker")}
       title={t("apply.cardTitle")}

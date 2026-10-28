@@ -34,6 +34,7 @@ function PackageQuery({ pkg, departures, ...props }: PackageQueryProps) {
 
   return (
     <LeadRequestCard<PackageQueryValues>
+      module="packages"
       titleId="package-query-title"
       kicker={t("query.kicker")}
       title={t("query.title")}

@@ -4,7 +4,12 @@ import { useState, type ReactNode } from "react";
 import { CircleAlert, Home, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
-import { whatsappLink, type LeadCreateInput, type LeadCreated } from "@waafa/shared";
+import {
+  whatsappLink,
+  type LeadCreateInput,
+  type LeadCreated,
+  type LeadModule,
+} from "@waafa/shared";
 import { useSubmitOnce } from "@/components/forms/useSubmitOnce";
 import { useTurnstile } from "@/components/forms/useTurnstile";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
@@ -32,6 +37,8 @@ type LeadRequestCardProps<T> = {
   emailRequired: boolean;
   phoneDisplay: string;
   whatsappE164: string;
+  /** The service, for partial capture: step 1 offers "call me if I don't finish" (FR-FLT-08, issue 250). */
+  module?: LeadModule;
   /** Turns the two steps into the shared lead contract (the server validates again). */
   buildLead: (
     contact: ContactStepValues,
@@ -55,6 +62,34 @@ type LeadRequestCardProps<T> = {
 };
 
 type Phase = "contact" | "second" | "sent";
+
+/**
+ * Keeps step 1 with the visitor's OK (FR-FLT-08, issue 250): fire and forget, so a slow network never holds the form.
+ * The full request later completes it on the server.
+ */
+async function keepStepOne(module: LeadModule, values: ContactStepValues) {
+  try {
+    const { contactToLead } = await import("@/lib/leads/contactForm");
+    const contact = contactToLead(values, "call", "");
+    await fetch("/api/leads/draft", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        module,
+        contact: {
+          name: contact.name,
+          phone: contact.phone,
+          ...(contact.email ? { email: contact.email } : {}),
+        },
+        page: `${window.location.pathname}${window.location.search}`,
+        consent: true,
+      }),
+    });
+  } catch {
+    // Best effort: the visitor is still on the form.
+  }
+}
 
 /**
  * The two-step lead request used by every Manual module (flights, hotels, packages, visa…): contact first, then the
@@ -237,8 +272,10 @@ function LeadRequestCard<T>(props: LeadRequestCardProps<T>) {
               emailRequired={props.emailRequired}
               countries={props.countries}
               {...(props.contactCopy ? { copy: props.contactCopy } : {})}
-              onSubmit={(values) => {
+              offerKeep={props.module !== undefined}
+              onSubmit={(values, keep) => {
                 setContact(values);
+                if (keep && props.module) void keepStepOne(props.module, values);
                 goTo("second");
               }}
             />

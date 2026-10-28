@@ -32,6 +32,7 @@ does not have yet, in this order, when the API starts inside `sh deploy.sh`. **T
 | `20261101010000_reminders_alerts` | #243 | reminders, personal bell alerts, and the round-robin switch per staff member |
 | `20261102010000_customers_roles` | #244 | customer tags, notes and merges; custom roles |
 | `20261103010000_reviews_questions` | #245 | reviews from real customers and product questions |
+| `20261104010000_lead_drafts` | #250 | Incomplete requests (step 1 kept with the visitor's OK) |
 
 One-time data patches (`_seedPatches`, never over staff edits) run after the migrations. Live already has
 `2026-10-13-visa-route`, `2026-10-14-second-phone` and `2026-10-14-home-seo`; everything below runs at the release: workflow, invite, low-stock,

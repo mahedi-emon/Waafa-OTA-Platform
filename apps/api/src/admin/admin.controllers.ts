@@ -29,6 +29,8 @@ import {
   FeedbackListQuerySchema,
   FeedbackModerationInputSchema,
   LeadBulkInputSchema,
+  LeadDraftActionSchema,
+  LeadDraftListQuerySchema,
   LeadListQuerySchema,
   VisaApplicationListQuerySchema,
   LeadNoteInputSchema,
@@ -61,6 +63,7 @@ import { AdminInboxService } from "./inbox.service";
 import { AdminLeadsService } from "./leads.service";
 import { MediaReplaceService } from "./media-replace.service";
 import { ContentImportService } from "./contentImport.service";
+import { LeadDraftsService } from "./leadDrafts.service";
 import { AdminOrdersService } from "./orders.service";
 import { AdminUsersService } from "./users.service";
 import { AdminWorkbenchService } from "./workbench.service";
@@ -78,7 +81,10 @@ const id = (value: string) => {
 @UseGuards(StaffGuard)
 @Roles("admin", "travel-sales", "visa-officer", "shop-manager")
 export class AdminLeadsController {
-  constructor(@Inject(AdminLeadsService) private readonly leads: AdminLeadsService) {}
+  constructor(
+    @Inject(AdminLeadsService) private readonly leads: AdminLeadsService,
+    @Inject(LeadDraftsService) private readonly drafts: LeadDraftsService,
+  ) {}
 
   @Get()
   list(@Staff() staff: StaffPrincipal, @Query() query: unknown) {
@@ -98,6 +104,22 @@ export class AdminLeadsController {
   @HttpCode(200)
   bulk(@Staff() staff: StaffPrincipal, @Body() body: unknown) {
     return this.leads.bulk(staff, parseInput(LeadBulkInputSchema, body));
+  }
+
+  /** Incomplete requests: step 1 done, never sent (FR-FLT-08, issue 250). */
+  @Get("incomplete")
+  incomplete(@Staff() staff: StaffPrincipal, @Query() query: unknown) {
+    return this.drafts.list(staff, parseInput(LeadDraftListQuerySchema, query));
+  }
+
+  @Post("incomplete/:id/actions")
+  @HttpCode(200)
+  incompleteAction(
+    @Staff() staff: StaffPrincipal,
+    @Param("id") draftId: string,
+    @Body() body: unknown,
+  ) {
+    return this.drafts.act(staff, id(draftId), parseInput(LeadDraftActionSchema, body));
   }
 
   @Get(":id")

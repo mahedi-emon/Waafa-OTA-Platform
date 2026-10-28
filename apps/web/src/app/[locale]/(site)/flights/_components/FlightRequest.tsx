@@ -107,6 +107,7 @@ function FlightRequest(props: FlightRequestProps) {
         </PreferencesSheet>
 
         <LeadRequestCard<TripStepValues>
+          module="flights"
           titleId="flight-request-title"
           kicker={t("card.kicker")}
           title={t("card.title")}
