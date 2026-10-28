@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type APIRequestContext, type Locator, type Page } from "@playwright/test";
 import { collectErrors } from "./errors";
+import { whenHydrated } from "./hydration";
 
 /*
  * Status automation (D0 R4, docs/design/ADMIN.md §8 and §9): buttons set a record's status and every chip says why,
@@ -247,6 +248,22 @@ test("a WhatsApp reply moves a new lead to In progress, and Convert to booking b
   await expect(page.getByText("Converted to a booking.").first()).toBeVisible();
   await expect(heading).toContainText("Booked");
   await expect(page.getByText("Converted to a booking: ৳58,500")).toBeVisible();
+
+  // Issue 242: the booking record, reached from the lead; PNR, a ticket and a part payment.
+  await page.getByRole("link", { name: /^BKG-\d{6}-\d{4}$/ }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/^BKG-\d{6}-\d{4}/);
+  const record = page.getByRole("form", { name: "Booking details" });
+  await whenHydrated(record.getByLabel("PNR (airline or hotel reference)"));
+  await record.getByLabel("PNR (airline or hotel reference)").fill("ab12cd");
+  await record.getByLabel("Ticket numbers").fill("0652345678901");
+  await record.getByLabel("Paid so far (৳)").fill("20000");
+  await record.getByRole("button", { name: "Save booking" }).click();
+  await expect(page.getByText("Booking saved")).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Part paid").first()).toBeVisible();
+  await expect(page.getByLabel("PNR (airline or hotel reference)")).toHaveValue("AB12CD");
+  await page.goto("/secure-admin-control/bookings?q=AB12CD");
+  await expect(page.getByRole("row").filter({ hasText: "AB12CD" })).toBeVisible();
   expect(errors).toEqual([]);
 });
 

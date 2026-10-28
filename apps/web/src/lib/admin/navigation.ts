@@ -12,6 +12,7 @@ export type AdminIconName =
   | "reports"
   | "customers"
   | "leads"
+  | "bookings"
   | "search"
   | "fares"
   | "routes"
@@ -114,6 +115,14 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         roles: LEADS,
         badge: "newLeads",
         urgent: "overdueLeads",
+      },
+      {
+        key: "bookings",
+        label: "bookings",
+        href: `${ADMIN}/bookings`,
+        icon: "bookings",
+        // Sales who may open the lead, and Accounts for the payments (issue 242).
+        roles: ["admin", "travel-sales", "visa-officer", "accounts"],
       },
       {
         key: "visaApplications",
