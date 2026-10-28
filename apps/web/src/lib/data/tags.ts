@@ -24,6 +24,7 @@ export const CACHE_TAGS = {
   groupFares: "group-fares",
   flightRoutes: "flight-routes",
   packages: "packages",
+  hotels: "hotels",
   visa: "visa",
   catalogue: "catalogue",
   /** Outside services from Admin › Integrations: public keys, IDs and feature switches (issue 284). */

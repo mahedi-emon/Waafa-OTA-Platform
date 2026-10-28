@@ -82,7 +82,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-FLT-08 | P1 | Partial capture: abandoned form after step 1 saved as Incomplete lead | missing | — (no "incomplete" status or capture) | Whole feature | #250 |
 | FR-FLT-L | P2 | Live offers, details, booking, payment, ticketing, manage booking | missing | web/components/results/LivePlaceholder.tsx only | Whole Live flight flow (Phase 2) | Phase E (#32) |
 | FR-HTL-01 | P0 | Hotel two-step form (destination, dates, rooms, stars, budget) | done | site/hotels; e2e/hotels.spec.ts | — | — |
-| FR-HTL-02 | P1 | Curated hotels with photos, amenities, rooms, "Request booking" | missing | — (no hotel property collection; `hotelPlaces` is autocomplete only) | Whole feature | #249 |
+| FR-HTL-02 | P1 | Curated hotels with photos, amenities, rooms, "Request booking" | done | content `hotels` (shared HotelSchema), /hotels "Hotels our team recommends", /hotels/[slug] (gallery, amenities, room types with from prices, Hotel JSON-LD, sitemap), Request on a room → hotel lead with hotelId, hotelName, roomType; Admin › Curated hotels; e2e/hotels-curated.spec.ts, shared hotels.test.ts, web hotelLeadForm.test.ts, leadFacts.test.ts (#249) | — | #249 |
 | FR-HTL-L | P2 | Live hotel results, detail, booking, voucher | missing | LivePlaceholder.tsx only | Whole Live hotel flow | Phase E (#32) |
 
 ## §9 Tour packages and visa services

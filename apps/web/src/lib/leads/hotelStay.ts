@@ -6,9 +6,18 @@ import type { StayStepInput } from "./hotelLeadForm";
  * form without loading validation first (issue 170).
  */
 
-export function stayDefaults(search: HotelSearch | null): StayStepInput {
+/** A curated hotel's Request booking (FR-HTL-02): the hotel and the room type the customer chose. */
+export type ChosenHotel = { id: string; name: string; city: string; roomType?: string };
+
+/** "Sample Beach Resort, Cox’s Bazar": the place a curated hotel's request starts with. */
+export const chosenHotelPlace = (hotel: ChosenHotel) => `${hotel.name}, ${hotel.city}`;
+
+export function stayDefaults(
+  search: HotelSearch | null,
+  hotel?: ChosenHotel | null,
+): StayStepInput {
   return {
-    place: search?.placeLabel ?? "",
+    place: hotel ? chosenHotelPlace(hotel) : (search?.placeLabel ?? ""),
     nationality: search?.nationality ?? "BD",
     checkin: search?.checkIn ?? "",
     checkout: search?.checkOut ?? "",

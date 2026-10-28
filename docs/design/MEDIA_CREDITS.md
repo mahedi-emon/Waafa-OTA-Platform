@@ -20,6 +20,11 @@ Source list and download script: `docs/design/photos/CREDITS.txt`, `docs/design/
 | `sajek-alt.jpg` | Clouds over the Sajek hills | Sium Ahameed Bhuyan | [unsplash.com/photos/ADFyoO70OVA](https://unsplash.com/photos/ADFyoO70OVA) | 900 × 675 |
 | `maldives.jpg` | Overwater villas in the Maldives | Ishan @seefromthesky | [unsplash.com/photos/DtWyp_4YEes](https://unsplash.com/photos/DtWyp_4YEes) | 1600 × 2000 |
 | `maldives-alt.jpg` | Island resort in the Maldives | Rayyu Maldives | [unsplash.com/photos/4F4OtnNjpmc](https://unsplash.com/photos/4F4OtnNjpmc) | 900 × 1201 |
+| `hotel-room.jpg` | Hotel room with a king bed, two bedside lamps and grey curtains (sample curated hotels, #249) | Vojtech Bruzek | [unsplash.com/photos/Yrxr3bsPdS0](https://unsplash.com/photos/Yrxr3bsPdS0) | 1600 × 1067 |
+| `hotel-room-garden.jpg` | Hotel room with a wooden bed and a glass door to a tropical garden (sample curated hotels, #249) | visualsofdana | [unsplash.com/photos/T5pL6ciEn-I](https://unsplash.com/photos/T5pL6ciEn-I) | 1600 × 1067 |
+| `hotel-room-grey.jpg` | Hotel room with a low wooden bed, a reading lamp and an armchair (sample curated hotels, #249) | Linus Mimietz | [unsplash.com/photos/p3UWyaujtQo](https://unsplash.com/photos/p3UWyaujtQo) | 1600 × 2844 |
+| `hotel-pool.jpg` | Resort pool with palm trees and loungers at sunset (sample curated hotels, #249) | Valeriia Bugaiova | [unsplash.com/photos/_pPHgeHz1uk](https://unsplash.com/photos/_pPHgeHz1uk) | 1600 × 1067 |
+| `hotel-lobby.jpg` | Hotel lobby with lounge chairs and a slatted wooden wall (sample curated hotels, #249) | Frames For Your Heart | [unsplash.com/photos/zSG-kd-L6vw](https://unsplash.com/photos/zSG-kd-L6vw) | 1600 × 1067 |
 | `dubai.jpg` | Dubai skyline with the Burj Khalifa at sunset | David Rodrigo | [unsplash.com/photos/Fr6zexbmjmc](https://unsplash.com/photos/Fr6zexbmjmc) | 1600 × 1067 |
 | `dubai-desert.jpg` | Camels in front of the Dubai Marina towers | Fredrik Öhlander | [unsplash.com/photos/fCW1hWq2nq0](https://unsplash.com/photos/fCW1hWq2nq0) | 900 × 1350 |
 | `nepal.jpg` | Village below snow-capped mountains in Nepal | Giuseppe Mondì | [unsplash.com/photos/xyE1p1rG04U](https://unsplash.com/photos/xyE1p1rG04U) | 1600 × 2400 |

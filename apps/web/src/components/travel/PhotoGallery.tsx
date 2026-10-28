@@ -21,17 +21,17 @@ const LAYOUTS: Record<number, string> = {
   5: "md:grid-cols-4 md:grid-rows-2",
 };
 
-type PackageGalleryProps = {
+type PhotoGalleryProps = {
   images: Image[];
   title: string;
   labels: { all: string; gallery: string; previous: string; next: string };
 };
 
 /**
- * Package gallery (PackageDetail, PackageDetail-photos): a bento of the first five photos; any photo opens the
+ * Photo gallery for packages and curated hotels (PackageDetail, PackageDetail-photos): a bento of the first five photos; any photo opens the
  * lightbox at that photo (Embla: swipe on phones, arrow keys and buttons on desktop).
  */
-function PackageGallery({ images, title, labels }: PackageGalleryProps) {
+function PhotoGallery({ images, title, labels }: PhotoGalleryProps) {
   const [start, setStart] = useState<number | null>(null);
   const shown = images.slice(0, 5);
 
@@ -91,4 +91,4 @@ function PackageGallery({ images, title, labels }: PackageGalleryProps) {
   );
 }
 
-export { PackageGallery };
+export { PhotoGallery };

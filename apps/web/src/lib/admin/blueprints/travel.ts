@@ -1,6 +1,7 @@
 import {
   FRAME,
   faqList,
+  itemId,
   keep,
   lines,
   listOrder,
@@ -195,6 +196,51 @@ export const tourPackagesBlueprint = {
   },
   url: "/tour-packages/{slug}",
   publish: ["cover_src", "itinerary", "prices"],
+} satisfies Blueprint;
+
+export const hotelsBlueprint = {
+  key: "hotels",
+  // Hotel → Photos → What it offers → Rooms and prices → SEO (ADMIN.md §7).
+  sections: [
+    {
+      id: "basics",
+      fields: [
+        "name",
+        "slug",
+        "stars",
+        "city",
+        "country",
+        "area",
+        "placeId",
+        "summary",
+        "description",
+      ],
+    },
+    { id: "photos", fields: ["cover", "gallery"] },
+    { id: "offers", fields: ["amenities", "checkIn", "checkOut"] },
+    { id: "rooms", fields: ["rooms"] },
+    { id: "seo", fields: ["seo"] },
+  ],
+  fields: {
+    id: recordId,
+    slug: { widget: "slug", prefix: "/hotels/", source: "name" },
+    summary: textarea,
+    description: { ...lines, wide: true },
+    placeId: { widget: "reference", ref: { key: "hotelPlaces", value: "id" } },
+    amenities: { widget: "choices", choices: "hotelAmenity" },
+    ...photoAt("cover", FRAME.landscape),
+    ...photoList("gallery", FRAME.landscape),
+    rooms: { widget: "repeater", summary: "name", wide: true },
+    rooms_id: itemId,
+    rooms_fromPrice: money,
+    rooms_features: tags,
+    ...photoAt("rooms_image", FRAME.landscape),
+    order: listOrder,
+    ...seoAt(),
+    ...sample,
+  },
+  url: "/hotels/{slug}",
+  publish: ["cover_src", "rooms"],
 } satisfies Blueprint;
 
 export const hotelPlacesBlueprint = {

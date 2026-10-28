@@ -111,6 +111,10 @@ export const HotelLeadPayloadSchema = z
   .object({
     module: z.literal("hotels"),
     search: HotelSearchSchema,
+    /** A curated hotel's Request booking (FR-HTL-02): which hotel and room type the customer asked about. */
+    hotelId: IdSchema.optional(),
+    hotelName: z.string().min(1).max(80).optional(),
+    roomType: z.string().min(1).max(60).optional(),
     starPreference: z.enum(["any", "3", "4", "5"]).default("any"),
     budgetPerNight: TakaSchema.optional(),
     budgetBand: HotelBudgetBandSchema.default("any"),

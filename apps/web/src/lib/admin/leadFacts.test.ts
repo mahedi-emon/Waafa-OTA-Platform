@@ -95,4 +95,33 @@ describe("leadFacts", () => {
       "Extra field": "x",
     });
   });
+
+  it("names the curated hotel and room a hotel request asked about (issue 249)", () => {
+    const facts = byLabel(
+      leadFacts(
+        {
+          module: "hotels",
+          search: {
+            placeId: "city-coxs-bazar",
+            placeLabel: "Sample Beach Resort, Cox’s Bazar",
+            checkIn: "2026-11-14",
+            checkOut: "2026-11-16",
+            rooms: [{ adults: 2, childAges: [] }],
+            nationality: "BD",
+          },
+          starPreference: "any",
+          budgetBand: "any",
+          meals: "any",
+          seaView: false,
+          freeCancellation: false,
+          hotelId: "hotel-sample-coxs",
+          hotelName: "Sample Beach Resort",
+          roomType: "Family suite",
+        },
+        words,
+      ),
+    );
+    expect(facts).toMatchObject({ "[hotel]": "Sample Beach Resort", "[roomType]": "Family suite" });
+    expect(Object.keys(facts).join(" ")).not.toMatch(/hotelId|hotelName/);
+  });
 });

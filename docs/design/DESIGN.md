@@ -288,6 +288,7 @@ Ready-to-use prompts:
 
 ## Design system files and prototype deviations
 
+- 29 Oct 2026 (issue 249): curated hotels have no Manual-mode board; /hotels/[slug] borrows the HotelsLive-m-detail structure (gallery, stars and area, amenities with icons, room cards with a from price) and the package page's sticky request card instead of live rates and a booking form, because Manual mode confirms every rate with an expert (FR-HTL-02, D321). On phones the name and summary come first, then the request card, then the rooms.
 - 26 Oct 2026 (issue 234): the AdminLogin board has one step; the sign-in card now also holds the code step, the authenticator setup (three numbered steps, the QR code drawn as SVG in ink on white, the key in groups of four) and the recovery codes (shown once, copy or download, Continue only after "I saved my recovery codes"). Same card, same alerts, no new colours; the code boxes narrow below 390 px so all six fit at 320 px.
 - 26 Oct 2026 (issue 219): dialog, sheet and confirm overlays and the admin top bar and editor action bar drop their backdrop blur (solid white or the plain navy scrim). Blur behind a scrim repainted the whole page on every frame of the fade (a sheet closing over a 100-row list took 128 to 192 ms headless, 56 to 88 ms without it), and DESIGN.md keeps glass for the search card only.
 

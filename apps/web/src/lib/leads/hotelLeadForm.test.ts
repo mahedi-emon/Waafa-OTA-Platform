@@ -124,3 +124,52 @@ describe("buildHotelLead", () => {
     expect(result.error?.issues.map((issue) => issue.message)).toContain("adultPerRoom");
   });
 });
+
+describe("curated hotel requests (issue 249)", () => {
+  const hotel = {
+    id: "hotel-sample-coxs",
+    name: "Sample Beach Resort",
+    city: "Cox’s Bazar",
+    roomType: "Family suite",
+  };
+  const contact = { name: "Sample Karim", phoneCountry: "BD", phone: "01812-345678", email: "" };
+  const preferences = { seaView: false, freeCancellation: false };
+
+  it("starts at the hotel and sends which hotel and room the customer asked about", () => {
+    const stay = stayStepSchema.parse({
+      ...stayDefaults(null, hotel),
+      checkin: "2026-11-14",
+      checkout: "2026-11-16",
+      consent: true,
+    });
+    expect(stay.place).toBe("Sample Beach Resort, Cox’s Bazar");
+    const lead = LeadCreateInputSchema.parse(
+      buildHotelLead({ contact, stay, search: null, preferences, page: "/hotels", hotel }),
+    );
+    expect(lead.payload).toMatchObject({
+      module: "hotels",
+      hotelId: "hotel-sample-coxs",
+      hotelName: "Sample Beach Resort",
+      roomType: "Family suite",
+    });
+  });
+
+  it("drops the hotel when the customer types another place", () => {
+    const stay = stayStepSchema.parse({
+      ...stayDefaults(null, hotel),
+      place: "Sylhet",
+      checkin: "2026-11-14",
+      checkout: "2026-11-16",
+      consent: true,
+    });
+    const lead = buildHotelLead({
+      contact,
+      stay,
+      search: null,
+      preferences,
+      page: "/hotels",
+      hotel,
+    });
+    expect(lead.payload).not.toHaveProperty("hotelId");
+  });
+});

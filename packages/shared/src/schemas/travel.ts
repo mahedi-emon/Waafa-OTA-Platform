@@ -214,6 +214,78 @@ export const HotelPlaceSchema = z
   })
   .strict();
 
+/** What a curated hotel offers (FR-HTL-02); the site shows each with its own icon and words. */
+export const HOTEL_AMENITIES = [
+  "wifi",
+  "breakfast",
+  "pool",
+  "beach",
+  "sea-view",
+  "spa",
+  "gym",
+  "restaurant",
+  "room-service",
+  "air-conditioning",
+  "parking",
+  "airport-transfer",
+  "family-rooms",
+  "prayer-room",
+] as const;
+export const HotelAmenitySchema = z.enum(HOTEL_AMENITIES);
+
+/** A room type at a curated hotel with its "from" price per night (taka, VAT included, indicative). */
+export const HotelRoomTypeSchema = z
+  .object({
+    id: IdSchema,
+    name: z.string().min(1).max(60),
+    /** e.g. "1 king bed" or "2 twin beds". */
+    beds: z.string().min(1).max(60),
+    sleeps: z.number().int().min(1).max(10),
+    /** e.g. "32 m²". */
+    size: z.string().max(20).optional(),
+    fromPrice: TakaSchema,
+    features: z.array(z.string().min(1).max(40)).max(6).default([]),
+    image: ImageSchema.optional(),
+  })
+  .strict();
+
+/**
+ * Curated hotels (FR-HTL-02, issue 249): properties the team recommends, with photos, amenities, room types and
+ * "from" prices per night. Prices are indicative; "Request booking" sends a hotel request that an expert confirms.
+ */
+export const HotelSchema = z
+  .object({
+    id: IdSchema,
+    slug: SlugSchema,
+    name: z.string().min(1).max(80),
+    city: z.string().min(1).max(60),
+    country: z.string().min(1).max(60),
+    /** The neighbourhood or beach, e.g. "Kolatoli, Cox's Bazar". */
+    area: z.string().max(80).optional(),
+    stars: z.number().int().min(1).max(5),
+    /** The hotel search's place for its city, so a request starts there. */
+    placeId: IdSchema.optional(),
+    summary: z.string().min(1).max(200),
+    description: z.array(z.string().min(1).max(800)).min(1).max(6),
+    cover: ImageSchema,
+    gallery: z.array(ImageSchema).max(12).default([]),
+    amenities: z.array(HotelAmenitySchema).default([]),
+    rooms: z.array(HotelRoomTypeSchema).min(1).max(10),
+    checkIn: z.string().max(20).optional(),
+    checkOut: z.string().max(20).optional(),
+    order: z.number().int().min(0).default(0),
+    status: PublishStatusSchema,
+    ...PublishTimesShape,
+    seo: SeoSchema.default({ noIndex: false }),
+    sample: SampleFlagSchema,
+  })
+  .strict()
+  .superRefine((hotel, ctx) => {
+    if (new Set(hotel.rooms.map((room) => room.id)).size !== hotel.rooms.length) {
+      ctx.addIssue({ code: "custom", message: "Room types need different ids", path: ["rooms"] });
+    }
+  });
+
 /* ---------- Normalised models for Live mode (FR-GS-08). The UI renders only these. ---------- */
 
 export const BaggageAllowanceSchema = z
@@ -415,6 +487,9 @@ export type PackageDeparture = z.infer<typeof PackageDepartureSchema>;
 export type PackageHotel = z.infer<typeof PackageHotelSchema>;
 export type TourPackage = z.infer<typeof TourPackageSchema>;
 export type HotelPlace = z.infer<typeof HotelPlaceSchema>;
+export type HotelAmenity = z.infer<typeof HotelAmenitySchema>;
+export type HotelRoomType = z.infer<typeof HotelRoomTypeSchema>;
+export type Hotel = z.infer<typeof HotelSchema>;
 export type BaggageAllowance = z.infer<typeof BaggageAllowanceSchema>;
 export type Segment = z.infer<typeof SegmentSchema>;
 export type FareBreakdown = z.infer<typeof FareBreakdownSchema>;

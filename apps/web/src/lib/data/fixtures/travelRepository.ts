@@ -114,6 +114,17 @@ export function createFixtureTravelRepository(data: FixtureData): TravelReposito
       return published().find((pkg) => pkg.slug === slug) ?? null;
     },
 
+    async listHotels() {
+      return (data.hotels ?? [])
+        .filter((hotel) => hotel.status === "published")
+        .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+    },
+
+    async getHotel(slug) {
+      const hotel = (data.hotels ?? []).find((candidate) => candidate.slug === slug);
+      return hotel && hotel.status === "published" ? hotel : null;
+    },
+
     async listRelatedPackages(slug) {
       const current = published().find((pkg) => pkg.slug === slug);
       if (!current) return [];

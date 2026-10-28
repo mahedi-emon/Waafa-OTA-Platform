@@ -127,6 +127,10 @@ export function leadFacts(payload: unknown, words: LeadWords): LeadFact[] {
       const search = (data.search && typeof data.search === "object" ? data.search : {}) as Payload;
       used.add("search");
       push("place", text(search.placeLabel));
+      // A curated hotel's Request booking (issue 249).
+      push("hotel", text(data.hotelName));
+      push("roomType", text(data.roomType));
+      used.add("hotelId").add("hotelName");
       push("checkIn", date(search.checkIn));
       push("checkOut", date(search.checkOut));
       const rooms = Array.isArray(search.rooms) ? (search.rooms as Payload[]) : [];
