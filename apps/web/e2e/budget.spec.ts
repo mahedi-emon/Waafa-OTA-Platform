@@ -23,6 +23,7 @@ const ROUTES = [
   "/shop",
   "/shop/c/power-banks",
   "/shop/p/voltaro-power-bank-22-5w",
+  "/shop/campaign/winter-office-week",
   "/shop/cart",
   "/shop/checkout",
   "/track",

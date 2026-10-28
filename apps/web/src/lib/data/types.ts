@@ -1,4 +1,5 @@
 import type {
+  Campaign,
   Airline,
   Airport,
   Announcement,
@@ -233,6 +234,9 @@ export interface ShopRepository {
   getProduct(slug: string): Promise<Product | null>;
   listCollections(): Promise<Collection[]>;
   getCollection(slug: string): Promise<Collection | null>;
+  /** Campaign pages (issue 247), in admin order. */
+  getCampaign(slug: string): Promise<Campaign | null>;
+  listCampaigns(): Promise<Campaign[]>;
   /** Deals that have not ended, ending soonest first. */
   listDeals(now: Date): Promise<DealWithProduct[]>;
   /** Enabled store rows in admin order (FR-SHOP-01). */

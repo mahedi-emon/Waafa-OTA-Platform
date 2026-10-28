@@ -29,6 +29,7 @@ describe("hasRecordOrder", () => {
     expect(CONTENT_KEYS.filter(hasRecordOrder).sort()).toEqual(
       [
         "banners",
+        "campaigns",
         "categories",
         "collections",
         "destinations",

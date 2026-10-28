@@ -31,3 +31,28 @@ export function isScheduledNow(
   if (Date.parse(schedule.startsAt) > time) return false;
   return schedule.endsAt === undefined || Date.parse(schedule.endsAt) > time;
 }
+
+/** A deal or flash sale whose price applies now: started (or no start) and not ended (issue 247). */
+export function dealIsLive(deal: Pick<Deal, "startsAt" | "endsAt">, now: Date): boolean {
+  const time = now.getTime();
+  if (deal.startsAt && Date.parse(deal.startsAt) > time) return false;
+  return Date.parse(deal.endsAt) > time;
+}
+
+/**
+ * Flash-sale caps (issue 247): a deal with a stock cap applies to a line only while the units already sold at its
+ * price plus the line's quantity stay within the cap. `sold` maps deal id → units sold at the deal price.
+ */
+export function dealsWithinCap<T extends Pick<Deal, "id" | "variantId" | "stockCap">>(
+  deals: readonly T[],
+  sold: ReadonlyMap<string, number>,
+  lines: ReadonlyArray<{ variantId: string; quantity: number }>,
+): T[] {
+  return deals.filter((deal) => {
+    if (deal.stockCap === undefined) return true;
+    const wanted = lines
+      .filter((line) => line.variantId === deal.variantId)
+      .reduce((sum, line) => sum + line.quantity, 0);
+    return (sold.get(deal.id) ?? 0) + Math.max(wanted, 1) <= deal.stockCap;
+  });
+}

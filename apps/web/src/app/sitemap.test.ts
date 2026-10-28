@@ -44,6 +44,7 @@ vi.mock("@/lib/data/shop", () => ({
   listCategories: async () => data.categories,
   listBrands: async () => data.brands,
   listCollections: async () => data.collections,
+  listCampaigns: async () => [],
 }));
 
 const { sitemapEntries: sitemap, partOf, SITEMAP_PARTS } = await import("@/lib/seo/sitemapEntries");

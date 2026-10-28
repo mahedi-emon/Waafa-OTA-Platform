@@ -69,6 +69,21 @@ export async function getCollection(slug: string) {
   return repositories.shop.getCollection(slug);
 }
 
+/** A campaign page by its address (issue 247); its products and countdown are read on the page. */
+export async function getCampaign(slug: string) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalogue);
+  return repositories.shop.getCampaign(slug);
+}
+
+export async function listCampaigns() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalogue);
+  return repositories.shop.listCampaigns();
+}
+
 export async function listDeals() {
   "use cache";
   cacheLife("minutes");

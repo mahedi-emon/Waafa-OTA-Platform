@@ -45,6 +45,7 @@ import {
   compatibleModelsBlueprint,
   couponsBlueprint,
   dealsBlueprint,
+  campaignsBlueprint,
   productsBlueprint,
   shopContentBlueprint,
   storeRowsBlueprint,
@@ -110,6 +111,7 @@ export const BLUEPRINTS: Record<ContentKey, Blueprint> = {
   products: productsBlueprint,
   collections: collectionsBlueprint,
   deals: dealsBlueprint,
+  campaigns: campaignsBlueprint,
   storeRows: storeRowsBlueprint,
   coupons: couponsBlueprint,
 };

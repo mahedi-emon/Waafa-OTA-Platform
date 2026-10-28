@@ -1,5 +1,6 @@
 import type { FixtureData } from "@waafa/fixtures";
 import {
+  dealIsLive,
   makeReference,
   toDhakaDateString,
   toDhakaIsoString,
@@ -191,15 +192,26 @@ export function createFixtureShopRepository(data: FixtureData): ShopRepository {
       return data.collections.find((collection) => collection.slug === slug) ?? null;
     },
 
+    async getCampaign(slug) {
+      return (data.campaigns ?? []).find((campaign) => campaign.slug === slug) ?? null;
+    },
+
+    async listCampaigns() {
+      return byAdminOrder(data.campaigns ?? []);
+    },
+
     async listDeals(now) {
-      return data.deals
-        .filter((deal) => Date.parse(deal.endsAt) > now.getTime())
-        .flatMap((deal): DealWithProduct[] => {
-          const product = published().find((candidate) => candidate.id === deal.productId);
-          const variant = product?.variants.find((candidate) => candidate.id === deal.variantId);
-          return product && variant ? [{ ...deal, product }] : [];
-        })
-        .sort((a, b) => a.endsAt.localeCompare(b.endsAt));
+      return (
+        data.deals
+          // Started and not ended (issue 247: flash sales may start later).
+          .filter((deal) => dealIsLive(deal, now))
+          .flatMap((deal): DealWithProduct[] => {
+            const product = published().find((candidate) => candidate.id === deal.productId);
+            const variant = product?.variants.find((candidate) => candidate.id === deal.variantId);
+            return product && variant ? [{ ...deal, product }] : [];
+          })
+          .sort((a, b) => a.endsAt.localeCompare(b.endsAt))
+      );
     },
 
     async listStoreRows() {
