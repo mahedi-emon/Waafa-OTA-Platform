@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck } from "@/components/icons/server/CircleCheck";
 import { getTranslations } from "next-intl/server";
 import type { QuoteView } from "@waafa/shared";
 import { AdminNotFound } from "@/components/admin/AdminNotFound";

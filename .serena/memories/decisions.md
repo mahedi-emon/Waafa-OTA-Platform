@@ -166,4 +166,12 @@
   referrer only fills, own host = SITE_URL); lead/order routes add it; Order.source JSONB; conversions via track() →
   EventBridge mounted only inside consented scripts (dataLayer + gtag beacon + Pixel, once per reference); Reports
   "Where leads come from" (admin/leadSources.ts). Sitemap split + share images → #287.
+- D306–D308 (#287, #238, #239): see TRACKER.
+- D309 (#242): one Booking per lead, made in the Convert transaction, kept on reopen (second Convert corrects amount);
+  payment status from amount/paid unless Refunded; Accounts see all, others by lead access; documents = customer files
+  owner "booking" (POST /admin/files/attach).
+- D310 (#298): customer quote link /quote/<id>-<HMAC32 with JWT_SECRET> (no dot: the proxy matcher skips dotted
+  paths); email carries the link, PDF rendered on demand by the API (pdfkit 0.20.2; Inter/Jakarta/Hind Siliguri WOFF in
+  apps/api/assets; WOFF2 subset rendered ৳ empty); accept withdraws the lead's other open quotes and alerts staff by
+  module; Convert prefills the accepted price; sending = the lead's "Log quote" step.
 - axe 4.14 (label-content-name-mismatch): a link's aria-label must contain its visible words (#283 logo, #288 ask-for-price).

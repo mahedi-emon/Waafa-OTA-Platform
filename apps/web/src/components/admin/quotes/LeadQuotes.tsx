@@ -1,4 +1,4 @@
-import { FilePlus2 } from "lucide-react";
+import { FilePlus2 } from "@/components/icons/server/FilePlus2";
 import { getTranslations } from "next-intl/server";
 import type { QuoteSummary } from "@waafa/shared";
 import { AdminPanel } from "@/components/admin/AdminPanel";

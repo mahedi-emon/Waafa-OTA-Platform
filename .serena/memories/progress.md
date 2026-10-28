@@ -1,4 +1,7 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-31 — #293 (#238, 129 min) and #299 docs merged; #300 (#242 bookings, 68 min, migration bookings + seed patch
+  back-fill) merged. #298 quote builder (split from #242) built and in CI as PR #301 (full-ci; migration quotes, seed
+  patch quote templates, pdfkit). Next: #243.
 - 2026-10-29 — Owner's order of 28 Oct (D303): steps 1–5 merged except #238 (PR #293 in CI). #283 deps + axe 4.14
   logo (14 min), #281 My account (105), #286 integration hub + #288 axe names (341), #290 sitemap index + visa share
   cards (10), #296 Home back under 200 KB (61), #291 RELEASE.md + upgrade rehearsal (105; passed from 541bd21), #292
