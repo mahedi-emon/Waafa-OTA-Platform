@@ -40,6 +40,7 @@ export type SitePageId = (typeof SITE_PAGES)[number]["id"];
 /** Lists whose records have a page, with the start of that page's address (the record's id ends it). */
 export const RECORD_LINKS = [
   { key: "tourPackages", prefix: "/tour-packages/" },
+  { key: "hotels", prefix: "/hotels/" },
   { key: "visaCountries", prefix: "/visa/" },
   { key: "visaGuides", prefix: "/visa-guide/" },
   { key: "flightRoutes", prefix: "/flights/" },

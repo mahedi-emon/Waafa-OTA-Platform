@@ -20,6 +20,8 @@ import {
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { loadHotelSearch, parseHotelValues } from "@/lib/search/hotelParams";
 import { formatFieldDate } from "@/lib/search/isoDate";
+import { getHotel } from "@/lib/data/travel";
+import { CuratedHotels } from "./_components/CuratedHotels";
 import { HotelRequest } from "./_components/HotelRequest";
 import { withSocial } from "@/lib/seo/withSocial";
 import { ExploreMore } from "@/components/seo/ExploreMore";
@@ -39,16 +41,31 @@ async function HotelResults({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const [parsed, config, contact, leadForm, searchSettings, messages, t] = await Promise.all([
-    Promise.resolve(parseHotelValues(loadHotelSearch(params))),
-    getPublicConfig(),
-    getContactSettings(),
-    getLeadFormSettings(),
-    getSearchSettings(),
-    getMessages(),
-    getTranslations("Hotels"),
-  ]);
+  // A curated hotel's Request booking (FR-HTL-02): /hotels?hotel=<slug>&room=<id>.
+  const hotelSlug = typeof params.hotel === "string" ? params.hotel : null;
+  const [parsed, config, contact, leadForm, searchSettings, messages, t, chosen] =
+    await Promise.all([
+      Promise.resolve(parseHotelValues(loadHotelSearch(params))),
+      getPublicConfig(),
+      getContactSettings(),
+      getLeadFormSettings(),
+      getSearchSettings(),
+      getMessages(),
+      getTranslations("Hotels"),
+      hotelSlug && /^[a-z0-9-]{1,80}$/.test(hotelSlug)
+        ? getHotel(hotelSlug)
+        : Promise.resolve(null),
+    ]);
   const search = parsed.success ? parsed.data : null;
+  const room = chosen?.rooms.find((candidate) => candidate.id === params.room);
+  const hotel = chosen
+    ? {
+        id: chosen.id,
+        name: chosen.name,
+        city: chosen.city,
+        ...(room ? { roomType: room.name } : {}),
+      }
+    : null;
   const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
   const countries = leadForm.phoneCountries
     .filter(isPhoneCountry)
@@ -81,8 +98,11 @@ async function HotelResults({
             mode={config.modes.hotels.mode}
             manual={
               <NextIntlClientProvider messages={pickMessages(messages, ["Hotels", "Leads"])}>
+                {/* A new hotel or room starts a fresh request: the page keeps state between visits. */}
                 <HotelRequest
+                  key={hotel ? `${hotel.id}:${hotel.roomType ?? ""}` : "any"}
                   search={search}
+                  hotel={hotel}
                   nationalities={nationalities}
                   countries={countries}
                   emailRequired={leadForm.emailRequired}
@@ -117,6 +137,9 @@ export default async function HotelsPage({ searchParams }: PageProps<"/[locale]/
         }
       >
         <HotelResults searchParams={searchParams} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <CuratedHotels />
       </Suspense>
       <ExploreMore groups={["packages", "visa", "routes"]} />
     </main>

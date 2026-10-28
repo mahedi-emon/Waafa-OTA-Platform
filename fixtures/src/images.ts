@@ -237,6 +237,41 @@ const PHOTOS = {
     width: 900,
     height: 601,
   },
+  "hotel-room": {
+    alt: "Hotel room with a king bed, two bedside lamps and grey curtains",
+    photographer: "Vojtech Bruzek",
+    id: "Yrxr3bsPdS0",
+    width: 1600,
+    height: 1067,
+  },
+  "hotel-room-garden": {
+    alt: "Hotel room with a wooden bed and a glass door to a tropical garden",
+    photographer: "visualsofdana",
+    id: "T5pL6ciEn-I",
+    width: 1600,
+    height: 1067,
+  },
+  "hotel-room-grey": {
+    alt: "Hotel room with a low wooden bed, a reading lamp and an armchair by the curtains",
+    photographer: "Linus Mimietz",
+    id: "p3UWyaujtQo",
+    width: 1600,
+    height: 2844,
+  },
+  "hotel-pool": {
+    alt: "Resort pool with palm trees and loungers at sunset",
+    photographer: "Valeriia Bugaiova",
+    id: "_pPHgeHz1uk",
+    width: 1600,
+    height: 1067,
+  },
+  "hotel-lobby": {
+    alt: "Hotel lobby with lounge chairs and a slatted wooden wall",
+    photographer: "Frames For Your Heart",
+    id: "zSG-kd-L6vw",
+    width: 1600,
+    height: 1067,
+  },
 } as const satisfies Record<string, PhotoEntry>;
 
 export type PhotoKey = keyof typeof PHOTOS;

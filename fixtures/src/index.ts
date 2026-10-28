@@ -29,6 +29,7 @@ import {
   FlightRouteSchema,
   HomeSectionSchema,
   HotelPlaceSchema,
+  HotelSchema,
   LeadFormSettingsSchema,
   LeadSchema,
   MaintenanceSettingsSchema,
@@ -114,7 +115,15 @@ import {
   products,
   storeRows,
 } from "./shop";
-import { airlines, airports, flightRoutes, groupFares, hotelPlaces, tourPackages } from "./travel";
+import {
+  airlines,
+  airports,
+  flightRoutes,
+  groupFares,
+  hotelPlaces,
+  hotels,
+  tourPackages,
+} from "./travel";
 import { visaApplications, visaCountries, visaGuides } from "./visa";
 
 /**
@@ -175,6 +184,7 @@ export const fixtureRegistry = {
   flightRoutes: entry(z.array(FlightRouteSchema), flightRoutes),
   tourPackages: entry(z.array(TourPackageSchema), tourPackages),
   hotelPlaces: entry(z.array(HotelPlaceSchema), hotelPlaces),
+  hotels: entry(z.array(HotelSchema), hotels),
   // Visa
   visaCountries: entry(z.array(VisaCountrySchema), visaCountries),
   visaGuides: entry(z.array(VisaGuideSchema), visaGuides),

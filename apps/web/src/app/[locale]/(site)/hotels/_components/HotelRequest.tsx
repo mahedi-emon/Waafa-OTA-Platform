@@ -10,7 +10,7 @@ import { useDhakaToday } from "@/components/search/useDhakaToday";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import type { StayStepInput, StayStepValues } from "@/lib/leads/hotelLeadForm";
-import { stayDefaults } from "@/lib/leads/hotelStay";
+import { stayDefaults, type ChosenHotel } from "@/lib/leads/hotelStay";
 
 /** Step 2 and its validation load when the visitor reaches it, not with the page (issue 170). */
 const StayStep = dynamic(() => import("./StayStep").then((mod) => mod.StayStep), {
@@ -19,6 +19,8 @@ const StayStep = dynamic(() => import("./StayStep").then((mod) => mod.StayStep),
 
 type HotelRequestProps = {
   search: HotelSearch | null;
+  /** The curated hotel (and room type) a Request booking started from (FR-HTL-02). */
+  hotel?: ChosenHotel | null;
   nationalities: Array<{ code: string; name: string }>;
   countries: Array<{ code: string; name: string; dial: string }>;
   emailRequired: boolean;
@@ -36,7 +38,7 @@ function HotelRequest(props: HotelRequestProps) {
   const tLeads = useTranslations("Leads");
   const today = useDhakaToday();
   const [preferences, setPreferences] = useState<Preferences>(NONE);
-  const [stay, setStay] = useState<StayStepInput>(() => stayDefaults(props.search));
+  const [stay, setStay] = useState<StayStepInput>(() => stayDefaults(props.search, props.hotel));
   const count = Number(preferences.seaView) + Number(preferences.freeCancellation);
 
   const panel = (
@@ -95,7 +97,13 @@ function HotelRequest(props: HotelRequestProps) {
           titleId="hotel-request-title"
           kicker={t("card.kicker")}
           title={t("card.title")}
-          lead={t("card.lead")}
+          lead={
+            props.hotel
+              ? t("card.hotelLead", {
+                  hotel: [props.hotel.name, props.hotel.roomType].filter(Boolean).join(" · "),
+                })
+              : t("card.lead")
+          }
           secondStepLabel={t("steps.stay")}
           countries={props.countries}
           emailRequired={props.emailRequired}
@@ -109,6 +117,7 @@ function HotelRequest(props: HotelRequestProps) {
               search: props.search,
               preferences,
               page,
+              hotel: props.hotel ?? null,
             });
           }}
           renderSecondStep={({ sending, goBack, submit }) => (

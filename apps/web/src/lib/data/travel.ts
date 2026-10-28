@@ -78,6 +78,21 @@ export async function listPackages(query: PackageQuery = {}) {
   return repositories.travel.listPackages(query);
 }
 
+/** Curated hotels (FR-HTL-02, issue 249), published only. */
+export async function listHotels() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.hotels);
+  return repositories.travel.listHotels();
+}
+
+export async function getHotel(slug: string) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.hotels);
+  return repositories.travel.getHotel(slug);
+}
+
 export async function getPackage(slug: string) {
   "use cache";
   cacheLife("hours");

@@ -8,6 +8,7 @@ import type { CollectionKey } from "./registry";
  */
 export const ROUTED_KEYS = [
   "tourPackages",
+  "hotels",
   "flightRoutes",
   "visaCountries",
   "visaGuides",

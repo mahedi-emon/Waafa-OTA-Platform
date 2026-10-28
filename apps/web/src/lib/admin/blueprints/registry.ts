@@ -56,6 +56,7 @@ import {
   flightRoutesBlueprint,
   groupFaresBlueprint,
   hotelPlacesBlueprint,
+  hotelsBlueprint,
   tourPackagesBlueprint,
 } from "./travel";
 import type { Blueprint } from "./types";
@@ -101,6 +102,7 @@ export const BLUEPRINTS: Record<ContentKey, Blueprint> = {
   flightRoutes: flightRoutesBlueprint,
   tourPackages: tourPackagesBlueprint,
   hotelPlaces: hotelPlacesBlueprint,
+  hotels: hotelsBlueprint,
   visaCountries: visaCountriesBlueprint,
   visaGuides: visaGuidesBlueprint,
   shopContent: shopContentBlueprint,

@@ -24,6 +24,7 @@ const ROUTES = [
   "/shop/c/power-banks",
   "/shop/p/voltaro-power-bank-22-5w",
   "/shop/campaign/winter-office-week",
+  "/hotels/sample-beach-resort-coxs-bazar",
   "/shop/cart",
   "/shop/checkout",
   "/track",

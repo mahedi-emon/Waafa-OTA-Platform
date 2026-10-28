@@ -39,7 +39,7 @@ export function summarizeLead(payload: LeadPayload): LeadDigest {
         0,
       );
       return {
-        summary: `${search.placeLabel} · ${formatDayMonth(search.checkIn)} to ${formatDayMonth(search.checkOut)} · ${people(search.rooms.length, "room", "rooms")}, ${people(guests, "guest", "guests")}`,
+        summary: `${search.placeLabel} · ${formatDayMonth(search.checkIn)} to ${formatDayMonth(search.checkOut)} · ${people(search.rooms.length, "room", "rooms")}, ${people(guests, "guest", "guests")}${payload.roomType ? ` · ${payload.roomType}` : ""}`,
         travelDate: search.checkIn,
         travellers: guests,
       };
