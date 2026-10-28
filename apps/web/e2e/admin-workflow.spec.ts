@@ -255,16 +255,16 @@ test("a WhatsApp reply moves a new lead to In progress, and Convert to booking b
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/^BKG-\d{6}-\d{4}/);
   const record = page.getByRole("form", { name: "Booking details" });
   await whenHydrated(record.getByLabel("PNR (airline or hotel reference)"));
-  await record.getByLabel("PNR (airline or hotel reference)").fill("ab12cd");
+  await record.getByLabel("PNR (airline or hotel reference)").fill(`ab${STAMP}`);
   await record.getByLabel("Ticket numbers").fill("0652345678901");
   await record.getByLabel("Paid so far (৳)").fill("20000");
   await record.getByRole("button", { name: "Save booking" }).click();
   await expect(page.getByText("Booking saved")).toBeVisible();
   await page.reload();
   await expect(page.getByText("Part paid").first()).toBeVisible();
-  await expect(page.getByLabel("PNR (airline or hotel reference)")).toHaveValue("AB12CD");
-  await page.goto("/secure-admin-control/bookings?q=AB12CD");
-  await expect(page.getByRole("row").filter({ hasText: "AB12CD" })).toBeVisible();
+  await expect(page.getByLabel("PNR (airline or hotel reference)")).toHaveValue(`AB${STAMP}`);
+  await page.goto(`/secure-admin-control/bookings?q=AB${STAMP}`);
+  await expect(page.getByRole("row").filter({ hasText: `AB${STAMP}` })).toBeVisible();
   expect(errors).toEqual([]);
 });
 

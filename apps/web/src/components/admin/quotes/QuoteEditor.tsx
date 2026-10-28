@@ -60,7 +60,8 @@ const numbered = (text: string, number: number) => text.replace("{number}", Stri
 function QuoteEditor({ target, options, validUntil, notes, today, labels }: QuoteEditorProps) {
   const id = useId();
   const router = useRouter();
-  const next = useRef(options.length + 1);
+  // Keys for new options start after the ones on screen (a new quote starts with one empty option).
+  const next = useRef(Math.max(options.length, 1) + 1);
   const [pending, startTransition] = useTransition();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [drafts, setDrafts] = useState<Draft[]>(() =>
