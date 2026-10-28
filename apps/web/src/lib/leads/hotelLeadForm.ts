@@ -13,6 +13,7 @@ import { z } from "zod";
 import { contactToLead, type ContactStepValues } from "./contactForm";
 import { distributeGuests } from "../search/hotelParams";
 import { ADULTS_PER_ROOM, CHILDREN_PER_ROOM } from "./hotelLeadFormFields";
+import type { ChosenHotel } from "./hotelStay";
 export { ADULTS_PER_ROOM, CHILDREN_PER_ROOM } from "./hotelLeadFormFields";
 
 /*
@@ -77,6 +78,8 @@ export function buildHotelLead(args: {
   search: HotelSearch | null;
   preferences: { seaView: boolean; freeCancellation: boolean };
   page: string;
+  /** Set when the request started from a curated hotel's page. */
+  hotel?: ChosenHotel | null;
 }): LeadCreateInput {
   const { contact, stay, search, preferences } = args;
   const samePlace = search && search.placeLabel === stay.place;
@@ -102,6 +105,13 @@ export function buildHotelLead(args: {
       meals: stay.meals,
       seaView: preferences.seaView,
       freeCancellation: preferences.freeCancellation,
+      ...(args.hotel
+        ? {
+            hotelId: args.hotel.id,
+            hotelName: args.hotel.name,
+            ...(args.hotel.roomType ? { roomType: args.hotel.roomType } : {}),
+          }
+        : {}),
       ...(stay.notes.trim() ? { notes: stay.notes.trim() } : {}),
     },
     consent: true,

@@ -33,6 +33,7 @@ import type {
   ServicePageKey,
   ShopContent,
   HomeSection,
+  Hotel,
   HotelPlace,
   LeadCreated,
   LeadCreateInput,
@@ -186,6 +187,9 @@ export interface TravelRepository {
   getGroupFare(id: string, now: Date): Promise<GroupFare | null>;
   listPackages(query?: PackageQuery): Promise<ListPage<TourPackage>>;
   getPackage(slug: string): Promise<TourPackage | null>;
+  /** Curated hotels (FR-HTL-02), published only, in admin order. */
+  listHotels(): Promise<Hotel[]>;
+  getHotel(slug: string): Promise<Hotel | null>;
   listRelatedPackages(slug: string): Promise<TourPackage[]>;
   searchHotelPlaces(query: string, limit?: number): Promise<HotelPlace[]>;
   /** Published flight route pages in admin order (#99). */

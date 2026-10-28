@@ -742,7 +742,8 @@
     "card": {
       "kicker": "Hotel rates checked by a person",
       "title": "Get the best hotel rate from our experts",
-      "lead": "Tell us how to reach you. A travel expert checks hotels for your dates and sends the best options with room type, meals and cancellation rules."
+      "lead": "Tell us how to reach you. A travel expert checks hotels for your dates and sends the best options with room type, meals and cancellation rules.",
+      "hotelLead": "You are asking about {hotel}. Tell us how to reach you: a travel expert checks the room and the rate with the hotel and confirms before you pay."
     },
     "steps": {
       "stay": "Your stay"
@@ -820,6 +821,52 @@
       "stayTooLong": "Up to 30 nights in one booking",
       "adultPerRoom": "Each room needs at least one adult.",
       "tooManyGuests": "Up to 6 adults and 4 children per room. Add a room for more guests."
+    },
+    "curated": {
+      "kicker": "Hotels we book",
+      "title": "Hotels our team recommends",
+      "lead": "Stays our experts know well, with photos, rooms and from prices. Rates are confirmed with the hotel before you pay.",
+      "from": "From {price}",
+      "perNight": "per night",
+      "stars": "{count}-star hotel",
+      "viewHotel": "See rooms"
+    },
+    "detail": {
+      "breadcrumb": "Hotels",
+      "overview": "About the hotel",
+      "amenities": "What the hotel offers",
+      "rooms": "Rooms",
+      "sleeps": "Sleeps {count}",
+      "from": "From {price}",
+      "perNight": "per night, VAT included",
+      "request": "Request booking",
+      "requestRoom": "Request {room}",
+      "checkIn": "Check-in {time}",
+      "checkOut": "Check-out {time}",
+      "indicative": "Prices are indicative for one room per night. An expert confirms the room, the rate and the cancellation rules with the hotel before you pay.",
+      "photos": "All photos",
+      "gallery": "Photos of {hotel}",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "more": "More hotels we recommend",
+      "askWhatsApp": "Ask on WhatsApp",
+      "whatsappText": "Hello Waafa, I would like the rate for {hotel}."
+    },
+    "amenities": {
+      "wifi": "Free Wi-Fi",
+      "breakfast": "Breakfast",
+      "pool": "Swimming pool",
+      "beach": "Near the beach",
+      "sea-view": "Sea view rooms",
+      "spa": "Spa",
+      "gym": "Gym",
+      "restaurant": "Restaurant",
+      "room-service": "Room service",
+      "air-conditioning": "Air conditioning",
+      "parking": "Parking",
+      "airport-transfer": "Airport transfer",
+      "family-rooms": "Family rooms",
+      "prayer-room": "Prayer room"
     }
   },
   "Packages": {

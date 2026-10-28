@@ -32,3 +32,8 @@ prod-tshirt.jpg - Sample product: T-shirt (size and colour variants) - photo by 
 prod-powerbank.jpg - Sample product: power bank (capacity variants) - photo by I'M ZION on Unsplash - https://unsplash.com/photos/APdfyW0Aq-E
 prod-headphones.jpg - Sample product: wireless headphones (colour variants) - photo by C D-X on Unsplash - https://unsplash.com/photos/PDX_a_82obo
 cat-stationery.jpg - Sample category tile: Office & Stationery - photo by Joanna Kosinska on Unsplash - https://unsplash.com/photos/bF2vsubyHcQ
+hotel-room.jpg - Sample curated hotel: Hotel room with a king bed, two bedside lamps and grey curtains - photo by Vojtech Bruzek on Unsplash - https://unsplash.com/photos/Yrxr3bsPdS0
+hotel-room-garden.jpg - Sample curated hotel: Hotel room with a wooden bed and a glass door to a tropical garden - photo by visualsofdana on Unsplash - https://unsplash.com/photos/T5pL6ciEn-I
+hotel-room-grey.jpg - Sample curated hotel: Hotel room with a low wooden bed, a reading lamp and an armchair - photo by Linus Mimietz on Unsplash - https://unsplash.com/photos/p3UWyaujtQo
+hotel-pool.jpg - Sample curated hotel: Resort pool with palm trees and loungers at sunset - photo by Valeriia Bugaiova on Unsplash - https://unsplash.com/photos/_pPHgeHz1uk
+hotel-lobby.jpg - Sample curated hotel: Hotel lobby with lounge chairs and a slatted wooden wall - photo by Frames For Your Heart on Unsplash - https://unsplash.com/photos/zSG-kd-L6vw

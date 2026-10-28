@@ -42,6 +42,7 @@ import {
   GroupFareSchema,
   FlightRouteSchema,
   HotelPlaceSchema,
+  HotelSchema,
   TourPackageSchema,
 } from "../schemas/travel";
 import { VisaCountrySchema, VisaGuideSchema } from "../schemas/visa";
@@ -135,6 +136,7 @@ export const CONTENT_MODEL = {
   flightRoutes: collection("travel", FlightRouteSchema, "slug", "title"),
   tourPackages: collection("travel", TourPackageSchema, "slug", "title"),
   hotelPlaces: collection("travel", HotelPlaceSchema, "id", "name"),
+  hotels: collection("travel", HotelSchema, "slug", "name"),
   // Visa
   visaCountries: collection("visa", VisaCountrySchema, "slug", "name"),
   visaGuides: collection("visa", VisaGuideSchema, "slug", "title"),
