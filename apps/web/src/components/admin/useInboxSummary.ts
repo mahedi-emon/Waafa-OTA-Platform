@@ -100,3 +100,8 @@ export function countOf(summary: InboxSummary | null, key: InboxCountKey | undef
   if (!summary || !key) return 0;
   return summary.counts[key] ?? 0;
 }
+
+/** Asks for fresh numbers now, e.g. when the real-time stream says something arrived (issue 243). */
+export function pollInboxNow(): void {
+  void poll();
+}

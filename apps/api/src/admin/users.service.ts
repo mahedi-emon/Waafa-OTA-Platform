@@ -64,6 +64,8 @@ export class AdminUsersService {
       lastLoginAt: user.lastLoginAt ? toDhakaIsoString(user.lastLoginAt) : null,
       /** Two-step sign-in is set up (issue 234). */
       twoStep: Boolean(user.totpEnabledAt),
+      /** Round-robin (issue 243): takes new leads in turn for the services their roles open. */
+      takesLeads: user.takesLeads,
       createdAt: toDhakaIsoString(user.createdAt),
       /** An invite that is still open (sent, not yet used); an expired one can be sent again. */
       invite: user.inviteHash
@@ -160,6 +162,7 @@ export class AdminUsersService {
           ...(input.name ? { name: input.name } : {}),
           ...(input.roles ? { roles: input.roles } : {}),
           ...(input.status ? { status: input.status } : {}),
+          ...(input.takesLeads !== undefined ? { takesLeads: input.takesLeads } : {}),
         },
       });
       if (input.status === "deactivated" || input.roles) {
@@ -175,7 +178,12 @@ export class AdminUsersService {
           action: "staff.update",
           entity: "staff",
           entityId: user.email,
-          before: { name: user.name, roles: user.roles, status: user.status },
+          before: {
+            name: user.name,
+            roles: user.roles,
+            status: user.status,
+            takesLeads: user.takesLeads,
+          },
           after: input,
         },
         tx,

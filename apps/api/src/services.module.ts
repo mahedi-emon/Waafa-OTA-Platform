@@ -11,6 +11,9 @@ import { ErrorReporter } from "./common/errorReporter";
 import { ErrorReporterWatcher } from "./common/errorReporterWatcher";
 import { WebErrorsController } from "./health/webErrors.controller";
 import { RevalidateService } from "./revalidate/revalidate.service";
+import { StaffAlertsService } from "./realtime/alerts.service";
+import { LiveBus } from "./realtime/liveBus";
+import { RoundRobinService } from "./realtime/roundRobin.service";
 
 export type ServicesOptions = {
   /** Tests pass a MemoryMailer to read what was sent. */
@@ -39,6 +42,10 @@ export class ServicesModule {
       IntakeKeyGuard,
       { provide: ErrorReporter, useValue: new ErrorReporter("api") },
       ErrorReporterWatcher,
+      // Real-time alerts, personal alerts and round-robin (issue 243): used by the intake and the admin.
+      LiveBus,
+      StaffAlertsService,
+      RoundRobinService,
     ];
     return {
       module: ServicesModule,
@@ -53,6 +60,9 @@ export class ServicesModule {
         IdempotencyService,
         IntakeKeyGuard,
         ErrorReporter,
+        LiveBus,
+        StaffAlertsService,
+        RoundRobinService,
       ],
     };
   }

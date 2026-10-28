@@ -29,6 +29,7 @@ does not have yet, in this order, when the API starts inside `sh deploy.sh`. **T
 | `20261029010000_order_source` | #237 | where a buyer came from (UTM, referrer, landing page) on each order |
 | `20261030010000_bookings` | #242 | a booking record per converted lead (PNR, tickets, amount, payments, documents) |
 | `20261031010000_quotes` | #298 | quotes on leads (options, last valid day, the accepted option) |
+| `20261101010000_reminders_alerts` | #243 | reminders, personal bell alerts, and the round-robin switch per staff member |
 
 One-time data patches (`_seedPatches`, never over staff edits) run after the migrations. Live already has
 `2026-10-13-visa-route`, `2026-10-14-second-phone` and `2026-10-14-home-seo`; everything below runs at the release: workflow, invite, low-stock,
@@ -46,15 +47,16 @@ release that grows past the budget (`scripts/measure-stack.sh`).
 
 | Image | Live (`7af26e7`) | Before #303 (`8694513`) | This release | Budget |
 | --- | --- | --- | --- | --- |
-| api (also the worker) | 2.07 GB | 1.82 GB | 270 MB | 400 MB |
-| web | 571 MB | 599 MB | 464 MB | 500 MB |
-| nginx | 74 MB | 74 MB | 74 MB | 100 MB |
+| api (also the worker) | 2.07 GB | 1.82 GB | 182 MB | 400 MB |
+| web | 571 MB | 599 MB | 321 MB | 500 MB |
+| nginx | 74 MB | 74 MB | 45 MB | 100 MB |
 
 API: Alpine with only the node binary, one compiled bundle (Nest, Prisma client and query compiler included), five
 packages that must stay on disk (sharp, argon2, pdfkit, bullmq, ioredis), no package manager, no Prisma CLI, no
 TypeScript. Web: Alpine with only the node binary and the traced standalone server; about 110 MB of it is the
 prerendered pages (62 MB of them prefetch segments), which keep every page instant, so the owner's 250 MB target is not
-met (D313). Memory: API about 130 MB and worker about 100 MB at rest (both about 200 MB before).
+met (D313). Memory in the VPS smoke with ClamAV loaded: api 101 MB, worker 69, web 105, postgres 52, redis 4, nginx 6,
+certbot 2, clamav 952: the whole stack 1.29 GB.
 
 ## New or changed containers
 
@@ -108,6 +110,7 @@ copy for them. Optional new `.env` lines: `BACKUP_CRON=off` (no cron), `BACKUP_K
 | GA4, GTM, Meta Pixel IDs, Search Console and Bing codes | Admin › Integrations › Measurement (#284) | check the cards are On |
 | Customer accounts | Settings › Site › Accounts live (#241) | turn on when ready |
 | Staff two-step sign-in | required for Super Admin and Admin (#234) | each of them sets up an authenticator app at first sign-in |
+| Round-robin for new leads | Admin › Users › a person › Takes new leads in turn (#243) | turn it on for the staff who should get new requests in turn (off for everyone after the deploy) |
 
 ## Keys to enter in Admin › Integrations (all off until saved)
 

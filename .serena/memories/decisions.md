@@ -174,4 +174,12 @@
   paths); email carries the link, PDF rendered on demand by the API (pdfkit 0.20.2; Inter/Jakarta/Hind Siliguri WOFF in
   apps/api/assets; WOFF2 subset rendered ৳ empty); accept withdraws the lead's other open quotes and alerts staff by
   module; Convert prefills the accepted price; sending = the lead's "Log quote" step.
+- D311 (#302): store = "Waafa’s World" (typographic ’); structured data "Waafa's World" + alternateName "Waafas World"
+  only in lib/seo/schemaNames.ts (guards); seed patch renames exact old defaults only.
+- D312 (28 Oct evening): live = 7af26e7; VPS-only storage; keep light; integration cards with Banglish steps and
+  copy-able provider URLs, Telegram Find my group, plain Test errors.
+- D313–D315 (#303): Alpine + node-binary images, bundled API + own migration runner, budgets in measure-stack.sh
+  (api 400, web 500, stack 3 GB); ClamAV ConcurrentDatabaseReload no; logs/backups/prune/Docker Hub keep 10 + live.
+- D316 (#243): SSE (not WebSockets) through the BFF, Redis pub/sub fan-out, poll stays as fallback; personal alerts
+  stored; Web Audio chime after first click; round-robin per-person switch, office hours, never re-assign.
 - axe 4.14 (label-content-name-mismatch): a link's aria-label must contain its visible words (#283 logo, #288 ask-for-price).

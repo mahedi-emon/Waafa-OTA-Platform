@@ -20,6 +20,8 @@ import { ENV, type Env } from "../config/env";
 import type { Prisma } from "../generated/prisma/client";
 import { NotificationService } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { RemindersService } from "../realtime/reminders.service";
+import { RoundRobinService } from "../realtime/roundRobin.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { lowResources, readResources } from "./resourceAlert";
 import { ContentService } from "../content/content.service";
@@ -49,12 +51,23 @@ export type TickResult = {
   overdue: number;
   /** Customer files deleted: unclaimed uploads and visa documents past retention (issue 232). */
   files: number;
+  /** Reminders that fell due and became alerts, and after-hours leads handed out at opening (issue 243). */
+  reminders: number;
+  handedOut: number;
 };
 
 /** How long staff sign-in history is kept (issue 234). */
 export const LOGIN_HISTORY_DAYS = 365;
 
-const EMPTY: TickResult = { published: [], windows: [], purged: 0, overdue: 0, files: 0 };
+const EMPTY: TickResult = {
+  published: [],
+  windows: [],
+  purged: 0,
+  overdue: 0,
+  files: 0,
+  reminders: 0,
+  handedOut: 0,
+};
 
 const isCollectionKey = (key: string): key is CollectionKey =>
   isContentKey(key) && CONTENT_MODEL[key].kind === "collection";
@@ -83,6 +96,8 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
     @Inject(NotificationService) private readonly notifications: NotificationService,
     @Inject(CustomerFilesService) private readonly files: CustomerFilesService,
+    @Inject(RemindersService) private readonly reminders: RemindersService,
+    @Inject(RoundRobinService) private readonly roundRobin: RoundRobinService,
   ) {}
 
   onModuleInit(): void {
@@ -127,7 +142,17 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
       const overdue = await this.alertOverdue(now);
       const files = await this.files.purge(now);
       await this.alertResources(now);
-      return { published: result.published, windows, purged: result.purged, overdue, files };
+      const reminders = await this.reminders.alertDue(now);
+      const handedOut = await this.roundRobin.catchUp(now);
+      return {
+        published: result.published,
+        windows,
+        purged: result.purged,
+        overdue,
+        files,
+        reminders,
+        handedOut,
+      };
     } finally {
       this.running = false;
     }

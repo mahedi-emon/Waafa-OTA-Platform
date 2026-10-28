@@ -32,12 +32,50 @@ model StaffUser {
   totpEnabledAt   DateTime?           @db.Timestamptz(3)
   /// The last 30-second step a code was accepted for: the same or an older code is refused (no replay).
   totpLastStep    Int?
+  /// Round-robin (issue 243): this person takes new leads in turn for the services their roles open.
+  takesLeads      Boolean             @default(false)
+  /// When round-robin last gave this person a lead; the longest-waiting person is next.
+  lastLeadAt      DateTime?           @db.Timestamptz(3)
   createdAt       DateTime            @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
   sessions        StaffSession[]
   recoveryCodes   StaffRecoveryCode[]
   devices         StaffDevice[]
   loginEvents     StaffLoginEvent[]
+  reminders       Reminder[]
+  alerts          StaffAlert[]
+}
+
+/// A follow-up a staff member set for themselves (issue 243), usually on a lead; the minute job alerts them when due.
+model Reminder {
+  id        String    @id @default(cuid())
+  staffId   String
+  staff     StaffUser @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  leadId    String?
+  note      String
+  dueAt     DateTime  @db.Timestamptz(3)
+  alertedAt DateTime? @db.Timestamptz(3)
+  doneAt    DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([staffId, doneAt, dueAt])
+  @@index([dueAt, alertedAt])
+  @@index([leadId])
+}
+
+/// Something for one person in the bell (issue 243): a mention, a due reminder or a lead handed to them.
+model StaffAlert {
+  id        String    @id @default(cuid())
+  staffId   String
+  staff     StaffUser @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  kind      String
+  title     String
+  detail    String
+  href      String
+  readAt    DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([staffId, readAt, createdAt])
 }
 
 /// One-time recovery codes for two-step sign-in (issue 234); only hashes are stored.

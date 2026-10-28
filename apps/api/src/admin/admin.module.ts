@@ -34,6 +34,9 @@ import { ContentScheduler } from "./scheduler.service";
 import { AdminUsersService } from "./users.service";
 import { StaffInviteController } from "./invite.controller";
 import { AdminWorkbenchService } from "./workbench.service";
+import { AdminEventsController } from "../realtime/events.controller";
+import { AdminAlertsController, AdminRemindersController } from "../realtime/reminders.controller";
+import { RemindersService } from "../realtime/reminders.service";
 
 /** The admin API (B4): staff only, by role; needs AuthModule and ServicesModule. */
 @Module({
@@ -41,6 +44,10 @@ import { AdminWorkbenchService } from "./workbench.service";
   // Customer files: the minute job deletes them when their time is up (issue 232).
   imports: [MediaCoreModule, FilesCoreModule],
   controllers: [
+    // Reminders, personal alerts and the real-time stream (issue 243).
+    AdminEventsController,
+    AdminRemindersController,
+    AdminAlertsController,
     AdminBookingsController,
     // Quotes (issue 298): the admin side and the customer's page by its signed link.
     AdminQuotesController,
@@ -62,6 +69,7 @@ import { AdminWorkbenchService } from "./workbench.service";
     AdminWorkbenchController,
   ],
   providers: [
+    RemindersService,
     AdminBookingsService,
     AdminQuotesService,
     StatusService,

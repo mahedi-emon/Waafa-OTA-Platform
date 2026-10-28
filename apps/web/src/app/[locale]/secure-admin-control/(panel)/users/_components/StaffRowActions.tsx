@@ -5,6 +5,7 @@ import type { Role } from "@waafa/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { resendStaffInvite, resetStaffPassword, updateStaff } from "@/lib/admin/opsActions";
 import { resetStaffTwoStep } from "@/lib/admin/twoStepActions";
 import type { StaffRow } from "@/lib/admin/types";
@@ -34,6 +35,8 @@ type StaffRowActionsProps = {
     twoStepReset: string;
     cancel: string;
     failed: string;
+    takesLeads: string;
+    takesLeadsHint: string;
   };
 };
 
@@ -49,6 +52,22 @@ function StaffRowActions({ row, self, twoStepRequired, roleNames, strings }: Sta
 
   return (
     <div className="flex flex-col gap-4">
+      {row.status === "active" ? (
+        <div className="flex items-start justify-between gap-3 rounded-xl bg-mist-25 p-3 ring-1 ring-mist-100">
+          <label htmlFor={`takes-leads-${row.id}`} className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-[14px] font-semibold text-navy-900">{strings.takesLeads}</span>
+            <span className="text-[12.5px] text-mist-600">{strings.takesLeadsHint}</span>
+          </label>
+          <Switch
+            id={`takes-leads-${row.id}`}
+            checked={row.takesLeads}
+            disabled={pending}
+            onCheckedChange={(on) =>
+              run(() => updateStaff(row.id, { takesLeads: on }), strings.updated)
+            }
+          />
+        </div>
+      ) : null}
       <div className="flex flex-wrap gap-2">
         {row.invite && !row.lastLoginAt && row.status === "active" ? (
           <Button

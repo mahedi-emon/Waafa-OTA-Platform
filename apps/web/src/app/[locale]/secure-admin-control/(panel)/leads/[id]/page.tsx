@@ -2,7 +2,13 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { LeadPrioritySchema, type ContentOption } from "@waafa/shared";
+import {
+  leadModulesForRoles,
+  LeadPrioritySchema,
+  type ContentOption,
+  type LeadModule,
+  type ReminderList,
+} from "@waafa/shared";
 import { AdminNotFound } from "@/components/admin/AdminNotFound";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPanel } from "@/components/admin/AdminPanel";
@@ -17,11 +23,14 @@ import { LeadQuotes } from "@/components/admin/quotes/LeadQuotes";
 import { CustomerFiles } from "@/components/admin/files/CustomerFiles";
 import { expectedFiles } from "@/lib/admin/expectedFiles";
 import { LeadStatusBadge } from "@/components/admin/LeadStatusBadge";
+import { ReminderForm } from "@/components/admin/reminders/ReminderForm";
+import { ReminderItems } from "@/components/admin/reminders/ReminderItems";
+import { reminderStrings } from "@/lib/admin/reminderStrings";
 import { VisaProgressPanel } from "@/components/admin/VisaProgressPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessagePaths } from "@/i18n/pickMessages";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
-import { adminFind, adminGet } from "@/lib/admin/adminApi";
+import { adminFind, adminGet, requireStaff } from "@/lib/admin/adminApi";
 import { ageParts, formatDhakaDateTime, taka, whatsappHref } from "@/lib/admin/format";
 import { leadFacts } from "@/lib/admin/leadFacts";
 import {
@@ -100,25 +109,47 @@ async function queueFor(search: SearchParams) {
 
 async function Lead({ params, searchParams }: Pick<Params, "params" | "searchParams">) {
   const [{ id }, search] = await Promise.all([params, searchParams]);
-  const [lead, staff, airports, queue, t, tl, tc, tm, ts, tp, tv, to, tb, messages] =
-    await Promise.all([
-      adminFind<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
-      adminGet<StaffDirectoryEntry[]>("/admin/staff"),
-      adminGet<{ items: ContentOption[] }>("/admin/content/airports/options").catch(() => ({
-        items: [] as ContentOption[],
-      })),
-      queueFor(search),
-      getTranslations("Admin.lead"),
-      getTranslations("Admin.leads"),
-      getTranslations("Admin.common"),
-      getTranslations("Admin.modules"),
-      getTranslations("Admin.statuses"),
-      getTranslations("Admin.priorities"),
-      getTranslations("Admin.visaProgress"),
-      getTranslations("Admin.orders"),
-      getTranslations("Admin.bookings"),
-      getMessages(),
-    ]);
+  const [
+    lead,
+    staff,
+    airports,
+    queue,
+    t,
+    tl,
+    tc,
+    tm,
+    ts,
+    tp,
+    tv,
+    to,
+    tb,
+    messages,
+    me,
+    reminders,
+    tr,
+    rs,
+  ] = await Promise.all([
+    adminFind<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
+    adminGet<StaffDirectoryEntry[]>("/admin/staff"),
+    adminGet<{ items: ContentOption[] }>("/admin/content/airports/options").catch(() => ({
+      items: [] as ContentOption[],
+    })),
+    queueFor(search),
+    getTranslations("Admin.lead"),
+    getTranslations("Admin.leads"),
+    getTranslations("Admin.common"),
+    getTranslations("Admin.modules"),
+    getTranslations("Admin.statuses"),
+    getTranslations("Admin.priorities"),
+    getTranslations("Admin.visaProgress"),
+    getTranslations("Admin.orders"),
+    getTranslations("Admin.bookings"),
+    getMessages(),
+    requireStaff(),
+    adminGet<ReminderList>("/admin/reminders", { leadId: id }).catch(() => ({ items: [] })),
+    getTranslations("Admin.reminders"),
+    reminderStrings(),
+  ]);
   if (!lead) return <AdminNotFound />;
   // The option the customer accepted on a quote (issue 298): Convert starts with its price.
   const accepted = lead.quotes.find((quote) => quote.accepted)?.accepted ?? null;
@@ -394,9 +425,28 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
             />
           </AdminPanel>
 
+          <AdminPanel
+            id="lead-reminders"
+            title={tr("title")}
+            lead={tr("leadLead")}
+            className="@4xl:col-start-1"
+          >
+            <div className="flex flex-col gap-5">
+              <ReminderItems items={reminders.items} strings={rs.list} />
+              <ReminderForm leadId={lead.id} strings={rs.form} />
+            </div>
+          </AdminPanel>
+
           <AdminPanel title={t("timeline")} lead={t("timelineLead")} className="@4xl:col-start-1">
             <NoteForm
               id={lead.id}
+              people={staff
+                .filter(
+                  (person) =>
+                    person.id !== me.id &&
+                    leadModulesForRoles(person.roles).includes(lead.module as LeadModule),
+                )
+                .map((person) => ({ id: person.id, name: person.name }))}
               types={(["note", "call", "email", "whatsapp"] as const).map((value) => ({
                 value,
                 label: t(`noteTypes.${value}`),
@@ -407,6 +457,13 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
                 submit: t("addNote"),
                 added: t("noteAdded"),
                 failed: tc("unavailable"),
+                mentionHint: t("mentionHint"),
+                mentionList: t("mentionList"),
+                mentionPick: t("mentionPick", {
+                  name: "{name}",
+                  position: "{position}",
+                  count: "{count}",
+                }),
               }}
             />
             <div className="mt-5">

@@ -17,6 +17,7 @@ import { photoOf } from "../common/photo";
 import { ContentService } from "../content/content.service";
 import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { StaffAlertsService } from "../realtime/alerts.service";
 import { canEditContent, leadModulesFor } from "./access";
 
 const DAY = 24 * 60 * 60_000;
@@ -41,6 +42,7 @@ export class AdminWorkbenchService {
   constructor(
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(ContentService) private readonly content: ContentService,
+    @Inject(StaffAlertsService) private readonly alerts: StaffAlertsService,
   ) {}
 
   private async slaMinutes(): Promise<number> {
@@ -180,9 +182,16 @@ export class AdminWorkbenchService {
           }),
       );
 
-    await Promise.all(jobs);
+    const [, mine] = await Promise.all([Promise.all(jobs), this.alerts.latest(staff.id)]);
     recent.sort((a, b) => b.at.localeCompare(a.at));
-    return { counts, recent: recent.slice(0, 30), at: now.toISOString() };
+    return {
+      counts,
+      recent: recent.slice(0, 30),
+      // The person's own alerts (issue 243): mentions, due reminders, leads handed to them in turn.
+      alerts: mine.alerts,
+      unreadAlerts: mine.unread,
+      at: now.toISOString(),
+    };
   }
 
   async search(staff: StaffPrincipal, query: string): Promise<AdminSearchResult> {

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { formatTaka, type InboxCountKey } from "@waafa/shared";
+import { formatTaka, type InboxCountKey, type ReminderList } from "@waafa/shared";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { BarList } from "@/components/admin/BarList";
@@ -10,12 +10,14 @@ import { RelativeTime } from "@/components/admin/RelativeTime";
 import { SetupChecklist } from "@/components/admin/SetupChecklist";
 import { LineChart } from "@/components/admin/dashboard/LineChart";
 import { TodayCard } from "@/components/admin/dashboard/TodayCard";
+import { ReminderItems } from "@/components/admin/reminders/ReminderItems";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { adminGet, requireStaff } from "@/lib/admin/adminApi";
 import { formatDhakaTime, formatPlainDate } from "@/lib/admin/format";
 import { loadSetup } from "@/lib/admin/loadSetup";
+import { reminderStrings } from "@/lib/admin/reminderStrings";
 import { conversionPercent, todayCards, weekChange } from "@/lib/admin/todayQueue";
 import type { DashboardSummary } from "@/lib/admin/types";
 
@@ -30,7 +32,7 @@ type InboxCounts = { counts: Partial<Record<InboxCountKey, number>> };
 const shortDay = (day: string) => formatPlainDate(day).replace(/\s\d{4}$/, "");
 
 async function Dashboard() {
-  const [staff, data, inbox, steps, t, tc, tm] = await Promise.all([
+  const [staff, data, inbox, steps, t, tc, tm, reminders, tr, rs] = await Promise.all([
     requireStaff(),
     adminGet<DashboardSummary>("/admin/dashboard"),
     adminGet<InboxCounts>("/admin/inbox").catch(() => null),
@@ -38,7 +40,12 @@ async function Dashboard() {
     getTranslations("Admin.dashboard"),
     getTranslations("Admin.counts"),
     getTranslations("Admin.modules"),
+    adminGet<ReminderList>("/admin/reminders").catch(() => ({ items: [] })),
+    getTranslations("Admin.reminders"),
+    reminderStrings(),
   ]);
+  // Reminders due by the end of today, then the next few (issue 243).
+  const shown = reminders.items.slice(0, 8);
   const firstName = staff.name.split(/\s+/)[0] ?? staff.name;
   const cards = todayCards(inbox?.counts ?? {});
   const changeOf = (week: { thisWeek: number; lastWeek: number }) => {
@@ -105,6 +112,12 @@ async function Dashboard() {
             ))}
           </ul>
         </section>
+      ) : null}
+
+      {shown.length > 0 ? (
+        <AdminPanel id="dash-reminders" title={tr("title")} lead={tr("dashLead")} className="mb-8">
+          <ReminderItems items={shown} strings={{ ...rs.list, empty: tr("dashEmpty") }} showLead />
+        </AdminPanel>
       ) : null}
 
       <section aria-labelledby="dash-kpis" className="mb-8">

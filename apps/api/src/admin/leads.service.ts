@@ -1,6 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
+  findMentions,
   formatDate,
+  leadModulesForRoles,
+  type LeadModule,
+  type Role,
   formatTaka,
   isOverdueLead,
   nextLeadStatus,
@@ -24,6 +28,8 @@ import { ContentService } from "../content/content.service";
 import { NotificationService } from "../notifications/notification.service";
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { StaffAlertsService } from "../realtime/alerts.service";
+import { adminHref } from "../realtime/liveBus";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { assertLeadAccess, canSeeOrders, dhakaDate, leadModulesFor } from "./access";
 import { AdminBookingsService } from "./bookings.service";
@@ -148,6 +154,7 @@ export class AdminLeadsService {
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
     @Inject(NotificationService) private readonly notifications: NotificationService,
     @Inject(AdminBookingsService) private readonly bookings: AdminBookingsService,
+    @Inject(StaffAlertsService) private readonly alerts: StaffAlertsService,
   ) {}
 
   private async slaMinutes(): Promise<number> {
@@ -803,18 +810,52 @@ export class AdminLeadsService {
     if (input.type !== "note") {
       return this.act(staff, id, { type: "contact", channel: input.type, note: input.body }, now);
     }
-    await this.load(staff, id);
-    await this.prisma.leadActivity.create({
-      data: {
-        leadId: id,
-        type: "note",
-        body: input.body,
-        actorId: staff.id,
-        actorName: staff.name,
-        createdAt: now,
-      },
+    const lead = await this.load(staff, id);
+    const push = await this.prisma.$transaction(async (tx) => {
+      await tx.leadActivity.create({
+        data: {
+          leadId: id,
+          type: "note",
+          body: input.body,
+          actorId: staff.id,
+          actorName: staff.name,
+          createdAt: now,
+        },
+      });
+      return this.alerts.create(await this.mentioned(staff, lead, input.body), tx, now);
     });
+    push();
     return this.detail(staff, id);
+  }
+
+  /**
+   * "@Full Name" in a note (issue 243): one alert for each active colleague named who can open the lead; never for
+   * the writer, an inactive account or someone without access to the service.
+   */
+  private async mentioned(
+    staff: StaffPrincipal,
+    lead: { id: string; reference: string; name: string; module: string },
+    body: string,
+  ) {
+    if (!body.includes("@")) return [];
+    const people = await this.prisma.staffUser.findMany({
+      where: { status: "active", id: { not: staff.id } },
+      select: { id: true, name: true, roles: true },
+    });
+    const ids = new Set(findMentions(body, people));
+    return people
+      .filter(
+        (person) =>
+          ids.has(person.id) &&
+          leadModulesForRoles(person.roles as Role[]).includes(lead.module as LeadModule),
+      )
+      .map((person) => ({
+        staffId: person.id,
+        kind: "mention" as const,
+        title: `${staff.name} mentioned you on ${lead.reference}`,
+        detail: `${lead.name}: ${body}`.slice(0, 300),
+        href: adminHref(`/leads/${lead.id}`),
+      }));
   }
 
   async bulk(staff: StaffPrincipal, input: LeadBulkInput, now = new Date()) {

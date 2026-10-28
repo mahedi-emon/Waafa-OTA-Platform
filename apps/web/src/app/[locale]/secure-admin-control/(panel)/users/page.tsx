@@ -113,6 +113,8 @@ async function Users({
     twoStepReset: t("twoStepReset"),
     cancel: tc("cancel"),
     failed: tc("unavailable"),
+    takesLeads: t("takesLeads"),
+    takesLeadsHint: t("takesLeadsHint"),
   };
 
   const rows: DataRow[] = list.items.map((row, index) => {
@@ -144,6 +146,7 @@ async function Users({
         { label: t("roles"), value: roles },
         { label: t("lastLogin"), value: login },
         { label: t("twoStep"), value: twoStep },
+        { label: t("takesLeads"), value: row.takesLeads ? t("takesLeadsOn") : t("takesLeadsOff") },
       ],
       actions: (
         <div className="flex flex-col gap-5">

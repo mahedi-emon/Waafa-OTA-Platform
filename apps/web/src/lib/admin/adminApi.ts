@@ -189,3 +189,19 @@ export async function requireStaff(): Promise<StaffSession> {
 export function hasRole(staff: StaffSession, ...roles: Role[]): boolean {
   return staff.roles.includes("super-admin") || roles.some((role) => staff.roles.includes(role));
 }
+
+/**
+ * A long-lived read for the real-time stream (issue 243): no 15-second timeout, ended when the browser leaves (the
+ * request's own signal). Null when there is no session.
+ */
+export async function adminStream(path: string, signal: AbortSignal): Promise<Response | null> {
+  const api = apiConfig();
+  if (!api) return null;
+  const token = (await cookies()).get(ACCESS_COOKIE)?.value;
+  if (!token) return null;
+  return fetch(`${api.baseUrl}/api/v1${path}`, {
+    headers: { authorization: `Bearer ${token}`, accept: "text/event-stream" },
+    cache: "no-store",
+    signal,
+  });
+}

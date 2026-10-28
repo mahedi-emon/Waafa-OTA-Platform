@@ -3,6 +3,7 @@ import { IdSchema, IsoDateSchema, IsoDateTimeSchema, SampleFlagSchema, TakaSchem
 import { FeedbackSchema } from "./content";
 import { LeadModuleSchema, LeadPrioritySchema, LeadStatusSchema } from "./leads";
 import { OrderStatusSchema } from "./shop";
+import { StaffAlertViewSchema } from "./alerts";
 import { ContentActionSchema } from "./workflow";
 
 /** Staff roles (PRD §4); one person can hold several. B2B Agent arrives in Phase 3. */
@@ -25,6 +26,8 @@ export const StaffUserSchema = z
     roles: z.array(RoleSchema).min(1),
     status: z.enum(["active", "invited", "deactivated"]),
     lastLoginAt: IsoDateTimeSchema.optional(),
+    /** Round-robin (issue 243): takes new leads in turn for the services their roles open. */
+    takesLeads: z.boolean().default(false),
     sample: SampleFlagSchema,
   })
   .strict();
@@ -278,6 +281,7 @@ export const StaffUpdateInputSchema = z
     name: z.string().trim().min(2).max(80).optional(),
     roles: z.array(RoleSchema).min(1).optional(),
     status: z.enum(["active", "deactivated"]).optional(),
+    takesLeads: z.boolean().optional(),
   })
   .strict()
   .refine(somethingToChange, { message: "Nothing to change" });
@@ -387,6 +391,9 @@ export const InboxSummarySchema = z
   .object({
     counts: z.partialRecord(InboxCountKeySchema, z.number().int().min(0)),
     recent: z.array(InboxItemSchema).max(30),
+    /** This person's own alerts, newest first, and how many are unread (issue 243). */
+    alerts: z.array(StaffAlertViewSchema).max(20).default([]),
+    unreadAlerts: z.number().int().min(0).default(0),
     at: IsoDateTimeSchema,
   })
   .strict();

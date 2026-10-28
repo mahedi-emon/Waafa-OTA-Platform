@@ -347,6 +347,8 @@ export type StaffRow = {
   lastLoginAt: string | null;
   /** Two-step sign-in is set up (issue 234). */
   twoStep: boolean;
+  /** Takes new leads in turn for the services their roles open (issue 243). */
+  takesLeads: boolean;
   createdAt: string;
   /** An invite email still waiting to be used (D0 R9); expired ones can be sent again. */
   invite: { expiresAt: string | null; expired: boolean } | null;
