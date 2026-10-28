@@ -548,6 +548,15 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     enabled: true,
   },
   {
+    key: "system-alert-staff",
+    audience: "Admins, system alerts",
+    channel: "email",
+    subject: "Server running low: {{what}}",
+    body: "The website server is running low on {{what}}: {{detail}}.\n\nOpen Settings › System status for the details: {{link}}.",
+    variables: ["{{what}}", "{{detail}}", "{{link}}"],
+    enabled: true,
+  },
+  {
     key: "staff-new-device",
     audience: "Staff, on a new device",
     channel: "email",

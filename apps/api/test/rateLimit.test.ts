@@ -125,4 +125,30 @@ describe.skipIf(!dbAvailable)("lead limit per phone number (NFR-SEC, issue 234)"
     expect(blocked.json<{ detail: string }>().detail).toMatch(/phone number/);
     expect((await send("+8801000000778", 51)).statusCode).toBe(201);
   });
+
+  it("takes 10 lead submits a minute from one address, twice the web's PRD limit of 5 (issue 239)", async () => {
+    const send = (index: number) =>
+      app.inject({
+        method: "POST",
+        url: "/api/v1/public/leads",
+        headers: {
+          "x-intake-key": "test-intake-key-0123456789-abcdef",
+          "x-client-ip": "10.250.0.9",
+          "idempotency-key": randomUUID(),
+        },
+        payload: {
+          contact: {
+            name: "Sample Caller",
+            phone: `+88010000009${String(index).padStart(2, "0")}`,
+          },
+          consent: true,
+          payload: { module: "contact", topic: "other", message: "Please call me about a trip." },
+        },
+      });
+    for (let index = 0; index < 10; index += 1) {
+      const response = await send(index);
+      expect(response.statusCode, response.body).toBe(201);
+    }
+    expect((await send(10)).statusCode).toBe(429);
+  });
 });
