@@ -10,7 +10,6 @@ import type { Env } from "./config/env";
 import { redactToken } from "./common/redact";
 import { CoreModule } from "./core.module";
 import { HealthController } from "./health/health.controller";
-import { WebErrorsController } from "./health/webErrors.controller";
 import { ErrorReporter } from "./common/errorReporter";
 import { ProblemFilter } from "./common/problem";
 
@@ -20,7 +19,7 @@ class AppModule {
     return {
       module: AppModule,
       imports: [CoreModule.register(env), ...features],
-      controllers: [HealthController, WebErrorsController],
+      controllers: [HealthController],
     };
   }
 }

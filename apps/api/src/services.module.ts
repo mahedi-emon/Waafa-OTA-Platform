@@ -9,6 +9,7 @@ import { PrismaService } from "./prisma/prisma.service";
 import { MAILER, NotificationService } from "./notifications/notification.service";
 import { ErrorReporter } from "./common/errorReporter";
 import { ErrorReporterWatcher } from "./common/errorReporterWatcher";
+import { WebErrorsController } from "./health/webErrors.controller";
 import { RevalidateService } from "./revalidate/revalidate.service";
 
 export type ServicesOptions = {
@@ -41,6 +42,8 @@ export class ServicesModule {
     ];
     return {
       module: ServicesModule,
+      // Web server errors (issue 238) need the reporter and the intake key guard that live here.
+      controllers: [WebErrorsController],
       providers,
       exports: [
         MAILER,
