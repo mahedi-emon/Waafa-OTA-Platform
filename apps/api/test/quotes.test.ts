@@ -124,7 +124,8 @@ describe.skipIf(!dbAvailable)("quotes (issue 298)", () => {
     prisma = testPrisma();
     await resetDatabase(prisma);
     await seedDatabase(prisma, loadFixtures());
-    app = await testApp(featureModules({ mailer }));
+    // Staff alerts go to the desk address while no one is chosen in Settings (issue 233).
+    app = await testApp(featureModules({ mailer }), { STAFF_ALERT_EMAIL: "desk@example.com" });
     app.get(ContentService).invalidate();
     agent = await person("Sample Quoter", ["travel-sales"]);
     visaOfficer = await person("Sample Visa Desk", ["visa-officer"]);
@@ -188,7 +189,11 @@ describe.skipIf(!dbAvailable)("quotes (issue 298)", () => {
       (await customer("POST", "/accept", { token: tokenOf(draft), optionId: "o1" })).statusCode,
     ).toBe(409);
     await vi.waitFor(() =>
-      expect(mailer.sent.some((mail) => mail.subject.includes("accepted"))).toBe(true),
+      expect(
+        mailer.sent.some(
+          (mail) => mail.to === "desk@example.com" && mail.subject.includes("accepted"),
+        ),
+      ).toBe(true),
     );
 
     const afterAccept = (await call(agent, "GET", `/leads/${leadId}`)).json<{
