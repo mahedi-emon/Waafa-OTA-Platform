@@ -16,7 +16,7 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { TabBar } from "@/components/layout/TabBar";
 import { StaffToolsLoader } from "@/components/staff/StaffToolsLoader";
-import { TurnstileKeyProvider } from "@/components/forms/TurnstileKeyProvider";
+import { TURNSTILE_META } from "@/components/forms/turnstileSiteKey";
 import { pickMessages } from "@/i18n/pickMessages";
 import { getIntegrations } from "@/lib/data/integrations";
 import { getContactSettings, getMenu, getPublicConfig } from "@/lib/data/settings";
@@ -53,6 +53,10 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
 
   return (
     <div className="flex min-h-dvh flex-col pb-(--tab-space) lg:pb-0">
+      {/* Forms read the Turnstile site key from here on first use (issue 295); React moves it into the head. */}
+      {integrations.public.turnstileSiteKey ? (
+        <meta name={TURNSTILE_META} content={integrations.public.turnstileSiteKey} />
+      ) : null}
       <PreviewBanner />
       <AnnouncementBar />
       <SiteHeader />
@@ -65,9 +69,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
       >
         {/* The error boundary sits between this layout and the page, so its strings come from here. */}
         <NextIntlClientProvider messages={pickMessages(messages, ["Errors"])}>
-          <TurnstileKeyProvider siteKey={integrations.public.turnstileSiteKey}>
-            <div className="flex flex-1 flex-col">{children}</div>
-          </TurnstileKeyProvider>
+          <div className="flex flex-1 flex-col">{children}</div>
         </NextIntlClientProvider>
       </SupportContactProvider>
       <SiteFooter />
