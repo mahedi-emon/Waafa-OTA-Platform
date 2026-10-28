@@ -577,6 +577,21 @@ async function storeName(prisma: PrismaClient): Promise<number> {
   return changed;
 }
 
+/** The daily and weekly summary email (issue 244), as fixtures/src/settings.ts has it. */
+const SUMMARY_TEMPLATE = {
+  key: "summary-report-staff",
+  audience: "Staff chosen for summaries",
+  channel: "email",
+  subject: "Waafa {{period}} summary: {{headline}}",
+  body: "Here is the {{period}} summary for {{range}} (Bangladesh time).\n\n{{summary}}\n\nOpen Reports for the details and downloads: {{link}}.",
+  variables: ["{{period}}", "{{headline}}", "{{range}}", "{{summary}}", "{{link}}"],
+  enabled: true,
+} as const;
+
+async function summaryTemplate(prisma: PrismaClient): Promise<number> {
+  return appendTemplate(prisma, SUMMARY_TEMPLATE);
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -596,6 +611,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-30-bookings-for-booked-leads", apply: bookingsForBookedLeads },
   { id: "2026-10-31-quote-templates", apply: quoteTemplates },
   { id: "2026-10-28-store-name", apply: storeName },
+  { id: "2026-11-02-summary-template", apply: summaryTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

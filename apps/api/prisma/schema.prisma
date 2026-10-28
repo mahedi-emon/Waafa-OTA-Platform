@@ -36,6 +36,8 @@ model StaffUser {
   takesLeads      Boolean             @default(false)
   /// When round-robin last gave this person a lead; the longest-waiting person is next.
   lastLeadAt      DateTime?           @db.Timestamptz(3)
+  /// Custom roles (issue 244): each adds the access of the built-in roles it grants.
+  customRoleIds   String[]            @default([])
   createdAt       DateTime            @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
   sessions        StaffSession[]
@@ -695,4 +697,39 @@ model Quote {
   updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
 
   @@index([leadId, createdAt])
+}
+
+// Customers and custom roles (issue 244) ------------------------------------------------------------------------
+
+/// What staff add to a customer (keyed by phone, D157): tags, and the number this one was merged into.
+model CustomerProfile {
+  phone      String    @id
+  tags       String[]  @default([])
+  /// Set when staff merged this number into another customer; its requests and orders show under that one.
+  mergedInto String?
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  updatedBy  String?
+
+  @@index([mergedInto])
+}
+
+/// A staff note on a customer, newest first on the customer page.
+model CustomerNote {
+  id        String   @id @default(cuid())
+  phone     String
+  body      String
+  actorId   String?
+  actorName String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([phone, createdAt])
+}
+
+/// A named bundle of built-in roles (issue 244); Super Admin is never one of them.
+model CustomRole {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  grants    String[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }

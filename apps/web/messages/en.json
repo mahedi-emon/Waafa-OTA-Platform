@@ -3746,6 +3746,20 @@
       "twoStepReset": "Two-step sign-in reset",
       "recentSignIns": "Recent sign-ins",
       "noSignIns": "No sign-ins recorded yet.",
+      "customRoles": {
+        "title": "Custom roles",
+        "lead": "Give a name to a set of roles, like Senior sales = Travel sales + Visa officer. People with it can do what those roles can, from their next sign-in.",
+        "name": "Role name",
+        "grants": "Can do what these roles can",
+        "add": "Add a custom role",
+        "edit": "Edit",
+        "remove": "Delete",
+        "people": "{count, plural, one {# person} other {# people}}",
+        "empty": "No custom roles yet.",
+        "saved": "Saved. People with this role sign in again.",
+        "inUse": "Take this role off the people who have it first.",
+        "saveForPerson": "Save custom roles"
+      },
       "takesLeads": "Takes new leads in turn",
       "takesLeadsHint": "During office hours, new requests for the services this person's roles open go to them in turn with others who have this on.",
       "takesLeadsOn": "Yes, in turn",
@@ -4085,6 +4099,28 @@
       }
     },
     "customers": {
+      "extras": {
+        "tags": "Tags",
+        "tagsHint": "Short words to group customers, like VIP or Corporate. Up to 12.",
+        "addTag": "Add tag",
+        "removeTag": "Remove tag",
+        "saveTags": "Save tags",
+        "notes": "Notes",
+        "notePlaceholder": "Anything colleagues should know about this customer",
+        "addNote": "Add note",
+        "noNotes": "No notes yet.",
+        "merge": "Same person, another number",
+        "mergeHint": "Merge a second number of this customer here: its requests and orders show on this page. You can undo it.",
+        "mergePhone": "The other mobile number",
+        "mergeSubmit": "Merge into this customer",
+        "merged": "Numbers merged here",
+        "unmerge": "Unmerge",
+        "saved": "Saved",
+        "failed": "That did not work. Check the number and try again.",
+        "badPhone": "Type a Bangladesh mobile number, like 01712-345678"
+      },
+      "export": "Export CSV",
+      "tagFilter": "Tag",
       "metaTitle": "Customers",
       "title": "Customers",
       "profileTitle": "Customer",
@@ -5764,7 +5800,8 @@
         "staff-code-locked": "Sign-in paused at the code (to that staff member)",
         "system-alert-staff": "Server running low (to admins)",
         "quote-customer": "Quote sent (to the customer)",
-        "quote-accepted-staff": "Quote accepted (to staff)"
+        "quote-accepted-staff": "Quote accepted (to staff)",
+        "summary-report-staff": "Daily and weekly summary (to chosen staff)"
       },
       "tone": {
         "default": "Normal",
@@ -5801,7 +5838,9 @@
         "payments": "Payment proofs",
         "feedback": "Feedback",
         "stock": "Low stock",
-        "system": "Server running low (disk, memory)"
+        "system": "Server running low (disk, memory)",
+        "daily-report": "Daily summary (leads, bookings, orders)",
+        "weekly-report": "Weekly summary (every Saturday)"
       }
     },
     "blueprints": {

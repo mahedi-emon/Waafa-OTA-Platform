@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Query,
+  Patch,
   Res,
   UseGuards,
 } from "@nestjs/common";
@@ -17,6 +18,8 @@ import type { StaffPrincipal } from "../auth/principal";
 import { CSV_BOM } from "../common/csv";
 import { XLSX_TYPE } from "../common/xlsx";
 import { parseInput, problems } from "../common/problem";
+import { AuditService } from "../audit/audit.service";
+import { CustomerProfilesService } from "./customerProfiles.service";
 import { AdminCustomerAccountsService } from "./customerAccounts.service";
 import { AdminCustomersService } from "./customers.service";
 import { AdminReportsService, type ReportDataset } from "./reports.service";
@@ -37,6 +40,12 @@ const AttachSchema = z
     reference: z.string().trim().min(3).max(40),
   })
   .strict();
+const TagsSchema = z.object({ tags: z.array(z.string().trim().min(1).max(30)).max(12) }).strict();
+const NoteSchema = z.object({ body: z.string().trim().min(1).max(2000) }).strict();
+const MergeSchema = z
+  .object({ into: z.string().regex(/^\+880\d{10}$/, "A Bangladesh mobile number") })
+  .strict();
+
 const CustomerQuerySchema = z
   .object({
     q: z.string().trim().max(80).optional(),
@@ -46,12 +55,20 @@ const CustomerQuerySchema = z
       .int()
       .refine((size) => [25, 50, 100].includes(size))
       .optional(),
+    tag: z.string().trim().min(1).max(30).optional(),
     sort: z
       .enum(["last.asc", "last.desc", "spent.asc", "spent.desc", "orders.asc", "orders.desc"])
       .optional(),
   })
   .strict();
 const PHONE = /^\+\d{8,15}$/;
+
+/** A customer phone from the address, or a 404. */
+function phoneParam(value: string): string {
+  const decoded = decodeURIComponent(value);
+  if (!PHONE.test(decoded)) throw problems.notFound();
+  return decoded;
+}
 
 /** Reports (#111): managers and accounts see the summary and download CSVs in a date range. */
 @Controller("admin/reports")
@@ -96,7 +113,35 @@ export class AdminCustomersController {
   constructor(
     @Inject(AdminCustomersService) private readonly customers: AdminCustomersService,
     @Inject(AdminCustomerAccountsService) private readonly accounts: AdminCustomerAccountsService,
+    @Inject(CustomerProfilesService) private readonly profiles: CustomerProfilesService,
+    @Inject(AuditService) private readonly audit: AuditService,
   ) {}
+
+  /** Every customer this person may see, as CSV (issue 244). */
+  @Get("export.csv")
+  async exportCsv(
+    @Staff() staff: StaffPrincipal,
+    @Query() query: unknown,
+    @Res() reply: FastifyReply,
+  ) {
+    const { q, tag } = parseInput(CustomerQuerySchema, query);
+    const csv = await this.customers.csv(staff, { ...(q ? { q } : {}), ...(tag ? { tag } : {}) });
+    await this.auditExport(staff);
+    reply
+      .header("content-type", "text/csv; charset=utf-8")
+      .header("content-disposition", 'attachment; filename="waafa-customers.csv"')
+      .header("cache-control", "no-store")
+      .send(CSV_BOM + csv);
+  }
+
+  private async auditExport(staff: StaffPrincipal) {
+    await this.audit.record({
+      actor: staff,
+      action: "customer.export",
+      entity: "customer",
+      entityId: "all",
+    });
+  }
 
   @Get()
   list(@Staff() staff: StaffPrincipal, @Query() query: unknown) {
@@ -144,9 +189,53 @@ export class AdminCustomersController {
 
   @Get(":phone")
   async detail(@Staff() staff: StaffPrincipal, @Param("phone") phone: string) {
-    const decoded = decodeURIComponent(phone);
-    if (!PHONE.test(decoded)) throw problems.notFound();
+    const decoded = phoneParam(phone);
     const profile = await this.customers.detail(staff, decoded);
-    return { ...profile, account: await this.accounts.forProfile(staff, decoded, profile.email) };
+    if (profile.mergedInto) return profile;
+    return {
+      ...profile,
+      account: await this.accounts.forProfile(staff, decoded, profile.email ?? null),
+    };
+  }
+
+  /** Tags on a customer (issue 244): short words staff choose, up to 12. */
+  @Patch(":phone/tags")
+  async tags(@Staff() staff: StaffPrincipal, @Param("phone") phone: string, @Body() body: unknown) {
+    const decoded = phoneParam(phone);
+    await this.customers.detail(staff, decoded);
+    return { tags: await this.profiles.setTags(staff, decoded, parseInput(TagsSchema, body).tags) };
+  }
+
+  @Post(":phone/notes")
+  async note(@Staff() staff: StaffPrincipal, @Param("phone") phone: string, @Body() body: unknown) {
+    const decoded = phoneParam(phone);
+    await this.customers.detail(staff, decoded);
+    await this.profiles.addNote(staff, decoded, parseInput(NoteSchema, body).body);
+    return this.customers.detail(staff, decoded);
+  }
+
+  /** Merge a duplicate number into this customer's (issue 244); Admin and Super Admin, audited. */
+  @Post(":phone/merge")
+  @HttpCode(200)
+  @Roles("admin")
+  async merge(
+    @Staff() staff: StaffPrincipal,
+    @Param("phone") phone: string,
+    @Body() body: unknown,
+  ) {
+    const decoded = phoneParam(phone);
+    const { into } = parseInput(MergeSchema, body);
+    await Promise.all([this.customers.detail(staff, decoded), this.customers.detail(staff, into)]);
+    await this.profiles.merge(staff, decoded, into);
+    return this.customers.detail(staff, into);
+  }
+
+  @Post(":phone/unmerge")
+  @HttpCode(200)
+  @Roles("admin")
+  async unmerge(@Staff() staff: StaffPrincipal, @Param("phone") phone: string) {
+    const decoded = phoneParam(phone);
+    await this.profiles.unmerge(staff, decoded);
+    return this.customers.detail(staff, decoded);
   }
 }

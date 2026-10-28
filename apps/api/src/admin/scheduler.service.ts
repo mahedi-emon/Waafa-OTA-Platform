@@ -22,6 +22,7 @@ import { NotificationService } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { RemindersService } from "../realtime/reminders.service";
 import { RoundRobinService } from "../realtime/roundRobin.service";
+import { SummaryReportsService } from "./summaryReports.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { lowResources, readResources } from "./resourceAlert";
 import { ContentService } from "../content/content.service";
@@ -54,6 +55,8 @@ export type TickResult = {
   /** Reminders that fell due and became alerts, and after-hours leads handed out at opening (issue 243). */
   reminders: number;
   handedOut: number;
+  /** Daily and weekly summary emails sent this pass (issue 244). */
+  summaries: string[];
 };
 
 /** How long staff sign-in history is kept (issue 234). */
@@ -67,6 +70,7 @@ const EMPTY: TickResult = {
   files: 0,
   reminders: 0,
   handedOut: 0,
+  summaries: [],
 };
 
 const isCollectionKey = (key: string): key is CollectionKey =>
@@ -98,6 +102,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
     @Inject(CustomerFilesService) private readonly files: CustomerFilesService,
     @Inject(RemindersService) private readonly reminders: RemindersService,
     @Inject(RoundRobinService) private readonly roundRobin: RoundRobinService,
+    @Inject(SummaryReportsService) private readonly summaries: SummaryReportsService,
   ) {}
 
   onModuleInit(): void {
@@ -144,6 +149,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
       await this.alertResources(now);
       const reminders = await this.reminders.alertDue(now);
       const handedOut = await this.roundRobin.catchUp(now);
+      const summaries = await this.summaries.sendDue(now);
       return {
         published: result.published,
         windows,
@@ -152,6 +158,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
         files,
         reminders,
         handedOut,
+        summaries,
       };
     } finally {
       this.running = false;

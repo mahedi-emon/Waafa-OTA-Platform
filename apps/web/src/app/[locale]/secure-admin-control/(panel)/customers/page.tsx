@@ -6,6 +6,8 @@ import { CustomerTabs } from "@/components/admin/CustomerTabs";
 import { AdminDataTable } from "@/components/admin/table/AdminDataTable";
 import { pageSizeOf, sortOf } from "@/components/admin/table/listQuery";
 import type { ColumnSpec, DataRow } from "@/components/admin/table/types";
+import { Download } from "@/components/icons/server/Download";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminGet } from "@/lib/admin/adminApi";
 import { displayPhone, formatDhakaDateTime, initialsOf, pageParam, taka } from "@/lib/admin/format";
@@ -18,6 +20,7 @@ type CustomerRow = {
   orders: number;
   spent: number;
   lastActivityAt: string;
+  tags?: string[];
 };
 type CustomerList = { items: CustomerRow[]; total: number; page: number; pageSize: number };
 
@@ -43,12 +46,15 @@ async function Customers({
 }) {
   const params = await searchParams;
   const q = typeof params.q === "string" ? params.q.slice(0, 80) : "";
+  // Issue 244: a tag from a customer's page narrows the list; Export CSV takes the same filters.
+  const tag = typeof params.tag === "string" ? params.tag.slice(0, 30) : "";
   const sort = sortOf(params.sort, SORTS);
   const [list, t, tc] = await Promise.all([
     adminGet<CustomerList>("/admin/customers", {
       page: pageParam(params.page),
       pageSize: pageSizeOf(params.pageSize),
       ...(q ? { q } : {}),
+      ...(tag ? { tag } : {}),
       ...(sort ? { sort } : {}),
     }),
     getTranslations("Admin.customers"),
@@ -70,6 +76,10 @@ async function Customers({
         orders: { text: String(row.orders), kind: "money" },
         spent: { text: taka(row.spent), kind: "money" },
         last: { text: last, kind: "date" },
+        tags: {
+          text: (row.tags ?? []).join(", "),
+          ...(row.tags?.length ? {} : { kind: "muted" as const }),
+        },
       },
       summary: [
         { label: t("colPhone"), value: displayPhone(row.phone) },
@@ -78,6 +88,7 @@ async function Customers({
         { label: t("colOrders"), value: String(row.orders) },
         { label: t("colSpent"), value: taka(row.spent) },
         { label: t("colLast"), value: last },
+        ...(row.tags?.length ? [{ label: t("tagFilter"), value: row.tags.join(", ") }] : []),
       ],
     };
   });
@@ -88,11 +99,27 @@ async function Customers({
     { key: "orders", label: t("colOrders"), sort: "orders", align: "end" },
     { key: "spent", label: t("colSpent"), sort: "spent", align: "end" },
     { key: "last", label: t("colLast"), sort: "last" },
+    { key: "tags", label: t("tagFilter") },
   ];
+  const exportQuery = new URLSearchParams({
+    ...(q ? { q } : {}),
+    ...(tag ? { tag } : {}),
+  }).toString();
 
   return (
     <>
-      <AdminPageHeader title={t("title")} lead={t("lead")} />
+      <AdminPageHeader
+        title={t("title")}
+        lead={t("lead")}
+        actions={
+          <Button asChild variant="secondary" size="sm">
+            <a href={`${PATH}/export${exportQuery ? `?${exportQuery}` : ""}`} download>
+              <Download aria-hidden="true" />
+              {t("export")}
+            </a>
+          </Button>
+        }
+      />
       <CustomerTabs current="customers" />
       <AdminDataTable
         listKey="customers"

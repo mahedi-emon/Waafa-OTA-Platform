@@ -557,6 +557,15 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     enabled: true,
   },
   {
+    key: "summary-report-staff",
+    audience: "Staff chosen for summaries",
+    channel: "email",
+    subject: "Waafa {{period}} summary: {{headline}}",
+    body: "Here is the {{period}} summary for {{range}} (Bangladesh time).\n\n{{summary}}\n\nOpen Reports for the details and downloads: {{link}}.",
+    variables: ["{{period}}", "{{headline}}", "{{range}}", "{{summary}}", "{{link}}"],
+    enabled: true,
+  },
+  {
     key: "quote-customer",
     audience: "Customer, with a quote",
     channel: "email",

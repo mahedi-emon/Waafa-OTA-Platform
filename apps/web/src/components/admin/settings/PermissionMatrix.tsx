@@ -16,13 +16,21 @@ const ROLES: Role[] = [
   "accounts",
 ];
 
-type PermissionMatrixProps = { roleNames: Record<Role, string> };
+type PermissionMatrixProps = {
+  roleNames: Record<Role, string>;
+  /** Custom roles (issue 244): a column each, allowed where any role it grants is. */
+  custom?: Array<{ id: string; name: string; grants: Role[] }>;
+};
 
 /**
  * Who can open what, read-only (ADMIN.md §5.6): every sidebar screen and settings section against every role, from
  * the same rules the sidebar and the API use, so it can never disagree with them.
  */
-async function PermissionMatrix({ roleNames }: PermissionMatrixProps) {
+async function PermissionMatrix({ roleNames, custom = [] }: PermissionMatrixProps) {
+  const columns = [
+    ...ROLES.map((role) => ({ key: role, label: roleNames[role], roles: [role] })),
+    ...custom.map((role) => ({ key: role.id, label: role.name, roles: role.grants })),
+  ];
   const [t, tn, ts] = await Promise.all([
     getTranslations("Admin.users.matrix"),
     getTranslations("Admin.nav"),
@@ -67,13 +75,13 @@ async function PermissionMatrix({ roleNames }: PermissionMatrixProps) {
               >
                 {t("screen")}
               </th>
-              {ROLES.map((role) => (
+              {columns.map((column) => (
                 <th
-                  key={role}
+                  key={column.key}
                   scope="col"
                   className="px-2 py-3 text-center font-semibold text-navy-900"
                 >
-                  {roleNames[role]}
+                  {column.label}
                 </th>
               ))}
             </tr>
@@ -83,7 +91,7 @@ async function PermissionMatrix({ roleNames }: PermissionMatrixProps) {
               <tr>
                 <th
                   scope="colgroup"
-                  colSpan={ROLES.length + 1}
+                  colSpan={columns.length + 1}
                   className="bg-mist-25 px-5 py-2 text-left text-[12.5px] font-semibold text-mist-700"
                 >
                   {group.label}
@@ -97,10 +105,10 @@ async function PermissionMatrix({ roleNames }: PermissionMatrixProps) {
                   >
                     {row.label}
                   </th>
-                  {ROLES.map((role) => {
-                    const yes = row.can(role);
+                  {columns.map((column) => {
+                    const yes = column.roles.some((role) => row.can(role));
                     return (
-                      <td key={role} className="relative px-2 py-2.5 text-center">
+                      <td key={column.key} className="relative px-2 py-2.5 text-center">
                         {yes ? (
                           <Check aria-hidden="true" className="mx-auto size-4 text-success-600" />
                         ) : (

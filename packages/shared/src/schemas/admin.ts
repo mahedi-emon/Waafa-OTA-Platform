@@ -282,9 +282,27 @@ export const StaffUpdateInputSchema = z
     roles: z.array(RoleSchema).min(1).optional(),
     status: z.enum(["active", "deactivated"]).optional(),
     takesLeads: z.boolean().optional(),
+    /** Custom roles (issue 244) by id. */
+    customRoleIds: z.array(IdSchema).max(10).optional(),
   })
   .strict()
   .refine(somethingToChange, { message: "Nothing to change" });
+
+/** Built-in roles a custom role may bundle (issue 244): never Super Admin or Admin. */
+export const GRANTABLE_ROLES = [
+  "travel-sales",
+  "visa-officer",
+  "content-editor",
+  "shop-manager",
+  "accounts",
+] as const satisfies readonly Role[];
+
+export const CustomRoleInputSchema = z
+  .object({
+    name: z.string().trim().min(2).max(40),
+    grants: z.array(z.enum(GRANTABLE_ROLES)).min(1).max(GRANTABLE_ROLES.length),
+  })
+  .strict();
 
 export const PasswordSetInputSchema = z.object({ password: PasswordSchema }).strict();
 
@@ -491,4 +509,5 @@ export type ContentListQuery = z.infer<typeof ContentListQuerySchema>;
 export type ContentBulkInput = z.infer<typeof ContentBulkInputSchema>;
 export type StaffCreateInput = z.infer<typeof StaffCreateInputSchema>;
 export type StaffUpdateInput = z.infer<typeof StaffUpdateInputSchema>;
+export type CustomRoleInput = z.infer<typeof CustomRoleInputSchema>;
 export type ContentWriteInput = z.infer<typeof ContentWriteInputSchema>;

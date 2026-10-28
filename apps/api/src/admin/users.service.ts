@@ -66,6 +66,8 @@ export class AdminUsersService {
       twoStep: Boolean(user.totpEnabledAt),
       /** Round-robin (issue 243): takes new leads in turn for the services their roles open. */
       takesLeads: user.takesLeads,
+      /** Custom roles (issue 244) by id. */
+      customRoleIds: user.customRoleIds,
       createdAt: toDhakaIsoString(user.createdAt),
       /** An invite that is still open (sent, not yet used); an expired one can be sent again. */
       invite: user.inviteHash
@@ -155,6 +157,13 @@ export class AdminUsersService {
       if (others === 0)
         throw problems.conflict("Keep at least one active Super Admin", "last-super-admin");
     }
+    if (input.customRoleIds && input.customRoleIds.length > 0) {
+      const known = await this.prisma.customRole.count({
+        where: { id: { in: input.customRoleIds } },
+      });
+      if (known !== new Set(input.customRoleIds).size)
+        throw problems.badRequest("Pick roles from the list");
+    }
     const updated = await this.prisma.$transaction(async (tx) => {
       const next = await tx.staffUser.update({
         where: { id },
@@ -163,9 +172,10 @@ export class AdminUsersService {
           ...(input.roles ? { roles: input.roles } : {}),
           ...(input.status ? { status: input.status } : {}),
           ...(input.takesLeads !== undefined ? { takesLeads: input.takesLeads } : {}),
+          ...(input.customRoleIds ? { customRoleIds: [...new Set(input.customRoleIds)] } : {}),
         },
       });
-      if (input.status === "deactivated" || input.roles) {
+      if (input.status === "deactivated" || input.roles || input.customRoleIds) {
         // New roles take effect at the next sign-in; a deactivated person is signed out everywhere.
         await tx.staffSession.updateMany({
           where: { userId: id, revokedAt: null },
@@ -183,6 +193,7 @@ export class AdminUsersService {
             roles: user.roles,
             status: user.status,
             takesLeads: user.takesLeads,
+            customRoleIds: user.customRoleIds,
           },
           after: input,
         },

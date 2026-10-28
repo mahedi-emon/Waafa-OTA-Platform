@@ -3,7 +3,9 @@ import { toDhakaIsoString } from "@waafa/shared";
 import type { StaffPrincipal } from "../auth/principal";
 import { problems } from "../common/problem";
 import { PrismaService } from "../prisma/prisma.service";
+import { toCsv } from "../common/csv";
 import { canSeeOrders, leadModulesFor } from "./access";
+import { CustomerProfilesService } from "./customerProfiles.service";
 
 const NOT_SOLD = ["cancelled", "returned"];
 const PAGE_SIZE = 50;
@@ -16,6 +18,8 @@ export type CustomerRow = {
   orders: number;
   spent: number;
   lastActivityAt: string;
+  /** Staff tags (issue 244). */
+  tags: string[];
 };
 
 type Group = { phone: string; leads: number; orders: number; spent: number; last: Date };
@@ -64,11 +68,14 @@ export function sortCustomers(groups: Group[], sort: CustomerSort | undefined): 
  */
 @Injectable()
 export class AdminCustomersService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(CustomerProfilesService) private readonly profiles: CustomerProfilesService,
+  ) {}
 
   async list(
     staff: StaffPrincipal,
-    query: { q?: string; page?: number; pageSize?: number; sort?: CustomerSort },
+    query: { q?: string; tag?: string; page?: number; pageSize?: number; sort?: CustomerSort },
   ) {
     const page = Math.max(1, query.page ?? 1);
     const pageSize = query.pageSize ?? PAGE_SIZE;
@@ -108,21 +115,42 @@ export class AdminCustomersService {
         })
       : [];
     const spentBy = new Map(soldTotals.map((row) => [row.phone, row._sum.total ?? 0]));
-    const merged = mergeCustomers(
+    // Merged numbers (issue 244) count under the customer they joined.
+    const alias = await this.profiles.aliases();
+    const canon = (phone: string) => alias.get(phone) ?? phone;
+    let merged = mergeCustomers(
       leadGroups.map((row) => ({
-        phone: row.phone,
+        phone: canon(row.phone),
         count: row._count._all,
         last: row._max.createdAt,
       })),
       orderGroups.map((row) => ({
-        phone: row.phone,
+        phone: canon(row.phone),
         count: row._count._all,
         spent: spentBy.get(row.phone) ?? 0,
         last: row._max.createdAt,
       })),
     );
+    if (query.tag) {
+      const wanted = query.tag.toLowerCase();
+      const tagged = await this.prisma.customerProfile.findMany({
+        where: { tags: { isEmpty: false } },
+        select: { phone: true, tags: true },
+      });
+      const keep = new Set(
+        tagged
+          .filter((row) => row.tags.some((tag) => tag.toLowerCase() === wanted))
+          .map((row) => row.phone),
+      );
+      merged = merged.filter((row) => keep.has(row.phone));
+    }
     const slice = sortCustomers(merged, query.sort).slice((page - 1) * pageSize, page * pageSize);
-    const phones = slice.map((row) => row.phone);
+    const primaries = slice.map((row) => row.phone);
+    const phones = [
+      ...primaries,
+      ...[...alias.entries()].filter(([, into]) => primaries.includes(into)).map(([from]) => from),
+    ];
+    const tags = await this.profiles.tagsFor(primaries);
     const [leadNames, orderNames] = await Promise.all([
       this.prisma.lead.findMany({
         where: { phone: { in: phones }, module: { in: leadModulesFor(staff) } },
@@ -141,9 +169,10 @@ export class AdminCustomersService {
     ]);
     const latest = new Map<string, { name: string; email: string | null; at: Date }>();
     for (const row of [...leadNames, ...orderNames]) {
-      const current = latest.get(row.phone);
+      const phone = canon(row.phone);
+      const current = latest.get(phone);
       if (!current || row.createdAt > current.at) {
-        latest.set(row.phone, { name: row.name, email: row.email, at: row.createdAt });
+        latest.set(phone, { name: row.name, email: row.email, at: row.createdAt });
       }
     }
     const items: CustomerRow[] = slice.map((row) => ({
@@ -154,15 +183,38 @@ export class AdminCustomersService {
       orders: row.orders,
       spent: row.spent,
       lastActivityAt: toDhakaIsoString(row.last),
+      tags: tags.get(row.phone) ?? [],
     }));
     return { items, total: merged.length, page, pageSize };
   }
 
+  /** Every customer this person may see, with tags and totals, as CSV (issue 244; formulas neutralised). */
+  async csv(staff: StaffPrincipal, query: { q?: string; tag?: string }): Promise<string> {
+    const { items } = await this.list(staff, { ...query, page: 1, pageSize: 10_000 });
+    return toCsv(
+      ["Phone", "Name", "Email", "Requests", "Orders", "Spent (BDT)", "Last activity", "Tags"],
+      items.map((row) => [
+        row.phone,
+        row.name,
+        row.email ?? "",
+        row.leads,
+        row.orders,
+        row.spent,
+        row.lastActivityAt,
+        row.tags.join("; "),
+      ]),
+    );
+  }
+
   async detail(staff: StaffPrincipal, phone: string) {
+    const extras = await this.profiles.extras(phone);
+    // A merged number opens the customer it joined (issue 244).
+    if (extras.mergedInto) return { phone, mergedInto: extras.mergedInto } as const;
+    const phones = [phone, ...extras.mergedPhones];
     const orders = canSeeOrders(staff);
     const [leads, orderRows] = await Promise.all([
       this.prisma.lead.findMany({
-        where: { phone, module: { in: leadModulesFor(staff) } },
+        where: { phone: { in: phones }, module: { in: leadModulesFor(staff) } },
         orderBy: { createdAt: "desc" },
         take: 200,
         select: {
@@ -178,7 +230,7 @@ export class AdminCustomersService {
       }),
       orders
         ? this.prisma.order.findMany({
-            where: { phone },
+            where: { phone: { in: phones } },
             orderBy: { createdAt: "desc" },
             take: 200,
             select: {
@@ -193,13 +245,17 @@ export class AdminCustomersService {
           })
         : Promise.resolve([]),
     ]);
-    if (leads.length === 0 && orderRows.length === 0)
+    if (leads.length === 0 && orderRows.length === 0 && extras.notes.length === 0)
       throw problems.notFound("No customer with this phone");
     const newest = [...leads, ...orderRows].sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     )[0];
     return {
       phone,
+      mergedInto: null,
+      tags: extras.tags,
+      notes: extras.notes,
+      mergedPhones: extras.mergedPhones,
       name: newest?.name ?? "",
       email: [...leads, ...orderRows].find((row) => row.email)?.email ?? null,
       spent: orderRows
