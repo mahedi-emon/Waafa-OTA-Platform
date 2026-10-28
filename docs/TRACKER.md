@@ -38,6 +38,19 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #303 · Lighter images, RAM and disk on the VPS — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's decisions of 28 Oct (evening), item 3 and OPTIMISE |
+| Measured before | images (`docker images`): api 2.07 GB live (`7af26e7`) / 1.82 GB on main (`8694513`), web 571 / 599 MB, nginx 74 MB; API 199 MB and worker 198 MB RAM at rest; admin first-load JS lists ≈ 306 KB, editors 380–400 KB |
+| Built | API image: Alpine with only the node binary; `scripts/build.mjs` bundles everything (Nest, Fastify, Prisma client and query compiler, pg) into dist/ with shared chunks; `scripts/collect-runtime.mjs` copies only sharp, argon2, pdfkit, bullmq and ioredis with their dependencies (46 MB); `prisma` moved to devDependencies; `dist/migrate.js` applies migrations with pg, compatible with `prisma migrate deploy` (same table, lock 72707369, SHA-256 checksums, one transaction per migration, P3009 stop). Web image: Alpine with only the node binary and the traced standalone server; Next image disk cache capped at 512 MB. Every image carries `org.opencontainers.image.revision` (deploy.sh exports GIT_REVISION when building); Status page shows release and commit. Compose (both): logs 10 MB × 3, API limit 512 MB, ClamAV `ConcurrentDatabaseReload no`, `./backups` read only into the API. backup.sh keeps `BACKUP_KEEP_DAYS` (default 7); deploy.sh removes unused images older than a week; Docker Hub keeps 10 releases plus `deploy/LIVE_RELEASE` (now `7af26e7`). Settings › System status: "What fills the disk" (database, photos and videos, customer files, backups; nginx 600 MB and image 512 MB caps). `scripts/measure-stack.sh` in the VPS smoke and Docker images workflow: image budgets (api 400, web 500, nginx 100 MB), revision labels, `docker stats` of every container, whole stack ≤ 3 GB. RELEASE.md from `7af26e7` with the server files and curl commands |
+| Measured after | api 270 MB, web 464 MB (fixture build), API 130 MB and worker 100 MB RAM at rest; stack in CI (see PR) |
+| Tests | API DB `applyMigrations.test.ts` 4, `status.test.ts` 2; API unit `diskUsage.unit.test.ts` 2; container runs (fresh DB migrate + seed, sharp/argon2/pdfkit/bullmq, worker); VPS smoke: upgrade rehearsal from 7af26e7 + measure-stack; QA plan `docs/qa/303-optimise.md` (OP-01..20) |
+| Migration | none; deploy/server compose.yml, deploy.sh, backup.sh change (RELEASE.md) |
+| Decision | D313, D314, D315 |
+| Tools and skills | Context7 (Next `images.maximumDiskCacheSize`); clamav-docker sources (CLAMD_CONF_ env); Docker Hub API; Serena memories |
+| PR · CI minutes | (PR open) |
+
 ### #298 · Quote builder: options, baggage, validity, branded PDF, accept page — 🟡 In review
 | Field | Value |
 | --- | --- |
@@ -1986,6 +1999,9 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 | D309 | 30 Oct | Bookings: one Booking per lead, created in the same transaction as Convert and kept when the lead is reopened (a second Convert corrects the amount); payment status follows amount and paid unless Refunded; Accounts see every booking, other roles follow lead access; documents reuse the customer files store (owner "booking") | Owner, 28 Oct | #242 |
 | D310 | 31 Oct | Quote builder: the customer's link is `<quote id>-<HMAC signature>` with JWT_SECRET (staff can copy it again; withdrawing closes it; a dot would send it past the locale proxy); emails carry the link, not an attachment (the queue stays small) and the PDF is rendered on demand by the API with pdfkit 0.20.2 (new dependency: the smallest maintained Node PDF writer that embeds fonts and mixes them in a line, needed for ৳) with Inter, Plus Jakarta Sans and Hind Siliguri WOFF files in apps/api/assets; accepting withdraws the lead's other open quotes; Convert starts with the accepted price; sending is the lead's "Log quote" step | Owner, 28 Oct | #298 |
+| D313 | 28 Oct | Images: API and web on Alpine with only the node binary (no npm, corepack, pnpm); the API bundles every npm dependency except sharp, argon2, pdfkit, bullmq and ioredis (copied with their dependencies by collect-runtime.mjs) and applies migrations with its own pg runner compatible with `prisma migrate deploy` (Prisma CLI is a dev tool only). Budgets enforced by measure-stack.sh: api 400 MB, web 500 MB, nginx 100 MB, stack 3 GB. The web target of 250 MB is not met: 127 MB is the node binary and about 110 MB the prerendered pages and their prefetch segments (`partialPrefetching`), which keep pages instant; dropping them would trade speed for disk, so it stays and is revisited with #271 | Owner targets (D312); measured: api 2.07 GB → 270 MB, web 571 → 464 MB | #303 |
+| D314 | 28 Oct | ClamAV stays always on (customer uploads are scanned within seconds) with `ConcurrentDatabaseReload no`: one signature set in memory, so the daily reload no longer doubles the peak; scans wait about a minute during that reload (the worker retries every 10 s). On-demand clamscan was rejected (each scan loads the whole database, about 20 s and the same peak memory) and stopping clamd when idle needs the Docker socket in a container (a security cost) | Steady stack under 3 GB with clamd loaded; the trade-off is a one-minute pause a day | #303 |
+| D315 | 28 Oct | Disk: container logs 10 MB × 3; backups `BACKUP_KEEP_DAYS` (default 7, was 14), compressed; unused images older than a week removed after each deploy; Docker Hub keeps 10 releases and always `deploy/LIVE_RELEASE`; Next image cache 512 MB; nginx cache 600 MB (existing); uploads already stored once as WebP; Trash already purged after 30 days. Admin first-load JS measured (lists ≈ 306 KB, editors 380–400 KB with heavy parts on demand); further admin splitting goes with #257 rather than risk the shell now | Owner (D312 item 3) | #303 |
 
 ## 9. Bugs and known issues
 

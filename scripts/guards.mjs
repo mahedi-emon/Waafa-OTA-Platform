@@ -173,7 +173,7 @@ for (const file of files.filter((f) => f.startsWith("apps/web/messages/") && f.e
     );
   const server = settings("deploy/server/compose.yml");
   // Build arguments only: they are baked into the images the bundle pulls.
-  const buildOnly = new Set(["TURNSTILE_SITE_KEY"]);
+  const buildOnly = new Set(["TURNSTILE_SITE_KEY", "GIT_REVISION"]);
   for (const name of settings("deploy/compose.yml")) {
     if (!server.has(name) && !buildOnly.has(name))
       fail("deploy/server/compose.yml", 0, `missing \${${name}} (deploy/compose.yml passes it)`);

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Daily backup (the same script ships in deploy/server for the image-only server, issue 164): the PostgreSQL dump, the uploaded photos and the customer files, 14 of each kept in
+# Daily backup (the same script ships in deploy/server for the image-only server, issue 164): the PostgreSQL dump, the uploaded photos and the customer files, BACKUP_KEEP_DAYS of each (default 7) kept in
 # ./backups, plus a copy of each to the off-site storage card in Admin › Integrations when it is On (issue 239).
 # deploy.sh installs the cron lines itself (BACKUP_CRON=off in .env to skip):
 #   15 3 * * * cd /opt/waafa && sh backup.sh >> backups/backup.log 2>&1
@@ -38,6 +38,10 @@ if [ "${1:-}" = "--drill" ]; then
   exit 0
 fi
 
+# Issue 303: keep BACKUP_KEEP_DAYS days of backups (one a day, default 7), compressed; older ones are removed.
+keep=$(sed -n "s/^BACKUP_KEEP_DAYS=//p" .env 2>/dev/null | tr -d '\r' | head -n 1)
+case "$keep" in "" | *[!0-9]*) keep=7 ;; esac
+[ "$keep" -ge 1 ] || keep=1
 stamp=$(date +%Y%m%d-%H%M)
 file="backups/waafa-$stamp.sql.gz"
 $COMPOSE exec -T postgres pg_dump -U waafa --no-owner waafa | gzip > "$file"
@@ -45,12 +49,12 @@ if [ "$(wc -c < "$file")" -lt 1024 ]; then
   echo "$(date) backup too small: $file" >&2
   exit 1
 fi
-ls -1t backups/waafa-*.sql.gz | tail -n +15 | xargs -r rm --
+ls -1t backups/waafa-*.sql.gz | tail -n +$((keep + 1)) | xargs -r rm --
 $COMPOSE exec -T api tar -czf - -C /data/media . > "backups/waafa-$stamp.media.tar.gz"
-ls -1t backups/waafa-*.media.tar.gz | tail -n +15 | xargs -r rm --
+ls -1t backups/waafa-*.media.tar.gz | tail -n +$((keep + 1)) | xargs -r rm --
 # Customer files (issue 232: visa documents, payment slips): readable by the server owner only.
 (umask 077 && $COMPOSE exec -T api tar -czf - -C /data/private . > "backups/waafa-$stamp.private.tar.gz")
-ls -1t backups/waafa-*.private.tar.gz | tail -n +15 | xargs -r rm --
+ls -1t backups/waafa-*.private.tar.gz | tail -n +$((keep + 1)) | xargs -r rm --
 echo "$(date) backup ok: $file"
 
 # Off-site copy (issue 239): the API sends each file to the Cloudflare R2 or Backblaze B2 card that is On.

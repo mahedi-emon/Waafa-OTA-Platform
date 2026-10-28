@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 const acceptQuote = vi.fn();
 const verifyTurnstile = vi.fn();
@@ -17,13 +17,20 @@ function post(body: unknown, headers: Record<string, string> = {}) {
 }
 
 describe("POST /api/quotes/accept (issue 298)", () => {
+  let POST: (request: Request) => Promise<Response>;
+
+  // The route pulls in the lead and rate-limit modules: a cold import under a busy test run took over 5 s and timed
+  // out the first test, so it loads once here with room to spare.
+  beforeAll(async () => {
+    ({ POST } = await import("./route"));
+  }, 30_000);
+
   beforeEach(() => {
     acceptQuote.mockReset();
     verifyTurnstile.mockReset().mockResolvedValue(true);
   });
 
   it("accepts a signed link and an option after the Turnstile check", async () => {
-    const { POST } = await import("./route");
     acceptQuote.mockResolvedValue({ ok: true, quote: { state: "accepted" } });
     const response = await POST(post({ token: TOKEN, optionId: "o2", turnstileToken: "t" }));
     expect(response.status).toBe(200);
@@ -32,7 +39,6 @@ describe("POST /api/quotes/accept (issue 298)", () => {
   });
 
   it("refuses cross-site posts, bad links and a failed check before reaching the API", async () => {
-    const { POST } = await import("./route");
     expect(
       (await POST(post({ token: TOKEN, optionId: "o1" }, { "sec-fetch-site": "cross-site" })))
         .status,
@@ -44,7 +50,6 @@ describe("POST /api/quotes/accept (issue 298)", () => {
   });
 
   it("passes on the API's refusals: another option, expired", async () => {
-    const { POST } = await import("./route");
     acceptQuote.mockResolvedValueOnce({ ok: false, status: 409, error: "conflict" });
     const conflict = await POST(
       post({ token: TOKEN, optionId: "o1" }, { "x-forwarded-for": "10.9.0.2" }),

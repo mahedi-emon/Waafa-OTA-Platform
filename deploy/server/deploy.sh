@@ -98,6 +98,7 @@ if [ "$(setting BACKUP_CRON)" != "off" ] && command -v crontab > /dev/null 2>&1;
   echo "Backups: daily at 03:15 and a restore drill on the 1st (crontab; BACKUP_CRON=off to skip)"
 fi
 
-docker image prune -f > /dev/null
+# Issue 303: unused images older than a week go (earlier releases stay on Docker Hub for a rollback), then layers.
+docker image prune -af --filter "until=168h" > /dev/null
 $COMPOSE ps
 echo "Done: https://$DOMAIN (release $TAG). Admin: https://$DOMAIN/secure-admin-control"
