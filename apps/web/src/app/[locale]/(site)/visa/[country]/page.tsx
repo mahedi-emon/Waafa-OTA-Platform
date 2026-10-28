@@ -45,12 +45,24 @@ export async function generateMetadata({
   if (!country) return {};
   const title = country.seo.title ?? t("metaTitle", { country: country.name });
   const description = country.seo.description ?? t("metaDescription", { country: country.name });
-  return withSocial({
-    title,
-    description,
-    alternates: { canonical: `/visa/${country.slug}` },
-    ...recordRobots(country),
-  });
+  // Its own photo when it has one, else a share card in the brand colours (issue 287).
+  const image = country.cover
+    ? {
+        url: country.cover.src,
+        alt: country.cover.alt,
+        width: country.cover.width,
+        height: country.cover.height,
+      }
+    : { url: `/og/visa/${country.slug}.png`, alt: title, width: 1200, height: 630 };
+  return withSocial(
+    {
+      title,
+      description,
+      alternates: { canonical: `/visa/${country.slug}` },
+      ...recordRobots(country),
+    },
+    { image },
+  );
 }
 
 const h2 = "font-display text-[22px] font-bold text-navy-900";
