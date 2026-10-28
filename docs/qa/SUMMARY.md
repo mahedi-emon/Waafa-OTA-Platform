@@ -12,5 +12,6 @@ checkpoint updates this table.
 | Errors and status (#238) | [238-status-errors.md](238-status-errors.md) | 14 | 8 | 6 (real Sentry or GlitchTip, worker stopped, retry or discard on the real stack: UAT) | unit 3, admin-screens sweep in CI | 2 (test worker crash from the DSN read, axe on the failed-emails table) | 2 | 0 |
 | Backups and security (#239) | [239-backups-security.md](239-backups-security.md) | 12 | 7 | 5 (BACKUP_CRON=off, a broken dump, wrong off-site key, alert email, staging: UAT) | API limit test, SigV4 and alert unit tests, VPS smoke (cron, backup, drill) in CI | 1 (flaky order test: variant had 3 in stock, #289) | 1 | 0 |
 | Rename (#302) | [302-rename.md](302-rename.md) | 16 | 15 | 1 (U-14 share card in WhatsApp) | unit and API DB passing locally; e2e in CI | 0 | 0 | 0 |
+| Reminders and alerts (#243) | [243-reminders-alerts.md](243-reminders-alerts.md) | 21 | 18 | 3 (chime by ear, three browsers in #259, exploratory) | API DB 5 + unit 13 passing locally; e2e admin-alerts in CI API mode | 0 | 0 | 0 |
 
-Totals: 142 cases · 119 automated · 23 manual · 12 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5) · 0 open (performance target follow-up #271).
+Totals: 163 cases · 137 automated · 26 manual · 12 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5) · 0 open (performance target follow-up #271).

@@ -1,4 +1,6 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-28 (evening, real date) — Owner decisions D312. #302 rename merged (#304, 61 min). #303 optimise in CI (#306).
+  #243 reminders/mentions/round-robin/SSE built, local verify, PR next. Then #244 onward.
 - 2026-10-31 — #293 (#238, 129 min) and #299 docs merged; #300 (#242 bookings, 68 min, migration bookings + seed patch
   back-fill) merged. #298 quote builder (split from #242) built and in CI as PR #301 (full-ci; migration quotes, seed
   patch quote templates, pdfkit). Next: #243.

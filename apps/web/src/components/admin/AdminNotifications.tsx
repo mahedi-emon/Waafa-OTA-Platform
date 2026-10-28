@@ -114,8 +114,15 @@ function AdminNotifications() {
       {live}
       <Popover open={open} onOpenChange={toggle}>
         <PopoverTrigger asChild>{trigger}</PopoverTrigger>
-        <PopoverContent align="end" sideOffset={8} className="w-[400px] gap-0 overflow-hidden p-0">
-          <p className="px-4 pt-3 font-display text-[15px] font-bold text-navy-900">{t("title")}</p>
+        <PopoverContent
+          align="end"
+          sideOffset={8}
+          aria-labelledby="bell-title"
+          className="w-[400px] gap-0 overflow-hidden p-0"
+        >
+          <p id="bell-title" className="px-4 pt-3 font-display text-[15px] font-bold text-navy-900">
+            {t("title")}
+          </p>
           {used ? <AdminNotificationsBody {...body} /> : null}
         </PopoverContent>
       </Popover>

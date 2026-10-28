@@ -31,6 +31,7 @@ Prisma applies only the ones the live database does not have yet, in this order,
 | `20261029010000_order_source` | #237 | where a buyer came from (UTM, referrer, landing page) on each order |
 | `20261030010000_bookings` | #242 | a booking record per converted lead (PNR, tickets, amount, payments, documents) |
 | `20261031010000_quotes` | #298 | quotes on leads (options, last valid day, the accepted option) |
+| `20261101010000_reminders_alerts` | #243 | reminders, personal bell alerts, and the round-robin switch per staff member |
 
 One-time data patches (`_seedPatches`, never over staff edits) run after the migrations: workflow, invite, low-stock,
 new-device, code-locked and customer sign-in email templates; #284 adds `2026-10-28-integration-cards`; #239 adds
@@ -69,6 +70,7 @@ copy for them.
 | GA4, GTM, Meta Pixel IDs, Search Console and Bing codes | Admin › Integrations › Measurement (#284) | check the cards are On |
 | Customer accounts | Settings › Site › Accounts live (#241) | turn on when ready |
 | Staff two-step sign-in | required for Super Admin and Admin (#234) | each of them sets up an authenticator app at first sign-in |
+| Round-robin for new leads | Admin › Users › a person › Takes new leads in turn (#243) | turn it on for the staff who should get new requests in turn (off for everyone after the deploy) |
 
 ## Keys to enter in Admin › Integrations (all off until saved)
 
