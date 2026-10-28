@@ -32,6 +32,8 @@ import { getProduct } from "@/lib/data/shop";
 import { getPackage } from "@/lib/data/travel";
 import { dialCode, isPhoneCountry } from "@/lib/leads/phone";
 import { AccountRequestCard } from "./_components/AccountRequestCard";
+import { BuyAgainButton } from "@/components/account/BuyAgainButton";
+import { buyAgainLines } from "@/lib/shop/buyAgain";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Account.account");
@@ -123,6 +125,10 @@ async function AccountContent({
   ]);
   const error = params.error === "confirm" || params.error === "delete" ? params.error : undefined;
   const { customer, orders } = account;
+  // Buy again (issue 246): orders that reached the customer, at today's prices.
+  const again = await buyAgainLines(
+    orders.filter((order) => order.status === "delivered" || order.status === "shipped"),
+  );
   const requests = account.requests.filter((request) => request.module !== "visa");
   const visas = account.requests.filter((request) => request.module === "visa");
   const saved = await resolveWishlist(account.wishlist, {
@@ -296,6 +302,12 @@ async function AccountContent({
                         {t("total", { total: formatTaka(order.total) })}
                       </span>
                     </p>
+                    {again.get(order.reference) ? (
+                      <BuyAgainButton
+                        lines={again.get(order.reference) ?? []}
+                        label={t("buyAgain")}
+                      />
+                    ) : null}
                   </li>
                 ))}
               </ul>

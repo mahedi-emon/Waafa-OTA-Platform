@@ -129,7 +129,7 @@ export class CustomerAccountService {
         where: mine,
         orderBy: { createdAt: "desc" },
         take: LIST_LIMIT,
-        select: { reference: true, status: true, total: true, createdAt: true },
+        select: { reference: true, status: true, total: true, createdAt: true, items: true },
       }),
       this.prisma.customerWishlistItem.findMany({ where: mine, orderBy: { createdAt: "desc" } }),
       this.prisma.customerTraveller.findMany({ where: mine, orderBy: { createdAt: "asc" } }),
@@ -161,7 +161,29 @@ export class CustomerAccountService {
       hasPassword: customer.passwordHash !== null,
       preferences: { notifyOffers: customer.notifyOffers },
       requests,
-      orders: orders.map((order) => ({ ...order, createdAt: toDhakaIsoString(order.createdAt) })),
+      orders: orders.map((order) => ({
+        reference: order.reference,
+        status: order.status,
+        total: order.total,
+        createdAt: toDhakaIsoString(order.createdAt),
+        items: (
+          order.items as Array<{
+            productId: string;
+            variantId: string;
+            title: string;
+            variantLabel?: string;
+            sku: string;
+            quantity: number;
+          }>
+        ).map((item) => ({
+          productId: item.productId,
+          variantId: item.variantId,
+          title: item.title,
+          ...(item.variantLabel ? { variantLabel: item.variantLabel } : {}),
+          sku: item.sku,
+          quantity: item.quantity,
+        })),
+      })),
       wishlist: wishlist.map((item) => ({
         kind: item.kind as WishlistItem["kind"],
         slug: item.slug,

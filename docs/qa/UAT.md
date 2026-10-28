@@ -30,3 +30,5 @@ lines here; automated tests already cover the same flows, these are the checks o
 | U-22 | Reviews (#245) | A package you booked through the site with your own account | Open the package page signed in, write a review; approve it in Admin › Reviews and questions | It shows with your first name and initial, "travelled with us" and your reply; Google's Rich Results test shows the rating on products only after approved reviews | ☐ |
 | U-23 | Product questions (#245) | Any product page on the phone | Ask a question; answer it in Admin | It appears on the product page with the answer within a minute | ☐ |
 | U-24 | Feedback photos (#245) | /feedback with a photo, then Admin › Feedback | Approve it | The photo shows on the wall; before approval it is nowhere public | ☐ |
+| U-25 | Save for later (#246) | /shop/cart on the phone with two items | Tap "Save for later" on one, then "Move to cart" | It moves below as Saved for later and back; totals follow | ☐ |
+| U-26 | Buy again (#246) | My account › Orders, a delivered order | Tap "Buy again" | The cart opens with the same items at today's prices (sold-out or hidden-price items left out) | ☐ |

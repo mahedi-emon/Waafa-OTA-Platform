@@ -1565,6 +1565,13 @@
     }
   },
   "Cart": {
+    "saved": {
+      "title": "Saved for later ({count})",
+      "move": "Move to cart",
+      "moveLabel": "Move to cart: {title}",
+      "remove": "Remove",
+      "removeLabel": "Remove: {title}"
+    },
     "metaTitle": "Your cart",
     "title": "Your cart",
     "itemsLine": "{count, plural, one {# item} other {# items}} in your cart",
@@ -1591,6 +1598,8 @@
       "more": "One more of {title}",
       "remove": "Remove",
       "removeLabel": "Remove {title} from your cart",
+      "save": "Save for later",
+      "saveLabel": "Save for later: {title}",
       "inStock": "In stock",
       "onlyLeft": "Only {count} left",
       "preOrder": "Pre-order",
@@ -2239,6 +2248,7 @@
       "requestsLead": "Flights, hotels, holidays, visas and quotes on your account: sent with {email}, or with your phone number when they had no email.",
       "requestsEmpty": "No requests on your account yet. When you send one, it shows here with its status.",
       "ordersTitle": "Your Waafa’s World orders",
+      "buyAgain": "Buy again",
       "ordersEmpty": "No orders on your account yet.",
       "reference": "Reference",
       "sent": "Sent {date}",

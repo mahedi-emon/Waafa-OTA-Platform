@@ -38,6 +38,16 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #246 · Save for later and Buy again — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 6 (FR-SHOP-13; the wishlist itself shipped in #278) |
+| Built | Cart lines and "Saved for later" as two localStorage lists from one `createLineStore` (tabs stay in step; blocked storage keeps the page working); Save for later on each cart line, a Saved for later section with Move to cart and Remove, shown under the empty cart too. Buy again: the account view carries each order's items (ids, words, quantities); delivered or shipped orders get a Buy again button that adds today's price and stock (sold-out, removed or hidden-price items left out) and opens the cart |
+| Tests | web unit `useCart.test.ts` 2, `buyAgain.test.ts` 1; e2e `cart-saved.spec.ts` at 390 and 1440 with axe and scroll width; budget cart 191 KB, account 182 KB; QA plan `docs/qa/246-save-for-later.md` (SL-01..10); UAT U-25, U-26. Found and fixed on the way: axe label-content-name-mismatch on the new buttons, an 84 px overflow at 390 px in the cart line row; and on #245 the admin Reviews page prerendering at build without the API |
+| Migration | none |
+| Tools and skills | Playwright e2e and budget; no new library |
+| PR · CI minutes | (PR open) |
+
 ### #245 · Reviews from real customers, product Q&A, feedback photos — 🟡 In review
 | Field | Value |
 | --- | --- |
