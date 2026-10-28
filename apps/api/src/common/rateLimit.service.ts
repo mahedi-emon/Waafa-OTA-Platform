@@ -42,6 +42,9 @@ export const RATE_RULES = {
   quotes: { limit: 60, windowMs: 60_000 },
   /** Accepting a quote (issue 298): twice the web's 5 a minute. */
   quoteAccept: { limit: 10, windowMs: 60_000 },
+  /** Reviews and product questions (issue 245): twice the web's 5 a minute. */
+  reviews: { limit: 10, windowMs: 60_000 },
+  questions: { limit: 10, windowMs: 60_000 },
 } satisfies Record<string, RateRule>;
 
 export type RateBucket = keyof typeof RATE_RULES;

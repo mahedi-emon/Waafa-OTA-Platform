@@ -96,7 +96,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-PKG-05 | P0 | Sticky booking card / mobile bar, Send query (Manual) | done | [slug]/_components/BookingCard.tsx, BookingBar.tsx | — | — |
 | FR-PKG-06 | P0 | Package query lead PKG-… with package, date, travellers, room | done | [slug]/_components/PackageQuery.tsx; e2e/packages.spec.ts | — | — |
 | FR-PKG-07 | P0 | Plan My Trip custom request lead CTR-… | done | site/plan-my-trip | — | — |
-| FR-PKG-08 | P1 | Package reviews and wishlist | missing | — | Whole feature | #245, #246 |
+| FR-PKG-08 | P1 | Package reviews and wishlist | done | reviews: api/reviews/*, components/reviews/ReviewsSection.tsx on the package page (only travellers with a booked request; moderated), api/test/reviews.test.ts, e2e/admin-reviews.spec.ts (#245); wishlist: My account (#278) | — | #245, #278 |
 | FR-PKG-09 | P2 | Instant booking with online payment and balance reminders | missing | — | Phase 2 | Phase E (#32) |
 | FR-VISA-01 | P0 | Country list: search, region filter, cards with flag, fee, time | done | site/visa; components/visa/VisaCountryCard.tsx; e2e/visa.spec.ts | — | — |
 | FR-VISA-02 | P0 | Country page tab per type: checklist, fees split, forms, FAQs | done | site/visa/[country]; shared/schemas/visa.ts (embassyFee, serviceCharge, forms) | — | — |
@@ -130,7 +130,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-SHOP-10 | P0 | Stock per variant drops on order, returns on cancel; low-stock alerts | done | api/public/intake.service.ts (low-stock-staff when a variant reaches lowStockAt); apps/api/test/public.test.ts | — | #233 |
 | FR-SHOP-11 | P0 | Printing Solutions page + quote form PRN-… with attachment | done | site/shop/printing-solutions; components/services/PrintingRequest.tsx | — | #232 |
 | FR-SHOP-12 | P0 | Trading page + RFQ form TRD-… with attachments | done | site/shop/international-trading; TradingRequest.tsx | — | #232 |
-| FR-SHOP-13 | P1 | Reviews, wishlist, save for later, campaign pages, flash sales, Q&A, Buy again, online pay | missing | product page has only a WhatsApp "ask a question" link | All of it; SSLCommerz/bKash = waiting-owner (stubs only) | #245, #246, #247, #251 |
+| FR-SHOP-13 | P1 | Reviews, wishlist, save for later, campaign pages, flash sales, Q&A, Buy again, online pay | partial | reviews (delivered orders only) and moderated Q&A with Product AggregateRating from approved reviews (#245); wishlist (#278) | save for later, Buy again (#246), campaigns and flash sales (#247), online pay (#251) | #246, #247, #251 |
 | FR-SHOP-14 | P1 | Courier booking/tracking (Steadfast/Pathao/RedX) + SMS on dispatch | waiting for owner account | manual courier + tracking fields in admin/orders.service.ts | No courier adapter code at all; needs courier account | #253 |
 | FR-SHOP-15 | P3 | Corporate accounts, negotiated price lists, VAT invoices | missing | — | Phase 3 | Phase 3 (later) |
 

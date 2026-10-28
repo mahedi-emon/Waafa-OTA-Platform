@@ -23,6 +23,7 @@ const ICONS: Record<InboxCountKey, LucideIcon> = {
   ordersToConfirm: PackageCheck,
   proofsToVerify: BadgeCheck,
   feedbackToReview: MessageSquareText,
+  reviewsToModerate: MessageSquareText,
   lowStock: PackageMinus,
   groupFaresEnding: Plane,
   sampleLeft: Sparkles,

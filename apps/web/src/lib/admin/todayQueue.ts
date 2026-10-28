@@ -13,6 +13,7 @@ const QUEUE: ReadonlyArray<{ key: InboxCountKey; href: string }> = [
   { key: "ordersToConfirm", href: `${ADMIN}/orders?status=placed` },
   { key: "proofsToVerify", href: `${ADMIN}/payments` },
   { key: "feedbackToReview", href: `${ADMIN}/feedback` },
+  { key: "reviewsToModerate", href: `${ADMIN}/reviews` },
   { key: "lowStock", href: `${ADMIN}/content/products?chip=lowStock` },
   { key: "groupFaresEnding", href: `${ADMIN}/content/groupFares` },
   { key: "sampleLeft", href: `${ADMIN}/content` },

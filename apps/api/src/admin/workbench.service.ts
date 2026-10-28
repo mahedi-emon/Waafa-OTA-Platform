@@ -88,6 +88,14 @@ export class AdminWorkbenchService {
       count("proofsToVerify", this.prisma.paymentProof.count({ where: { status: "received" } }));
     if (hasAny(staff, "content-editor"))
       count("feedbackToReview", this.prisma.feedback.count({ where: { status: "pending" } }));
+    if (hasAny(staff, "content-editor", "shop-manager", "travel-sales"))
+      count(
+        "reviewsToModerate",
+        Promise.all([
+          this.prisma.review.count({ where: { status: "pending" } }),
+          this.prisma.productQuestion.count({ where: { status: "pending" } }),
+        ]).then(([reviews, questions]) => reviews + questions),
+      );
     if (hasAny(staff, "shop-manager"))
       count(
         "lowStock",

@@ -245,3 +245,28 @@ export async function signInWithPassword(
     return { ok: false, reason: "unavailable" };
   }
 }
+
+/** Whether the signed-in customer may review a package or product (issue 245); signed out when there is no session. */
+export async function reviewEligibility(
+  kind: "package" | "product",
+  targetId: string,
+  token: string | undefined,
+): Promise<{ signedIn: boolean; eligible: boolean; reviewed: boolean }> {
+  const none = { signedIn: false, eligible: false, reviewed: false };
+  const api = apiConfig();
+  if (!api || !token) return none;
+  try {
+    const query = new URLSearchParams({ kind, targetId }).toString();
+    const answer = (await callApi(api, `/api/v1/public/account/reviews/eligibility?${query}`, {
+      headers: sessionHeaders(token),
+      timeoutMs: 5_000,
+    })) as Partial<typeof none>;
+    return {
+      signedIn: answer.signedIn === true,
+      eligible: answer.eligible === true,
+      reviewed: answer.reviewed === true,
+    };
+  } catch {
+    return none;
+  }
+}

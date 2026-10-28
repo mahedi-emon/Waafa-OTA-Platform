@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { Inject, Injectable } from "@nestjs/common";
 import type { z } from "zod";
 import {
@@ -17,6 +19,8 @@ import { ContentService } from "../content/content.service";
 import type { Prisma } from "../generated/prisma/client";
 import { NotificationService } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { MediaService } from "../media/media.service";
+import { ENV, type Env } from "../config/env";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { dhakaDate } from "./access";
 
@@ -38,7 +42,50 @@ export class AdminInboxService {
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
     @Inject(NotificationService) private readonly notifier: NotificationService,
+    @Inject(MediaService) private readonly media: MediaService,
+    @Inject(ENV) private readonly env: Env,
   ) {}
+
+  /**
+   * An approved feedback's photo goes public (issue 245): the private upload, once its malware scan passed (or when no
+   * scanner is set up), is optimised into the media library and the feedback points at that copy. Anything else
+   * (not scanned yet, a hit, not a photo) approves the words alone and says why.
+   */
+  private async publishPhoto(
+    staff: StaffPrincipal,
+    item: { id: string; name: string; photo: unknown },
+  ): Promise<{ photo: Record<string, unknown> | null; note: string | null }> {
+    const ref = item.photo as { storageKey?: unknown; src?: unknown } | null;
+    if (!ref) return { photo: null, note: null };
+    if (typeof ref.src === "string") return { photo: ref as Record<string, unknown>, note: null };
+    if (typeof ref.storageKey !== "string") return { photo: null, note: null };
+    const file = await this.prisma.customerFile.findUnique({
+      where: { storageKey: ref.storageKey },
+    });
+    if (!file) return { photo: null, note: "photo-missing" };
+    const scanned =
+      file.scanStatus === "clean" || (!this.env.CLAMAV_URL && file.scanStatus === "unscanned");
+    if (!scanned) return { photo: null, note: "photo-not-scanned" };
+    try {
+      const bytes = await readFile(path.join(path.resolve(this.env.PRIVATE_FILES_DIR), file.path));
+      const saved = await this.media.upload(staff, bytes, file.mimeType, {
+        alt: `Photo shared by ${item.name}`,
+        credit: item.name,
+      });
+      return {
+        photo: {
+          src: saved.url,
+          alt: saved.alt,
+          width: saved.width,
+          height: saved.height,
+          credit: item.name,
+        },
+        note: null,
+      };
+    } catch {
+      return { photo: null, note: "photo-not-image" };
+    }
+  }
 
   async feedback(query: z.output<typeof FeedbackListQuerySchema>) {
     const contains = (value: string) => ({ contains: value, mode: "insensitive" as const });
@@ -96,10 +143,20 @@ export class AdminInboxService {
     if (input.status === "approved" && !item.consentToPublish) {
       throw problems.conflict("The customer did not agree to publish this feedback", "no-consent");
     }
+    // Issue 245: on approval a clean photo becomes public; a rejected one stays private.
+    const published =
+      input.status === "approved"
+        ? await this.publishPhoto(staff, item)
+        : { photo: null, note: null };
     await this.prisma.$transaction(async (tx) => {
       await tx.feedback.update({
         where: { id },
-        data: { status: input.status, moderatedAt: now, moderatedBy: staff.name },
+        data: {
+          status: input.status,
+          moderatedAt: now,
+          moderatedBy: staff.name,
+          ...(published.photo ? { photo: published.photo as Prisma.InputJsonValue } : {}),
+        },
       });
       await this.audit.record(
         {
@@ -115,7 +172,7 @@ export class AdminInboxService {
     });
     this.content.invalidate();
     this.revalidate.request(["feedback"]);
-    return { id, status: input.status };
+    return { id, status: input.status, ...(published.note ? { photoNote: published.note } : {}) };
   }
 
   /** Payment proofs by status; "received" is the To verify queue: received and matched proofs (D0 R4). */

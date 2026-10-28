@@ -733,3 +733,47 @@ model CustomRole {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
+
+// Reviews and product questions (issue 245) ---------------------------------------------------------------------
+
+/// A review from a real customer: a booked request for the package or a delivered order with the product.
+model Review {
+  id         String    @id @default(cuid())
+  /// "package" or "product".
+  kind       String
+  targetId   String
+  customerId String
+  /// The booked lead or delivered order that made the customer eligible.
+  proof      String
+  name       String
+  rating     Int
+  title      String?
+  body       String
+  /// pending, approved or rejected.
+  status     String    @default("pending")
+  reply      String?
+  decidedAt  DateTime? @db.Timestamptz(3)
+  decidedBy  String?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@unique([kind, targetId, customerId])
+  @@index([kind, targetId, status])
+  @@index([status, createdAt])
+}
+
+/// A visitor's question on a product, shown only once staff answer it.
+model ProductQuestion {
+  id         String    @id @default(cuid())
+  productId  String
+  name       String
+  question   String
+  answer     String?
+  /// pending, published or hidden.
+  status     String    @default("pending")
+  answeredBy String?
+  answeredAt DateTime? @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([productId, status])
+  @@index([status, createdAt])
+}
