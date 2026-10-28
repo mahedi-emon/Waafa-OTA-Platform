@@ -31,6 +31,7 @@ export * from "./schemas/files";
 export * from "./schemas/workflow";
 export * from "./schemas/track";
 export * from "./schemas/bookings";
+export * from "./schemas/quotes";
 
 export * from "./content/registry";
 export * from "./content/publicPaths";

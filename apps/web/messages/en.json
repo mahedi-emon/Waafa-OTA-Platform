@@ -5694,7 +5694,9 @@
         "low-stock-staff": "Low stock (to the store team)",
         "staff-new-device": "New device sign-in (to that staff member)",
         "staff-code-locked": "Sign-in paused at the code (to that staff member)",
-        "system-alert-staff": "Server running low (to admins)"
+        "system-alert-staff": "Server running low (to admins)",
+        "quote-customer": "Quote sent (to the customer)",
+        "quote-accepted-staff": "Quote accepted (to staff)"
       },
       "tone": {
         "default": "Normal",

@@ -26,6 +26,8 @@ import { AdminCustomersController, AdminReportsController } from "./reports.cont
 import { AdminReportsService } from "./reports.service";
 import { AdminBookingsController } from "./bookings.controller";
 import { AdminBookingsService } from "./bookings.service";
+import { AdminQuotesController, PublicQuotesController } from "./quotes.controller";
+import { AdminQuotesService } from "./quotes.service";
 import { AdminStatusController } from "./status.controller";
 import { StatusService } from "./status.service";
 import { ContentScheduler } from "./scheduler.service";
@@ -40,6 +42,9 @@ import { AdminWorkbenchService } from "./workbench.service";
   imports: [MediaCoreModule, FilesCoreModule],
   controllers: [
     AdminBookingsController,
+    // Quotes (issue 298): the admin side and the customer's page by its signed link.
+    AdminQuotesController,
+    PublicQuotesController,
     AdminStatusController,
     AdminLeadsController,
     AdminVisaApplicationsController,
@@ -58,6 +63,7 @@ import { AdminWorkbenchService } from "./workbench.service";
   ],
   providers: [
     AdminBookingsService,
+    AdminQuotesService,
     StatusService,
     AdminLeadsService,
     MediaReplaceService,

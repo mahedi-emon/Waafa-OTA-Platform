@@ -38,6 +38,10 @@ export const RATE_RULES = {
   proofs: { limit: 10, windowMs: 60_000 },
   searchLogs: { limit: 60, windowMs: 60_000 },
   subscribers: { limit: 10, windowMs: 60_000 },
+  /** A customer's quote page and its PDF (issue 298), per visitor address. */
+  quotes: { limit: 60, windowMs: 60_000 },
+  /** Accepting a quote (issue 298): twice the web's 5 a minute. */
+  quoteAccept: { limit: 10, windowMs: 60_000 },
 } satisfies Record<string, RateRule>;
 
 export type RateBucket = keyof typeof RATE_RULES;
