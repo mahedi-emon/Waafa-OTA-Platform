@@ -28,9 +28,11 @@ Prisma applies only the ones the live database does not have yet, in this order,
 | `20261026120000_staff_two_step` | #234 | staff two-step sign-in, recovery codes, trusted devices, sign-in history |
 | `20261027090000_customer_sign_in` | #241 | customer email code sign-in, customer on leads and orders |
 | `20261027150000_customer_account_sections` | #278 | wishlist, saved travellers (sealed passport), addresses, optional password |
+| `20261029010000_order_source` | #237 | where a buyer came from (UTM, referrer, landing page) on each order |
 
 One-time data patches (`_seedPatches`, never over staff edits) run after the migrations: workflow, invite, low-stock,
-new-device, code-locked and customer sign-in email templates; #284 adds `2026-10-28-integration-cards`.
+new-device, code-locked and customer sign-in email templates; #284 adds `2026-10-28-integration-cards`; #239 adds
+`2026-10-29-system-alert-template` (disk and memory alerts).
 
 ## New or changed containers
 
@@ -44,12 +46,17 @@ The VPS needs about 1.6 GB more free memory than before for ClamAV.
 ## Server bundle (`deploy/server`) changes
 
 Copy the changed files from `deploy/server` to `/opt/waafa` before deploying (DEPLOY.md, "When deploy/server
-changes"): `compose.yml` (clamav, private files volume, Turnstile lines moved to the API, #284), `deploy.sh` and `backup.sh`.
+changes"): `compose.yml` (clamav, private files volume, Turnstile lines moved to the API, #284), `deploy.sh` (it now installs the backup cron, #239) and `backup.sh` (restore drill, off-site copy, #239).
 
 ## Settings that moved or are new
 
 | What | Where now | Owner action after deploy |
 | --- | --- | --- |
+| Daily backup and monthly restore drill | installed in cron by deploy.sh (#239) | none; `BACKUP_CRON=off` in .env only to opt out |
+| Off-site backup copy | Admin › Integrations › Errors and backups (R2 or B2) | create a bucket and a key, save the card, Test |
+| Error tracking | Admin › Integrations › Errors and backups (Sentry or GlitchTip DSN) | optional |
+| Who gets disk and memory alerts | Settings › Forms and messages › staff alerts, area "Server running low" | choose people (else STAFF_ALERT_EMAIL) |
+| System status, failed emails | Settings › System status (#238) | look after the deploy: everything green |
 | Turnstile site key and secret | Admin › Integrations › Sign-in and security (#284) | none if they were in `.env` (moved once); then empty both `.env` lines |
 | GA4, GTM, Meta Pixel IDs, Search Console and Bing codes | Admin › Integrations › Measurement (#284) | check the cards are On |
 | Customer accounts | Settings › Site › Accounts live (#241) | turn on when ready |

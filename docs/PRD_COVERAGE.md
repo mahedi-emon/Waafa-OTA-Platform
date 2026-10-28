@@ -19,15 +19,15 @@ Paths: `web/` = `apps/web/src/`, `site/` = `apps/web/src/app/[locale]/(site)/`, 
 `apps/web/src/app/[locale]/secure-admin-control/(panel)/`, `api/` = `apps/api/src/`, `shared/` = `packages/shared/src/`,
 `e2e/` = `apps/web/e2e/`.
 
-## Summary (updated 26 Oct 2026, after #233)
+## Summary (updated 29 Oct 2026, after #237, #238, #239, #287)
 
 | Priority | Rows | Status |
 | --- | --- | --- |
-| P0 (launch) | 116 | done 99 · partial 16 · missing 1 |
+| P0 (launch) | 116 | done 101 · partial 13 · missing 1 · waiting for owner account 1 |
 | P1 (Phase D, due 13 Nov) | 17 | done 2 · partial 8 · missing 5 · waiting for owner account 2 |
 | P2 (Phase E, live booking) | 8 | missing 8 |
 | P3 (scale) | 1 | missing 1 |
-| All | 142 | done 101 · partial 24 · missing 15 · waiting for owner account 2 |
+| All | 142 | done 103 · partial 21 · missing 15 · waiting for owner account 3 |
 
 **P0 not done (fixed first):** customer files never leave the browser (visa documents, payment proof, printing and
 trading attachments, feedback photo: the Phase A rule D87/D106/D109 was never lifted) → #232; visa status email never
@@ -210,10 +210,10 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
 | NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial | e2e/budget.spec.ts (31 routes ≤ 200 KB); scripts/lighthouse-run.mjs + apps/web/lighthouse.config.json (CI errors on a11y/BP/SEO/CLS); TRACKER #236 | 8 of 11 key routes at 90+ (Home 87, Hotels 86, Blog 88); lab LCP 2.6 to 4.0 s; performance and LCP are CI warnings (D298) | #271 |
-| NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | partial | api/auth/auth.service.ts; lib/security/securityHeaders.ts; nginx HSTS; providers/secretBox.ts; ci.yml CodeQL; dependabot.yml | API limits in Redis with the 10/h per-phone lead limit (#234); per-IP lead limits stay at the web's 10/min (API 20) rather than 5; CSP uses 'unsafe-inline' not nonce (documented); backups keep 14 days, no off-site copy; malware scan with ClamAV since #235 | #239 |
-| NFR-SEO | P0 | SSR titles, canonical, JSON-LD, split sitemap, OG images, llms.txt, GA4/GTM/Pixel events | partial | app/sitemap.ts, robots.ts, llms.txt; components/seo/*; e2e/seo.spec.ts | No conversion events (search, generate_lead, …, purchase); sitemap not split; OG = record photos, not generated images | #237 |
+| NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | done | lead limit 5/min per address (web) and 10 (API) + rateLimit.test; CSP exception in docs/SECURITY.md; daily backups and monthly drill (deploy/backup.sh, cron by deploy.sh); off-site copy via the R2/B2 card (api/offsite.ts); Turnstile from Admin (#284) | — | #239, #284 |
+| NFR-SEO | P0 | SSR titles, canonical, JSON-LD, split sitemap, OG images, llms.txt, GA4/GTM/Pixel events | done | sitemap index (app/sitemap.xml + app/sitemap/[part]); visa share cards app/og/visa; consented events lib/analytics/track.ts + components/analytics/EventBridge.tsx; UTM in proxy (lib/analytics/attribution.ts); e2e seo.spec, api-mode.spec | — | #237, #287 |
 | NFR-A11Y | P0 | WCAG 2.2 AA: contrast, focus, keyboard, labels, 44 px, skip link, reduced motion | done | skip link in app/[locale]/layout.tsx; AxeBuilder in 24 e2e specs | — | — |
-| NFR-OPS | P0 | 99.5% uptime, /health + /ready, Sentry, request-ID logs, envs, migrations, DLQ | partial | api/health/health.controller.ts; api/app.ts (pino, genReqId); deploy/* | Sentry not installed (no SDK; DSN waiting-owner); no staging environment; dead-letter only for email | #238, #239 (staging: owner decision) |
+| NFR-OPS | P0 | 99.5% uptime, /health + /ready, Sentry, request-ID logs, envs, migrations, DLQ | waiting for owner account | /health, /ready; Settings › System status (api/admin/status.service.ts); dead-letter list with Retry/Discard; error tracking to Sentry or GlitchTip from the Admin card (common/errorReporter.ts), off until the DSN; disk/memory alerts; staging bundle deploy/staging | Sentry or GlitchTip DSN and an uptime monitor account (owner); browser-side errors not sent (200 KB budget) | #238, #239 |
 | NFR-L10N | P0 (Bangla P1) | English strings in next-intl from day one; Dhaka time; dates; ৳ lakh | done (P0 scope) | apps/web/messages/en.json; shared/format | Bangla P1 missing (see FR-GLB-07) | #254 (Bangla) |
 | NFR-COMP | P0 | Last two versions of major browsers; Android 9+; layouts from 320 px | partial | e2e/public-screens.spec.ts (320–1440) | Only Chromium is tested; no Safari/Firefox/Samsung runs | #259 |
 | NFR-LEGAL | P0 | Privacy, terms, refund, contact live; consent on forms; analytics notice | done | policy pages; components/forms/ConsentField.tsx; components/analytics/ConsentBar.tsx | — | — |

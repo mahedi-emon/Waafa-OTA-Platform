@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 29 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, then #285 release note and upgrade rehearsal (in review), #237, #238/#239, #242–#244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 29 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, next #242–#244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,43 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #285 · Release note and upgrade rehearsal from the live release — 🟡 In review
+### #239 · Backups, restore drill, off-site copy, alerts, lead limit, CSP, staging — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 5 |
+| Built | deploy.sh (both) installs the 03:15 backup and the monthly restore drill in cron unless `BACKUP_CRON=off`; one backup.sh for deploy/ and deploy/server with `--drill` (restore into waafa_drill, check staff, content, settings, log lead and order counts, drop) and an off-site copy of each file through `node dist/offsite.js` (API: `files/offsiteStorage.ts`, S3 SigV4 PUT to the R2 or B2 card, no SDK; off = local only); the minute job emails the "system" alert recipients when disk is under 10 % or 2 GB or memory under 5 % (template `system-alert-staff`, seed patch `2026-10-29-system-alert-template`, at most every six hours); lead submits 5 a minute per address (web) and 10 (API) as the PRD sets; CSP without nonces documented as an exception in SECURITY.md; `deploy/staging` (README, env.example; `STAGING=1` lets staging run the live images) |
+| Tests | API `rateLimit.test.ts` (10 a minute per address), `offsiteStorage.unit.test.ts`, `resourceAlert.unit.test.ts`; VPS smoke step "Backups (cron, backup, restore drill)"; QA plan `docs/qa/239-backups-security.md` (B-01..12) |
+| Migration | none (seed patch); deploy/server: backup.sh and deploy.sh change; new optional .env lines BACKUP_CRON, STAGING |
+| Decision | D308 |
+
+### #238 · Error tracking, System status page, dead-letter list — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 5: error tracking for web, API and worker with release tags, a staff Status page, dead-letter handling for every queue |
+| Built | API: `common/errorReporter.ts` (Sentry envelope API without the SDK, GlitchTip compatible; DSN read from the error tracking card every minute; release from `WAAFA_RELEASE`; 30 a minute; never throws) used by ProblemFilter (unknown errors), the worker (emails that used every try, malware scan failures) and `POST /public/errors` (web server errors from `instrumentation.ts` onRequestError); `GET /admin/status` (release, database, Redis, worker heartbeat, queue counts, memory, disk) and the dead-letter list with Retry and Discard (audited) for the one BullMQ queue (notifications); worker heartbeat in Redis; API image ARG RELEASE. Web: Settings › System status page. Browser-side errors are not sent: an SDK or even a listener would push public pages over 200 KB; web server errors cover rendering and route handlers |
+| Tests | API unit `errorReporter.unit.test.ts` 3; admin-screens sweep includes the Status page; QA plan `docs/qa/238-status-errors.md` (E-01..14) |
+| Migration | none; `deploy/compose.yml` api build arg RELEASE |
+| Decision | D307 |
+
+### #237 · D measurement: conversion events after consent, UTM on leads and orders, Where leads come from — ✅ Done
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct (D303) step 4: consented GA4, GTM and Pixel events (search, lead_submit, order_placed, payment_proof_sent, whatsapp_click, call_click, sign_up, login, add_to_cart, begin_checkout); UTM and referrer on leads and orders; "Where leads come from"; split sitemap and generated share images (moved to #287 to keep the PR small) |
+| Built | Shared: LeadSourceSchema gains utm term and content, referrer and landing (all capped); OrderCreateInput takes an optional source. API: migration `20261029010000_order_source` (Order.source JSONB, additive); intake stores it; Reports summary `sources` (admin/leadSources.ts: UTM source with medium, known sites by name such as Google, Facebook, ChatGPT, else host, else channel, else Direct or unknown; leads, booked, orders, revenue). Web: the proxy remembers where a visit came from in the httpOnly first-party cookie `waafa_src` (UTM replaces, a plain referrer only fills, our own pages never count; no script on the page); /api/leads and /api/orders add it; `track()` announces conversions and `EventBridge`, mounted only inside the consented analytics scripts, sends each once to dataLayer, gtag (beacon) and the Pixel (standard names where Meta has one, BDT value), plus call and WhatsApp taps; Admin › Reports "Where leads come from" table |
+| Tests | web `attribution.test.ts` 3, `sendConversion.test.ts` 3; API `leadSources.unit.test.ts` 2; e2e `api-mode.spec.ts` (a UTM visit sets the httpOnly cookie, the contact lead is credited as "Newsletter (email)" with its campaign in Reports); QA plan `docs/qa/237-measurement.md` (M-01..14) |
+| Verify | guards, lint, typecheck, format, shared 155, web 701, API unit 101; web build; first-load JS / 200, /flights 192, package 192, product 192, checkout 183, /contact 197, /login 183 KB; the cookie checked on a local build |
+| Migration | `20261029010000_order_source` (additive): goes into docs/RELEASE.md |
+| Tools and skills | Serena; existing shadcn Table; Context7 and the design skills not run (one admin table in the existing report card style) |
+| Decision | D305 |
+
+### #295 · Bug: Home first-load JS 201 KB after the integration hub — ✅ Done
+| Field | Value |
+| --- | --- |
+| Found | The full suite on #291–#294: Home 201 KB first-load JS (budget 200); #286 added a client provider for the Turnstile key and the #283 dependency updates had used the last margin |
+| Fix | Turnstile site key in a meta tag read on first use; the card cart control and its arc load after hydration (the placeholder still adds). Home 198.6 KB |
+| PR · CI minutes | #296 (1e47138) · 61 |
+
+### #285 · Release note and upgrade rehearsal from the live release — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct (D303): no deploys during development; docs/RELEASE.md as one cumulative note from the live release to main; an upgrade rehearsal in the VPS deploy smoke (main, nightly, full-ci); hands-on checks in docs/qa/UAT.md |
@@ -1910,6 +1946,9 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D303 | 28 Oct | Owner's order of 28 Oct replaces D300: finish every P0 and P1 PRD row (exceptions: waiting for an owner account with the adapter built and off; Phase E and P3 rows); no deploys during development, one release at the end with docs/RELEASE.md and an upgrade rehearsal; an integration hub before D and E; checkpoints with local screenshot paths; hands-on checks in docs/qa/UAT.md; QA numbers in docs/qa/SUMMARY.md | Owner, 28 Oct | #284, #285 |
 | D304 | 28 Oct | Integration hub: every outside service is a provider card (new kinds captcha, analytics, monitoring, storage, alerts, courier). The site reads only catalog-listed public fields through `GET /public/integrations/status` in a cached accessor that every save expires (hours lifetime, seconds when the API is unreachable), so a change needs no rebuild and pages stay static. Turnstile tokens are checked by the API with the sealed secret; the web image carries no key. Saved secrets never come back (the audited reveal is removed; last 4 only). Measurement, monitoring, storage and Telegram cards have one Live set. A service whose last test failed is not used until a test passes. Settings › Tracking and the two verification fields retire (kept in the record, hidden); a seed patch moves their values and .env Turnstile keys onto the cards once | Owner, 28 Oct: one place, no redeploy, secrets never in the browser | #284 |
 | D306 | 29 Oct | Sitemap: /sitemap.xml is a route-handler index of five parts (/sitemap/<part>.xml); Next cannot serve a metadata sitemap beside it. Share images: a record photo when there is one (visa countries now share their cover), else a next/og text card in the brand colours at /og/<kind>/<slug>.png (text only, so no drawn or generated picture; the extension keeps it out of the locale proxy) | Owner, 28 Oct | #287 |
+| D305 | 28 Oct | Measurement: UTM, referrer and landing page remembered by the proxy in the httpOnly first-party cookie waafa_src (no script; UTM replaces, a referrer only fills, our own host never counts) and added to leads and orders (Order.source); conversions announced by track() and sent only by the EventBridge mounted inside the consented analytics scripts, once per reference; Reports "Where leads come from" | Owner, 28 Oct | #237 |
+| D307 | 29 Oct | Error tracking without an SDK: the API posts Sentry envelopes (GlitchTip reads them) to the DSN of the card that is On, read every minute by a Nest provider started after boot; the worker reports final job failures and scan errors; the web server reports request errors through instrumentation onRequestError → POST /public/errors. Browser errors are not sent (the 200 KB budget). Dead letters = the BullMQ failed list of the notifications queue, with audited Retry and Discard on Settings › System status | Owner, 28 Oct | #238 |
+| D308 | 29 Oct | Backups install themselves (cron from deploy.sh, BACKUP_CRON=off to opt out); one backup.sh for deploy/ and deploy/server with --drill; the off-site copy goes through the API (S3 SigV4 PUT, no SDK) to the R2 or B2 card; disk and memory alerts from the minute job (10 % or 2 GB disk, 5 % memory, six hours apart); lead limit 5 a minute per address (web) and 10 (API); CSP nonces stay out (documented exception); staging is an optional second VPS behind Cloudflare Access running the live images (STAGING=1) | Owner, 28 Oct | #239 |
 | D183 | 19 Oct | The admin follows `docs/design/ADMIN.md` (epic #201); the Admin* boards are no longer the floor; HANDOFF's admin row and the old admin page rules point to it | Owner feedback 19 Oct: confusing admin, raw forms, manual statuses; the boards encoded the same generic patterns | #190 |
 | D184 | 19 Oct | Admin sidebar stays midnight-950 (text mist-300 12.7:1, muted mist-400 8.3:1) with a light work surface | ui-ux-pro-max did not recommend a light sidebar; dark navigation separates moving around from working and keeps the brand | #190 |
 | D185 | 19 Oct | Status chips: six families (info, progress, success, warning, danger, neutral), each icon + word + colour + a "why" tooltip; new tokens sky-50 #ECF6FE, sky-700 #00459C, success-700 #005836, warning-800 #8C4A00, danger-700 #AF120D from ui-color-palette scales; existing hex values unchanged | Every chip pair ≥ 6.2:1; colour is never the only signal | #190 |
@@ -2012,6 +2051,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 29 Oct | Steps 3–5 of the owner's order: #284 hub merged after axe 4.14 fixes (#288); #287 sitemap index and share cards; #295 Home back under 200 KB; #285 release note and upgrade rehearsal (passed in CI from 541bd21); #237 measurement; #238 error tracking, System status, dead letters; #239 backups, drill, off-site copy, alerts, lead limit, CSP doc, staging | #284 #285 #287 #288 #289 #295 #237 #238 #239 | #286 #290 #296 #291 #292 #293 #294 | full suite green on each; rehearsal and backup drill run in the VPS smoke |
 | 28 Oct | Owner's order of 28 Oct (D303): Dependabot done (#188, #283 with the axe 4.14 logo fix); #278 merged after budget and test fixes; #284 integration hub built (API, web, deploy, seed patch) | #282, #278, #284, #285 | #283, #281 | shared 157, web 691, API unit 117; API DB tests and API-mode e2e in CI (no Docker locally) |
 | 27 Oct (night) | #279 merged (#241 F1 email code sign-in, 182 min, migration). #278 F2 built: My account sections (timeline, visa, wishlist, travellers sealed, addresses, offers opt-in, password, sign-ins, sign out other devices), Save on package and product pages, checkout prefill, password sign-in; API-mode e2e with a local Mailpit | #241, #278 | #279 | API account 7 · web unit 695 · e2e account-sections |
 | 27 Oct | #236 merged (PR #272, 5583bf7, 379 min): all public routes ≤ 200 KB, 8 of 11 key routes at Lighthouse 90+ in CI; CI caught record pages failing in API mode without Suspense (D299) before merge; #271 follow-up, #273 manual Lighthouse dispatch-only. Letter C done | #236, #271, #273 | #272 | unit 689 · e2e public + API mode green · CI Lighthouse budgets pass |
