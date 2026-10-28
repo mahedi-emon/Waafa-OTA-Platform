@@ -2827,6 +2827,7 @@
       "backOnline": "Back online"
     },
     "nav": {
+      "reviews": "Reviews and questions",
       "home": "Home",
       "inbox": "Inbox",
       "travel": "Travel",
@@ -2919,6 +2920,7 @@
           "ordersToConfirm": "Orders to confirm",
           "proofsToVerify": "Payment proofs",
           "feedbackToReview": "Feedback to review",
+          "reviewsToModerate": "Reviews and questions",
           "lowStock": "Low stock",
           "groupFaresEnding": "Group fares ending",
           "sampleLeft": "Sample content"
@@ -4467,6 +4469,7 @@
       }
     },
     "navHelp": {
+      "reviews": "Approve real customers' reviews and answer product questions",
       "dashboard": "Today's work, the numbers and what needs you first",
       "reports": "Leads, bookings, orders and searches by date",
       "leads": "Every request from the website, WhatsApp and calls",
@@ -4527,6 +4530,27 @@
       "page": "Page",
       "galleryAlbum": "Gallery album",
       "teamMember": "Team member"
+    },
+    "reviewsAdmin": {
+      "metaTitle": "Reviews and questions",
+      "title": "Reviews and questions",
+      "lead": "Reviews come only from customers who booked or received the item. Approve the real ones, reply if you like; answer product questions to show them.",
+      "reviews": "Reviews waiting",
+      "questions": "Questions waiting",
+      "noReviews": "No reviews waiting.",
+      "noQuestions": "No questions waiting.",
+      "package": "Package",
+      "product": "Product",
+      "proof": "Booked or delivered: {proof}",
+      "rating": "{rating} of 5",
+      "reply": "Reply (optional, shows under the review)",
+      "approve": "Approve",
+      "reject": "Reject",
+      "answer": "Answer",
+      "publish": "Publish answer",
+      "hide": "Hide",
+      "done": "Saved",
+      "failed": "That did not work. Try again."
     },
     "reminders": {
       "title": "Your reminders",
@@ -4590,6 +4614,7 @@
       "ordersToConfirm": "{count, plural, one {# order to confirm} other {# orders to confirm}}",
       "proofsToVerify": "{count, plural, one {# payment proof to check} other {# payment proofs to check}}",
       "feedbackToReview": "{count, plural, one {# feedback to review} other {# feedback to review}}",
+      "reviewsToModerate": "{count, plural, one {# review or question waiting} other {# reviews and questions waiting}}",
       "lowStock": "{count, plural, one {# product low on stock} other {# products low on stock}}",
       "groupFaresEnding": "{count, plural, one {# group fare ends this week} other {# group fares end this week}}",
       "sampleLeft": "{count, plural, one {# Sample record left} other {# Sample records left}}"
@@ -7711,6 +7736,39 @@
     "accept": "Accept",
     "decline": "No thanks",
     "privacy": "Privacy policy"
+  },
+  "Reviews": {
+    "title": "Reviews",
+    "summary": "{average} out of 5 from {count, plural, one {# review} other {# reviews}}",
+    "outOf": "{value} out of 5",
+    "emptyPackage": "No reviews yet. Reviews come only from travellers who booked this package with us.",
+    "emptyProduct": "No reviews yet. Reviews come only from customers who received this product.",
+    "by": "{name}",
+    "verifiedTrip": "travelled with us",
+    "verifiedOrder": "bought from us",
+    "reply": "Waafa replied:",
+    "write": "Write a review",
+    "signInPackage": "Booked this package with us? Sign in to review it",
+    "signInProduct": "Bought this from us? Sign in to review it",
+    "notEligiblePackage": "Reviews come from travellers who booked this package with us. Once your trip is booked, you can write one.",
+    "notEligibleProduct": "Reviews come from customers who received this product. Once your order is delivered, you can write one.",
+    "reviewed": "Thank you. Your review is with us; it shows here once a colleague has read it.",
+    "rating": "Your rating",
+    "ratingOption": "{value} of 5",
+    "reviewTitle": "Title (optional)",
+    "body": "Your review",
+    "bodyHint": "At least 10 characters. Please leave out phone numbers and email addresses.",
+    "submit": "Send review",
+    "thanks": "Thank you. Your review shows here once a colleague has read it.",
+    "failed": "That did not go through. Try again in a moment.",
+    "questions": "Questions and answers",
+    "noQuestions": "No questions yet. Ask one and our team will answer here.",
+    "askedBy": "Asked by {name}",
+    "ask": "Ask a question",
+    "yourName": "Your name",
+    "question": "Your question",
+    "askSubmit": "Send question",
+    "askThanks": "Thank you. Our team will answer here, usually within a working day."
   },
   "Wishlist": {
     "save": "Save",

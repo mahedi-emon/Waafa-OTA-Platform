@@ -34,6 +34,7 @@ export * from "./schemas/track";
 export * from "./schemas/bookings";
 export * from "./schemas/quotes";
 export * from "./schemas/alerts";
+export * from "./schemas/reviews";
 
 export * from "./content/registry";
 export * from "./content/publicPaths";

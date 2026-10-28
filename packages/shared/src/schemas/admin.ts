@@ -387,6 +387,8 @@ export const InboxCountKeySchema = z.enum([
   "ordersToConfirm",
   "proofsToVerify",
   "feedbackToReview",
+  /** Reviews and product questions waiting (issue 245). */
+  "reviewsToModerate",
   "lowStock",
   "groupFaresEnding",
   "sampleLeft",

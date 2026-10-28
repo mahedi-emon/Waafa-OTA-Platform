@@ -11,6 +11,7 @@ import { SectionHeading } from "@/components/content/SectionHeading";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { PackageCard } from "@/components/travel/PackageCard";
 import {
   Accordion,
@@ -554,6 +555,9 @@ async function PackagePageContent({
           </ul>
         </section>
       ) : null}
+
+      {/* Reviews from travellers who booked it (issue 245); TouristTrip has no rating in schema.org, so none in JSON-LD. */}
+      <ReviewsSection kind="package" targetId={pkg.id} path={`/tour-packages/${pkg.slug}`} />
     </main>
   );
 }

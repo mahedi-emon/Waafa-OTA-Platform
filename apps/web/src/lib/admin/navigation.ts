@@ -166,6 +166,14 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         roles: CONTENT,
         badge: "feedbackToReview",
       },
+      {
+        key: "reviews",
+        label: "reviews",
+        href: `${ADMIN}/reviews`,
+        icon: "feedback",
+        roles: ["content-editor", "shop-manager", "travel-sales"],
+        badge: "reviewsToModerate",
+      },
     ],
   },
   {

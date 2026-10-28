@@ -11,6 +11,9 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartVideo } from "@/components/media/SmartVideo";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { ReviewsSection } from "@/components/reviews/ReviewsSection";
+import { getReviewsFor } from "@/lib/data/reviews";
+import { reviewStructuredData } from "@/lib/seo/reviewStructuredData";
 import { BulkQuote } from "@/components/shop/BulkQuote";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { RecentlyViewed } from "@/components/shop/RecentlyViewed";
@@ -107,6 +110,8 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
     parent = categories.find((item) => item.id === next);
   }
   const url = absoluteUrl(`/shop/p/${product.slug}`);
+  // Only approved reviews from customers who received the product (issue 245); none means no rating at all.
+  const rated = reviewStructuredData(await getReviewsFor("product", product.id));
 
   return (
     <main id="main" className="site-container flex flex-col gap-12 pt-4 pb-40 md:pt-6 lg:pb-24">
@@ -120,6 +125,7 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
           sku: product.variants[0]?.sku,
           brand: { "@type": "Brand", name: brand },
           ...(category ? { category: category.name } : {}),
+          ...rated,
           // No price, no Offer: a hidden price (issue 178) never reaches structured data.
           ...(product.showPrice
             ? {
@@ -355,6 +361,8 @@ async function ProductContent({ params }: Pick<PageProps<"/[locale]/shop/p/[slug
           </ul>
         </section>
       ) : null}
+
+      <ReviewsSection kind="product" targetId={product.id} path={`/shop/p/${product.slug}`} />
 
       <RecentlyViewed
         title={t("product.recentlyViewed")}

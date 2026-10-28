@@ -30,6 +30,8 @@ export const CACHE_TAGS = {
   integrations: "integrations",
   /** Old record addresses that redirect after a link change (D0 R4). */
   redirects: "redirects",
+  /** Approved reviews and answered product questions (issue 245). */
+  reviews: "reviews",
 } as const;
 
 export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

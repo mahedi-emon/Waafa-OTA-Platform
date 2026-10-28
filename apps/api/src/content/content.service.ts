@@ -75,6 +75,10 @@ export class ContentService {
       contact: "private",
       service: item.service,
       ...(item.rating ? { rating: item.rating } : {}),
+      // Only a published copy (issue 245); a private upload reference never reaches the site.
+      ...(item.photo && typeof (item.photo as { src?: unknown }).src === "string"
+        ? { photo: item.photo }
+        : {}),
       comment: item.comment,
       consentToPublish: true,
       status: "approved",
