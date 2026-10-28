@@ -1,4 +1,5 @@
 import {
+  TicketCheck,
   BadgePercent,
   Bell,
   BookOpenText,
@@ -62,6 +63,7 @@ const ICONS: Record<AdminIconName, LucideIcon> = {
   visa: Globe,
   guide: BookOpenText,
   passport: IdCard,
+  bookings: TicketCheck,
   orders: ShoppingBag,
   proofs: Receipt,
   products: Package,

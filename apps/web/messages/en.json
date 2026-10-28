@@ -2867,7 +2867,8 @@
       "team": "Team",
       "mediaLibrary": "Media library",
       "settings": "Settings",
-      "trash": "Trash"
+      "trash": "Trash",
+      "bookings": "Bookings"
     },
     "common": {
       "save": "Save",
@@ -4437,7 +4438,8 @@
       "team": "Meet our team on Home and About us",
       "mediaLibrary": "Every photo and video, ready to reuse",
       "settings": "Contact details, payments, booking modes, users and more",
-      "trash": "Deleted records, restorable for 30 days"
+      "trash": "Deleted records, restorable for 30 days",
+      "bookings": "Every sale from a converted lead: PNR, tickets, payments and documents."
     },
     "newMenu": {
       "travel": "Travel",
@@ -7439,6 +7441,68 @@
       "retried": "Back in the queue",
       "discarded": "Removed",
       "failed": "That did not work. Try again."
+    },
+    "bookings": {
+      "metaTitle": "Bookings",
+      "title": "Bookings",
+      "lead": "Lead",
+      "search": "Reference, PNR, ticket, name or phone",
+      "searchButton": "Search",
+      "allStatuses": "All",
+      "allPayments": "Any payment",
+      "empty": "No bookings yet. A booking appears here when a lead is converted.",
+      "reference": "Booking",
+      "customer": "Customer",
+      "service": "Service",
+      "amount": "Amount",
+      "paid": "Paid",
+      "due": "Due",
+      "payment": "Payment",
+      "status": "Status",
+      "travel": "Travel",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {pages}",
+      "tableLabel": "Bookings",
+      "statuses": {
+        "confirmed": "Confirmed",
+        "ticketed": "Ticketed",
+        "travelled": "Travelled",
+        "cancelled": "Cancelled"
+      },
+      "payments": {
+        "unpaid": "Unpaid",
+        "partial": "Part paid",
+        "paid": "Paid",
+        "refunded": "Refunded"
+      },
+      "edit": {
+        "details": "Booking details",
+        "pnr": "PNR (airline or hotel reference)",
+        "tickets": "Ticket numbers",
+        "ticketsHint": "One per line",
+        "supplier": "Bought from",
+        "supplierHint": "Airline, consolidator or hotel",
+        "travelDate": "Travel date",
+        "amount": "Amount (৳, VAT included)",
+        "paidAmount": "Paid so far (৳)",
+        "refunded": "Refunded",
+        "refundedHint": "Tick when the money went back to the customer",
+        "notes": "Notes for the team",
+        "save": "Save booking",
+        "saved": "Booking saved",
+        "failed": "That did not save. Check the fields and try again.",
+        "updated": "Updated {time} by {name}",
+        "fromLead": "From lead {reference}"
+      },
+      "documents": {
+        "title": "Documents",
+        "lead": "E-tickets, vouchers and invoices for this booking. Only staff who may open the booking can see them.",
+        "add": "Add a document",
+        "adding": "Uploading…",
+        "added": "Document added",
+        "failed": "That file was not added. Use a PDF, JPG or PNG up to 5 MB."
+      }
     }
   },
   "Consent": {

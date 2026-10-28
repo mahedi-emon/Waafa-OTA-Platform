@@ -27,7 +27,13 @@ export const VISA_DOCUMENT_RETENTION_MS = 90 * 24 * 60 * 60_000;
 /** Signed staff links last ten minutes (FR-VISA-05). */
 export const CUSTOMER_FILE_LINK_MS = 10 * 60_000;
 
-export const CUSTOMER_FILE_OWNERS = ["lead", "payment-proof", "order", "feedback"] as const;
+export const CUSTOMER_FILE_OWNERS = [
+  "lead",
+  "payment-proof",
+  "order",
+  "feedback",
+  "booking",
+] as const;
 export type CustomerFileOwner = (typeof CUSTOMER_FILE_OWNERS)[number];
 
 /** Storage keys are "cf_" plus 32 URL-safe characters (24 random bytes). */

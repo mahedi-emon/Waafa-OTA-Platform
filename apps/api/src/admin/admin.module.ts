@@ -24,6 +24,8 @@ import { MediaReplaceService } from "./media-replace.service";
 import { AdminOrdersService } from "./orders.service";
 import { AdminCustomersController, AdminReportsController } from "./reports.controller";
 import { AdminReportsService } from "./reports.service";
+import { AdminBookingsController } from "./bookings.controller";
+import { AdminBookingsService } from "./bookings.service";
 import { AdminStatusController } from "./status.controller";
 import { StatusService } from "./status.service";
 import { ContentScheduler } from "./scheduler.service";
@@ -37,6 +39,7 @@ import { AdminWorkbenchService } from "./workbench.service";
   // Customer files: the minute job deletes them when their time is up (issue 232).
   imports: [MediaCoreModule, FilesCoreModule],
   controllers: [
+    AdminBookingsController,
     AdminStatusController,
     AdminLeadsController,
     AdminVisaApplicationsController,
@@ -54,6 +57,7 @@ import { AdminWorkbenchService } from "./workbench.service";
     AdminWorkbenchController,
   ],
   providers: [
+    AdminBookingsService,
     StatusService,
     AdminLeadsService,
     MediaReplaceService,

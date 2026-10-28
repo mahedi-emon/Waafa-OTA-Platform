@@ -18,6 +18,16 @@ import { CustomerFilesService } from "./customer-files.service";
 const typeOf = (request: FastifyRequest) =>
   (request.headers["content-type"] ?? "").split(";")[0]?.trim() ?? "";
 
+/** Staff uploads go to bookings only for now; customer records get their files from the customer. */
+const StaffAttachQuerySchema = z
+  .object({
+    owner: z.literal("booking"),
+    id: z.string().min(1).max(64),
+    kind: CustomerFileUploadQuerySchema.shape.kind,
+    name: CustomerFileUploadQuerySchema.shape.name,
+  })
+  .strict();
+
 const ListQuerySchema = z
   .object({ owner: z.enum(CUSTOMER_FILE_OWNERS), id: z.string().min(1).max(64) })
   .strict();
@@ -90,7 +100,36 @@ export class PublicFilesController {
 @Controller("admin/files")
 @UseGuards(StaffGuard)
 export class AdminFilesController {
-  constructor(@Inject(CustomerFilesService) private readonly files: CustomerFilesService) {}
+  constructor(
+    @Inject(CustomerFilesService) private readonly files: CustomerFilesService,
+    @Inject(ENV) private readonly env: Env,
+    @Inject(RateLimitService) private readonly limits: RateLimitService,
+  ) {}
+
+  /** Staff add a document to a booking (issue 242): the file is the body, owner, id, kind and name in the query. */
+  @Post("attach")
+  async attach(
+    @Staff() staff: StaffPrincipal,
+    @Req() request: FastifyRequest,
+    @Query() query: unknown,
+    @Res() reply: FastifyReply,
+  ) {
+    const ip = clientIp(request, this.env);
+    if (!(await this.limits.allow("uploads", ip))) throw problems.tooMany();
+    const input = parseInput(StaffAttachQuerySchema, query);
+    const body = rawBody(request.body);
+    if (!body) throw problems.badRequest("Send the file as the request body", "file-type");
+    const files = await this.files.attachForStaff(
+      staff,
+      input.owner,
+      input.id,
+      body,
+      typeOf(request),
+      { kind: input.kind, name: input.name },
+      ip,
+    );
+    return reply.status(201).send(files);
+  }
 
   @Get()
   list(@Staff() staff: StaffPrincipal, @Query() query: unknown) {

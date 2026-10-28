@@ -99,8 +99,8 @@ async function queueFor(search: SearchParams) {
 
 async function Lead({ params, searchParams }: Pick<Params, "params" | "searchParams">) {
   const [{ id }, search] = await Promise.all([params, searchParams]);
-  const [lead, staff, airports, queue, t, tl, tc, tm, ts, tp, tv, to, messages] = await Promise.all(
-    [
+  const [lead, staff, airports, queue, t, tl, tc, tm, ts, tp, tv, to, tb, messages] =
+    await Promise.all([
       adminFind<LeadDetail>(`/admin/leads/${encodeURIComponent(id)}`),
       adminGet<StaffDirectoryEntry[]>("/admin/staff"),
       adminGet<{ items: ContentOption[] }>("/admin/content/airports/options").catch(() => ({
@@ -115,9 +115,9 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
       getTranslations("Admin.priorities"),
       getTranslations("Admin.visaProgress"),
       getTranslations("Admin.orders"),
+      getTranslations("Admin.bookings"),
       getMessages(),
-    ],
-  );
+    ]);
   if (!lead) return <AdminNotFound />;
   // Fact labels and value words are looked up by computed keys, so this translator is used untyped.
   const tf = t as unknown as ((key: string, values?: Record<string, number>) => string) & {
@@ -270,6 +270,19 @@ async function Lead({ params, searchParams }: Pick<Params, "params" | "searchPar
                 <div>
                   <dt className="text-[12.5px] font-semibold text-mist-600">{t("amount")}</dt>
                   <dd className="font-semibold tabular-nums">{taka(lead.amount)}</dd>
+                </div>
+              ) : null}
+              {lead.booking ? (
+                <div>
+                  <dt className="text-[12.5px] font-semibold text-mist-600">{tb("reference")}</dt>
+                  <dd>
+                    <Link
+                      href={`/secure-admin-control/bookings/${lead.booking.id}`}
+                      className="font-semibold text-brand-700 underline-offset-4 hover:underline"
+                    >
+                      {lead.booking.reference}
+                    </Link>
+                  </dd>
                 </div>
               ) : null}
               {lead.reason ? (

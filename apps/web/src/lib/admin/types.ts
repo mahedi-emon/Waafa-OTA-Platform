@@ -128,6 +128,8 @@ export type LeadDetail = {
   travelDate: string | null;
   travellers: number | null;
   amount: number | null;
+  /** The booking made when the lead was converted (issue 242). */
+  booking: { id: string; reference: string; status: string; paymentStatus: string } | null;
   reason: string | null;
   assignee: { id: string; name: string } | null;
   duplicateOf: { id: string; reference: string } | null;
