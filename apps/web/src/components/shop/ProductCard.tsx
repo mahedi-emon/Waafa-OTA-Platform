@@ -6,7 +6,7 @@ import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getContactSettings } from "@/lib/data/settings";
 import { MAX_LINE_QTY } from "@/lib/shop/cart";
 import { canBuy, defaultVariant, priceInfo, priceRange, stockBadge } from "@/lib/shop/variants";
-import { AddToCartControl } from "./AddToCartControl";
+import { LazyAddToCartControl } from "./LazyAddToCartControl";
 import { StockBadge } from "./StockBadge";
 
 type ProductCardProps = {
@@ -127,7 +127,7 @@ async function ProductCard({
               {t("card.choose")}
             </span>
           ) : canBuy(variant) ? (
-            <AddToCartControl
+            <LazyAddToCartControl
               line={{
                 productId: product.id,
                 variantId: variant.id,
