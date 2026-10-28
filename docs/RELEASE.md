@@ -8,16 +8,14 @@ one release at the end. Every PR that changes what the deploy does adds its line
 
 | | Release | Commit | How we know |
 | --- | --- | --- | --- |
-| Live on the server | the image tag the server runs (`IMAGE_TAG` in `/opt/waafa/.env`, `latest` at its last pull) | **owner to confirm**; assumed `541bd21` (23 Oct, Next.js security fix) or later | On 28 Oct `https://waafasworld.com/track` answered 404, so the live release is older than #280 (`ea5e7f9`, 27 Oct). The upgrade rehearsal (#285) starts from `deploy/LIVE_RELEASE` |
-| This release | the release candidate tag (step 14) | `main` at tagging time | — |
-
-To confirm on the server (read only): `docker compose -f /opt/waafa/compose.yml images` shows the tag in use;
-tell Claude the 7-character tag at the next checkpoint and `deploy/LIVE_RELEASE` changes to it.
+| Live on the server | `7af26e7` (Docker images run #30, PR #187, 14 Oct) with the 13 Oct `deploy/server` bundle | api and worker `sha256:b52c4bb564fa37ee3b778b1dee49835823b89aed5eea30d84159c3745c61a8e1`, web `sha256:023a177a453ff445457cca56b5f6f5cbe5cf378d5521518c7aa5376da49d3e6a` (tags `api-7af26e7`, `web-7af26e7`) | Owner, 28 Oct (D312); `deploy/LIVE_RELEASE` = `7af26e7`, so the upgrade rehearsal starts there, and Docker Hub never deletes it |
+| This release | the release candidate tag (step 15) | `main` at tagging time | — |
 
 ## Database migrations, in order (all additive)
 
-Prisma applies only the ones the live database does not have yet, in this order, inside `sh deploy.sh`.
-**Take a backup first** (`sh backup.sh`).
+Every migration since `7af26e7` (D0 admin redesign included). Since #303 the API image applies them with its own
+runner (`node dist/migrate.js`, the same `_prisma_migrations` table and lock as Prisma), only the ones the live database
+does not have yet, in this order, when the API starts inside `sh deploy.sh`. **Take a backup first** (`sh backup.sh`).
 
 | Migration | From | What it adds |
 | --- | --- | --- |
@@ -32,7 +30,8 @@ Prisma applies only the ones the live database does not have yet, in this order,
 | `20261030010000_bookings` | #242 | a booking record per converted lead (PNR, tickets, amount, payments, documents) |
 | `20261031010000_quotes` | #298 | quotes on leads (options, last valid day, the accepted option) |
 
-One-time data patches (`_seedPatches`, never over staff edits) run after the migrations: workflow, invite, low-stock,
+One-time data patches (`_seedPatches`, never over staff edits) run after the migrations. Live already has
+`2026-10-13-visa-route`, `2026-10-14-second-phone` and `2026-10-14-home-seo`; everything below runs at the release: workflow, invite, low-stock,
 new-device, code-locked and customer sign-in email templates; #284 adds `2026-10-28-integration-cards`; #239 adds
 `2026-10-29-system-alert-template` (disk and memory alerts); #242 adds `2026-10-30-bookings-for-booked-leads` (one
 Confirmed, Unpaid booking for every lead already Booked, amount from the lead); #298 adds `2026-10-31-quote-templates`
@@ -40,21 +39,61 @@ Confirmed, Unpaid booking for every lead already Booked, amount from the lead); 
 stored text that still equals an old "Waafas World" default becomes "Waafa’s World": store name, menus, footer column,
 COD note, pages, team, timeline, email templates; anything staff wrote stays as it is).
 
+## Image sizes (issue 303)
+
+Measured with `docker images` (the number the server shows); the VPS smoke and the Docker images workflow fail a
+release that grows past the budget (`scripts/measure-stack.sh`).
+
+| Image | Live (`7af26e7`) | Before #303 (`8694513`) | This release | Budget |
+| --- | --- | --- | --- | --- |
+| api (also the worker) | 2.07 GB | 1.82 GB | 270 MB | 400 MB |
+| web | 571 MB | 599 MB | 464 MB | 500 MB |
+| nginx | 74 MB | 74 MB | 74 MB | 100 MB |
+
+API: Alpine with only the node binary, one compiled bundle (Nest, Prisma client and query compiler included), five
+packages that must stay on disk (sharp, argon2, pdfkit, bullmq, ioredis), no package manager, no Prisma CLI, no
+TypeScript. Web: Alpine with only the node binary and the traced standalone server; about 110 MB of it is the
+prerendered pages (62 MB of them prefetch segments), which keep every page instant, so the owner's 250 MB target is not
+met (D313). Memory: API about 130 MB and worker about 100 MB at rest (both about 200 MB before).
+
 ## New or changed containers
 
 | Container | Memory limit | Since | Note |
 | --- | --- | --- | --- |
 | `clamav` (new) | 1.6 GB | #235 | malware scan of customer files; first start downloads signatures (a few minutes); new volume `clamdata` |
-| `api`, `worker` | 640 MB, 384 MB | — | unchanged limits; customer files in the new private volume `privatedata` (#232) |
+| `api`, `worker` | 512 MB, 384 MB | #303 | API limit down from 640 MB; customer files in the private volume `privatedata` (#232); the API reads `./backups` read only for the Status page |
+| all | logs rotate at 10 MB × 3 | #303 | no log file grows without end |
+| `clamav` | 1.6 GB | #303 | `CLAMD_CONF_ConcurrentDatabaseReload: "no"`: one signature set in memory; the daily reload pauses scans about a minute |
 
-The VPS needs about 1.6 GB more free memory than before for ClamAV.
+The VPS needs about 1.2 GB more memory than before for ClamAV; the whole stack stays under 3 GB at rest (measured in
+the VPS smoke, budget 3 GB).
 
 ## Server bundle (`deploy/server`) changes
 
-Copy the changed files from `deploy/server` to `/opt/waafa` before deploying (DEPLOY.md, "When deploy/server
-changes"): `compose.yml` (clamav, private files volume, Turnstile lines moved to the API, #284), `deploy.sh` (it now installs the backup cron, #239) and `backup.sh` (restore drill, off-site copy, #239).
+Since `7af26e7` three files changed; copy them to `/opt/waafa` **before** `sh deploy.sh` (after the backup):
+
+| File | Why |
+| --- | --- |
+| `compose.yml` | ClamAV (#235), private files volume (#232), Turnstile lines moved to the API (#284), log rotation, the backups folder read by the Status page, API limit 512 MB, ClamAV reload setting (#303) |
+| `deploy.sh` | installs the backup cron (#239); removes unused images older than a week after a deploy (#303) |
+| `backup.sh` | restore drill and off-site copy (#239); keeps `BACKUP_KEEP_DAYS` days (default 7, was 14) (#303) |
+
+The repository is private, so the copy needs a GitHub token with read access to its contents (fine-grained, this
+repository only, "Contents: Read-only"; it can expire after a day). On the server:
+
+```sh
+cd /opt/waafa
+TAG=<release tag>          # e.g. v1.1.0, from the release page
+TOKEN=<read-only token>
+for f in compose.yml deploy.sh backup.sh; do
+  cp "$f" "$f.before-$TAG" 2>/dev/null || true
+  curl -fsSL -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github.raw"     -o "$f" "https://api.github.com/repos/mahedi-emon/Waafa-OTA-Platform/contents/deploy/server/$f?ref=$TAG"
+done
+unset TOKEN
+```
+
 The nginx settings live inside the `nginx` image (the 6 MB booking document upload, #242, comes with it): nothing to
-copy for them.
+copy for them. Optional new `.env` lines: `BACKUP_CRON=off` (no cron), `BACKUP_KEEP_DAYS=7`, `STAGING=1` (staging only).
 
 ## Settings that moved or are new
 

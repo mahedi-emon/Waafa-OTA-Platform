@@ -41,7 +41,7 @@ only pulls them. Everything the server needs is the folder `deploy/server` (issu
 | `compose.yml` | The stack from images only: PostgreSQL, Redis, API, worker, web, nginx (HTTPS), certbot |
 | `deploy.sh` | Pulls the images, starts everything in order, refreshes the web caches, gets the Let's Encrypt certificate |
 | `setup-server.sh` | Once on a fresh Ubuntu: updates, Asia/Dhaka, 4 GB swap, firewall 22/80/443, Docker with log rotation |
-| `backup.sh` | Daily database and photo backup, 14 kept |
+| `backup.sh` | Daily database, photo and customer-file backup, compressed, `BACKUP_KEEP_DAYS` kept (default 7) |
 | `revalidate.mjs` | Used by deploy.sh to refresh the site's caches |
 | `.env` | The production settings (only on the owner's PC and the server; gitignored, never in git or chat) |
 
@@ -112,6 +112,7 @@ change the password, delete both lines from `/opt/waafa/.env`, and follow the la
 | Release | What changed in `deploy/server` | What to do |
 | --- | --- | --- |
 | Issue 235 (Oct 2026) | `compose.yml`: a `clamav` service (ClamAV 1.5.4, about 1.2 GB once loaded, limit 1.6 GB, signatures in the `clamdata` volume), `CLAMAV_URL` for the API and the worker, the worker mounts `privatedata`; `deploy.sh` starts `clamav` | **Copy the bundle before this deploy** (step 1), then `sh deploy.sh` (no migration). The first start downloads the ClamAV image (about 160 MB) and loads signatures for a minute or two; files wait as "Checking for viruses" until then. With the old bundle nothing is scanned and files open as before |
+| Issue 303 (Oct 2026) | `compose.yml`: log rotation (10 MB × 3 per container), API limit 512 MB, ClamAV keeps one signature set in memory, the API reads `./backups` read only (System status sizes); `deploy.sh` removes unused images older than a week; `backup.sh` keeps `BACKUP_KEEP_DAYS` (default 7) | Copy the three files (docs/RELEASE.md has the commands), then `sh backup.sh` and `sh deploy.sh` |
 | Issue 232 (Oct 2026) | `compose.yml`: a `privatedata` volume for customer files (visa documents, payment slips) and `PRIVATE_FILES_DIR`; `backup.sh` also keeps `waafa-<time>.private.tar.gz` (readable by the server owner only) | **Copy the bundle before this deploy** (step 1), then `sh backup.sh` (migration) and `sh deploy.sh`. With the old bundle the site works, but file uploads pause and the forms send only file names |
 | Issue 231 (Oct 2026) | `compose.yml`: the worker runs `node dist/worker.js` (the image no longer has TypeScript or tsx) | Copy the bundle again (step 1) when convenient. Until then the old `tsx src/worker.ts` command still works through a stand-in inside the image, kept for one more release |
 
@@ -216,12 +217,12 @@ crontab -e
 15 3 * * * cd /opt/waafa && sh deploy/backup.sh >> deploy/backups/backup.log 2>&1
 ```
 
-Daily dump at 03:15 server time, the last 14 kept in `deploy/backups/`. Copy them off the server weekly (or use the
+Daily dump at 03:15 server time, the last `BACKUP_KEEP_DAYS` (default 7) kept in `deploy/backups/`. Copy them off the server weekly (or use the
 VPS provider's snapshot backups as well). Restore:
 `gunzip -c deploy/backups/<file>.sql.gz | docker compose -f deploy/compose.yml exec -T postgres psql -U waafa waafa`.
 
 Uploaded photos (Admin › Media library, #109) live on the `mediadata` volume and are archived by the same script as
-`waafa-<stamp>.media.tar.gz` (last 14 kept). Restore:
+`waafa-<stamp>.media.tar.gz` (same number kept). Restore:
 `docker compose -f deploy/compose.yml exec -T api tar -xzf - -C /data/media < deploy/backups/<file>.media.tar.gz`.
 nginx serves them at `/uploads/` straight from the API with a one-year cache; admin uploads up to 12 MB are allowed on
 `/secure-admin-control/media/upload` only (every other request keeps the 2 MB limit).

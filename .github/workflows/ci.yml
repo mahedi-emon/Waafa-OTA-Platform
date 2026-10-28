@@ -350,10 +350,11 @@ jobs:
           pnpm --filter @waafa/api generate
           node apps/api/scripts/build.mjs
 
+      # The image's own migration runner (issue 303), not the Prisma CLI.
       - name: Database (migrate and seed)
         working-directory: apps/api
         run: |
-          node_modules/.bin/prisma migrate deploy
+          node dist/migrate.js
           node dist/seed.js
 
       - name: Start the API
@@ -500,6 +501,10 @@ jobs:
           sh deploy/backup.sh
           ls -l deploy/backups
           sh deploy/backup.sh --drill | tee /dev/stderr | grep -q "drill ok"
+
+      # Issue 303: image sizes, revision labels and the memory of every container, against their budgets.
+      - name: Image sizes and memory
+        run: sh scripts/measure-stack.sh
 
       - name: Logs
         if: failure()

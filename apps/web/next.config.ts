@@ -34,6 +34,9 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1440, 1920, 2560],
     // A month: an uploaded photo gets a new name when it changes, and a deploy starts with an empty image cache.
     minimumCacheTTL: 2_678_400,
+    // Resized images on disk stay under 512 MB, least recently used removed first (issue 303); the default would
+    // take half the free disk. Shown on Settings › System status.
+    maximumDiskCacheSize: 512 * 1024 * 1024,
     // Photo fields may link a photo on Unsplash or Pexels (D0 R3); every other photo is uploaded to the library.
     remotePatterns: PHOTO_HOSTS.map((hostname) => ({ protocol: "https" as const, hostname })),
   },
