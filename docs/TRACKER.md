@@ -38,7 +38,7 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #255 · Bilingual content fields — 🟡 In review
+### #255 · Bilingual content fields — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 11 (PROMPT 10 letter K): English required, Bangla optional with English fallback, "Bangla missing" filter, admin stays English |
@@ -47,7 +47,7 @@ Serena memory `audit_findings`.
 | Migration | none (content documents are JSON) |
 | Decision | D327 |
 | Tools and skills | Serena, Context7 (root params in "use cache"), Playwright |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #320 · 10 min |
 
 ### #254 · Bangla at /bn — 🟡 In review
 | Field | Value |
