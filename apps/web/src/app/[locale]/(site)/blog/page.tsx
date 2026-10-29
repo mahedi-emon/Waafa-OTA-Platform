@@ -53,8 +53,7 @@ async function BlogContent({ searchParams }: Pick<PageProps<"/[locale]/blog">, "
     ...(q ? { search: q } : {}),
   });
   const names = new Map(categories.map((item) => [item.slug, item.name]));
-  const featured =
-    !q && !category ? (all.items.find((post) => post.featured) ?? all.items[0]) : undefined;
+  const featured = all.items.find((post) => post.featured) ?? all.items[0];
   const posts = filtered.items.filter((post) => post.id !== featured?.id);
   const counts = new Map<string, number>();
   for (const post of all.items) counts.set(post.category, (counts.get(post.category) ?? 0) + 1);
@@ -68,62 +67,7 @@ async function BlogContent({ searchParams }: Pick<PageProps<"/[locale]/blog">, "
   };
 
   return (
-    <main id="main" className="site-container flex flex-col gap-10 pt-4 pb-28 md:pt-6">
-      <Canonical path="/blog" />
-      <div className="flex flex-col gap-6">
-        <Breadcrumbs items={[{ label: t("kicker") }]} />
-        <PageHero
-          kicker={t("kicker")}
-          title={t("title")}
-          lead={t("lead")}
-          aside={
-            all.items.some((post) => post.sample) ? (
-              <SampleBadge label={t("sample")} title={t("sampleNote")} />
-            ) : null
-          }
-        />
-      </div>
-
-      {featured ? (
-        <article className="group relative grid grid-cols-1 overflow-hidden rounded-[24px] border border-mist-200 bg-white lg:grid-cols-[1.25fr_1fr]">
-          <SmartImage
-            src={featured.cover.src}
-            focal={featured.cover.focal}
-            alt={featured.cover.alt}
-            ratio="16/10"
-            sizes="(min-width: 1024px) 700px, 100vw"
-            preload
-            frameClassName="lg:h-full"
-            zoomOnHover
-          />
-          <div className="flex flex-col justify-center gap-3 p-6 md:p-8">
-            <p className="text-[13px] font-bold tracking-[0.12em] text-brand-700 uppercase">
-              {t("editorsPick")} · {names.get(featured.category) ?? featured.category}
-            </p>
-            <h2 className="font-display text-[24px] leading-tight font-extrabold text-navy-900 md:text-[30px]">
-              <Link
-                href={`/blog/${featured.slug}`}
-                className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
-              >
-                {featured.title}
-              </Link>
-            </h2>
-            <p className="text-[15.5px] leading-relaxed text-mist-700">{featured.excerpt}</p>
-            <p className="text-[13.5px] text-mist-600">
-              {t("minutes", { minutes: featured.readingMinutes })} ·{" "}
-              {formatDate(featured.publishedAt)} · {featured.author}
-            </p>
-            <span className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-brand-700">
-              {t("readGuide")}
-              <ArrowRight
-                aria-hidden="true"
-                className="size-4 transition-transform group-hover:translate-x-0.5"
-              />
-            </span>
-          </div>
-        </article>
-      ) : null}
-
+    <>
       <section aria-labelledby="blog-list" className="flex flex-col gap-5">
         <h2 id="blog-list" className="sr-only">
           {t("title")}
@@ -249,22 +193,86 @@ async function BlogContent({ searchParams }: Pick<PageProps<"/[locale]/blog">, "
           }}
         />
       </section>
-    </main>
+    </>
   );
 }
 
 /** /blog (Blog, Blog-m): the editor's pick, topics with counts, search, the article grid and the newsletter. */
-export default function BlogPage({ searchParams }: PageProps<"/[locale]/blog">) {
+export default async function BlogPage({ searchParams }: PageProps<"/[locale]/blog">) {
+  const [categories, all, t] = await Promise.all([
+    listBlogCategories(),
+    listBlogPosts({ limit: 100 }),
+    getTranslations("Blog"),
+  ]);
+  const names = new Map(categories.map((item) => [item.slug, item.name]));
+  const featured = all.items.find((post) => post.featured) ?? all.items[0];
   return (
-    <Suspense
-      fallback={
-        <div className="site-container flex min-h-dvh flex-col gap-6 pt-6 pb-28">
-          <Skeleton className="h-10 w-2/3 rounded-xl" />
-          <Skeleton className="h-80 rounded-[24px]" />
-        </div>
-      }
-    >
-      <BlogContent searchParams={searchParams} />
-    </Suspense>
+    <main id="main" className="site-container flex flex-col gap-10 pt-4 pb-28 md:pt-6">
+      <Canonical path="/blog" />
+      <div className="flex flex-col gap-6">
+        <Breadcrumbs items={[{ label: t("kicker") }]} />
+        <PageHero
+          kicker={t("kicker")}
+          title={t("title")}
+          lead={t("lead")}
+          aside={
+            all.items.some((post) => post.sample) ? (
+              <SampleBadge label={t("sample")} title={t("sampleNote")} />
+            ) : null
+          }
+        />
+      </div>
+
+      {featured ? (
+        <article className="group relative grid grid-cols-1 overflow-hidden rounded-[24px] border border-mist-200 bg-white lg:grid-cols-[1.25fr_1fr]">
+          <SmartImage
+            src={featured.cover.src}
+            focal={featured.cover.focal}
+            alt={featured.cover.alt}
+            ratio="16/10"
+            sizes="(min-width: 1024px) 700px, 100vw"
+            preload
+            frameClassName="lg:h-full"
+            zoomOnHover
+          />
+          <div className="flex flex-col justify-center gap-3 p-6 md:p-8">
+            <p className="text-[13px] font-bold tracking-[0.12em] text-brand-700 uppercase">
+              {t("editorsPick")} · {names.get(featured.category) ?? featured.category}
+            </p>
+            <h2 className="font-display text-[24px] leading-tight font-extrabold text-navy-900 md:text-[30px]">
+              <Link
+                href={`/blog/${featured.slug}`}
+                className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
+              >
+                {featured.title}
+              </Link>
+            </h2>
+            <p className="text-[15.5px] leading-relaxed text-mist-700">{featured.excerpt}</p>
+            <p className="text-[13.5px] text-mist-600">
+              {t("minutes", { minutes: featured.readingMinutes })} ·{" "}
+              {formatDate(featured.publishedAt)} · {featured.author}
+            </p>
+            <span className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-brand-700">
+              {t("readGuide")}
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 transition-transform group-hover:translate-x-0.5"
+              />
+            </span>
+          </div>
+        </article>
+      ) : null}
+      <Suspense
+        fallback={
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3" aria-hidden="true">
+            <Skeleton className="h-80 rounded-[20px]" />
+            <Skeleton className="hidden h-80 rounded-[20px] md:block" />
+            <Skeleton className="hidden h-80 rounded-[20px] md:block" />
+          </div>
+        }
+      >
+        <BlogContent searchParams={searchParams} />
+      </Suspense>
+    </main>
   );
 }
