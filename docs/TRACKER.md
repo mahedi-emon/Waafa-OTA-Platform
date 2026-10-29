@@ -2272,6 +2272,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 30 Oct | #250 merged (#315, 105 min), #251 (#316, 132 min), #252 (#317, 67 min). #253 Steadfast built (PR #318). #254 Bangla at /bn (2,380 strings by four parallel translation passes, switch, hreflang, sitemap) and #255 bilingual content (bn map, overlay, editor section, Bangla missing filter) built and pushed | #250–#255 | #315–#318 | API 427, web 740, shared 176, e2e bangla 35 + bilingual + couriers + payments |
 | 29 Oct (night) | #249 PR #314 in CI. #250 partial lead capture built (LeadDraft, step 1 opt-in, Incomplete requests page, one reminder, purge); PR opened with full-ci | #249 #250 | #314 | API DB 5, e2e partial-capture 2 |
 | 29 Oct (late) | #249 merged (#314, 62 min). #250 in CI (#315). #251 online payments built (three gateway adapters, start/confirm, refunds, checkout options, result page, integration setup guides with Copy and server IP) | #249 #250 #251 | #314 #315 | API unit 8, API DB 3, e2e payments 6 |
 | 29 Oct (later) | #248 merged (#313, 10 min) and closed out. #249 curated hotels built (schema, fixtures with real photos, list and detail pages, Request booking into the hotel lead, admin editor); PR opened with full-ci | #248 #249 | #313 | shared +2, web +3, e2e hotels-curated |
@@ -2351,6 +2352,8 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 Owner's order of 28 Oct (D303, D312). One issue per PR; start the next while CI runs.
 1. ✅ #302, #303, #243, #244, #245, #246, #247.
 2. ✅ #248 (#313). Checkpoint to the owner given after #248.
-3. ✅ #249 (#314). 🟡 #250 PR #315 in CI (full-ci, migration). 🟡 #251 online payments started. Then #251–#253 (integration cards with copyable URLs, Telegram "Find my group", plain Test connection;
-   checkpoint with the accounts to open), #254 / #255 (checkpoint), #271, #256 / #257 / #258, #259 (checkpoint), release
-   candidate (RELEASE.md from 7af26e7).
+3. ✅ #249 (#314), #250 (#315), #251 (#316), #252 (#317). Checkpoint with the accounts to open given 30 Oct.
+4. 🟡 #253 PR #318 in CI (full-ci). Ready and pushed, stacked: feat/254-bangla (#254), feat/255-bilingual-content (#255):
+   after each merge, merge main into the next branch (take ours), open its PR, merge when green.
+5. Then #271 (Lighthouse 90+ and LCP 2.5 s on Home, Hotels, Blog; assertions to error), #256 / #257 / #258, #259
+   (checkpoint), release candidate (RELEASE.md from 7af26e7, upgrade rehearsal). Cut first if behind: #257, then #258 extras.
