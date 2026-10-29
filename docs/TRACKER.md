@@ -38,7 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #249 · Curated hotels with Request booking — 🟡 In review
+### #250 · Partial lead capture — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 9 (PROMPT 10 letter I; FR-FLT-08 P1) |
+| Built | Step 1 of the flight, hotel, package, visa and plan-my-trip requests asks "If I don't finish, a travel expert may call me about this request" (native checkbox, off by default). Ticked, the form sends name, number (E.164), email, service and the page path to POST /api/leads/draft (same-site, 2 KB, 5 a minute) → API POST /public/leads/drafts (10 an hour per phone) → `LeadDraft`: one open draft per phone and service, nothing kept if that phone sent this service's request in 24 hours; the full request completes it inside the lead transaction. Admin › Leads › Incomplete requests (To call / Handled) lists drafts 30 minutes old for the person's services with call, WhatsApp, the page they were on, Contacted and Set aside (audited). The minute job sends one reminder (`lead-incomplete-customer`, seed patch `2026-11-04-incomplete-template`) when an email was given and the draft is under 2 days old, and deletes drafts after 30 days |
+| Tests | API DB `leadDrafts.test.ts` 5 (one per phone, 30-minute window, other services hidden; completed by the full request; one reminder only with email, link to the page, purge; contacted/dismissed with roles and audit; consent, foreign page, bad phone refused); `seedPatches.test.ts` list; e2e `partial-capture.spec.ts` (opt-in only, request body, axe; cross-site and bad input refused); QA plan `docs/qa/250-partial-lead-capture.md` (PC-01..11); UAT U-34 |
+| Migration | `20261104010000_lead_drafts` (additive) and seed patch `2026-11-04-incomplete-template` |
+| Decision | D322 |
+| Tools and skills | Serena (memories), Playwright; no new library |
+| PR · CI minutes | (PR open) |
+
+### #249 · Curated hotels with Request booking — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 9 (PROMPT 10 letter I; FR-HTL-02 P1) |
@@ -47,7 +58,7 @@ Serena memory `audit_findings`.
 | Migration | none (content documents; lead payload fields are optional) |
 | Decision | D321 |
 | Tools and skills | Serena (memories), WebSearch/WebFetch for real Unsplash photos (checked by eye; 3D renders skipped), Playwright, ui-ux-pro-max checklist |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #314 · 62 min |
 
 ### #248 · Invoices and packing slips as PDF; CSV import with preview — ✅ Done
 | Field | Value |
@@ -1620,6 +1631,7 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-159 | Customer quote page and PDF: options (title, details, baggage, price), last valid day, note | Quote record (options, validUntil, notes) | Admin › a lead › Quotes › the quote | `POST /admin/leads/:id/quotes`, `PATCH /admin/quotes/:id`; `GET /public/quotes/:token` | ✅ API test + e2e (#298) |
 | AC-161 | Invoice and packing slip PDFs: seller name, contacts; VAT rate | siteSettings.companyName, storeName; contactSettings; paymentSettings.vatPercent | Settings › Site, Contact, Payment settings (Invoices) | `GET /admin/orders/:id/invoice`, `/packing-slip` | ✅ API DB test + e2e (#248) |
 | AC-162 | Products, group fares, printer models changed in bulk | products, groupFares, compatibleModels records | Admin › each list › Download CSV to edit / Import CSV | `GET /admin/content/:key/export.csv`, `POST /admin/content/:key/import[/preview]` | ✅ API DB test + e2e (#248) |
+| AC-164 | The reminder for an unfinished request | notificationTemplates `lead-incomplete-customer` | Admin › Settings › Notifications | content API | ✅ API DB test (#250) |
 | AC-163 | Curated hotels on /hotels and /hotels/[slug]: name, stars, area, photos, amenities, rooms, from prices, order | hotels records | Admin › Curated hotels | `/admin/content/hotels` (content API); public snapshot | ✅ e2e (#249) |
 | AC-160 | Quote email and the "quote accepted" staff alert | notificationTemplates quote-customer, quote-accepted-staff | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | ✅ API test (#298) |
 
@@ -2098,6 +2110,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D318 | 28 Oct | Reviews: only signed-in customers whose account holds a booked package request or a delivered order with the product (the API refuses everyone else, so no review can be invented), one per item, approved by staff before they show; names as first name + initial. Structured data: Product gets AggregateRating and Review from approved reviews only; packages (TouristTrip) get none because schema.org has no rating there. Questions: anyone may ask (Turnstile, limits), shown only with a staff answer. Feedback photos: copied into the public media library at approval only when the scan passed (or no scanner), the private upload stays private | Owner order step 5; "never invent reviews" | #245 |
 | D319 | 28 Oct | Flash sales are deals with an optional start and stock cap, enforced only by the API when it takes an order (counting units sold at the deal price since the start, inside the locked order transaction); a cart may show the flash price until the cap is reached and the order is then charged the normal price (the confirmation shows it). Campaign pages are a content list with a request-time strip in its own Suspense so the rest prerenders; no slug redirects for them (short-lived pages) | Owner order step 7: "price and cap enforced on the server" | #247 |
 | D320 | 29 Oct | CSV import (products, group fares, compatible models) merges each line into the saved record and saves through the normal editor save, so rules, History, audit and cache stay one path; the whole file is refused while any line has a problem; it never deletes; products update existing products and variants only (new ones need photos, added in the editor). Invoices are drawn from the order's price snapshot; the seller block shows only the name and contacts (no licence or ID numbers), the customer's BIN only when they asked for a VAT invoice; the VAT amount shows only when Admin sets a rate (no invented number) | Owner order step 8; CLAUDE.md "Never show licence or ID numbers" | #248 |
+| D322 | 29 Oct | Partial capture keeps step 1 in its own table (`LeadDraft`), not as a half-valid lead: leads keep one strict contract, and the Incomplete queue, its retention (30 days) and its single reminder stay separate. It is opt-in on step 1 (consent, PRD FR-FLT-08), shown to staff only after 30 minutes, and the full request completes it in the same transaction, so there is never a duplicate. The reminder links only to a path on this site | Owner order step 9; PRD §13 privacy | #250 |
 | D321 | 29 Oct | Curated hotels are a content list with their own pages; Request booking reuses the hotel request (/hotels?hotel=&room=) instead of a second form, so one lead flow and one set of rules; the hotel fields ride along only while the place still names the hotel. Amenities are a fixed list (icons and words in code and messages) so cards stay consistent; prices are "from" per night and labelled indicative. Sample hotels use real Unsplash room, lobby and pool photos (no renders) and say they are samples | Owner order step 9; FR-HTL-02; CLAUDE.md media and "never fake live availability" | #249 |
 
 ## 9. Bugs and known issues
@@ -2195,6 +2208,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 29 Oct (night) | #249 PR #314 in CI. #250 partial lead capture built (LeadDraft, step 1 opt-in, Incomplete requests page, one reminder, purge); PR opened with full-ci | #249 #250 | #314 | API DB 5, e2e partial-capture 2 |
 | 29 Oct (later) | #248 merged (#313, 10 min) and closed out. #249 curated hotels built (schema, fixtures with real photos, list and detail pages, Request booking into the hotel lead, admin editor); PR opened with full-ci | #248 #249 | #313 | shared +2, web +3, e2e hotels-curated |
 | 29 Oct | #246 merged (#311, 62 min) and #247 merged (#312, 68 min), both closed out. #248 built: invoice and packing slip PDFs on a shared brand kit, CSV export and import with a preview for products, group fares and compatible models; local API-mode e2e green; PR opened | #246 #247 #248 | #311 #312 | API unit 23 new, API DB 4 new, e2e admin-imports; all unit suites green (shared 168, web 720, API 360) |
 | 28 Oct (evening) | Owner's decisions D312 logged. #302 rename merged (#304, 61 min). #303 optimise merged (#306, 143 min): api 182 MB, web 321 MB, nginx 45 MB, stack 1.29 GB, rehearsal from 7af26e7. #243 reminders, mentions, round-robin and SSE alerts built and in CI (#307, full-ci; local API-mode e2e 11/11; CI found an axe aria-allowed-role on the note box, fixed). #244 started on feat/244-reports-customers-roles (reports by agent, visa cases, searches per day and funnel pushed) | #302 #303 #305 #243 #244 | #304 #306 #307 | API 316, web 717, shared 166 locally; API-mode e2e 85/86 then fixed |
@@ -2272,6 +2286,6 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 Owner's order of 28 Oct (D303, D312). One issue per PR; start the next while CI runs.
 1. ✅ #302, #303, #243, #244, #245, #246, #247.
 2. ✅ #248 (#313). Checkpoint to the owner given after #248.
-3. 🟡 #249 PR in CI (full-ci). Then #250 partial lead capture (full-ci, lead intake), then #251–#253 (integration cards with copyable URLs, Telegram "Find my group", plain Test connection;
+3. ✅ #249 (#314). 🟡 #250 PR #315 in CI (full-ci, migration). 🟡 #251 online payments started. Then #251–#253 (integration cards with copyable URLs, Telegram "Find my group", plain Test connection;
    checkpoint with the accounts to open), #254 / #255 (checkpoint), #271, #256 / #257 / #258, #259 (checkpoint), release
    candidate (RELEASE.md from 7af26e7).

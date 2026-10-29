@@ -55,6 +55,48 @@ export const LeadPrioritySchema = z.enum(["low", "normal", "high", "urgent"]);
 
 export const PreferredContactSchema = z.enum(["call", "whatsapp", "email"]);
 
+/** Minutes after step 1 when an unfinished request counts as Incomplete (FR-FLT-08, issue 250). */
+export const INCOMPLETE_AFTER_MINUTES = 30;
+/** Incomplete requests are forgotten after this many days (personal data, PRD §13). */
+export const INCOMPLETE_KEEP_DAYS = 30;
+
+/**
+ * Step 1 of a request form with the visitor's OK to be called if they don't finish (FR-FLT-08, issue 250). Only the
+ * contact, the service and the page are kept; the full request later completes it.
+ */
+export const LeadDraftInputSchema = z
+  .object({
+    module: LeadModuleSchema,
+    contact: z
+      .object({
+        name: z.string().trim().min(2).max(80),
+        phone: z.string().regex(/^\+[1-9]\d{6,14}$/, "Enter a valid phone number"),
+        email: EmailSchema.optional(),
+      })
+      .strict(),
+    /** A path on this site (the reminder links back to it), never another site. */
+    page: z
+      .string()
+      .min(1)
+      .max(500)
+      .regex(/^\/(?!\/)\S*$/, "A path on this site"),
+    consent: z.literal(true),
+  })
+  .strict();
+
+/** What staff do with an Incomplete request. */
+export const LeadDraftActionSchema = z
+  .object({ type: z.enum(["contacted", "dismissed"]) })
+  .strict();
+
+export const LeadDraftListQuerySchema = z
+  .object({
+    view: z.enum(["open", "done"]).default("open"),
+    page: z.coerce.number().int().min(1).default(1),
+    pageSize: z.coerce.number().int().min(5).max(100).default(25),
+  })
+  .strict();
+
 export const LeadContactSchema = z
   .object({
     name: z.string().trim().min(2, "Enter your full name").max(80),
@@ -392,6 +434,9 @@ export const LeadSchema = z
     }
   });
 
+export type LeadDraftInput = z.infer<typeof LeadDraftInputSchema>;
+export type LeadDraftAction = z.infer<typeof LeadDraftActionSchema>;
+export type LeadDraftListQuery = z.infer<typeof LeadDraftListQuerySchema>;
 export type LeadModule = z.infer<typeof LeadModuleSchema>;
 export type LeadStatus = z.infer<typeof LeadStatusSchema>;
 export type LeadPriority = z.infer<typeof LeadPrioritySchema>;

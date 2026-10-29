@@ -592,6 +592,21 @@ async function summaryTemplate(prisma: PrismaClient): Promise<number> {
   return appendTemplate(prisma, SUMMARY_TEMPLATE);
 }
 
+/** The one reminder for an unfinished request (issue 250), as fixtures/src/settings.ts has it. */
+const INCOMPLETE_TEMPLATE = {
+  key: "lead-incomplete-customer",
+  audience: "Customer, request not finished",
+  channel: "email",
+  subject: "Finish your {{service}} request with Waafa",
+  body: "Hello {{name}},\n\nYou started a {{service}} request on our website but didn't send it. Pick up where you left off: {{link}}\n\nOr reply to this email, call or WhatsApp us, and a travel expert will help. We only send this reminder once.",
+  variables: ["{{name}}", "{{service}}", "{{link}}"],
+  enabled: true,
+} as const;
+
+async function incompleteTemplate(prisma: PrismaClient): Promise<number> {
+  return appendTemplate(prisma, INCOMPLETE_TEMPLATE);
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -612,6 +627,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-31-quote-templates", apply: quoteTemplates },
   { id: "2026-10-28-store-name", apply: storeName },
   { id: "2026-11-02-summary-template", apply: summaryTemplate },
+  { id: "2026-11-04-incomplete-template", apply: incompleteTemplate },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

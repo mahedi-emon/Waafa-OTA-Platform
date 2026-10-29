@@ -117,3 +117,14 @@ export async function assignLeads(ids: string[], choice?: string): Promise<BulkR
 export async function markLeadsSpam(ids: string[]): Promise<BulkResult> {
   return bulkWords(await bulkUpdateLeads({ ids, markSpam: true }), "bulkSpamDone");
 }
+
+/** An Incomplete request (issue 250): staff called the visitor, or set the request aside. */
+export async function markIncomplete(
+  id: string,
+  type: "contacted" | "dismissed",
+): Promise<ActionResult> {
+  if (!/^[a-z0-9]{10,40}$/.test(id))
+    return { ok: false, problem: { status: 404, title: "Unknown" } };
+  const result = await adminWrite(`/admin/leads/incomplete/${id}/actions`, "POST", { type });
+  return result.ok ? { ok: true } : result;
+}

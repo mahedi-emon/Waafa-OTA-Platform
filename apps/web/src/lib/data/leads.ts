@@ -1,6 +1,7 @@
 import "server-only";
 import {
   LeadCreateInputSchema,
+  LeadDraftInputSchema,
   PaymentProofInputSchema,
   type PaymentProof,
   SearchLogInputSchema,
@@ -23,6 +24,22 @@ export async function createLead(
   const api = apiConfig();
   if (api) return callApi<LeadCreated>(api, "/api/v1/public/leads", { ...context, body: lead });
   return repositories.leads.createLead(lead, new Date());
+}
+
+/**
+ * Keeps step 1 of a request with the visitor's OK (FR-FLT-08, issue 250). API mode only: the fixture data has no
+ * admin queue for it, so there it is accepted and dropped.
+ */
+export async function saveLeadDraft(input: unknown, context: IntakeContext = {}): Promise<boolean> {
+  const parsed = LeadDraftInputSchema.safeParse(input);
+  if (!parsed.success) return false;
+  const api = apiConfig();
+  if (api)
+    await callApi(api, "/api/v1/public/leads/drafts", {
+      clientIp: context.clientIp,
+      body: parsed.data,
+    });
+  return true;
 }
 
 /** Records a submitted search (FR-SRCH-10). Returns false for input that fails the shared contract. */

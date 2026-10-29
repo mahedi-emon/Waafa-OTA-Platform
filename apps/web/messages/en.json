@@ -715,7 +715,11 @@
     "noPayment": "No payment now",
     "back": "Back",
     "submit": "Send to a travel expert",
-    "priceConfirmed": "Price confirmed before you pay"
+    "priceConfirmed": "Price confirmed before you pay",
+    "keep": {
+      "label": "If I don't finish, a travel expert may call me about this request",
+      "help": "We keep only your name, number and the page you were on, for 30 days."
+    }
   },
   "Hotels": {
     "metaTitle": "Hotel Booking in Bangladesh and Worldwide",
@@ -3112,7 +3116,8 @@
       "openCount": "{count} open",
       "show": "Show",
       "emptyAllTitle": "No leads yet",
-      "emptyAllBody": "Every search and form on the website lands here as a lead."
+      "emptyAllBody": "Every search and form on the website lands here as a lead.",
+      "incomplete": "Incomplete requests"
     },
     "lead": {
       "createdFrom": "Created {time} · {channel}",
@@ -5951,7 +5956,8 @@
         "system-alert-staff": "Server running low (to admins)",
         "quote-customer": "Quote sent (to the customer)",
         "quote-accepted-staff": "Quote accepted (to staff)",
-        "summary-report-staff": "Daily and weekly summary (to chosen staff)"
+        "summary-report-staff": "Daily and weekly summary (to chosen staff)",
+        "lead-incomplete-customer": "Unfinished request reminder (to the customer)"
       },
       "tone": {
         "default": "Normal",
@@ -7910,6 +7916,32 @@
       "price": "Price",
       "fromLead": "Lead {reference}",
       "updated": "Updated {time} by {name}"
+    },
+    "incomplete": {
+      "metaTitle": "Incomplete requests",
+      "back": "Leads",
+      "title": "Incomplete requests",
+      "lead": "Visitors who gave their name and number, agreed to a call, and didn't send the request. They show here 30 minutes after step 1 and are forgotten after 30 days.",
+      "tabsLabel": "Incomplete requests",
+      "open": "To call",
+      "done": "Handled",
+      "listTitle": "{count, plural, one {# request} other {# requests}}",
+      "started": "started {time}",
+      "page": "Page they were on",
+      "reminded": "Reminder email sent",
+      "outcome": {
+        "contacted": "Contacted by {name}",
+        "dismissed": "Set aside by {name}"
+      },
+      "call": "Call",
+      "whatsapp": "WhatsApp",
+      "contacted": "Contacted",
+      "dismiss": "Set aside",
+      "saved": "Saved",
+      "failed": "That didn't save. Try again.",
+      "emptyTitle": "Nobody to call back",
+      "emptyDoneTitle": "Nothing handled yet",
+      "emptyBody": "When a visitor stops after step 1 and agreed to a call, they show here."
     }
   },
   "Consent": {

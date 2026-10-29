@@ -353,6 +353,7 @@ export const NotificationTemplateSchema = z
       "quote-customer",
       "quote-accepted-staff",
       "summary-report-staff",
+      "lead-incomplete-customer",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */
     audience: z.string().min(1).max(40),

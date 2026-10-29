@@ -93,6 +93,7 @@ function HotelRequest(props: HotelRequestProps) {
         </PreferencesSheet>
 
         <LeadRequestCard<StayStepValues>
+          module="hotels"
           titleId="hotel-request-title"
           kicker={t("card.kicker")}
           title={t("card.title")}

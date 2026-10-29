@@ -31,6 +31,7 @@ function PlanTripRequest({ place, places, ...props }: PlanTripRequestProps) {
 
   return (
     <LeadRequestCard<PlanTripValues>
+      module="plan-trip"
       titleId="plan-trip-title"
       kicker={t("card.kicker")}
       title={t("card.title")}
