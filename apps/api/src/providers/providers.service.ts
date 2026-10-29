@@ -29,6 +29,9 @@ import { ENV, type Env } from "../config/env";
 import { ProblemException, problems } from "../common/problem";
 import type { IntegrationSetting, ProviderCredential } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { MESSAGING, type Messaging } from "../notifications/integrationSms";
+import { isSmsGateway, smsAdapter, SmsError } from "../notifications/smsGateways";
+import { findTelegramGroups, TelegramError, type TelegramGroup } from "../notifications/telegram";
 import type { ProviderAdapter, ProviderContext } from "./adapters";
 import { adapterFor, type Fetcher, type PortProbe } from "./catalogAdapters";
 import { RevalidateService } from "../revalidate/revalidate.service";
@@ -82,6 +85,7 @@ export class ProvidersService {
     @Inject(PROVIDER_FETCH) private readonly fetcher: Fetcher,
     @Inject(PROVIDER_PROBE) private readonly probe: PortProbe,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
+    @Inject(MESSAGING) private readonly messaging: Messaging,
   ) {
     this.box = env.PROVIDER_SECRET_KEY ? new SecretBox(env.PROVIDER_SECRET_KEY) : null;
   }
@@ -350,6 +354,85 @@ export class ProvidersService {
     return this.view(next);
   }
 
+  /**
+   * "Find my group" on the Telegram card (issue 252): the groups the bot has seen, read with the token typed in the
+   * form or, when the field is left empty, the saved one. Throws one plain sentence when Telegram says no.
+   */
+  async findTelegramGroups(
+    staff: StaffPrincipal,
+    botToken?: string,
+  ): Promise<{ groups: TelegramGroup[] }> {
+    let token = botToken?.trim() ?? "";
+    if (!token) {
+      const row = await this.prisma.providerCredential.findUnique({
+        where: { provider_environment: { provider: "telegram", environment: "production" } },
+      });
+      token = (row && this.context(row)?.secrets.botToken) ?? "";
+    }
+    if (!token) throw problems.badRequest("Type the bot token first, then press Find my group.");
+    try {
+      const groups = await findTelegramGroups(token, this.fetcher);
+      await this.audit.record({
+        actor: staff,
+        action: "provider.telegram-groups",
+        entity: "provider",
+        entityId: "telegram",
+        after: { found: groups.length },
+      });
+      return { groups };
+    } catch (error) {
+      if (error instanceof TelegramError) throw problems.badRequest(error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * A test SMS from an SMS card's saved values (issue 252), on or off, so staff can check the Sender ID before turning
+   * it on. Answers the gateway's reason in one plain sentence.
+   */
+  async sendTestSms(
+    staff: StaffPrincipal,
+    provider: string,
+    environment: ProviderEnvironment,
+    phone: string,
+  ): Promise<{ ok: boolean; message: string }> {
+    if (!isSmsGateway(provider)) throw problems.notFound("No SMS service called " + provider);
+    const row = await this.find(provider, environment);
+    const context = this.context(row);
+    let result: { ok: boolean; message: string };
+    if (!context) {
+      result = {
+        ok: false,
+        message: "Saved secrets cannot be opened: PROVIDER_SECRET_KEY changed or is missing",
+      };
+    } else {
+      try {
+        await smsAdapter(provider, this.fetcher).send(
+          phone,
+          "WAAFA test SMS: status messages will come from this sender.",
+          context,
+        );
+        result = {
+          ok: true,
+          message: "The gateway accepted the test SMS. It should arrive within a minute.",
+        };
+      } catch (error) {
+        result = {
+          ok: false,
+          message: error instanceof SmsError ? error.message : "The SMS could not be sent.",
+        };
+      }
+    }
+    await this.audit.record({
+      actor: staff,
+      action: "provider.test-sms",
+      entity: "provider",
+      entityId: `${provider}:${environment}`,
+      after: result,
+    });
+    return result;
+  }
+
   async remove(staff: StaffPrincipal, provider: string, environment: ProviderEnvironment) {
     const row = await this.find(provider, environment);
     const setting = await this.prisma.integrationSetting.findUnique({ where: { provider } });
@@ -562,6 +645,8 @@ export class ProvidersService {
   /** The site reads the public part at run time: expire its cache so a change shows without a redeploy (issue 284). */
   private changed(): void {
     this.revalidate.request(["integrations"]);
+    // SMS and Telegram read the cards that are on through a one-minute cache (issue 252).
+    this.messaging.active.clear();
   }
 
   private adapter(definition: ProviderDefinition): ProviderAdapter {

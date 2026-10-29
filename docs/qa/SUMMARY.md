@@ -20,6 +20,7 @@ checkpoint updates this table.
 | Invoices, packing slips, CSV import (#248) | [248-invoices-csv-import.md](248-invoices-csv-import.md) | 15 | 14 | 1 (print on paper) | API unit 23 (CSV 10, documents 13) + API DB 4 + e2e admin-imports 2 | 2 (placeholder strings reached the dialog as ICU objects; zod's own words in the preview) | 2 | 0 |
 | Curated hotels (#249) | [249-curated-hotels.md](249-curated-hotels.md) | 11 | 10 | 1 (photo quality review) | shared 2 + web lead builder 2 + lead facts 1 + sitemap + e2e hotels-curated 3 + budget + public screens | 0 | 0 | 0 |
 | Partial lead capture (#250) | [250-partial-lead-capture.md](250-partial-lead-capture.md) | 11 | 11 | 0 | API DB 5 + e2e partial-capture 2 + budget | 0 | 0 | 0 |
-| Online payments (#251) | [251-online-payments.md](251-online-payments.md) | 13 | 12 | 1 (৳10 live test, U-35) | API unit gateways 8 + API DB payments 3 + e2e payments 6 + admin guide 1 | 0 | 0 | 0 |
+| Online payments (#251) | [251-online-payments.md](251-online-payments.md) | 13 | 12 | 1 (৳10 live test, U-35) | API unit gateways 8 + API DB payments 3 + e2e payments 7 + admin guide 1 | 2 (result page blocked prerender, caught by the local build; the XSS check matched Next's own inline scripts) | 2 | 0 |
+| SMS and Telegram (#252) | [252-sms-telegram.md](252-sms-telegram.md) | 20 | 19 | 1 (submit timing with both on, U-36) | API unit SMS 13 + Telegram 13 + notifications 3 + service check + API DB messaging 6 + e2e admin guide 1 | 0 | 0 | 0 |
 
-Totals: 272 cases · 237 automated · 35 manual · 12 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5) · 0 open (performance target follow-up #271).
+Totals: 292 cases · 256 automated · 36 manual · 14 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5, 2 in #251) · 0 open (performance target follow-up #271).

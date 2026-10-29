@@ -607,6 +607,52 @@ async function incompleteTemplate(prisma: PrismaClient): Promise<number> {
   return appendTemplate(prisma, INCOMPLETE_TEMPLATE);
 }
 
+/** The status SMS templates (issue 252), as fixtures/src/settings.ts has them; nothing sends until an SMS card is on. */
+const SMS_TEMPLATES = [
+  {
+    key: "lead-received-sms",
+    audience: "Customer, by SMS",
+    channel: "sms",
+    subject: "Request received (SMS)",
+    body: "WAAFA: we got your request {{reference}}. A travel expert will call you soon. Help: 01823-232241",
+    variables: ["{{reference}}", "{{name}}"],
+    enabled: true,
+  },
+  {
+    key: "order-placed-sms",
+    audience: "Customer, by SMS",
+    channel: "sms",
+    subject: "Order placed (SMS)",
+    body: "WAAFA: we got your order {{order_number}}. We will call to confirm before we ship. Help: 01823-232241",
+    variables: ["{{order_number}}", "{{name}}"],
+    enabled: true,
+  },
+  {
+    key: "order-status-sms",
+    audience: "Customer, by SMS",
+    channel: "sms",
+    subject: "Order status (SMS)",
+    body: "WAAFA: your order {{order_number}} is {{status}}. Help: 01823-232241",
+    variables: ["{{order_number}}", "{{status}}", "{{name}}"],
+    enabled: true,
+  },
+  {
+    key: "visa-status-sms",
+    audience: "Customer, by SMS",
+    channel: "sms",
+    subject: "Visa status (SMS)",
+    body: "WAAFA: visa file {{reference}} ({{country}}): {{status}}. Help: 01823-232241",
+    variables: ["{{reference}}", "{{country}}", "{{status}}", "{{name}}"],
+    enabled: true,
+  },
+] as const;
+
+async function smsTemplates(prisma: PrismaClient): Promise<number> {
+  let added = 0;
+  for (const template of SMS_TEMPLATES) added += await appendTemplate(prisma, template);
+  return added;
+}
+
 /** One-time data changes that ship with the code, in order. Never edit a shipped patch; add a new one. */
 export const SEED_PATCHES: ReadonlyArray<{
   id: string;
@@ -628,6 +674,7 @@ export const SEED_PATCHES: ReadonlyArray<{
   { id: "2026-10-28-store-name", apply: storeName },
   { id: "2026-11-02-summary-template", apply: summaryTemplate },
   { id: "2026-11-04-incomplete-template", apply: incompleteTemplate },
+  { id: "2026-11-05-sms-templates", apply: smsTemplates },
 ];
 
 export type PatchResult = { applied: string[]; changed: number };

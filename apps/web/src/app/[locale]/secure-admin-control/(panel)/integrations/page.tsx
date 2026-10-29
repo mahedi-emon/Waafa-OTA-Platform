@@ -146,6 +146,20 @@ async function Integrations() {
     },
     failingDetail: t("failingDetail", { message: "{message}", time: "{time}" }),
     changedBy: t("changedBy", { name: "{name}", time: "{time}" }),
+    telegram: {
+      find: t("telegram.find"),
+      hint: t("telegram.hint"),
+      filled: t("telegram.filled", { title: "{title}" }),
+      pick: t("telegram.pick", { count: "{count}" }),
+      use: t("telegram.use", { title: "{title}" }),
+      failed: t("telegram.failed"),
+    },
+    testSms: {
+      label: t("testSms.label"),
+      send: t("testSms.send"),
+      hint: t("testSms.hint"),
+      failed: t("testSms.failed"),
+    },
   };
   const addStrings = {
     title: t("add.title"),

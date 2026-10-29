@@ -219,6 +219,13 @@ export class IntakeService {
     };
     void this.notifications.notify("lead-received-customer", input.contact.email, vars);
     void this.notifications.notifyStaff("lead-alert-staff", module, vars);
+    // Issue 252: a status SMS to the customer and an alert to the sales group, while those cards are on.
+    void this.notifications.sms("lead-received-sms", input.contact.phone, vars);
+    void this.notifications.telegram("lead", [
+      `New ${module} request · ${created.reference}`,
+      `${input.contact.name}: ${digest.summary.slice(0, 300)}`,
+      vars.link,
+    ]);
     // Issue 243: the open admin tabs of that service hear it at once, then it goes to the next person in turn.
     this.live.publish({
       audience: { module },
@@ -401,6 +408,12 @@ export class IntakeService {
     };
     void this.notifications.notify("order-placed-customer", input.address.email, vars);
     void this.notifications.notifyStaff("order-placed-staff", "orders", vars);
+    void this.notifications.sms("order-placed-sms", input.address.phone, vars);
+    void this.notifications.telegram("order", [
+      `New Waafa’s World order · ${vars.order_number}`,
+      `${vars.name}: ${vars.total}, ${vars.method}`,
+      vars.link,
+    ]);
     this.live.publish({
       audience: { roles: ["shop-manager", "accounts"] },
       event: {
@@ -586,6 +599,11 @@ export class IntakeService {
       trx_id: input.transactionId ?? "slip only",
       link: this.adminLink("/payments"),
     });
+    void this.notifications.telegram("proof", [
+      `Payment proof · ${input.reference}`,
+      `${input.name}: ${formatTaka(input.amount)}`,
+      this.adminLink("/payments"),
+    ]);
     return { reference: stored.reference, receivedAt: toDhakaIsoString(now) };
   }
 

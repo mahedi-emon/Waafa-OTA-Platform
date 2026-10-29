@@ -4,7 +4,9 @@ import { IdempotencyService } from "./common/idempotency.service";
 import { IntakeKeyGuard } from "./common/serverKey";
 import { ContentService } from "./content/content.service";
 import { IntegrationMailer } from "./notifications/integrationMailer";
+import { createMessaging, MESSAGING } from "./notifications/integrationSms";
 import { createMailer, type Mailer } from "./notifications/mailer";
+import type { Fetcher } from "./providers/catalogAdapters";
 import { PrismaService } from "./prisma/prisma.service";
 import { MAILER, NotificationService } from "./notifications/notification.service";
 import { ErrorReporter } from "./common/errorReporter";
@@ -18,6 +20,8 @@ import { RoundRobinService } from "./realtime/roundRobin.service";
 export type ServicesOptions = {
   /** Tests pass a MemoryMailer to read what was sent. */
   mailer?: Mailer;
+  /** Tests pass a fake fetch for the SMS gateways and Telegram (issue 252). */
+  fetcher?: Fetcher;
 };
 
 /** Content, notifications, web revalidation and idempotency: used by the public intake and the admin modules. */
@@ -35,6 +39,13 @@ export class ServicesModule {
               new IntegrationMailer(prisma, env.PROVIDER_SECRET_KEY, createMailer(env)),
             inject: [ENV, PrismaService],
           },
+      {
+        provide: MESSAGING,
+        // SMS and Telegram cards that are on in Admin › Integrations (issue 252).
+        useFactory: (env: Env, prisma: PrismaService) =>
+          createMessaging(prisma, env.PROVIDER_SECRET_KEY, options.fetcher),
+        inject: [ENV, PrismaService],
+      },
       ContentService,
       NotificationService,
       RevalidateService,
@@ -54,6 +65,7 @@ export class ServicesModule {
       providers,
       exports: [
         MAILER,
+        MESSAGING,
         ContentService,
         NotificationService,
         RevalidateService,

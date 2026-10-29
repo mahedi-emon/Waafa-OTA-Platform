@@ -64,6 +64,17 @@ export type IntegrationStrings = {
   failingDetail: string;
   /** Contains {name} and {time}. */
   changedBy: string;
+  /** Issue 252: Find my group on the Telegram card. {title} and {count} are filled in. */
+  telegram: {
+    find: string;
+    hint: string;
+    filled: string;
+    pick: string;
+    use: string;
+    failed: string;
+  };
+  /** Issue 252: a test SMS from an SMS card. */
+  testSms: { label: string; send: string; hint: string; failed: string };
 };
 
 export const fill = (text: string, values: Record<string, string>) =>

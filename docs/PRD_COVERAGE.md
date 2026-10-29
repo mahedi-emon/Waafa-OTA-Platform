@@ -155,9 +155,9 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ACC attach | P1 | Guest leads/orders attach on the verified email (or phone when the record has no email); staff attach by hand | done | api/customers/customerAuth.ts (attachGuestRecords); admin/customerAccounts.service.ts; customerCodes.test.ts | — | #241 |
 | FR-NTF P0 email | P0 | Emails: lead (cust), module-routed staff alert, order, visa status, feedback, proof | done | api/notifications/notification.service.ts notifyStaff (Settings › Forms and messages › Staff alerts by area, env fallback); visa status and low-stock emails | — | #233 |
 | FR-NTF templates + queue | P0 | Admin-editable templates with variables; queue, retries, delivery log | done | notificationTemplates content; BullMQ queue (attempts 5) in notification.service.ts, api/worker.ts; adm/notifications | — | — |
-| FR-NTF SMS | P1 | SMS via BD gateway adapter (OTP, lead ack, order status) | waiting for owner account | catalog stubs ssl-wireless, bulksmsbd, twilio in shared/schemas/providers.ts | Adapters only health-check; no send code | #252 |
+| FR-NTF SMS | P1 | SMS via BD gateway adapter (OTP, lead ack, order status) | done, waiting for keys (off until the owner saves an SMS card) | api/notifications/smsGateways.ts (BulkSMSBD, SSL Wireless, Twilio), integrationSms.ts, worker job "sms", SMS templates (seed patch 2026-11-05-sms-templates); api/test/messaging.test.ts | OTP by SMS dropped (D300: email code or Google) | #252 |
 | FR-NTF real-time | P1 | Real-time admin alerts with sound | done | api/realtime/liveBus.ts (Redis pub/sub), realtime/events.controller.ts (SSE per person), web adm/api/events/route.ts, components/admin/liveEvents.ts, LiveAlerts.tsx, lib/admin/chime.ts; api/test/realtime.test.ts, e2e/admin-alerts.spec.ts | Polling every 30 s stays as the fallback; Telegram in #252 | #243 |
-| FR-NTF Telegram | P1 | Telegram alert to sales group | missing | — | Whole feature | #252 |
+| FR-NTF Telegram | P1 | Telegram alert to sales group | done, waiting for keys | api/notifications/telegram.ts (alerts, Find my group, test message), NotificationService.telegram; web TelegramGroupFinder; api/test/messaging.test.ts | — | #252 |
 | FR-NTF P2 | P2 | WhatsApp Business templates; app push | missing | — | Phase 2 | Phase E (#32) |
 
 ## §12 The Golden Switch

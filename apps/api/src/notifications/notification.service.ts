@@ -1,10 +1,16 @@
 import { Inject, Injectable, Logger, type OnModuleDestroy } from "@nestjs/common";
 import { Queue } from "bullmq";
-import { ADMIN_BASE_PATH, type NotificationTemplate, type StaffAlertArea } from "@waafa/shared";
+import {
+  ADMIN_BASE_PATH,
+  type NotificationTemplate,
+  type SmsTemplateKey,
+  type StaffAlertArea,
+} from "@waafa/shared";
 import { ENV, type Env } from "../config/env";
 import { ContentService } from "../content/content.service";
 import { PrismaService } from "../prisma/prisma.service";
 import type { PrismaClient } from "../generated/prisma/client";
+import { deliverSms, MESSAGING, type Messaging, type SmsJob } from "./integrationSms";
 import type { Mail, Mailer } from "./mailer";
 
 export const MAILER = Symbol("MAILER");
@@ -61,6 +67,7 @@ export class NotificationService implements OnModuleDestroy {
     @Inject(MAILER) private readonly mailer: Mailer,
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(ContentService) private readonly content: ContentService,
+    @Inject(MESSAGING) private readonly messaging: Messaging,
   ) {
     this.queue = env.REDIS_URL
       ? new Queue(NOTIFICATION_QUEUE, {
@@ -118,6 +125,59 @@ export class NotificationService implements OnModuleDestroy {
     vars: Record<string, string>,
   ): Promise<void> {
     return this.track(this.queueEmail(key, to, vars));
+  }
+
+  /**
+   * One status SMS (issue 252) from an SMS template, while an SMS card is on in Admin › Integrations and the template is
+   * on. Only status messages have SMS templates: sign-in codes never go by SMS (D300). Fire and forget like notify().
+   */
+  sms(
+    key: SmsTemplateKey,
+    phone: string | null | undefined,
+    vars: Record<string, string>,
+  ): Promise<void> {
+    return this.track(this.queueSms(key, phone ?? undefined, vars));
+  }
+
+  /**
+   * One alert to the sales group on Telegram (issue 252) while that card is on. Plain text with the reference, a short
+   * summary and the admin link; never a phone, email or document. Failures are logged, never thrown into a submit.
+   */
+  telegram(kind: string, lines: readonly string[]): Promise<void> {
+    const text = lines.filter(Boolean).join("\n");
+    return this.track(
+      (async () => {
+        try {
+          if (!(await this.messaging.telegram.post(text))) return;
+          await this.prisma.notificationLog.create({
+            data: {
+              channel: "telegram",
+              recipient: "sales group",
+              template: kind,
+              subject: lines[0] ?? kind,
+              status: "sent",
+              attempts: 1,
+              sentAt: new Date(),
+            },
+          });
+        } catch (error) {
+          this.logger.warn(`Telegram alert ${kind} failed: ${String(error)}`);
+          await this.prisma.notificationLog
+            .create({
+              data: {
+                channel: "telegram",
+                recipient: "sales group",
+                template: kind,
+                subject: lines[0] ?? kind,
+                status: "failed",
+                error: error instanceof Error ? error.message.slice(0, 300) : "unknown",
+                attempts: 1,
+              },
+            })
+            .catch(() => undefined);
+        }
+      })(),
+    );
   }
 
   /**
@@ -187,6 +247,60 @@ export class NotificationService implements OnModuleDestroy {
       }
     } catch (error) {
       this.logger.warn(`Could not queue ${key}: ${String(error)}`);
+      if (logId) {
+        await this.prisma.notificationLog
+          .update({ where: { id: logId }, data: { status: "failed", error: "queue unavailable" } })
+          .catch(() => undefined);
+      }
+    }
+  }
+
+  private async queueSms(
+    key: SmsTemplateKey,
+    to: string | undefined,
+    vars: Record<string, string>,
+  ): Promise<void> {
+    if (!to) return;
+    let logId: string | null = null;
+    try {
+      if (!(await this.messaging.sms.ready())) return;
+      const templates = await this.content.collection("notificationTemplates");
+      const template = templates.find(
+        (item) => item.key === key && item.channel === "sms" && item.enabled,
+      );
+      if (!template) return;
+      const text = renderTemplate(template.body, vars);
+      const log = await this.prisma.notificationLog.create({
+        data: {
+          channel: "sms",
+          recipient: to,
+          template: key,
+          subject: text.slice(0, 120),
+          status: "queued",
+        },
+      });
+      logId = log.id;
+      const job: SmsJob = { channel: "sms", to, text, logId: log.id };
+      if (this.queue) {
+        await this.queue.add("sms", job, {
+          attempts: 3,
+          backoff: { type: "exponential", delay: 60_000 },
+          removeOnComplete: 1_000,
+          removeOnFail: false,
+        });
+      } else {
+        void this.track(
+          new Promise<void>((resolve) => {
+            setImmediate(() => {
+              deliverSms(this.prisma, this.messaging.sms, job)
+                .catch((error: unknown) => this.logger.warn(`SMS ${key} failed: ${String(error)}`))
+                .finally(resolve);
+            });
+          }),
+        );
+      }
+    } catch (error) {
+      this.logger.warn(`Could not queue SMS ${key}: ${String(error)}`);
       if (logId) {
         await this.prisma.notificationLog
           .update({ where: { id: logId }, data: { status: "failed", error: "queue unavailable" } })

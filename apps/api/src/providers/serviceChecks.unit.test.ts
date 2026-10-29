@@ -39,7 +39,10 @@ describe("service checks (issue 284)", () => {
           { botToken: "123456789:AAEabcdefghijklmnopqrstuvwxyz012345" },
         ),
       ),
-    ).toEqual({ ok: false, message: "Telegram does not know this bot token" });
+    ).toEqual({
+      ok: false,
+      message: "Telegram does not know this bot token. Copy it again from @BotFather.",
+    });
   });
 
   it("measurement IDs pass on their form alone; a wrong form fails without a call", async () => {

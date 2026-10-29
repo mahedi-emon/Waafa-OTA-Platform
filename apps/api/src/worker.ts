@@ -7,6 +7,7 @@ import { ClamdClient, parseClamdUrl } from "./files/clamd";
 import { scanPendingFiles } from "./files/fileScan";
 import { PrismaClient } from "./generated/prisma/client";
 import { IntegrationMailer } from "./notifications/integrationMailer";
+import { createMessaging, deliverSms, type SmsJob } from "./notifications/integrationSms";
 import { TRANSACTION_OPTIONS, warmUp } from "./prisma/prisma.service";
 import { createMailer } from "./notifications/mailer";
 import { HEARTBEAT_INTERVAL_MS, WORKER_HEARTBEAT_KEY } from "./common/heartbeat";
@@ -20,7 +21,7 @@ import {
 const SCAN_INTERVAL_MS = 10_000;
 
 /**
- * Job worker (separate process, same image): sends queued emails with retries and backoff; failed jobs stay in the
+ * Job worker (separate process, same image): sends queued emails and status SMS with retries and backoff; failed jobs stay in the
  * queue's failed list (the dead-letter list) and in the notification log. With CLAMAV_URL set it also scans customer
  * files for malware (issue 235).
  */
@@ -34,10 +35,15 @@ async function main() {
   // The email provider turned on in Admin › Integrations wins; the environment mailer is the fallback (#107).
   const fallback = createMailer(env);
   const mailer = new IntegrationMailer(prisma, env.PROVIDER_SECRET_KEY, fallback);
+  // Status SMS through the SMS card that is on in Admin › Integrations (issue 252).
+  const messaging = createMessaging(prisma, env.PROVIDER_SECRET_KEY);
   await warmUp(prisma).catch(() => undefined);
-  const worker = new Worker<EmailJob>(
+  const worker = new Worker<EmailJob | SmsJob>(
     NOTIFICATION_QUEUE,
-    async (job) => deliverEmail(prisma, mailer, job.data),
+    async (job) =>
+      job.name === "sms"
+        ? deliverSms(prisma, messaging.sms, job.data as SmsJob)
+        : deliverEmail(prisma, mailer, job.data as EmailJob),
     { connection: { url: env.REDIS_URL, maxRetriesPerRequest: null }, concurrency: 4 },
   );
   // Unexpected failures reach Sentry or GlitchTip when that card is On (issue 238); an email is reported once it
