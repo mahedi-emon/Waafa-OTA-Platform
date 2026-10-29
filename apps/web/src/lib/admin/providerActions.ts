@@ -61,6 +61,26 @@ export async function removeProvider(
   return adminWrite<null>(at, "DELETE");
 }
 
+/** "Find my group" on the Telegram card (issue 252): the groups the bot has seen; an empty token uses the saved one. */
+export async function findTelegramGroups(
+  botToken: string,
+): Promise<AdminResult<{ groups: Array<{ id: string; title: string }> }>> {
+  const token = botToken.trim();
+  if (token.length > 100) return invalid("The bot token is too long");
+  return adminWrite(`/admin/providers/telegram/groups`, "POST", token ? { botToken: token } : {});
+}
+
+/** A test SMS from an SMS card's saved values (issue 252). */
+export async function sendTestSms(
+  provider: string,
+  environment: ProviderEnvironment,
+  phone: string,
+): Promise<AdminResult<{ ok: boolean; message: string }>> {
+  const at = path(provider, environment);
+  if (!at) return invalid("Unknown provider");
+  return adminWrite(`${at}/test-sms`, "POST", { phone: phone.trim() });
+}
+
 /** Active, Sandbox or Live, markup (issue 107). */
 export async function saveIntegrationSetting(
   provider: string,

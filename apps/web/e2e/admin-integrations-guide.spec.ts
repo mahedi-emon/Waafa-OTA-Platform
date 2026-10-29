@@ -38,3 +38,23 @@ test("payment cards show the steps and the addresses to copy", async ({ page }) 
   expect(axe.violations).toEqual([]);
   expect(errors).toEqual([]);
 });
+
+test("the Telegram card finds the group and SMS cards explain themselves (issue 252)", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await signIn(page);
+  const errors = collectErrors(page);
+  await page.goto("/secure-admin-control/integrations");
+  const telegram = page.getByRole("article", { name: /^Telegram alerts/ });
+  await telegram.getByRole("button", { name: "Connect" }).click();
+  // No token typed or saved: one plain sentence instead of a call to Telegram.
+  await telegram.getByRole("button", { name: "Find my group" }).click();
+  await expect(telegram.getByRole("status").filter({ hasText: "bot token" })).toBeVisible();
+  const sms = page.getByRole("article", { name: /^BulkSMSBD/ });
+  await sms.getByText("How to connect it (step by step)").click();
+  await expect(sms.getByText(/Sender ID approve korun/)).toBeVisible();
+  const axe = await new AxeBuilder({ page }).include("main").analyze();
+  expect(axe.violations).toEqual([]);
+  expect(errors).toEqual([]);
+});

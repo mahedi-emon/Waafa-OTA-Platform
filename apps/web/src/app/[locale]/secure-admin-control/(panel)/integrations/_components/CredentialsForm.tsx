@@ -17,6 +17,11 @@ import { formatDhakaDateTime } from "@/lib/admin/format";
 import { removeProvider, saveProvider, testProvider } from "@/lib/admin/providerActions";
 import { fill, type IntegrationStrings } from "./integrationStrings";
 import { SecretInput } from "./SecretInput";
+import { TelegramGroupFinder } from "./TelegramGroupFinder";
+import { TestSmsForm } from "./TestSmsForm";
+
+/** SMS cards that can send a test SMS (issue 252). */
+const SMS_CARDS = new Set(["bulksmsbd", "ssl-wireless", "twilio"]);
 
 type CredentialsFormProps = {
   formId: string;
@@ -210,6 +215,18 @@ function CredentialsForm({
             </div>
           );
         })}
+        {definition.id === "telegram" ? (
+          <TelegramGroupFinder
+            botToken={draft.secrets.botToken ?? ""}
+            onPick={(chatId) =>
+              setDraft((current) => ({
+                ...current,
+                settings: { ...current.settings, chatId },
+              }))
+            }
+            strings={strings.telegram}
+          />
+        ) : null}
         <div className="flex min-w-0 flex-col gap-1.5 md:col-span-2">
           <Label htmlFor={`${formId}-note`}>
             {strings.note}
@@ -258,6 +275,10 @@ function CredentialsForm({
             </span>
           </span>
         </p>
+      ) : null}
+
+      {connection && SMS_CARDS.has(definition.id) ? (
+        <TestSmsForm provider={definition.id} environment={environment} strings={strings.testSms} />
       ) : null}
 
       <div className="flex flex-wrap gap-2">
