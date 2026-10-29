@@ -26,6 +26,7 @@ test("payment cards show the steps and the addresses to copy", async ({ page }) 
   await signIn(page);
   const errors = collectErrors(page);
   await page.goto("/secure-admin-control/integrations");
+  await page.getByRole("tab", { name: "Payments" }).click();
   const card = page.getByRole("article", { name: /^SSLCommerz/ });
   await card.getByText("How to connect it (step by step)").click();
   await expect(card.getByText(/developer\.sslcommerz\.com e sandbox store khulun/)).toBeVisible();

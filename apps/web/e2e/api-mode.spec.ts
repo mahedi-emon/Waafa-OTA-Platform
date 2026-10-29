@@ -155,6 +155,8 @@ test("a Super Admin connects outside services; secrets never come back and the s
   request,
 }) => {
   test.skip(!ADMIN_PASSWORD, "needs SEED_ADMIN_PASSWORD");
+  // Several saves and a wait of up to 60 s for the site to follow: the default 30 s test time is too short.
+  test.setTimeout(90_000);
   const errors = collectErrors(page);
   await signIn(page);
   await page.goto("/secure-admin-control/integrations");
@@ -217,9 +219,12 @@ test("a Super Admin connects outside services; secrets never come back and the s
   await google.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByText("Google Search Console saved")).toBeVisible();
   const on = google.getByRole("switch", { name: "Active" });
-  if (!(await on.isChecked())) await on.click();
-  await google.getByRole("button", { name: "Save settings" }).click();
-  await expect(page.getByText("Google Search Console settings saved")).toBeVisible();
+  // Already on from an earlier run against the same database: nothing to save then.
+  if (!(await on.isChecked())) {
+    await on.click();
+    await google.getByRole("button", { name: "Save settings" }).click();
+    await expect(page.getByText("Google Search Console settings saved")).toBeVisible();
+  }
   await expect
     .poll(async () => (await (await request.get("/")).text()).includes(code), { timeout: 60_000 })
     .toBe(true);
@@ -340,7 +345,10 @@ test("a Super Admin connects Google sign-in and the Log in page offers it (issue
   await page.goto("/secure-admin-control/integrations");
   await page.getByRole("tab", { name: "Sign-in" }).click();
   const panel = page.getByRole("tabpanel", { name: "Sign-in" });
-  await expect(panel.getByText(/\/api\/auth\/google\/callback/)).toBeVisible();
+  // The note above the cards; the Google card's setup guide repeats it inside its closed details.
+  await expect(
+    panel.getByText(/\/api\/auth\/google\/callback/).filter({ visible: true }),
+  ).toBeVisible();
   await expect(panel.getByRole("button", { name: "Add provider" })).toHaveCount(0);
   const card = panel
     .getByRole("article")
