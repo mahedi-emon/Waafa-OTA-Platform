@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { CircleAlert } from "@/components/icons/server/CircleAlert";
 import { CircleCheck } from "@/components/icons/server/CircleCheck";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Payment");
@@ -13,13 +15,9 @@ export async function generateMetadata(): Promise<Metadata> {
 const OUTCOMES = ["paid", "failed", "cancelled", "pending"] as const;
 type Outcome = (typeof OUTCOMES)[number];
 
-/**
- * Where the customer lands after the payment gateway (issue 251): paid, failed, cancelled or still being checked.
- * It shows no order details (the address carries only the outcome and the reference); /track has the rest.
- */
-export default async function PaymentResultPage({
+async function PaymentOutcome({
   searchParams,
-}: PageProps<"/[locale]/shop/payment">) {
+}: Pick<PageProps<"/[locale]/shop/payment">, "searchParams">) {
   const search = await searchParams;
   const outcome: Outcome = OUTCOMES.includes(search.outcome as Outcome)
     ? (search.outcome as Outcome)
@@ -56,5 +54,17 @@ export default async function PaymentResultPage({
         </Button>
       </div>
     </main>
+  );
+}
+
+/**
+ * Where the customer lands after the payment gateway (issue 251): paid, failed, cancelled or still being checked.
+ * It shows no order details (the address carries only the outcome and the reference); /track has the rest.
+ */
+export default function PaymentResultPage({ searchParams }: PageProps<"/[locale]/shop/payment">) {
+  return (
+    <Suspense fallback={<Skeleton className="m-4 h-72 rounded-2xl" />}>
+      <PaymentOutcome searchParams={searchParams} />
+    </Suspense>
   );
 }
