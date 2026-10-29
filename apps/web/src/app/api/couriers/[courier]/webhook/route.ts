@@ -21,14 +21,16 @@ export async function POST(
   const token = (request.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
   if (!token || token.length > 200)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  let payload: Record<string, unknown> = {};
+  let parsed: unknown = null;
   try {
-    const parsed: unknown = JSON.parse((await readCappedBody(request, 16_384)) ?? "{}");
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed))
-      payload = parsed as Record<string, unknown>;
+    parsed = JSON.parse((await readCappedBody(request, 16_384)) ?? "null");
   } catch {
-    return NextResponse.json({ error: "invalid" }, { status: 400 });
+    parsed = null;
   }
+  // Only a JSON object is a courier update: anything else (a string, a list, a cut-off body) is refused.
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+    return NextResponse.json({ error: "invalid" }, { status: 400 });
+  const payload = parsed as Record<string, unknown>;
   const status = await forwardCourierWebhook(courier, token, payload);
   return status === 200
     ? NextResponse.json({ status: "success", message: "Webhook received" })
