@@ -6,6 +6,7 @@ import {
   type FlightSearch,
 } from "@waafa/shared";
 import { describe, expect, it } from "vitest";
+import { GATEWAY_ADAPTERS } from "../payments/gateways";
 import { ProviderUnavailableError, type FlightProvider, type ProviderContext } from "./adapters";
 import {
   adapterFor,
@@ -97,6 +98,8 @@ describe("catalog adapters (contract)", () => {
           adapter as unknown as Record<string, (...args: unknown[]) => Promise<unknown>>
         )[method];
         expect(typeof call).toBe("function");
+        // The three online gateways are real now; their calls are covered in gateways.unit.test.ts.
+        if (id in GATEWAY_ADAPTERS) continue;
         await expect(call?.({}, sabreContext)).rejects.toBeInstanceOf(ProviderUnavailableError);
       }
     },
