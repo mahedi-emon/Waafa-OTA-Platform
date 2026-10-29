@@ -182,12 +182,13 @@ export async function sitemapEntries(): Promise<MetadataRoute.Sitemap> {
 }
 
 /** The parts of the sitemap index (issue 287): one file per area of the site. */
-export const SITEMAP_PARTS = ["pages", "travel", "visa", "store", "blog"] as const;
+export const SITEMAP_PARTS = ["pages", "travel", "visa", "store", "blog", "bangla"] as const;
 export type SitemapPart = (typeof SITEMAP_PARTS)[number];
 
 /** Which part a page belongs to, by its path; every URL lands in exactly one part. */
 export function partOf(url: string): SitemapPart {
   const path = new URL(url).pathname;
+  if (/^\/bn(\/|$)/.test(path)) return "bangla";
   if (/^\/(flights|hotels|tour-packages|plan-my-trip)(\/|$)/.test(path)) return "travel";
   if (/^\/(visa|visa-guide)(\/|$)/.test(path)) return "visa";
   if (/^\/shop(\/|$)/.test(path)) return "store";
@@ -201,6 +202,20 @@ const escapeXml = (value: string) =>
     (char) => `&${{ "<": "lt", ">": "gt", "&": "amp", "'": "apos", '"': "quot" }[char]};`,
   );
 
+/** The English and Bangla address of one page (issue 254). */
+export function languageUrls(url: string): { en: string; bn: string } {
+  const parsed = new URL(url);
+  const english = parsed.pathname.replace(/^\/bn(?=\/|$)/, "") || "/";
+  const en = new URL(english, parsed.origin);
+  const bn = new URL(english === "/" ? "/bn" : `/bn${english}`, parsed.origin);
+  return { en: en.toString(), bn: bn.toString() };
+}
+
+/** The Bangla part (issue 254): every page again at its /bn address. */
+export function banglaEntries(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
+  return entries.map((entry) => ({ ...entry, url: languageUrls(entry.url).bn }));
+}
+
 /** One part as sitemap XML with image entries (the same shape Next's metadata sitemap wrote). */
 export function sitemapXml(entries: MetadataRoute.Sitemap): string {
   const urls = entries.map((entry) => {
@@ -209,9 +224,14 @@ export function sitemapXml(entries: MetadataRoute.Sitemap): string {
       lines.push(`<lastmod>${new Date(entry.lastModified).toISOString()}</lastmod>`);
     if (entry.changeFrequency) lines.push(`<changefreq>${entry.changeFrequency}</changefreq>`);
     if (entry.priority !== undefined) lines.push(`<priority>${entry.priority}</priority>`);
+    // Each page lists its English and Bangla versions (hreflang, issue 254).
+    const { en, bn } = languageUrls(entry.url);
+    lines.push(`<xhtml:link rel="alternate" hreflang="en" href="${escapeXml(en)}"/>`);
+    lines.push(`<xhtml:link rel="alternate" hreflang="bn" href="${escapeXml(bn)}"/>`);
+    lines.push(`<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(en)}"/>`);
     for (const image of entry.images ?? [])
       lines.push(`<image:image><image:loc>${escapeXml(image)}</image:loc></image:image>`);
     return `<url>\n${lines.map((line) => `  ${line}`).join("\n")}\n</url>`;
   });
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join("\n")}\n</urlset>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join("\n")}\n</urlset>\n`;
 }

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Noto_Sans_Bengali, Plus_Jakarta_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
@@ -25,6 +25,14 @@ const sans = Inter({
   display: "swap",
 });
 
+// Bangla pages (issue 254): self-hosted by next/font, never preloaded, so English pages never fetch it (unicode-range).
+const bengali = Noto_Sans_Bengali({
+  subsets: ["bengali"],
+  variable: "--font-bengali",
+  display: "swap",
+  preload: false,
+});
+
 // Inter and Plus Jakarta Sans have no taka sign: this 2.6 KB Hind Siliguri subset draws only "৳".
 const taka = localFont({
   src: "../../assets/fonts/waafa-taka.woff2",
@@ -35,8 +43,12 @@ const taka = localFont({
   declarations: [{ prop: "unicode-range", value: "U+09F3" }],
 });
 
+/**
+ * English is prerendered; Bangla pages render on their first visit and are cached (D326), which keeps the web image
+ * and the build half the size.
+ */
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+  return [{ locale: routing.defaultLocale }];
 }
 
 /**
@@ -45,7 +57,8 @@ export function generateStaticParams() {
  * Settings › General.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const [t, site, image, integrations] = await Promise.all([
+  const [locale, t, site, image, integrations] = await Promise.all([
+    getLocale(),
     getTranslations("Metadata"),
     getSiteSettings(),
     defaultShareImage(),
@@ -78,7 +91,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     openGraph: {
       siteName: site.travelBrand,
-      locale: "en_BD",
+      locale: locale === "bn" ? "bn_BD" : "en_BD",
       type: "website",
       title,
       description,
@@ -106,7 +119,10 @@ export default async function RootLayout({ children }: LayoutProps<"/[locale]">)
   const t = await getTranslations("Common");
 
   return (
-    <html lang={locale} className={`${display.variable} ${sans.variable} ${taka.variable}`}>
+    <html
+      lang={locale}
+      className={`${display.variable} ${sans.variable} ${taka.variable} ${bengali.variable}`}
+    >
       <body className="min-h-dvh">
         {/*
          * Form validation (zod) without its eval probe: the CSP has no 'unsafe-eval', and the caught probe still

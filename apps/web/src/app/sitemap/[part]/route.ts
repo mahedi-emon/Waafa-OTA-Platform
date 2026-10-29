@@ -1,4 +1,5 @@
 import {
+  banglaEntries,
   partOf,
   SITEMAP_PARTS,
   sitemapEntries,
@@ -17,7 +18,9 @@ export async function GET(_request: Request, context: { params: Promise<{ part: 
   if (!SITEMAP_PARTS.includes(id) || !part.endsWith(".xml")) {
     return new Response("Not found", { status: 404 });
   }
-  const entries = (await sitemapEntries()).filter((entry) => partOf(entry.url) === id);
+  const all = await sitemapEntries();
+  const entries =
+    id === "bangla" ? banglaEntries(all) : all.filter((entry) => partOf(entry.url) === id);
   return new Response(sitemapXml(entries), {
     headers: { "content-type": "application/xml; charset=utf-8" },
   });

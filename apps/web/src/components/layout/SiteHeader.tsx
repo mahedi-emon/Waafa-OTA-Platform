@@ -7,6 +7,7 @@ import { listCategories } from "@/lib/data/shop";
 import { DesktopNavStatic } from "./DesktopNavStatic";
 import { DesktopNavSwitch } from "./DesktopNavSwitch";
 import { HelpMenu } from "./HelpMenu";
+import { LanguageSwitch } from "./LanguageSwitch";
 import { HelpPanel } from "./HelpPanel";
 import { MobileMenu } from "./MobileMenu";
 import { MobileMenuBody } from "./MobileMenuBody";
@@ -81,6 +82,16 @@ async function SiteHeader() {
         />
 
         <div className="flex items-center gap-1.5 lg:gap-2">
+          {/* English ⇄ বাংলা (issue 254); phones find it in the menu. */}
+          <LanguageSwitch
+            variant="header"
+            className="hidden md:inline-flex"
+            labels={{
+              en: t("language.en"),
+              bn: t("language.bn"),
+              switchTo: t("language.switchTo"),
+            }}
+          />
           <HelpMenu
             panel={<HelpPanel contact={contact} />}
             hours={contact.officeHours}

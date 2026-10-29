@@ -4,6 +4,7 @@ import { Mail } from "@/components/icons/server/Mail";
 import { Phone } from "@/components/icons/server/Phone";
 import { User } from "@/components/icons/server/User";
 import { getTranslations } from "next-intl/server";
+import { LanguageSwitch } from "./LanguageSwitch";
 import type { ContactSettings, MenuItem } from "@waafa/shared";
 import { whatsappLink } from "@waafa/shared/helpers/phone";
 import { MenuIcon } from "@/components/icons/MenuIcon";
@@ -26,6 +27,10 @@ async function MobileMenuBody({ links, more, contact, accountsLive = false }: Mo
 
   return (
     <div className="flex flex-col gap-6 px-4 pt-2 pb-[calc(24px+env(safe-area-inset-bottom))]">
+      <LanguageSwitch
+        className="self-start"
+        labels={{ en: t("language.en"), bn: t("language.bn"), switchTo: t("language.switchTo") }}
+      />
       {accountsLive ? (
         <AccountLink
           labels={{ logIn: t("logIn"), myAccount: t("myAccount") }}

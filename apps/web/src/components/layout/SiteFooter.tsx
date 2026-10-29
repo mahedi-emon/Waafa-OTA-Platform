@@ -21,6 +21,7 @@ import {
 } from "@/lib/data/settings";
 import { getCurrentYear } from "@/lib/currentYear";
 import { DeveloperCredit } from "./DeveloperCredit";
+import { LanguageSwitch } from "./LanguageSwitch";
 import { FooterAccordion } from "./FooterAccordion";
 import { NewsletterForm } from "./NewsletterForm";
 import { OfficeStatusChip } from "./OfficeStatusChip";
@@ -270,6 +271,13 @@ async function SiteFooter() {
                 ))}
             </ul>
           </div>
+          <LanguageSwitch
+            labels={{
+              en: tl("language.en"),
+              bn: tl("language.bn"),
+              switchTo: tl("language.switchTo"),
+            }}
+          />
           <DeveloperCredit label={t("developedBy")} />
         </div>
       </div>

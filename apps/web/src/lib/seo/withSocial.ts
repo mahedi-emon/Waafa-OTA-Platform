@@ -1,6 +1,6 @@
 import "server-only";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getMediaSlot } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
 import { type ShareImage, shareImageSrc, sharePreview } from "@/lib/media/imageQuality";
@@ -78,6 +78,23 @@ function fitPageTitle(title: Metadata["title"], template: string): Metadata["tit
 }
 
 /**
+ * English and Bangla addresses of one page (issue 254): pages give their English path as the canonical; a Bangla page
+ * gets its /bn address as the canonical, and both pages list each other (hreflang) with English as x-default.
+ */
+export function languageAlternates(
+  canonical: unknown,
+  locale: string,
+): { canonical: string; languages: Record<string, string> } | null {
+  if (typeof canonical !== "string" || !canonical.startsWith("/")) return null;
+  const english = canonical.replace(/^\/bn(?=\/|$)/, "") || "/";
+  const bangla = english === "/" ? "/bn" : `/bn${english}`;
+  return {
+    canonical: locale === "bn" ? bangla : english,
+    languages: { en: english, bn: bangla, "x-default": english },
+  };
+}
+
+/**
  * Adds the share preview a page needs on Facebook, WhatsApp, LinkedIn and X (#96): og:title, description, url,
  * site name, en_BD locale, type and image, plus a large Twitter card, all derived from the page's own title,
  * description and canonical. Values the page already set win; without an image the admin default is used.
@@ -88,10 +105,11 @@ export async function withSocial(
   metadata: Metadata,
   options: SocialOptions = {},
 ): Promise<Metadata> {
-  const [site, fallback, t] = await Promise.all([
+  const [site, fallback, t, locale] = await Promise.all([
     getSiteSettings(),
     defaultShareImage(),
     getTranslations("Metadata"),
+    getLocale(),
   ]);
   const pageTitle = fitPageTitle(metadata.title, t("titleTemplate"));
   const title = titleText(pageTitle) ?? site.defaultSeo.title ?? site.travelBrand;
@@ -99,7 +117,8 @@ export async function withSocial(
     (typeof metadata.description === "string" ? metadata.description : undefined) ??
     site.defaultSeo.description;
   const description = rawDescription ? clampText(rawDescription, DESCRIPTION_MAX) : undefined;
-  const canonical = metadata.alternates?.canonical;
+  const alternates = languageAlternates(metadata.alternates?.canonical, locale);
+  const canonical = alternates?.canonical ?? metadata.alternates?.canonical;
   const url =
     typeof canonical === "string"
       ? absoluteUrl(canonical)
@@ -117,11 +136,12 @@ export async function withSocial(
 
   return {
     ...metadata,
+    ...(alternates ? { alternates: { ...metadata.alternates, ...alternates } } : {}),
     ...(pageTitle ? { title: pageTitle } : {}),
     ...(typeof metadata.description === "string" && description ? { description } : {}),
     openGraph: {
       siteName: site.travelBrand,
-      locale: "en_BD",
+      locale: locale === "bn" ? "bn_BD" : "en_BD",
       type: options.type ?? "website",
       title,
       ...(description ? { description } : {}),

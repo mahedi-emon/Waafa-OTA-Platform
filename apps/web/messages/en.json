@@ -214,6 +214,11 @@
       "title": "Preview of unpublished changes",
       "body": "Drafts and scheduled changes show here as if they were live. Visitors don't see them.",
       "exit": "Exit preview"
+    },
+    "language": {
+      "en": "English",
+      "bn": "বাংলা",
+      "switchTo": "Change language"
     }
   },
   "Footer": {
