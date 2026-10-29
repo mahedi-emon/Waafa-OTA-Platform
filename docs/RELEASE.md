@@ -41,7 +41,7 @@ new-device, code-locked and customer sign-in email templates; #284 adds `2026-10
 Confirmed, Unpaid booking for every lead already Booked, amount from the lead); #298 adds `2026-10-31-quote-templates`
 (the quote email to the customer and the "quote accepted" staff alert); #302 adds `2026-10-28-store-name` (every
 stored text that still equals an old "Waafas World" default becomes "Waafa’s World": store name, menus, footer column,
-COD note, pages, team, timeline, email templates; anything staff wrote stays as it is); #244 adds `2026-11-02-summary-template` (the daily and weekly summary email).
+COD note, pages, team, timeline, email templates; anything staff wrote stays as it is); #244 adds `2026-11-02-summary-template` (the daily and weekly summary email); #250 adds `2026-11-04-incomplete-template`; #252 adds `2026-11-05-sms-templates` (four status SMS templates; nothing is sent until an SMS card is on).
 
 ## Image sizes (issue 303)
 
@@ -117,6 +117,7 @@ copy for them. Optional new `.env` lines: `BACKUP_CRON=off` (no cron), `BACKUP_K
 | Custom roles | Admin › Users › Custom roles (#244) | optional |
 | Round-robin for new leads | Admin › Users › a person › Takes new leads in turn (#243) | turn it on for the staff who should get new requests in turn (off for everyone after the deploy) |
 | Online payment (SSLCommerz, bKash, Nagad) | Admin › Integrations › Payments (#251) | save Sandbox keys and test first; checkout offers a gateway only when it is On, in Live mode, with Live keys; then do the ৳10 test (UAT U-35). No migration |
+| Status SMS and Telegram alerts | Admin › Integrations › SMS and Alerts (#252); SMS texts in Settings › Forms and messages | SMS: save the keys, Test, Send a test SMS, turn On. Telegram: create the bot, add it to the group, write a message, Find my group, Save, Test, turn On (UAT U-36). No migration |
 
 ## Keys to enter in Admin › Integrations (all off until saved)
 

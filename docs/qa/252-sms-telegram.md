@@ -23,4 +23,4 @@ FR-NTF SMS (status messages only, D300) and FR-NTF Telegram (PROMPT 10 letter J)
 | SEC-03 | Security | Template text with HTML or Markdown | Telegram messages are sent as plain text (no parse mode), so nothing is interpreted | unit |
 | A11Y-01 | Accessibility | Find my group and test SMS controls | Buttons named, results announced (role=status), 44 px targets on phones, axe clean | e2e (API mode) |
 | RWD-01 | Responsive | Integrations cards at 320 and 1440 | No horizontal scroll; Copy rows wrap | e2e screenshots |
-| PERF-01 | Performance | Submit time with SMS and Telegram on | Unchanged: both are fire and forget (queue or background) | API DB timing |
+| PERF-01 | Performance | Submit time with SMS and Telegram on | Unchanged: both are fire and forget (queue or background) | manual (U-36) |
