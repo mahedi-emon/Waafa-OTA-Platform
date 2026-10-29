@@ -65,7 +65,9 @@ export function buildResolvedBlueprint(
       Boolean(spec?.auto) ||
       Boolean(spec?.retired) ||
       linkFlag ||
-      (system && (info.name === "sample" || workflow));
+      (system && (info.name === "sample" || workflow)) ||
+      // Bangla text has its own section beside the English (EditorBangla, issue 255).
+      (info.parent === "" && info.name === "bn");
     const set = spec?.choices ?? info.name;
     const choices = info.values?.map((value) => ({
       value,

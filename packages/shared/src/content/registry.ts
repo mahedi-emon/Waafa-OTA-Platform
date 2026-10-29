@@ -267,6 +267,12 @@ const FIXED = new Set<ContentKey>([
 ]);
 
 /** Whether Move to Trash is offered for a key's records. */
+/** Collections whose records can carry Bangla text beside the English (issue 255): their schema has `bn`. */
+export function isBilingual(key: ContentKey): boolean {
+  const schema = CONTENT_MODEL[key].schema as unknown as { shape?: Record<string, unknown> };
+  return Boolean(schema.shape && "bn" in schema.shape);
+}
+
 export function canDelete(key: ContentKey): boolean {
   return CONTENT_MODEL[key].kind === "collection" && !FIXED.has(key);
 }

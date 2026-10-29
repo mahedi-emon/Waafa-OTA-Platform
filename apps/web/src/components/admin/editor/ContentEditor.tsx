@@ -14,6 +14,7 @@ import { ConflictDialog } from "./ConflictDialog";
 import { DraftBanner } from "./DraftBanner";
 import { EditorActionBar } from "./EditorActionBar";
 import { EditorAdvanced } from "./EditorAdvanced";
+import { EditorBangla } from "./EditorBangla";
 import { EditorHistory } from "./EditorHistory";
 import { EditorNoticeBanner } from "./EditorNoticeBanner";
 import { EditorSection } from "./EditorSection";
@@ -159,6 +160,8 @@ function ContentEditor({ canAdvanced, origin, ...input }: ContentEditorProps) {
       {blueprint.sections.map((section, index) => (
         <EditorSection key={section.id} section={section} next={blueprint.sections[index + 1]} />
       ))}
+      {/* Bangla beside the English (issue 255), for lists whose records can carry it. */}
+      <EditorBangla />
       {canAdvanced ? <EditorAdvanced fields={blueprint.advanced} /> : null}
     </div>
   );

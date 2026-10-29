@@ -1,3 +1,4 @@
+import { BanglaTextSchema } from "./bangla";
 import { z } from "zod";
 import {
   IdSchema,
@@ -78,6 +79,8 @@ export const VisaCountrySchema = z
     ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict()
   .refine(
@@ -106,6 +109,8 @@ export const VisaGuideSchema = z
     ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 

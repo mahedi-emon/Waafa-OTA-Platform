@@ -24,5 +24,6 @@ checkpoint updates this table.
 | SMS and Telegram (#252) | [252-sms-telegram.md](252-sms-telegram.md) | 20 | 19 | 1 (submit timing with both on, U-36) | API unit SMS 13 + Telegram 13 + notifications 3 + service check + API DB messaging 6 + e2e admin guide 1 | 0 | 0 | 0 |
 | Couriers (#253) | [253-couriers.md](253-couriers.md) | 14 | 13 | 1 (performance review) | API unit Steadfast 7 + API DB couriers 6 + e2e couriers 1 | 0 | 0 | 0 |
 | Bangla (#254) | [254-bangla.md](254-bangla.md) | 12 | 10 | 2 (admin at /bn spot check; native-speaker review, U-38) | unit messages 6 + sitemap + e2e bangla 35 + smoke, budget, seo, routes | 1 (the sitemap e2e listed the parts by name) | 1 | 0 |
+| Bilingual content (#255) | [255-bilingual-content.md](255-bilingual-content.md) | 10 | 8 | 2 (editor walk-through, admin language) | shared 4 + blueprints + API DB 1 + e2e bilingual 1 | 1 (structured data test after the async change in #254) | 1 | 0 |
 
-Totals: 318 cases · 279 automated · 39 manual · 14 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5, 2 in #251) · 0 open (performance target follow-up #271).
+Totals: 328 cases · 287 automated · 41 manual · 14 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5, 2 in #251) · 0 open (performance target follow-up #271).

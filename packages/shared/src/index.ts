@@ -19,6 +19,7 @@ export * from "./constants";
 export * from "./schemas/common";
 export * from "./schemas/settings";
 export * from "./schemas/content";
+export * from "./schemas/bangla";
 export * from "./schemas/travel";
 export * from "./schemas/search";
 export * from "./schemas/leads";

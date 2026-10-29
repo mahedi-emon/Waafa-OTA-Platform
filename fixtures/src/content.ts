@@ -547,6 +547,12 @@ export const faqs: In<typeof FaqSchema>[] = [
     order: 0,
     onHome: true,
     sample: true,
+    // Bangla written for this one (issue 255); the other questions show English on /bn until staff add theirs.
+    bn: {
+      question: "WAAFA-তে কীভাবে ফ্লাইট বুক করব?",
+      answer:
+        "আপনার রুট খুঁজে ছোট ফর্মটি পাঠান। একজন ট্রাভেল এক্সপার্ট সেরা অপশন নিয়ে ফোন বা মেসেজ করবেন, ভাড়া ও নিয়ম নিশ্চিত করবেন, আর পেমেন্টের পর টিকিট ইস্যু করবেন।",
+    },
   },
   {
     id: "faq-change-cancel",

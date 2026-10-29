@@ -12,6 +12,7 @@ import {
   hasPublishWorkflow,
   isContentKey,
   type ContentKey,
+  isBilingual,
 } from "@waafa/shared";
 import { listPriceOf, photoOf } from "@waafa/shared/helpers/photo";
 import { recordChipsOf } from "@waafa/shared/workflow/chips";
@@ -60,6 +61,7 @@ function recordsQuery(search: Record<string, string | string[] | undefined>) {
     ...(q ? { q } : {}),
     ...(chip && /^[a-zA-Z]{2,20}$/.test(chip) ? { chip } : {}),
     ...(sort ? { sort } : {}),
+    ...(one(search.bn) === "missing" ? { bn: "missing" as const } : {}),
     page: pageParam(search.page),
     pageSize: pageSizeOf(search.pageSize),
   };
@@ -230,7 +232,7 @@ async function RecordTable({
   const workflow = hasPublishWorkflow(key);
   // Moving a record only makes sense in the order the site uses: no search, filter or other sort.
   const query = recordsQuery(search);
-  const inSiteOrder = !query.q && !query.chip && !query.sort;
+  const inSiteOrder = !query.q && !query.chip && !query.sort && !query.bn;
   const prices = data.items.map(
     (item) => listPriceOf(item.data as Record<string, unknown>) ?? null,
   );
@@ -329,8 +331,8 @@ async function RecordTable({
       columns={columns}
       page={{ total: data.total, page: data.page, pageSize: data.pageSize }}
       searchLabel={tc("search")}
-      filters={
-        chipNames.length > 0
+      filters={[
+        ...(chipNames.length > 0
           ? [
               {
                 param: "chip",
@@ -338,8 +340,18 @@ async function RecordTable({
                 options: chipNames.map((name) => ({ value: name, label: tchip(`labels.${name}`) })),
               },
             ]
-          : []
-      }
+          : []),
+        // Records whose visitor text has no Bangla yet (issue 255).
+        ...(isBilingual(key)
+          ? [
+              {
+                param: "bn",
+                label: t("bangla"),
+                options: [{ value: "missing", label: t("banglaMissing") }],
+              },
+            ]
+          : []),
+      ]}
       bulk={bulk}
       openLabel={t("open")}
       empty={{ title: t("emptyTitle"), body: t("emptyBody") }}

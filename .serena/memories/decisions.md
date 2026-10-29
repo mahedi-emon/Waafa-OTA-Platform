@@ -1,4 +1,5 @@
 # Decisions (full table: docs/TRACKER.md section 8)
+- D323–D327 (30 Oct): payments trust only the gateway's answer; SMS status-only (ASCII "WAAFA:"), Telegram plain text without phone/email; Steadfast first (Pathao/RedX later), webhook token = HMAC of PROVIDER_SECRET_KEY; Bangla at /bn, English prerendered only, Latin digits, admin English; one optional `bn` map per record with overlay in the data layer.
 - D1–D63: see TRACKER (planning, design system, MotionKit, search card, Back restore, pickers lazy).
 - D64–D124: see TRACKER (home, flights/hotels Manual, packages, visa, store, cart/checkout, service pages, info pages,
   system states, group fares, footer brand text).

@@ -38,7 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #254 · Bangla at /bn — 🟡 In review
+### #255 · Bilingual content fields — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 11 (PROMPT 10 letter K): English required, Bangla optional with English fallback, "Bangla missing" filter, admin stays English |
+| Built | `bn` (field path → Bangla text, dotted paths only) on 23 content schemas (pages, service pages, blocks, blog, FAQs, banners, media slots, destinations, gallery, team, baggage, announcements, packages, hotels, routes, group fares, visa countries and guides, categories, products, collections, deals, campaigns). Shared `translatablePaths` (only fields visitors read), `banglaMissing`, `withBangla` (copies, never changes the record). The web data layer wraps the repositories: on /bn every answer carries the Bangla where it exists (the locale root param is part of each cached accessor's key; route handlers stay English). Admin: a "Bangla" section in the record editor with each English text beside its Bangla field and "N of M written"; a "Bangla missing" filter on the lists of bilingual collections (API `bn=missing`). One Sample FAQ carries Bangla to show the flow |
+| Tests | shared `bangla.test.ts` 4; blueprint tests (bn handled by its own section); API DB `adminLists` (Bangla missing filter, bad value 422); e2e `bilingual.spec.ts`; QA plan `docs/qa/255-bilingual-content.md` |
+| Migration | none (content documents are JSON) |
+| Decision | D327 |
+| Tools and skills | Serena, Context7 (root params in "use cache"), Playwright |
+| PR · CI minutes | (PR open) |
+
+### #254 · Bangla at /bn — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 11 (PROMPT 10 letter K; FR-GLB-07, NFR-L10N) |
@@ -47,9 +58,9 @@ Serena memory `audit_findings`.
 | Migration | none |
 | Decision | D326 |
 | Tools and skills | Serena, Context7 (next/root-params in "use cache"), four translation subagents in parallel, Playwright |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #319 · 11 min |
 
-### #253 · Courier booking and tracking, Steadfast first — ✅ Done
+### #253 · Courier booking and tracking, Steadfast first — 🟡 In review
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 10 (PROMPT 10 letter J; FR-SHOP-14) and the integration-card brief (webhook URL with Copy, plain Test connection) |
@@ -58,7 +69,7 @@ Serena memory `audit_findings`.
 | Migration | none (tracking lives on the order history) |
 | Decision | D325 |
 | Tools and skills | Serena (memories, symbols), Playwright; no new library |
-| PR · CI minutes | #318 · 68 min (full-ci) |
+| PR · CI minutes | (PR open) |
 
 ### #252 · SMS for status messages and Telegram alerts — 🟡 In review
 | Field | Value |
@@ -2160,6 +2171,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D320 | 29 Oct | CSV import (products, group fares, compatible models) merges each line into the saved record and saves through the normal editor save, so rules, History, audit and cache stay one path; the whole file is refused while any line has a problem; it never deletes; products update existing products and variants only (new ones need photos, added in the editor). Invoices are drawn from the order's price snapshot; the seller block shows only the name and contacts (no licence or ID numbers), the customer's BIN only when they asked for a VAT invoice; the VAT amount shows only when Admin sets a rate (no invented number) | Owner order step 8; CLAUDE.md "Never show licence or ID numbers" | #248 |
 | D322 | 29 Oct | Partial capture keeps step 1 in its own table (`LeadDraft`), not as a half-valid lead: leads keep one strict contract, and the Incomplete queue, its retention (30 days) and its single reminder stay separate. It is opt-in on step 1 (consent, PRD FR-FLT-08), shown to staff only after 30 minutes, and the full request completes it in the same transaction, so there is never a duplicate. The reminder links only to a path on this site | Owner order step 9; PRD §13 privacy | #250 |
 | D321 | 29 Oct | Curated hotels are a content list with their own pages; Request booking reuses the hotel request (/hotels?hotel=&room=) instead of a second form, so one lead flow and one set of rules; the hotel fields ride along only while the place still names the hotel. Amenities are a fixed list (icons and words in code and messages) so cards stay consistent; prices are "from" per night and labelled indicative. Sample hotels use real Unsplash room, lobby and pool photos (no renders) and say they are samples | Owner order step 9; FR-HTL-02; CLAUDE.md media and "never fake live availability" | #249 |
+| D327 | 30 Oct | Bangla content is one optional `bn` map per record (field path → text) instead of a second field beside every English one: one schema change for 23 collections, one editor section for all of them, and the site's fallback is automatic (a missing path shows the English). Only fields visitors read are offered; ids, links, enums, prices and dates never change with the language. The overlay runs in the data layer, so no page or component changes | Owner order step 11; PRD FR-GLB-07 | #255 |
 | D326 | 30 Oct | Bangla ships as a full second locale at /bn with English unprefixed. Only English is prerendered: Bangla pages render on their first visit and are cached, which keeps the build time and the web image near today's size; budgets stay measured on English. Digits, prices (৳ with lakh grouping), phone numbers and dates stay in Latin digits as most Bangladeshi commerce sites do, and brand names stay in Latin letters (CLAUDE.md). The admin and llms.txt stay English. The UI copy was translated in four parallel passes with automatic checks; a native-speaker review is on the owner's UAT list (U-38) | Owner order step 11; PRD FR-GLB-07, NFR-L10N; CLAUDE.md "brand names stay in Latin letters" | #254 |
 | D325 | 29 Oct | Courier booking ships for Steadfast first: one adapter, the order reference as the courier's invoice (so status is read by it and nothing new is stored), tracking through the existing ship step (SMS and history for free), status by webhook plus a 30-minute check as the safety net. Pathao and RedX keep their cards and Test connection; their booking adapters wait until the owner opens those accounts (cut list). The webhook token is an HMAC of PROVIDER_SECRET_KEY, so there is no new secret to store or rotate | Owner order step 10; FR-SHOP-14; CLAUDE.md "outside services through Admin › Integrations" | #253 |
 | D324 | 29 Oct | SMS carries status messages only (request received, order placed and its real steps, visa stage) from four admin-editable SMS templates; sign-in codes have no SMS template (D300). SMS text stays ASCII ("WAAFA:" instead of the store name) so one message is one 160-character GSM SMS, not three Unicode parts. The first SMS card that is on, in its mode, with a last test that did not fail, sends; nothing is logged while SMS is off. Telegram posts plain text (no parse mode) with the reference, a short summary and the admin link, never phone, email or documents, because the group is outside our access control. Find my group reads getUpdates without a webhook, so the owner never types a chat ID | Owner order step 10 and the integration-card brief; PRD §13 privacy; D300 | #252 |
@@ -2260,6 +2272,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 30 Oct | #250 merged (#315, 105 min), #251 (#316, 132 min), #252 (#317, 67 min). #253 Steadfast built (PR #318). #254 Bangla at /bn (2,380 strings by four parallel translation passes, switch, hreflang, sitemap) and #255 bilingual content (bn map, overlay, editor section, Bangla missing filter) built and pushed | #250–#255 | #315–#318 | API 427, web 740, shared 176, e2e bangla 35 + bilingual + couriers + payments |
 | 29 Oct (night) | #249 PR #314 in CI. #250 partial lead capture built (LeadDraft, step 1 opt-in, Incomplete requests page, one reminder, purge); PR opened with full-ci | #249 #250 | #314 | API DB 5, e2e partial-capture 2 |
 | 29 Oct (late) | #249 merged (#314, 62 min). #250 in CI (#315). #251 online payments built (three gateway adapters, start/confirm, refunds, checkout options, result page, integration setup guides with Copy and server IP) | #249 #250 #251 | #314 #315 | API unit 8, API DB 3, e2e payments 6 |
 | 29 Oct (later) | #248 merged (#313, 10 min) and closed out. #249 curated hotels built (schema, fixtures with real photos, list and detail pages, Request booking into the hotel lead, admin editor); PR opened with full-ci | #248 #249 | #313 | shared +2, web +3, e2e hotels-curated |
@@ -2339,6 +2352,8 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 Owner's order of 28 Oct (D303, D312). One issue per PR; start the next while CI runs.
 1. ✅ #302, #303, #243, #244, #245, #246, #247.
 2. ✅ #248 (#313). Checkpoint to the owner given after #248.
-3. ✅ #249 (#314). 🟡 #250 PR #315 in CI (full-ci, migration). 🟡 #251 online payments started. Then #251–#253 (integration cards with copyable URLs, Telegram "Find my group", plain Test connection;
-   checkpoint with the accounts to open), #254 / #255 (checkpoint), #271, #256 / #257 / #258, #259 (checkpoint), release
-   candidate (RELEASE.md from 7af26e7).
+3. ✅ #249 (#314), #250 (#315), #251 (#316), #252 (#317). Checkpoint with the accounts to open given 30 Oct.
+4. 🟡 #253 PR #318 in CI (full-ci). Ready and pushed, stacked: feat/254-bangla (#254), feat/255-bilingual-content (#255):
+   after each merge, merge main into the next branch (take ours), open its PR, merge when green.
+5. Then #271 (Lighthouse 90+ and LCP 2.5 s on Home, Hotels, Blog; assertions to error), #256 / #257 / #258, #259
+   (checkpoint), release candidate (RELEASE.md from 7af26e7, upgrade rehearsal). Cut first if behind: #257, then #258 extras.
