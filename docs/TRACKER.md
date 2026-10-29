@@ -49,7 +49,7 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (root params in "use cache"), Playwright |
 | PR · CI minutes | (PR open) |
 
-### #254 · Bangla at /bn — 🟡 In review
+### #254 · Bangla at /bn — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 11 (PROMPT 10 letter K; FR-GLB-07, NFR-L10N) |
@@ -58,7 +58,7 @@ Serena memory `audit_findings`.
 | Migration | none |
 | Decision | D326 |
 | Tools and skills | Serena, Context7 (next/root-params in "use cache"), four translation subagents in parallel, Playwright |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #319 · 11 min |
 
 ### #253 · Courier booking and tracking, Steadfast first — 🟡 In review
 | Field | Value |
