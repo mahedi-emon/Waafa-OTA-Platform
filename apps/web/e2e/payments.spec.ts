@@ -56,6 +56,9 @@ test("a gateway's return redirects to the result page; unknown gateways and odd 
   expect((await request.get("/api/payments/paypal/success", { maxRedirects: 0 })).status()).toBe(
     404,
   );
-  const odd = await request.get("/shop/payment?outcome=paid&order=<script>");
-  expect(await odd.text()).not.toContain("<script>");
+  // Next's own inline scripts are fine; the order value must never come back as markup.
+  const odd = await request.get(
+    `/shop/payment?outcome=paid&order=${encodeURIComponent("<script>waafaXss()</script>")}`,
+  );
+  expect(await odd.text()).not.toContain("<script>waafaXss");
 });
