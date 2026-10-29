@@ -49,7 +49,7 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena, Context7 (next/root-params in "use cache"), four translation subagents in parallel, Playwright |
 | PR · CI minutes | (PR open) |
 
-### #253 · Courier booking and tracking, Steadfast first — 🟡 In review
+### #253 · Courier booking and tracking, Steadfast first — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 10 (PROMPT 10 letter J; FR-SHOP-14) and the integration-card brief (webhook URL with Copy, plain Test connection) |
@@ -58,7 +58,7 @@ Serena memory `audit_findings`.
 | Migration | none (tracking lives on the order history) |
 | Decision | D325 |
 | Tools and skills | Serena (memories, symbols), Playwright; no new library |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #318 · 68 min (full-ci) |
 
 ### #252 · SMS for status messages and Telegram alerts — 🟡 In review
 | Field | Value |
