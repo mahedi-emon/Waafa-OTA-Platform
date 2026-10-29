@@ -49,7 +49,7 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena (memories, symbols), Playwright; no new library |
 | PR · CI minutes | (PR open) |
 
-### #252 · SMS for status messages and Telegram alerts — 🟡 In review
+### #252 · SMS for status messages and Telegram alerts — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 10 (PROMPT 10 letter J; FR-NTF SMS for status messages only per D300, FR-NTF Telegram) and the integration-card brief ("Find my group", plain Test connection) |
@@ -58,7 +58,7 @@ Serena memory `audit_findings`.
 | Migration | none; seed patch `2026-11-05-sms-templates` (adds the four SMS templates when missing) |
 | Decision | D324 |
 | Tools and skills | Serena (memories, symbols), Context7 not needed (no new library; Telegram Bot API and gateway HTTP contracts), Playwright |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #317 · 67 min (full-ci) | |
 
 ### #251 · SSLCommerz, bKash and Nagad — 🟡 In review
 | Field | Value |
