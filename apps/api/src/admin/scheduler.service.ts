@@ -27,6 +27,7 @@ import { SummaryReportsService } from "./summaryReports.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { lowResources, readResources } from "./resourceAlert";
 import { ContentService } from "../content/content.service";
+import { CouriersService } from "../couriers/couriers.service";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 
@@ -60,6 +61,8 @@ export type TickResult = {
   summaries: string[];
   /** Reminder emails for requests left unfinished (issue 250). */
   incompleteReminders: number;
+  /** Orders whose courier status changed this pass (issue 253). */
+  couriers: number;
 };
 
 /** How long staff sign-in history is kept (issue 234). */
@@ -75,6 +78,7 @@ const EMPTY: TickResult = {
   handedOut: 0,
   summaries: [],
   incompleteReminders: 0,
+  couriers: 0,
 };
 
 const isCollectionKey = (key: string): key is CollectionKey =>
@@ -108,6 +112,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
     @Inject(RoundRobinService) private readonly roundRobin: RoundRobinService,
     @Inject(SummaryReportsService) private readonly summaries: SummaryReportsService,
     @Inject(LeadDraftsService) private readonly drafts: LeadDraftsService,
+    @Inject(CouriersService) private readonly couriers: CouriersService,
   ) {}
 
   onModuleInit(): void {
@@ -156,6 +161,8 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
       const handedOut = await this.roundRobin.catchUp(now);
       const summaries = await this.summaries.sendDue(now);
       const incompleteReminders = await this.drafts.remindAndPurge(now);
+      // Courier status for shipped parcels, every 30 minutes (issue 253).
+      const couriers = await this.couriers.syncDue(now).catch(() => 0);
       return {
         published: result.published,
         windows,
@@ -166,6 +173,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
         handedOut,
         summaries,
         incompleteReminders,
+        couriers,
       };
     } finally {
       this.running = false;

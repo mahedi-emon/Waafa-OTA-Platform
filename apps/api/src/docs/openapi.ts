@@ -149,6 +149,15 @@ export const ROUTES: RouteDoc[] = [
   },
   {
     method: "post",
+    path: "/api/v1/public/couriers/{courier}/webhook",
+    summary:
+      "A courier's status push, forwarded by the web server with the courier's bearer token in x-courier-token; delivered marks the order Delivered",
+    tag: "public",
+    auth: "intake",
+    responses: { 200: "Taken", 401: "Wrong webhook token" },
+  },
+  {
+    method: "post",
     path: "/api/v1/public/leads/drafts",
     summary:
       "Step 1 of a request with the visitor's OK to be called if they don't finish (one per phone and service; the full request completes it)",
@@ -309,6 +318,14 @@ function adminRoutes(): RouteDoc[] {
       "Record a refund made in the gateway's or bank's panel (Admin, Accounts; never past the total; audited)",
       RefundRecordInputSchema,
     ),
+    route(
+      "post",
+      "/orders/{id}/courier",
+      "Book the parcel with a courier that is on (Steadfast); the order moves to Shipped with the courier's tracking code",
+      undefined,
+      { 200: "Order", 409: "Courier off, order not ready, or the courier's refusal in one sentence" },
+    ),
+    route("get", "/couriers", "Couriers that are on in Admin › Integrations"),
     route(
       "get",
       "/orders/{id}/invoice",

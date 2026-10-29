@@ -80,6 +80,8 @@ export type Messaging = {
   active: ActiveIntegrations;
   sms: IntegrationSms;
   telegram: TelegramAlerts;
+  /** The fetch outside services are called with (tests pass a fake); couriers use it too (issue 253). */
+  fetcher: Fetcher;
 };
 
 export function createMessaging(
@@ -92,5 +94,6 @@ export function createMessaging(
     active,
     sms: new IntegrationSms(active, fetcher),
     telegram: new TelegramAlerts(active, fetcher),
+    fetcher,
   };
 }

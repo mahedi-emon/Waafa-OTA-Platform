@@ -1,5 +1,6 @@
 import { validateProviderConnection, type ProviderDefinition } from "@waafa/shared";
 import type { HealthResult, ProviderContext, ServiceProvider } from "./adapters";
+import { steadfast } from "../couriers/steadfast";
 import { checkTelegramGroup } from "../notifications/telegram";
 import { checkConnection, isPublicHost, type Fetcher } from "./catalogAdapters";
 
@@ -128,7 +129,10 @@ export function serviceProvider(definition: ProviderDefinition, fetcher: Fetcher
       case "storage":
         return checkStorage(definition, context, fetcher);
       case "courier":
-        return checkConnection(definition, context, fetcher);
+        // Steadfast reads the balance with the keys, so a wrong key says so (issue 253).
+        return definition.id === "steadfast"
+          ? steadfast(fetcher).healthCheck(context)
+          : checkConnection(definition, context, fetcher);
       default:
         return Promise.resolve(checkShape(definition, context));
     }

@@ -291,7 +291,13 @@ export class AdminOrdersService {
    * proof, or a phone call for cash on delivery; shipping needs the courier and tracking number; cancelling and
    * returning need a reason and put the stock back; delivering cash on delivery records the cash as received.
    */
-  async act(staff: StaffPrincipal, id: string, input: OrderActionInput, now = new Date()) {
+  /** One step; the courier's own updates (issue 253) act as { id: null, name: "Courier update" }. */
+  async act(
+    staff: StaffPrincipal | { id: null; name: string },
+    id: string,
+    input: OrderActionInput,
+    now = new Date(),
+  ) {
     const order = await this.prisma.order.findUnique({ where: { id } });
     if (!order) throw problems.notFound("Order not found");
     const cash = (order.payment as { method?: string } | null)?.method === "cod";

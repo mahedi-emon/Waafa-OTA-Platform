@@ -58,6 +58,12 @@ async function Order({ params, searchParams }: Pick<Params, "params" | "searchPa
   ]);
   if (!order) return <AdminNotFound />;
   const canMove = hasRole(staff, "admin", "shop-manager");
+  // Couriers that are on in Admin › Integrations (issue 253): Mark shipped offers "Book with …".
+  const couriers =
+    canMove && (order.status === "confirmed" || order.status === "processing")
+      ? ((await adminGet<{ couriers: string[] }>("/admin/couriers").catch(() => null))?.couriers ??
+        [])
+      : [];
   const status = (value: string) =>
     ["placed", "confirmed", "processing", "shipped", "delivered", "cancelled", "returned"].includes(
       value,
@@ -165,6 +171,7 @@ async function Order({ params, searchParams }: Pick<Params, "params" | "searchPa
                     paymentVerified={order.paymentVerified}
                     phone={order.address.phone}
                     whatsappHref={whatsappHref(order.address.phone, order.reference)}
+                    couriers={couriers}
                   />
                 </NextIntlClientProvider>
               ) : null}

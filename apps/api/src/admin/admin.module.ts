@@ -42,6 +42,8 @@ import { AdminWorkbenchService } from "./workbench.service";
 import { AdminEventsController } from "../realtime/events.controller";
 import { AdminAlertsController, AdminRemindersController } from "../realtime/reminders.controller";
 import { RemindersService } from "../realtime/reminders.service";
+import { AdminCouriersController, PublicCouriersController } from "../couriers/couriers.controller";
+import { CouriersService } from "../couriers/couriers.service";
 
 /** The admin API (B4): staff only, by role; needs AuthModule and ServicesModule. */
 @Module({
@@ -73,6 +75,9 @@ import { RemindersService } from "../realtime/reminders.service";
     AdminReportsController,
     AdminCustomersController,
     AdminWorkbenchController,
+    // Courier booking, the courier's webhook and the webhook token (issue 253).
+    AdminCouriersController,
+    PublicCouriersController,
   ],
   providers: [
     RemindersService,
@@ -95,6 +100,7 @@ import { RemindersService } from "../realtime/reminders.service";
     CustomRolesService,
     AdminCustomerAccountsService,
     AdminWorkbenchService,
+    CouriersService,
     // The minute job: scheduled publishing, window refreshes, Trash purge, overdue alerts (D0 R4).
     ContentScheduler,
   ],

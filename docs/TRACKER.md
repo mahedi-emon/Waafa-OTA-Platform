@@ -38,7 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #252 · SMS for status messages and Telegram alerts — 🟡 In review
+### #253 · Courier booking and tracking, Steadfast first — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 10 (PROMPT 10 letter J; FR-SHOP-14) and the integration-card brief (webhook URL with Copy, plain Test connection) |
+| Built | Steadfast adapter (`api/src/couriers/steadfast.ts`, packzy API v1): create_order (invoice = order reference, 01… phone, address in one line, cash to collect only for unpaid cash on delivery), status_by_invoice, get_balance as Test connection; every refusal in one plain sentence. `CouriersService`: Book from the order page (confirmed or packing) → the order moves to Shipped with "Steadfast" and the tracking code through the normal step (so the "on its way" SMS goes out); the minute job asks Steadfast every 30 minutes about shipped parcels (45 days, 200 at most) and writes each new status once on the history; delivered marks the order Delivered; the webhook (`/api/couriers/steadfast/webhook` → API with the bearer token, compared in constant time; the token is derived from PROVIDER_SECRET_KEY, nothing stored) does the same at once. Admin: "Book with Steadfast" inside Mark shipped when the card is on; the card's guide shows the Callback URL and the Auth token with Copy buttons |
+| Tests | API unit `steadfast.unit.test.ts` 7 (request shape, errors, phone, statuses); API DB `couriers.test.ts` 6 (off, card test, booking with roles and cash, refusal leaves the order, minute job once + delivered, webhook token); e2e `couriers.spec.ts` (unknown courier, no token, bad body, no API); QA plan `docs/qa/253-couriers.md` (CR-01..14); UAT U-37 |
+| Migration | none (tracking lives on the order history) |
+| Decision | D325 |
+| Tools and skills | Serena (memories, symbols), Playwright; no new library |
+| PR · CI minutes | (PR open) |
+
+### #252 · SMS for status messages and Telegram alerts — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 10 (PROMPT 10 letter J; FR-NTF SMS for status messages only per D300, FR-NTF Telegram) and the integration-card brief ("Find my group", plain Test connection) |
@@ -47,9 +58,9 @@ Serena memory `audit_findings`.
 | Migration | none; seed patch `2026-11-05-sms-templates` (adds the four SMS templates when missing) |
 | Decision | D324 |
 | Tools and skills | Serena (memories, symbols), Context7 not needed (no new library; Telegram Bot API and gateway HTTP contracts), Playwright |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #317 · 67 min (full-ci) |
 
-### #251 · SSLCommerz, bKash and Nagad — ✅ Done
+### #251 · SSLCommerz, bKash and Nagad — 🟡 In review
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 10 (PROMPT 10 letter J; FR-SHOP-07 online pay) and the integration-card brief (Banglish steps, values to copy, server IP, plain Test connection) |
@@ -58,7 +69,7 @@ Serena memory `audit_findings`.
 | Migration | none (payment data lives on the order's payment JSON) |
 | Decision | D323 |
 | Tools and skills | Serena (symbols for the provider layer), Playwright; no new library (node:crypto for Nagad) |
-| PR · CI minutes | #316 · 132 min (full-ci) |
+| PR · CI minutes | (PR open) |
 
 ### #250 · Partial lead capture — ✅ Done
 | Field | Value |
@@ -1658,6 +1669,7 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-165 | Online payment options at checkout; integration setup guides | integration settings (active, Live mode, keys) | Admin › Integrations (payment cards) | `/admin/providers/*`, `/public/integrations/status` | ✅ API DB + e2e (#251) |
 | AC-166 | Status SMS to customers (request received, order placed and steps, visa stage) | notificationTemplates `lead-received-sms`, `order-placed-sms`, `order-status-sms`, `visa-status-sms` (text, on/off); SMS card (BulkSMSBD, SSL Wireless or Twilio) | Settings › Forms and messages › Email and SMS; Admin › Integrations › SMS (Test connection, Send a test SMS) | `PUT /api/v1/admin/content/notificationTemplates/:id`, `/admin/providers/:provider/:environment/test-sms` | API DB `messaging.test.ts` |
 | AC-167 | Telegram alerts to the sales group | Telegram card (bot token, group chat ID, On) | Admin › Integrations › Alerts (Find my group, Test connection) | `/admin/providers/telegram/groups`, `/admin/providers/telegram/production/test` | API DB `messaging.test.ts`, e2e admin-integrations-guide |
+| AC-168 | Courier booking and the parcel's status on the order and /track | Steadfast card (API key, Secret key, On); order history (courier, tracking, status lines) | Admin › Integrations › Couriers (Test, Callback URL and Auth token to copy); Admin › Orders › Mark shipped › Book with Steadfast | `/admin/orders/:id/courier`, `/admin/couriers`, `/public/couriers/steadfast/webhook` | API DB `couriers.test.ts` |
 | AC-160 | Quote email and the "quote accepted" staff alert | notificationTemplates quote-customer, quote-accepted-staff | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | ✅ API test (#298) |
 
 ## 5. Components inventory
@@ -2137,6 +2149,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D320 | 29 Oct | CSV import (products, group fares, compatible models) merges each line into the saved record and saves through the normal editor save, so rules, History, audit and cache stay one path; the whole file is refused while any line has a problem; it never deletes; products update existing products and variants only (new ones need photos, added in the editor). Invoices are drawn from the order's price snapshot; the seller block shows only the name and contacts (no licence or ID numbers), the customer's BIN only when they asked for a VAT invoice; the VAT amount shows only when Admin sets a rate (no invented number) | Owner order step 8; CLAUDE.md "Never show licence or ID numbers" | #248 |
 | D322 | 29 Oct | Partial capture keeps step 1 in its own table (`LeadDraft`), not as a half-valid lead: leads keep one strict contract, and the Incomplete queue, its retention (30 days) and its single reminder stay separate. It is opt-in on step 1 (consent, PRD FR-FLT-08), shown to staff only after 30 minutes, and the full request completes it in the same transaction, so there is never a duplicate. The reminder links only to a path on this site | Owner order step 9; PRD §13 privacy | #250 |
 | D321 | 29 Oct | Curated hotels are a content list with their own pages; Request booking reuses the hotel request (/hotels?hotel=&room=) instead of a second form, so one lead flow and one set of rules; the hotel fields ride along only while the place still names the hotel. Amenities are a fixed list (icons and words in code and messages) so cards stay consistent; prices are "from" per night and labelled indicative. Sample hotels use real Unsplash room, lobby and pool photos (no renders) and say they are samples | Owner order step 9; FR-HTL-02; CLAUDE.md media and "never fake live availability" | #249 |
+| D325 | 29 Oct | Courier booking ships for Steadfast first: one adapter, the order reference as the courier's invoice (so status is read by it and nothing new is stored), tracking through the existing ship step (SMS and history for free), status by webhook plus a 30-minute check as the safety net. Pathao and RedX keep their cards and Test connection; their booking adapters wait until the owner opens those accounts (cut list). The webhook token is an HMAC of PROVIDER_SECRET_KEY, so there is no new secret to store or rotate | Owner order step 10; FR-SHOP-14; CLAUDE.md "outside services through Admin › Integrations" | #253 |
 | D324 | 29 Oct | SMS carries status messages only (request received, order placed and its real steps, visa stage) from four admin-editable SMS templates; sign-in codes have no SMS template (D300). SMS text stays ASCII ("WAAFA:" instead of the store name) so one message is one 160-character GSM SMS, not three Unicode parts. The first SMS card that is on, in its mode, with a last test that did not fail, sends; nothing is logged while SMS is off. Telegram posts plain text (no parse mode) with the reference, a short summary and the admin link, never phone, email or documents, because the group is outside our access control. Find my group reads getUpdates without a webhook, so the owner never types a chat ID | Owner order step 10 and the integration-card brief; PRD §13 privacy; D300 | #252 |
 | D323 | 29 Oct | Online payment goes through the existing PaymentProvider adapters; the gateways call back to the web app (/api/payments/…), which passes the fields to the API, and the API believes only the gateway's own answer (validation, execute, verify) with the order's server-side total. Only gateways on, in Live mode and with Live keys are offered, so a sandbox never takes a customer's money and nothing shows before the owner's keys. Refunds are made in the gateway's panel and recorded on the order (no refund API calls until each gateway's refund contract is certified). The Nagad contract follows Nagad's published v-0.2.0 flow and is verified in its sandbox when the keys arrive | Owner order step 10; PRD FR-SHOP-07; CLAUDE.md "Never show online payment before it is live" | #251 |
 
@@ -2182,7 +2195,7 @@ If time runs out, cut in this order (PRD §17). Never cut security, lead capture
 or accessibility.
 Proposed 25 Oct for Phase D (lowest impact first; applied only if progress falls behind at a checkpoint): 1) admin dark
 mode #257; 2) custom roles, search funnel, scheduled reports and merge customers #244; 3) campaign pages and flash
-sales #247; 4) benchmark extras beyond fixes #258; 5) Buy again and save for later (wishlist stays) #246. Never cut:
+sales #247; 4) benchmark extras beyond fixes #258; 5) Buy again and save for later (wishlist stays) #246. Applied 29 Oct (D325): Pathao and RedX booking adapters wait for the owner's accounts (Steadfast ships first). Never cut:
 #232 files, #233, security #234 #235, payments #251, accessibility, compliance.
 
 1. Gallery video embeds
