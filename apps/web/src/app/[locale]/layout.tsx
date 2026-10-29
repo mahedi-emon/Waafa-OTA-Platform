@@ -121,7 +121,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[locale]">)
   return (
     <html
       lang={locale}
-      className={`${display.variable} ${sans.variable} ${taka.variable} ${bengali.variable}`}
+      className={`${display.variable} ${sans.variable} ${taka.variable}${locale === "bn" ? ` ${bengali.variable}` : ""}`}
     >
       <body className="min-h-dvh">
         {/*
