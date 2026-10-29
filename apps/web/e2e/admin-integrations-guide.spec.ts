@@ -47,6 +47,7 @@ test("the Telegram card finds the group and SMS cards explain themselves (issue 
   await signIn(page);
   const errors = collectErrors(page);
   await page.goto("/secure-admin-control/integrations");
+  await page.getByRole("tab", { name: "Email, SMS and alerts" }).click();
   const telegram = page.getByRole("article", { name: /^Telegram alerts/ });
   await telegram.getByRole("button", { name: "Connect" }).click();
   // No token typed or saved: one plain sentence instead of a call to Telegram.
