@@ -57,10 +57,14 @@ export const PROVIDER_SETUP: Partial<Record<ProviderId, ProviderSetup>> = {
     steps: [
       "steadfast.com.bd te merchant account khulun; login kore API section theke API key ar Secret key copy korun.",
       "Niche boshan; API base URL https://portal.packzy.com/api/v1.",
-      "Steadfast panel e Webhook URL e niche-r address boshan, jate parcel er status nijei update hoy.",
+      "Steadfast panel e Webhook settings e Callback URL e niche-r address ar Auth token (Bearer) e niche-r token boshan, jate parcel er status nijei update hoy.",
       live,
+      'Card on hole order page e "Book with Steadfast" chapun: parcel book hoy, tracking code order e bose, customer SMS pay.',
     ],
-    panel: [{ label: "Webhook URL", path: "/api/couriers/steadfast/webhook" }],
+    panel: [
+      { label: "Callback (webhook) URL", path: "/api/couriers/steadfast/webhook" },
+      { label: "Auth token (Bearer)", webhookToken: true },
+    ],
   },
   pathao: {
     steps: [

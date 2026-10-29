@@ -59,6 +59,16 @@ export async function orderAction(id: string, input: OrderActionInput): Promise<
   return write(`/admin/orders/${at(id)}/actions`, "POST", parsed.data);
 }
 
+/** Books the parcel with a courier that is on (issue 253); the order moves to Shipped with its tracking code. */
+export async function bookCourier(id: string, courier: string): Promise<ActionResult> {
+  if (courier !== "steadfast")
+    return {
+      ok: false,
+      problem: { status: 422, title: "Validation failed", detail: "Unknown courier" },
+    };
+  return write(`/admin/orders/${at(id)}/courier`, "POST", { courier });
+}
+
 export async function moderateFeedback(
   id: string,
   input: FeedbackModerationInput,

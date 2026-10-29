@@ -4155,7 +4155,8 @@
         "values": "Paste these into the provider's own panel",
         "copy": "Copy",
         "copied": "Copied",
-        "noIp": "couldn't find it right now; your hosting panel shows the server's public IP"
+        "noIp": "couldn't find it right now; your hosting panel shows the server's public IP",
+        "noToken": "shows once the server has PROVIDER_SECRET_KEY (it is set on the live server)"
       },
       "telegram": {
         "find": "Find my group",
@@ -7104,6 +7105,9 @@
       "reason": "Reason",
       "restockNote": "Its items go back in stock.",
       "courierNeeded": "Name the courier and enter the tracking number.",
+      "bookWith": "Book with {courier}",
+      "bookHint": "Books the parcel, fills in the tracking code and texts the customer. Or type another courier below.",
+      "booked": "Booked with {courier}. The order is shipped.",
       "reasonNeeded": "Say why in a few words.",
       "cancelDialog": "Keep the order",
       "done": {

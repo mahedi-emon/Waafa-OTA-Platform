@@ -28,7 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Link, useRouter } from "@/i18n/navigation";
-import { orderAction } from "@/lib/admin/opsActions";
+import { bookCourier, orderAction } from "@/lib/admin/opsActions";
 import { PhoneActionBar } from "./inbox/PhoneActionBar";
 
 type Step =
@@ -57,7 +57,12 @@ type OrderStepsProps = {
   phone?: string;
   /** wa.me link with the order reference written. */
   whatsappHref?: string;
+  /** Couriers that are on (issue 253): Mark shipped offers "Book with …" before typing a tracking number. */
+  couriers?: readonly string[];
 };
+
+/** Courier names on the booking button. */
+const COURIER_NAMES: Record<string, string> = { steadfast: "Steadfast" };
 
 /** What an order offers next (ADMIN.md §8.4), the main step first. */
 function stepsFor(status: OrderStatus, cash: boolean, paid: boolean): Step[] {
@@ -89,6 +94,7 @@ function OrderSteps({
   paymentVerified,
   phone,
   whatsappHref,
+  couriers = [],
 }: OrderStepsProps) {
   const t = useTranslations("Admin.orderSteps");
   const router = useRouter();
@@ -142,6 +148,22 @@ function OrderSteps({
         return;
       }
       toast.success(t(`done.${current}`));
+      setStep(null);
+      router.refresh();
+    });
+  }
+
+  function book(courierId: string) {
+    setError(null);
+    startTransition(async () => {
+      const result = await bookCourier(id, courierId);
+      if (!result.ok) {
+        const message = result.problem.detail ?? t("failed");
+        setError(message);
+        toast.error(message);
+        return;
+      }
+      toast.success(t("booked", { courier: COURIER_NAMES[courierId] ?? courierId }));
       setStep(null);
       router.refresh();
     });
@@ -266,6 +288,22 @@ function OrderSteps({
             >
               {step === "ship" ? (
                 <>
+                  {couriers.length > 0 ? (
+                    <div className="flex flex-col gap-2 rounded-xl border border-electric-100 bg-electric-50/60 p-3">
+                      {couriers.map((courierId) => (
+                        <Button
+                          key={courierId}
+                          type="button"
+                          loading={pending}
+                          onClick={() => book(courierId)}
+                        >
+                          <Truck aria-hidden="true" className="size-4" />
+                          {t("bookWith", { courier: COURIER_NAMES[courierId] ?? courierId })}
+                        </Button>
+                      ))}
+                      <p className="text-[13px] text-mist-700">{t("bookHint")}</p>
+                    </div>
+                  ) : null}
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor={`${uid}-courier`}>{t("courier")}</Label>
                     <Input

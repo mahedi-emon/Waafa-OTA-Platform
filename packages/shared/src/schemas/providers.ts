@@ -110,7 +110,14 @@ export type ProviderDefinition = {
 };
 
 /** A value staff paste into the provider's panel: a path on this site (shown as a full address) or the server IP. */
-export type ProviderPanelValue = { label: string; path?: string; serverIp?: true };
+/** A value to paste into the provider's panel: an address on this site, the server IP, or the courier webhook token. */
+export type ProviderPanelValue = {
+  label: string;
+  path?: string;
+  serverIp?: true;
+  /** The bearer token the courier sends with its webhook (issue 253), read from the API. */
+  webhookToken?: true;
+};
 export type ProviderSetup = { steps: readonly string[]; panel?: readonly ProviderPanelValue[] };
 
 const url = (hint: string): ProviderField => ({

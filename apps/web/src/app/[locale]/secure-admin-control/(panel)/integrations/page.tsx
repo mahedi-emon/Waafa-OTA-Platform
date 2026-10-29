@@ -75,9 +75,13 @@ async function Integrations() {
   if (!hasRole(staff, "super-admin")) {
     return <AdminPageHeader title={tf("title")} lead={tf("body")} />;
   }
-  const [data, server] = await Promise.all([
+  const [data, server, steadfastToken] = await Promise.all([
     adminGet<ProvidersList>("/admin/providers"),
     adminGet<{ ip: string | null }>("/admin/providers/server-ip").catch(() => ({ ip: null })),
+    // The courier webhook token (issue 253); null without PROVIDER_SECRET_KEY.
+    adminGet<{ token: string | null }>("/admin/providers/steadfast/webhook-token").catch(() => ({
+      token: null,
+    })),
   ]);
   const guideStrings = {
     title: t("guide.title"),
@@ -85,6 +89,7 @@ async function Integrations() {
     copy: t("guide.copy"),
     copied: t("guide.copied"),
     noIp: t("guide.noIp"),
+    noToken: t("guide.noToken"),
   };
   // Placeholders stay in the strings; the cards fill them in (messages are precompiled, so no t.raw).
   const strings: IntegrationStrings = {
@@ -244,6 +249,9 @@ async function Integrations() {
                                 setup={PROVIDER_SETUP[definition.id as ProviderId]!}
                                 origin={SITE_URL}
                                 serverIp={server.ip}
+                                webhookToken={
+                                  definition.id === "steadfast" ? steadfastToken.token : null
+                                }
                                 strings={guideStrings}
                               />
                             ) : null
