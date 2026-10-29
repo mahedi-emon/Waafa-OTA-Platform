@@ -58,7 +58,7 @@ Serena memory `audit_findings`.
 | Migration | none; seed patch `2026-11-05-sms-templates` (adds the four SMS templates when missing) |
 | Decision | D324 |
 | Tools and skills | Serena (memories, symbols), Context7 not needed (no new library; Telegram Bot API and gateway HTTP contracts), Playwright |
-| PR · CI minutes | #317 · 67 min (full-ci) | |
+| PR · CI minutes | #317 · 67 min (full-ci) |
 
 ### #251 · SSLCommerz, bKash and Nagad — 🟡 In review
 | Field | Value |
