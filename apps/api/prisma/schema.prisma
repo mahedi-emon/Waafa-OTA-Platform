@@ -209,6 +209,31 @@ model Lead {
   @@index([createdAt])
 }
 
+/// FR-FLT-08 partial capture (issue 250): step 1 of a request form, kept with the visitor's OK to be called. It shows
+/// as an Incomplete request when not finished within 30 minutes; the full request completes it (no duplicate lead).
+model LeadDraft {
+  id           String    @id @default(cuid())
+  module       String
+  name         String
+  phone        String
+  email        String?
+  /// The page and search the visitor was on, for the expert's call.
+  page         String
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+  completedAt  DateTime? @db.Timestamptz(3)
+  leadId       String?
+  /// Staff called them ("contacted") or set it aside ("dismissed").
+  outcome      String?
+  outcomeAt    DateTime? @db.Timestamptz(3)
+  outcomeBy    String?
+  /// The one reminder email, when the visitor gave an address.
+  reminderSentAt DateTime? @db.Timestamptz(3)
+
+  @@index([phone, module, createdAt])
+  @@index([completedAt, outcome, createdAt])
+}
+
 model LeadActivity {
   id        String   @id @default(cuid())
   leadId    String

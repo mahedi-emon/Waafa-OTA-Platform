@@ -128,3 +128,14 @@ export async function recordRefund(
   const result = await adminWrite(`/admin/orders/${orderId}/refunds`, "POST", input);
   return result.ok ? { ok: true } : result;
 }
+
+/** An Incomplete request (issue 250): staff called the visitor, or set the request aside. */
+export async function markIncomplete(
+  id: string,
+  type: "contacted" | "dismissed",
+): Promise<ActionResult> {
+  if (!/^[a-z0-9]{10,40}$/.test(id))
+    return { ok: false, problem: { status: 404, title: "Unknown" } };
+  const result = await adminWrite(`/admin/leads/incomplete/${id}/actions`, "POST", { type });
+  return result.ok ? { ok: true } : result;
+}

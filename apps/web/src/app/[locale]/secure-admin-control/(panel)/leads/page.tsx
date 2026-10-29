@@ -158,12 +158,17 @@ async function Leads({
         title={t("title")}
         lead={t("lead", { sla: list.slaMinutes })}
         actions={
-          <Button asChild variant="secondary" size="sm">
-            <Link href={withSearch(`${PATH}/board`, queueSearch({ module: query.module }))}>
-              <Columns3 aria-hidden="true" className="size-4" />
-              {t("board")}
-            </Link>
-          </Button>
+          <>
+            <Button asChild variant="ghost" size="sm">
+              <Link href={`${PATH}/incomplete`}>{t("incomplete")}</Link>
+            </Button>
+            <Button asChild variant="secondary" size="sm">
+              <Link href={withSearch(`${PATH}/board`, queueSearch({ module: query.module }))}>
+                <Columns3 aria-hidden="true" className="size-4" />
+                {t("board")}
+              </Link>
+            </Button>
+          </>
         }
       />
       <LeadModuleTabs

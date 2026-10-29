@@ -22,6 +22,7 @@ import { NotificationService } from "../notifications/notification.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { RemindersService } from "../realtime/reminders.service";
 import { RoundRobinService } from "../realtime/roundRobin.service";
+import { LeadDraftsService } from "./leadDrafts.service";
 import { SummaryReportsService } from "./summaryReports.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 import { lowResources, readResources } from "./resourceAlert";
@@ -57,6 +58,8 @@ export type TickResult = {
   handedOut: number;
   /** Daily and weekly summary emails sent this pass (issue 244). */
   summaries: string[];
+  /** Reminder emails for requests left unfinished (issue 250). */
+  incompleteReminders: number;
 };
 
 /** How long staff sign-in history is kept (issue 234). */
@@ -71,6 +74,7 @@ const EMPTY: TickResult = {
   reminders: 0,
   handedOut: 0,
   summaries: [],
+  incompleteReminders: 0,
 };
 
 const isCollectionKey = (key: string): key is CollectionKey =>
@@ -103,6 +107,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
     @Inject(RemindersService) private readonly reminders: RemindersService,
     @Inject(RoundRobinService) private readonly roundRobin: RoundRobinService,
     @Inject(SummaryReportsService) private readonly summaries: SummaryReportsService,
+    @Inject(LeadDraftsService) private readonly drafts: LeadDraftsService,
   ) {}
 
   onModuleInit(): void {
@@ -150,6 +155,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
       const reminders = await this.reminders.alertDue(now);
       const handedOut = await this.roundRobin.catchUp(now);
       const summaries = await this.summaries.sendDue(now);
+      const incompleteReminders = await this.drafts.remindAndPurge(now);
       return {
         published: result.published,
         windows,
@@ -159,6 +165,7 @@ export class ContentScheduler implements OnModuleInit, OnModuleDestroy {
         reminders,
         handedOut,
         summaries,
+        incompleteReminders,
       };
     } finally {
       this.running = false;

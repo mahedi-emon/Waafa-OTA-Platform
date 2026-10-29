@@ -26,6 +26,8 @@ import {
   PaymentConfirmInputSchema,
   PaymentStartInputSchema,
   RefundRecordInputSchema,
+  LeadDraftActionSchema,
+  LeadDraftInputSchema,
   OrderCreateInputSchema,
   OrderTrackInputSchema,
   PaymentProofInputSchema,
@@ -147,6 +149,16 @@ export const ROUTES: RouteDoc[] = [
   },
   {
     method: "post",
+    path: "/api/v1/public/leads/drafts",
+    summary:
+      "Step 1 of a request with the visitor's OK to be called if they don't finish (one per phone and service; the full request completes it)",
+    tag: "public",
+    auth: "intake",
+    body: LeadDraftInputSchema,
+    responses: { 204: "Kept", 422: "Validation failed", 429: "Too many requests" },
+  },
+  {
+    method: "post",
     path: "/api/v1/public/orders",
     summary: "Order priced on the server; stock taken in the same transaction",
     tag: "public",
@@ -243,6 +255,17 @@ function adminRoutes(): RouteDoc[] {
       "Lead list: view, module, status, assignee, created dates, search, paging",
     ),
     route("get", "/leads/export.csv", "CSV of the current filter"),
+    route(
+      "get",
+      "/leads/incomplete",
+      "Incomplete requests: step 1 done more than 30 minutes ago and never sent (view open or done)",
+    ),
+    route(
+      "post",
+      "/leads/incomplete/{id}/actions",
+      "Mark an Incomplete request contacted or set it aside (audited)",
+      LeadDraftActionSchema,
+    ),
     route(
       "post",
       "/leads/bulk",

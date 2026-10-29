@@ -14,6 +14,7 @@ import {
   type DeliveryChoice,
   type FeedbackCreateInput,
   type LeadCreateInput,
+  type LeadDraftInput,
   type LeadCreated,
   type Order,
   type OrderCreateInput,
@@ -117,6 +118,33 @@ export class IntakeService {
     return keys !== null;
   }
 
+  /**
+   * Step 1 of a request with the visitor's OK to be called (FR-FLT-08, issue 250). One open draft per phone and
+   * service: a second step 1 updates it. Nothing is kept when the same phone already sent this service's request in
+   * the last 24 hours.
+   */
+  async saveDraft(input: LeadDraftInput, now = new Date()): Promise<void> {
+    const since = new Date(now.getTime() - DUPLICATE_WINDOW_MS);
+    const where = { phone: input.contact.phone, module: input.module };
+    const sent = await this.prisma.lead.findFirst({
+      where: { ...where, createdAt: { gte: since } },
+      select: { id: true },
+    });
+    if (sent) return;
+    const data = {
+      name: input.contact.name,
+      email: input.contact.email ?? null,
+      page: input.page,
+    };
+    const open = await this.prisma.leadDraft.findFirst({
+      where: { ...where, completedAt: null, outcome: null, createdAt: { gte: since } },
+      orderBy: { createdAt: "desc" },
+      select: { id: true },
+    });
+    if (open) await this.prisma.leadDraft.update({ where: { id: open.id }, data });
+    else await this.prisma.leadDraft.create({ data: { ...where, ...data, createdAt: now } });
+  }
+
   async createLead(input: LeadCreateInput, now = new Date()): Promise<LeadCreated> {
     const module = input.payload.module;
     const digest = leadDigest(input.payload);
@@ -147,6 +175,11 @@ export class IntakeService {
           duplicateOfId: duplicate?.id ?? null,
           createdAt: now,
         },
+      });
+      // The full request completes the visitor's step 1 (issue 250): no Incomplete request beside the lead.
+      await tx.leadDraft.updateMany({
+        where: { phone: input.contact.phone, module, completedAt: null },
+        data: { completedAt: now, leadId: lead.id },
       });
       await tx.leadActivity.create({
         data: {

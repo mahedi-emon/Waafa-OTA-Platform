@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   FeedbackCreateInputSchema,
   LeadCreateInputSchema,
+  LeadDraftInputSchema,
   OrderCreateInputSchema,
   OrderTrackInputSchema,
   PaymentProofInputSchema,
@@ -83,6 +84,19 @@ export class PublicController {
       body: await this.intake.createLead(input),
     }));
     return this.send(reply, outcome);
+  }
+
+  /** Step 1 with the visitor's OK to be called if they don't finish (FR-FLT-08, issue 250). */
+  @Post("leads/drafts")
+  @HttpCode(204)
+  async saveDraft(@Body() body: unknown, @Req() request: FastifyRequest) {
+    await this.limit(request, "leads");
+    const input = parseInput(LeadDraftInputSchema, body);
+    if (!(await this.limits.allow("leadsPerPhone", input.contact.phone)))
+      throw problems.tooMany(
+        "Too many requests from this phone number. Call us or try again in an hour.",
+      );
+    await this.intake.saveDraft(input);
   }
 
   @Post("orders")

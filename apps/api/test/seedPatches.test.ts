@@ -22,6 +22,7 @@ const ALL_PATCHES = [
   "2026-10-31-quote-templates",
   "2026-10-28-store-name",
   "2026-11-02-summary-template",
+  "2026-11-04-incomplete-template",
 ];
 
 /** A record as the live site stored it before visa moved to /visa (issue 176). */

@@ -566,6 +566,15 @@ export const notificationTemplates: In<typeof NotificationTemplateSchema>[] = [
     enabled: true,
   },
   {
+    key: "lead-incomplete-customer",
+    audience: "Customer, request not finished",
+    channel: "email",
+    subject: "Finish your {{service}} request with Waafa",
+    body: "Hello {{name}},\n\nYou started a {{service}} request on our website but didn't send it. Pick up where you left off: {{link}}\n\nOr reply to this email, call or WhatsApp us, and a travel expert will help. We only send this reminder once.",
+    variables: ["{{name}}", "{{service}}", "{{link}}"],
+    enabled: true,
+  },
+  {
     key: "quote-customer",
     audience: "Customer, with a quote",
     channel: "email",
