@@ -91,3 +91,18 @@ test("the Bangla sitemap lists every page at /bn", async ({ request }) => {
   expect(bangla).toContain("/bn/tour-packages</loc>");
   expect(bangla).toContain('hreflang="en"');
 });
+
+test("English pages never download the Bengali font, Bangla pages do", async ({ page }) => {
+  const bengaliLoaded = () =>
+    page.evaluate(async () => {
+      await document.fonts.ready;
+      return [...document.fonts].some(
+        (face) => face.family.includes("Bengali") && face.status === "loaded",
+      );
+    });
+  // /hotels shows prices with the taka sign, which the small taka face draws (issue 254 regression).
+  await page.goto("/hotels");
+  expect(await bengaliLoaded()).toBe(false);
+  await page.goto("/bn/hotels");
+  expect(await bengaliLoaded()).toBe(true);
+});

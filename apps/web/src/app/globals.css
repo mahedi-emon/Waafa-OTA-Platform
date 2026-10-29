@@ -195,14 +195,16 @@
   }
 }
 
-/* Fonts come from next/font (variables set on <html>); semantic colours map to the shadcn variables below. */
+/*
+ * Fonts come from next/font (variables set on <html>); semantic colours map to the shadcn variables below. Bangla pages
+ * alone set --font-bengali (issue 254): English pages never name the Bengali face, so it is never downloaded there,
+ * even for the taka sign.
+ */
 @theme inline {
   --font-sans:
-    var(--font-inter), var(--font-taka), var(--font-bengali), "Noto Sans Bengali", ui-sans-serif,
-    system-ui, sans-serif;
+    var(--font-inter), var(--font-taka), var(--font-bengali, ui-sans-serif), system-ui, sans-serif;
   --font-display:
-    var(--font-jakarta), var(--font-taka), var(--font-bengali), "Noto Sans Bengali", ui-sans-serif,
-    system-ui, sans-serif;
+    var(--font-jakarta), var(--font-taka), var(--font-bengali, ui-sans-serif), system-ui, sans-serif;
   --font-heading: var(--font-display);
 
   --color-background: var(--background);
