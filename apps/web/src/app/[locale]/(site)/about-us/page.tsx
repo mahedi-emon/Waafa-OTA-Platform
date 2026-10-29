@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowRight } from "@/components/icons/server/ArrowRight";
 import { MapPin } from "@/components/icons/server/MapPin";
 import { Phone } from "@/components/icons/server/Phone";
@@ -92,7 +92,7 @@ export default async function AboutPage() {
         url: pageUrl,
         name: page.title,
         description: page.seo.description ?? t("metaDescription"),
-        inLanguage: "en-BD",
+        inLanguage: (await getLocale()) === "bn" ? "bn-BD" : "en-BD",
         isPartOf: { "@id": schemaId("website") },
         about: { "@id": schemaId("organization") },
         mainEntity: { "@id": schemaId("organization") },

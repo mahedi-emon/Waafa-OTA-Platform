@@ -1,3 +1,4 @@
+import { getLocale } from "next-intl/server";
 import { absoluteUrl } from "@/lib/siteUrl";
 import { schemaId } from "@/lib/seo/schemaIds";
 import { JsonLd } from "./JsonLd";
@@ -17,14 +18,15 @@ type CollectionPageJsonLdProps = {
  * CollectionPage (or ImageGallery) with its ItemList as the main entity (issue 125), part of the site's WebSite node.
  * Index pages without a list (nothing published yet) still describe themselves, with no empty ItemList.
  */
-function CollectionPageJsonLd({
+async function CollectionPageJsonLd({
   type = "CollectionPage",
   path,
   name,
   description,
   items,
 }: CollectionPageJsonLdProps) {
-  const url = absoluteUrl(path);
+  const locale = await getLocale();
+  const url = absoluteUrl(locale === "bn" ? (path === "/" ? "/bn" : `/bn${path}`) : path);
   return (
     <JsonLd
       data={{
@@ -34,7 +36,7 @@ function CollectionPageJsonLd({
         url,
         name,
         description,
-        inLanguage: "en-BD",
+        inLanguage: locale === "bn" ? "bn-BD" : "en-BD",
         isPartOf: { "@id": schemaId("website") },
         publisher: { "@id": schemaId("organization") },
         ...(items.length > 0

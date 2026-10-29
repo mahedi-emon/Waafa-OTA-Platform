@@ -23,5 +23,6 @@ checkpoint updates this table.
 | Online payments (#251) | [251-online-payments.md](251-online-payments.md) | 13 | 12 | 1 (৳10 live test, U-35) | API unit gateways 8 + API DB payments 3 + e2e payments 7 + admin guide 1 | 2 (result page blocked prerender, caught by the local build; the XSS check matched Next's own inline scripts) | 2 | 0 |
 | SMS and Telegram (#252) | [252-sms-telegram.md](252-sms-telegram.md) | 20 | 19 | 1 (submit timing with both on, U-36) | API unit SMS 13 + Telegram 13 + notifications 3 + service check + API DB messaging 6 + e2e admin guide 1 | 0 | 0 | 0 |
 | Couriers (#253) | [253-couriers.md](253-couriers.md) | 14 | 13 | 1 (performance review) | API unit Steadfast 7 + API DB couriers 6 + e2e couriers 1 | 0 | 0 | 0 |
+| Bangla (#254) | [254-bangla.md](254-bangla.md) | 12 | 10 | 2 (admin at /bn spot check; native-speaker review, U-38) | unit messages 6 + sitemap + e2e bangla 35 + smoke, budget, seo, routes | 1 (the sitemap e2e listed the parts by name) | 1 | 0 |
 
-Totals: 306 cases · 269 automated · 37 manual · 14 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5, 2 in #251) · 0 open (performance target follow-up #271).
+Totals: 318 cases · 279 automated · 39 manual · 14 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5, 2 in #251) · 0 open (performance target follow-up #271).
