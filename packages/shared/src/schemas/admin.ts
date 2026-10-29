@@ -176,6 +176,8 @@ export const ContentListQuerySchema = z
       .regex(/^[a-zA-Z]{2,20}$/)
       .optional(),
     sort: z.enum(["title.asc", "title.desc", "updated.asc", "updated.desc"]).optional(),
+    /** "missing": only records with visitor text that has no Bangla yet (issue 255). */
+    bn: z.enum(["missing"]).optional(),
     page: z.coerce.number().int().min(1).max(10_000).default(1),
     pageSize: z.coerce
       .number()

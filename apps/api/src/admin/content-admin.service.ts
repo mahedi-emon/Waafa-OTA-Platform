@@ -12,6 +12,7 @@ import {
   isContentKey,
   isPickerKey,
   parseContent,
+  banglaMissing,
   recordChipsOf,
   type CollectionKey,
   type ContentAction,
@@ -265,6 +266,8 @@ export class AdminContentService {
         ...(uses ? { uses: uses.get(row.docId) ?? 0 } : {}),
       }))
       .filter((item) => !needle || `${item.title} ${item.id}`.toLowerCase().includes(needle));
+    // The "Bangla missing" filter (issue 255).
+    if (query.bn === "missing") items = items.filter((item) => banglaMissing(item.data));
     if (query.chip) {
       const chip = query.chip;
       items = items.filter((item) =>

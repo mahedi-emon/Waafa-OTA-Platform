@@ -1,3 +1,4 @@
+import { BanglaTextSchema } from "./bangla";
 import { z } from "zod";
 import { OnlineGatewaySchema } from "./payments";
 import {
@@ -50,6 +51,8 @@ export const CategorySchema = z
     order: z.number().int().min(0),
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -167,6 +170,8 @@ export const ProductSchema = z
     ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict()
   .superRefine((product, ctx) => {
@@ -218,6 +223,8 @@ export const CollectionSchema = z
     ]),
     order: z.number().int().min(0),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -243,6 +250,8 @@ export const DealSchema = z
     /** Flash sale: how many units sell at the deal price; the API counts orders and stops at it. */
     stockCap: z.number().int().positive().max(100_000).optional(),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -259,6 +268,8 @@ export const CampaignSchema = z
     productIds: z.array(IdSchema).min(1).max(60),
     order: z.number().int().min(0),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 

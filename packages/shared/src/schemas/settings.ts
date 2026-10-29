@@ -1,3 +1,4 @@
+import { BanglaTextSchema } from "./bangla";
 import { z } from "zod";
 import {
   EmailSchema,
@@ -191,6 +192,8 @@ export const AnnouncementSchema = z
     endsAt: IsoDateTimeSchema,
     enabled: z.boolean(),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 

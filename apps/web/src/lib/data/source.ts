@@ -1,6 +1,7 @@
 import "server-only";
 import { apiConfig } from "./api/apiClient";
 import { createApiRepositories } from "./api/apiRepositories";
+import { bilingual } from "./bilingual";
 import { createFixtureRepositories } from "./fixtures/createFixtureRepositories";
 import type { Repositories } from "./types";
 
@@ -16,8 +17,11 @@ export const apiMode = apiConfig() !== null;
 
 /**
  * The data source behind every accessor in this folder: the API snapshot in API mode (Phase C, D136), the typed
- * Sample fixtures otherwise. No page or component changes between the two.
+ * Sample fixtures otherwise. No page or component changes between the two. On /bn pages each record shows its Bangla
+ * text where staff wrote it (issue 255).
  */
-export const repositories: Repositories = apiMode
-  ? createApiRepositories()
-  : (globalStore.__waafaRepositories ??= createFixtureRepositories());
+export const repositories: Repositories = bilingual(
+  apiMode
+    ? createApiRepositories()
+    : (globalStore.__waafaRepositories ??= createFixtureRepositories()),
+);

@@ -4016,7 +4016,9 @@
         "moved": "Order saved",
         "emptyTitle": "Nothing here yet",
         "emptyBody": "Add the first one and it shows on the site when it is live.",
-        "changedBy": "Last change by {name}"
+        "changedBy": "Last change by {name}",
+        "bangla": "Bangla",
+        "banglaMissing": "Bangla missing"
       },
       "newRecordOf": "New {thing}",
       "csv": {
@@ -5384,6 +5386,11 @@
         "sample": "the sample data",
         "update": "a site update",
         "order": "a store order"
+      },
+      "bangla": {
+        "title": "Bangla",
+        "count": "{written} of {total} written",
+        "lead": "Optional. The /bn pages show the Bangla you write here and the English for anything left empty. Keep names, prices and codes as they are."
       }
     },
     "fieldNames": {

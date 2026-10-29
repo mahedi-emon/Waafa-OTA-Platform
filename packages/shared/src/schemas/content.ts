@@ -1,3 +1,4 @@
+import { BanglaTextSchema } from "./bangla";
 import { STORAGE_KEY_PATTERN } from "../helpers/customerFiles";
 import { z } from "zod";
 import { FEEDBACK_SERVICES } from "../constants";
@@ -48,6 +49,8 @@ export const PageSchema = z
     ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict()
   .refine(
@@ -84,6 +87,8 @@ export const BlogPostSchema = z
     ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -110,6 +115,8 @@ export const FaqSchema = z
     /** One of the five shown on Home (FR-HOME 11). */
     onHome: z.boolean().default(false),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -132,6 +139,8 @@ export const BannerSchema = z
     order: z.number().int().min(0),
     enabled: z.boolean(),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -164,6 +173,8 @@ export const MediaSlotSchema = z
     image: ImageSchema.optional(),
     video: VideoSchema.optional(),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict()
   .refine((slot) => slot.image !== undefined || slot.video !== undefined, {
@@ -228,6 +239,8 @@ export const DestinationSchema = z
     tags: z.array(DestinationTagSchema),
     order: z.number().int().min(0),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -264,6 +277,8 @@ export const GalleryAlbumSchema = z
     items: z.array(GalleryItemSchema),
     publishedAt: IsoDateSchema,
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -323,6 +338,8 @@ export const TeamMemberSchema = z
     visible: z.boolean(),
     order: z.number().int().min(0),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -339,6 +356,8 @@ export const BaggageRuleSchema = z
     notes: z.string().max(200).optional(),
     lastVerified: IsoDateSchema,
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -425,6 +444,8 @@ export const ServicePageSchema = z
       .max(8),
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 
@@ -459,6 +480,8 @@ export const PageBlockSchema = z
     tone: z.enum(["default", "warning", "danger"]).default("default"),
     order: z.number().int().min(0),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict();
 

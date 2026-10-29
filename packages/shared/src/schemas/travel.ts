@@ -1,3 +1,4 @@
+import { BanglaTextSchema } from "./bangla";
 import { z } from "zod";
 import { CABIN_CLASSES } from "../constants";
 import {
@@ -64,6 +65,8 @@ export const GroupFareSchema = z
     expiresAt: IsoDateTimeSchema,
     notes: z.string().max(200).optional(),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict()
   .refine((fare) => fare.tripType === "one-way" || Boolean(fare.returnDate), {
@@ -195,6 +198,8 @@ export const TourPackageSchema = z
     ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict()
   .refine((pkg) => pkg.itinerary.length === pkg.durationDays, {
@@ -278,6 +283,8 @@ export const HotelSchema = z
     ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict()
   .superRefine((hotel, ctx) => {
@@ -353,6 +360,8 @@ export const FlightRouteSchema = z
     ...PublishTimesShape,
     seo: SeoSchema.default({ noIndex: false }),
     sample: SampleFlagSchema,
+    /** Bangla text beside the English (issue 255): field path → Bangla; English is the fallback. */
+    bn: BanglaTextSchema,
   })
   .strict()
   .refine((route) => route.from !== route.to, {

@@ -52,6 +52,19 @@ describe.skipIf(!dbAvailable)("admin lists and fixed records (issue 229)", () =>
     await prisma?.$disconnect();
   });
 
+  it("lists only records with Bangla missing when asked (issue 255)", async () => {
+    const all = (await get("content/faqs/records?pageSize=100")).json<{
+      items: { id: string }[];
+    }>();
+    const missing = await get("content/faqs/records?pageSize=100&bn=missing");
+    expect(missing.statusCode).toBe(200);
+    const ids = missing.json<{ items: { id: string }[] }>().items.map((item) => item.id);
+    // The fixture FAQ with its question and answer in Bangla is done; the rest still need Bangla.
+    expect(ids).not.toContain("faq-book-flight");
+    expect(ids.length).toBe(all.items.length - 1);
+    expect((await get("content/faqs/records?bn=all")).statusCode).toBe(422);
+  });
+
   it("never moves a fixed record (message template, home section, menu…) to Trash", async () => {
     const template = await prisma.contentDocument.findFirstOrThrow({
       where: { collection: "notificationTemplates" },
