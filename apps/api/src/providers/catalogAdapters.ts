@@ -1,5 +1,6 @@
 import { Socket } from "node:net";
 import type { OnlineGateway } from "@waafa/shared";
+import { isSmsGateway, smsAdapter } from "../notifications/smsGateways";
 import { GATEWAY_ADAPTERS } from "../payments/gateways";
 import { serviceProvider } from "./serviceChecks";
 import {
@@ -183,10 +184,13 @@ export function messagingProvider(
   return {
     id: definition.id,
     kind: definition.kind === "email" ? "email" : "sms",
+    // SMS gateways answer with their own error codes, so a failing test says what is wrong (issue 252).
     healthCheck: (context) =>
       definition.id === "smtp"
         ? checkSmtp(definition, context, probe)
-        : checkConnection(definition, context, fetcher),
+        : isSmsGateway(definition.id)
+          ? smsAdapter(definition.id, fetcher).healthCheck(context)
+          : checkConnection(definition, context, fetcher),
   };
 }
 

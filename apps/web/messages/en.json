@@ -4156,6 +4156,20 @@
         "copy": "Copy",
         "copied": "Copied",
         "noIp": "couldn't find it right now; your hosting panel shows the server's public IP"
+      },
+      "telegram": {
+        "find": "Find my group",
+        "hint": "Add the bot to your sales group and write any message there first.",
+        "filled": "Group chat ID filled in for “{title}”. Save, then press Test connection.",
+        "pick": "The bot is in {count} groups. Pick the sales group:",
+        "use": "Use “{title}”",
+        "failed": "Telegram could not be reached. Try again in a minute."
+      },
+      "testSms": {
+        "label": "Send a test SMS to",
+        "send": "Send test SMS",
+        "hint": "Uses the values saved above, even while the card is off. Costs one SMS.",
+        "failed": "The test SMS could not be sent."
       }
     },
     "reports": {
@@ -5985,7 +5999,11 @@
         "quote-customer": "Quote sent (to the customer)",
         "quote-accepted-staff": "Quote accepted (to staff)",
         "summary-report-staff": "Daily and weekly summary (to chosen staff)",
-        "lead-incomplete-customer": "Unfinished request reminder (to the customer)"
+        "lead-incomplete-customer": "Unfinished request reminder (to the customer)",
+        "lead-received-sms": "Request received (SMS to the customer)",
+        "order-placed-sms": "Order placed (SMS to the customer)",
+        "order-status-sms": "Order step (SMS to the customer)",
+        "visa-status-sms": "Visa stage (SMS to the customer)"
       },
       "tone": {
         "default": "Normal",

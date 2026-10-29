@@ -331,6 +331,18 @@ export const TEMPLATE_REQUIRED_VARIABLES: Partial<Record<string, readonly string
   "quote-customer": ["{{link}}"],
 };
 
+/**
+ * The status messages that may go by SMS (issue 252): request received, order placed and its steps, visa stage. Sign-in
+ * codes never go by SMS (D300), so they have no SMS template.
+ */
+export const SMS_TEMPLATE_KEYS = [
+  "lead-received-sms",
+  "order-placed-sms",
+  "order-status-sms",
+  "visa-status-sms",
+] as const;
+export type SmsTemplateKey = (typeof SMS_TEMPLATE_KEYS)[number];
+
 export const NotificationTemplateSchema = z
   .object({
     key: z.enum([
@@ -354,6 +366,10 @@ export const NotificationTemplateSchema = z
       "quote-accepted-staff",
       "summary-report-staff",
       "lead-incomplete-customer",
+      "lead-received-sms",
+      "order-placed-sms",
+      "order-status-sms",
+      "visa-status-sms",
     ]),
     /** Who receives it, as shown in Admin > Notifications, e.g. "Customer" or "Staff, by module". */
     audience: z.string().min(1).max(40),

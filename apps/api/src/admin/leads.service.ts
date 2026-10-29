@@ -676,12 +676,15 @@ export class AdminLeadsService {
     const words = VISA_STAGE_WORDS[next];
     if (next !== stage && words) {
       const payload = lead.payload as { countryName?: unknown } | null;
-      void this.notifications.notify("visa-status-customer", lead.email ?? undefined, {
+      const vars = {
         name: lead.name,
         reference: lead.reference,
         country: typeof payload?.countryName === "string" ? payload.countryName : "",
         status: words,
-      });
+      };
+      void this.notifications.notify("visa-status-customer", lead.email ?? undefined, vars);
+      // And by SMS while an SMS card is on (issue 252).
+      void this.notifications.sms("visa-status-sms", lead.phone, vars);
     }
     return this.detail(staff, id);
   }

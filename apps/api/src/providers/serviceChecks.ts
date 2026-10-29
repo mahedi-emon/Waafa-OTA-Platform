@@ -1,5 +1,6 @@
 import { validateProviderConnection, type ProviderDefinition } from "@waafa/shared";
 import type { HealthResult, ProviderContext, ServiceProvider } from "./adapters";
+import { checkTelegramGroup } from "../notifications/telegram";
 import { checkConnection, isPublicHost, type Fetcher } from "./catalogAdapters";
 
 /** Cloudflare's server-side check; a made-up token tells a wrong secret apart from a good one. */
@@ -69,27 +70,6 @@ export async function checkTurnstile(
   }
 }
 
-/** Telegram: getMe with the bot token answers 200 for a real bot. */
-async function checkTelegram(
-  definition: ProviderDefinition,
-  context: ProviderContext,
-  fetcher: Fetcher,
-): Promise<HealthResult> {
-  const missing = incomplete(definition, context);
-  if (missing) return missing;
-  const answer = await reach(
-    `https://api.telegram.org/bot${context.secrets.botToken ?? ""}/getMe`,
-    fetcher,
-    context,
-    "GET",
-  );
-  if (typeof answer === "string") return failed("Telegram did not answer");
-  if (answer.status === 401 || answer.status === 404)
-    return failed("Telegram does not know this bot token");
-  if (answer.status !== 200) return failed(`Telegram answered HTTP ${answer.status}`);
-  return { ok: true, message: "The bot is real. Make sure it is a member of the sales group." };
-}
-
 /** Error tracking: the DSN's host must answer. */
 async function checkDsn(
   definition: ProviderDefinition,
@@ -141,7 +121,8 @@ export function serviceProvider(definition: ProviderDefinition, fetcher: Fetcher
       case "captcha":
         return checkTurnstile(definition, context, fetcher);
       case "alerts":
-        return checkTelegram(definition, context, fetcher);
+        // The token is real and a test message reaches the group (issue 252).
+        return checkTelegramGroup(context, fetcher);
       case "monitoring":
         return checkDsn(definition, context, fetcher);
       case "storage":

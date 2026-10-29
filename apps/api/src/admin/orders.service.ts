@@ -18,6 +18,7 @@ import type { Prisma } from "../generated/prisma/client";
 import { invoiceModel, packingSlipModel, type OrderForDocuments } from "../orders/orderDocuments";
 import { renderInvoicePdf, renderPackingSlipPdf } from "../orders/orderPdf";
 import { PrismaService } from "../prisma/prisma.service";
+import { NotificationService } from "../notifications/notification.service";
 import { RevalidateService } from "../revalidate/revalidate.service";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
@@ -44,6 +45,14 @@ const STEP_NOTES: Record<OrderActionInput["type"], string> = {
   return: "Returned",
 };
 
+/** The status words of the order SMS (issue 252); steps without words send nothing. */
+const ORDER_SMS_WORDS: Partial<Record<OrderActionInput["type"], string>> = {
+  confirm: "confirmed",
+  ship: "on its way",
+  deliver: "delivered",
+  cancel: "cancelled",
+};
+
 /**
  * Orders for the Waafa’s World team: list and search, detail with the history, steps along the workflow with what
  * each needs (D0 R4, ADMIN.md §8.4), notes. A cancelled or returned order puts its stock back.
@@ -56,6 +65,7 @@ export class AdminOrdersService {
     @Inject(ContentService) private readonly content: ContentService,
     @Inject(RevalidateService) private readonly revalidate: RevalidateService,
     @Inject(ENV) private readonly env: Env,
+    @Inject(NotificationService) private readonly notifications: NotificationService,
   ) {}
 
   /**
@@ -336,6 +346,18 @@ export class AdminOrdersService {
     if (move.restock) {
       this.content.invalidate();
       this.revalidate.request(["products"]);
+    }
+    // The customer hears each real step by SMS while an SMS card is on (issue 252); packing is internal.
+    const words = ORDER_SMS_WORDS[input.type];
+    if (words) {
+      void this.notifications.sms("order-status-sms", order.phone, {
+        name: order.name,
+        order_number: order.reference,
+        status:
+          input.type === "ship"
+            ? `${words} with ${input.courier}, tracking ${input.trackingNumber}`
+            : words,
+      });
     }
     return this.detail(id);
   }

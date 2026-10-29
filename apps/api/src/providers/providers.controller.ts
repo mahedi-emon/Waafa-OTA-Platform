@@ -28,6 +28,19 @@ const TurnstileVerifySchema = z
   .object({ token: z.string().max(4096).default(""), ip: z.string().max(64).optional() })
   .strict();
 
+/** Find my group (issue 252): the token typed in the form, or empty to use the saved one. */
+const TelegramGroupsSchema = z.object({ botToken: z.string().trim().max(100).optional() }).strict();
+
+/** A test SMS to a phone staff type in (issue 252). */
+const TestSmsSchema = z
+  .object({
+    phone: z
+      .string()
+      .trim()
+      .regex(/^\+?[\d\s-]{10,18}$/, "Type a phone number, e.g. 01712-345678"),
+  })
+  .strict();
+
 const target = (provider: string, environment: string) =>
   [
     parseInput(ProviderKeySchema, provider),
@@ -54,6 +67,17 @@ export class AdminProvidersController {
   @Roles("super-admin")
   serverIp() {
     return this.providers.serverIp();
+  }
+
+  /** The groups the Telegram bot has seen, so staff pick the sales group instead of typing its ID (issue 252). */
+  @Post("telegram/groups")
+  @Roles("super-admin")
+  @HttpCode(200)
+  telegramGroups(@Staff() staff: StaffPrincipal, @Body() body: unknown) {
+    return this.providers.findTelegramGroups(
+      staff,
+      parseInput(TelegramGroupsSchema, body ?? {}).botToken,
+    );
   }
 
   @Post()
@@ -110,6 +134,22 @@ export class AdminProvidersController {
     @Param("environment") environment: string,
   ) {
     return this.providers.test(staff, ...target(provider, environment));
+  }
+
+  @Post(":provider/:environment/test-sms")
+  @Roles("super-admin")
+  @HttpCode(200)
+  testSms(
+    @Staff() staff: StaffPrincipal,
+    @Param("provider") provider: string,
+    @Param("environment") environment: string,
+    @Body() body: unknown,
+  ) {
+    return this.providers.sendTestSms(
+      staff,
+      ...target(provider, environment),
+      parseInput(TestSmsSchema, body).phone,
+    );
   }
 
   @Delete(":provider/:environment")
