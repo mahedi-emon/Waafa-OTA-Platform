@@ -1,10 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
+  formatTaka,
   nextOrderStatus,
   toDhakaIsoString,
   type OrderActionInput,
   type OrderListQuery,
   type OrderUpdateInput,
+  type RefundRecordInput,
   type Product,
 } from "@waafa/shared";
 import { AuditService } from "../audit/audit.service";
@@ -194,6 +196,56 @@ export class AdminOrdersService {
         createdAt: toDhakaIsoString(proof.createdAt),
       })),
     };
+  }
+
+  /**
+   * A refund staff made in the gateway's or bank's own panel (issue 251), written on the order: never more than was
+   * paid in all, audited, and shown on the order's history.
+   */
+  async recordRefund(
+    staff: StaffPrincipal,
+    id: string,
+    input: RefundRecordInput,
+    now = new Date(),
+  ) {
+    const order = await this.prisma.order.findUnique({ where: { id } });
+    if (!order) throw problems.notFound("Order not found");
+    if (!order.paymentVerified)
+      throw problems.conflict("Only a paid order can be refunded", "unpaid");
+    const payment = order.payment as { refunds?: Array<{ amount: number }> } & Record<
+      string,
+      unknown
+    >;
+    const refunded = (payment.refunds ?? []).reduce((sum, refund) => sum + refund.amount, 0);
+    if (refunded + input.amount > order.total)
+      throw problems.conflict(
+        `Refunds can't pass the total: ${formatTaka(order.total - refunded)} is left`,
+        "too-much",
+      );
+    const refund = { ...input, at: now.toISOString(), by: staff.name };
+    await this.prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: { id },
+        data: { payment: json({ ...payment, refunds: [...(payment.refunds ?? []), refund] }) },
+      });
+      await tx.orderEvent.create({
+        data: {
+          orderId: id,
+          status: order.status,
+          note: `Refund of ${formatTaka(input.amount)} recorded · ${input.reference}${input.note ? ` · ${input.note}` : ""}`,
+          actorName: staff.name,
+          at: now,
+        },
+      });
+    });
+    await this.audit.record({
+      actor: staff,
+      action: "order.refund",
+      entity: "Order",
+      entityId: id,
+      after: refund,
+    });
+    return this.detail(id);
   }
 
   /** A note on the order's history; the status moves only through `act`. */

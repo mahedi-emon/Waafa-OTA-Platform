@@ -1,6 +1,7 @@
 "use client";
 
-import { Banknote, Building2, Smartphone } from "lucide-react";
+import type { OnlineGateway } from "@waafa/shared";
+import { Banknote, Building2, Smartphone, CreditCard } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { formatTaka } from "@waafa/shared";
 import { DocumentSlot, type SlotFile } from "@/components/forms/DocumentSlot";
@@ -8,7 +9,7 @@ import { FormField } from "@/components/forms/FormField";
 import { RadioCard } from "@/components/forms/RadioCard";
 import { Input } from "@/components/ui/input";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { COD } from "@/lib/shop/checkoutFormFields";
+import { COD, ONLINE_PREFIX } from "@/lib/shop/checkoutFormFields";
 
 export type OfflineAccount = {
   id: string;
@@ -20,6 +21,8 @@ export type OfflineAccount = {
 
 type PaymentOptionsProps = {
   accounts: OfflineAccount[];
+  /** Gateways taking real payments now (issue 251); empty until the owner's keys are live. */
+  gateways?: readonly OnlineGateway[];
   value: string;
   onChange: (value: string) => void;
   total: number;
@@ -39,6 +42,7 @@ const ICONS = { bank: Building2, bkash: Smartphone, nagad: Smartphone, office: B
 /** Payment choices (ShopCheckout step 4): cash on delivery within the limit, or an admin-listed account plus proof. */
 function PaymentOptions({
   accounts,
+  gateways = [],
   value,
   onChange,
   total,
@@ -78,6 +82,16 @@ function PaymentOptions({
           sub={codNote}
           aside={<Banknote aria-hidden="true" className="size-5 text-brand-700" />}
         />
+        {gateways.map((gateway) => (
+          <RadioCard
+            key={gateway}
+            value={`${ONLINE_PREFIX}${gateway}`}
+            checked={value === `${ONLINE_PREFIX}${gateway}`}
+            title={`${t("online")} · ${t(`gateways.${gateway}`)}`}
+            sub={t("onlineSub", { gateway: t(`gateways.${gateway}`) })}
+            aside={<CreditCard aria-hidden="true" className="size-5 text-brand-700" />}
+          />
+        ))}
         {accounts.map((account) => {
           const Icon = ICONS[account.kind];
           return (

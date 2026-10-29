@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { OnlineGatewaySchema } from "./payments";
 import {
   IdSchema,
   ImageSchema,
@@ -336,6 +337,8 @@ export const DeliveryAddressSchema = z
 
 export const PaymentChoiceSchema = z.discriminatedUnion("method", [
   z.object({ method: z.literal("cod") }).strict(),
+  /** Card, bKash or Nagad through the gateway (issue 251); only offered while the gateway is live. */
+  z.object({ method: z.literal("online"), gateway: OnlineGatewaySchema }).strict(),
   z
     .object({
       method: z.literal("offline"),

@@ -23,6 +23,9 @@ import {
   VisaProgressInputSchema,
   FeedbackCreateInputSchema,
   LeadCreateInputSchema,
+  PaymentConfirmInputSchema,
+  PaymentStartInputSchema,
+  RefundRecordInputSchema,
   LeadDraftActionSchema,
   LeadDraftInputSchema,
   OrderCreateInputSchema,
@@ -119,6 +122,30 @@ export const ROUTES: RouteDoc[] = [
     body: LeadCreateInputSchema,
     idempotent: true,
     responses: { 201: "Reference", 422: "Validation failed", 429: "Too many requests" },
+  },
+  {
+    method: "post",
+    path: "/api/v1/public/payments/start",
+    summary:
+      "Send the customer to the payment gateway for their online order (the phone on the order proves it)",
+    tag: "public",
+    auth: "intake",
+    body: PaymentStartInputSchema,
+    responses: {
+      200: "Gateway address",
+      404: "Order not found",
+      409: "Paid, cancelled or gateway not live",
+    },
+  },
+  {
+    method: "post",
+    path: "/api/v1/public/payments/{gateway}/confirm",
+    summary:
+      "A gateway return (success, fail, cancel, ipn, callback), confirmed with the gateway itself before the order is marked paid; amounts never come from the browser",
+    tag: "public",
+    auth: "intake",
+    body: PaymentConfirmInputSchema,
+    responses: { 200: "Outcome", 404: "Unknown gateway" },
   },
   {
     method: "post",
@@ -276,6 +303,12 @@ function adminRoutes(): RouteDoc[] {
     route("get", "/orders", "Order list"),
     route("get", "/orders/{id}", "Order detail with history and proofs"),
     route("patch", "/orders/{id}", "A note on the order's history", OrderUpdateInputSchema),
+    route(
+      "post",
+      "/orders/{id}/refunds",
+      "Record a refund made in the gateway's or bank's panel (Admin, Accounts; never past the total; audited)",
+      RefundRecordInputSchema,
+    ),
     route(
       "get",
       "/orders/{id}/invoice",

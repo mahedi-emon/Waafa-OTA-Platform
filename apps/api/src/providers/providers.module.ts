@@ -5,6 +5,8 @@ import { CustomerCodesService } from "../customers/customerCodes.service";
 import { CustomersService, GOOGLE_FETCH } from "../customers/customers.service";
 import type { GoogleFetch } from "../customers/googleOAuth";
 import { probePort, type Fetcher, type PortProbe } from "./catalogAdapters";
+import { PaymentsController } from "../payments/payments.controller";
+import { PaymentsService } from "../payments/payments.service";
 import { AdminProvidersController, PublicIntegrationsController } from "./providers.controller";
 import { PROVIDER_FETCH, PROVIDER_PROBE, ProvidersService } from "./providers.service";
 
@@ -21,9 +23,15 @@ export class ProvidersModule {
     const googleFetch: GoogleFetch = options.googleFetch ?? ((url, init) => fetch(url, init));
     return {
       module: ProvidersModule,
-      controllers: [AdminProvidersController, PublicIntegrationsController, CustomersController],
+      controllers: [
+        AdminProvidersController,
+        PublicIntegrationsController,
+        CustomersController,
+        PaymentsController,
+      ],
       providers: [
         ProvidersService,
+        PaymentsService,
         CustomersService,
         CustomerCodesService,
         CustomerAccountService,

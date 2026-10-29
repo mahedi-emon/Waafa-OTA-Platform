@@ -1,4 +1,6 @@
 import { Socket } from "node:net";
+import type { OnlineGateway } from "@waafa/shared";
+import { GATEWAY_ADAPTERS } from "../payments/gateways";
 import { serviceProvider } from "./serviceChecks";
 import {
   providerDefinition,
@@ -265,7 +267,10 @@ export function adapterFor(
     case "hotel":
       return stubHotelProvider(definition, fetcher);
     case "payment":
-      return stubPaymentProvider(definition, fetcher);
+      // SSLCommerz, bKash and Nagad take real payments (issue 251); others keep the stub until they get one.
+      return definition.id in GATEWAY_ADAPTERS
+        ? GATEWAY_ADAPTERS[definition.id as OnlineGateway](definition, fetcher)
+        : stubPaymentProvider(definition, fetcher);
     case "sms":
     case "email":
       return messagingProvider(definition, fetcher, probe);

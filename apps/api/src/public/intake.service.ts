@@ -44,7 +44,7 @@ const DUPLICATE_WINDOW_MS = 24 * 60 * 60_000;
 
 export type PlaceOrderResult =
   | { ok: true; order: OrderCreated }
-  | { ok: false; reason: "changed" | "cod" | "minimum" | "pickup"; quote?: Quote };
+  | { ok: false; reason: "changed" | "cod" | "minimum" | "pickup" | "payment"; quote?: Quote };
 
 /** The files a lead's form sent: visa documents, printing and trading attachments (issue 232). */
 function leadFileRefs(payload: LeadCreateInput["payload"]): FileRef[] {
@@ -105,6 +105,17 @@ export class IntakeService {
 
   private adminLink(path: string): string {
     return this.notifications.adminLink(path);
+  }
+
+  /** A payment gateway on, in Live mode and with Live keys saved (the same rule as checkout's choices). */
+  private async gatewayLive(tx: Prisma.TransactionClient, gateway: string): Promise<boolean> {
+    const setting = await tx.integrationSetting.findUnique({ where: { provider: gateway } });
+    if (!setting?.isActive || !setting.isLive) return false;
+    const keys = await tx.providerCredential.findFirst({
+      where: { provider: gateway, environment: "production" },
+      select: { id: true },
+    });
+    return keys !== null;
   }
 
   /**
@@ -290,6 +301,13 @@ export class IntakeService {
       if (input.payment.method === "cod" && (!quote.cod.allowed || input.pickup)) {
         return { ok: false as const, reason: "cod" as const, quote };
       }
+      // Online only through a gateway that is on, in Live mode, with Live keys (issue 251).
+      if (
+        input.payment.method === "online" &&
+        !(await this.gatewayLive(tx, input.payment.gateway))
+      ) {
+        return { ok: false as const, reason: "payment" as const, quote };
+      }
 
       // Take the stock (pre-orders have none to take); note variants that reach their low-stock mark now.
       const lowStock: Array<{ title: string; sku: string; stock: number; slug: string }> = [];
@@ -375,8 +393,10 @@ export class IntakeService {
       method:
         choice.method === "cod"
           ? "cash on delivery"
-          : (payment.offlineAccounts.find((account) => account.id === choice.accountId)?.title ??
-            "transfer"),
+          : choice.method === "online"
+            ? `online payment (${choice.gateway})`
+            : (payment.offlineAccounts.find((account) => account.id === choice.accountId)?.title ??
+              "transfer"),
       link: this.adminLink(`/orders/${result.id}`),
     };
     void this.notifications.notify("order-placed-customer", input.address.email, vars);

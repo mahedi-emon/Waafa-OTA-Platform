@@ -56,7 +56,11 @@ export async function quoteCart(request: QuoteRequest): Promise<Quote> {
 
 export type PlaceOrderResult =
   | { ok: true; order: OrderCreated }
-  | { ok: false; reason: "invalid" | "changed" | "cod" | "minimum" | "pickup"; quote?: Quote };
+  | {
+      ok: false;
+      reason: "invalid" | "changed" | "cod" | "minimum" | "pickup" | "payment";
+      quote?: Quote;
+    };
 
 /** Validates the checkout payload, prices it from the catalogue and stores the order. */
 export async function placeOrder(
@@ -77,7 +81,10 @@ export async function placeOrder(
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         const code = error.body.code;
-        const reason = code === "cod" || code === "minimum" || code === "pickup" ? code : "changed";
+        const reason =
+          code === "cod" || code === "minimum" || code === "pickup" || code === "payment"
+            ? code
+            : "changed";
         return { ok: false, reason, quote: error.body.quote as Quote | undefined };
       }
       if (error instanceof ApiError && error.status === 422)
@@ -100,6 +107,8 @@ export async function placeOrder(
   if (order.payment.method === "cod" && (!quote.cod.allowed || order.pickup)) {
     return { ok: false, reason: "cod", quote };
   }
+  // Online payment needs the API's gateways (issue 251).
+  if (order.payment.method === "online") return { ok: false, reason: "payment", quote };
 
   const stored: Order = await repositories.shop.createOrder(
     {

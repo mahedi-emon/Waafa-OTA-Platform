@@ -202,7 +202,7 @@ describe.skipIf(!dbAvailable)("external API connections (#82, #107)", () => {
     expect(status.json()).toEqual({
       flight: { mode: "provider" },
       hotel: { mode: "manual" },
-      payment: { ready: true },
+      payment: { ready: true, gateways: [] },
       sms: { ready: false },
       email: { ready: false },
       auth: { google: false },

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { OnlineGatewaySchema } from "./payments";
 import { IsoDateTimeSchema } from "./common";
 
 /**
@@ -107,6 +108,10 @@ export type ProviderDefinition = {
   publicFields?: readonly string[];
   fields: ProviderField[];
 };
+
+/** A value staff paste into the provider's panel: a path on this site (shown as a full address) or the server IP. */
+export type ProviderPanelValue = { label: string; path?: string; serverIp?: true };
+export type ProviderSetup = { steps: readonly string[]; panel?: readonly ProviderPanelValue[] };
 
 const url = (hint: string): ProviderField => ({
   key: "baseUrl",
@@ -709,7 +714,13 @@ export const IntegrationStatusSchema = z
   .object({
     flight: z.object({ mode: z.enum(["provider", "manual"]) }).strict(),
     hotel: z.object({ mode: z.enum(["provider", "manual"]) }).strict(),
-    payment: z.object({ ready: z.boolean() }).strict(),
+    payment: z
+      .object({
+        ready: z.boolean(),
+        /** Gateways taking real payments now: on, in Live mode, with Live keys (issue 251). */
+        gateways: z.array(OnlineGatewaySchema).default([]),
+      })
+      .strict(),
     sms: z.object({ ready: z.boolean() }).strict(),
     email: z.object({ ready: z.boolean() }).strict(),
     auth: z.object({ google: z.boolean() }).strict(),
@@ -745,7 +756,7 @@ export type PublicIntegrations = IntegrationStatus["public"];
 export const INTEGRATIONS_OFF: IntegrationStatus = {
   flight: { mode: "manual" },
   hotel: { mode: "manual" },
-  payment: { ready: false },
+  payment: { ready: false, gateways: [] },
   sms: { ready: false },
   email: { ready: false },
   auth: { google: false },

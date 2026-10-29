@@ -38,7 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #250 · Partial lead capture — 🟡 In review
+### #251 · SSLCommerz, bKash and Nagad — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 10 (PROMPT 10 letter J; FR-SHOP-07 online pay) and the integration-card brief (Banglish steps, values to copy, server IP, plain Test connection) |
+| Built | Real adapters behind PaymentProvider (`api/src/payments/gateways.ts`): SSLCommerz v4 session + validation API, bKash tokenized grant/create/execute (status on repeats), Nagad initialize/complete/verify with RSA sealing and signing. `PaymentsService`: start only for the order's own phone, session id = order + attempt, the order's total from the server; confirm asks the gateway, checks the amount (a mismatch is noted on the order, not accepted), marks paid once (placed → confirmed, "Paid online with … · trx"). Checkout offers "Pay online · <gateway>" only for gateways on, in Live mode, with Live keys (`IntegrationStatus.payment.gateways`); the API refuses online orders otherwise. Web: /api/payments/start (same-site), /api/payments/<gateway>/<success|fail|cancel|ipn|callback> (rate-limited, never trusted, IPN answers OK), /shop/payment result page (no order data, noindex). Admin: order shows online payment and refunds; Admin and Accounts record a refund made in the gateway's panel (never past the total, audited). Integration hub: every card has a Banglish "How to connect it" guide (`PROVIDER_SETUP`) with the panel values (IPN, success, fail, cancel, callback, webhook addresses) and the server IP (ipify) with Copy buttons; payment Test connection says in one sentence what is wrong |
+| Tests | API unit `gateways.unit.test.ts` 8 (contract shapes for the three gateways, forged amounts ignored, plain health messages); API DB `payments.test.ts` 3 (nothing until live keys, own phone only, forged success, wrong amount, paid once, refunds with roles and cap, cancel/unknown gateway); e2e `payments.spec.ts` (no online option in this build, result page outcomes with axe, returns redirect, unknown gateway 404, no injection) and `admin-integrations-guide.spec.ts` (API mode); QA plan `docs/qa/251-online-payments.md` (OP-01..13); UAT U-35 (৳10 live test) |
+| Migration | none (payment data lives on the order's payment JSON) |
+| Decision | D323 |
+| Tools and skills | Serena (symbols for the provider layer), Playwright; no new library (node:crypto for Nagad) |
+| PR · CI minutes | (PR open) |
+
+### #250 · Partial lead capture — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 9 (PROMPT 10 letter I; FR-FLT-08 P1) |
@@ -47,7 +58,7 @@ Serena memory `audit_findings`.
 | Migration | `20261104010000_lead_drafts` (additive) and seed patch `2026-11-04-incomplete-template` |
 | Decision | D322 |
 | Tools and skills | Serena (memories), Playwright; no new library |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #315 · 105 min (full-ci) |
 
 ### #249 · Curated hotels with Request booking — ✅ Done
 | Field | Value |
@@ -1633,6 +1644,7 @@ C2 audit (11 Oct): every snapshot row goes through one pipeline (admin save → 
 | AC-162 | Products, group fares, printer models changed in bulk | products, groupFares, compatibleModels records | Admin › each list › Download CSV to edit / Import CSV | `GET /admin/content/:key/export.csv`, `POST /admin/content/:key/import[/preview]` | ✅ API DB test + e2e (#248) |
 | AC-164 | The reminder for an unfinished request | notificationTemplates `lead-incomplete-customer` | Admin › Settings › Notifications | content API | ✅ API DB test (#250) |
 | AC-163 | Curated hotels on /hotels and /hotels/[slug]: name, stars, area, photos, amenities, rooms, from prices, order | hotels records | Admin › Curated hotels | `/admin/content/hotels` (content API); public snapshot | ✅ e2e (#249) |
+| AC-165 | Online payment options at checkout; integration setup guides | integration settings (active, Live mode, keys) | Admin › Integrations (payment cards) | `/admin/providers/*`, `/public/integrations/status` | ✅ API DB + e2e (#251) |
 | AC-160 | Quote email and the "quote accepted" staff alert | notificationTemplates quote-customer, quote-accepted-staff | Settings › Forms and messages › Email and SMS | `PUT /api/v1/admin/content/notificationTemplates/:id` | ✅ API test (#298) |
 
 ## 5. Components inventory
@@ -2112,6 +2124,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D320 | 29 Oct | CSV import (products, group fares, compatible models) merges each line into the saved record and saves through the normal editor save, so rules, History, audit and cache stay one path; the whole file is refused while any line has a problem; it never deletes; products update existing products and variants only (new ones need photos, added in the editor). Invoices are drawn from the order's price snapshot; the seller block shows only the name and contacts (no licence or ID numbers), the customer's BIN only when they asked for a VAT invoice; the VAT amount shows only when Admin sets a rate (no invented number) | Owner order step 8; CLAUDE.md "Never show licence or ID numbers" | #248 |
 | D322 | 29 Oct | Partial capture keeps step 1 in its own table (`LeadDraft`), not as a half-valid lead: leads keep one strict contract, and the Incomplete queue, its retention (30 days) and its single reminder stay separate. It is opt-in on step 1 (consent, PRD FR-FLT-08), shown to staff only after 30 minutes, and the full request completes it in the same transaction, so there is never a duplicate. The reminder links only to a path on this site | Owner order step 9; PRD §13 privacy | #250 |
 | D321 | 29 Oct | Curated hotels are a content list with their own pages; Request booking reuses the hotel request (/hotels?hotel=&room=) instead of a second form, so one lead flow and one set of rules; the hotel fields ride along only while the place still names the hotel. Amenities are a fixed list (icons and words in code and messages) so cards stay consistent; prices are "from" per night and labelled indicative. Sample hotels use real Unsplash room, lobby and pool photos (no renders) and say they are samples | Owner order step 9; FR-HTL-02; CLAUDE.md media and "never fake live availability" | #249 |
+| D323 | 29 Oct | Online payment goes through the existing PaymentProvider adapters; the gateways call back to the web app (/api/payments/…), which passes the fields to the API, and the API believes only the gateway's own answer (validation, execute, verify) with the order's server-side total. Only gateways on, in Live mode and with Live keys are offered, so a sandbox never takes a customer's money and nothing shows before the owner's keys. Refunds are made in the gateway's panel and recorded on the order (no refund API calls until each gateway's refund contract is certified). The Nagad contract follows Nagad's published v-0.2.0 flow and is verified in its sandbox when the keys arrive | Owner order step 10; PRD FR-SHOP-07; CLAUDE.md "Never show online payment before it is live" | #251 |
 
 ## 9. Bugs and known issues
 
@@ -2209,6 +2222,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
 | 29 Oct (night) | #249 PR #314 in CI. #250 partial lead capture built (LeadDraft, step 1 opt-in, Incomplete requests page, one reminder, purge); PR opened with full-ci | #249 #250 | #314 | API DB 5, e2e partial-capture 2 |
+| 29 Oct (late) | #249 merged (#314, 62 min). #250 in CI (#315). #251 online payments built (three gateway adapters, start/confirm, refunds, checkout options, result page, integration setup guides with Copy and server IP) | #249 #250 #251 | #314 #315 | API unit 8, API DB 3, e2e payments 6 |
 | 29 Oct (later) | #248 merged (#313, 10 min) and closed out. #249 curated hotels built (schema, fixtures with real photos, list and detail pages, Request booking into the hotel lead, admin editor); PR opened with full-ci | #248 #249 | #313 | shared +2, web +3, e2e hotels-curated |
 | 29 Oct | #246 merged (#311, 62 min) and #247 merged (#312, 68 min), both closed out. #248 built: invoice and packing slip PDFs on a shared brand kit, CSV export and import with a preview for products, group fares and compatible models; local API-mode e2e green; PR opened | #246 #247 #248 | #311 #312 | API unit 23 new, API DB 4 new, e2e admin-imports; all unit suites green (shared 168, web 720, API 360) |
 | 28 Oct (evening) | Owner's decisions D312 logged. #302 rename merged (#304, 61 min). #303 optimise merged (#306, 143 min): api 182 MB, web 321 MB, nginx 45 MB, stack 1.29 GB, rehearsal from 7af26e7. #243 reminders, mentions, round-robin and SSE alerts built and in CI (#307, full-ci; local API-mode e2e 11/11; CI found an axe aria-allowed-role on the note box, fixed). #244 started on feat/244-reports-customers-roles (reports by agent, visa cases, searches per day and funnel pushed) | #302 #303 #305 #243 #244 | #304 #306 #307 | API 316, web 717, shared 166 locally; API-mode e2e 85/86 then fixed |

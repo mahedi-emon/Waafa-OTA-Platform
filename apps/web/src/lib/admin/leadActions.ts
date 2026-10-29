@@ -118,6 +118,17 @@ export async function markLeadsSpam(ids: string[]): Promise<BulkResult> {
   return bulkWords(await bulkUpdateLeads({ ids, markSpam: true }), "bulkSpamDone");
 }
 
+/** A refund made in the gateway's or bank's own panel, written on the order (issue 251). */
+export async function recordRefund(
+  orderId: string,
+  input: { amount: number; reference: string; note?: string },
+): Promise<ActionResult> {
+  if (!/^[a-z0-9]{10,40}$/.test(orderId))
+    return { ok: false, problem: { status: 404, title: "Unknown" } };
+  const result = await adminWrite(`/admin/orders/${orderId}/refunds`, "POST", input);
+  return result.ok ? { ok: true } : result;
+}
+
 /** An Incomplete request (issue 250): staff called the visitor, or set the request aside. */
 export async function markIncomplete(
   id: string,

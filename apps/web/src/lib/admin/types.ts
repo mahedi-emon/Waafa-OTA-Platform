@@ -191,7 +191,7 @@ export type OrderRow = {
   phone: string;
   total: number;
   items: number;
-  payment: "cod" | "offline";
+  payment: "cod" | "offline" | "online";
   paymentVerified: boolean;
   pickup: boolean;
   createdAt: string;
@@ -218,7 +218,14 @@ export type OrderDetail = {
   delivery: number;
   total: number;
   couponCode: string | null;
-  payment: { method: "cod" } | { method: "offline"; accountId: string; transactionId: string };
+  payment: (
+    | { method: "cod" }
+    | { method: "offline"; accountId: string; transactionId: string }
+    | { method: "online"; gateway: string; transactionId?: string; paidAt?: string }
+  ) & {
+    /** Refunds made in the gateway's or bank's panel, recorded by staff (issue 251). */
+    refunds?: Array<{ amount: number; reference: string; note?: string; at: string; by: string }>;
+  };
   paymentVerified: boolean;
   address: {
     name: string;

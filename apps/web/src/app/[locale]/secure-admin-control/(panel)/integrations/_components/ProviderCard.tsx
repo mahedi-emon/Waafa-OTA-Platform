@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, useTransition } from "react";
+import { useId, useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import type {
   IntegrationSettingView,
@@ -24,6 +24,8 @@ type ProviderCardProps = {
   connections: ProviderConnectionView[];
   canSaveSecrets: boolean;
   strings: IntegrationStrings;
+  /** How to connect it and the values for the provider's panel (issue 251). */
+  guide?: ReactNode;
 };
 
 /**
@@ -36,6 +38,7 @@ function ProviderCard({
   connections,
   canSaveSecrets,
   strings,
+  guide,
 }: ProviderCardProps) {
   const router = useRouter();
   const formId = useId();
@@ -107,6 +110,7 @@ function ProviderCard({
           {fill(strings.failingDetail, { message: status.message, time: status.at })}
         </p>
       ) : null}
+      {guide}
       {setting.updatedBy && setting.updatedAt ? (
         <p className="text-sm text-mist-600">
           {fill(strings.changedBy, {

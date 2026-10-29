@@ -1776,7 +1776,16 @@
       "proofRule": "JPG, PNG or PDF, up to 5 MB",
       "proofAdded": "Added",
       "proofUploading": "Uploading…",
-      "proofUploadFailed": "The file didn't upload. Check your connection and choose it again."
+      "proofUploadFailed": "The file didn't upload. Check your connection and choose it again.",
+      "online": "Pay online",
+      "onlineSub": "Card, bKash or Nagad through {gateway}. You pay on the gateway's secure page.",
+      "gateways": {
+        "sslcommerz": "SSLCommerz",
+        "bkash": "bKash",
+        "nagad": "Nagad"
+      },
+      "onlineUnavailable": "Online payment isn't available right now. Choose another way to pay.",
+      "redirecting": "Taking you to the payment page…"
     },
     "summary": {
       "title": "Your order",
@@ -3489,7 +3498,19 @@
       "colPhone": "Phone",
       "print": "Print",
       "invoicePdf": "Invoice (PDF)",
-      "packingSlipPdf": "Packing slip (PDF)"
+      "packingSlipPdf": "Packing slip (PDF)",
+      "online": "Paid online · {gateway}",
+      "onlineShort": "Online",
+      "refunded": "Refunded {amount} · {reference}",
+      "refund": {
+        "title": "Record a refund made in the gateway's or bank's panel",
+        "amount": "Amount (৳)",
+        "reference": "Refund reference",
+        "referenceHint": "The refund ID the gateway or bank gave you.",
+        "note": "Note (optional)",
+        "save": "Record refund",
+        "saved": "Refund recorded"
+      }
     },
     "feedback": {
       "metaTitle": "Feedback",
@@ -4128,7 +4149,14 @@
         "failing": "Failing"
       },
       "failingDetail": "Last test failed {time}: {message}. The site does not use it until a test passes.",
-      "changedBy": "Changed by {name}, {time}"
+      "changedBy": "Changed by {name}, {time}",
+      "guide": {
+        "title": "How to connect it (step by step)",
+        "values": "Paste these into the provider's own panel",
+        "copy": "Copy",
+        "copied": "Copied",
+        "noIp": "couldn't find it right now; your hosting panel shows the server's public IP"
+      }
     },
     "reports": {
       "metaTitle": "Reports",
@@ -8019,5 +8047,26 @@
     "challenge": "Please complete the check above, then accept again.",
     "conflict": "This quote changed. Reload the page to see where it stands.",
     "selected": "Selected"
+  },
+  "Payment": {
+    "metaTitle": "Payment",
+    "track": "Track your order",
+    "store": "Back to Waafa’s World",
+    "paid": {
+      "title": "Payment received",
+      "body": "Thank you. Your order is confirmed and paid; we'll send it soon. Track it any time with the order number and your phone."
+    },
+    "failed": {
+      "title": "The payment didn't go through",
+      "body": "No money was taken, or the gateway will return it. Your order is saved: track it to pay again, or call or WhatsApp us and we'll help."
+    },
+    "cancelled": {
+      "title": "Payment cancelled",
+      "body": "You cancelled the payment. Your order is saved but not paid: track it to pay again, or call or WhatsApp us."
+    },
+    "pending": {
+      "title": "We're checking your payment",
+      "body": "The gateway hasn't confirmed it yet. If money was taken, your order turns paid within a few minutes; track it, or call us if it doesn't."
+    }
   }
 }

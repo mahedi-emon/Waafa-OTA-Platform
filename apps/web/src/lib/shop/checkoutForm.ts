@@ -1,8 +1,9 @@
 import { z } from "zod";
+import type { OnlineGateway } from "@waafa/shared";
 import type { OrderCreateInput } from "@waafa/shared";
 import { isPhoneCountry, toE164 } from "@/lib/leads/phone";
 import type { CartLine } from "./cart";
-import { COD } from "./checkoutFormFields";
+import { COD, ONLINE_PREFIX } from "./checkoutFormFields";
 export { DIVISIONS, COD } from "./checkoutFormFields";
 
 /*
@@ -46,7 +47,12 @@ export const checkoutSchema = z
       if (values.area.length < 2) issue("area", "areaRequired");
       if (values.street.length < 3) issue("street", "streetRequired");
     }
-    if (values.payment !== COD && values.payment !== "" && values.transactionId.length < 4) {
+    if (
+      values.payment !== COD &&
+      values.payment !== "" &&
+      !values.payment.startsWith(ONLINE_PREFIX) &&
+      values.transactionId.length < 4
+    ) {
       issue("transactionId", "transactionRequired");
     }
   });
@@ -102,11 +108,16 @@ export function buildOrderInput(
     payment:
       values.payment === COD
         ? { method: "cod" }
-        : {
-            method: "offline",
-            accountId: values.payment,
-            transactionId: values.transactionId.trim(),
-            ...(proof ? { proof: { kind: "payment-proof", ...proof } } : {}),
-          },
+        : values.payment.startsWith(ONLINE_PREFIX)
+          ? {
+              method: "online",
+              gateway: values.payment.slice(ONLINE_PREFIX.length) as OnlineGateway,
+            }
+          : {
+              method: "offline",
+              accountId: values.payment,
+              transactionId: values.transactionId.trim(),
+              ...(proof ? { proof: { kind: "payment-proof", ...proof } } : {}),
+            },
   };
 }

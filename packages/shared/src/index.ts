@@ -26,6 +26,8 @@ export * from "./schemas/visa";
 export * from "./schemas/shop";
 export * from "./schemas/admin";
 export * from "./schemas/contentImport";
+export * from "./schemas/payments";
+export * from "./schemas/providerSetup";
 export * from "./schemas/providers";
 export * from "./schemas/customers";
 export * from "./schemas/media";
