@@ -118,6 +118,7 @@ copy for them. Optional new `.env` lines: `BACKUP_CRON=off` (no cron), `BACKUP_K
 | Round-robin for new leads | Admin › Users › a person › Takes new leads in turn (#243) | turn it on for the staff who should get new requests in turn (off for everyone after the deploy) |
 | Online payment (SSLCommerz, bKash, Nagad) | Admin › Integrations › Payments (#251) | save Sandbox keys and test first; checkout offers a gateway only when it is On, in Live mode, with Live keys; then do the ৳10 test (UAT U-35). No migration |
 | Status SMS and Telegram alerts | Admin › Integrations › SMS and Alerts (#252); SMS texts in Settings › Forms and messages | SMS: save the keys, Test, Send a test SMS, turn On. Telegram: create the bot, add it to the group, write a message, Find my group, Save, Test, turn On (UAT U-36). No migration |
+| Courier booking (Steadfast) | Admin › Integrations › Couriers (#253) | save the keys, Test, paste the Callback URL and Auth token into Steadfast's webhook settings, turn On (UAT U-37). No migration |
 
 ## Keys to enter in Admin › Integrations (all off until saved)
 
