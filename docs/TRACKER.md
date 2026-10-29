@@ -49,7 +49,7 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena (memories, symbols), Context7 not needed (no new library; Telegram Bot API and gateway HTTP contracts), Playwright |
 | PR · CI minutes | (PR open) |
 
-### #251 · SSLCommerz, bKash and Nagad — 🟡 In review
+### #251 · SSLCommerz, bKash and Nagad — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 10 (PROMPT 10 letter J; FR-SHOP-07 online pay) and the integration-card brief (Banglish steps, values to copy, server IP, plain Test connection) |
@@ -58,7 +58,7 @@ Serena memory `audit_findings`.
 | Migration | none (payment data lives on the order's payment JSON) |
 | Decision | D323 |
 | Tools and skills | Serena (symbols for the provider layer), Playwright; no new library (node:crypto for Nagad) |
-| PR · CI minutes | (PR open) |
+| PR · CI minutes | #316 · 132 min (full-ci) |
 
 ### #250 · Partial lead capture — ✅ Done
 | Field | Value |
