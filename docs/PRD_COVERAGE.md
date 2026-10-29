@@ -46,7 +46,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-GLB-04 | P0 | Floating WhatsApp button, message names current page | done | web/components/layout/FloatingWhatsApp.tsx | — | — |
 | FR-GLB-05 | P0 | Brand loader (W ribbon) for slow route changes; static on reduced motion | done | web/components/brand/BrandLoader.tsx | — | — |
 | FR-GLB-06 | P0 | One shared style for toasts, skeletons, empty and error states | done | web/components/feedback/*; site/styleguide; e2e/system.spec.ts | — | — |
-| FR-GLB-07 | P1 | English/Bangla switch; ৳ with lakh grouping | partial | shared/format (formatTaka); web/i18n/routing.ts | Bangla: `locales: ["en"]`, only messages/en.json, no /bn, no switch, no Bengali font | #254 |
+| FR-GLB-07 | P1 | English/Bangla switch; ৳ with lakh grouping | done (UI; content fields in #255) | web/messages/bn.json, i18n/routing.ts + request.ts, components/layout/LanguageSwitch.tsx, lib/seo/withSocial.ts languageAlternates, sitemap bangla part; e2e/bangla.spec.ts | Native review (U-38) | #254 |
 | FR-FTR-01 | P0 | Footer brand column: white lockup, tagline, about, socials | done | web/components/layout/SiteFooter.tsx | — | — |
 | FR-FTR-02 | P0 | Admin menu-builder link columns (Travel, Waafa’s World, Help) | done | SiteFooter.tsx; menus footer-travel/-shop/-help; adm/website/menus | — | — |
 | FR-FTR-03 | P0 | Contact block: address, phone, WhatsApp, email, hours, map | done | SiteFooter.tsx; ContactRow.tsx; OfficeStatusChip.tsx | — | — |
@@ -214,7 +214,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | NFR-SEO | P0 | SSR titles, canonical, JSON-LD, split sitemap, OG images, llms.txt, GA4/GTM/Pixel events | done | sitemap index (app/sitemap.xml + app/sitemap/[part]); visa share cards app/og/visa; consented events lib/analytics/track.ts + components/analytics/EventBridge.tsx; UTM in proxy (lib/analytics/attribution.ts); e2e seo.spec, api-mode.spec | — | #237, #287 |
 | NFR-A11Y | P0 | WCAG 2.2 AA: contrast, focus, keyboard, labels, 44 px, skip link, reduced motion | done | skip link in app/[locale]/layout.tsx; AxeBuilder in 24 e2e specs | — | — |
 | NFR-OPS | P0 | 99.5% uptime, /health + /ready, Sentry, request-ID logs, envs, migrations, DLQ | waiting for owner account | /health, /ready; Settings › System status (api/admin/status.service.ts); dead-letter list with Retry/Discard; error tracking to Sentry or GlitchTip from the Admin card (common/errorReporter.ts), off until the DSN; disk/memory alerts; staging bundle deploy/staging | Sentry or GlitchTip DSN and an uptime monitor account (owner); browser-side errors not sent (200 KB budget) | #238, #239 |
-| NFR-L10N | P0 (Bangla P1) | English strings in next-intl from day one; Dhaka time; dates; ৳ lakh | done (P0 scope) | apps/web/messages/en.json; shared/format | Bangla P1 missing (see FR-GLB-07) | #254 (Bangla) |
+| NFR-L10N | P0 (Bangla P1) | English strings in next-intl from day one; Dhaka time; dates; ৳ lakh | done | apps/web/messages/en.json + bn.json; shared/format | — | #254 (Bangla) |
 | NFR-COMP | P0 | Last two versions of major browsers; Android 9+; layouts from 320 px | partial | e2e/public-screens.spec.ts (320–1440) | Only Chromium is tested; no Safari/Firefox/Samsung runs | #259 |
 | NFR-LEGAL | P0 | Privacy, terms, refund, contact live; consent on forms; analytics notice | done | policy pages; components/forms/ConsentField.tsx; components/analytics/ConsentBar.tsx | — | — |
 

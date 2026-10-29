@@ -149,6 +149,8 @@ test("the sitemap lists the public pages and every record page, Sample ones too 
     "/sitemap/visa.xml",
     "/sitemap/store.xml",
     "/sitemap/blog.xml",
+    // Every page again at /bn (issue 254).
+    "/sitemap/bangla.xml",
   ]);
   let body = "";
   for (const part of parts) {

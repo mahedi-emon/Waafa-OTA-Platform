@@ -48,7 +48,13 @@ vi.mock("@/lib/data/shop", () => ({
   listCampaigns: async () => [],
 }));
 
-const { sitemapEntries: sitemap, partOf, SITEMAP_PARTS } = await import("@/lib/seo/sitemapEntries");
+const {
+  sitemapEntries: sitemap,
+  partOf,
+  SITEMAP_PARTS,
+  languageUrls,
+  sitemapXml,
+} = await import("@/lib/seo/sitemapEntries");
 
 const seo = { noIndex: false };
 const hidden = { noIndex: true };
@@ -205,7 +211,22 @@ describe("sitemap (issue 183)", () => {
     for (const entry of entries)
       byPart.set(partOf(entry.url), (byPart.get(partOf(entry.url)) ?? 0) + 1);
     expect([...byPart.values()].reduce((sum, count) => sum + count, 0)).toBe(entries.length);
-    expect(SITEMAP_PARTS.every((part) => (byPart.get(part) ?? 0) > 0)).toBe(true);
+    // The Bangla part repeats every page at /bn (issue 254); the English list fills the rest.
+    expect(
+      SITEMAP_PARTS.filter((part) => part !== "bangla").every(
+        (part) => (byPart.get(part) ?? 0) > 0,
+      ),
+    ).toBe(true);
+    expect(partOf("https://waafasworld.com/bn/visa-guide/thailand")).toBe("bangla");
+    expect(languageUrls("https://waafasworld.com/")).toEqual({
+      en: "https://waafasworld.com/",
+      bn: "https://waafasworld.com/bn",
+    });
+    expect(languageUrls("https://waafasworld.com/bn/shop")).toEqual({
+      en: "https://waafasworld.com/shop",
+      bn: "https://waafasworld.com/bn/shop",
+    });
+    expect(sitemapXml(entries.slice(0, 1))).toContain('hreflang="bn"');
     expect(partOf("https://waafasworld.com/visa-guide/thailand")).toBe("visa");
     expect(partOf("https://waafasworld.com/shop/p/x")).toBe("store");
     expect(partOf("https://waafasworld.com/flights/dhaka-to-dubai")).toBe("travel");

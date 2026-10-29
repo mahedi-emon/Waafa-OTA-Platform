@@ -4,23 +4,21 @@ import { locale as rootLocale } from "next/root-params";
 import { DHAKA_TIME_ZONE } from "@waafa/shared";
 import { routing } from "./routing";
 
-/**
- * With one locale the answer is known without reading the URL, so shared layouts stay part of the static App Shell
- * (Partial Prefetching flags any URL read outside <Suspense>). When Bangla joins (P1) the root param is read again.
- */
+/** The locale root param (/bn/…); next-intl passes it as the override where it already knows it. */
 async function requestedLocale(override: string | undefined): Promise<string | undefined> {
   if (override) return override;
-  if (routing.locales.length === 1) return routing.defaultLocale;
   return rootLocale();
 }
 
 export default getRequestConfig(async ({ locale: override }) => {
   const requested = await requestedLocale(override);
   const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
+  const english = (await import("../../messages/en.json")).default;
+  // Bangla has every public namespace; the admin (English only) and llms.txt come from English (issue 254).
+  const messages =
+    locale === "en"
+      ? english
+      : { ...english, ...(await import(`../../messages/${locale}.json`)).default };
 
-  return {
-    locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
-    timeZone: DHAKA_TIME_ZONE,
-  };
+  return { locale, messages, timeZone: DHAKA_TIME_ZONE };
 });

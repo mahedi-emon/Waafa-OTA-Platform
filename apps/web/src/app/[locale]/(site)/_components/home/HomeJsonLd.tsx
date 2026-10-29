@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { contactPhones } from "@waafa/shared";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getContactSettings, getSiteSettings } from "@/lib/data/settings";
@@ -84,7 +84,7 @@ async function HomeJsonLd() {
               schemaName(site.storeName),
               ...formerStoreNames(site.storeName),
             ),
-            inLanguage: "en-BD",
+            inLanguage: (await getLocale()) === "bn" ? "bn-BD" : "en-BD",
             publisher: { "@id": schemaId("organization") },
           },
           {
