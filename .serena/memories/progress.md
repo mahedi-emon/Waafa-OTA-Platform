@@ -1,4 +1,7 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-30 (night) — Phase D complete, epic #31 closed. #257 (#324), #258 (#327), #259 + bugs #325/#326 (#328),
+  release candidate #329 (#330) merged; tag v1.1.0-rc.1 on f580d01; upgrade rehearsal 7af26e7 → fac3fb1 passed,
+  stack 1,282 MB. Waiting for the owner's deploy and UAT.
 - 2026-10-30 (day) — #253 (#318, 68), #254 (#319, 11), #255 (#320, 10), #271 + bug #322 (#321, 190; all 11 key
   routes 92–96 in CI, perf 90/TBT 200/LCP 3.5 s gates, D328), #256 morphs (#323, 101; D329) merged. #257 admin dark
   (#324, full-ci, D330) re-running after the dark sweep found WhatsApp/midnight contrast. #258 benchmark re-run and #259

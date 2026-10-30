@@ -1,25 +1,22 @@
-# Session handoff (30 Oct 2026, evening)
+# Session handoff (30 Oct 2026, night) — Phase D complete
 
-Owner order of 28 Oct (D303/D312): no deploys until the release candidate; live = 7af26e7. Deadline 13 Nov.
-Owner (30 Oct): "sob complete koro use serena" + "no CI should fail": verify locally (build in FOREGROUND with
-`timeout 590`, kill every `next start` first — a stale server corrupts .next and gives 404 chunks), Chromium + Firefox +
-WebKit before pushing.
+Owner order of 28 Oct (D303/D312): every step merged; epic #31 closed. Release candidate tag `v1.1.0-rc.1` on f580d01
+(code as of fac3fb1). Live server still runs 7af26e7 until the owner deploys.
 
-## Merged today
-#253 (#318), #254 (#319), #255 (#320), #271 + #322 (#321), #256 (#323), #257 (#324, 307 min; D330, no root :has();
-Lighthouse runner warms photos + median of 5; TBT error 300 ms, target 200).
-
-## Open
-- **#258 PR #327** (quick CI): benchmark docs + lighthouse-run `--desktop`. Merge when green, close-out, Done.
-- **feat/259-phase-d-qa** (no PR yet, needs full-ci): Firefox/WebKit projects (CROSS_BROWSER=1, 60 s timeout) + CI
-  step; bugs #325 (ContactStep uncontrolled, adopts typed text on mount; e2e early-typing) and #326 (SmartVideo joins
-  after load near viewport, HoverVideo sources on first hover; home.spec clip check); e2e errors.ts ignores WebKit's
-  aborted `_rsc` prefetch wording; whenHydrated in search/early-typing; smoke skip-link skipped on WebKit (Safari Tab);
-  docs: ADMIN_GUIDE §15, UAT U-39–42, CONTENT_READINESS.md, SUMMARY 368/319/49, PRD_COVERAGE (P0 112 done, P1 17 done),
-  RELEASE rows, TRACKER #259 block + bugs. Locally green: Chromium 217, Firefox 97, WebKit 96+1 skip, unit 746.
+## State
+- Merged today: #318 (#253), #319 (#254), #320 (#255), #321 (#271 + #322), #323 (#256), #324 (#257), #327 (#258),
+  #328 (#259 + #325 + #326), #330 (#329 release candidate).
+- Upgrade rehearsal 7af26e7 → fac3fb1 passed; images api 183 / web 312 / nginx 45 MB; stack 1,282 MB.
+- PRD coverage: P0 112/116 done (Phase E ×2, NFR-PERF lab LCP 2.7–3.0 s, NFR-OPS waiting for accounts); P1 17/17.
+- QA: 368 cases, 319 automated, 20 bugs fixed, 0 open. Chromium + Firefox + WebKit in the full suite.
 
 ## Next three steps
-1. Merge #327 → merge main into 259 (take ours) → PR "Closes #259, #325, #326" with full-ci → merge → close epic #31.
-2. Checkpoint to the owner (Banglish).
-3. Release candidate: tag v1.1.0-rc.1 on main; RELEASE.md final; read the tag's VPS smoke (upgrade rehearsal from
-   deploy/LIVE_RELEASE, memory/disk from measure-stack) and Docker images run; Banglish deploy steps; checkpoint.
+1. Owner deploys with docs/RELEASE.md "Deploy steps" (backup first: migrations), then docs/qa/UAT.md; staff fill
+   docs/qa/CONTENT_READINESS.md; keys for payments/SMS/Telegram/Steadfast/Sentry when accounts open.
+2. After the deploy: set deploy/LIVE_RELEASE to the deployed sha (issue first), turn UAT findings into bug issues,
+   read field LCP in Search Console.
+3. Phase E (#32) waits for a live-booking provider contract; Phase F (#33) waits for the licences.
+
+## Machine notes
+~1.2–1.8 GB free. Builds: foreground `timeout 590 npx next build`, and kill every `next start` first (a stale server
+writes old pages into .next → 404 chunks). Firefox/WebKit installed locally (CROSS_BROWSER=1).
