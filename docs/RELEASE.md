@@ -8,8 +8,8 @@ one release at the end. Every PR that changes what the deploy does adds its line
 
 | | Release | Commit | How we know |
 | --- | --- | --- | --- |
-| Live on the server | `7af26e7` (Docker images run #30, PR #187, 14 Oct) with the 13 Oct `deploy/server` bundle | api and worker `sha256:b52c4bb564fa37ee3b778b1dee49835823b89aed5eea30d84159c3745c61a8e1`, web `sha256:023a177a453ff445457cca56b5f6f5cbe5cf378d5521518c7aa5376da49d3e6a` (tags `api-7af26e7`, `web-7af26e7`) | Owner, 28 Oct (D312); `deploy/LIVE_RELEASE` = `7af26e7`, so the upgrade rehearsal starts there, and Docker Hub never deletes it |
-| This release | `v1.1.0-rc.2` (#332; `v1.1.0-rc.1` was #329) | `main` at the tag; the rc.1 code plus the lighter, faster server of #332 | Upgrade rehearsal in the Docker images run for `fac3fb1` (30 Oct): `7af26e7 → fac3fb1` passed with seeded data; the full suite (Chromium, Firefox, WebKit, API mode, Lighthouse, VPS smoke) green on #328 and on `main` |
+| Live on the server | `v1.1.0-rc.2`, images `31428d7` (Docker images run for #334), deployed by the owner on 31 Oct | tags `api-31428d7`, `web-31428d7`, `nginx-31428d7` | Owner, 31 Oct (#335); checked from outside: every key route 200, `/admin` 404, Brotli, HTTP/2 and HTTP/3, AVIF images, `/bn` live; `deploy/LIVE_RELEASE` = `31428d7`, so the upgrade rehearsal starts there and Docker Hub never deletes it |
+| Next release | none yet | — | Everything below went live with `v1.1.0-rc.2` (from `7af26e7`); the next PR that changes the deploy starts a new list here |
 
 ## Database migrations, in order (all additive)
 

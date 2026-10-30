@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 30 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise ✅, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271 ✅, #256 ✅, #257 ✅, #258 ✅, #259 ✅, release candidate #329 ✅ (tag v1.1.0-rc.1), #332 lighter server 🟡 (tag v1.1.0-rc.2 next); epic #31 closed 30 Oct · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 31 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise ✅, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271 ✅, #256 ✅, #257 ✅, #258 ✅, #259 ✅, release candidate #329 ✅ (tag v1.1.0-rc.1), #332 lighter server ✅ (tag v1.1.0-rc.2, live since 31 Oct); epic #31 closed 30 Oct · Status: live on `v1.1.0-rc.2` (31428d7) since 31 Oct
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,16 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #332 · Lighter and faster server — 🟡 In review
+### #335 · Live release is 31428d7 — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner deployed `v1.1.0-rc.2` on 31 Oct and asked to check the site and push everything |
+| Result | Checked from outside: Home, Flights, Hotels, Packages, Visa, Waafa’s World, About, Contact, FAQs, `/bn`, `/bn/tour-packages`, admin sign-in, sitemap, robots, llms.txt 200; `/admin` 404; http and www redirect to https://waafasworld.com; Home 60 KB Brotli (93 KB gzip); HTTP/2 and HTTP/3 200; JS immutable for a year; images AVIF; warm Home TTFB 0.24–0.30 s (3 s on the first request after the cache was cleared) |
+| Built | `deploy/LIVE_RELEASE` = `31428d7`; RELEASE.md live row, next list empty |
+| Migration | none |
+| PR · CI minutes | pending |
+
+### #332 · Lighter and faster server — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner, 30 Oct: use less memory and disk on the server, make the site faster, then the exact deploy commands |
@@ -48,7 +57,7 @@ Serena memory `audit_findings`.
 | Tests | unit `diskUsage.unit.test.ts` (hard links once); guards (#333); VPS smoke: Brotli and gzip lines, HTTPS check, backup link count; QA plan `docs/qa/332-server-lean.md` (20 cases) |
 | Migration | none. Server bundle: `compose.yml` and `backup.sh` changed again (still the same three files to copy); tag `v1.1.0-rc.2` after the merge |
 | Tools and skills | Serena (edits), Docker (local image runs), Context7 not needed (no library API) |
-| PR · CI minutes | pending |
+| PR · CI minutes | #334 · 90 min (full suite green); tag `v1.1.0-rc.2` on 31428d7 |
 
 ### #329 · Release candidate v1.1.0-rc.1 — ✅ Done
 | Field | Value |
@@ -2368,7 +2377,8 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
-| 30 Oct (night) | Owner asked for a lighter, faster server: #332 (Brotli and HTTP/3 in a 17 MB nginx image, compressed logs, smaller WAL, linked identical backups); bug #333 (deploy steps named check.sh) fixed with a guard | #332 #333 | pending | unit 1, guards, local image and backup runs |
+| 31 Oct | #332 merged (#334, 90 min), tag `v1.1.0-rc.2`; the repository went public (owner); the owner deployed `31428d7` and the live site checked out (routes, Brotli, HTTP/2 and HTTP/3, AVIF); #335 moves LIVE_RELEASE | #332 #333 #335 | #334 | full suite on #334; live checks |
+| 30 Oct (night) | Owner asked for a lighter, faster server: #332 (Brotli and HTTP/3 in a 17 MB nginx image, compressed logs, smaller WAL, linked identical backups); bug #333 (deploy steps named check.sh) fixed with a guard | #332 #333 | #334 | unit 1, guards, local image and backup runs |
 | 30 Oct (evening) | #257 merged (#324, 307 min), #258 (#327, 6 min), #259 (#328, 88 min, first full run green): Firefox and WebKit in the full suite, bugs #325 (typing wiped at hydration) and #326 (clips held WebKit load) fixed with tests. Release candidate #329: upgrade rehearsal 7af26e7 → fac3fb1 passed, images 183/312/45 MB, stack 1,282 MB; RELEASE.md final | #257–#259 #325 #326 #329 | #324 #327 #328 | Chromium 217, Firefox 97, WebKit 96 + 1 skipped, unit 746 |
 | 30 Oct (day) | #253–#255 merged. #271 merged (#321, 190 min): all 11 key routes 92–96 in CI, gates to errors (D328); the API-mode e2e caught #322 (main red since #320) and the Partial Prefetching regression. #256 merged (#323, 101 min). #257 admin dark mode in CI (#324). #258 benchmark re-run (ahead on every column at 390 and 1440). #259: Firefox and WebKit in the full suite, staff guide, UAT U-39–U-42, content-readiness list, QA summary, release note rows. Local builds were stopped twice by the memory reaper | #253–#259 #271 #322 | #318–#321 #323 #324 | CI Lighthouse 92–96; e2e morph, store, admin-dark; unit request, adminTheme |
 | 30 Oct | #250 merged (#315, 105 min), #251 (#316, 132 min), #252 (#317, 67 min). #253 Steadfast built (PR #318). #254 Bangla at /bn (2,380 strings by four parallel translation passes, switch, hreflang, sitemap) and #255 bilingual content (bn map, overlay, editor section, Bangla missing filter) built and pushed | #250–#255 | #315–#318 | API 427, web 740, shared 176, e2e bangla 35 + bilingual + couriers + payments |
@@ -2448,11 +2458,9 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 ## 14. Next steps
 
-Owner's order of 28 Oct (D303, D312): every step is merged except the release itself.
-1. ✅ #329 release candidate: RELEASE.md final, tag `v1.1.0-rc.1` on f580d01, epic #31 closed. #332 lighter server, then
-   tag `v1.1.0-rc.2`.
-2. Owner: deploy on the VPS with RELEASE.md "Deploy steps" (backup, copy three files from the tag, deploy, two-step
-   sign-in), then UAT.md on a phone and a laptop; staff fill CONTENT_READINESS.md; save the outside-service keys when
-   the accounts are open (payments, SMS, Telegram, Steadfast, error tracking).
-3. After the deploy: field LCP from Search Console (NFR-PERF lab LCP 2.7–3.0 s), UAT findings as bug issues, update
-   deploy/LIVE_RELEASE to the new release so the next rehearsal starts there. Phase E waits for a provider contract.
+The owner's order of 28 Oct is done and live: `v1.1.0-rc.2` (31428d7) deployed on 31 Oct (#335).
+1. Owner: first sign-in with two-step (authenticator, recovery codes), Settings › System status green, UAT.md on a
+   phone and a laptop (U-42 PageSpeed, U-43 br/h3); staff fill CONTENT_READINESS.md; save the outside-service keys when
+   the accounts are open (payments, SMS, Telegram, Steadfast, error tracking, off-site backup).
+2. UAT findings become bug issues; field LCP from Search Console after a few weeks (NFR-PERF lab LCP 2.7–3.0 s).
+3. Phase E (#32) waits for a live-booking provider contract; Phase F (#33) waits for the licences.
