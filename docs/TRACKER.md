@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 30 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise ✅, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271 ✅, #256 ✅, #257 ✅, #258 ✅, #259 ✅, release candidate #329 🟡 · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 30 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise ✅, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271 ✅, #256 ✅, #257 ✅, #258 ✅, #259 ✅, release candidate #329 ✅ (tag v1.1.0-rc.1); epic #31 closed 30 Oct · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,14 +38,14 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #329 · Release candidate v1.1.0-rc.1 — 🟡 In review
+### #329 · Release candidate v1.1.0-rc.1 — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 15: tag; RELEASE.md complete from 7af26e7; upgrade rehearsal with seeded data and the full suite once more; memory and disk measured; Banglish deploy steps |
 | Built | RELEASE.md: this release = `v1.1.0-rc.1` (code as of `fac3fb1`), measured images and memory, release-day steps 1–6 (backup, copy the bundle from the tag, check, deploy, first sign-in with two-step, Admin settings, UAT and content readiness) and the rollback |
 | Result | Docker images run for `fac3fb1`: upgrade rehearsal `7af26e7 → fac3fb1` passed; images api 183 MB, web 312 MB, nginx 45 MB, every one labelled with its revision; stack memory 1,282 MB (api 107, worker 73, web 108, postgres 32, redis 4, nginx 6, certbot 2, clamav 951) of the 3 GB budget; full suite green on #328 and `main` |
 | Migration | none new (the release carries the ten since 7af26e7 listed in RELEASE.md) |
-| PR · CI minutes | pending |
+| PR · CI minutes | #330 · docs only (heavy jobs skipped); tag `v1.1.0-rc.1` on f580d01 |
 
 ### #259 · Phase D QA and close-out — ✅ Done
 | Field | Value |
@@ -2434,7 +2434,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 ## 14. Next steps
 
 Owner's order of 28 Oct (D303, D312): every step is merged except the release itself.
-1. 🟡 #329 release candidate: merge the RELEASE.md PR, tag `v1.1.0-rc.1` on that commit, close #329 and epic #31.
+1. ✅ #329 release candidate: RELEASE.md final, tag `v1.1.0-rc.1` on f580d01, epic #31 closed.
 2. Owner: deploy on the VPS with RELEASE.md "Deploy steps" (backup, copy three files from the tag, check, deploy, two-step
    sign-in), then UAT.md on a phone and a laptop; staff fill CONTENT_READINESS.md; save the outside-service keys when
    the accounts are open (payments, SMS, Telegram, Steadfast, error tracking).
