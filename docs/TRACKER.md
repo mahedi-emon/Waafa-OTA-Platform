@@ -49,7 +49,7 @@ Serena memory `audit_findings`.
 | Tools and skills | Serena (edits), Playwright (Firefox, WebKit), Context7 |
 | PR · CI minutes | pending |
 
-### #258 · Competitor benchmark re-run — 🟡 In review
+### #258 · Competitor benchmark re-run — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | PROMPT 10 letter L: re-run COMPETITOR_BENCHMARK.md against gozayaan.com, sharetrip.net, akijair.com and obokash.com at 390 and 1440 with Lighthouse; fix every axis where Waafa is not ahead |
@@ -58,7 +58,7 @@ Serena memory `audit_findings`.
 | Tests | measurement only |
 | Migration | none |
 | Tools and skills | Lighthouse runner; Playwright MCP was disconnected, so the area-by-area screens in §2 were not re-shot (patterns unchanged) |
-| PR · CI minutes | pending |
+| PR · CI minutes | #327 · 6 min |
 
 ### #257 · Admin dark mode — ✅ Done
 | Field | Value |
