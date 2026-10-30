@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { startTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 /** The `a[data-nav]` link an event happened in, when it is a same-site page the router can open. */
@@ -32,8 +32,11 @@ function NavDriver() {
       if (!link) return;
       event.preventDefault();
       const scroll = link.anchor.dataset.navScroll !== "false";
-      if (link.anchor.hasAttribute("data-nav-replace")) router.replace(link.href, { scroll });
-      else router.push(link.href, { scroll });
+      // In a transition, as next/link does, so shared-element morphs (CardMorph, issue 256) can run.
+      startTransition(() => {
+        if (link.anchor.hasAttribute("data-nav-replace")) router.replace(link.href, { scroll });
+        else router.push(link.href, { scroll });
+      });
     };
 
     const ahead = (event: Event) => {

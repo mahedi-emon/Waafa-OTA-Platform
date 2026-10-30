@@ -33,7 +33,7 @@ async function PackagesSection({ section }: { section: HomeSection }) {
       />
       <SnapRow className="lg:grid-cols-2 xl:grid-cols-4">
         {packages.map((pkg) => (
-          <PackageCard key={pkg.id} pkg={pkg} />
+          <PackageCard key={pkg.id} pkg={pkg} morph />
         ))}
       </SnapRow>
     </HomeSectionShell>

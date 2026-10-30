@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { PenLine, X } from "lucide-react";
+import { TripSummaryMorph } from "@/components/motion/TripSummaryMorph";
 import { Button } from "@/components/ui/button";
 
 type TripSummaryBarProps = {
@@ -25,26 +26,30 @@ function TripSummaryBar({ route, details, labels, visual, children }: TripSummar
 
   return (
     <section aria-label={labels.region} className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-3 rounded-2xl border border-mist-200 bg-white px-4 py-3 shadow-xs md:px-5">
-        <p className="min-w-0">
-          <span className="block truncate font-display text-[18px] font-extrabold tracking-wide text-navy-900 md:text-[20px]">
-            {route}
-          </span>
-          <span className="block truncate text-[13.5px] text-mist-600 tabular-nums">{details}</span>
-        </p>
-        {visual ? <div className="ml-auto hidden sm:block">{visual}</div> : null}
-        <Button
-          type="button"
-          variant={editing ? "ghost" : "secondary"}
-          size="sm"
-          aria-expanded={editing}
-          onClick={() => setEditing((open) => !open)}
-          className="shrink-0"
-        >
-          {editing ? <X aria-hidden="true" /> : <PenLine aria-hidden="true" />}
-          {editing ? labels.close : labels.edit}
-        </Button>
-      </div>
+      <TripSummaryMorph>
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-mist-200 bg-white px-4 py-3 shadow-xs md:px-5">
+          <p className="min-w-0">
+            <span className="block truncate font-display text-[18px] font-extrabold tracking-wide text-navy-900 md:text-[20px]">
+              {route}
+            </span>
+            <span className="block truncate text-[13.5px] text-mist-600 tabular-nums">
+              {details}
+            </span>
+          </p>
+          {visual ? <div className="ml-auto hidden sm:block">{visual}</div> : null}
+          <Button
+            type="button"
+            variant={editing ? "ghost" : "secondary"}
+            size="sm"
+            aria-expanded={editing}
+            onClick={() => setEditing((open) => !open)}
+            className="shrink-0"
+          >
+            {editing ? <X aria-hidden="true" /> : <PenLine aria-hidden="true" />}
+            {editing ? labels.close : labels.edit}
+          </Button>
+        </div>
+      </TripSummaryMorph>
       {editing ? <div className="motion-safe:animate-rise">{children}</div> : null}
     </section>
   );

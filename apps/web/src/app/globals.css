@@ -497,6 +497,35 @@
 }
 
 /*
+ * Shared-element morphs (issue 256, TripSummaryMorph and CardMorph): only the named element travels; the rest of the
+ * page swaps at once and gets its usual page enter, so there is never a double fade. Reduced motion: instant.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-group(.trip-morph) {
+  animation-duration: 460ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-group(.card-morph) {
+  animation-duration: 380ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-image-pair(.trip-morph),
+::view-transition-image-pair(.card-morph) {
+  isolation: isolate;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/*
  * Slot swap for rotating words and rolling numbers (TextRotate, RollingNumber): the new value rises in from
  * --slot-from, the old one leaves towards --slot-to. Reduced motion fades the new value and hides the old one.
  */

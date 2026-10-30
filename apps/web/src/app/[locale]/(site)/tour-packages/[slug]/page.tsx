@@ -183,6 +183,7 @@ async function PackagePageContent({
         <PhotoGallery
           images={images}
           title={pkg.title}
+          morphName={`package-${pkg.slug}`}
           labels={{
             all: t("detail.photos", { count: images.length }),
             gallery: t("detail.gallery"),

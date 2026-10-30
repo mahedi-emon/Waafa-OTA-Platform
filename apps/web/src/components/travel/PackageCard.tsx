@@ -5,8 +5,14 @@ import { HoverVideo } from "@/components/media/HoverVideo";
 import { SmartImage } from "@/components/media/SmartImage";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { CardFx } from "@/components/fx/CardFx";
+import { CardMorph } from "@/components/motion/CardMorph";
 
-type PackageCardProps = { pkg: TourPackage; sizes?: string };
+type PackageCardProps = {
+  pkg: TourPackage;
+  sizes?: string;
+  /** The photo grows into the detail page's main photo (issue 256); only where the package appears once. */
+  morph?: boolean;
+};
 
 /**
  * Tour package card (DESIGN.md "Cards"): cover, places, title, what is included, nights and "from ৳ per person,
@@ -16,6 +22,7 @@ type PackageCardProps = { pkg: TourPackage; sizes?: string };
 async function PackageCard({
   pkg,
   sizes = "(min-width: 1280px) 300px, (min-width: 768px) 45vw, 80vw",
+  morph = false,
 }: PackageCardProps) {
   const t = await getTranslations("Home.packages");
   const tag = pkg.tags[0];
@@ -23,23 +30,27 @@ async function PackageCard({
   return (
     <CardFx tilt spotlight className="rounded-2xl">
       <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-xs transition-shadow duration-200 hover:shadow-md">
-        <div className="relative">
-          <SmartImage
-            src={pkg.cover.src}
-            focal={pkg.cover.focal}
-            alt={pkg.cover.alt}
-            ratio="4/3"
-            sizes={sizes}
-            zoomOnHover
-          />
-          {pkg.video ? <HoverVideo sources={{ mp4: pkg.video.mp4, webm: pkg.video.webm }} /> : null}
-          {tag ? (
-            <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
-              {tag === "best-seller" ? <GoldTriangle className="size-2.5" /> : null}
-              {t(`tags.${tag}`)}
-            </span>
-          ) : null}
-        </div>
+        <CardMorph name={morph ? `package-${pkg.slug}` : undefined}>
+          <div className="relative">
+            <SmartImage
+              src={pkg.cover.src}
+              focal={pkg.cover.focal}
+              alt={pkg.cover.alt}
+              ratio="4/3"
+              sizes={sizes}
+              zoomOnHover
+            />
+            {pkg.video ? (
+              <HoverVideo sources={{ mp4: pkg.video.mp4, webm: pkg.video.webm }} />
+            ) : null}
+            {tag ? (
+              <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
+                {tag === "best-seller" ? <GoldTriangle className="size-2.5" /> : null}
+                {t(`tags.${tag}`)}
+              </span>
+            ) : null}
+          </div>
+        </CardMorph>
         <div className="flex flex-1 flex-col gap-2 p-4">
           <p className="text-[13px] font-medium text-brand-700">{pkg.placesLabel}</p>
           <h3 className="font-display text-[17px] leading-snug font-bold text-navy-900">
