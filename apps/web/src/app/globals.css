@@ -294,6 +294,89 @@
   }
 }
 
+/*
+ * Admin dark theme (issue 257). The admin frame carries data-admin-theme from the staff member's choice; while it says
+ * "dark" (or "system" on a dark device) the WAAFA colours take their dark values on the whole document, so dialogs,
+ * menus and toasts rendered in portals follow. Pairs swap together (white surface ↔ navy text), so a filled button
+ * with white text stays readable. Every text colour on every dark surface passes WCAG AA (4.5:1). The public site never
+ * has the attribute and stays light.
+ */
+@utility admin-dark {
+  color-scheme: dark;
+  --color-white: #111a2e;
+  --color-mist-25: #0d1526;
+  --color-mist-50: #0a1120;
+  --color-mist-100: #18233b;
+  --color-mist-200: #26334f;
+  --color-mist-300: #35435f;
+  --color-mist-400: #6b7894;
+  --color-mist-500: #97a2b8;
+  --color-mist-600: #aab4c7;
+  --color-mist-700: #c6cdda;
+  --color-mist-800: #dde2eb;
+  --color-mist-900: #eef1f6;
+  --color-ink-900: #f2f4f8;
+  --color-navy-900: #f1f4fb;
+  --color-royal-800: #dbe5ff;
+  --color-brand-700: #93b6ff;
+  --color-electric-600: #6b9bff;
+  --color-electric-50: #14254a;
+  --color-electric-100: #1b3163;
+  --color-electric-200: #2a4a8f;
+  --color-sky-50: #0f2740;
+  --color-sky-700: #8cc8ff;
+  --color-success-50: #0d2a20;
+  --color-success-600: #43d197;
+  --color-success-700: #7ae3b6;
+  --color-warning-50: #2e2210;
+  --color-warning-700: #f0b55a;
+  --color-warning-800: #f6c983;
+  --color-danger-25: #1c1214;
+  --color-danger-50: #3a1618;
+  --color-danger-600: #ff8178;
+  --color-danger-700: #ffa29b;
+  --color-gold-50: #2a2414;
+  --color-gold-100: #3d331c;
+  --color-gold-600: #e0b56b;
+  --color-gold-700: #e8c482;
+  --ribbon-soft: linear-gradient(120deg, #13234a 0%, #101a33 55%, #0f2533 100%);
+  --background: #0a1120;
+  --foreground: #f2f4f8;
+  --card: #111a2e;
+  --card-foreground: #f2f4f8;
+  --popover: #111a2e;
+  --popover-foreground: #f2f4f8;
+  --primary: #6b9bff;
+  --primary-foreground: #0a1120;
+  --secondary: #14254a;
+  --secondary-foreground: #dbe5ff;
+  --muted: #0d1526;
+  --muted-foreground: #aab4c7;
+  --accent: #18233b;
+  --accent-foreground: #f1f4fb;
+  --destructive: #ff8178;
+  --border: #26334f;
+  --input: #35435f;
+  --ring: #6b9bff;
+}
+:root:has([data-admin-theme="dark"]) {
+  @apply admin-dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:has([data-admin-theme="system"]) {
+    @apply admin-dark;
+  }
+}
+/* The sidebar is midnight in both themes: inside it the colours keep their light-theme values. */
+[data-sidebar="sidebar"] {
+  --color-white: #ffffff;
+  --color-mist-50: #f6f8fb;
+  --color-mist-300: #cdd5e2;
+  --color-mist-400: #a3adbf;
+  --color-electric-600: #0053d7;
+  --color-danger-600: #c2261d;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

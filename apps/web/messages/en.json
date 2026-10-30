@@ -2909,7 +2909,13 @@
       "settings": "Settings",
       "skipToContent": "Skip to content",
       "offline": "You're offline. What you type stays here; save again when the connection is back.",
-      "backOnline": "Back online"
+      "backOnline": "Back online",
+      "theme": {
+        "label": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "Match this device"
+      }
     },
     "nav": {
       "reviews": "Reviews and questions",

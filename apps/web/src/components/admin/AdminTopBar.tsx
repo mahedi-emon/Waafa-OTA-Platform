@@ -1,23 +1,29 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ExternalLink, KeyRound, LogOut, PanelLeft } from "lucide-react";
+import { ExternalLink, KeyRound, LogOut, Monitor, Moon, PanelLeft, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Link } from "@/i18n/navigation";
+import { ADMIN_THEMES } from "@/lib/admin/adminTheme";
 import { signOut } from "@/lib/admin/sessionActions";
 import { AdminCommand } from "./AdminCommand";
 import { AdminNewMenu } from "./AdminNewMenu";
 import { AdminNotifications } from "./AdminNotifications";
 import { useAdminNav } from "./AdminNavContext";
+import { useAdminTheme } from "./AdminThemeContext";
+
+const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor } as const;
 
 /**
  * The top bar (ADMIN.md §3.2): menu toggle, search (Ctrl K), + New, notifications, View site and the account menu.
@@ -27,6 +33,7 @@ function AdminTopBar() {
   const t = useTranslations("Admin.shell");
   const { staff } = useAdminNav();
   const { toggleSidebar, open, isMobile } = useSidebar();
+  const { theme, setTheme } = useAdminTheme();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-1.5 border-b border-mist-200 bg-white px-2 sm:gap-2 md:px-4 lg:px-6">
@@ -86,6 +93,27 @@ function AdminTopBar() {
                 {t("viewSite")}
               </a>
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-[12.5px] font-semibold text-mist-600">
+              {t("theme.label")}
+            </DropdownMenuLabel>
+            <DropdownMenuRadioGroup
+              value={theme}
+              onValueChange={(value) => {
+                const next = ADMIN_THEMES.find((option) => option === value);
+                if (next) setTheme(next);
+              }}
+            >
+              {ADMIN_THEMES.map((option) => {
+                const Icon = THEME_ICONS[option];
+                return (
+                  <DropdownMenuRadioItem key={option} value={option}>
+                    <Icon aria-hidden="true" />
+                    {t(`theme.${option}`)}
+                  </DropdownMenuRadioItem>
+                );
+              })}
+            </DropdownMenuRadioGroup>
             <DropdownMenuSeparator />
             <form action={signOut}>
               <DropdownMenuItem asChild>

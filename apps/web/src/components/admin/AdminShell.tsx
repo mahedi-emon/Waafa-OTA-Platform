@@ -6,6 +6,7 @@ import type { InboxSummary, Role } from "@waafa/shared";
 import { Toaster } from "@/components/ui/sonner";
 import { pickMessagePaths } from "@/i18n/pickMessages";
 import { adminGet, type StaffSession } from "@/lib/admin/adminApi";
+import { ADMIN_THEME_COOKIE, parseAdminTheme } from "@/lib/admin/adminTheme";
 import { initialsOf } from "@/lib/admin/format";
 import { SETTINGS_ITEM, allItems, canSee, navFor, newRecordsFor } from "@/lib/admin/navigation";
 import { AdminBrand } from "./AdminBrand";
@@ -72,6 +73,7 @@ async function AdminShell({ staff, children }: AdminShellProps) {
           <AdminBrand name={t("brand.name")} sub={t("brand.sub")} markLabel={t("brand.name")} />
         }
         sidebarOpen={store.get("sidebar_state")?.value !== "false"}
+        theme={parseAdminTheme(store.get(ADMIN_THEME_COOKIE)?.value)}
         offlineMessage={t("shell.offline")}
       >
         {children}
