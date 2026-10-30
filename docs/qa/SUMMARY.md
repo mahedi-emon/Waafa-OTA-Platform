@@ -29,5 +29,6 @@ checkpoint updates this table.
 | Morphs (#256) | [256-morphs.md](256-morphs.md) | 9 | 7 | 2 (MO-02 streaming feel, MO-08 thumbnail and Edit) | e2e morph 3 (trip-summary passing locally; card → detail in CI) | 1 (links from Server Components navigated outside a transition, so no pair formed) | 1 | 0 |
 | Admin dark mode (#257) | [257-admin-dark.md](257-admin-dark.md) | 9 | 7 | 2 (AD-03 device setting, AD-09 sign-in stays light) | unit 2 + palette contrast script + API-mode e2e admin-dark (every admin route) | 0 | 0 | 0 |
 | Benchmark (#258) | COMPETITOR_BENCHMARK.md §0 | 1 | 1 | 0 | Lighthouse on 4 competitors + live Waafa at 390 and 1440: ahead on every column | 0 | 0 | 0 |
+| Phase D QA (#259) | [UAT.md](UAT.md), [CONTENT_READINESS.md](CONTENT_READINESS.md) | 12 | 8 | 4 (UAT walk-through after the release, content readiness by staff, exploratory on a phone, real Safari on an iPhone) | Chromium 217, Firefox 97 of 97, WebKit 96 + 1 skipped (Safari Tab), unit 746 | 2 (#325 typing wiped at hydration, #326 clips held WebKit's load) | 2 | 0 |
 
-Totals: 356 cases · 311 automated · 45 manual · 18 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5, 2 in #251, 3 in #271 including #322, 1 in #256) · 0 open.
+Totals: 368 cases · 319 automated · 49 manual · 20 bugs found and fixed (5 in C, the flaky hero test #276, axe 4.14 names #288, Home budget #295, 4 in steps 4 and 5, 2 in #251, 3 in #271 including #322, 1 in #256, 2 in #259) · 0 open.

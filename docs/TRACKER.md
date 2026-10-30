@@ -38,6 +38,17 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #259 · Phase D QA and close-out — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | PROMPT 10 letter M and the owner's order of 28 Oct, step 14: Chromium, Firefox and WebKit; every flow on phone and desktop; PRD_COVERAGE, UAT, ADMIN_GUIDE, DEPLOY current; content-readiness checklist |
+| Built | Firefox and WebKit projects (`CROSS_BROWSER=1`, a minute per test) run the key visitor specs (smoke, home, search, flights, hotels, packages, visa, store, payments, bangla, morph) in the full suite (main, nightly, full-ci). ADMIN_GUIDE §15 (Phase D features in Banglish), UAT U-39–U-42, `docs/qa/CONTENT_READINESS.md` (P0/P1 lists for staff, FR-CAT-06 real stock), QA summary, RELEASE rows, PRD_COVERAGE (NFR-COMP done, NFR-PERF evidence) |
+| Found and fixed | #325 (P1): a visitor's typing before hydration was wiped from the request forms' step 1, so step 2 never came on a slow phone; #326 (P2): clips with sources in the page held WebKit's load event. Test-side: WebKit's aborted-prefetch wording, hydration waits, Safari's Tab skipping links |
+| Tests | Locally on one build: Chromium 217 passed (145 API-mode skipped), Firefox 97 of 97, WebKit 96 + 1 skipped (Safari Tab); unit 746; e2e `early-typing.spec.ts` (#325) and Home's clip check (#326) |
+| Migration | none |
+| Tools and skills | Serena (edits), Playwright (Firefox, WebKit), Context7 |
+| PR · CI minutes | pending |
+
 ### #258 · Competitor benchmark re-run — 🟡 In review
 | Field | Value |
 | --- | --- |
@@ -2239,6 +2250,8 @@ competitor, median of 3 for Waafa. Waafa live = the 13 Oct line up to 7af26e7 (n
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #325 Request forms' step 1 lost what a visitor typed before the page hydrated (controlled inputs reset at hydration); step 2 never appeared. Found by the first WebKit run | P1 (lead capture) | apps/web/src/components/leads/ContactStep.tsx | ✅ Fixed in #259 (uncontrolled fields adopted on mount; e2e early-typing) |
+| #326 Clips with sources in the page (SmartVideo below the fold, HoverVideo) held WebKit's load event on Home | P2 | components/media/SmartVideo.tsx, HoverVideo.tsx | ✅ Fixed in #259 (clips join after load, near the viewport or on hover; e2e) |
 | #257 CI: the dark-theme axe sweep found the WhatsApp button (white text on whatsapp-700) below 4.5:1 on the lead board; midnight-950 and the WhatsApp greens had no dark values. The same run hit a timing flake in `native-controls.spec.ts` (counted the visa tabs before they streamed in) | P1 (a11y) / P2 (test only) | globals.css admin-dark; e2e/native-controls.spec.ts | ✅ Fixed in #324 (dark values, contrast script; the sweep now lists every miss; the test waits for the tabs) |
 | #322 Server actions failed when they read translations: `i18n/request.ts` read the locale root param, which Next refuses inside a Server Action (admin bulk steps on Leads); main's API-mode e2e red since #320 | P0 | apps/web/src/i18n/request.ts | ✅ Fixed in #321 (English fallback, unit test) |
 | #276 API-mode hero photo task flaky: continued on any level-1 heading before the editor loaded, uploaded into the first empty zone, clicked before hydration (PR #272, passed on re-run) | P1 (test only) | apps/web/e2e/admin-staff-tasks.spec.ts | ✅ Fixed in #276 (URL wait, whenHydrated, exact Photo field, preview change) |
