@@ -13,6 +13,44 @@ This pass adds what the designer's Stage A research (`project/Main.dc.html`) cou
 into the repository (study screenshots stayed in the gitignored `.playwright-mcp/` folder). A visitor must never
 mistake a Waafa page for one of theirs (PRD §16, Originality).
 
+## 0. Re-run on 30 Oct 2026 (#258)
+
+Same method as below, against the live sites. Waafa is measured on https://waafasworld.com, which still runs the 13 Oct
+line up to 7af26e7 (no deploys until the release candidate, D312), so the release adds the Phase D speed work on top.
+Lighthouse 13.5.0 through `scripts/lighthouse-run.mjs --live`: mobile preset (simulated Slow 4G, 4× CPU) median of
+three; desktop preset (`--desktop`, 1350 px wide, the 1440 view) one run per competitor and the median of three for
+Waafa. Transfer, script and requests count everything the run loaded.
+
+**Mobile (390 view), home pages**
+
+| Site | Performance | Accessibility | Best practices | SEO | FCP | LCP | TBT | CLS | Speed Index | Transfer | Script | Requests |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Obokash | 40 | 88 | 54 | 92 | 1.9 s | 9.4 s | 1,324 ms | 0 | 9.0 s | 8.6 MB | 1.7 MB | 136 |
+| Akij Air | 38 | 79 | 73 | 92 | 6.5 s | 27.6 s | 706 ms | 0 | 11.9 s | 6.9 MB | 1.3 MB | 139 |
+| GoZayaan | 28 | 76 | 50 | 92 | 7.2 s | 16.0 s | 4,016 ms | 0.049 | 7.2 s | 4.0 MB | 3.0 MB | 164 |
+| ShareTrip | 3 | 72 | 73 | 100 | 4.5 s | 29.5 s | 3,296 ms | 0.93 | 31.5 s | 15.9 MB | 3.2 MB | 197 |
+| **Best of four** | **40** | **88** | **73** | **100** | **1.9 s** | **9.4 s** | **706 ms** | **0** | **7.2 s** | **4.0 MB** | **1.3 MB** | **136** |
+| **Waafa (live)** | **88** | **100** | **100** | **100** | **1.5 s** | **3.3 s** | **236 ms** | **0** | **2.8 s** | **688 KB** | **321 KB** | **71** |
+| Waafa (live) /tour-packages | 93 | 100 | 100 | 100 | 1.4 s | 3.0 s | 115 ms | 0 | 1.9 s | 756 KB | 321 KB | 63 |
+
+**Desktop (1440 view), home pages**
+
+| Site | Performance | Accessibility | Best practices | SEO | FCP | LCP | TBT | CLS | Speed Index | Transfer | Script | Requests |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Obokash | 85 | 93 | 54 | 92 | 0.6 s | 2.3 s | 82 ms | 0.012 | 1.7 s | 2.8 MB | 1.7 MB | 189 |
+| Akij Air | 66 | 79 | 73 | 92 | 0.5 s | 6.3 s | 91 ms | 0.029 | 3.7 s | 8.5 MB | 1.3 MB | 165 |
+| GoZayaan | 35 | 76 | 50 | 92 | 1.9 s | 4.5 s | 339 ms | 0.288 | 3.2 s | 4.8 MB | 3.0 MB | 168 |
+| ShareTrip | 25 | 68 | 73 | 92 | 1.2 s | 5.5 s | 353 ms | 0.859 | 8.0 s | 16.7 MB | 3.2 MB | 216 |
+| **Best of four** | **85** | **93** | **73** | **92** | **0.5 s** | **2.3 s** | **82 ms** | **0.012** | **1.7 s** | **2.8 MB** | **1.3 MB** | **165** |
+| **Waafa (live)** | **99** | **100** | **100** | **100** | **0.4 s** | **0.7 s** | **78 ms** | **0** | **1.2 s** | **699 KB** | **316 KB** | **80** |
+
+**Verdict.** Waafa is ahead of the best competitor on every column at both widths; CLS 0 and SEO 100 are ties at the
+best possible value. Against the 9 Oct pass the competitors moved little (Obokash and Akij Air gained a few points,
+GoZayaan's TBT grew to 4 s, ShareTrip still shifts its layout by 0.93). Nothing needed fixing for this table; the
+remaining Waafa gap is its own target (mobile LCP 2.5 s, #271, D328). The area-by-area review in §2 still holds: since
+9 Oct Waafa added the search → results and card → detail morphs (#256), Bangla at /bn (#254), online payment, SMS,
+courier tracking and partial lead capture, none of which changes a competitor-derived pattern.
+
 ## 1. Scores: the bar to beat
 
 Lighthouse mobile, median of three runs.

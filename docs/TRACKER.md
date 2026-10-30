@@ -1856,6 +1856,15 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | Home | 26 / 76 / 50 / 92 · 24.4 s | 1 / 72 / 73 / 100 · 29.2 s | 27 / 79 / 69 / 92 · 25.4 s | 35 / 88 / 54 / 92 · 12.5 s | **45 / 100 / 100 / 100 · 5.9 s** (CI runner, 1 run, 11 Oct) | Ahead of all four on every axis; below our own 90 / 2.5 s target (#91) |
 | Package listing (1 run, 10 Oct) | 35 / 73 / 50 / 92 · 5.6 s | 1 / 72 / 73 / 100 · 26.5 s | 27 / 93 / 73 / 100 · 23.4 s | 34 / 85 / 54 / 100 · 16.2 s | **71 / 100 / 100 / 100 · 5.6 s** (CI, 11 Oct) | GoZayaan `/tour` redirects to its home Tour tab; measured for Waafa in A11 and A22 |
 
+Re-run on 30 Oct 2026 (#258), live sites, Lighthouse 13.5.0. Mobile median of 3; desktop (1440 view) one run per
+competitor, median of 3 for Waafa. Waafa live = the 13 Oct line up to 7af26e7 (no deploys until the release, D312).
+
+| Page | GoZayaan | ShareTrip | Akij Air | Obokash | Waafa (live) | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Home, mobile | 28 / 76 / 50 / 92 · 16.0 s | 3 / 72 / 73 / 100 · 29.5 s | 38 / 79 / 73 / 92 · 27.6 s | 40 / 88 / 54 / 92 · 9.4 s | **88 / 100 / 100 / 100 · 3.3 s** | Ahead on every column (TBT 236 vs best 706 ms; 688 KB vs best 4.0 MB; 71 vs best 136 requests) |
+| Home, desktop | 35 / 76 / 50 / 92 · 4.5 s | 25 / 68 / 73 / 92 · 5.5 s | 66 / 79 / 73 / 92 · 6.3 s | 85 / 93 / 54 / 92 · 2.3 s | **99 / 100 / 100 / 100 · 0.7 s** | Ahead on every column (TBT 78 vs best 82 ms; CLS 0 vs best 0.012) |
+| Package listing, mobile | — | — | — | — | **93 / 100 / 100 / 100 · 3.0 s** | Competitors' listings were 1–35 on 10 Oct |
+
 ## 8. Decisions
 
 | ID | Date | Decision | Why | Issue |
