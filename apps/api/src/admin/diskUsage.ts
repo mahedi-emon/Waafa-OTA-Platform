@@ -6,7 +6,8 @@ const MAX_ENTRIES = 200_000;
 
 /**
  * Bytes inside a folder and every folder under it (issue 303), or null when the folder is not there (not mounted
- * into this container). Symbolic links are not followed.
+ * into this container). Symbolic links are not followed; a file with several hard links (a backup identical to the
+ * day before, issue 332) counts once.
  */
 export async function folderBytes(dir: string): Promise<number | null> {
   try {
@@ -16,6 +17,7 @@ export async function folderBytes(dir: string): Promise<number | null> {
   }
   let total = 0;
   let seen = 0;
+  const counted = new Set<string>();
   const queue = [dir];
   while (queue.length > 0 && seen < MAX_ENTRIES) {
     const current = queue.pop()!;
@@ -31,7 +33,13 @@ export async function folderBytes(dir: string): Promise<number | null> {
       if (entry.isDirectory()) queue.push(full);
       else if (entry.isFile()) {
         try {
-          total += (await stat(full)).size;
+          const info = await stat(full);
+          if (info.nlink > 1) {
+            const inode = `${info.dev}:${info.ino}`;
+            if (counted.has(inode)) continue;
+            counted.add(inode);
+          }
+          total += info.size;
         } catch {
           // Removed while counting.
         }

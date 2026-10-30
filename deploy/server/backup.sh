@@ -17,7 +17,7 @@ mkdir -p backups
 psql() { $COMPOSE exec -T postgres psql -U waafa -v ON_ERROR_STOP=1 -tA "$@"; }
 
 if [ "${1:-}" = "--drill" ]; then
-  latest=$(ls -1t backups/waafa-*.sql.gz 2>/dev/null | head -n 1)
+  latest=$(ls -1 backups/waafa-*.sql.gz 2>/dev/null | sort | tail -n 1)
   [ -n "$latest" ] || { echo "$(date) drill failed: no backup yet" >&2; exit 1; }
   psql -d waafa -c "DROP DATABASE IF EXISTS waafa_drill" > /dev/null
   psql -d waafa -c "CREATE DATABASE waafa_drill" > /dev/null
@@ -38,23 +38,43 @@ if [ "${1:-}" = "--drill" ]; then
   exit 0
 fi
 
-# Issue 303: keep BACKUP_KEEP_DAYS days of backups (one a day, default 7), compressed; older ones are removed.
+# Issue 303: keep BACKUP_KEEP_DAYS days of backups (one a day, default 7), compressed; older ones are removed (by the
+# date in the name).
 keep=$(sed -n "s/^BACKUP_KEEP_DAYS=//p" .env 2>/dev/null | tr -d '\r' | head -n 1)
 case "$keep" in "" | *[!0-9]*) keep=7 ;; esac
 [ "$keep" -ge 1 ] || keep=1
 stamp=$(date +%Y%m%d-%H%M)
+
+# store <kind>: moves backups/.waafa-$stamp.<kind> (just written) into place as backups/waafa-$stamp.<kind>. Issue 332:
+# when it holds the same as the newest earlier backup of its kind (photos and customer files rarely change from one
+# day to the next), it becomes a hard link to that one, so a week of backups takes only the space of the days that
+# differ. Archives are written to the hidden name first, so a link is never written through.
+store() {
+  new="backups/.waafa-$stamp.$1"
+  target="backups/waafa-$stamp.$1"
+  previous=$(ls -1 backups/waafa-*."$1" 2>/dev/null | grep -Fvx "$target" | sort | tail -n 1)
+  if [ -n "$previous" ] && [ "$(gunzip -c "$previous" | cksum)" = "$(gunzip -c "$new" | cksum)" ]; then
+    ln -f "$previous" "$target"
+    rm -f "$new"
+  else
+    mv -f "$new" "$target"
+  fi
+  ls -1 backups/waafa-*."$1" | sort -r | tail -n +$((keep + 1)) | xargs -r rm --
+}
+
 file="backups/waafa-$stamp.sql.gz"
-$COMPOSE exec -T postgres pg_dump -U waafa --no-owner waafa | gzip > "$file"
-if [ "$(wc -c < "$file")" -lt 1024 ]; then
+$COMPOSE exec -T postgres pg_dump -U waafa --no-owner waafa | gzip > "backups/.waafa-$stamp.sql.gz"
+if [ "$(wc -c < "backups/.waafa-$stamp.sql.gz")" -lt 1024 ]; then
+  rm -f "backups/.waafa-$stamp.sql.gz"
   echo "$(date) backup too small: $file" >&2
   exit 1
 fi
-ls -1t backups/waafa-*.sql.gz | tail -n +$((keep + 1)) | xargs -r rm --
-$COMPOSE exec -T api tar -czf - -C /data/media . > "backups/waafa-$stamp.media.tar.gz"
-ls -1t backups/waafa-*.media.tar.gz | tail -n +$((keep + 1)) | xargs -r rm --
+store sql.gz
+$COMPOSE exec -T api tar -czf - -C /data/media . > "backups/.waafa-$stamp.media.tar.gz"
+store media.tar.gz
 # Customer files (issue 232: visa documents, payment slips): readable by the server owner only.
-(umask 077 && $COMPOSE exec -T api tar -czf - -C /data/private . > "backups/waafa-$stamp.private.tar.gz")
-ls -1t backups/waafa-*.private.tar.gz | tail -n +$((keep + 1)) | xargs -r rm --
+(umask 077 && $COMPOSE exec -T api tar -czf - -C /data/private . > "backups/.waafa-$stamp.private.tar.gz")
+store private.tar.gz
 echo "$(date) backup ok: $file"
 
 # Off-site copy (issue 239): the API sends each file to the Cloudflare R2 or Backblaze B2 card that is On.

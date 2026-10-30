@@ -479,11 +479,18 @@ jobs:
             [ "$status" = "200" ] || exit 1
           done
           curl -s http://localhost/ | grep -q "Waafa"
+          # Issue 332: Brotli where the browser accepts it, gzip otherwise.
+          curl -s -H 'Accept-Encoding: br, gzip' -o /dev/null -D - http://localhost/ | grep -qi '^content-encoding: br'
+          curl -s -H 'Accept-Encoding: gzip' -o /dev/null -D - http://localhost/ | grep -qi '^content-encoding: gzip'
           # #85: the old admin path is a 404 behind nginx too.
           [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost/admin)" = "404" ]
           # The worker runs the compiled file (issue 231).
           docker compose -f deploy/compose.yml ps
           [ "$(docker compose -f deploy/compose.yml ps -q worker | xargs docker inspect -f '{{.State.Running}}')" = "true" ]
+
+      # Issue 332: Brotli, HTTP/2, HSTS and the HTTP/3 advert on the HTTPS site, with a throwaway certificate.
+      - name: nginx HTTPS (test certificate)
+        run: sh scripts/nginx-https-check.sh
 
       # Issue 235: the worker scans customer files with ClamAV; a clean PDF turns "clean", the EICAR test file
       # "infected" and moves to quarantine/. ClamAV loads its signatures first (a minute or two).
@@ -512,7 +519,13 @@ jobs:
           crontab -l | grep -q "sh backup.sh >> backups/backup.log 2>&1 # waafa-backup"
           crontab -l | grep -q "sh backup.sh --drill >> backups/drill.log 2>&1 # waafa-backup"
           sh deploy/backup.sh
-          ls -l deploy/backups
+          # Issue 332: an archive identical to the day before becomes a hard link to it.
+          media=$(ls -1 deploy/backups/waafa-*.media.tar.gz | sort | tail -n 1)
+          cp "$media" deploy/backups/waafa-20000101-0000.media.tar.gz
+          sh deploy/backup.sh
+          media=$(ls -1 deploy/backups/waafa-*.media.tar.gz | sort | tail -n 1)
+          [ "$(stat -c %h "$media")" -ge 2 ]
+          ls -li deploy/backups
           sh deploy/backup.sh --drill | tee /dev/stderr | grep -q "drill ok"
 
       # Issue 303: image sizes, revision labels and the memory of every container, against their budgets.

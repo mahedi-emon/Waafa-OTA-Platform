@@ -13,7 +13,7 @@ tag=${tag:-latest}
 # Budgets in MB: images as `docker images` reports them on the server, memory as `docker stats` reports it.
 API_MAX=400
 WEB_MAX=500
-NGINX_MAX=100
+NGINX_MAX=40
 STACK_MAX=3072
 
 # ClamAV answers only after loading its signatures (a minute or two on first start).

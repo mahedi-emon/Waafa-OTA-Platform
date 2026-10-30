@@ -38,6 +38,7 @@ echo "4/7 Firewall: SSH, HTTP, HTTPS"
 ufw allow OpenSSH >/dev/null
 ufw allow 80/tcp >/dev/null
 ufw allow 443/tcp >/dev/null
+ufw allow 443/udp >/dev/null
 ufw --force enable >/dev/null
 
 echo "5/7 Ports 80 and 443 for Docker's nginx"
@@ -54,7 +55,7 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 mkdir -p /etc/docker
 if [ ! -f /etc/docker/daemon.json ]; then
-  printf '%s\n' '{ "log-driver": "json-file", "log-opts": { "max-size": "10m", "max-file": "3" } }' > /etc/docker/daemon.json
+  printf '%s\n' '{ "log-driver": "local", "log-opts": { "max-size": "10m", "max-file": "3" } }' > /etc/docker/daemon.json
   systemctl restart docker
 fi
 systemctl enable --now docker >/dev/null
