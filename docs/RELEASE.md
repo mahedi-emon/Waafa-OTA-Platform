@@ -9,7 +9,7 @@ one release at the end. Every PR that changes what the deploy does adds its line
 | | Release | Commit | How we know |
 | --- | --- | --- | --- |
 | Live on the server | `7af26e7` (Docker images run #30, PR #187, 14 Oct) with the 13 Oct `deploy/server` bundle | api and worker `sha256:b52c4bb564fa37ee3b778b1dee49835823b89aed5eea30d84159c3745c61a8e1`, web `sha256:023a177a453ff445457cca56b5f6f5cbe5cf378d5521518c7aa5376da49d3e6a` (tags `api-7af26e7`, `web-7af26e7`) | Owner, 28 Oct (D312); `deploy/LIVE_RELEASE` = `7af26e7`, so the upgrade rehearsal starts there, and Docker Hub never deletes it |
-| This release | `v1.1.0-rc.1` (#329) | `main` at the tag; code as of `fac3fb1` (#328), the tag adds only this note | Upgrade rehearsal in the Docker images run for `fac3fb1` (30 Oct): `7af26e7 → fac3fb1` passed with seeded data; the full suite (Chromium, Firefox, WebKit, API mode, Lighthouse, VPS smoke) green on #328 and on `main` |
+| This release | `v1.1.0-rc.2` (#332; `v1.1.0-rc.1` was #329) | `main` at the tag; the rc.1 code plus the lighter, faster server of #332 | Upgrade rehearsal in the Docker images run for `fac3fb1` (30 Oct): `7af26e7 → fac3fb1` passed with seeded data; the full suite (Chromium, Firefox, WebKit, API mode, Lighthouse, VPS smoke) green on #328 and on `main` |
 
 ## Database migrations, in order (all additive)
 
@@ -52,7 +52,7 @@ release that grows past the budget (`scripts/measure-stack.sh`).
 | --- | --- | --- | --- | --- |
 | api (also the worker) | 2.07 GB | 1.82 GB | 183 MB | 400 MB |
 | web | 571 MB | 599 MB | 312 MB | 500 MB |
-| nginx | 74 MB | 74 MB | 45 MB | 100 MB |
+| nginx | 74 MB | 74 MB | 17 MB (#332; 45 MB in rc.1) | 40 MB |
 
 API: Alpine with only the node binary, one compiled bundle (Nest, Prisma client and query compiler included), five
 packages that must stay on disk (sharp, argon2, pdfkit, bullmq, ioredis), no package manager, no Prisma CLI, no
@@ -71,6 +71,9 @@ backups and caches use on the server shows in Admin › Settings › System stat
 | `api`, `worker` | 512 MB, 384 MB | #303 | API limit down from 640 MB; customer files in the private volume `privatedata` (#232); the API reads `./backups` read only for the Status page |
 | all | logs rotate at 10 MB × 3 | #303 | no log file grows without end |
 | `clamav` | 1.6 GB | #303 | `CLAMD_CONF_ConcurrentDatabaseReload: "no"`: one signature set in memory; the daily reload pauses scans about a minute |
+| `nginx` | 96 MB | #332 | Alpine's nginx 1.28 with Brotli: HTML, JS, CSS and page data about a fifth smaller than gzip for every browser that accepts it; HTTP/3 on UDP 443 (browsers fall back to HTTP/2 by themselves); image 17 MB |
+| all | logs in Docker's `local` driver | #332 | same 10 MB × 3 rotation, kept compressed |
+| `postgres` | 640 MB | #332 | at most 256 MB of WAL on disk (default 1 GB), WAL compressed |
 
 The VPS needs about 1.2 GB more memory than before for ClamAV; the whole stack stays under 3 GB at rest (measured in
 the VPS smoke, budget 3 GB).
@@ -81,16 +84,16 @@ Since `7af26e7` three files changed; copy them to `/opt/waafa` **before** `sh de
 
 | File | Why |
 | --- | --- |
-| `compose.yml` | ClamAV (#235), private files volume (#232), Turnstile lines moved to the API (#284), log rotation, the backups folder read by the Status page, API limit 512 MB, ClamAV reload setting (#303) |
+| `compose.yml` | ClamAV (#235), private files volume (#232), Turnstile lines moved to the API (#284), log rotation, the backups folder read by the Status page, API limit 512 MB, ClamAV reload setting (#303); compressed logs, smaller WAL, UDP 443 for HTTP/3 (#332) |
 | `deploy.sh` | installs the backup cron (#239); removes unused images older than a week after a deploy (#303) |
-| `backup.sh` | restore drill and off-site copy (#239); keeps `BACKUP_KEEP_DAYS` days (default 7, was 14) (#303) |
+| `backup.sh` | restore drill and off-site copy (#239); keeps `BACKUP_KEEP_DAYS` days (default 7, was 14) (#303); a backup identical to the day before becomes a hard link to it, so a week of photo and customer-file archives takes about one copy (#332) |
 
 The repository is private, so the copy needs a GitHub token with read access to its contents (fine-grained, this
 repository only, "Contents: Read-only"; it can expire after a day). On the server:
 
 ```sh
 cd /opt/waafa
-TAG=<release tag>          # e.g. v1.1.0, from the release page
+TAG=<release tag>          # e.g. v1.1.0-rc.2, from the release page
 TOKEN=<read-only token>
 for f in compose.yml deploy.sh backup.sh; do
   cp "$f" "$f.before-$TAG" 2>/dev/null || true
@@ -144,14 +147,17 @@ turned on later in Admin › Integrations.
    ```
 
 2. Copy the three changed `deploy/server` files from the tag (the curl loop in "Server bundle changes" above, with
-   `TAG=v1.1.0-rc.1` and a read-only token).
+   `TAG=v1.1.0-rc.2` and a read-only token).
 
-3. Check the settings, then deploy:
+3. Deploy (deploy.sh stops with a plain message when `.env` lacks a setting, an image cannot be pulled or was built
+   for another address; #333):
 
    ```sh
-   sh check.sh                  # settings check; fix what it names
    sh deploy.sh                 # pulls the images, runs the migrations and seed patches, restarts, installs the backup cron
+   sudo ufw allow 443/udp       # HTTP/3 (#332); harmless if UDP is closed: browsers keep using HTTP/2
    ```
+
+   If the hosting company's own panel has a firewall, allow UDP 443 there too (optional, same reason).
 
    ClamAV downloads its signatures on the first start (a few minutes); file scans wait until it is ready.
 
@@ -165,6 +171,6 @@ turned on later in Admin › Integrations.
 6. Walk through [qa/UAT.md](qa/UAT.md) on a phone and a laptop, and give the staff
    [qa/CONTENT_READINESS.md](qa/CONTENT_READINESS.md).
 
-Roll back if something is wrong: put back the three files the copy saved as `*.before-v1.1.0-rc.1`, restore the backup
+Roll back if something is wrong: put back the three files the copy saved as `*.before-v1.1.0-rc.2`, restore the backup
 from step 1 (DEPLOY.md, "Restore"), then `IMAGE_TAG=7af26e7 sh deploy.sh`. The 7af26e7 images expect the old bundle and
 the old database, so all three go back together.

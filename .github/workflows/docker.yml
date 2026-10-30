@@ -95,8 +95,14 @@ jobs:
           curl -s http://localhost/about-us | grep -q "$SITE_URL/about-us"
           # nginx compresses text and caches hashed build files (issue 126).
           curl -s -H 'Accept-Encoding: gzip' -o /dev/null -D - http://localhost/ | grep -qi '^content-encoding: gzip'
+          # Issue 332: Brotli where the browser accepts it.
+          curl -s -H 'Accept-Encoding: br, gzip' -o /dev/null -D - http://localhost/ | grep -qi '^content-encoding: br'
           label=$(docker image inspect -f '{{ index .Config.Labels "org.waafa.site-url" }}' "$IMAGE_REPO:web-$TAG")
           [ "$label" = "$SITE_URL" ]
+
+      # Issue 332: Brotli, HTTP/2, HSTS and the HTTP/3 advert on the HTTPS site, with a throwaway certificate.
+      - name: nginx HTTPS (test certificate)
+        run: sh scripts/nginx-https-check.sh
 
       # Issue 231: the API image runs compiled JavaScript only (no TypeScript source, tests or workspace packages).
       - name: API image holds no source or tests

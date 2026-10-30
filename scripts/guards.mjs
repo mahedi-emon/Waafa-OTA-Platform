@@ -201,6 +201,21 @@ if (!read("fixtures/src/settings.ts").includes('storeName: "Waafa’s World"')) 
   }
 }
 
+// Issue 333: the release's deploy steps run on the server in /opt/waafa, so every script they name must ship in the
+// server bundle (deploy/server); deploy/check.sh, for one, is the repository-layout preflight.
+{
+  const release = read("docs/RELEASE.md");
+  const start = release.indexOf("## Deploy steps");
+  const end = release.indexOf("\n## ", start + 1);
+  const steps = start < 0 ? "" : release.slice(start, end < 0 ? undefined : end);
+  if (start < 0) fail("docs/RELEASE.md", 0, `no "## Deploy steps" section`);
+  const shipped = new Set(readdirSync(join(root, "deploy/server")));
+  for (const [, script] of steps.matchAll(/\bsh ([\w.-]+\.sh)\b/g)) {
+    if (!shipped.has(script))
+      fail("docs/RELEASE.md", 0, `deploy steps run ${script}, which deploy/server does not ship`);
+  }
+}
+
 if (failures.length > 0) {
   console.error(`guards: ${failures.length} problem${failures.length === 1 ? "" : "s"}\n`);
   for (const f of failures) console.error(`  ${f}`);

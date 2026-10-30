@@ -4,7 +4,7 @@ Everything runs on one VPS (2 vCPU, 4 GB RAM, Docker) with Docker Compose: `depl
 
 | Service | Image | Public | Memory cap |
 | --- | --- | --- | --- |
-| `nginx` | `deploy/nginx` (nginx 1.27): reverse proxy, HTTPS, www → apex, rate limit on form posts | 80 and 443 | 96 MB |
+| `nginx` | `deploy/nginx` (Alpine nginx 1.28 with Brotli, #332): reverse proxy, HTTPS and HTTP/3, www → apex, rate limit on form posts | 80, 443 and UDP 443 | 96 MB |
 | `certbot` | `certbot/certbot`: gets and renews the Let's Encrypt certificate | no | 128 MB |
 | `web` | `apps/web/Dockerfile` (Next.js standalone) | through nginx only | 1 GB |
 | `api` | `apps/api/Dockerfile` (compiled JavaScript only; runs migrations and the idempotent seed, then starts; volumes `mediadata` and `privatedata`) | no (127.0.0.1:4000 for the web build) | 640 MB |
@@ -40,12 +40,12 @@ only pulls them. Everything the server needs is the folder `deploy/server` (issu
 | --- | --- |
 | `compose.yml` | The stack from images only: PostgreSQL, Redis, API, worker, web, nginx (HTTPS), certbot |
 | `deploy.sh` | Pulls the images, starts everything in order, refreshes the web caches, gets the Let's Encrypt certificate |
-| `setup-server.sh` | Once on a fresh Ubuntu: updates, Asia/Dhaka, 4 GB swap, firewall 22/80/443, Docker with log rotation |
+| `setup-server.sh` | Once on a fresh Ubuntu: updates, Asia/Dhaka, 4 GB swap, firewall 22/80/443 (and UDP 443 for HTTP/3), Docker with log rotation |
 | `backup.sh` | Daily database, photo and customer-file backup, compressed, `BACKUP_KEEP_DAYS` kept (default 7) |
 | `revalidate.mjs` | Used by deploy.sh to refresh the site's caches |
 | `.env` | The production settings (only on the owner's PC and the server; gitignored, never in git or chat) |
 
-nginx is part of the stack (the `nginx` image: reverse proxy, HTTPS, www → apex redirect, gzip, caching, security
+nginx is part of the stack (the `nginx` image: reverse proxy, HTTPS, www → apex redirect, Brotli and gzip, caching, security
 headers, rate limits on form posts). Nothing to install or configure by hand; `setup-server.sh` stops a host nginx or
 Apache so ports 80 and 443 are free.
 
@@ -138,7 +138,7 @@ sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapf
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 # Firewall: SSH, HTTP, HTTPS only.
-sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw enable
+sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw allow 443/udp && sudo ufw enable
 
 # Docker Engine with the Compose plugin (skip if `docker compose version` already works).
 curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker "$USER"   # then log out and in
