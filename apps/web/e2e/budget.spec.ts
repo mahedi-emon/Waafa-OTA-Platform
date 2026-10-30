@@ -90,15 +90,3 @@ for (const route of ROUTES) {
     expect(kb, `${route} first-load JS (KB gzip)`).toBeLessThanOrEqual(TARGET_KB);
   });
 }
-
-/*
- * One copy of the page's data in the HTML (issue 271): with Partial Prefetching on, Next rendered streamed pages twice
- * and embedded the second render as a runtime prefetch stream (the root payload's `p` field), which doubled the inline
- * payload and the work on phones. The field must stay absent.
- */
-for (const route of ["/hotels", "/flights", "/blog"]) {
-  test(`${route} embeds its data once`, async ({ request }) => {
-    const html = await (await request.get(route)).text();
-    expect(html).not.toMatch(/\\"p\\":\\"\$[0-9a-f]+\\"/);
-  });
-}

@@ -4,10 +4,17 @@ import { locale as rootLocale } from "next/root-params";
 import { DHAKA_TIME_ZONE } from "@waafa/shared";
 import { routing } from "./routing";
 
-/** The locale root param (/bn/…); next-intl passes it as the override where it already knows it. */
+/**
+ * The locale root param (/bn/…); next-intl passes it as the override where it already knows it. Server Actions and
+ * route handlers have no root params (Next throws there), so they get English (issue 322).
+ */
 async function requestedLocale(override: string | undefined): Promise<string | undefined> {
   if (override) return override;
-  return rootLocale();
+  try {
+    return await rootLocale();
+  } catch {
+    return undefined;
+  }
 }
 
 export default getRequestConfig(async ({ locale: override }) => {
