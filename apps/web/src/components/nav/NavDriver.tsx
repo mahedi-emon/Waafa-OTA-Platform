@@ -3,6 +3,10 @@
 import { startTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+type PrefetchOptions = NonNullable<Parameters<ReturnType<typeof useRouter>["prefetch"]>[1]>;
+/** `<Link prefetch={true}>` for plain links: the page's own content, not only its route's shell (issue 256). */
+const FULL = { kind: "full" } as unknown as PrefetchOptions;
+
 /** The `a[data-nav]` link an event happened in, when it is a same-site page the router can open. */
 function navLink(target: EventTarget | null): { anchor: HTMLAnchorElement; href: string } | null {
   const anchor =
@@ -45,7 +49,8 @@ function NavDriver() {
       const page = link.href.split("#")[0] ?? link.href;
       if (fetched.has(page)) return;
       fetched.add(page);
-      router.prefetch(page);
+      if (link.anchor.dataset.navPrefetch === "full") router.prefetch(page, FULL);
+      else router.prefetch(page);
     };
 
     document.addEventListener("click", click);
