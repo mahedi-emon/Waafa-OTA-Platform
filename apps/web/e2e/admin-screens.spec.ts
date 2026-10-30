@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { ADMIN_ROUTES as ROUTES, ADMIN_SCREENS as SCREENS } from "./adminRoutes";
 import { collectErrors } from "./errors";
 
 /*
@@ -12,28 +13,6 @@ const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "";
 const WIDTHS = [320, 390, 768, 1024, 1440] as const;
 const AXE_WIDTHS = new Set<number>([390, 1440]);
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
-const SCREENS = [
-  { name: "dashboard", path: "/secure-admin-control" },
-  { name: "leads", path: "/secure-admin-control/leads" },
-  { name: "lead-board", path: "/secure-admin-control/leads/board" },
-  { name: "orders", path: "/secure-admin-control/orders" },
-  { name: "feedback", path: "/secure-admin-control/feedback" },
-  { name: "content", path: "/secure-admin-control/content" },
-  { name: "content-faqs", path: "/secure-admin-control/content/faqs" },
-  { name: "settings-contact", path: "/secure-admin-control/settings/business" },
-  { name: "users", path: "/secure-admin-control/users" },
-  { name: "integrations", path: "/secure-admin-control/integrations" },
-  { name: "reports", path: "/secure-admin-control/reports" },
-  { name: "bookings", path: "/secure-admin-control/bookings" },
-  { name: "status", path: "/secure-admin-control/status" },
-  { name: "customers", path: "/secure-admin-control/customers" },
-  { name: "customer-accounts", path: "/secure-admin-control/customers/accounts" },
-  { name: "media", path: "/secure-admin-control/media" },
-  { name: "settings", path: "/secure-admin-control/settings" },
-  { name: "settings-payments", path: "/secure-admin-control/settings/payments" },
-  { name: "settings-messages", path: "/secure-admin-control/settings/forms?tab=messages" },
-  { name: "audit", path: "/secure-admin-control/audit" },
-] as const;
 
 test.skip(!apiMode || !ADMIN_PASSWORD, "API mode with the seed Super Admin only");
 test.describe.configure({ mode: "serial" });
@@ -98,50 +77,6 @@ test("signed-in admin screens hold every width, stay error-free and pass axe", a
   }
   expect(errors).toEqual([]);
 });
-
-/** Every other admin route (D0 R10): each sidebar list, each settings section and the website builder. */
-const ROUTES = [
-  "/secure-admin-control/visa-applications",
-  "/secure-admin-control/payments",
-  "/secure-admin-control/subscribers",
-  "/secure-admin-control/search",
-  "/secure-admin-control/notifications",
-  "/secure-admin-control/trash",
-  "/secure-admin-control/account",
-  "/secure-admin-control/website/home",
-  "/secure-admin-control/website/menus",
-  "/secure-admin-control/settings/hours",
-  "/secure-admin-control/settings/modes",
-  "/secure-admin-control/settings/forms",
-  "/secure-admin-control/settings/seo?tab=connections",
-  "/secure-admin-control/settings/search",
-  "/secure-admin-control/settings/maintenance",
-  ...[
-    "tourPackages",
-    "groupFares",
-    "flightRoutes",
-    "hotelPlaces",
-    "visaCountries",
-    "visaGuides",
-    "airlines",
-    "products",
-    "categories",
-    "brands",
-    "collections",
-    "deals",
-    "storeRows",
-    "coupons",
-    "attributeSets",
-    "compatibleModels",
-    "announcements",
-    "banners",
-    "pages",
-    "blogPosts",
-    "galleryAlbums",
-    "team",
-  ].map((key) => `/secure-admin-control/content/${key}`),
-  "/secure-admin-control/content/tourPackages/bali-temples-and-beaches",
-] as const;
 
 test("every other admin route holds a phone and a wide screen and passes axe", async ({ page }) => {
   test.setTimeout(480_000);
