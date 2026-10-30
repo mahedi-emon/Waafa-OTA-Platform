@@ -32,7 +32,7 @@ test("Dark from the account menu applies at once, is remembered and every admin 
   const light = await background();
   await page.getByRole("button", { name: /^My account: / }).click();
   await page.getByRole("menuitemradio", { name: "Dark" }).click();
-  await expect(page.locator('[data-admin-theme="dark"]')).toHaveCount(1);
+  await expect(page.locator("html")).toHaveAttribute("data-admin-theme", "dark");
   await expect.poll(background).not.toBe(light);
   expect((await page.context().cookies()).find((c) => c.name === "waafa_admin_theme")?.value).toBe(
     "dark",
@@ -42,7 +42,7 @@ test("Dark from the account menu applies at once, is remembered and every admin 
   const misses: string[] = [];
   for (const route of [...ADMIN_SCREENS.map((screen) => screen.path), ...ADMIN_ROUTES]) {
     await page.goto(route);
-    await expect(page.locator('[data-admin-theme="dark"]'), route).toHaveCount(1);
+    await expect(page.locator("html"), route).toHaveAttribute("data-admin-theme", "dark");
     await expect(page.getByRole("heading", { level: 1 }).first(), route).toBeVisible();
     const axe = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
     for (const violation of axe.violations)
@@ -60,6 +60,6 @@ test("Dark from the account menu applies at once, is remembered and every admin 
   await page.goto("/secure-admin-control");
   await page.getByRole("button", { name: /^My account: / }).click();
   await page.getByRole("menuitemradio", { name: "Light" }).click();
-  await expect(page.locator('[data-admin-theme="light"]')).toHaveCount(1);
+  await expect(page.locator("html")).toHaveAttribute("data-admin-theme", "light");
   expect(errors).toEqual([]);
 });

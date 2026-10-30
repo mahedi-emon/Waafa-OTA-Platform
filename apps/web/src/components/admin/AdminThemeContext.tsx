@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { adminThemeCookie, type AdminTheme } from "@/lib/admin/adminTheme";
 
 type AdminThemeValue = { theme: AdminTheme; setTheme: (theme: AdminTheme) => void };
@@ -24,6 +24,15 @@ function AdminThemeProvider({
     document.cookie = adminThemeCookie(next);
     setThemeState(next);
   };
+  // Mirrored on <html> after hydration so dialogs, menus and toasts in portals follow; the frame carries it from the
+  // server, so the first paint is already right. No :has() selector: it made every public page recalculate (issue 257).
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.adminTheme = theme;
+    return () => {
+      delete root.dataset.adminTheme;
+    };
+  }, [theme]);
   return (
     <AdminThemeContext.Provider value={{ theme, setTheme }}>
       {children(theme)}
