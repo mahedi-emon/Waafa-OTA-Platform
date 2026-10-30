@@ -1,5 +1,5 @@
 # WAAFA — Build Tracker
-Updated: 29 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise ✅, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271, #256–#258, #259, release candidate · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
+Updated: 30 Oct Asia/Dhaka · Phase: A ✅ B ✅ C ✅ (live on https://waafasworld.com since 13 Oct) · D0 admin redesign ✅ (epic #201) · D · P1 completion (epic #31, due 13 Nov), owner's order of 28 Oct (D303): 1 Dependabot ✅ (#282), 2 #278 ✅, 3 #284 ✅, #287 ✅, #285 ✅, #237 ✅, #238 ✅, #239 ✅, #242 ✅, #298 ✅; owner's decisions of 28 Oct evening (D312): #302 rename ✅, #303 optimise ✅, OPTIMISE, then #243, #244, #245–#248, #249/#250, #251–#253, #254/#255, #271 ✅, #256 ✅, #257 ✅, #258 ✅, #259 ✅, release candidate #329 🟡 · Status: live; no deploys until the one release at the end (docs/RELEASE.md)
 
 Legend: ⬜ Todo · 🟡 In progress · ✅ Done · ⛔ Blocked. Phase A counts A0–A22 plus A1b (24 issues).
 
@@ -38,7 +38,16 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #259 · Phase D QA and close-out — 🟡 In review
+### #329 · Release candidate v1.1.0-rc.1 — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | Owner's order of 28 Oct, step 15: tag; RELEASE.md complete from 7af26e7; upgrade rehearsal with seeded data and the full suite once more; memory and disk measured; Banglish deploy steps |
+| Built | RELEASE.md: this release = `v1.1.0-rc.1` (code as of `fac3fb1`), measured images and memory, release-day steps 1–6 (backup, copy the bundle from the tag, check, deploy, first sign-in with two-step, Admin settings, UAT and content readiness) and the rollback |
+| Result | Docker images run for `fac3fb1`: upgrade rehearsal `7af26e7 → fac3fb1` passed; images api 183 MB, web 312 MB, nginx 45 MB, every one labelled with its revision; stack memory 1,282 MB (api 107, worker 73, web 108, postgres 32, redis 4, nginx 6, certbot 2, clamav 951) of the 3 GB budget; full suite green on #328 and `main` |
+| Migration | none new (the release carries the ten since 7af26e7 listed in RELEASE.md) |
+| PR · CI minutes | pending |
+
+### #259 · Phase D QA and close-out — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | PROMPT 10 letter M and the owner's order of 28 Oct, step 14: Chromium, Firefox and WebKit; every flow on phone and desktop; PRD_COVERAGE, UAT, ADMIN_GUIDE, DEPLOY current; content-readiness checklist |
@@ -47,7 +56,7 @@ Serena memory `audit_findings`.
 | Tests | Locally on one build: Chromium 217 passed (145 API-mode skipped), Firefox 97 of 97, WebKit 96 + 1 skipped (Safari Tab); unit 746; e2e `early-typing.spec.ts` (#325) and Home's clip check (#326) |
 | Migration | none |
 | Tools and skills | Serena (edits), Playwright (Firefox, WebKit), Context7 |
-| PR · CI minutes | pending |
+| PR · CI minutes | #328 · 88 min (first full run green, Firefox and WebKit included) |
 
 ### #258 · Competitor benchmark re-run — ✅ Done
 | Field | Value |
@@ -2345,6 +2354,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 30 Oct (evening) | #257 merged (#324, 307 min), #258 (#327, 6 min), #259 (#328, 88 min, first full run green): Firefox and WebKit in the full suite, bugs #325 (typing wiped at hydration) and #326 (clips held WebKit load) fixed with tests. Release candidate #329: upgrade rehearsal 7af26e7 → fac3fb1 passed, images 183/312/45 MB, stack 1,282 MB; RELEASE.md final | #257–#259 #325 #326 #329 | #324 #327 #328 | Chromium 217, Firefox 97, WebKit 96 + 1 skipped, unit 746 |
 | 30 Oct (day) | #253–#255 merged. #271 merged (#321, 190 min): all 11 key routes 92–96 in CI, gates to errors (D328); the API-mode e2e caught #322 (main red since #320) and the Partial Prefetching regression. #256 merged (#323, 101 min). #257 admin dark mode in CI (#324). #258 benchmark re-run (ahead on every column at 390 and 1440). #259: Firefox and WebKit in the full suite, staff guide, UAT U-39–U-42, content-readiness list, QA summary, release note rows. Local builds were stopped twice by the memory reaper | #253–#259 #271 #322 | #318–#321 #323 #324 | CI Lighthouse 92–96; e2e morph, store, admin-dark; unit request, adminTheme |
 | 30 Oct | #250 merged (#315, 105 min), #251 (#316, 132 min), #252 (#317, 67 min). #253 Steadfast built (PR #318). #254 Bangla at /bn (2,380 strings by four parallel translation passes, switch, hreflang, sitemap) and #255 bilingual content (bn map, overlay, editor section, Bangla missing filter) built and pushed | #250–#255 | #315–#318 | API 427, web 740, shared 176, e2e bangla 35 + bilingual + couriers + payments |
 | 29 Oct (night) | #249 PR #314 in CI. #250 partial lead capture built (LeadDraft, step 1 opt-in, Incomplete requests page, one reminder, purge); PR opened with full-ci | #249 #250 | #314 | API DB 5, e2e partial-capture 2 |
@@ -2423,13 +2433,10 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 ## 14. Next steps
 
-Owner's order of 28 Oct (D303, D312). One issue per PR; start the next while CI runs.
-1. ✅ #302, #303, #243–#255, #271 (#321), #256 (#323).
-2. 🟡 #257 PR #324 in CI (full-ci). Stacked and pushed: feat/258-benchmark (#258, docs and the runner's --desktop),
-   feat/259-phase-d-qa (#259: cross-browser CI, guide, UAT, content readiness, QA summary, release rows). After each
-   merge, merge main into the next branch (take ours), open its PR, merge when green. #259 runs full-ci (the new Firefox
-   and WebKit step must pass); then close epic #31 with zero open P0/P1 bugs.
-3. Checkpoint to the owner after #259.
-4. Release candidate: tag `v1.1.0-rc.1` on main; RELEASE.md from 7af26e7 final; the upgrade rehearsal and the
-   memory and disk numbers come from the tag's VPS deploy smoke and Docker images run; Banglish deploy steps.
-   Checkpoint.
+Owner's order of 28 Oct (D303, D312): every step is merged except the release itself.
+1. 🟡 #329 release candidate: merge the RELEASE.md PR, tag `v1.1.0-rc.1` on that commit, close #329 and epic #31.
+2. Owner: deploy on the VPS with RELEASE.md "Deploy steps" (backup, copy three files from the tag, check, deploy, two-step
+   sign-in), then UAT.md on a phone and a laptop; staff fill CONTENT_READINESS.md; save the outside-service keys when
+   the accounts are open (payments, SMS, Telegram, Steadfast, error tracking).
+3. After the deploy: field LCP from Search Console (NFR-PERF lab LCP 2.7–3.0 s), UAT findings as bug issues, update
+   deploy/LIVE_RELEASE to the new release so the next rehearsal starts there. Phase E waits for a provider contract.
