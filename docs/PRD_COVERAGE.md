@@ -209,13 +209,13 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
-| NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial | e2e/budget.spec.ts (31 routes ≤ 200 KB); scripts/lighthouse-run.mjs + apps/web/lighthouse.config.json (CI errors on a11y/BP/SEO/CLS); TRACKER #236 | 8 of 11 key routes at 90+ (Home 87, Hotels 86, Blog 88); lab LCP 2.6 to 4.0 s; performance and LCP are CI warnings (D298) | #271 |
+| NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial | e2e/budget.spec.ts (31 routes ≤ 200 KB); scripts/lighthouse-run.mjs + apps/web/lighthouse.config.json; #271: Blog hero in the static shell, Hotels card header in the loading preview, content-visibility on long pages; competitor benchmark re-run (#258): ahead on every column | Local: Home 90, Blog 96, Hotels 85; lab LCP 2.7–3.1 s (~470 KB before LCP on simulated slow 4G); performance and LCP gates per D328 | #271 |
 | NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | done | lead limit 5/min per address (web) and 10 (API) + rateLimit.test; CSP exception in docs/SECURITY.md; daily backups and monthly drill (deploy/backup.sh, cron by deploy.sh); off-site copy via the R2/B2 card (api/offsite.ts); Turnstile from Admin (#284) | — | #239, #284 |
 | NFR-SEO | P0 | SSR titles, canonical, JSON-LD, split sitemap, OG images, llms.txt, GA4/GTM/Pixel events | done | sitemap index (app/sitemap.xml + app/sitemap/[part]); visa share cards app/og/visa; consented events lib/analytics/track.ts + components/analytics/EventBridge.tsx; UTM in proxy (lib/analytics/attribution.ts); e2e seo.spec, api-mode.spec | — | #237, #287 |
 | NFR-A11Y | P0 | WCAG 2.2 AA: contrast, focus, keyboard, labels, 44 px, skip link, reduced motion | done | skip link in app/[locale]/layout.tsx; AxeBuilder in 24 e2e specs | — | — |
 | NFR-OPS | P0 | 99.5% uptime, /health + /ready, Sentry, request-ID logs, envs, migrations, DLQ | waiting for owner account | /health, /ready; Settings › System status (api/admin/status.service.ts); dead-letter list with Retry/Discard; error tracking to Sentry or GlitchTip from the Admin card (common/errorReporter.ts), off until the DSN; disk/memory alerts; staging bundle deploy/staging | Sentry or GlitchTip DSN and an uptime monitor account (owner); browser-side errors not sent (200 KB budget) | #238, #239 |
 | NFR-L10N | P0 (Bangla P1) | English strings in next-intl from day one; Dhaka time; dates; ৳ lakh | done | apps/web/messages/en.json + bn.json; shared/format | — | #254 (Bangla) |
-| NFR-COMP | P0 | Last two versions of major browsers; Android 9+; layouts from 320 px | partial | e2e/public-screens.spec.ts (320–1440) | Only Chromium is tested; no Safari/Firefox/Samsung runs | #259 |
+| NFR-COMP | P0 | Last two versions of major browsers; Android 9+; layouts from 320 px | done | e2e/public-screens.spec.ts (320–1440); Firefox and WebKit projects (`CROSS_BROWSER=1`) run the key visitor flows in the full suite (playwright.config.ts, ci.yml, #259) | Samsung Internet is Chromium-based (covered by Chromium); no real-device lab | — |
 | NFR-LEGAL | P0 | Privacy, terms, refund, contact live; consent on forms; analytics notice | done | policy pages; components/forms/ConsentField.tsx; components/analytics/ConsentBar.tsx | — | — |
 
 ## Gaps the owner listed (PROMPT 10)
@@ -231,8 +231,8 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | No quote builder, reminders, round-robin, partial capture (FR-FLT-08) | Quote builder fixed in #298 | Reminders, round-robin and partial capture still missing (#243); only an SLA "lead-overdue-staff" email exists |
 | No invoice/packing-slip PDF or CSV import | Confirmed | Only CSV/XLSX export (reports.controller.ts); order page shows VAT invoice details as text; no PDF library |
 | No conversion events (GA4/GTM/Pixel load after consent only) | Confirmed | ConsentBar.tsx loads gtag/fbq PageView only; no generate_lead / add_to_cart etc. |
-| Search→results morph and card→detail transition not built | Confirmed | No `layoutId` or View Transitions anywhere; TRACKER #52 lists the morph as after launch |
-| Lighthouse CI only warns | Confirmed | apps/web/lighthouserc.json: all assertions `"warn"` |
+| Search→results morph and card→detail transition not built | Fixed in #256 | React `ViewTransition`: components/motion/TripSummaryMorph.tsx, CardMorph.tsx; e2e/morph.spec.ts |
+| Lighthouse CI only warns | Fixed in #236 and #271 | Accessibility, best practices, SEO and CLS fail CI since #236; performance and LCP per D328 (#271) |
 | EMI calculator | Refuted (built) | site/emi/_components/EmiCalculator.tsx, lib/shop/emi.test.ts. But the P0 "Request EMI plan" form is missing (WhatsApp link only) |
 | Curated hotels (FR-HTL-02) | Confirmed missing | No hotel property collection in shared/content/registry.ts |
 | Real-time admin alerts | Partial | Bell polls every 30 s (useInboxSummary.ts); no push, no sound, no Telegram |
