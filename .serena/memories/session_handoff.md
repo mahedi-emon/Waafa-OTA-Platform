@@ -1,10 +1,25 @@
-30 Oct. Owner order D303 + D312 (live = 7af26e7; VPS-only storage; no deploys until the end; integration cards with Banglish steps + Copy + server IP + Telegram Find my group + plain Test errors).
-MERGED + closed out: #302 #303 #243 #244 #245 #246 #247 #248 #249 #250 (#315, 105 min) #251 (#316, 132 min).
-STACKED BRANCHES (each contains the previous): feat/252-sms-telegram → feat/253-couriers → feat/254-bangla → feat/255-bilingual-content. All pushed, all locally verified (unit, API 427, e2e on touched specs).
-- PR #317 (#252) in CI, only Lighthouse pending. When green: squash-merge "feat(notify): status SMS and Telegram alerts, off until keys (#317)", close-out #252 (no migration; seed patch 2026-11-05-sms-templates), Project Done (PVTI_lAHOBsdPus4BmHeEzhDZF4I), minutes into TRACKER #252 block.
-- Then for 253, 254, 255 in turn: git switch <branch>; git merge origin/main (conflicts → git checkout --ours, branch already has everything); open PR (full-ci for 253: orders; 254/255 normal unless guards demand) with Closes #n; merge when green; close-out; Project Done (253 PVTI_lAHOBsdPus4BmHeEzhDZGCM, 254 PVTI_lAHOBsdPus4BmHeEzhDZGMw, 255 PVTI_lAHOBsdPus4BmHeEzhDZGUI); later branches merge main again.
-- 255 build running for e2e bilingual.spec + bangla.spec (fixture mode). Not yet run locally: API-mode check of the editor "Bangla" section (EditorBangla) — add an admin e2e if time.
-NEXT after 255: #271 (Lighthouse 90+ and LCP 2.5 s on Home, Hotels, Blog; then perf/LCP assertions to error), #256 morph transitions, #257 admin dark mode, #258 benchmark re-run, #259 Phase D QA, release candidate (RELEASE.md from 7af26e7, upgrade rehearsal). Cut list if behind: #257 first, then #258 extras.
-Decisions logged: D323 payments, D324 SMS/Telegram, D325 Steadfast first (Pathao/RedX later), D326 Bangla (English prerendered only, Latin digits), D327 bn map per record.
-Local env: dev Postgres waafa-dev-pg :5433; API tests API_TEST_DATABASE_URL=postgresql://waafa:waafa@localhost:5433/waafa_test; API-mode e2e: source $TEMP/e2e.env.sh, node apps/api/scripts/build.mjs, apps/api: node dist/migrate.js, dist/seed.js, dist/main.js; web build with that env (~12 min). imgredis container :6390.
-Gotchas: bash heredoc → node template literal loses backslashes (regexes): use Edit tool for regex lines; after squash merges, merge main into the next stacked branch and take ours; guards forbid "Waafa's World" (straight apostrophe); CollectionPageJsonLd is async now (tests await it).
+# Session handoff (30 Oct 2026, evening)
+
+Owner order of 28 Oct (D303/D312): no deploys until the release candidate; live = 7af26e7. Deadline 13 Nov.
+Owner (30 Oct): "sob complete koro use serena" + "no CI should fail": verify locally (build in FOREGROUND with
+`timeout 590`, kill every `next start` first — a stale server corrupts .next and gives 404 chunks), Chromium + Firefox +
+WebKit before pushing.
+
+## Merged today
+#253 (#318), #254 (#319), #255 (#320), #271 + #322 (#321), #256 (#323), #257 (#324, 307 min; D330, no root :has();
+Lighthouse runner warms photos + median of 5; TBT error 300 ms, target 200).
+
+## Open
+- **#258 PR #327** (quick CI): benchmark docs + lighthouse-run `--desktop`. Merge when green, close-out, Done.
+- **feat/259-phase-d-qa** (no PR yet, needs full-ci): Firefox/WebKit projects (CROSS_BROWSER=1, 60 s timeout) + CI
+  step; bugs #325 (ContactStep uncontrolled, adopts typed text on mount; e2e early-typing) and #326 (SmartVideo joins
+  after load near viewport, HoverVideo sources on first hover; home.spec clip check); e2e errors.ts ignores WebKit's
+  aborted `_rsc` prefetch wording; whenHydrated in search/early-typing; smoke skip-link skipped on WebKit (Safari Tab);
+  docs: ADMIN_GUIDE §15, UAT U-39–42, CONTENT_READINESS.md, SUMMARY 368/319/49, PRD_COVERAGE (P0 112 done, P1 17 done),
+  RELEASE rows, TRACKER #259 block + bugs. Locally green: Chromium 217, Firefox 97, WebKit 96+1 skip, unit 746.
+
+## Next three steps
+1. Merge #327 → merge main into 259 (take ours) → PR "Closes #259, #325, #326" with full-ci → merge → close epic #31.
+2. Checkpoint to the owner (Banglish).
+3. Release candidate: tag v1.1.0-rc.1 on main; RELEASE.md final; read the tag's VPS smoke (upgrade rehearsal from
+   deploy/LIVE_RELEASE, memory/disk from measure-stack) and Docker images run; Banglish deploy steps; checkpoint.
