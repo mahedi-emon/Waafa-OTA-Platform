@@ -5,7 +5,8 @@
 //   node scripts/lighthouse-run.mjs                              starts `next start` on :3200 in apps/web (a build first)
 //                                                                behind an HTTP/2 proxy, as production serves it
 //   node scripts/lighthouse-run.mjs --base https://waafasworld.com --live   the live site, read-only (liveRoutes)
-//   options: --runs 1, --only /shop, --out apps/web/lighthouse-report, --warn (report only, never fail)
+//   options: --runs 1, --only /shop, --out apps/web/lighthouse-report, --warn (report only, never fail),
+//            --desktop (Lighthouse's desktop preset, for the competitor benchmark at wide screens, issue 258)
 import { spawn } from "node:child_process";
 import { connect } from "node:net";
 import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
@@ -21,6 +22,7 @@ const arg = (name, fallback) => {
 };
 const live = process.argv.includes("--live");
 const warnOnly = process.argv.includes("--warn");
+const desktop = process.argv.includes("--desktop");
 const local = !process.argv.includes("--base");
 const base = arg("base", "https://localhost:3443");
 const runs = Number(arg("runs", config.runs));
@@ -137,6 +139,7 @@ for (const route of routes) {
         quoteOnWindows(
           `--chrome-flags=--headless=new --no-sandbox${local ? " --ignore-certificate-errors" : ""}`,
         ),
+        ...(desktop ? ["--preset=desktop"] : []),
         "--quiet",
       ]);
       try {
@@ -181,7 +184,7 @@ const higherIsBetter = new Set(["performance", "accessibility", "best-practices"
 const misses = [];
 const warnings = [];
 const lines = [
-  `Lighthouse ${config.lighthouse}, mobile, ${base}, median of ${runs}`,
+  `Lighthouse ${config.lighthouse}, ${desktop ? "desktop" : "mobile"}, ${base}, median of ${runs}`,
   "",
   "| Route | Performance (runs) | LCP | TBT | CLS | Accessibility | Best practices | SEO |",
   "| --- | --- | --- | --- | --- | --- | --- | --- |",
