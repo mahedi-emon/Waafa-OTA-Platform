@@ -38,6 +38,17 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
+### #258 · Competitor benchmark re-run — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | PROMPT 10 letter L: re-run COMPETITOR_BENCHMARK.md against gozayaan.com, sharetrip.net, akijair.com and obokash.com at 390 and 1440 with Lighthouse; fix every axis where Waafa is not ahead |
+| Built | Lighthouse 13.5.0 on the live sites through `scripts/lighthouse-run.mjs --live` (new `--desktop` option for the 1440 view): mobile median of 3 for every site, desktop one run per competitor and median of 3 for Waafa. COMPETITOR_BENCHMARK.md §0 and TRACKER §7 hold both tables |
+| Result | Waafa (live, 7af26e7) ahead of the best competitor on every column at both widths: mobile 88 vs 40, LCP 3.3 vs 9.4 s, TBT 236 vs 706 ms, 688 KB vs 4.0 MB, 71 vs 136 requests; desktop 99 vs 85, LCP 0.7 vs 2.3 s, TBT 78 vs 82 ms; CLS 0 and SEO 100 tie at the best possible value. Nothing needed fixing; the release adds #271's gains |
+| Tests | measurement only |
+| Migration | none |
+| Tools and skills | Lighthouse runner; Playwright MCP was disconnected, so the area-by-area screens in §2 were not re-shot (patterns unchanged) |
+| PR · CI minutes | pending |
+
 ### #257 · Admin dark mode — 🟡 In review
 | Field | Value |
 | --- | --- |
