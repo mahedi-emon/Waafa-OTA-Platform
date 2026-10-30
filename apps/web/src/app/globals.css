@@ -339,6 +339,9 @@
   --color-gold-100: #3d331c;
   --color-gold-600: #e0b56b;
   --color-gold-700: #e8c482;
+  --color-midnight-950: #e6ecfa;
+  --color-whatsapp-500: #6ee0a6;
+  --color-whatsapp-700: #4fd391;
   --ribbon-soft: linear-gradient(120deg, #13234a 0%, #101a33 55%, #0f2533 100%);
   --background: #0a1120;
   --foreground: #f2f4f8;
@@ -370,6 +373,7 @@
 /* The sidebar is midnight in both themes: inside it the colours keep their light-theme values. */
 [data-sidebar="sidebar"] {
   --color-white: #ffffff;
+  --color-midnight-950: #020d39;
   --color-mist-50: #f6f8fb;
   --color-mist-300: #cdd5e2;
   --color-mist-400: #a3adbf;
