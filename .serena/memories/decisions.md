@@ -1,4 +1,8 @@
 # Decisions (full table: docs/TRACKER.md section 8)
+- D331 (#332): nginx image = alpine:3.22 + apk nginx + nginx-mod-http-brotli (official image has no Brotli); own
+  nginx.conf + entrypoint.sh (sed-renders `${SITE_DOMAIN}` only, chowns cache volume: old image's nginx uid 101, new
+  100); Brotli 5 + gzip; HTTP/3 advertised (UDP 443), never required; ClamAV stays (security). Backups: identical
+  archive → hard link; retention sorts by name (mtime lies for links); diskUsage counts inodes once.
 - D328 (#271): Partial Prefetching stays ON (off = request renders reuse build-time data → unpublished post stays
   visible); content-visibility below lg only (axe zero-size targets); gates perf 90, TBT 300 ms, LCP 3.5 s fail CI,
   TBT 200 ms and LCP 2.5 s targets (lab floor ~2.8 s; TBT swings ~100 ms per CI run); the LCP element must never fade in on first paint (product photo bug).
