@@ -4,8 +4,11 @@ import { getPathname } from "@/i18n/navigation";
 
 type LocalLinkProps = Omit<ComponentProps<"a">, "href"> & {
   href: Parameters<typeof getPathname>[0]["href"];
-  /** false: never fetched ahead (heavy pages). */
-  prefetch?: boolean | null;
+  /**
+   * false: never fetched ahead (heavy pages). "full": the page's own content is fetched ahead too, not only the route's
+   * shared shell, so a card's photo can morph into it (issue 256).
+   */
+  prefetch?: boolean | "full" | null;
   /** false: keep the scroll position (tabs and filters on the same page). */
   scroll?: boolean;
   /** Replace the history entry instead of adding one. */
@@ -26,6 +29,7 @@ async function LocalLink({ href, prefetch, scroll, replace, ...props }: LocalLin
       href={target}
       {...(external ? {} : { "data-nav": "" })}
       {...(prefetch === false ? { "data-nav-prefetch": "false" } : {})}
+      {...(prefetch === "full" ? { "data-nav-prefetch": "full" } : {})}
       {...(scroll === false ? { "data-nav-scroll": "false" } : {})}
       {...(replace ? { "data-nav-replace": "" } : {})}
       {...props}

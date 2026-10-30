@@ -74,6 +74,7 @@ async function ProductCard({
         <h3 className="line-clamp-2 text-[14.5px] leading-snug font-semibold text-ink-900">
           <Link
             href={href}
+            prefetch={morph ? "full" : undefined}
             className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
           >
             {product.title}

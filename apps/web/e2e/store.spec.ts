@@ -163,3 +163,12 @@ test.describe("store at 1440", () => {
     await expect(page.getByText("Deal", { exact: true }).first()).toBeVisible();
   });
 });
+
+// The product page's first photo is its LCP element: it paints at once, with no fade (issue 271). A photo the
+// visitor picks afterwards may fade in.
+test("the product's first photo paints without a fade", async ({ page }) => {
+  await page.goto("/shop/p/voltaro-power-bank-22-5w");
+  const photo = page.locator('main img[fetchpriority="high"]').first();
+  await expect(photo).toBeVisible();
+  await expect(photo).not.toHaveClass(/animate-in/);
+});
