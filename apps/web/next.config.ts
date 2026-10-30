@@ -19,9 +19,10 @@ const standalone = process.env.NEXT_OUTPUT === "standalone";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
-  // Partial Prefetching stays off (issue 271, D328): with it on, every streamed page is rendered twice and the second
-  // copy is embedded in the HTML, which doubled the inline payload (Home 422 KB) and the main-thread work on phones.
-  partialPrefetching: false,
+  // Partial Prefetching stays on (issue 271, D328): turning it off made request-time renders reuse the data captured at
+  // build time, so an unpublished post kept showing to visitors. Its cost (each streamed page rendered twice, the second
+  // copy embedded in the HTML) is kept small by streaming less data instead.
+  partialPrefetching: true,
   reactStrictMode: true,
   poweredByHeader: false,
   // The Docker image runs behind nginx, which compresses (deploy/nginx, issue 126); elsewhere Next does it.
