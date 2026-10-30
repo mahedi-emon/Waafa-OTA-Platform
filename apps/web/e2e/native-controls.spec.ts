@@ -30,6 +30,8 @@ test.describe("at 390", () => {
     const errors = collectErrors(page);
     await page.goto("/visa/thailand");
     const tabs = page.getByRole("tab");
+    // The tabs stream in with the visa record: wait for them before counting (count() does not wait).
+    await expect(tabs.first()).toBeVisible();
     expect(await tabs.count()).toBeGreaterThan(1);
     const first = tabs.first();
     await expect(first).toHaveAttribute("aria-selected", "true");

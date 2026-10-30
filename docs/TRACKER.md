@@ -2239,6 +2239,7 @@ competitor, median of 3 for Waafa. Waafa live = the 13 Oct line up to 7af26e7 (n
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #257 CI: the dark-theme axe sweep found the WhatsApp button (white text on whatsapp-700) below 4.5:1 on the lead board; midnight-950 and the WhatsApp greens had no dark values. The same run hit a timing flake in `native-controls.spec.ts` (counted the visa tabs before they streamed in) | P1 (a11y) / P2 (test only) | globals.css admin-dark; e2e/native-controls.spec.ts | ✅ Fixed in #324 (dark values, contrast script; the sweep now lists every miss; the test waits for the tabs) |
 | #322 Server actions failed when they read translations: `i18n/request.ts` read the locale root param, which Next refuses inside a Server Action (admin bulk steps on Leads); main's API-mode e2e red since #320 | P0 | apps/web/src/i18n/request.ts | ✅ Fixed in #321 (English fallback, unit test) |
 | #276 API-mode hero photo task flaky: continued on any level-1 heading before the editor loaded, uploaded into the first empty zone, clicked before hydration (PR #272, passed on re-run) | P1 (test only) | apps/web/e2e/admin-staff-tasks.spec.ts | ✅ Fixed in #276 (URL wait, whenHydrated, exact Photo field, preview change) |
 | #263 Hotel stay e2e checked a day the desktop calendar did not show when check-in fell near a month's end (CI on 26 Oct, check-in 31 Oct) | P2 (test only) | apps/web/e2e/search.spec.ts | ✅ Fixed in #232 (goes to the next month to check it) |
