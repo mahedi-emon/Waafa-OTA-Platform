@@ -61,7 +61,7 @@ Serena memory `audit_findings`.
 | PR · CI minutes | pending |
 | Known limits | The sign-in page and the frame's loading skeleton stay light (no session yet) |
 
-### #256 · Search → results and card → detail morphs — 🟡 In review
+### #256 · Search → results and card → detail morphs — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | PROMPT 10 letter L (#52 follow-up, D140): search card → results bar morph and card → detail transition; reduced motion instant; no long task over 50 ms |
@@ -70,7 +70,7 @@ Serena memory `audit_findings`.
 | Migration | none |
 | Decision | D329 |
 | Tools and skills | Serena, Context7 (Next view transitions, router.prefetch kinds), MOTION.md |
-| PR · CI minutes | pending |
+| PR · CI minutes | #323 · 101 min (two runs: the card pair first failed in CI and was fixed with the shared name on the loading preview) |
 
 ### #271 · Lighthouse 90+ on Home, Hotels and Blog — ✅ Done
 | Field | Value |
