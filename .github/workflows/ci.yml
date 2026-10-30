@@ -515,7 +515,7 @@ jobs:
     needs: [changes, verify]
     if: needs.changes.outputs.run == 'true' && needs.changes.outputs.full == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v7
 
@@ -532,8 +532,8 @@ jobs:
       - name: Build web
         run: pnpm --filter @waafa/web... build
 
-      # Lighthouse 13 on the 11 key routes, median of 3 (issue 236): budgets in apps/web/lighthouse.config.json fail the
-      # job, targets are warnings (D298).
+      # Lighthouse 13 on the 11 key routes, median of 5 after a warm-up (issues 236, 257): budgets in
+      # apps/web/lighthouse.config.json fail the job, targets are warnings (D298, D328).
       - name: Lighthouse
         run: node scripts/lighthouse-run.mjs
 

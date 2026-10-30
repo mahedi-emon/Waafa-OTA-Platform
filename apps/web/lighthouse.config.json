@@ -1,7 +1,7 @@
 {
-  "$comment": "Lighthouse budgets (issue 236, NFR-PERF). scripts/lighthouse-run.mjs runs each route `runs` times on a mobile profile and checks the median run: a missed budget fails CI, a missed target is a warning. Since #271 (D328) performance 90 and TBT 200 ms are budgets; LCP fails above 3.5 s and 2.5 s stays the target (the lab floor is about 2.8 s on simulated slow 4G).",
+  "$comment": "Lighthouse budgets (issue 236, NFR-PERF). scripts/lighthouse-run.mjs runs each route `runs` times on a mobile profile and checks the median run: a missed budget fails CI, a missed target is a warning. Since #271 (D328) performance 90 is a budget; TBT fails above 300 ms (200 ms target: one CI run swings by 100 ms) and LCP above 3.5 s (2.5 s target) (the lab floor is about 2.8 s on simulated slow 4G).",
   "lighthouse": "13.5.0",
-  "runs": 3,
+  "runs": 5,
   "routes": [
     "/",
     "/flights",
@@ -22,10 +22,11 @@
     "seo": 95,
     "performance": 90,
     "cumulative-layout-shift": 0.1,
-    "total-blocking-time": 200,
+    "total-blocking-time": 300,
     "largest-contentful-paint": 3500
   },
   "targets": {
+    "total-blocking-time": 200,
     "largest-contentful-paint": 2500
   }
 }
