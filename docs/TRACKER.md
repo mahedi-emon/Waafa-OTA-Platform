@@ -38,7 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #271 · Lighthouse 90+ on Home, Hotels and Blog — 🟡 In review
+### #256 · Search → results and card → detail morphs — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | PROMPT 10 letter L (#52 follow-up, D140): search card → results bar morph and card → detail transition; reduced motion instant; no long task over 50 ms |
+| Built | React 19.3 `<ViewTransition>` (no Next flag in 16.4). `components/motion/TripSummaryMorph.tsx`: the Home search card, the results summary bar and the results loading preview's bar share `trip-summary`, so the pair forms even while results stream. `CardMorph.tsx` (a small client leaf): the clicked card's photo takes the one shared name `card-photo`, which the package gallery's first photo, the product page's main photo and both pages' loading previews carry (`DetailMorph.tsx`), so the pair forms even while the page streams and a page of cards never repeats a name; cards on detail pages stay off (the main photo already has the name). Morphing cards fetch their detail page in full on hover (`prefetch="full"` → `router.prefetch(kind full)`), because the route's shared shell has no slug content. Links from Server Components navigate in a transition (NavDriver). Only the named element travels; the root does not cross-fade (the page enter stays); reduced motion is instant |
+| Tests | e2e `morph.spec.ts` (names recorded at `startViewTransition`, skipped in browsers without the API); QA plan `docs/qa/256-morphs.md` |
+| Migration | none |
+| Decision | D329 |
+| Tools and skills | Serena, Context7 (Next view transitions, router.prefetch kinds), MOTION.md |
+| PR · CI minutes | pending |
+
+### #271 · Lighthouse 90+ on Home, Hotels and Blog — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | Owner's order of 28 Oct, step 12: Home, Hotels and Blog to Lighthouse 90+ and LCP 2.5 s, then the performance and LCP assertions become errors (D298) |
@@ -48,7 +59,7 @@ Serena memory `audit_findings`.
 | Migration | none |
 | Decision | D328 |
 | Tools and skills | Serena, Context7 (Partial Prefetching), Lighthouse runner, Next source (InitialRSCPayload `p`) |
-| PR · CI minutes | pending |
+| PR · CI minutes | #321 · 190 min (two full runs: the API-mode e2e found #322 and the Partial Prefetching regression) |
 
 ### #255 · Bilingual content fields — ✅ Done
 | Field | Value |
@@ -2183,6 +2194,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 | D320 | 29 Oct | CSV import (products, group fares, compatible models) merges each line into the saved record and saves through the normal editor save, so rules, History, audit and cache stay one path; the whole file is refused while any line has a problem; it never deletes; products update existing products and variants only (new ones need photos, added in the editor). Invoices are drawn from the order's price snapshot; the seller block shows only the name and contacts (no licence or ID numbers), the customer's BIN only when they asked for a VAT invoice; the VAT amount shows only when Admin sets a rate (no invented number) | Owner order step 8; CLAUDE.md "Never show licence or ID numbers" | #248 |
 | D322 | 29 Oct | Partial capture keeps step 1 in its own table (`LeadDraft`), not as a half-valid lead: leads keep one strict contract, and the Incomplete queue, its retention (30 days) and its single reminder stay separate. It is opt-in on step 1 (consent, PRD FR-FLT-08), shown to staff only after 30 minutes, and the full request completes it in the same transaction, so there is never a duplicate. The reminder links only to a path on this site | Owner order step 9; PRD §13 privacy | #250 |
 | D321 | 29 Oct | Curated hotels are a content list with their own pages; Request booking reuses the hotel request (/hotels?hotel=&room=) instead of a second form, so one lead flow and one set of rules; the hotel fields ride along only while the place still names the hotel. Amenities are a fixed list (icons and words in code and messages) so cards stay consistent; prices are "from" per night and labelled indicative. Sample hotels use real Unsplash room, lobby and pool photos (no renders) and say they are samples | Owner order step 9; FR-HTL-02; CLAUDE.md media and "never fake live availability" | #249 |
+| D329 | 30 Oct | Shared-element morphs use React `ViewTransition` pairs, not Motion `layoutId`: they work across routes without a persistent layout and cost no JavaScript on first load. The pair needs the destination ready in the same commit, so the results loading preview carries the trip-summary name and morphing cards prefetch their detail page in full; only one element per page may carry a name, so a card takes the shared name only when clicked, and cards on detail pages stay off | MOTION.md "Search → results" and "Shared image card → detail"; Next 16.4 docs | #256 |
 | D328 | 30 Oct | Partial Prefetching stays on. Off, it halves the HTML of streamed pages (/hotels 595 → 355 KB) and lifts /hotels to 94, but request-time renders then reuse build-time data, so an unpublished post kept showing to visitors (API-mode e2e): correctness first. Long pages use content-visibility below lg only (axe reads skipped blocks as zero-size targets on wide screens). LCP stays at 2.7–3.1 s under Lighthouse's simulated slow 4G because ~470 KB arrive first (document ~90 KB, the one stylesheet ~38 KB, two fonts ~75 KB, React and the router ~200 KB); after CI confirmed every key route at 92–96, performance 90 and TBT 200 ms became budgets, LCP fails above 3.5 s and 2.5 s stays the target | Owner order step 12; measured locally and in CI; PRD content safety | #271 |
 | D327 | 30 Oct | Bangla content is one optional `bn` map per record (field path → text) instead of a second field beside every English one: one schema change for 23 collections, one editor section for all of them, and the site's fallback is automatic (a missing path shows the English). Only fields visitors read are offered; ids, links, enums, prices and dates never change with the language. The overlay runs in the data layer, so no page or component changes | Owner order step 11; PRD FR-GLB-07 | #255 |
 | D326 | 30 Oct | Bangla ships as a full second locale at /bn with English unprefixed. Only English is prerendered: Bangla pages render on their first visit and are cached, which keeps the build time and the web image near today's size; budgets stay measured on English. Digits, prices (৳ with lakh grouping), phone numbers and dates stay in Latin digits as most Bangladeshi commerce sites do, and brand names stay in Latin letters (CLAUDE.md). The admin and llms.txt stay English. The UI copy was translated in four parallel passes with automatic checks; a native-speaker review is on the owner's UAT list (U-38) | Owner order step 11; PRD FR-GLB-07, NFR-L10N; CLAUDE.md "brand names stay in Latin letters" | #254 |
@@ -2194,6 +2206,7 @@ SEO · LCP. Detail: `docs/design/COMPETITOR_BENCHMARK.md`.
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #322 Server actions failed when they read translations: `i18n/request.ts` read the locale root param, which Next refuses inside a Server Action (admin bulk steps on Leads); main's API-mode e2e red since #320 | P0 | apps/web/src/i18n/request.ts | ✅ Fixed in #321 (English fallback, unit test) |
 | #276 API-mode hero photo task flaky: continued on any level-1 heading before the editor loaded, uploaded into the first empty zone, clicked before hydration (PR #272, passed on re-run) | P1 (test only) | apps/web/e2e/admin-staff-tasks.spec.ts | ✅ Fixed in #276 (URL wait, whenHydrated, exact Photo field, preview change) |
 | #263 Hotel stay e2e checked a day the desktop calendar did not show when check-in fell near a month's end (CI on 26 Oct, check-in 31 Oct) | P2 (test only) | apps/web/e2e/search.spec.ts | ✅ Fixed in #232 (goes to the next month to check it) |
 | #232 Customer files (visa documents, payment slips, attachments, feedback photo) never left the browser; staff got only the file names (Phase A rule D87/D106/D109 never lifted). Found in the #231 audit | P0 | forms, API | Fixed in #232 (private storage, signed links, e2e) |

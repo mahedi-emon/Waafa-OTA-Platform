@@ -10,6 +10,7 @@ import { flyToCart } from "@/lib/shop/flyToCart";
 import { formatTaka, whatsappLink, type Product, type ShippingZone } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { SmartImage } from "@/components/media/SmartImage";
+import { DetailMorph } from "@/components/motion/DetailMorph";
 import { StockBadge } from "@/components/shop/StockBadge";
 import { useCart } from "@/components/shop/useCart";
 import { recordView } from "@/components/shop/useRecentlyViewed";
@@ -161,46 +162,48 @@ function ProductView({
         className="flex flex-col gap-3 lg:sticky lg:top-[calc(var(--hdr-h)+16px)] lg:self-start"
       >
         {shown ? (
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setZoom(photo)}
-              aria-label={`${t("product.zoom")}: ${shown.alt}`}
-              className="group relative block w-full cursor-zoom-in overflow-hidden rounded-[20px] bg-mist-50 outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
-            >
-              <SmartImage
-                key={shown.src}
-                src={shown.src}
-                alt={shown.alt}
-                ratio="1/1"
-                preload
-                sizes="(min-width: 1024px) 560px, 100vw"
-                frameClassName="bg-mist-50"
-                className={cn(
-                  "object-contain p-6",
-                  picked && "animate-in duration-300 fade-in-0 motion-reduce:animate-none",
-                )}
-              />
-              <span
-                aria-hidden="true"
-                className="absolute right-3 bottom-3 grid size-10 place-items-center rounded-full bg-white/90 text-navy-900 shadow-xs"
+          <DetailMorph>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setZoom(photo)}
+                aria-label={`${t("product.zoom")}: ${shown.alt}`}
+                className="group relative block w-full cursor-zoom-in overflow-hidden rounded-[20px] bg-mist-50 outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
               >
-                <Expand className="size-4" />
+                <SmartImage
+                  key={shown.src}
+                  src={shown.src}
+                  alt={shown.alt}
+                  ratio="1/1"
+                  preload
+                  sizes="(min-width: 1024px) 560px, 100vw"
+                  frameClassName="bg-mist-50"
+                  className={cn(
+                    "object-contain p-6",
+                    picked && "animate-in duration-300 fade-in-0 motion-reduce:animate-none",
+                  )}
+                />
+                <span
+                  aria-hidden="true"
+                  className="absolute right-3 bottom-3 grid size-10 place-items-center rounded-full bg-white/90 text-navy-900 shadow-xs"
+                >
+                  <Expand className="size-4" />
+                </span>
+              </button>
+              <span className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
+                {showPrice && price.percentOff > 0 ? (
+                  <span className="rounded-full bg-danger-600 px-2.5 py-1 text-[12px] font-bold text-white tabular-nums">
+                    {t("card.off", { percent: price.percentOff })}
+                  </span>
+                ) : null}
+                {product.badges[0] ? (
+                  <span className="rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
+                    {t(`badges.${product.badges[0]}`)}
+                  </span>
+                ) : null}
               </span>
-            </button>
-            <span className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
-              {showPrice && price.percentOff > 0 ? (
-                <span className="rounded-full bg-danger-600 px-2.5 py-1 text-[12px] font-bold text-white tabular-nums">
-                  {t("card.off", { percent: price.percentOff })}
-                </span>
-              ) : null}
-              {product.badges[0] ? (
-                <span className="rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
-                  {t(`badges.${product.badges[0]}`)}
-                </span>
-              ) : null}
-            </span>
-          </div>
+            </div>
+          </DetailMorph>
         ) : null}
         {images.length > 1 ? (
           <ul className="flex gap-2 overflow-x-auto">

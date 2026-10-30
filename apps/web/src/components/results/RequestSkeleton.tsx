@@ -1,4 +1,5 @@
 import { LeadCardHeader } from "@/components/leads/LeadCardHeader";
+import { TripSummaryMorph } from "@/components/motion/TripSummaryMorph";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type RequestSkeletonProps = {
@@ -13,7 +14,9 @@ type RequestSkeletonProps = {
 function RequestSkeleton({ card }: RequestSkeletonProps) {
   return (
     <div className="flex flex-col gap-6" aria-hidden="true">
-      <Skeleton className="h-[72px] rounded-2xl" />
+      <TripSummaryMorph>
+        <Skeleton className="h-[72px] rounded-2xl" />
+      </TripSummaryMorph>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[264px_minmax(0,1fr)] xl:gap-8">
           <Skeleton className="hidden h-[420px] rounded-2xl xl:block" />

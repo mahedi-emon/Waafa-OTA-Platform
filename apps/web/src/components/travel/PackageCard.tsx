@@ -5,8 +5,14 @@ import { HoverVideo } from "@/components/media/HoverVideo";
 import { SmartImage } from "@/components/media/SmartImage";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { CardFx } from "@/components/fx/CardFx";
+import { CardMorph } from "@/components/motion/CardMorph";
 
-type PackageCardProps = { pkg: TourPackage; sizes?: string };
+type PackageCardProps = {
+  pkg: TourPackage;
+  sizes?: string;
+  /** The photo grows into the detail page's main photo (issue 256); only where the package appears once. */
+  morph?: boolean;
+};
 
 /**
  * Tour package card (DESIGN.md "Cards"): cover, places, title, what is included, nights and "from ৳ per person,
@@ -16,6 +22,7 @@ type PackageCardProps = { pkg: TourPackage; sizes?: string };
 async function PackageCard({
   pkg,
   sizes = "(min-width: 1280px) 300px, (min-width: 768px) 45vw, 80vw",
+  morph = false,
 }: PackageCardProps) {
   const t = await getTranslations("Home.packages");
   const tag = pkg.tags[0];
@@ -23,7 +30,7 @@ async function PackageCard({
   return (
     <CardFx tilt spotlight className="rounded-2xl">
       <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-xs transition-shadow duration-200 hover:shadow-md">
-        <div className="relative">
+        <CardMorph enabled={morph} className="relative">
           <SmartImage
             src={pkg.cover.src}
             focal={pkg.cover.focal}
@@ -39,12 +46,13 @@ async function PackageCard({
               {t(`tags.${tag}`)}
             </span>
           ) : null}
-        </div>
+        </CardMorph>
         <div className="flex flex-1 flex-col gap-2 p-4">
           <p className="text-[13px] font-medium text-brand-700">{pkg.placesLabel}</p>
           <h3 className="font-display text-[17px] leading-snug font-bold text-navy-900">
             <Link
               href={`/tour-packages/${pkg.slug}`}
+              prefetch={morph ? "full" : undefined}
               className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
             >
               {pkg.title}

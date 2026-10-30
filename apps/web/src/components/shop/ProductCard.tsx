@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { formatTaka, whatsappLink, type Product } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { SmartImage } from "@/components/media/SmartImage";
+import { CardMorph } from "@/components/motion/CardMorph";
 import { LocalLink as Link } from "@/components/nav/LocalLink";
 import { getContactSettings } from "@/lib/data/settings";
 import { MAX_LINE_QTY } from "@/lib/shop/cart";
@@ -13,6 +14,8 @@ type ProductCardProps = {
   product: Product;
   brandName?: string;
   sizes?: string;
+  /** The photo grows into the product page's main photo (issue 256); only where the product appears once. */
+  morph?: boolean;
 };
 
 /**
@@ -24,6 +27,7 @@ async function ProductCard({
   product,
   brandName,
   sizes = "(min-width: 1024px) 220px, 45vw",
+  morph = false,
 }: ProductCardProps) {
   const [t, contact] = await Promise.all([getTranslations("Shop"), getContactSettings()]);
   const showPrice = product.showPrice;
@@ -40,15 +44,17 @@ async function ProductCard({
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white transition-shadow duration-200 hover:shadow-md">
       <div className="relative">
         {image ? (
-          <SmartImage
-            src={image.src}
-            alt={image.alt}
-            ratio="1/1"
-            sizes={sizes}
-            frameClassName="bg-mist-50"
-            className="object-contain p-4"
-            zoomOnHover
-          />
+          <CardMorph enabled={morph}>
+            <SmartImage
+              src={image.src}
+              alt={image.alt}
+              ratio="1/1"
+              sizes={sizes}
+              frameClassName="bg-mist-50"
+              className="object-contain p-4"
+              zoomOnHover
+            />
+          </CardMorph>
         ) : null}
         <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
           {showPrice && price.percentOff > 0 && !hasOptions ? (
@@ -68,6 +74,7 @@ async function ProductCard({
         <h3 className="line-clamp-2 text-[14.5px] leading-snug font-semibold text-ink-900">
           <Link
             href={href}
+            prefetch={morph ? "full" : undefined}
             className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
           >
             {product.title}

@@ -231,7 +231,11 @@ async function ProductListing({
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
               {page.items.map((product) => (
                 <li key={product.id}>
-                  <ProductCard product={product} brandName={names.get(product.brandId) ?? ""} />
+                  <ProductCard
+                    product={product}
+                    brandName={names.get(product.brandId) ?? ""}
+                    morph
+                  />
                 </li>
               ))}
             </ul>

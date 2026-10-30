@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import type { HomeSection } from "@waafa/shared";
+import { TripSummaryMorph } from "@/components/motion/TripSummaryMorph";
 import { SearchCard } from "@/components/search/SearchCard";
 import { getMediaSlot } from "@/lib/data/content";
 import {
@@ -53,7 +54,11 @@ async function HomeSections() {
               phoneE164: contact.phoneE164,
               pendingLabel: tLayout("checkingHours"),
             }}
-            search={<SearchCard source="home" />}
+            search={
+              <TripSummaryMorph>
+                <SearchCard source="home" />
+              </TripSummaryMorph>
+            }
           />
         );
       case "trust":

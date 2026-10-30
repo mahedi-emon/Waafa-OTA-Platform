@@ -294,6 +294,7 @@ async function PackageResults({ searchParams }: { searchParams: Promise<Params> 
                   <PackageCard
                     pkg={pkg}
                     sizes="(min-width: 1280px) 300px, (min-width: 640px) 45vw, 92vw"
+                    morph
                   />
                 </li>
               ))}
