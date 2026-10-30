@@ -1,5 +1,16 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { adminThemeCookie, parseAdminTheme } from "./adminTheme";
+
+const css = readFileSync(fileURLToPath(new URL("../../app/globals.css", import.meta.url)), "utf8");
+
+describe("admin dark theme CSS", () => {
+  it("is scoped to the attribute and never uses :has() (it slowed every public page, issue 257)", () => {
+    expect(css).not.toMatch(/:root:has\(/);
+    expect(css).toMatch(/\[data-admin-theme="dark"\]\s*\{\s*@apply admin-dark;/);
+  });
+});
 
 describe("admin theme", () => {
   it("reads the saved choice and falls back to light", () => {
