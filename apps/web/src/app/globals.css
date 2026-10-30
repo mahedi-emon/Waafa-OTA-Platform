@@ -380,6 +380,17 @@
 }
 
 /*
+ * Below-the-fold blocks (issue 271): the browser skips their style, layout and paint until they come near the
+ * viewport, which keeps a long page's first load light on phones. `auto` remembers the real height once rendered, so
+ * the scrollbar settles; the content stays in the accessibility tree and find-in-page. Used below lg only: axe reads
+ * skipped blocks as zero-size targets on wide screens, where the first load is not the bottleneck.
+ */
+@utility paint-when-near {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
+/*
  * Headline word reveal (MOTION.md "Headline word reveal"): each word rises 0.35 em and fades in, 60 ms apart, in
  * CSS so it never waits for hydration. Set `--i` (word index) on each word. Reduced motion shows the words at once.
  */

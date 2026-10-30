@@ -5,14 +5,13 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { formatDate, formatTaka, type FlightSearch, type GroupFare } from "@waafa/shared";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { GroupFaresRail } from "@/components/results/GroupFaresRail";
-import { LeadCardHeader } from "@/components/leads/LeadCardHeader";
 import { HelpCard } from "@/components/results/HelpCard";
 import { LivePlaceholder } from "@/components/results/LivePlaceholder";
+import { RequestSkeleton } from "@/components/results/RequestSkeleton";
 import { ResultsBody } from "@/components/results/ResultsBody";
 import { RouteArc } from "@/components/motion/RouteArc";
 import { TripSummaryBar } from "@/components/results/TripSummaryBar";
 import { DeferredSearchCard } from "@/components/search/DeferredSearchCard";
-import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessages } from "@/i18n/pickMessages";
 import {
   getContactSettings,
@@ -204,40 +203,6 @@ async function FlightsResults({
   );
 }
 
-type FlightsSkeletonProps = {
-  card: { kicker: string; title: string; lead: string; badges: string[] };
-};
-
-/**
- * While the results stream: the summary bar and preferences as skeletons, and the request card with its real header,
- * so the page's largest text is in the first HTML and the card does not jump when the form arrives (issue 170).
- */
-function FlightsSkeleton({ card }: FlightsSkeletonProps) {
-  return (
-    <div className="flex flex-col gap-6" aria-hidden="true">
-      <Skeleton className="h-[72px] rounded-2xl" />
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[264px_minmax(0,1fr)] xl:gap-8">
-          <Skeleton className="hidden h-[420px] rounded-2xl xl:block" />
-          <div className="flex min-w-0 flex-col gap-4">
-            <Skeleton className="h-11 w-44 rounded-xl xl:hidden" />
-            <div className="overflow-hidden rounded-[20px] border border-mist-200 bg-white shadow-sm">
-              <LeadCardHeader {...card} />
-              <div className="flex flex-col gap-4 px-5 py-6 md:px-7">
-                <Skeleton className="h-8 w-48 rounded-full" />
-                <Skeleton className="h-12 rounded-xl" />
-                <Skeleton className="h-12 rounded-xl" />
-                <Skeleton className="h-12 rounded-xl" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <Skeleton className="hidden h-[360px] rounded-2xl lg:block" />
-      </div>
-    </div>
-  );
-}
-
 /** /flights (Flights, Flights-m boards): the results shell with the Manual request; Live arrives in Phase E. */
 export default async function FlightsPage({ searchParams }: PageProps<"/[locale]/flights">) {
   const [t, tLeads] = await Promise.all([getTranslations("Flights"), getTranslations("Leads")]);
@@ -251,7 +216,7 @@ export default async function FlightsPage({ searchParams }: PageProps<"/[locale]
     <main id="main" className="site-container flex flex-col gap-4 pt-4 pb-28 md:pt-6">
       <Breadcrumbs items={[{ label: t("breadcrumb") }]} />
       <h1 className="sr-only">{t("card.title")}</h1>
-      <Suspense fallback={<FlightsSkeleton card={card} />}>
+      <Suspense fallback={<RequestSkeleton card={card} />}>
         <FlightsResults searchParams={searchParams} />
       </Suspense>
       <PopularRoutes />
