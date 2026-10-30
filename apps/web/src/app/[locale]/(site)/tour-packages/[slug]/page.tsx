@@ -10,6 +10,7 @@ import { SampleBadge } from "@/components/content/SampleBadge";
 import { SectionHeading } from "@/components/content/SectionHeading";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SmartImage } from "@/components/media/SmartImage";
+import { DetailMorph } from "@/components/motion/DetailMorph";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { PackageCard } from "@/components/travel/PackageCard";
@@ -183,7 +184,7 @@ async function PackagePageContent({
         <PhotoGallery
           images={images}
           title={pkg.title}
-          morphName={`package-${pkg.slug}`}
+          morph
           labels={{
             all: t("detail.photos", { count: images.length }),
             gallery: t("detail.gallery"),
@@ -574,7 +575,9 @@ export default function PackagePage({ params }: PageProps<"/[locale]/tour-packag
           className="site-container flex min-h-dvh flex-col gap-6 pt-4 pb-28 md:pt-6"
         >
           <Skeleton className="h-5 w-56 rounded-full" />
-          <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
+          <DetailMorph>
+            <Skeleton className="h-[320px] rounded-[20px] md:h-[440px]" />
+          </DetailMorph>
           <Skeleton className="h-10 w-3/4 rounded-xl" />
           <Skeleton className="h-[480px] rounded-2xl" />
         </main>
