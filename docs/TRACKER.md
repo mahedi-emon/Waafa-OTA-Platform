@@ -49,7 +49,7 @@ Serena memory `audit_findings`.
 | Tools and skills | Lighthouse runner; Playwright MCP was disconnected, so the area-by-area screens in §2 were not re-shot (patterns unchanged) |
 | PR · CI minutes | pending |
 
-### #257 · Admin dark mode — 🟡 In review
+### #257 · Admin dark mode — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | PROMPT 10 letter L: admin-only dark theme from tokens (public site stays light), contrast checked, axe on every admin route in both themes |
@@ -58,7 +58,7 @@ Serena memory `audit_findings`.
 | Migration | none |
 | Decision | D330 |
 | Tools and skills | Serena, Context7 (Tailwind v4 @utility/@apply), contrast script in place of ui-color-palette (not installed this session) |
-| PR · CI minutes | pending |
+| PR · CI minutes | #324 · 307 min (four full runs: the dark axe sweep found the WhatsApp/midnight contrast, the first theme selector raised TBT on public pages, then two Lighthouse noise misses fixed with the warm-up and a median of 5) |
 | Known limits | The sign-in page and the frame's loading skeleton stay light (no session yet) |
 
 ### #256 · Search → results and card → detail morphs — ✅ Done
