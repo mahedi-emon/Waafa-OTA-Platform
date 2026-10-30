@@ -56,6 +56,7 @@ async function PackageCard({
           <h3 className="font-display text-[17px] leading-snug font-bold text-navy-900">
             <Link
               href={`/tour-packages/${pkg.slug}`}
+              prefetch={morph ? "full" : undefined}
               className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
             >
               {pkg.title}
