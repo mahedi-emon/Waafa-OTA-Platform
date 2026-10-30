@@ -295,11 +295,11 @@
 }
 
 /*
- * Admin dark theme (issue 257). The admin frame carries data-admin-theme from the staff member's choice; while it says
- * "dark" (or "system" on a dark device) the WAAFA colours take their dark values on the whole document, so dialogs,
- * menus and toasts rendered in portals follow. Pairs swap together (white surface ↔ navy text), so a filled button
- * with white text stays readable. Every text colour on every dark surface passes WCAG AA (4.5:1). The public site never
- * has the attribute and stays light.
+ * Admin dark theme (issue 257). The admin frame carries data-admin-theme from the staff member's choice, and <html>
+ * gets it after hydration so dialogs, menus and toasts in portals follow. While it says "dark" (or "system" on a dark
+ * device) the WAAFA colours take their dark values inside it. No root-level has() selector: it made public pages
+ * slower. Pairs swap together (white surface ↔ navy text), so a filled button with white text stays readable. Every
+ * text colour on every dark surface passes WCAG AA (4.5:1). The public site never has the attribute and stays light.
  */
 @utility admin-dark {
   color-scheme: dark;
@@ -362,11 +362,11 @@
   --input: #35435f;
   --ring: #6b9bff;
 }
-:root:has([data-admin-theme="dark"]) {
+[data-admin-theme="dark"] {
   @apply admin-dark;
 }
 @media (prefers-color-scheme: dark) {
-  :root:has([data-admin-theme="system"]) {
+  [data-admin-theme="system"] {
     @apply admin-dark;
   }
 }
