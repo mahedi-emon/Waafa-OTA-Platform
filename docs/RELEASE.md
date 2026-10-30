@@ -119,6 +119,9 @@ copy for them. Optional new `.env` lines: `BACKUP_CRON=off` (no cron), `BACKUP_K
 | Online payment (SSLCommerz, bKash, Nagad) | Admin › Integrations › Payments (#251) | save Sandbox keys and test first; checkout offers a gateway only when it is On, in Live mode, with Live keys; then do the ৳10 test (UAT U-35). No migration |
 | Status SMS and Telegram alerts | Admin › Integrations › SMS and Alerts (#252); SMS texts in Settings › Forms and messages | SMS: save the keys, Test, Send a test SMS, turn On. Telegram: create the bot, add it to the group, write a message, Find my group, Save, Test, turn On (UAT U-36). No migration |
 | Courier booking (Steadfast) | Admin › Integrations › Couriers (#253) | save the keys, Test, paste the Callback URL and Auth token into Steadfast's webhook settings, turn On (UAT U-37). No migration |
+| Bangla site at /bn | automatic (#254) | none; the language switch is in the header, phone menu and footer. Staff add Bangla text per record in each editor's Bangla section; the list filter "Bangla missing" shows what is left (#255, UAT U-38, U-39). No migration |
+| Admin dark theme | each person's account menu › Theme (#257) | none; light stays the default, the website is always light |
+| Lighthouse gates | CI (#271) | none on the server; performance 90, TBT 200 ms and LCP 3.5 s now fail CI |
 
 ## Keys to enter in Admin › Integrations (all off until saved)
 

@@ -1,4 +1,15 @@
 # Decisions (full table: docs/TRACKER.md section 8)
+- D328 (#271): Partial Prefetching stays ON (off = request renders reuse build-time data → unpublished post stays
+  visible); content-visibility below lg only (axe zero-size targets); gates perf 90, TBT 300 ms, LCP 3.5 s fail CI,
+  TBT 200 ms and LCP 2.5 s targets (lab floor ~2.8 s; TBT swings ~100 ms per CI run); the LCP element must never fade in on first paint (product photo bug).
+- D329 (#256): React ViewTransition pairs: `trip-summary` (Home card, TripSummaryBar, RequestSkeleton bar);
+  `card-photo` set only on the clicked card (CardMorph client leaf, flushSync before NavDriver's startTransition),
+  carried by DetailMorph on the detail photo and the detail loading preview; morph cards prefetch kind full.
+- D330 (#257): admin dark = remap colour vars in `@utility admin-dark` applied on `[data-admin-theme=dark]` (frame from
+  the server, <html> after hydration for portals; NEVER `:root:has()` — it raised TBT on every public page), cookie
+  waafa_admin_theme, sidebar keeps light vars; every
+  filled colour with white text needs a dark value (WhatsApp greens, midnight added after CI's axe sweep).
+- Bug #322: next/root-params throws in Server Actions; i18n/request.ts falls back to English.
 - D323–D327 (30 Oct): payments trust only the gateway's answer; SMS status-only (ASCII "WAAFA:"), Telegram plain text without phone/email; Steadfast first (Pathao/RedX later), webhook token = HMAC of PROVIDER_SECRET_KEY; Bangla at /bn, English prerendered only, Latin digits, admin English; one optional `bn` map per record with overlay in the data layer.
 - D1–D63: see TRACKER (planning, design system, MotionKit, search card, Back restore, pickers lazy).
 - D64–D124: see TRACKER (home, flights/hotels Manual, packages, visa, store, cart/checkout, service pages, info pages,

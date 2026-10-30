@@ -23,11 +23,11 @@ Paths: `web/` = `apps/web/src/`, `site/` = `apps/web/src/app/[locale]/(site)/`, 
 
 | Priority | Rows | Status |
 | --- | --- | --- |
-| P0 (launch) | 116 | done 103 · partial 12 · missing 0 · waiting for owner account 1 |
-| P1 (Phase D, due 13 Nov) | 17 | done 2 · partial 8 · missing 5 · waiting for owner account 2 |
+| P0 (launch) | 116 | done 112 · partial 3 (two Phase E live-price rows, NFR-PERF lab LCP) · missing 0 · waiting for owner account 1 (NFR-OPS) |
+| P1 (Phase D, due 13 Nov) | 17 | done 17 (online pay, SMS, Telegram and couriers built and off until the owner's keys) |
 | P2 (Phase E, live booking) | 8 | missing 8 |
 | P3 (scale) | 1 | missing 1 |
-| All | 142 | done 105 · partial 20 · missing 14 · waiting for owner account 3 |
+| All | 142 | done 129 · partial 3 · missing 9 (Phase E and scale) · waiting for owner account 1 (counted 30 Oct, #259) |
 
 **P0 not done (fixed first):** customer files never leave the browser (visa documents, payment proof, printing and
 trading attachments, feedback photo: the Phase A rule D87/D106/D109 was never lifted) → #232; visa status email never
@@ -130,7 +130,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-SHOP-10 | P0 | Stock per variant drops on order, returns on cancel; low-stock alerts | done | api/public/intake.service.ts (low-stock-staff when a variant reaches lowStockAt); apps/api/test/public.test.ts | — | #233 |
 | FR-SHOP-11 | P0 | Printing Solutions page + quote form PRN-… with attachment | done | site/shop/printing-solutions; components/services/PrintingRequest.tsx | — | #232 |
 | FR-SHOP-12 | P0 | Trading page + RFQ form TRD-… with attachments | done | site/shop/international-trading; TradingRequest.tsx | — | #232 |
-| FR-SHOP-13 | P1 | Reviews, wishlist, save for later, campaign pages, flash sales, Q&A, Buy again, online pay | partial | reviews (delivered orders only) and moderated Q&A with Product AggregateRating from approved reviews (#245); wishlist (#278); Save for later in the cart and Buy again on delivered or shipped orders at today's prices (components/shop/SavedForLater.tsx, lib/shop/buyAgain.ts, e2e/cart-saved.spec.ts, #246); campaign pages /shop/campaign/[slug] and flash sales (deal start + stock cap enforced by the API: api/public/intake.service.ts soldAtDealPrice, shared dealsWithinCap, api/test/flashSales.test.ts, e2e/campaign.spec.ts, #247) | — (online pay built in #251, waits for the owner's keys) | — |
+| FR-SHOP-13 | P1 | Reviews, wishlist, save for later, campaign pages, flash sales, Q&A, Buy again, online pay | done (online pay off until keys) | reviews (delivered orders only) and moderated Q&A with Product AggregateRating from approved reviews (#245); wishlist (#278); Save for later in the cart and Buy again on delivered or shipped orders at today's prices (components/shop/SavedForLater.tsx, lib/shop/buyAgain.ts, e2e/cart-saved.spec.ts, #246); campaign pages /shop/campaign/[slug] and flash sales (deal start + stock cap enforced by the API: api/public/intake.service.ts soldAtDealPrice, shared dealsWithinCap, api/test/flashSales.test.ts, e2e/campaign.spec.ts, #247) | — (online pay built in #251, waits for the owner's keys) | — |
 | FR-SHOP-14 | P1 | Courier booking/tracking (Steadfast/Pathao/RedX) + SMS on dispatch | done for Steadfast, waiting for keys | api/couriers/steadfast.ts, couriers.service.ts (book, webhook, 30-minute check), web /api/couriers/[courier]/webhook, OrderSteps Book with; SMS on dispatch via order-status-sms (#252); api/test/couriers.test.ts | Pathao and RedX booking after their accounts (D325) | #253 |
 | FR-SHOP-15 | P3 | Corporate accounts, negotiated price lists, VAT invoices | missing | — | Phase 3 | Phase 3 (later) |
 
@@ -139,7 +139,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
 | FR-GAL | P0 | Albums, masonry, lightbox, video embeds, admin bulk upload → WebP/AVIF | done | site/gallery, site/gallery/[slug]; media/PhotoLightbox.tsx; admin/media/MediaDropzone.tsx | — | — |
-| FR-FDB | P0 | Approved-only wall, rating summary, Turnstile submit, moderation | partial | site/feedback/_components/FeedbackForm.tsx; adm/feedback | Photo now stored privately (#232); an approved photo is not yet shown on the wall | #245 |
+| FR-FDB | P0 | Approved-only wall, rating summary, Turnstile submit, moderation | done | site/feedback/_components/FeedbackForm.tsx; adm/feedback; photos stored privately (#232) and shown on the wall only after approval (#245, UAT U-24) | — | — |
 | FR-TEAM | P0 | Team section/grid, initials, bento/carousel, admin order/featured/3:4 crop | done | components/team/TeamCard.tsx; content `team` (showOnHome/About, featured); ImageCropDialog 3:4 | — | — |
 | FR-PAGE Refund/Privacy/Terms | P0 | Rich-text policy pages with last-updated date | done | site/{refund-policy,privacy-policy,terms-and-conditions}; PolicyPage.tsx | — | — |
 | FR-PAGE Baggage | P0 | Searchable admin baggage table with disclaimer | done | site/baggage-information/_components/BaggageTable.tsx | — | — |
@@ -191,7 +191,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM Group fares | P0 | Create, edit, auto-expire | done | content `groupFares`; scheduler.service.ts expiresAt | — (P1 CSV import done in #248) | #248 |
 | FR-ADM Tour packages | P0 | Rich editor, day builder, price table, departures, SEO, draft/publish, duplicate | done | adm/content/[key]/[id] package editor (#198); e2e/admin-editors.spec.ts | — (P1 scheduled publishing done, #194) | — |
 | FR-ADM Visa | P0 | Countries/types/checklist/fees; pipeline with document viewer, notifying statuses | done | adm/visa-applications; VisaProgressPanel.tsx; Files panel (#232); status emails (#233) | — | #233 |
-| FR-ADM Shop | P0 | Products/variants/attributes/tree/brands/collections, compat CSV, orders, zones, coupons | partial | adm/orders, adm/content/{products,categories,…}; admin/orders.service.ts | — (compatibility, product and group fare CSV import, invoice and packing slip PDFs in #248) | #248 |
+| FR-ADM Shop | P0 | Products/variants/attributes/tree/brands/collections, compat CSV, orders, zones, coupons | done | adm/orders, adm/content/{products,categories,…}; admin/orders.service.ts; CSV import with preview for products, group fares and compatible models, invoice and packing slip PDFs (#248) | — | — |
 | FR-ADM Content | P0 | Pages, blog, FAQs, banners, home order, gallery, team, menus, baggage, EMI banks | done | adm/content/*, adm/website/{home,menus}, adm/feedback | P1 redirect manager: automatic slug redirects only (#194) | — |
 | FR-ADM Media | P0 | Uploads with required alt text and optimisation | done | adm/media; api/media/media.service.ts (sharp); e2e/admin-media.spec.ts | — (P1 usage tracking done) | — |
 | FR-ADM Customers | P0 | Unified list, profile with history, notes, tags, export | done | adm/customers, adm/customers/[phone]; api/admin/customers.service.ts ; notes, tags, CSV export, merge and unmerge (api/admin/customerProfiles.service.ts, adm/customers/[phone]/_components/CustomerExtras.tsx, api/test/customersRoles.test.ts, #244) | — | #244 |
@@ -199,7 +199,7 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | FR-ADM Reports | P0 | Leads by module/status/agent/source, response, sales, visa, CSV | done | adm/reports; api/admin/reports.service.ts (CSV + XLSX); apps/api/test/reports.test.ts ; by agent, by source (#237), visa cases by stage and country, daily and weekly summary emails (api/admin/summaryReports.service.ts, #244) | — | #244, #237 |
 | FR-ADM Users | P0 | Invite, roles, deactivate, reset password, login history | done | adm/users; api/admin/users.service.ts; invite.controller.ts; api/auth/twoStep.service.ts (history, two-step reset) ; custom roles with the permission matrix (api/admin/customRoles.service.ts, auth.service effectiveRoles, adm/users CustomRolesPanel, #244) | — | #244 |
 | FR-ADM Settings | P0 | General, footer, modes, payments/COD, shipping, recipients+templates, lead form, maintenance | done | adm/settings/[section]; Staff alerts in Forms and messages (#233) | — | #233 |
-| FR-ADM later P1 | P1 | Leaderboard, funnel, CSV imports, invoices/slips, review moderation, SMS, merge, campaigns, scheduled reports, custom roles | partial | done: scheduled publishing, media usage, encrypted creds, report date ranges; by-agent report and funnel, customer merge, scheduled summaries, custom roles (#244); review moderation (#245); campaigns (#247); CSV imports and invoice / packing slip PDFs (#248) | SMS (#252) | #252 |
+| FR-ADM later P1 | P1 | Leaderboard, funnel, CSV imports, invoices/slips, review moderation, SMS, merge, campaigns, scheduled reports, custom roles | done (SMS off until keys) | done: scheduled publishing, media usage, encrypted creds, report date ranges; by-agent report and funnel, customer merge, scheduled summaries, custom roles (#244); review moderation (#245); campaigns (#247); CSV imports and invoice / packing slip PDFs (#248) | — (status SMS built in #252, waits for the owner's keys) | — |
 | FR-ADM later P2 | P2 | Full ticketing, refund and reconciliation operations | missing | — | Phase 2 | Phase E (#32) |
 | FR-ADM security | P0 | Hidden admin path, noindex, lockout 5/15 min, audit with before/after | done | secure-admin-control/layout.tsx (noindex); api/auth/auth.service.ts (LOCK_MINUTES); AuditLog; e2e/admin-path.spec.ts | — | — |
 | FR-ADM 2FA | P1 | TOTP login, mandatory for Super Admin and Admin | done | api/auth/{totp,auth.service,twoStep.service}.ts; sign-in/_components/{CodeStep,EnrolStep,SavedStep}.tsx; adm/account; e2e/admin-two-step.spec.ts; test/twoStep.test.ts | — | #234 |
@@ -209,13 +209,13 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 
 | ID | Priority | Requirement | Status | Evidence | Missing | Issue |
 | --- | --- | --- | --- | --- | --- | --- |
-| NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial | e2e/budget.spec.ts (31 routes ≤ 200 KB); scripts/lighthouse-run.mjs + apps/web/lighthouse.config.json (CI errors on a11y/BP/SEO/CLS); TRACKER #236 | 8 of 11 key routes at 90+ (Home 87, Hotels 86, Blog 88); lab LCP 2.6 to 4.0 s; performance and LCP are CI warnings (D298) | #271 |
+| NFR-PERF | P0 | LCP ≤ 2.5 s, INP, CLS; LH 90+; first-load JS ≤ 200 KB; RSC, next/image, fonts | partial (lab LCP) | e2e/budget.spec.ts (31 routes ≤ 200 KB); scripts/lighthouse-run.mjs + apps/web/lighthouse.config.json (median of 5 after a warm-up); CI Lighthouse mobile: all 11 key routes 92–96, A11y/BP/SEO 100, CLS 0 (#271, #324); performance 90, TBT 300 ms and LCP 3.5 s fail CI (D328); competitor benchmark (#258): ahead on every column | Lab LCP 2.7–3.0 s on simulated slow 4G (~470 KB before LCP: document, one stylesheet, two fonts, React); the 2.5 s target is a CI warning; field LCP is measured after the release (Search Console, UAT U-42) | — |
 | NFR-SEC | P0 | OWASP, argon2id, tokens, CSRF, Redis limits, CSP, encryption, scans, backups | done | lead limit 5/min per address (web) and 10 (API) + rateLimit.test; CSP exception in docs/SECURITY.md; daily backups and monthly drill (deploy/backup.sh, cron by deploy.sh); off-site copy via the R2/B2 card (api/offsite.ts); Turnstile from Admin (#284) | — | #239, #284 |
 | NFR-SEO | P0 | SSR titles, canonical, JSON-LD, split sitemap, OG images, llms.txt, GA4/GTM/Pixel events | done | sitemap index (app/sitemap.xml + app/sitemap/[part]); visa share cards app/og/visa; consented events lib/analytics/track.ts + components/analytics/EventBridge.tsx; UTM in proxy (lib/analytics/attribution.ts); e2e seo.spec, api-mode.spec | — | #237, #287 |
 | NFR-A11Y | P0 | WCAG 2.2 AA: contrast, focus, keyboard, labels, 44 px, skip link, reduced motion | done | skip link in app/[locale]/layout.tsx; AxeBuilder in 24 e2e specs | — | — |
 | NFR-OPS | P0 | 99.5% uptime, /health + /ready, Sentry, request-ID logs, envs, migrations, DLQ | waiting for owner account | /health, /ready; Settings › System status (api/admin/status.service.ts); dead-letter list with Retry/Discard; error tracking to Sentry or GlitchTip from the Admin card (common/errorReporter.ts), off until the DSN; disk/memory alerts; staging bundle deploy/staging | Sentry or GlitchTip DSN and an uptime monitor account (owner); browser-side errors not sent (200 KB budget) | #238, #239 |
 | NFR-L10N | P0 (Bangla P1) | English strings in next-intl from day one; Dhaka time; dates; ৳ lakh | done | apps/web/messages/en.json + bn.json; shared/format | — | #254 (Bangla) |
-| NFR-COMP | P0 | Last two versions of major browsers; Android 9+; layouts from 320 px | partial | e2e/public-screens.spec.ts (320–1440) | Only Chromium is tested; no Safari/Firefox/Samsung runs | #259 |
+| NFR-COMP | P0 | Last two versions of major browsers; Android 9+; layouts from 320 px | done | e2e/public-screens.spec.ts (320–1440); Firefox and WebKit projects (`CROSS_BROWSER=1`) run the key visitor flows in the full suite (playwright.config.ts, ci.yml, #259) | Samsung Internet is Chromium-based (covered by Chromium); no real-device lab | — |
 | NFR-LEGAL | P0 | Privacy, terms, refund, contact live; consent on forms; analytics notice | done | policy pages; components/forms/ConsentField.tsx; components/analytics/ConsentBar.tsx | — | — |
 
 ## Gaps the owner listed (PROMPT 10)
@@ -231,8 +231,8 @@ conversion events and one sitemap → #237; no error tracking → #238; Chromium
 | No quote builder, reminders, round-robin, partial capture (FR-FLT-08) | Quote builder fixed in #298 | Reminders, round-robin and partial capture still missing (#243); only an SLA "lead-overdue-staff" email exists |
 | No invoice/packing-slip PDF or CSV import | Confirmed | Only CSV/XLSX export (reports.controller.ts); order page shows VAT invoice details as text; no PDF library |
 | No conversion events (GA4/GTM/Pixel load after consent only) | Confirmed | ConsentBar.tsx loads gtag/fbq PageView only; no generate_lead / add_to_cart etc. |
-| Search→results morph and card→detail transition not built | Confirmed | No `layoutId` or View Transitions anywhere; TRACKER #52 lists the morph as after launch |
-| Lighthouse CI only warns | Confirmed | apps/web/lighthouserc.json: all assertions `"warn"` |
+| Search→results morph and card→detail transition not built | Fixed in #256 | React `ViewTransition`: components/motion/TripSummaryMorph.tsx, CardMorph.tsx; e2e/morph.spec.ts |
+| Lighthouse CI only warns | Fixed in #236 and #271 | Accessibility, best practices, SEO and CLS fail CI since #236; performance and LCP per D328 (#271) |
 | EMI calculator | Refuted (built) | site/emi/_components/EmiCalculator.tsx, lib/shop/emi.test.ts. But the P0 "Request EMI plan" form is missing (WhatsApp link only) |
 | Curated hotels (FR-HTL-02) | Confirmed missing | No hotel property collection in shared/content/registry.ts |
 | Real-time admin alerts | Partial | Bell polls every 30 s (useInboxSummary.ts); no push, no sound, no Telegram |

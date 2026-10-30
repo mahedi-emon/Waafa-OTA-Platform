@@ -38,7 +38,18 @@ Serena memory `audit_findings`.
 
 ## 2. Issue log
 
-### #258 · Competitor benchmark re-run — 🟡 In review
+### #259 · Phase D QA and close-out — 🟡 In review
+| Field | Value |
+| --- | --- |
+| Asked | PROMPT 10 letter M and the owner's order of 28 Oct, step 14: Chromium, Firefox and WebKit; every flow on phone and desktop; PRD_COVERAGE, UAT, ADMIN_GUIDE, DEPLOY current; content-readiness checklist |
+| Built | Firefox and WebKit projects (`CROSS_BROWSER=1`, a minute per test) run the key visitor specs (smoke, home, search, flights, hotels, packages, visa, store, payments, bangla, morph) in the full suite (main, nightly, full-ci). ADMIN_GUIDE §15 (Phase D features in Banglish), UAT U-39–U-42, `docs/qa/CONTENT_READINESS.md` (P0/P1 lists for staff, FR-CAT-06 real stock), QA summary, RELEASE rows, PRD_COVERAGE (NFR-COMP done, NFR-PERF evidence) |
+| Found and fixed | #325 (P1): a visitor's typing before hydration was wiped from the request forms' step 1, so step 2 never came on a slow phone; #326 (P2): clips with sources in the page held WebKit's load event. Test-side: WebKit's aborted-prefetch wording, hydration waits, Safari's Tab skipping links |
+| Tests | Locally on one build: Chromium 217 passed (145 API-mode skipped), Firefox 97 of 97, WebKit 96 + 1 skipped (Safari Tab); unit 746; e2e `early-typing.spec.ts` (#325) and Home's clip check (#326) |
+| Migration | none |
+| Tools and skills | Serena (edits), Playwright (Firefox, WebKit), Context7 |
+| PR · CI minutes | pending |
+
+### #258 · Competitor benchmark re-run — ✅ Done
 | Field | Value |
 | --- | --- |
 | Asked | PROMPT 10 letter L: re-run COMPETITOR_BENCHMARK.md against gozayaan.com, sharetrip.net, akijair.com and obokash.com at 390 and 1440 with Lighthouse; fix every axis where Waafa is not ahead |
@@ -47,7 +58,7 @@ Serena memory `audit_findings`.
 | Tests | measurement only |
 | Migration | none |
 | Tools and skills | Lighthouse runner; Playwright MCP was disconnected, so the area-by-area screens in §2 were not re-shot (patterns unchanged) |
-| PR · CI minutes | pending |
+| PR · CI minutes | #327 · 6 min |
 
 ### #257 · Admin dark mode — ✅ Done
 | Field | Value |
@@ -2239,6 +2250,8 @@ competitor, median of 3 for Waafa. Waafa live = the 13 Oct line up to 7af26e7 (n
 
 | Issue | Severity | Where | Status |
 | --- | --- | --- | --- |
+| #325 Request forms' step 1 lost what a visitor typed before the page hydrated (controlled inputs reset at hydration); step 2 never appeared. Found by the first WebKit run | P1 (lead capture) | apps/web/src/components/leads/ContactStep.tsx | ✅ Fixed in #259 (uncontrolled fields adopted on mount; e2e early-typing) |
+| #326 Clips with sources in the page (SmartVideo below the fold, HoverVideo) held WebKit's load event on Home | P2 | components/media/SmartVideo.tsx, HoverVideo.tsx | ✅ Fixed in #259 (clips join after load, near the viewport or on hover; e2e) |
 | #257 CI: the dark-theme axe sweep found the WhatsApp button (white text on whatsapp-700) below 4.5:1 on the lead board; midnight-950 and the WhatsApp greens had no dark values. The same run hit a timing flake in `native-controls.spec.ts` (counted the visa tabs before they streamed in) | P1 (a11y) / P2 (test only) | globals.css admin-dark; e2e/native-controls.spec.ts | ✅ Fixed in #324 (dark values, contrast script; the sweep now lists every miss; the test waits for the tabs) |
 | #322 Server actions failed when they read translations: `i18n/request.ts` read the locale root param, which Next refuses inside a Server Action (admin bulk steps on Leads); main's API-mode e2e red since #320 | P0 | apps/web/src/i18n/request.ts | ✅ Fixed in #321 (English fallback, unit test) |
 | #276 API-mode hero photo task flaky: continued on any level-1 heading before the editor loaded, uploaded into the first empty zone, clicked before hydration (PR #272, passed on re-run) | P1 (test only) | apps/web/e2e/admin-staff-tasks.spec.ts | ✅ Fixed in #276 (URL wait, whenHydrated, exact Photo field, preview change) |
@@ -2332,6 +2345,7 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 
 | Date and time | Summary | Issues | PRs | Tests |
 | --- | --- | --- | --- | --- |
+| 30 Oct (day) | #253–#255 merged. #271 merged (#321, 190 min): all 11 key routes 92–96 in CI, gates to errors (D328); the API-mode e2e caught #322 (main red since #320) and the Partial Prefetching regression. #256 merged (#323, 101 min). #257 admin dark mode in CI (#324). #258 benchmark re-run (ahead on every column at 390 and 1440). #259: Firefox and WebKit in the full suite, staff guide, UAT U-39–U-42, content-readiness list, QA summary, release note rows. Local builds were stopped twice by the memory reaper | #253–#259 #271 #322 | #318–#321 #323 #324 | CI Lighthouse 92–96; e2e morph, store, admin-dark; unit request, adminTheme |
 | 30 Oct | #250 merged (#315, 105 min), #251 (#316, 132 min), #252 (#317, 67 min). #253 Steadfast built (PR #318). #254 Bangla at /bn (2,380 strings by four parallel translation passes, switch, hreflang, sitemap) and #255 bilingual content (bn map, overlay, editor section, Bangla missing filter) built and pushed | #250–#255 | #315–#318 | API 427, web 740, shared 176, e2e bangla 35 + bilingual + couriers + payments |
 | 29 Oct (night) | #249 PR #314 in CI. #250 partial lead capture built (LeadDraft, step 1 opt-in, Incomplete requests page, one reminder, purge); PR opened with full-ci | #249 #250 | #314 | API DB 5, e2e partial-capture 2 |
 | 29 Oct (late) | #249 merged (#314, 62 min). #250 in CI (#315). #251 online payments built (three gateway adapters, start/confirm, refunds, checkout options, result page, integration setup guides with Copy and server IP) | #249 #250 #251 | #314 #315 | API unit 8, API DB 3, e2e payments 6 |
@@ -2410,10 +2424,12 @@ never into chat, code or the repository. Each Phase D adapter ships switched off
 ## 14. Next steps
 
 Owner's order of 28 Oct (D303, D312). One issue per PR; start the next while CI runs.
-1. ✅ #302, #303, #243, #244, #245, #246, #247.
-2. ✅ #248 (#313). Checkpoint to the owner given after #248.
-3. ✅ #249 (#314), #250 (#315), #251 (#316), #252 (#317). Checkpoint with the accounts to open given 30 Oct.
-4. 🟡 #253 PR #318 in CI (full-ci). Ready and pushed, stacked: feat/254-bangla (#254), feat/255-bilingual-content (#255):
-   after each merge, merge main into the next branch (take ours), open its PR, merge when green.
-5. Then #271 (Lighthouse 90+ and LCP 2.5 s on Home, Hotels, Blog; assertions to error), #256 / #257 / #258, #259
-   (checkpoint), release candidate (RELEASE.md from 7af26e7, upgrade rehearsal). Cut first if behind: #257, then #258 extras.
+1. ✅ #302, #303, #243–#255, #271 (#321), #256 (#323).
+2. 🟡 #257 PR #324 in CI (full-ci). Stacked and pushed: feat/258-benchmark (#258, docs and the runner's --desktop),
+   feat/259-phase-d-qa (#259: cross-browser CI, guide, UAT, content readiness, QA summary, release rows). After each
+   merge, merge main into the next branch (take ours), open its PR, merge when green. #259 runs full-ci (the new Firefox
+   and WebKit step must pass); then close epic #31 with zero open P0/P1 bugs.
+3. Checkpoint to the owner after #259.
+4. Release candidate: tag `v1.1.0-rc.1` on main; RELEASE.md from 7af26e7 final; the upgrade rehearsal and the
+   memory and disk numbers come from the tag's VPS deploy smoke and Docker images run; Banglish deploy steps.
+   Checkpoint.

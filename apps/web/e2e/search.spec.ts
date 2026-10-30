@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { collectErrors } from "./errors";
+import { whenHydrated } from "./hydration";
 
 /*
  * Unified search card (A8): each tab submits to the right URL, pickers open as sheets on phones and popovers on
@@ -247,6 +248,7 @@ test.describe("desktop (1440)", () => {
 
   test("works by keyboard: tabs with arrows, pickers with Enter and Escape", async ({ page }) => {
     await page.goto("/");
+    await whenHydrated(page.getByRole("tab", { name: "Flight" }));
     await page.getByRole("tab", { name: "Flight" }).focus();
     await page.keyboard.press("ArrowRight");
     await expect(page.getByRole("tab", { name: "Hotel" })).toHaveAttribute("aria-selected", "true");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { cn } from "cn";
 import { canAutoplayVideo, type ConnectionInfo } from "./videoPolicy";
 
@@ -18,6 +19,9 @@ type HoverVideoProps = {
 function HoverVideo({ sources, className }: HoverVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
+  // The clip's sources are attached on the first hover. With sources in the page, WebKit keeps the page's load event
+  // waiting on every card clip even with preload="none" (issue 259), and no browser needs them before a hover.
+  const [armed, setArmed] = useState(false);
 
   useEffect(() => {
     const video = ref.current;
@@ -31,7 +35,11 @@ function HoverVideo({ sources, className }: HoverVideoProps) {
       );
     const enter = (event: PointerEvent) => {
       if (event.pointerType !== "mouse" || !allowed()) return;
-      // preload="none": the first play is the first byte downloaded.
+      if (!video.querySelector("source")) {
+        flushSync(() => setArmed(true));
+        video.load();
+      }
+      // The first play is the first byte downloaded.
       video.play().then(
         () => setPlaying(true),
         () => setPlaying(false),
@@ -64,8 +72,8 @@ function HoverVideo({ sources, className }: HoverVideoProps) {
         className,
       )}
     >
-      {sources.webm ? <source src={sources.webm} type="video/webm" /> : null}
-      <source src={sources.mp4} type="video/mp4" />
+      {armed && sources.webm ? <source src={sources.webm} type="video/webm" /> : null}
+      {armed ? <source src={sources.mp4} type="video/mp4" /> : null}
     </video>
   );
 }

@@ -1,4 +1,8 @@
 # Progress (newest first; mirror of docs/TRACKER.md header + session log)
+- 2026-10-30 (day) — #253 (#318, 68), #254 (#319, 11), #255 (#320, 10), #271 + bug #322 (#321, 190; all 11 key
+  routes 92–96 in CI, perf 90/TBT 200/LCP 3.5 s gates, D328), #256 morphs (#323, 101; D329) merged. #257 admin dark
+  (#324, full-ci, D330) re-running after the dark sweep found WhatsApp/midnight contrast. #258 benchmark re-run and #259
+  QA docs + Firefox/WebKit CI step pushed (stacked). Next: merge 257→258→259, close epic #31, release candidate.
 - 2026-10-30 — #250 (#315, 105 min), #251 online payments (#316, 132), #252 SMS + Telegram (#317, 67) merged.
   #253 Steadfast in CI (PR #318). #254 Bangla at /bn and #255 bilingual content built, pushed (stacked branches).
   Checkpoint with the accounts to open given. Next: merge 253→254→255, then #271, #256–#258, #259, release candidate.

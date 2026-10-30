@@ -257,6 +257,11 @@ jobs:
       - name: Install Playwright browser
         run: pnpm --filter @waafa/web exec playwright install --with-deps chromium
 
+      # Firefox and WebKit for the cross-browser run (NFR-COMP, issue 259), full suite only.
+      - name: Install Firefox and WebKit
+        if: env.FULL == 'true'
+        run: pnpm --filter @waafa/web exec playwright install --with-deps firefox webkit
+
       - name: E2E smoke (home at five widths, axe, keyboard)
         if: env.FULL != 'true'
         working-directory: apps/web
@@ -266,6 +271,14 @@ jobs:
         if: env.FULL == 'true'
         working-directory: apps/web
         run: pnpm exec playwright test
+
+      # The key visitor flows in Firefox and WebKit (NFR-COMP, issue 259).
+      - name: E2E Firefox and WebKit (key flows)
+        if: env.FULL == 'true'
+        working-directory: apps/web
+        env:
+          CROSS_BROWSER: "1"
+        run: pnpm exec playwright test --project=firefox --project=webkit --workers=2
 
       # A22 QA (#22): every public route at five widths; screenshots at 390 and 1440 for the design review.
       - name: Public screens at five widths

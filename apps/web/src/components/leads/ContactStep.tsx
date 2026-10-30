@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FormField } from "@/components/forms/FormField";
@@ -50,6 +50,20 @@ function ContactStep({
   const inputs = useRef<Partial<Record<Field, HTMLInputElement | null>>>({});
   // The newest values for checks that resolve after a later keystroke; every change writes it before setValues.
   const latest = useRef(defaultValues);
+
+  // The text fields are uncontrolled, so words typed before the page finished loading survive hydration (a slow phone,
+  // or WebKit in tests, issue 259); they join the form's values here.
+  useEffect(() => {
+    const typed: Partial<ContactStepValues> = {};
+    for (const field of ORDER) {
+      const value = inputs.current[field]?.value;
+      if (value !== undefined && value !== latest.current[field]) typed[field] = value;
+    }
+    if (Object.keys(typed).length === 0) return;
+    const next = { ...latest.current, ...typed };
+    latest.current = next;
+    setValues(next);
+  }, []);
 
   async function check(next: ContactStepValues) {
     const { contactStepSchema } = await import("@/lib/leads/contactForm");
@@ -138,7 +152,7 @@ function ContactStep({
             aria-required="true"
             aria-invalid={errors.name ? true : undefined}
             aria-describedby={describedBy}
-            value={values.name}
+            defaultValue={defaultValues.name}
             onChange={(event) => change("name", event.target.value)}
             onBlur={() => blur("name")}
           />
@@ -173,7 +187,7 @@ function ContactStep({
             }}
             inputProps={{
               name: "phone",
-              value: values.phone,
+              defaultValue: defaultValues.phone,
               onChange: (event) => change("phone", event.target.value),
               onBlur: () => blur("phone"),
               "aria-required": true,
@@ -208,7 +222,7 @@ function ContactStep({
             aria-required={emailRequired || undefined}
             aria-invalid={errors.email ? true : undefined}
             aria-describedby={describedBy}
-            value={values.email}
+            defaultValue={defaultValues.email}
             onChange={(event) => change("email", event.target.value)}
             onBlur={() => blur("email")}
           />

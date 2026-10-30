@@ -80,21 +80,46 @@ function SmartVideo({
     () => false,
   );
   const [playing, setPlaying] = useState(false);
-  const [engaged, setEngaged] = useState(!preloadPoster);
+  // The <video> element joins the page only after it has loaded and only near the viewport: a clip never competes
+  // with the page's own load (WebKit held the load event on clips with preload="none", issue 259), and a clip
+  // nobody scrolls to downloads nothing. The hero waits for the visitor's first move instead (D173).
+  const [engaged, setEngaged] = useState(false);
   // A dynamic value from the data layer, so it is the one inline style here.
   const position = objectPositionOf(focal);
   const placed = position ? { objectPosition: position } : undefined;
 
   useEffect(() => {
     if (engaged || !allowed) return;
-    const engage = () => setEngaged(true);
-    for (const type of ENGAGE_EVENTS) {
-      window.addEventListener(type, engage, { once: true, passive: true });
+    if (preloadPoster) {
+      const engage = () => setEngaged(true);
+      for (const type of ENGAGE_EVENTS) {
+        window.addEventListener(type, engage, { once: true, passive: true });
+      }
+      return () => {
+        for (const type of ENGAGE_EVENTS) window.removeEventListener(type, engage);
+      };
     }
-    return () => {
-      for (const type of ENGAGE_EVENTS) window.removeEventListener(type, engage);
+    const container = containerRef.current;
+    if (!container) return;
+    let observer: IntersectionObserver | null = null;
+    const watch = () => {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry?.isIntersecting) return;
+          observer?.disconnect();
+          setEngaged(true);
+        },
+        { rootMargin: "200px" },
+      );
+      observer.observe(container);
     };
-  }, [engaged, allowed]);
+    if (document.readyState === "complete") watch();
+    else window.addEventListener("load", watch, { once: true });
+    return () => {
+      window.removeEventListener("load", watch);
+      observer?.disconnect();
+    };
+  }, [engaged, allowed, preloadPoster]);
 
   useEffect(() => {
     const container = containerRef.current;

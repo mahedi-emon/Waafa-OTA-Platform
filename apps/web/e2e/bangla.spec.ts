@@ -54,8 +54,12 @@ for (const route of ROUTES) {
 test("the language switch goes between the two versions of a page", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/tour-packages");
-  await page.getByRole("banner").getByRole("link", { name: /বাংলা/ }).click();
-  await expect(page).toHaveURL(/\/bn\/tour-packages$/);
+  // The switch links to the other language's home until hydration fills in the current page.
+  const switchLink = page.getByRole("banner").getByRole("link", { name: /বাংলা/ });
+  await expect(switchLink).toHaveAttribute("href", "/bn/tour-packages");
+  await switchLink.click();
+  // Bangla pages render on their first visit (D326), so the first one can take a while.
+  await expect(page).toHaveURL(/\/bn\/tour-packages$/, { timeout: 15_000 });
   await expect(page.locator("html")).toHaveAttribute("lang", "bn");
   await page
     .getByRole("banner")

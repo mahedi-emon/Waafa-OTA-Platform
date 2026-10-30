@@ -2,6 +2,13 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 const isCI = Boolean(process.env.CI);
+/**
+ * Firefox and WebKit (NFR-COMP, issue 259): the visitor flows that matter most, in the full suite only
+ * (`CROSS_BROWSER=1`, main, nightly and full-ci), so the default run stays Chromium.
+ */
+const crossBrowser = process.env.CROSS_BROWSER === "1";
+const CROSS_BROWSER_SPECS =
+  /[\\/](smoke|home|search|flights|hotels|packages|visa|store|payments|bangla|morph)\.spec\.ts$/;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -21,6 +28,23 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/staff-device.json" },
       dependencies: ["setup"],
     },
+    ...(crossBrowser
+      ? [
+          // Their drivers are slower than Chromium's: a minute per test instead of 30 s.
+          {
+            name: "firefox",
+            use: { ...devices["Desktop Firefox"] },
+            testMatch: CROSS_BROWSER_SPECS,
+            timeout: 60_000,
+          },
+          {
+            name: "webkit",
+            use: { ...devices["Desktop Safari"] },
+            testMatch: CROSS_BROWSER_SPECS,
+            timeout: 60_000,
+          },
+        ]
+      : []),
   ],
   // Runs against the production build (`pnpm build` first), the way visitors get it.
   webServer: {
