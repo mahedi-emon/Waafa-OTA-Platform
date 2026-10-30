@@ -38,16 +38,18 @@ test("Dark from the account menu applies at once, is remembered and every admin 
     "dark",
   );
 
+  // Every route is checked before failing, so one run lists every contrast miss.
+  const misses: string[] = [];
   for (const route of [...ADMIN_SCREENS.map((screen) => screen.path), ...ADMIN_ROUTES]) {
     await page.goto(route);
     await expect(page.locator('[data-admin-theme="dark"]'), route).toHaveCount(1);
     await expect(page.getByRole("heading", { level: 1 }).first(), route).toBeVisible();
     const axe = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
-    expect(
-      axe.violations.map((violation) => `${violation.id}: ${violation.nodes[0]?.target.join(" ")}`),
-      `${route} axe in the dark theme`,
-    ).toEqual([]);
+    for (const violation of axe.violations)
+      for (const node of violation.nodes)
+        misses.push(`${route} ${violation.id}: ${node.target.join(" ")}`);
   }
+  expect(misses, "axe in the dark theme").toEqual([]);
   await page.screenshot({ path: "test-results/admin-shots/dark-dashboard-1440.png" });
 
   // The public site never takes the admin theme.
