@@ -98,10 +98,26 @@ if (local) {
     if (ok && (await portOpen(3443))) break;
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  // Warm the server so the first run doesn't measure a cold render.
-  for (const route of routes)
+  // Warm the server so the first run doesn't measure a cold render, nor the image optimizer's first encode of each
+  // preloaded photo (seconds on a CI runner, issue 257): the page, then every width its LCP photo offers, asked for
+  // with Chrome's Accept header so the same AVIF file is cached.
+  for (const route of routes) {
     // codeql[js/file-access-to-http] The routes come from this repository's own config and only reach localhost.
-    await fetch(`${origin}${route}`).catch(() => undefined);
+    const html = await fetch(`${origin}${route}`)
+      .then((response) => response.text())
+      .catch(() => "");
+    const sets = [...html.matchAll(/<link[^>]+rel="preload"[^>]+imageSrcSet="([^"]+)"/gi)].map(
+      (m) => m[1],
+    );
+    const urls = sets.flatMap((set) =>
+      set.split(",").map((candidate) => candidate.trim().split(" ")[0].replaceAll("&amp;", "&")),
+    );
+    for (const url of urls)
+      // codeql[js/file-access-to-http] Image URLs from the local page above; localhost only.
+      await fetch(new URL(url, origin), {
+        headers: { accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8" },
+      }).catch(() => undefined);
+  }
 }
 
 const audit = (report, id) => report.audits[id]?.numericValue ?? 0;
