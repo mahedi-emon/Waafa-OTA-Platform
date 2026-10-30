@@ -9,7 +9,7 @@ one release at the end. Every PR that changes what the deploy does adds its line
 | | Release | Commit | How we know |
 | --- | --- | --- | --- |
 | Live on the server | `7af26e7` (Docker images run #30, PR #187, 14 Oct) with the 13 Oct `deploy/server` bundle | api and worker `sha256:b52c4bb564fa37ee3b778b1dee49835823b89aed5eea30d84159c3745c61a8e1`, web `sha256:023a177a453ff445457cca56b5f6f5cbe5cf378d5521518c7aa5376da49d3e6a` (tags `api-7af26e7`, `web-7af26e7`) | Owner, 28 Oct (D312); `deploy/LIVE_RELEASE` = `7af26e7`, so the upgrade rehearsal starts there, and Docker Hub never deletes it |
-| This release | the release candidate tag (step 15) | `main` at tagging time | — |
+| This release | `v1.1.0-rc.1` (#329) | `main` at the tag; code as of `fac3fb1` (#328), the tag adds only this note | Upgrade rehearsal in the Docker images run for `fac3fb1` (30 Oct): `7af26e7 → fac3fb1` passed with seeded data; the full suite (Chromium, Firefox, WebKit, API mode, Lighthouse, VPS smoke) green on #328 and on `main` |
 
 ## Database migrations, in order (all additive)
 
@@ -50,16 +50,18 @@ release that grows past the budget (`scripts/measure-stack.sh`).
 
 | Image | Live (`7af26e7`) | Before #303 (`8694513`) | This release | Budget |
 | --- | --- | --- | --- | --- |
-| api (also the worker) | 2.07 GB | 1.82 GB | 182 MB | 400 MB |
-| web | 571 MB | 599 MB | 321 MB | 500 MB |
+| api (also the worker) | 2.07 GB | 1.82 GB | 183 MB | 400 MB |
+| web | 571 MB | 599 MB | 312 MB | 500 MB |
 | nginx | 74 MB | 74 MB | 45 MB | 100 MB |
 
 API: Alpine with only the node binary, one compiled bundle (Nest, Prisma client and query compiler included), five
 packages that must stay on disk (sharp, argon2, pdfkit, bullmq, ioredis), no package manager, no Prisma CLI, no
 TypeScript. Web: Alpine with only the node binary and the traced standalone server; about 110 MB of it is the
 prerendered pages (62 MB of them prefetch segments), which keep every page instant, so the owner's 250 MB target is not
-met (D313). Memory in the VPS smoke with ClamAV loaded: api 101 MB, worker 69, web 105, postgres 52, redis 4, nginx 6,
-certbot 2, clamav 952: the whole stack 1.29 GB.
+met (D313). Memory on the rehearsal stack for `fac3fb1` (Docker images run, 30 Oct, `scripts/measure-stack.sh`, ClamAV loaded): api
+107 MB, worker 73, web 108, postgres 32, redis 4, nginx 6, certbot 2, clamav 951: the whole stack 1,282 MB in use
+(budget 3 GB), so an 8 GB VPS keeps about 6 GB free. Disk: our three images take 540 MB; what the database, uploads,
+backups and caches use on the server shows in Admin › Settings › System status after the deploy.
 
 ## New or changed containers
 
@@ -131,13 +133,38 @@ Pathao, RedX. Each card links to where its keys come from.
 
 ## Deploy steps (the release day)
 
-```sh
-cd /opt/waafa
-sh backup.sh                 # database and media backup first
-# copy the changed deploy/server files (see above)
-sh check.sh                  # settings check
-sh deploy.sh                 # pulls the images, runs migrations and seed patches, restarts
-```
+Everything below is on the server, as the owner, in this order. Nothing else needs editing: outside services are
+turned on later in Admin › Integrations.
 
-Then: sign in to Admin, set up two-step, open Integrations and check each card's chip; walk through
-[qa/UAT.md](qa/UAT.md).
+1. Back up first (this release has database migrations):
+
+   ```sh
+   cd /opt/waafa
+   sh backup.sh
+   ```
+
+2. Copy the three changed `deploy/server` files from the tag (the curl loop in "Server bundle changes" above, with
+   `TAG=v1.1.0-rc.1` and a read-only token).
+
+3. Check the settings, then deploy:
+
+   ```sh
+   sh check.sh                  # settings check; fix what it names
+   sh deploy.sh                 # pulls the images, runs the migrations and seed patches, restarts, installs the backup cron
+   ```
+
+   ClamAV downloads its signatures on the first start (a few minutes); file scans wait until it is ready.
+
+4. First sign-in: open `https://waafasworld.com/secure-admin-control`, sign in as Super Admin, scan the QR code with an
+   authenticator app, save the ten recovery codes somewhere safe. Every Admin account does the same at its first sign-in.
+
+5. In Admin: Settings › System status (everything green, the running release shows `fac3fb1` or newer), then
+   Integrations (each card's chip; Turnstile and measurement moved there by themselves), then the settings in "Settings
+   that moved or are new" above.
+
+6. Walk through [qa/UAT.md](qa/UAT.md) on a phone and a laptop, and give the staff
+   [qa/CONTENT_READINESS.md](qa/CONTENT_READINESS.md).
+
+Roll back if something is wrong: put back the three files the copy saved as `*.before-v1.1.0-rc.1`, restore the backup
+from step 1 (DEPLOY.md, "Restore"), then `IMAGE_TAG=7af26e7 sh deploy.sh`. The 7af26e7 images expect the old bundle and
+the old database, so all three go back together.
