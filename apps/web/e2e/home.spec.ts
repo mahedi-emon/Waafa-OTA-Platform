@@ -99,3 +99,17 @@ test.describe("home at 1440", () => {
     expect(errors).toEqual([]);
   });
 });
+
+// Clips join the page after it has loaded, near the viewport or on a hover: with sources in the page, WebKit held the
+// page's load event on every clip even with preload="none" (issue 259).
+test("clips load nothing while the page loads, and the page finishes loading", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.addEventListener("load", () => {
+      document.documentElement.dataset.clipSourcesAtLoad = String(
+        document.querySelectorAll("main video source").length,
+      );
+    });
+  });
+  await page.goto("/", { waitUntil: "load" });
+  await expect(page.locator("html")).toHaveAttribute("data-clip-sources-at-load", "0");
+});
