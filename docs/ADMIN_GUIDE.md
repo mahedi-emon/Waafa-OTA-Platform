@@ -166,3 +166,47 @@ ek minute-er moddhe site-e pouche jay, redeploy lage na.
 - Lal lekhay bola thake ki korte hobe, **Try again** button thake.
 - "We can't find this" mane record nei (Trash-e dekhun).
 - Somossa thakle screenshot niye admin-ke pathan.
+
+## 15. Notun ja ache (Phase D, release-er sathe)
+
+**Leads ar team**
+- **Bell ar chime**: notun request ele kichu second-er moddhe bell-e ase, halka shobdo hoy. Bell-e "Sound for new
+  alerts" diye shobdo bondho kora jay.
+- **Paloa paloi lead**: Users-e "Takes new leads in turn" on korle notun lead ekjon ekjon kore sales staff-er kache
+  jay. Office bondho thakle lead opekkha kore, khular por jay.
+- **@ mention ar reminder**: note-e @ likhe colleague bachhun, tini bell-e paben. "Remind me" diye somoy dile
+  dashboard-e ar bell-e mone koriye dey.
+- **Incomplete requests**: keu form-er prothom dhap puron kore chole gele 30 minute por Leads › Incomplete requests-e
+  ase. Phone kore **Contacted** chapun.
+- **Quote**: lead-e **Write a quote** › option likhe **Send by email**. Customer accept korle **Convert to booking**.
+
+**Reports ar customers**
+- **Reports**: agent onujayi request ar booking, search theke booking porjonto, visa-r hishab. **Export CSV** ache.
+- **Customers**: tag ar note dite paren; ekoi manusher duita number hole **Merge**.
+- **Roles**: Users-e nijer role banate paren (jemon "Senior sales" = Travel sales + Visa officer).
+
+**Waafa’s World**
+- **Online payment**: SSLCommerz, bKash, Nagad Integrations-e key save ar Live mode on korle tobei checkout-e dekhay.
+  Refund gateway-r panel-e kore order-e **Record refund** chapun.
+- **Courier**: order Confirmed hole **Mark shipped › Book with Steadfast**: tracking code nije bose, customer SMS pan,
+  deliver hole order nije Delivered hoy.
+- **Invoice ar packing slip**: order-e **Invoice (PDF)** ar **Packing slip (PDF)**.
+- **Dam ar stock CSV diye**: Products › **Download CSV to edit** › Excel-e bodlan › **Import CSV** (age preview dekhay).
+- **Flash sale ar campaign**: Deals-e shuru-r somoy ar cap din; Campaign pages-e banner ar product diye page banan.
+- **Reviews ar questions**: approve na kora porjonto kichui site-e dekhay na. Uttor likhle product page-e dekhay.
+
+**Hotel**
+- **Curated hotels**: photo, amenities ar room type diye hotel jog korun; /hotels-e "Hotels our team recommends"-e dekhay.
+
+**Bangla**
+- Site-er Bangla `/bn`-e. Protiti content editor-e **Bangla** section-e English-er pashe Bangla likhun; na likhle
+  Bangla page-e English dekhay. List-e **Bangla missing** filter diye baki gulo khujun.
+
+**SMS ar Telegram**
+- SMS shudhu status-er jonno (request pelam, order, visa-r dhap), sign-in-e na. Lekha bodlate Settings › Forms and
+  messages › SMS.
+- Telegram: bot-ke sales group-e jog korun, group-e ekta message likhun, tarpor card-e **Find my group**.
+
+**Dark mode**
+- Upore dan dike nijer naam-er gol button › **Theme** › Light, Dark ba Match this device. Ei browser-e mone rakhe;
+  website shobsomoy light thake.
