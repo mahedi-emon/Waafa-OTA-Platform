@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { DetailMorph } from "@/components/motion/DetailMorph";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Building2 } from "@/components/icons/server/Building2";
@@ -383,7 +384,9 @@ export default function ProductPage({ params }: PageProps<"/[locale]/shop/p/[slu
           aria-busy="true"
           className="site-container grid min-h-dvh grid-cols-1 gap-8 pt-4 pb-28 md:pt-6 lg:grid-cols-2"
         >
-          <Skeleton className="aspect-square rounded-[20px]" />
+          <DetailMorph>
+            <Skeleton className="aspect-square rounded-[20px]" />
+          </DetailMorph>
           <div className="flex flex-col gap-4">
             <Skeleton className="h-6 w-40 rounded-full" />
             <Skeleton className="h-16 rounded-xl" />

@@ -30,26 +30,22 @@ async function PackageCard({
   return (
     <CardFx tilt spotlight className="rounded-2xl">
       <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white shadow-xs transition-shadow duration-200 hover:shadow-md">
-        <CardMorph name={morph ? `package-${pkg.slug}` : undefined}>
-          <div className="relative">
-            <SmartImage
-              src={pkg.cover.src}
-              focal={pkg.cover.focal}
-              alt={pkg.cover.alt}
-              ratio="4/3"
-              sizes={sizes}
-              zoomOnHover
-            />
-            {pkg.video ? (
-              <HoverVideo sources={{ mp4: pkg.video.mp4, webm: pkg.video.webm }} />
-            ) : null}
-            {tag ? (
-              <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
-                {tag === "best-seller" ? <GoldTriangle className="size-2.5" /> : null}
-                {t(`tags.${tag}`)}
-              </span>
-            ) : null}
-          </div>
+        <CardMorph enabled={morph} className="relative">
+          <SmartImage
+            src={pkg.cover.src}
+            focal={pkg.cover.focal}
+            alt={pkg.cover.alt}
+            ratio="4/3"
+            sizes={sizes}
+            zoomOnHover
+          />
+          {pkg.video ? <HoverVideo sources={{ mp4: pkg.video.mp4, webm: pkg.video.webm }} /> : null}
+          {tag ? (
+            <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold text-navy-900 shadow-xs">
+              {tag === "best-seller" ? <GoldTriangle className="size-2.5" /> : null}
+              {t(`tags.${tag}`)}
+            </span>
+          ) : null}
         </CardMorph>
         <div className="flex flex-1 flex-col gap-2 p-4">
           <p className="text-[13px] font-medium text-brand-700">{pkg.placesLabel}</p>
