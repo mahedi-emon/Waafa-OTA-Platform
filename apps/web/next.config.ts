@@ -19,6 +19,9 @@ const standalone = process.env.NEXT_OUTPUT === "standalone";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  // Partial Prefetching stays on (issue 271, D328): turning it off made request-time renders reuse the data captured at
+  // build time, so an unpublished post kept showing to visitors. Its cost (each streamed page rendered twice, the second
+  // copy embedded in the HTML) is kept small by streaming less data instead.
   partialPrefetching: true,
   reactStrictMode: true,
   poweredByHeader: false,

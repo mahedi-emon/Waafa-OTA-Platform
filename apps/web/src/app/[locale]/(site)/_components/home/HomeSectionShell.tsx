@@ -19,7 +19,11 @@ function HomeSectionShell({
   return (
     <section
       aria-labelledby={labelledBy}
-      className={cn("py-11 md:py-16 xl:py-[88px]", tone === "mist" && "bg-mist-50", className)}
+      className={cn(
+        "py-11 max-lg:paint-when-near md:py-16 xl:py-[88px]",
+        tone === "mist" && "bg-mist-50",
+        className,
+      )}
     >
       <div className="site-container flex reveal-on-view flex-col gap-8 md:gap-10">{children}</div>
     </section>

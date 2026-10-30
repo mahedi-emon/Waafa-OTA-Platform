@@ -71,6 +71,8 @@ function ProductView({
   const [qty, setQty] = useState(1);
   const [zoneId, setZoneId] = useState(zones[0]?.id ?? "");
   const [photo, setPhoto] = useState(0);
+  // The first photo is the LCP element: it paints at once; only a photo the visitor picks fades in (issue 271).
+  const [picked, setPicked] = useState(false);
   const [zoom, setZoom] = useState<number | null>(null);
   const variant = resolveVariant(product, selection) ?? defaultVariant(product);
   const images = variantImages(product, variant);
@@ -174,7 +176,10 @@ function ProductView({
                 preload
                 sizes="(min-width: 1024px) 560px, 100vw"
                 frameClassName="bg-mist-50"
-                className="animate-in object-contain p-6 duration-300 fade-in-0 motion-reduce:animate-none"
+                className={cn(
+                  "object-contain p-6",
+                  picked && "animate-in duration-300 fade-in-0 motion-reduce:animate-none",
+                )}
               />
               <span
                 aria-hidden="true"
@@ -205,7 +210,10 @@ function ProductView({
                   type="button"
                   aria-label={t("product.photo", { n: index + 1, total: images.length })}
                   aria-pressed={index === photo}
-                  onClick={() => setPhoto(index)}
+                  onClick={() => {
+                    setPicked(true);
+                    setPhoto(index);
+                  }}
                   className={cn(
                     "block size-16 overflow-hidden rounded-xl border-2 bg-mist-50 outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
                     index === photo ? "border-electric-600" : "border-transparent",
@@ -312,6 +320,7 @@ function ProductView({
                       setSelection((current) =>
                         pickOption(product, current, option.key, value.value),
                       );
+                      setPicked(true);
                       setPhoto(0);
                       setQty(1);
                     }}

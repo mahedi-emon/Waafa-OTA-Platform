@@ -6,10 +6,10 @@ import { daysBetween } from "@waafa/shared";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HelpCard } from "@/components/results/HelpCard";
 import { LivePlaceholder } from "@/components/results/LivePlaceholder";
+import { RequestSkeleton } from "@/components/results/RequestSkeleton";
 import { ResultsBody } from "@/components/results/ResultsBody";
 import { TripSummaryBar } from "@/components/results/TripSummaryBar";
 import { DeferredSearchCard } from "@/components/search/DeferredSearchCard";
-import { Skeleton } from "@/components/ui/skeleton";
 import { pickMessages } from "@/i18n/pickMessages";
 import {
   getContactSettings,
@@ -123,19 +123,19 @@ async function HotelResults({
 
 /** /hotels (Hotels, Hotels-m boards): the shared results shell with the Manual hotel request. */
 export default async function HotelsPage({ searchParams }: PageProps<"/[locale]/hotels">) {
-  const t = await getTranslations("Hotels");
+  const [t, tLeads] = await Promise.all([getTranslations("Hotels"), getTranslations("Leads")]);
+  // The request card's header in the first HTML: it is the page's largest text (issue 271).
+  const card = {
+    kicker: t("card.kicker"),
+    title: t("card.title"),
+    lead: t("card.lead"),
+    badges: [tLeads("noPayment"), tLeads("priceConfirmed")],
+  };
   return (
     <main id="main" className="site-container flex flex-col gap-4 pt-4 pb-28 md:pt-6">
       <Breadcrumbs items={[{ label: t("breadcrumb") }]} />
       <h1 className="sr-only">{t("card.title")}</h1>
-      <Suspense
-        fallback={
-          <div className="flex flex-col gap-6" aria-hidden="true">
-            <Skeleton className="h-[72px] rounded-2xl" />
-            <Skeleton className="h-[560px] rounded-[20px]" />
-          </div>
-        }
-      >
+      <Suspense fallback={<RequestSkeleton card={card} />}>
         <HotelResults searchParams={searchParams} />
       </Suspense>
       <Suspense fallback={null}>
