@@ -30,12 +30,19 @@ export default defineConfig({
     },
     ...(crossBrowser
       ? [
+          // Their drivers are slower than Chromium's: a minute per test instead of 30 s.
           {
             name: "firefox",
             use: { ...devices["Desktop Firefox"] },
             testMatch: CROSS_BROWSER_SPECS,
+            timeout: 60_000,
           },
-          { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: CROSS_BROWSER_SPECS },
+          {
+            name: "webkit",
+            use: { ...devices["Desktop Safari"] },
+            testMatch: CROSS_BROWSER_SPECS,
+            timeout: 60_000,
+          },
         ]
       : []),
   ],

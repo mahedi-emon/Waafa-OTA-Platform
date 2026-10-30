@@ -41,7 +41,9 @@ test("pages declare English and keep pinch-zoom enabled", async ({ page }) => {
   expect(viewport).not.toMatch(/user-scalable\s*=\s*(no|0)|maximum-scale\s*=\s*1(\.0)?\b/);
 });
 
-test("the skip link is the first stop for keyboard users", async ({ page }) => {
+test("the skip link is the first stop for keyboard users", async ({ page, browserName }) => {
+  // Safari moves Tab only between form controls by default (links need Option+Tab), and WebKit follows that.
+  test.skip(browserName === "webkit", "Safari's Tab skips links unless the visitor turns it on");
   await page.goto("/");
   await page.keyboard.press("Tab");
   const skip = page.getByRole("link", { name: "Skip to content" });
