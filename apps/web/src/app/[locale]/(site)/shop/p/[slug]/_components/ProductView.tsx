@@ -10,7 +10,7 @@ import { flyToCart } from "@/lib/shop/flyToCart";
 import { formatTaka, whatsappLink, type Product, type ShippingZone } from "@waafa/shared";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { SmartImage } from "@/components/media/SmartImage";
-import { CardMorph } from "@/components/motion/CardMorph";
+import { DetailMorph } from "@/components/motion/DetailMorph";
 import { StockBadge } from "@/components/shop/StockBadge";
 import { useCart } from "@/components/shop/useCart";
 import { recordView } from "@/components/shop/useRecentlyViewed";
@@ -162,7 +162,7 @@ function ProductView({
         className="flex flex-col gap-3 lg:sticky lg:top-[calc(var(--hdr-h)+16px)] lg:self-start"
       >
         {shown ? (
-          <CardMorph name={`product-${product.slug}`}>
+          <DetailMorph>
             <div className="relative">
               <button
                 type="button"
@@ -203,7 +203,7 @@ function ProductView({
                 ) : null}
               </span>
             </div>
-          </CardMorph>
+          </DetailMorph>
         ) : null}
         {images.length > 1 ? (
           <ul className="flex gap-2 overflow-x-auto">

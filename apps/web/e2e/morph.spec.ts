@@ -87,7 +87,7 @@ test.describe("desktop (1280)", () => {
     await page.waitForURL(`**/tour-packages/${slug}`);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const names = await morphNames(page);
-    if (names) expect(names).toContain(`package-${slug}`);
+    if (names) expect(names).toContain("card-photo");
     expect(errors).toEqual([]);
   });
 
@@ -105,7 +105,7 @@ test.describe("desktop (1280)", () => {
     await page.waitForURL(`**/shop/p/${slug}`);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const names = await morphNames(page);
-    if (names) expect(names).toContain(`product-${slug}`);
+    if (names) expect(names).toContain("card-photo");
     expect(errors).toEqual([]);
   });
 });
