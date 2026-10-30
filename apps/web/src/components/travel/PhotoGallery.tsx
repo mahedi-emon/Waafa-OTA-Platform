@@ -6,7 +6,7 @@ import { Images } from "lucide-react";
 import { cn } from "cn";
 import type { Image } from "@waafa/shared";
 import { SmartImage } from "@/components/media/SmartImage";
-import { CardMorph } from "@/components/motion/CardMorph";
+import { DetailMorph } from "@/components/motion/DetailMorph";
 
 /** The lightbox (Dialog + Embla) loads on the first tap, keeping it out of the first load. */
 const PhotoLightbox = dynamic(() =>
@@ -26,15 +26,15 @@ type PhotoGalleryProps = {
   images: Image[];
   title: string;
   labels: { all: string; gallery: string; previous: string; next: string };
-  /** The card photo that grows into the first photo when the page opens from a grid (issue 256). */
-  morphName?: string;
+  /** The first photo is where a clicked card's photo grows into (issue 256). */
+  morph?: boolean;
 };
 
 /**
  * Photo gallery for packages and curated hotels (PackageDetail, PackageDetail-photos): a bento of the first five photos; any photo opens the
  * lightbox at that photo (Embla: swipe on phones, arrow keys and buttons on desktop).
  */
-function PhotoGallery({ images, title, labels, morphName }: PhotoGalleryProps) {
+function PhotoGallery({ images, title, labels, morph = false }: PhotoGalleryProps) {
   const [start, setStart] = useState<number | null>(null);
   const shown = images.slice(0, 5);
 
@@ -46,9 +46,10 @@ function PhotoGallery({ images, title, labels, morphName }: PhotoGalleryProps) {
           LAYOUTS[shown.length],
         )}
       >
-        {shown.map((image, index) => (
-          <CardMorph key={image.src} name={index === 0 ? morphName : undefined}>
+        {shown.map((image, index) => {
+          const photo = (
             <button
+              key={image.src}
               type="button"
               onClick={() => setStart(index)}
               className={cn(
@@ -69,8 +70,9 @@ function PhotoGallery({ images, title, labels, morphName }: PhotoGalleryProps) {
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
             </button>
-          </CardMorph>
-        ))}
+          );
+          return index === 0 && morph ? <DetailMorph key={image.src}>{photo}</DetailMorph> : photo;
+        })}
       </div>
       {images.length > 1 ? (
         <button

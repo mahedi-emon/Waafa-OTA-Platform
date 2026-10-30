@@ -44,7 +44,7 @@ async function ProductCard({
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-mist-200 bg-white transition-shadow duration-200 hover:shadow-md">
       <div className="relative">
         {image ? (
-          <CardMorph name={morph ? `product-${product.slug}` : undefined}>
+          <CardMorph enabled={morph}>
             <SmartImage
               src={image.src}
               alt={image.alt}
